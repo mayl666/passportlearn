@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender name="CONSOLE-DEBUG" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="DEBUG"/>
+        </filter>
+    </appender>
+    <appender name="CONSOLE-INFO" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+        </filter>
+    </appender>
+    <appender name="FILE-ALL" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-mm-dd"/>
+        <param name="Append" value="true"/>
+        <param name="File" value="${passport.log.path}/couponActive.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+        </layout>
+    </appender>
+
+    <category name="java.sql" additivity="false">
+        <priority value="${passport.log.level}"/>
+        <appender-ref ref="CONSOLE-DEBUG"/>
+    </category>
+
+    <root>
+        <priority value="${passport.log.level}"/>
+        <appender-ref ref="CONSOLE-DEBUG"/>
+    </root>
+
+
+</log4j:configuration>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+<!-- 创建connectionFactory -->
+    <bean id="connectionFactory"
+          class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
+        <constructor-arg name="hostname" value="10.16.172.44" />
+        <constructor-arg name="port" value="5672" />
+        <property name="username" value="upd_passport" />
+        <property name="password" value="upd_passport" />
+        <property name="virtualHost" value="upd" />
+    </bean>
+
+    <bean id="rabbitTemplate"
+          class="org.springframework.amqp.rabbit.core.RabbitTemplate">
+        <constructor-arg ref="connectionFactory"></constructor-arg>
+        <property name="exchange" value="passport" />
+        <property name="queue" value="passport_queue1"></property>
+        <property name="routingKey" value="routing.a1.service"></property>
+    </bean>
+
+</beans>
