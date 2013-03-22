@@ -61,6 +61,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
         jedis.hmset(mobile, map);
         jedis.expire(mobile, 6 * 60);      //有效时长
+        System.out.println();
 
     }
 
