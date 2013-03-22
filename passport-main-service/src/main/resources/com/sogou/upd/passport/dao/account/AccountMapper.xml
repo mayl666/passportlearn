@@ -20,4 +20,5 @@
     <insert id="userRegister" parameterType="account">
         insert into account(passportId,passwd,mobile,regTime,regIp,status,version,accountType) values (#{passportId},#{passwd},#{mobile},#{regTime},#{regIp},#{status},#{version},#{accountType})
     </insert>
+
 </mapper>
