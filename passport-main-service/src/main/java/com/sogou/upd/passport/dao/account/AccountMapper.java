@@ -8,6 +8,10 @@ import com.sogou.upd.passport.model.account.Account;
  * Time: 下午3:42
  * To change this template use File | Settings | File Templates.
  */
+
+/**
+ * 用户主表的接口mapper文件
+ */
 public interface AccountMapper {
     /**
      * 根据传入的参数，手机号码和密码,查询该手机是否已经注册
