@@ -3,16 +3,21 @@ package com.sogou.upd.passport.common.utils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * User: mayan
+ * Date: 13-3-22
+ * Time: 下午2:02
+ * To change this template use File | Settings | File Templates.
+ */
 public class SMSUtil {
 	
 	private static final String SMS_PROXY = "http://sms.sogou-op.org/portal/mobile/smsproxy.php?appid=sogoupassport";
 	
 	public static final long SEND_SMS_INTERVAL = 1000*60; // 发送短信验证码的间隔，1分钟只能发1条短信，单位ms
 	
-	public static final int MAX_SMS_COUNT_ONEDAY = 20; // 每日最多发送短信验证码
+	public static final int MAX_SMS_COUNT_ONEDAY = 5; // 每日最多发送短信验证码
 	
-	public static final int SMS_VALID = 60; // 短信验证码的有效期，60分钟
+	public static final int SMS_VALID = 10; // 短信验证码的有效期，60分钟
 
 	static final Logger logger = LoggerFactory.getLogger(SMSUtil.class);
 	
