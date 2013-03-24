@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common;
+package com.sogou.upd.passport.common.parameter;
 
 
 public class CommonParameters {
@@ -22,5 +22,5 @@ public class CommonParameters {
 	public static final int PASSPORT_PROFILE_TIMEOUT = 0; // 不过期吧，为了性能
 	public static final int PASSPORT_USERSTATUE_TIMEOUT = 0; // 不过期吧，为了性能
 	public static final int CONNECT_AUTHORIZE_STATE_TIMEOUT = 60 * 30;  // 第三方登录授权的statue缓存有效期
-	
+
 }
