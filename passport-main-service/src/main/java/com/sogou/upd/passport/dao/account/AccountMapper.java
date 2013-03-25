@@ -22,7 +22,7 @@ public interface AccountMapper {
      * 验证合法，用户注册
      * @param account
      */
-    public void userRegister(Account account);
+    public long userRegister(Account account);
 
 
 }

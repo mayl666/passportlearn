@@ -31,19 +31,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void userRegister(Account account) {
-        accountDao.userRegister(account);
+    public long userRegister(Account account) {
+        return accountDao.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void userRegiterDetail(String mobile, String passwd, String regIp,String smsCode) {
+    public long userRegiterDetail(String mobile, String passwd, String regIp,String smsCode) {
         int accountType = AccountTypeEnum.PHONE.getValue();
         String passportId = PassportIDGenerator.generator(mobile, accountType);
         int status = AccountStatusEnum.REGULAR.getValue();
         int version = Account.NEW_ACCOUNT_VERSION;
         Account account = new Account(0, passportId, passwd, mobile, new Date(), regIp, status, version, accountType);
-        accountDao.userRegister(account);
+        return accountDao.userRegister(account);
         //TODO add insert smsCode into app table
     }
 
@@ -58,8 +58,7 @@ public class AccountServiceImpl implements AccountService {
         a.setStatus(AccountStatusEnum.REGULAR.getValue());
         a.setVersion(Account.NEW_ACCOUNT_VERSION);
         a.setMobile(account);
-        // TODO add dao implement，return userid
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return accountDao.userRegister(a);
     }
 
     @Override

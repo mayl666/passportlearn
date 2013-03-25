@@ -28,8 +28,8 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public void userRegister(Account account) {
-        accountMapper.userRegister(account);
+    public long userRegister(Account account) {
+        return accountMapper.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

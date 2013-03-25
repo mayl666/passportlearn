@@ -21,5 +21,5 @@ public interface AccountDao {
      * 用户注册
      * @param account  封装的对象
      */
-    public void userRegister(Account account);
+    public long userRegister(Account account);
 }

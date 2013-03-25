@@ -19,6 +19,9 @@
     </select>
 
     <insert id="userRegister" parameterType="account">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT @@IDENTITY
+        </selectKey>
         insert into account(passportId,passwd,mobile,regTime,regIp,status,version,accountType) values (#{passportId},#{passwd},#{mobile},#{regTime},#{regIp},#{status},#{version},#{accountType})
     </insert>
 

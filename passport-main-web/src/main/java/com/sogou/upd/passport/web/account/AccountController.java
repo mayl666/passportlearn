@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account;
 
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.model.account.Account;
@@ -68,7 +69,8 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/v2/account", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(@RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                                     @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey) throws Exception {
+                                     @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey,
+                                     @RequestParam(defaultValue = "") String regIp) throws Exception {
         //验证手机号码是否为空，格式及位数是否正确
         checkMobile(mobile, appkey);
         //验证手机号码与验证码是否匹配
@@ -77,13 +79,15 @@ public class AccountController extends BaseController {
         //todo add service implement of validate
         //验证该手机用户是否已经注册过了
         boolean account = accountService.checkIsRegisterAccount(new Account(mobile, passwd));
+        long id = 0;
         if (account == true) {     //如果用户没有被注册，则注册用户，并返回access_token和refresh_token
+            id = accountService.initialAccount(mobile, passwd, regIp, AccountTypeEnum.PHONE.getValue());
             //todo 这里分跳转情况，1，跳转到登录页面，相当于第一次登录；2，自动登录，相当于第N次登录
         } else {                    //否则，不允许手机用户重复注册
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
         //todo 调用生成access_token和refresh_token方法生成并返回给用户
-        return null;
+        return buildSuccess(null,null);
     }
 
     /**
