@@ -17,7 +17,7 @@ public interface AccountMapper {
      * 根据传入的参数，手机号码和密码,查询该手机是否已经注册
      * @return
      */
-    public Account findUserRegisterIsOrNot(Account account);
+    public boolean findUserRegisterIsOrNot(Account account);
 
     /**
      * 验证合法，用户注册
