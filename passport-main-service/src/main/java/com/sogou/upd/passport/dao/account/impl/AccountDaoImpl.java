@@ -21,12 +21,13 @@ public class AccountDaoImpl implements AccountDao {
     public AccountMapper accountMapper;
 
     @Override
-    public Account findUserRegisterIsOrNot(Account account) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean findUserRegisterIsOrNot(Account account) {
+        return accountMapper.findUserRegisterIsOrNot(account);
     }
 
     @Override
     public void userRegister(Account account) {
+        accountMapper.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

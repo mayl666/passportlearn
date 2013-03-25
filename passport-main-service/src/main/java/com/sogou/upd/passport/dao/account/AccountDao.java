@@ -15,7 +15,7 @@ public interface AccountDao {
      * @param account 封装的对象
      * @return
      */
-    public Account findUserRegisterIsOrNot(Account account);
+    public boolean findUserRegisterIsOrNot(Account account);
 
     /**
      * 用户注册
