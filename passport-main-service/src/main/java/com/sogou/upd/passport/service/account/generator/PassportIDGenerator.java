@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.math;
+package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 
@@ -11,6 +11,12 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
  */
 public class PassportIDGenerator {
 
+    /**
+     * 根据account生成passportid
+     * @param account
+     * @param provider
+     * @return
+     */
     public static String generator(String account, int provider) {
         String passportID = null;
         if (AccountTypeEnum.isPhone(account, provider)) {

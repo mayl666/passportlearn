@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.sogou.upd.passport.common.math.PassportIDGenerator;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
