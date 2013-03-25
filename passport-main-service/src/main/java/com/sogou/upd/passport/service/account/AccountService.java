@@ -12,15 +12,13 @@ import com.sogou.upd.passport.model.account.Account;
  */
 public interface AccountService {
 
-    public boolean findUserRegisterIsOrNot(Account account);
-
     public void userRegister(Account account);
     /**
      * 检查此用户是否注册过，从用户账号表查
      * @param account
      * @return
      */
-    public Account checkIsRegisterAccount(Account account);
+    public boolean checkIsRegisterAccount(Account account);
 
     /**
      * 初始化非第三方用户账号
