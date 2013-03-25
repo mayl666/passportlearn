@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sogou.upd.passport.model.account.Account">
+<mapper namespace="com.sogou.upd.passport.dao.account.AccountMapper">
     <resultMap id="accountMap" type="account">
         <id property="id" column="id"></id>
         <id property="passportId" column="passport_id"></id>
@@ -19,6 +19,9 @@
     </select>
 
     <insert id="userRegister" parameterType="account">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT @@IDENTITY
+        </selectKey>
         insert into account(passportId,passwd,mobile,regTime,regIp,status,version,accountType) values (#{passportId},#{passwd},#{mobile},#{regTime},#{regIp},#{status},#{version},#{accountType})
     </insert>
 

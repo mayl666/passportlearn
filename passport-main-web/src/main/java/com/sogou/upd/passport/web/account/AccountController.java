@@ -32,7 +32,6 @@ public class AccountController extends BaseController {
     @Inject
     private AccountService accountService;
 
-
     @RequestMapping(value = "/v2/authcode", method = RequestMethod.GET)
     @ResponseBody
     public Object sendPhoneCode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
@@ -62,6 +61,12 @@ public class AccountController extends BaseController {
         return buildSuccess(null, null);
     }
 
+    /**
+     * 验证手机号码是否为空，格式是否正确
+     *
+     * @param mobile
+     * @return
+     */
     private Map<String, Object> checkAccount(String mobile) {
         boolean empty = hasEmpty(mobile);
         if (empty) {

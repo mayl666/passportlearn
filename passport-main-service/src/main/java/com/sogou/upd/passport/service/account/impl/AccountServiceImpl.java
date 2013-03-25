@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountDao;
 import com.sogou.upd.passport.common.math.PassportIDGenerator;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -14,6 +13,7 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
+import javax.print.DocFlavor;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,9 +75,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void userRegister(Account account) {
-        accountDao.userRegister(account);
+    public long userRegister(Account account) {
+        return accountDao.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public long userRegiterDetail(String mobile, String passwd, String regIp,String smsCode) {
+        int accountType = AccountTypeEnum.PHONE.getValue();
+        String passportId = PassportIDGenerator.generator(mobile, accountType);
+        int status = AccountStatusEnum.REGULAR.getValue();
+        int version = Account.NEW_ACCOUNT_VERSION;
+        Account account = new Account(0, passportId, passwd, mobile, new Date(), regIp, status, version, accountType);
+        return accountDao.userRegister(account);
+        //TODO add insert smsCode into app table
     }
 
     @Override
@@ -90,8 +101,8 @@ public class AccountServiceImpl implements AccountService {
         a.setAccountType(provider);
         a.setStatus(AccountStatusEnum.REGULAR.getValue());
         a.setVersion(Account.NEW_ACCOUNT_VERSION);
-        // TODO add dao implement，return userid
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        a.setMobile(account);
+        return accountDao.userRegister(a);
     }
 
     @Override
