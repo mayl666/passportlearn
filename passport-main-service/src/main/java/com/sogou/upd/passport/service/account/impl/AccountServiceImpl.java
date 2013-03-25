@@ -31,6 +31,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void userRegister(Account account) {
         accountDao.userRegister(account);
+        //TODO add insert smsCode into app table
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

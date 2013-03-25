@@ -45,8 +45,8 @@ public class AccountController extends BaseController {
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
         //判断账号是否被注册  todo 先缓存读取
-        Account account = accountService.checkIsRegisterAccount(new Account(mobile));
-        if (account == null){
+        boolean account = accountService.checkIsRegisterAccount(new Account(mobile));
+        if (account == true){
 
         } else {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
