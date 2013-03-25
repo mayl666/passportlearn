@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.math;
 
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -20,6 +21,7 @@ public class RSATest {
 
     /**
      * 公钥-私钥对生成
+     *
      * @throws Exception
      */
     @Test
@@ -37,22 +39,24 @@ public class RSATest {
 
     /**
      * 签名-校验
+     *
      * @throws Exception
      */
     @Test
     public void testSig_Verify() throws Exception {
-        String signStr = RSA.sign(str, RSA.PRIVATE_KEY);
-        Assert.assertTrue(RSA.verify(str, RSA.PUBLIC_KEY, signStr));
+        String signStr = RSA.sign(str, TokenGenerator.PRIVATE_KEY);
+        Assert.assertTrue(RSA.verify(str, TokenGenerator.PUBLIC_KEY, signStr));
     }
 
     /**
      * 私钥加密-公钥解密
+     *
      * @throws Exception
      */
     @Test
     public void testEncryptByPrivateKey_DecryptByPublicKey() throws Exception {
-        byte[] encbyte = RSA.encryptByPrivateKey(str.getBytes(), RSA.PRIVATE_KEY);
-        String decStr = RSA.decryptByPublicKey(encbyte, RSA.PUBLIC_KEY);
-        Assert.assertEquals(str,decStr);
+        byte[] encbyte = RSA.encryptByPrivateKey(str.getBytes(), TokenGenerator.PRIVATE_KEY);
+        String decStr = RSA.decryptByPublicKey(encbyte, TokenGenerator.PUBLIC_KEY);
+        Assert.assertEquals(str, decStr);
     }
 }

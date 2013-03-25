@@ -33,13 +33,6 @@ public class RSA extends Coder {
     // 公钥
     public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
             "7rU/9UWJqy8li64i5bYtx7rE8+I4EdC00To5kz6D61UCAwEAAQ==";
-    // 私钥
-    public static final String PRIVATE_KEY = "MIIBUgIBADANBgkqhkiG9w0BAQEFAASCATwwggE4AgEAAkEAqD6eZzVTCkwYodA/nyOEmD+Eu5yb\n" +
-            "igsFMEzJEGYIAorutT/1RYmrLyWLriLlti3HusTz4jgR0LTROjmTPoPrVQIDAQABAkAaMgW/1BGl\n" +
-            "3MtJBn+ha4pNmjY0b+HX0HdyWcJEh15f5rkqhcrAxzaHo5vHnnW+mYrIIGdeqF8QTbB1lMKYuIxR\n" +
-            "AiEA2TBeNoI/EU+4I876iOHn5kopV0+OCtkLdxsu12nUNsMCIQDGTzgd7uVDGKzX4oNy4VY0FrZR\n" +
-            "bqTdtJtiRKTFU8EkBwIgBSByKOE8MeFq3FWHbnG+sp3vieMT3EexUJdwrJ8P5lcCIBYHVsR8dRsu\n" +
-            "8oRItTFdtqWyoC4LjGTUWy5fUa5Zz2qhAh9rQb9VP0rnQPP3Hm9z9SFccXUZaPiC9a8+r5g5WUen";
 
     /**
      * 加密<br>
@@ -78,7 +71,6 @@ public class RSA extends Coder {
     public static byte[] encryptByPrivateKey(byte[] data, String key) throws Exception {
         // 对密钥解密
         byte[] keyBytes = decryptBASE64(key);
-        //		byte[] keyBytes = key.getBytes();
 
         // 取得私钥
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
@@ -131,7 +123,6 @@ public class RSA extends Coder {
     public static String decryptByPublicKey(byte[] data, String key) throws Exception {
         // 对密钥解密
         byte[] keyBytes = decryptBASE64(key);
-        //		byte[] keyBytes = key.getBytes();
 
         // 取得公钥
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
@@ -225,26 +216,6 @@ public class RSA extends Coder {
 
         return encodedByteArray;
     }
-
-    public static String toHexString(byte[] b) {
-        StringBuilder sb = new StringBuilder(b.length * 2);
-        for (int i = 0; i < b.length; i++) {
-            sb.append(HEXCHAR[(b[i] & 0xf0) >>> 4]);
-            sb.append(HEXCHAR[b[i] & 0x0f]);
-        }
-        return sb.toString();
-    }
-
-    public static final byte[] toBytes(String s) {
-        byte[] bytes;
-        bytes = new byte[s.length() / 2];
-        for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) Integer.parseInt(s.substring(2 * i, 2 * i + 2), 16);
-        }
-        return bytes;
-    }
-
-    private static char[] HEXCHAR = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     /**
      * 初始化密钥

@@ -23,7 +23,7 @@ public class Coder {
 	 * HmacSHA512 
 	 * </pre> 
 	 */
-	public static final String KEY_MAC = "HmacMD5";
+	public static final String KEY_MAC = "HmacSHA1";
 
 	/** 
 	 * BASE64解密 
@@ -109,4 +109,24 @@ public class Coder {
 		return mac.doFinal(data);
 
 	}
+
+    public static String toHexString(byte[] b) {
+        StringBuilder sb = new StringBuilder(b.length * 2);
+        for (int i = 0; i < b.length; i++) {
+            sb.append(HEXCHAR[(b[i] & 0xf0) >>> 4]);
+            sb.append(HEXCHAR[b[i] & 0x0f]);
+        }
+        return sb.toString();
+    }
+
+    public static final byte[] toBytes(String s) {
+        byte[] bytes;
+        bytes = new byte[s.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) Integer.parseInt(s.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
+    }
+
+    private static char[] HEXCHAR = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 }
