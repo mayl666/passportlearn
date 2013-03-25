@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.model.account.Account;
+
 /**
  * User: mayan
  * Date: 13-3-22
@@ -9,10 +11,10 @@ package com.sogou.upd.passport.service.account;
 public interface AccountService {
     /**
      * 检查此用户是否注册过，从用户账号表查
-     * @param mobile
+     * @param account
      * @return
      */
-    public boolean checkIsRegisterAccount(String mobile);
+    public Account checkIsRegisterAccount(Account account);
 
     /**
      * 初始化非第三方用户账号

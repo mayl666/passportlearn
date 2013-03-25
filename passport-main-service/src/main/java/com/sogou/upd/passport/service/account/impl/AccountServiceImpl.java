@@ -22,8 +22,8 @@ public class AccountServiceImpl implements AccountService {
     private AccountMapper accountMapper;
 
     @Override
-    public boolean checkIsRegisterAccount(String mobile) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public Account checkIsRegisterAccount(Account account) {
+        return accountMapper.checkIsRegisterAccount(account);
     }
 
     @Override
