@@ -7,6 +7,12 @@ package com.sogou.upd.passport.service.account;
  * To change this template use File | Settings | File Templates.
  */
 public interface AccountService {
+    /**
+     * 检查此用户是否注册过，从用户账号表查
+     * @param mobile
+     * @return
+     */
+    public boolean checkIsRegisterAccount(String mobile);
 
     /**
      * 初始化非第三方用户账号

@@ -22,6 +22,11 @@ public class AccountServiceImpl implements AccountService {
     private AccountMapper accountMapper;
 
     @Override
+    public boolean checkIsRegisterAccount(String mobile) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public long initialAccount(String account, String pwd, String ip, int provider) {
         Account a = new Account();
         a.setPassportId(PassportIDGenerator.generator(account, provider));
