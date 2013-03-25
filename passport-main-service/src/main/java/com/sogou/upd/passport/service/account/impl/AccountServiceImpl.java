@@ -7,8 +7,10 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountDao;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -67,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
                 return mapResult;
             }
         } catch (Exception e) {
-            logger.error("[SMS] service method handleSendSms error.{}",e);
+            logger.error("[SMS] service method handleSendSms error.{}", e);
         } finally {
             shardedJedisPool.returnResource(jedis);
         }
@@ -110,14 +112,14 @@ public class AccountServiceImpl implements AccountService {
                         mapResult.put("smscode", smsCode);
                         return mapResult;
                     } else {
-                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS,"短信发送已达今天的最高上限20条");
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限20条");
                     }
                 } else {
-                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT,"1分钟只能发送一条短信");
+                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
                 }
             }
-        }catch (Exception e){
-            logger.error("[SMS] service method     public Map<String, Object> updateCacheStatusByAccount(String cacheKey) {\n error.{}",e);
+        } catch (Exception e) {
+            logger.error("[SMS] service method     public Map<String, Object> updateCacheStatusByAccount(String cacheKey) {\n error.{}", e);
         } finally {
             shardedJedisPool.returnResource(jedis);
         }
@@ -159,5 +161,32 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public long initialConnectAccount(String account, String ip, int provider) {
         return initialAccount(account, null, ip, provider);
+    }
+
+    @Override
+    public AccountAuth initialAccountAuth(Account account, int appkey) {
+        long userid = account.getId();
+        String passportID = account.getPassportId();
+        TokenGenerator generator = new TokenGenerator();
+        long vaildTime = generator.generatorVaildTime(appkey);
+        String accessToken;
+        String refreshToken;
+        try {
+            accessToken = generator.generatorAccessToken(passportID, appkey);
+            refreshToken = generator.generatorRefreshToken(passportID, appkey);
+        } catch (Exception e) {
+            // TODO record error log
+            return null;
+        }
+
+        AccountAuth accountAuth = new AccountAuth();
+        accountAuth.setUserId(userid);
+        accountAuth.setAppkey(appkey);
+        accountAuth.setAccessToken(accessToken);
+        accountAuth.setValidTime(vaildTime);
+        accountAuth.setRefreshToken(refreshToken);
+
+        // TODO DAO insert AccountAuth table
+        return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

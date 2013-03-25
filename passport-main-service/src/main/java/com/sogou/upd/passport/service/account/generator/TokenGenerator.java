@@ -86,4 +86,12 @@ public class TokenGenerator {
 
         return Coder.toHexString(encryByte);
     }
+
+    public long generatorVaildTime(int appkey) {
+        int expiresIn = appConfigService.getAccessTokenExpiresIn(appkey);
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.SECOND, expiresIn);
+        return c.getTimeInMillis();
+    }
 }
