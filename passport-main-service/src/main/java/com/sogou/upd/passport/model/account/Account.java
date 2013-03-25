@@ -15,12 +15,17 @@ public class Account {
     private long id;
     private String passportId;
     private String passwd;
-    private long mobile;
+    private String mobile;
     private Date regTime;
     private String regIp;
     private int status;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
     private int version;  // 0-sohu老用户，1-sogou新用户
-    private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-email
+    private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-
+    public Account(){}
+
+    public Account(String mobile) {
+        this.mobile = mobile;
+    }
 
     public long getId() {
         return id;
@@ -46,11 +51,11 @@ public class Account {
         this.passwd = passwd;
     }
 
-    public long getMobile() {
+    public String getMobile() {
         return mobile;
     }
 
-    public void setMobile(long mobile) {
+    public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
