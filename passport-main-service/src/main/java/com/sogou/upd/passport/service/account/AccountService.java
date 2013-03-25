@@ -2,8 +2,6 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.model.account.Account;
 
-import com.sogou.upd.passport.model.account.Account;
-
 /**
  * User: mayan
  * Date: 13-3-22
