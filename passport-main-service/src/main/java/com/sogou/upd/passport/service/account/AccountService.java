@@ -13,6 +13,8 @@ import com.sogou.upd.passport.model.account.Account;
 public interface AccountService {
 
     public void userRegister(Account account);
+
+    public void userRegiterDetail(String mobile, String passwd, String regIp,String smsCode) ;
     /**
      * 检查此用户是否注册过，从用户账号表查
      * @param account
