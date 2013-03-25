@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.sogou.upd.passport.common.CommonParameters;
+import com.sogou.upd.passport.common.parameter.CommonParameters;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -16,6 +16,10 @@ import java.util.Map;
 public class StringUtil {
 
 	static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
+
+    public static boolean isEmpty(String str) {
+        return org.apache.commons.lang3.StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
+    }
 
 	/**
 	 * 字符串数组用分隔符拼接成字符串

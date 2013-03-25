@@ -1,8 +1,9 @@
-package com.sogou.upd.passport.common.web;
+package com.sogou.upd.passport.web;
 
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonParameters;
-import com.sogou.upd.passport.common.utils.AESencrp;
+import com.sogou.upd.passport.common.exception.ApplicationException;
+import com.sogou.upd.passport.common.exception.ProblemException;
+import com.sogou.upd.passport.common.parameter.CommonParameters;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -79,23 +80,6 @@ public class BaseController {
 		return buildSuccess("", null);
 	}
 
-	/**
-	 * 验证签名合法性，十分钟之内就是有效的访问签名
-	 * @param secret
-	 * @param signature
-	 * @param appid
-	 * @return
-	 */
-	protected boolean checkSignature(String secret, String signature, String appid) {
-		boolean valid = AESencrp.checkSignature(appid, secret, signature);
-		return valid;
-	}
-
-	protected String generateAccessToken(String base, String appSecret) throws Exception {
-		String accessToken = AESencrp.encrypt(appSecret, base);
-		return accessToken;
-	}
-
 	protected String composeBaseAccessToken(String appid, String openid, long time, String version) {
 		String base = appid + "|" + openid + "|" + time + "|" + version;
 		return base;
@@ -110,17 +94,6 @@ public class BaseController {
 		return realip;
 	}
 	
-	protected Object checkRequiredValidParam(String access_token, String openid,
-			String client_signature, String signature) {
-		if (hasEmpty(signature) && hasEmpty(client_signature)) { return ErrorUtil
-				.buildError(ErrorUtil.ERR_CODE_COM_REQURIE); }
-		if (!hasEmpty(client_signature) && hasEmpty(access_token)) { return ErrorUtil
-				.buildError(ErrorUtil.ERR_CODE_COM_REQURIE); }
-		if (!hasEmpty(signature) && hasEmpty(openid)) { return ErrorUtil
-				.buildError(ErrorUtil.ERR_CODE_COM_REQURIE); }
-		return null;
-	}
-
 	protected boolean isInternalRequest(HttpServletRequest request) {
 		
 		String host = request.getServerName();
@@ -131,5 +104,41 @@ public class BaseController {
         }
 		return false;
 	}
+
+    /**
+     * 处理Controller抛出的异常
+     * ApplicationException-参数异常
+     * ProblemException-接口调用问题异常
+     * Exception-服务器异常
+     * @param e
+     * @param uri 接口URI
+     * @param connectName 可以为null
+     * @return
+     */
+    public Map<String, Object> handleException(Throwable e, String connectName, String uri) {
+
+        if (e instanceof ApplicationException) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("[" + uri + "] Provider:" + connectName
+                        + " request params error! ErrorMessage:" + e.getMessage());
+            }
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, e.getMessage());
+        } else if (e instanceof ProblemException) {
+            String desc = ((ProblemException) e).getDescription();
+            String error = ((ProblemException) e).getError();
+            if (StringUtils.isEmpty(desc)) {
+                desc = ErrorUtil.ERR_CODE_MSG_MAP.get(error);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("[" + uri + "] Provider:" + connectName + " Exception; Error:"
+                        + error + ", Message:" + desc);
+            }
+            return ErrorUtil.buildError(error, desc);
+        } else {
+            logger.error("HasError!, uri:[" + uri + "]", e);
+            return ErrorUtil.buildExceptionError(e.getMessage());
+        }
+
+    }
 
 }
