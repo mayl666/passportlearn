@@ -4,7 +4,6 @@ import com.sogou.upd.passport.model.account.AccountConnect;
 import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
 import com.sogou.upd.passport.model.connect.OAuthToken;
 import com.sogou.upd.passport.service.account.AccountConnectService;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
  * Time: 下午8:08
  * To change this template use File | Settings | File Templates.
  */
-@Service
 public class AccountConnectServiceImpl implements AccountConnectService{
     @Override
     public List<AccountConnect> listAccountConnectByQuery(AccountConnectQuery query) {

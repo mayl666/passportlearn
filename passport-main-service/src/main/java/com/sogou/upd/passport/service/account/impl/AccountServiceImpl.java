@@ -1,17 +1,14 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountDao;
-import com.sogou.upd.passport.common.math.PassportIDGenerator;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -21,9 +18,7 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
-import javax.print.DocFlavor;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
