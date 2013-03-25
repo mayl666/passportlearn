@@ -18,12 +18,11 @@ public interface AccountMapper {
      * @return
      */
     public Account checkIsRegisterAccount(Account account);
-
     /**
      * 验证合法，用户注册
      * @param account
      */
-    public void userRegister(Account account);
+    public long userRegister(Account account);
 
 
 }

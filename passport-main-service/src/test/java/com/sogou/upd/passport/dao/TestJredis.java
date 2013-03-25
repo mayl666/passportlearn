@@ -38,7 +38,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void test() {
-        generalCodeValidTime();
+        System.out.println(jedis.exists("1111"));
     }
 
     public long generalCodeValidTime() {

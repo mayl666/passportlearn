@@ -15,11 +15,11 @@ public interface AccountDao {
      * @param account 封装的对象
      * @return
      */
-    public Account findUserRegisterIsOrNot(Account account);
+    public boolean checkIsRegisterAccount(Account account);
 
     /**
      * 用户注册
      * @param account  封装的对象
      */
-    public void userRegister(Account account);
+    public long userRegister(Account account);
 }

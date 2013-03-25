@@ -21,10 +21,35 @@ public class Account {
     private int status;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
     private int version;  // 0-sohu老用户，1-sogou新用户
     private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-
-    public Account(){}
+
+    public Account() {
+    }
 
     public Account(String mobile) {
         this.mobile = mobile;
+    }
+
+    public Account(String mobile, String passwd) {
+        this.mobile = mobile;
+        this.passwd = passwd;
+    }
+
+    public Account(String passwd, String mobile, String regIp) {
+        this.passwd = passwd;
+        this.mobile = mobile;
+        this.regIp = regIp;
+    }
+
+    public Account(long id, String passportId, String passwd, String mobile, Date regTime, String regIp, int status, int version, int accountType) {
+        this.id = id;
+        this.passportId = passportId;
+        this.passwd = passwd;
+        this.mobile = mobile;
+        this.regTime = regTime;
+        this.regIp = regIp;
+        this.status = status;
+        this.version = version;
+        this.accountType = accountType;
     }
 
     public long getId() {
