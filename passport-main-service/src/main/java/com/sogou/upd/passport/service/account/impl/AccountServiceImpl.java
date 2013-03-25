@@ -24,8 +24,8 @@ public class AccountServiceImpl implements AccountService {
     private AccountDao accountDao;
 
     @Override
-    public boolean checkIsRegisterAccount(Account account) {;
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean checkIsRegisterAccount(Account account) {
+        return accountDao.checkIsRegisterAccount(account);
     }
 
     @Override

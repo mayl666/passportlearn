@@ -21,8 +21,8 @@ public class AccountDaoImpl implements AccountDao {
     public AccountMapper accountMapper;
 
     @Override
-    public boolean findUserRegisterIsOrNot(Account account) {
-        return accountMapper.findUserRegisterIsOrNot(account);
+    public boolean checkIsRegisterAccount(Account account) {
+        return accountMapper.checkIsRegisterAccount(account);
     }
 
     @Override
