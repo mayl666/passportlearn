@@ -10,7 +10,7 @@ import com.sogou.upd.passport.model.account.Account;
  */
 public interface AccountService {
 
-    public void userRegister(Account account);
+    public long userRegister(Account account);
 
 
     public boolean checkIsExistFromCache(String account);
