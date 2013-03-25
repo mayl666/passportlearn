@@ -2,6 +2,8 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.model.account.Account;
 
+import java.util.Map;
+
 /**
  * User: mayan
  * Date: 13-3-22
@@ -12,8 +14,18 @@ public interface AccountService {
 
     public long userRegister(Account account);
 
-
+    /**
+     * 检查此用户是否发送过验证码，并是否在有效期内
+     * @param account
+     * @return
+     */
     public boolean checkIsExistFromCache(String account);
+    /**
+     * 验证码重发缓存更新
+     * @param cacheKey
+     * @return
+     */
+    public Map<String, Object> updateCacheStatusByAccount(String cacheKey) ;
 
     public long userRegiterDetail(String mobile, String passwd, String regIp,String smsCode) ;
     /**
@@ -27,7 +39,7 @@ public interface AccountService {
      * @param account
      * @return
      */
-    public boolean handleSendSms(String account,int appkey) ;
+    public Map<String, Object> handleSendSms(String account,int appkey) ;
 
     /**
      * 初始化非第三方用户账号

@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountDao;
 import com.sogou.upd.passport.common.math.PassportIDGenerator;
@@ -8,8 +10,12 @@ import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.AccountService;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
@@ -28,6 +34,7 @@ import java.util.Map;
  */
 @Service
 public class AccountServiceImpl implements AccountService {
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Inject
     private AccountDao accountDao;
     @Inject
@@ -35,38 +42,48 @@ public class AccountServiceImpl implements AccountService {
 
     private ShardedJedis jedis;
 
+
     @Override
     public boolean checkIsRegisterAccount(Account account) {
         return accountDao.checkIsRegisterAccount(account);
     }
 
     @Override
-    public boolean handleSendSms(String account, int appkey) {
-        boolean flag = true;
+    public Map<String, Object> handleSendSms(String account, int appkey) {
+        Map<String, Object> mapResult = Maps.newHashMap();
+        boolean isSend = true;
         try {
             //生成随机数
             String randomCode = RandomStringUtils.randomNumeric(5);
             //写入缓存
             String keyCache = account + "_" + appkey;
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = Maps.newHashMap();
             map.put("smsCode", randomCode);    //验证码
             map.put("sendNum", "1");
             map.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
 
+            jedis = shardedJedisPool.getResource();
             jedis.hmset(keyCache, map);
-            jedis.expire(keyCache, SMSUtil.SMS_VALID * 60);      //有效时长30分钟
+            jedis.expire(keyCache, SMSUtil.SMS_VALID * 60);      //有效时长30分钟  ，1800秒
+            //todo 内容从缓存中读取
+            isSend = SMSUtil.sendSMS(account, "test");
+            if (isSend) {
+                mapResult.put("smscode", randomCode);
+                return mapResult;
+            }
         } catch (Exception e) {
-            flag = false;
+            logger.error("[SMS] service method handleSendSms error.{}",e);
         } finally {
             shardedJedisPool.returnResource(jedis);
         }
-        return flag;
+        return null;
     }
 
     @Override
     public boolean checkIsExistFromCache(String account) {
         boolean flag = true;
         try {
+            jedis = shardedJedisPool.getResource();
             flag = jedis.exists(account);
         } catch (Exception e) {
             flag = false;
@@ -77,13 +94,50 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Map<String, Object> updateCacheStatusByAccount(String cacheKey) {
+
+        Map<String, Object> mapResult = Maps.newHashMap();
+        try {
+            jedis = shardedJedisPool.getResource();
+
+            Map<String, String> mapCacheResult = jedis.hgetAll(cacheKey);
+            if (MapUtils.isNotEmpty(mapCacheResult)) {
+                long sendTime = Long.parseLong(mapCacheResult.get("sendTime"));
+                int sendNum = Integer.parseInt(mapCacheResult.get("sendNum"));
+                String smsCode = mapCacheResult.get("smsCode");
+
+                long curtime = System.currentTimeMillis();
+                boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
+                if (valid) {
+                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //在30分钟内返回之前的smsCode
+                        jedis.hincrBy(cacheKey, "sendNum", 1);
+                        jedis.hset(cacheKey, "sendTime", Long.toString(System.currentTimeMillis()));
+                        mapResult.put("smscode", smsCode);
+                        return mapResult;
+                    } else {
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS,"短信发送已达今天的最高上限20条");
+                    }
+                } else {
+                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT,"1分钟只能发送一条短信");
+                }
+            }
+        }catch (Exception e){
+            logger.error("[SMS] service method     public Map<String, Object> updateCacheStatusByAccount(String cacheKey) {\n error.{}",e);
+        } finally {
+            shardedJedisPool.returnResource(jedis);
+        }
+
+        return null;
+    }
+
+    @Override
     public long userRegister(Account account) {
         return accountDao.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public long userRegiterDetail(String mobile, String passwd, String regIp,String smsCode) {
+    public long userRegiterDetail(String mobile, String passwd, String regIp, String smsCode) {
         int accountType = AccountTypeEnum.PHONE.getValue();
         String passportId = PassportIDGenerator.generator(mobile, accountType);
         int status = AccountStatusEnum.REGULAR.getValue();
