@@ -13,12 +13,21 @@ import com.sogou.upd.passport.model.account.Account;
 public interface AccountService {
 
     public void userRegister(Account account);
+
+
+    public boolean checkIsExistFromCache(String account);
     /**
      * 检查此用户是否注册过，从用户账号表查
      * @param account
      * @return
      */
     public boolean checkIsRegisterAccount(Account account);
+    /**
+     * 手机验证码的获取与重发
+     * @param account
+     * @return
+     */
+    public boolean handleSendSms(String account,int appkey) ;
 
     /**
      * 初始化非第三方用户账号

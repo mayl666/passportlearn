@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountDao;
 import com.sogou.upd.passport.common.math.PassportIDGenerator;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -7,10 +8,15 @@ import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: mayan
@@ -22,10 +28,50 @@ import java.util.Date;
 public class AccountServiceImpl implements AccountService {
     @Inject
     private AccountDao accountDao;
+    @Inject
+    private ShardedJedisPool shardedJedisPool;
+
+    private ShardedJedis jedis;
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
         return accountDao.checkIsRegisterAccount(account);
+    }
+
+    @Override
+    public boolean handleSendSms(String account, int appkey) {
+        boolean flag = true;
+        try {
+            //生成随机数
+            String randomCode = RandomStringUtils.randomNumeric(5);
+            //写入缓存
+            String keyCache = account + "_" + appkey;
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("smsCode", randomCode);    //验证码
+            map.put("sendNum", "1");
+            map.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
+
+            jedis.hmset(keyCache, map);
+            jedis.expire(keyCache, SMSUtil.SMS_VALID * 60);      //有效时长30分钟
+        } catch (Exception e) {
+            flag = false;
+        } finally {
+            shardedJedisPool.returnResource(jedis);
+        }
+        return flag;
+    }
+
+    @Override
+    public boolean checkIsExistFromCache(String account) {
+        boolean flag = true;
+        try {
+            flag = jedis.exists(account);
+        } catch (Exception e) {
+            flag = false;
+        } finally {
+            shardedJedisPool.returnResource(jedis);
+        }
+        return flag;
     }
 
     @Override

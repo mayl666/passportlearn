@@ -32,6 +32,7 @@ public class AccountController extends BaseController {
     @Inject
     private AccountService accountService;
 
+
     @RequestMapping(value = "/v2/authcode", method = RequestMethod.GET)
     @ResponseBody
     public Object sendPhoneCode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
@@ -44,14 +45,21 @@ public class AccountController extends BaseController {
         //对mobile手机号验证
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
-        //判断账号是否被注册  todo 先缓存读取
-        Account account = accountService.checkIsRegisterAccount(new Account(mobile));
-        if (account == null){
-
+        //判断账号是否被缓存
+        boolean isExistFromCache = accountService.checkIsExistFromCache(mobile);
+        if (isExistFromCache) {
+            //更新缓存
         } else {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
+            if (isReg) {
+                accountService.handleSendSms(mobile,appkey);
+            } else {
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            }
         }
-            return buildSuccess(null, null);
+
+
+        return buildSuccess(null, null);
     }
 
     private Map<String, Object> checkAccount(String mobile) {
