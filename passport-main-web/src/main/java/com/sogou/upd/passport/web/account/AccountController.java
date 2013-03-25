@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.web.account;
 
-import com.sogou.upd.passport.common.web.BaseController;
+import com.sogou.upd.passport.web.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
  * User: mayan

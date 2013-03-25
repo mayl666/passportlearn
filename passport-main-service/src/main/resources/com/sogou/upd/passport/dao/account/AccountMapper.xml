@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.upd.passport.model.account.Account">
+    <resultMap id="accountMap" type="account">
+        <id property="id" column="id"></id>
+        <id property="passportId" column="passport_id"></id>
+        <id property="passwd" column="passwd"></id>
+        <id property="mobile" column="mobile"></id>
+        <id property="regTime" column="reg_time"></id>
+        <id property="regIp" column="reg_ip"></id>
+        <id property="status" column="status"></id>
+        <id property="version" column="version"></id>
+        <id property="accountType" column="account_type"></id>
+    </resultMap>
+
+    <select id="findUserRegisterIsOrNot" parameterType="account" resultMap="accountMap">
+        select id,passportId,passwd,mobile,regTime,regIp,status,version,accountType from account where mobile=#{mobile} and passwd=#{passwd}
+    </select>
+
+    <insert id="userRegister" parameterType="account">
+        insert into account(passportId,passwd,mobile,regTime,regIp,status,version,accountType) values (#{passportId},#{passwd},#{mobile},#{regTime},#{regIp},#{status},#{version},#{accountType})
+    </insert>
+
+</mapper>

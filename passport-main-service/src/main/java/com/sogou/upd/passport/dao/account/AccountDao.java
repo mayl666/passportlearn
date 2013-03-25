@@ -3,27 +3,23 @@ package com.sogou.upd.passport.dao.account;
 import com.sogou.upd.passport.model.account.Account;
 
 /**
- * User: mayan
+ * Created with IntelliJ IDEA.
+ * User: liuling
  * Date: 13-3-22
- * Time: 下午3:42
+ * Time: 下午4:35
  * To change this template use File | Settings | File Templates.
  */
-
-/**
- * 用户主表的接口mapper文件
- */
-public interface AccountMapper {
+public interface AccountDao {
     /**
-     * 根据传入的参数，手机号码和密码,查询该手机是否已经注册
+     * 查询某手机用户是否已经注册
+     * @param account 封装的对象
      * @return
      */
     public Account findUserRegisterIsOrNot(Account account);
 
     /**
-     * 验证合法，用户注册
-     * @param account
+     * 用户注册
+     * @param account  封装的对象
      */
     public void userRegister(Account account);
-
-
 }

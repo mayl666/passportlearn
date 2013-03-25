@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.model.account;
 
 import java.util.Date;
+
 /**
  * User: mayan
  * Date: 13-3-22
@@ -8,21 +9,24 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class Account {
-    private Long id;
+    public static final int OLD_ACCOUNT_VERSION = 0; // sohu-passport迁移过来的账号
+    public static final int NEW_ACCOUNT_VERSION = 1; // sogou-passport新生成的账号
+
+    private long id;
     private String passportId;
     private String passwd;
-    private Long mobile;
+    private long mobile;
     private Date regTime;
     private String regIp;
-    private Byte status;
-    private Byte version;
-    private Byte accountType;
+    private int status;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
+    private int version;  // 0-sohu老用户，1-sogou新用户
+    private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-email
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -42,11 +46,11 @@ public class Account {
         this.passwd = passwd;
     }
 
-    public Long getMobile() {
+    public long getMobile() {
         return mobile;
     }
 
-    public void setMobile(Long mobile) {
+    public void setMobile(long mobile) {
         this.mobile = mobile;
     }
 
@@ -66,27 +70,27 @@ public class Account {
         this.regIp = regIp;
     }
 
-    public Byte getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public Byte getVersion() {
+    public int getVersion() {
         return version;
     }
 
-    public void setVersion(Byte version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 
-    public Byte getAccountType() {
+    public int getAccountType() {
         return accountType;
     }
 
-    public void setAccountType(Byte accountType) {
+    public void setAccountType(int accountType) {
         this.accountType = accountType;
     }
 }

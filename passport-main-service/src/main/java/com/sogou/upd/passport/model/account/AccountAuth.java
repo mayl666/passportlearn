@@ -6,26 +6,26 @@ package com.sogou.upd.passport.model.account;
  * To change this template use File | Settings | File Templates.
  */
 public class AccountAuth {
-    private Long id;
-    private Long userId;
+    private long id;
+    private long userId;
     private String accessToken;
     private String refreshToken;
-    private Long validTime;
+    private long validTime;
     private String appId;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -45,11 +45,11 @@ public class AccountAuth {
         this.refreshToken = refreshToken;
     }
 
-    public Long getValidTime() {
+    public long getValidTime() {
         return validTime;
     }
 
-    public void setValidTime(Long validTime) {
+    public void setValidTime(long validTime) {
         this.validTime = validTime;
     }
 
