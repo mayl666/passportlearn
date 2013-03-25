@@ -13,11 +13,9 @@
         <id property="accountType" column="account_type"></id>
     </resultMap>
 
-    <select id="findUserRegisterIsOrNot" parameterType="account" resultType="boolean">
-        select id,passportId,passwd,mobile,regTime,regIp,status,version,accountType from account 
-        where
-        <if test="mobile!=null">mobile=#{mobile} and </if>
-        <if test="passwd!=null">passwd=#{passwd}</if>
+    <select id="checkIsRegisterAccount" parameterType="account" resultMap="accountMap">
+        select id,passportId,passwd,mobile,regTime,regIp,status,version,accountType from account where mobile=#{mobile}
+        <if test="passwd!=null">and passwd=#{passwd}</if>
     </select>
 
     <insert id="userRegister" parameterType="account">
