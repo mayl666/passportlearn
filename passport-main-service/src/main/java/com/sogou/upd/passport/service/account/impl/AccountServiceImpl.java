@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
@@ -9,8 +10,11 @@ import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
-        Account accountReturn = accountMapper.checkIsRegisterAccount(account);
+        Account accountReturn  = accountMapper.checkIsRegisterAccount(account);
         return accountReturn == null ? true : false;
     }
 
@@ -271,33 +275,48 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountAuth initialAccountAuth(Account account, int appkey) {
-//        long userid = account.getId();
-//        String passportID = account.getPassportId();
-//        TokenGenerator generator = new TokenGenerator();
-//        long vaildTime = generator.generatorAccessVaildTime(appkey);
-//        String accessToken;
-//        String refreshToken;
-//        try {
-//            accessToken = generator.generatorAccessToken(passportID, appkey);
-//            refreshToken = generator.generatorRefreshToken(passportID, appkey);
-//        } catch (Exception e) {
-//            // TODO record error log
-//            return null;
-//        }
-//
-//        AccountAuth accountAuth = new AccountAuth();
-//        accountAuth.setUserId(userid);
-//        accountAuth.setAppkey(appkey);
-//        accountAuth.setAccessToken(accessToken);
-//        accountAuth.setAccessValidTime(vaildTime);
-//        accountAuth.setRefreshToken(refreshToken);
-//        long id = accountAuthMapper.saveAccountAuth(accountAuth);
-//        if(id != 0){
-//            accountAuth.setId(id);
-//            return accountAuth;
-//        }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public AccountAuth initialAccountAuth(Account account, int appkey) throws SystemException {
+        long userID = account.getId();
+        String passportID = account.getPassportId();
+        AccountAuth accountAuth = newAccountAuth(userID, passportID, appkey);
+        long id = accountAuthMapper.saveAccountAuth(accountAuth);
+        if(id != 0){
+            accountAuth.setId(id);
+            return accountAuth;
+        }
+        return null;
+    }
 
+    /**
+     * 构造一个新的AccountAuth
+     *
+     * @param userid
+     * @param passportID
+     * @param appKey
+     * @return
+     */
+    private AccountAuth newAccountAuth(long userid, String passportID, int appKey) throws SystemException {
+        AppConfig appConfig = appConfigService.getAppConfig(appKey);
+        int accessTokenExpiresin = appConfig.getAccessTokenExpiresin();
+        int refreshTokenExpiresin = appConfig.getRefreshTokenExpiresin();
+
+        TokenGenerator generator = new TokenGenerator();
+        String accessToken;
+        String refreshToken;
+        try {
+            accessToken = generator.generatorAccessToken(passportID, appKey, accessTokenExpiresin);
+            refreshToken = generator.generatorRefreshToken(passportID, appKey);
+        } catch (Exception e) {
+            throw new SystemException(e);
+        }
+        AccountAuth accountAuth = new AccountAuth();
+        accountAuth.setUserId(userid);
+        accountAuth.setAppkey(appKey);
+        accountAuth.setAccessToken(accessToken);
+        accountAuth.setAccessValidTime(generator.generatorVaildTime(accessTokenExpiresin));
+        accountAuth.setRefreshToken(refreshToken);
+        accountAuth.setRefreshValidTime(generator.generatorVaildTime(refreshTokenExpiresin));
+
+        return accountAuth;
     }
 }
