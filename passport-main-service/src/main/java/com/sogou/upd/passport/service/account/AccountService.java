@@ -23,20 +23,13 @@ public interface AccountService {
      */
     public Map<String,Object> handleLogin(String mobile, String passwd,String access_token, int appkey, PostUserProfile postData);
 
-    /**
-     * 根据用户名密码获取用户
-     * @param
-     * @return
-     */
-    public Account getUserAccount(String account, String passwd);
-
-    /**
+       /**
      * 注册时检测手机号，验证码，应用ID
      *
      * @param account
      * @return
      */
-    public boolean checkSmsInfoCache(String account,String smsCode,String appkey);
+    public boolean checkSmsInfoFromCache(String account,String smsCode,String appkey);
 
     /**
      * 检查此用户是否发送过验证码，并是否在有效期内
