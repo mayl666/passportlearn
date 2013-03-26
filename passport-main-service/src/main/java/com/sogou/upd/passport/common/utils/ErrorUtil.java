@@ -56,7 +56,9 @@ public class ErrorUtil {
 	public static final String ERR_CODE_ACCOUNT_PASSWDFORMAT = "20211";
     // 昵称验证失败
     public static final String ERR_CODE_ACCOUNT_VERIFY_FIELDS = "20212";
-	
+    // 手机验证码发送失败
+    public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
+
 	//***************************account 服务的错误代码end*********************************
 
 
@@ -105,7 +107,7 @@ public class ErrorUtil {
 	// 没有第三方关联帐号，请关联
 	public static final String CONNECT_ASSOCIATE_NOT_EXIST = "30012";
 	//***************************通用的错误代码end*********************************
-	
+
 	//***************************Friend 服务的错误代码start************************
 	// 无法读入上传文件
 	public static final String READ_FILE_FAILED = "30301";
@@ -165,6 +167,8 @@ public class ErrorUtil {
 		ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ASSOCIATE, "此帐号无法关联，可能已经关联过了");
 		ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PASSWDFORMAT, "请输入6-16位的数字、字母或字符");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_VERIFY_FIELDS,"昵称格式有误，只能包含中文、英文大小写,-,_,字母或空格");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND,"手机验证码发送失败");
+
 
 		// profile
 		ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");

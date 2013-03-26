@@ -55,10 +55,11 @@ public class AccountController extends BaseController {
         if (isExistFromCache) {
             //更新缓存状态
             mapResult=accountService.updateCacheStatusByAccount(cacheKey);
-            return mapResult;
+            return buildSuccess("获取注册验证码成功", mapResult);
         } else {
             boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
             if (isReg) {
+                //未注册过
                 mapResult = accountService.handleSendSms(mobile, appkey);
                 if (MapUtils.isNotEmpty(mapResult)) {
                     return buildSuccess("获取注册验证码成功", mapResult);
