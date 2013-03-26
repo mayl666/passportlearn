@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
+import com.sogou.upd.passport.model.account.PostUserProfile;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.web.BaseController;
@@ -15,12 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,9 +41,17 @@ public class AccountController extends BaseController {
     @Inject
     private AccountConnectService accountConnectService;
 
+    /**
+     * 手机账号获取，重发手机验证码接口
+     *
+     * @param mobile 传入的手机号码
+     * @param appkey 传入的密码
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/v2/authcode", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendPhoneCode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
+    public Object authcode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
         //参数验证
         boolean empty = hasEmpty(mobile);
@@ -62,8 +70,7 @@ public class AccountController extends BaseController {
             mapResult = accountService.updateCacheStatusByAccount(cacheKey);
             return mapResult;
         } else {
-//            boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
-            boolean isReg = true;
+            boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
             if (isReg) {
                 //未注册过
                 mapResult = accountService.handleSendSms(mobile, appkey);
@@ -77,6 +84,26 @@ public class AccountController extends BaseController {
             }
         }
     }
+
+    /**
+     * 手机账号登录接口
+     *
+     * @param mobile 传入的手机号码
+     * @param appkey 传入的密码
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/v2/mobile/userlogin", method = RequestMethod.POST)
+    @ResponseBody
+    public Object userlogin(HttpServletRequest request, HttpServletResponse response,
+                            @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int appkey,
+                            @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
+                            @RequestParam(defaultValue = "") String client_signature) throws Exception {
+        boolean empty = hasEmpty(mobile, passwd);
+        if (empty || appkey == 0) { return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE); }
+        return accountService.handleLogin(mobile, passwd, appkey, postData);
+    }
+
 
     /**
      * 手机账号正式注册调用
@@ -96,7 +123,7 @@ public class AccountController extends BaseController {
         //验证手机号码是否为空，格式及位数是否正确
         Map<String, Object> mapAccount = checkAccount(mobile);
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfo(mobile, smsCode, appkey + "");
+        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, appkey + "");
         //验证密码是否明文传送
         //TODO 调用密码是否明文传送的接口
         //验证该手机用户是否已经注册过了
@@ -109,7 +136,6 @@ public class AccountController extends BaseController {
                 //往account_auth表里插一条用户状态记录
                 AccountAuth accountAuth = accountService.initialAccountAuth(account, appkey);
                 if(accountAuth != null){
-                    //TODO 往缓存里写入一条AccountAuth记录
                     String accessToken = accountAuth.getAccessToken();
                     String refreshToken = accountAuth.getRefreshToken();
                     Map<String , Object> mapResult = new HashMap<String, Object>();
