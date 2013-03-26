@@ -20,7 +20,7 @@
     </select>
 
     <insert id="userRegister" parameterType="account">
-        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT @@IDENTITY
         </selectKey>
         insert into account(passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type) values (#{passportId},#{passwd},#{mobile},#{regTime},#{regIp},#{status},#{version},#{accountType})
