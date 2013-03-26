@@ -11,7 +11,6 @@ import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
-        Account accountReturn  = accountMapper.checkIsRegisterAccount(account);
+        Account accountReturn = accountMapper.checkIsRegisterAccount(account);
         return accountReturn == null ? true : false;
     }
 
@@ -171,44 +170,53 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd,String access_token, int appkey, PostUserProfile postData) {
-        Account userAccount = getUserAccount(mobile,passwd);
+    public Map<String, Object> handleLogin(String mobile, String passwd, String access_token, int appkey, PostUserProfile postData) {
 
-//        if (userAccount == null) {
-//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-//        }
-//        if (userAccount.isExpUser()) {
-//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_EXPUSERLOGIN);
-//        } else {
-//            User user = userDao.getUserById(userAccount.getUserid());
-//            String shapw = shaPasswd(passwd);
-//            if (shapw.equals(user.passwd)) {
-//                // 重新生成access token
-//                UserStatus status = loginGetUserStatus(user, appid);
-//
-//                // 异步记录统计信息
-//                UserLoginInfo userLoginInfo = UserLoginInfoServiceImpl.buildUserLoginInfo(user.id, user.openid,
-//                        postData, appid);
-//                userLoginInfoService.insertLoginSysInfo(userLoginInfo, true);
-//
-//                // 成功
-//                Map<String, Object> data = Maps.newHashMap();
-//                data.put("access_token", status.accessToken);
-//                return ErrorUtil.buildSuccess("登录成功", data);
-//
-//            }
-//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
-//        }
-        return null;
+        //判断用户是否存在
+        Account userAccount = getUserAccount(mobile, passwd);
+        if (userAccount == null) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        }
+        //判读access_token有效性，是否在有效的范围内
+        AccountAuth accountAuth = getUserAuthByAccessToken(access_token, appkey);
+        if (accountAuth == null) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED);
+        }
+        long curtime = System.currentTimeMillis();
+        boolean valid = curtime < accountAuth.getAccessValidTime();
+        if(valid){
+            return ErrorUtil.buildSuccess("登录成功",null);
+        }
+
+        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
     }
 
-    @Override
+    /**
+     * 根据AccessToken获取AccountAuth信息
+     *
+     * @param
+     * @return
+     */
+    public AccountAuth getUserAuthByAccessToken(String access_token, int appkey) {
+        Map<String, String> mapResult = Maps.newHashMap();
+        mapResult.put("access_token", access_token);
+        mapResult.put("appkey", Integer.toString(appkey));
+        AccountAuth accountAuth = accountMapper.getUserAuthByAccessToken(mapResult);
+        return accountAuth != null ? accountAuth : null;
+    }
+
+    /**
+     * 根据用户名密码获取用户Account
+     *
+     * @param
+     * @return
+     */
     public Account getUserAccount(String mobile, String passwd) {
-        Map<String,String> mapResult=Maps.newHashMap();
-        mapResult.put("mobile",mobile);
-        mapResult.put("passwd",passwd);
-        Account accountResult=accountMapper.getUserAccount(mapResult);
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Map<String, String> mapResult = Maps.newHashMap();
+        mapResult.put("mobile", mobile);
+        mapResult.put("passwd", passwd);
+        Account accountResult = accountMapper.getUserAccount(mapResult);
+        return accountResult != null ? accountResult : null;
     }
 
 
@@ -277,30 +285,19 @@ public class AccountServiceImpl implements AccountService {
 //            // TODO record error log
 //            return null;
 //        }
-
-<<<<<<< HEAD
+//
 //        AccountAuth accountAuth = new AccountAuth();
 //        accountAuth.setUserId(userid);
 //        accountAuth.setAppkey(appkey);
 //        accountAuth.setAccessToken(accessToken);
 //        accountAuth.setAccessValidTime(vaildTime);
 //        accountAuth.setRefreshToken(refreshToken);
-
-        // TODO DAO insert AccountAuth table
-        return null;
-=======
-        AccountAuth accountAuth = new AccountAuth();
-        accountAuth.setUserId(userid);
-        accountAuth.setAppkey(appkey);
-        accountAuth.setAccessToken(accessToken);
-        accountAuth.setAccessValidTime(vaildTime);
-        accountAuth.setRefreshToken(refreshToken);
-        long id = accountAuthMapper.saveAccountAuth(accountAuth);
-        if(id != 0){
-            accountAuth.setId(id);
-            return accountAuth;
-        }
+//        long id = accountAuthMapper.saveAccountAuth(accountAuth);
+//        if(id != 0){
+//            accountAuth.setId(id);
+//            return accountAuth;
+//        }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
->>>>>>> 9d6f841c594a8fb8005779bb76be48d0db464e9c
+
     }
 }
