@@ -114,7 +114,7 @@ public class AccountController extends BaseController {
                     mapResult.put("account",account);
                     mapResult.put("accessToken",accessToken);
                     mapResult.put("refreshToken",refreshToken);
-                    return ErrorUtil.buildSuccess("用户注册成功！",mapResult);
+                    return buildSuccess("用户注册成功！",mapResult);
                 }else{
                     //  TODO  这个地方是异常抛出来还是build状态码及提示信息，待定！
                 }
