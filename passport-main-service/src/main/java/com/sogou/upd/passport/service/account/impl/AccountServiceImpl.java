@@ -278,7 +278,6 @@ public class AccountServiceImpl implements AccountService {
 //            return null;
 //        }
 
-<<<<<<< HEAD
 //        AccountAuth accountAuth = new AccountAuth();
 //        accountAuth.setUserId(userid);
 //        accountAuth.setAppkey(appkey);
@@ -288,7 +287,6 @@ public class AccountServiceImpl implements AccountService {
 
         // TODO DAO insert AccountAuth table
         return null;
-=======
         AccountAuth accountAuth = new AccountAuth();
         accountAuth.setUserId(userid);
         accountAuth.setAppkey(appkey);
@@ -301,6 +299,5 @@ public class AccountServiceImpl implements AccountService {
             return accountAuth;
         }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
->>>>>>> 9d6f841c594a8fb8005779bb76be48d0db464e9c
     }
 }
