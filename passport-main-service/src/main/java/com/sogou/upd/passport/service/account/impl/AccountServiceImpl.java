@@ -1,13 +1,14 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountMapper;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountAuth;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
@@ -20,7 +21,9 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
+import javax.print.DocFlavor;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,7 +36,7 @@ import java.util.Map;
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Inject
-    private AccountMapper accountMapper;
+    private AccountDao accountDao;
     @Inject
     private ShardedJedisPool shardedJedisPool;
 
@@ -42,8 +45,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
-        Account accountReturn = accountMapper.checkIsRegisterAccount(account);
-        return accountReturn == null ? true : false;
+        return accountDao.checkIsRegisterAccount(account);
     }
 
     @Override
@@ -130,8 +132,19 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public long userRegister(Account account) {
-        return accountMapper.userRegister(account);
+        return accountDao.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public long userRegiterDetail(String mobile, String passwd, String regIp, String smsCode) {
+        int accountType = AccountTypeEnum.PHONE.getValue();
+        String passportId = PassportIDGenerator.generator(mobile, accountType);
+        int status = AccountStatusEnum.REGULAR.getValue();
+        int version = Account.NEW_ACCOUNT_VERSION;
+        Account account = new Account(0, passportId, passwd, mobile, new Date(), regIp, status, version, accountType);
+        return accountDao.userRegister(account);
+        //TODO add insert smsCode into app table
     }
 
     @Override
@@ -145,7 +158,7 @@ public class AccountServiceImpl implements AccountService {
         a.setStatus(AccountStatusEnum.REGULAR.getValue());
         a.setVersion(Account.NEW_ACCOUNT_VERSION);
         a.setMobile(account);
-        return accountMapper.userRegister(a);
+        return accountDao.userRegister(a);
     }
 
     @Override
