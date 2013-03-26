@@ -17,7 +17,9 @@ public class SMSUtil {
 	
 	public static final int MAX_SMS_COUNT_ONEDAY = 5; // 每日最多发送20短信验证码
 	
-	public static final int SMS_VALID = 10; // 短信验证码的有效期，30分钟
+	public static final int SMS_VALID = 30 * 60; // 短信验证码的有效期，30分钟
+
+	public static final int SMS_ONEDAY = 40 * 60; // 每日最多发送20短信验证码，时间 一天 1440分钟 ,单位s
 
 	static final Logger logger = LoggerFactory.getLogger(SMSUtil.class);
 	

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
@@ -13,12 +14,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -48,22 +51,23 @@ public class AccountController extends BaseController {
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
         //判断账号是否被缓存
-        String cacheKey = mobile + "_" + appkey;
+        String cacheKey= mobile + "_" + appkey;
         boolean isExistFromCache = accountService.checkIsExistFromCache(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateCacheStatusByAccount(cacheKey);
-            return buildSuccess("获取注册验证码成功", mapResult);
+            mapResult=accountService.updateCacheStatusByAccount(cacheKey);
+            return mapResult;
         } else {
-            boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
+//            boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
+            boolean isReg = true;
             if (isReg) {
                 //未注册过
                 mapResult = accountService.handleSendSms(mobile, appkey);
                 if (MapUtils.isNotEmpty(mapResult)) {
                     return buildSuccess("获取注册验证码成功", mapResult);
                 } else {
-                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
+                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 }
             } else {
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
