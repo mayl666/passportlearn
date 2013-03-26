@@ -67,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
 
             //设置每日最多发送短信验证码条数
             jedis.hset(account, "sendNum", "1");
-            jedis.expire(account,SMSUtil.SMS_ONEDAY);
+            jedis.expire(account, SMSUtil.SMS_ONEDAY);
             //todo 内容从缓存中读取
             isSend = SMSUtil.sendSMS(account, "test");
             if (isSend) {
@@ -118,14 +118,14 @@ public class AccountServiceImpl implements AccountService {
                         mapResult.put("smscode", smsCode);
                         return mapResult;
                     } else {
-                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS,"短信发送已达今天的最高上限20条");
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限20条");
                     }
                 } else {
-                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT,"1分钟只能发送一条短信");
+                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
                 }
             }
-        }catch (Exception e){
-            logger.error("[SMS] service method updateCacheStatusByAccount error.{}",e);
+        } catch (Exception e) {
+            logger.error("[SMS] service method updateCacheStatusByAccount error.{}", e);
         } finally {
             shardedJedisPool.returnResource(jedis);
         }
@@ -145,21 +145,21 @@ public class AccountServiceImpl implements AccountService {
             jedis = shardedJedisPool.getResource();
             String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + appkey;
             Map<String, String> mapCacheResult = jedis.hgetAll(keyCache);
-            if(MapUtils.isNotEmpty(mapCacheResult)){
+            if (MapUtils.isNotEmpty(mapCacheResult)) {
                 String smsCodeResult = mapCacheResult.get("smsCode");
-                if(StringUtils.isNotBlank(smsCodeResult)){
-                    if(smsCodeResult.equals(smsCode)){
-                         return true;
+                if (StringUtils.isNotBlank(smsCodeResult)) {
+                    if (smsCodeResult.equals(smsCode)) {
+                        return true;
                     } else {
                         return false;
                     }
                 }
-            }else {
+            } else {
                 return false;
             }
-        }catch (Exception e){
-
-        }finally {
+        } catch (Exception e) {
+            logger.error("[SMS] service method checkSmsInfo error.{}", e);
+        } finally {
             shardedJedisPool.returnResource(jedis);
         }
         return false;
