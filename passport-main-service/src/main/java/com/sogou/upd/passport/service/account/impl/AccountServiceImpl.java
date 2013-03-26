@@ -279,6 +279,18 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+    @Override
+    public void addPassportIdMapUserId(String passportId, long userId) {
+        //TODO 写缓存
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public long getUserIdByPassportId(String passportId) {
+        //TODO 读缓存
+        return 0;  // To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /**
      * 构造一个新的AccountAuth
      *

@@ -94,4 +94,18 @@ public interface AccountService {
      */
     public AccountAuth initialAccountAuth(Account account, int appkey) throws Exception;
 
+    /**
+     * Account写缓存
+     * @param passportId
+     * @param userId
+     */
+    public void addPassportIdMapUserId(String passportId,long userId);
+
+    /**
+     * Account读缓存
+     * @param passportId
+     * @return
+     */
+    public long getUserIdByPassportId(String passportId);
+
 }
