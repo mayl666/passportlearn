@@ -122,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             }
         }catch (Exception e){
-            logger.error("[SMS] service method     public Map<String, Object> updateCacheStatusByAccount(String cacheKey) {\n error.{}",e);
+            logger.error("[SMS] service method updateCacheStatusByAccount error.{}",e);
         } finally {
             shardedJedisPool.returnResource(jedis);
         }
