@@ -41,6 +41,8 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
     private static final String CACHE_PREFIX_USERID = "PASSPORT:ID_USERID_";     //passport_id与userID映射
     @Inject
+    private AppConfigService appConfigService;
+    @Inject
     private AccountMapper accountMapper;
     @Inject
     private AccountAuthMapper accountAuthMapper;
@@ -54,7 +56,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
-        Account accountReturn  = accountMapper.checkIsRegisterAccount(account);
+        Account accountReturn = accountMapper.checkIsRegisterAccount(account);
         return accountReturn == null ? true : false;
     }
 
@@ -189,8 +191,8 @@ public class AccountServiceImpl implements AccountService {
         }
         long curtime = System.currentTimeMillis();
         boolean valid = curtime < accountAuth.getAccessValidTime();
-        if(valid){
-            return ErrorUtil.buildSuccess("登录成功",null);
+        if (valid) {
+            return ErrorUtil.buildSuccess("登录成功", null);
         }
 
         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
@@ -226,7 +228,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public boolean checkSmsInfoFromCache(String account, String smsCode, String appkey) {
+    public boolean checkSmsInfoCache(String account, String smsCode, String appkey) {
         try {
             jedis = shardedJedisPool.getResource();
             String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + appkey;
@@ -281,7 +283,7 @@ public class AccountServiceImpl implements AccountService {
         String passportID = account.getPassportId();
         AccountAuth accountAuth = newAccountAuth(userID, passportID, appkey);
         long id = accountAuthMapper.saveAccountAuth(accountAuth);
-        if(id != 0){
+        if (id != 0) {
             accountAuth.setId(id);
             return accountAuth;
         }
