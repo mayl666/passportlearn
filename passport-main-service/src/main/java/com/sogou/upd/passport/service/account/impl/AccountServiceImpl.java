@@ -44,8 +44,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
-        Account a = accountMapper.checkIsRegisterAccount(account);
-        return a == null ? true : false;
+        Account accountReturn  = accountMapper.checkIsRegisterAccount(account);
+        return accountReturn == null ? true : false;
     }
 
     @Override
@@ -193,19 +193,19 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account initialAccount(String account, String pwd, String ip, int provider) {
-        Account a = new Account();
-        a.setPassportId(PassportIDGenerator.generator(account, provider));
-        a.setPasswd(pwd);
-        a.setRegTime(new Date());
-        a.setRegIp(ip);
-        a.setAccountType(provider);
-        a.setStatus(AccountStatusEnum.REGULAR.getValue());
-        a.setVersion(Account.NEW_ACCOUNT_VERSION);
-        a.setMobile(account);
-        long id = accountMapper.userRegister(a);
+        Account accountReturn = new Account();
+        accountReturn.setPassportId(PassportIDGenerator.generator(account, provider));
+        accountReturn.setPasswd(pwd);
+        accountReturn.setRegTime(new Date());
+        accountReturn.setRegIp(ip);
+        accountReturn.setAccountType(provider);
+        accountReturn.setStatus(AccountStatusEnum.REGULAR.getValue());
+        accountReturn.setVersion(Account.NEW_ACCOUNT_VERSION);
+        accountReturn.setMobile(account);
+        long id = accountMapper.userRegister(accountReturn);
         if (id != 0) {
-            a.setId(id);
-            return a;
+            accountReturn.setId(id);
+            return accountReturn;
         }
         return null;
     }
