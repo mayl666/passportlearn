@@ -56,7 +56,7 @@ public interface AccountService {
      * @param provider
      * @return
      */
-    public long initialAccount(String account, String pwd, String ip, int provider);
+    public Account initialAccount(String account, String pwd, String ip, int provider);
 
     /**
      * 初始化第三方用户账号
@@ -66,7 +66,7 @@ public interface AccountService {
      * @param provider
      * @return
      */
-    public long initialConnectAccount(String account, String ip, int provider);
+    public Account initialConnectAccount(String account, String ip, int provider);
 
     /**
      * 初始化账号授权信息
