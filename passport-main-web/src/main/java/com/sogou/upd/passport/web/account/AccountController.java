@@ -67,7 +67,7 @@ public class AccountController extends BaseController {
                 //未注册过
                 mapResult = accountService.handleSendSms(mobile, appkey);
                 if (MapUtils.isNotEmpty(mapResult)) {
-                    return buildSuccess("获取注册验证码成功", mapResult);
+                    return mapResult;
                 } else {
                     return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 }

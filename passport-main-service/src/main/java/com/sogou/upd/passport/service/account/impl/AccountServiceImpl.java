@@ -53,18 +53,6 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> mapResult = Maps.newHashMap();
         boolean isSend = true;
         try {
-            //生成随机数
-            String randomCode = RandomStringUtils.randomNumeric(5);
-            //写入缓存
-            String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + appkey;
-            Map<String, String> map = Maps.newHashMap();
-            map.put("smsCode", randomCode);    //初始化验证码
-            map.put("mobile", account);        //发送手机号
-            map.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
-
-            jedis = shardedJedisPool.getResource();
-            jedis.hmset(keyCache, map);
-            jedis.expire(keyCache, SMSUtil.SMS_VALID);      //有效时长30分钟  ，1800秒
 
             //设置每日最多发送短信验证码条数
             String keySendNumCache = CACHE_PREFIX_ACCOUNT_SENDNUM + account;
@@ -84,11 +72,24 @@ public class AccountServiceImpl implements AccountService {
                     }
                 }
             }
+            //生成随机数
+            String randomCode = RandomStringUtils.randomNumeric(5);
+            //写入缓存
+            String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + appkey;
+            Map<String, String> map = Maps.newHashMap();
+            map.put("smsCode", randomCode);    //初始化验证码
+            map.put("mobile", account);        //发送手机号
+            map.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
+
+            jedis = shardedJedisPool.getResource();
+            jedis.hmset(keyCache, map);
+            jedis.expire(keyCache, SMSUtil.SMS_VALID);      //有效时长30分钟  ，1800秒
+
             //todo 内容从缓存中读取
             isSend = SMSUtil.sendSMS(account, "test");
             if (isSend) {
                 mapResult.put("smscode", randomCode);
-                return mapResult;
+                return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
             }
         } catch (Exception e) {
             logger.error("[SMS] service method handleSendSms error.{}", e);
