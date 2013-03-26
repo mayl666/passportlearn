@@ -125,13 +125,13 @@ public class AccountServiceImpl implements AccountService {
                             if (isSend) {
                                 //30分钟之内返回原先验证码
                                 mapResult.put("smscode", smsCode);
-                                return mapResult;
-                            } else {
-                                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
+                                return ErrorUtil.buildSuccess("获取注册验证码成功",mapResult);
                             }
-                        } else {
-                            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
+                        }else {
+                            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
                         }
+                    } else {
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
                     }
                 }
             }
