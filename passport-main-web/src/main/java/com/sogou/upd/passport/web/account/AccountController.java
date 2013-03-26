@@ -136,7 +136,7 @@ public class AccountController extends BaseController {
             if (account != null) {  //如果对象不为空，说明注册成功
                 //TODO 往缓存里写入一条Account记录
                 //往account_auth表里插一条用户状态记录
-                AccountAuth accountAuth = accountService.initialAccountAuth(account, appkey);
+                AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), appkey);
                 if (accountAuth != null) {
                     //TODO 往缓存里写入一条AccountAuth记录
                     String accessToken = accountAuth.getAccessToken();

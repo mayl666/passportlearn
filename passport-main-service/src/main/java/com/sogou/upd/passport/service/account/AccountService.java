@@ -83,10 +83,12 @@ public interface AccountService {
 
     /**
      * 初始化账号授权信息
-     * @param account
+     * @param userId
+     * @param passportId
+     * @param appKey
      * @return
      */
-    public AccountAuth initialAccountAuth(Account account, int appkey) throws Exception;
+    public AccountAuth initialAccountAuth(long userId, String passportId, int appKey) throws Exception;
 
     /**
      * Account写缓存
@@ -101,5 +103,12 @@ public interface AccountService {
      * @return
      */
     public long getUserIdByPassportId(String passportId);
+
+    /**
+     * 根据userId获取passportId
+     * @param userId
+     * @return
+     */
+    public String getPassportIdByUserId(long userId);
 
 }

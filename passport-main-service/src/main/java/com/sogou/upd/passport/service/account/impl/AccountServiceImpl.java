@@ -281,10 +281,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountAuth initialAccountAuth(Account account, int appkey) throws SystemException {
-        long userID = account.getId();
-        String passportID = account.getPassportId();
-        AccountAuth accountAuth = newAccountAuth(userID, passportID, appkey);
+    public AccountAuth initialAccountAuth(long userId, String passportId, int appKey) throws SystemException {
+        AccountAuth accountAuth = newAccountAuth(userId, passportId, appKey);
         long id = accountAuthMapper.saveAccountAuth(accountAuth);
         if (id != 0) {
             accountAuth.setId(id);
@@ -310,6 +308,11 @@ public class AccountServiceImpl implements AccountService {
     public long getUserIdByPassportId(String passportId) {
         //TODO 读缓存
         return 0;  // To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getPassportIdByUserId(long userId) {
+        return null;  //todo
     }
 
     /**
