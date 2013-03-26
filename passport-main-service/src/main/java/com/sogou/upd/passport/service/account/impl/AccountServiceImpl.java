@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
@@ -42,6 +43,8 @@ public class AccountServiceImpl implements AccountService {
     private AppConfigService appConfigService;
     @Inject
     private AccountMapper accountMapper;
+    @Inject
+    private AccountAuthMapper accountAuthMapper;
     @Inject
     private ShardedJedisPool shardedJedisPool;
 
@@ -172,9 +175,46 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) {
+    public Map<String, Object> handleLogin(String mobile, String passwd,String access_token, int appkey, PostUserProfile postData) {
+        Account userAccount = getUserAccount(mobile,passwd);
+
+//        if (userAccount == null) {
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+//        }
+//        if (userAccount.isExpUser()) {
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_EXPUSERLOGIN);
+//        } else {
+//            User user = userDao.getUserById(userAccount.getUserid());
+//            String shapw = shaPasswd(passwd);
+//            if (shapw.equals(user.passwd)) {
+//                // 重新生成access token
+//                UserStatus status = loginGetUserStatus(user, appid);
+//
+//                // 异步记录统计信息
+//                UserLoginInfo userLoginInfo = UserLoginInfoServiceImpl.buildUserLoginInfo(user.id, user.openid,
+//                        postData, appid);
+//                userLoginInfoService.insertLoginSysInfo(userLoginInfo, true);
+//
+//                // 成功
+//                Map<String, Object> data = Maps.newHashMap();
+//                data.put("access_token", status.accessToken);
+//                return ErrorUtil.buildSuccess("登录成功", data);
+//
+//            }
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
+//        }
+        return null;
+    }
+
+    @Override
+    public Account getUserAccount(String mobile, String passwd) {
+        Map<String,String> mapResult=Maps.newHashMap();
+        mapResult.put("mobile",mobile);
+        mapResult.put("passwd",passwd);
+        Account accountResult=accountMapper.getUserAccount(mapResult);
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
 
     @Override
     public boolean checkSmsInfoCache(String account, String smsCode, String appkey) {
@@ -228,12 +268,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountAuth initialAccountAuth(Account account, int appkey) throws SystemException {
-        long userid = account.getId();
+        long userID = account.getId();
         String passportID = account.getPassportId();
-        AccountAuth accountAuth = newAccountAuth(userid, passportID, appkey);
-
-        // TODO DAO insert AccountAuth table
-        return accountAuth;
+        AccountAuth accountAuth = newAccountAuth(userID, passportID, appkey);
+        long id = accountAuthMapper.saveAccountAuth(accountAuth);
+        if(id != 0){
+            accountAuth.setId(id);
+            return accountAuth;
+        }
+        return null;
     }
 
     /**
@@ -258,7 +301,6 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new SystemException(e);
         }
-
         AccountAuth accountAuth = new AccountAuth();
         accountAuth.setUserId(userid);
         accountAuth.setAppkey(appKey);

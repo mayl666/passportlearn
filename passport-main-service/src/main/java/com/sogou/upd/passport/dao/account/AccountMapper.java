@@ -2,6 +2,8 @@ package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.Account;
 
+import java.util.Map;
+
 /**
  * User: mayan
  * Date: 13-3-22
@@ -23,6 +25,12 @@ public interface AccountMapper {
      * @param account
      */
     public int userRegister(Account account);
+    /**
+     * 根据用户名密码获取用户
+     * @param
+     * @return
+     */
+    public Account getUserAccount(Map<String,String> queryMap);
 
 
 }
