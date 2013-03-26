@@ -121,29 +121,32 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
                                      @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey) throws Exception {
-        String ip = getIp(request);
         //验证手机号码是否为空，格式及位数是否正确
         Map<String, Object> mapAccount = checkAccount(mobile);
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, appkey + "");
-        //验证密码是否明文传送
-        //TODO 调用密码是否明文传送的接口
-        //验证该手机用户是否已经注册过了
+        if(checkSmsInfo == false){
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE)  ;
+        }
+        //TODO 先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
+        //再读数据库，验证该手机用户是否已经注册过了
         boolean as = accountService.checkIsRegisterAccount(new Account(mobile, passwd));
+        String ip = getIp(request);
         Account account = null;
-        if (as == true && mapAccount == null && checkSmsInfo == true) {     //如果用户没有被注册，手机号码格式验证通过，并且与验证码匹配，则注册用户，并返回access_token和refresh_token
+        if (as == true) {     //如果用户没有被注册，手机号码格式验证通过，并且与验证码匹配，则注册用户，并返回access_token和refresh_token
             account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
             if (account != null) {  //如果对象不为空，说明注册成功
-                //TODO 往缓存里写入一条Account记录
                 //往account_auth表里插一条用户状态记录
                 AccountAuth accountAuth = accountService.initialAccountAuth(account, appkey);
                 if (accountAuth != null) {
-                    //TODO 往缓存里写入一条AccountAuth记录
+                    //TODO 往缓存里写入一条Account记录
                     String accessToken = accountAuth.getAccessToken();
+                    long accessValidTime = accountAuth.getAccessValidTime();
                     String refreshToken = accountAuth.getRefreshToken();
                     Map<String, Object> mapResult = new HashMap<String, Object>();
                     mapResult.put("account", account);
                     mapResult.put("accessToken", accessToken);
+                    mapResult.put("accessValidTime",accessValidTime);
                     mapResult.put("refreshToken", refreshToken);
                     return buildSuccess("用户注册成功！", mapResult);
                 } else {
