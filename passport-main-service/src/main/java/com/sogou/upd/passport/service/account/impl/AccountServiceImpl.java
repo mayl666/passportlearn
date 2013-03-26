@@ -11,8 +11,8 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -220,7 +220,7 @@ public class AccountServiceImpl implements AccountService {
         long userid = account.getId();
         String passportID = account.getPassportId();
         TokenGenerator generator = new TokenGenerator();
-        long vaildTime = generator.generatorVaildTime(appkey);
+        long vaildTime = generator.generatorAccessVaildTime(appkey);
         String accessToken;
         String refreshToken;
         try {
@@ -235,7 +235,7 @@ public class AccountServiceImpl implements AccountService {
         accountAuth.setUserId(userid);
         accountAuth.setAppkey(appkey);
         accountAuth.setAccessToken(accessToken);
-        accountAuth.setValidTime(vaildTime);
+        accountAuth.setAccessValidTime(vaildTime);
         accountAuth.setRefreshToken(refreshToken);
 
         // TODO DAO insert AccountAuth table
