@@ -28,10 +28,10 @@ public class CoderTest {
         System.out.println("SecretKey:" + key);
     }
 
-    @Test
-    public void testEncryptHMAC() throws Exception {
-         byte[] encryByte = Coder.encryptHMAC(str.getBytes(), TokenGenerator.HMAC_SHA_KEY);
-        String str1 = RSA.toHexString(encryByte);
-        System.out.println("str1:" + str1);
-    }
+//    @Test
+//    public void testEncryptHMAC() throws Exception {
+//         byte[] encryByte = Coder.encryptHMAC(str.getBytes(), TokenGenerator.HMAC_SHA_KEY);
+//        String str1 = RSA.toHexString(encryByte);
+//        System.out.println("str1:" + str1);
+//    }
 }
