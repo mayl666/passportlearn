@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
@@ -38,6 +39,8 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_USERID = "PASSPORT:ID_USERID_";     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
+    @Inject
+    private AccountAuthMapper accountAuthMapper;
     @Inject
     private ShardedJedisPool shardedJedisPool;
 
@@ -275,6 +278,7 @@ public class AccountServiceImpl implements AccountService {
 //            return null;
 //        }
 
+<<<<<<< HEAD
 //        AccountAuth accountAuth = new AccountAuth();
 //        accountAuth.setUserId(userid);
 //        accountAuth.setAppkey(appkey);
@@ -284,5 +288,19 @@ public class AccountServiceImpl implements AccountService {
 
         // TODO DAO insert AccountAuth table
         return null;
+=======
+        AccountAuth accountAuth = new AccountAuth();
+        accountAuth.setUserId(userid);
+        accountAuth.setAppkey(appkey);
+        accountAuth.setAccessToken(accessToken);
+        accountAuth.setAccessValidTime(vaildTime);
+        accountAuth.setRefreshToken(refreshToken);
+        long id = accountAuthMapper.saveAccountAuth(accountAuth);
+        if(id != 0){
+            accountAuth.setId(id);
+            return accountAuth;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+>>>>>>> 9d6f841c594a8fb8005779bb76be48d0db464e9c
     }
 }
