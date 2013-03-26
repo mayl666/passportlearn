@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
+import com.sogou.upd.passport.model.account.PostUserProfile;
 
 import java.util.Map;
 
@@ -15,7 +16,12 @@ public interface AccountService {
 
     public long userRegister(Account account);
 
-
+    /**
+     * 用户登录接口
+     * @param
+     * @return
+     */
+    public Map<String,Object> handleLogin(String mobile, String passwd,int appkey,PostUserProfile postData);
 
     /**
      * 注册时检测手机号，验证码，应用ID
@@ -23,7 +29,7 @@ public interface AccountService {
      * @param account
      * @return
      */
-    public boolean checkSmsInfo(String account,String smsCode,String appkey);
+    public boolean checkSmsInfoFromCache(String account,String smsCode,String appkey);
 
     /**
      * 检查此用户是否发送过验证码，并是否在有效期内
@@ -35,7 +41,6 @@ public interface AccountService {
 
     /**
      * 验证码重发缓存更新
-     *
      * @param cacheKey
      * @return
      */
@@ -51,7 +56,6 @@ public interface AccountService {
 
     /**
      * 手机验证码的获取与重发
-     *
      * @param account
      * @return
      */
@@ -59,7 +63,6 @@ public interface AccountService {
 
     /**
      * 初始化非第三方用户账号
-     *
      * @param account
      * @param pwd
      * @param ip
@@ -70,7 +73,6 @@ public interface AccountService {
 
     /**
      * 初始化第三方用户账号
-     *
      * @param account
      * @param ip
      * @param provider
@@ -80,7 +82,6 @@ public interface AccountService {
 
     /**
      * 初始化账号授权信息
-     *
      * @param account
      * @return
      */
