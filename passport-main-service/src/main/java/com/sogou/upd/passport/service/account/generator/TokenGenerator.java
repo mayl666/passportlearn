@@ -35,19 +35,19 @@ public class TokenGenerator {
 
     /**
      * 生成access_token
-     * 构成格式 passportID|appkey|vaild_timestamp(过期时间点，单位毫秒)|6位随机数
+     * 构成格式 passportID|appkey|vaild_timestamp(过期时间点，单位毫秒)|4位随机数
      *
      * @param passportID
      * @param appkey
      * @return
      */
-    public String generatorAccessToken(String passportID, int appkey, int expiresIn) throws Exception {
+    public static String generatorAccessToken(String passportID, int appkey, int expiresIn) throws Exception {
 
         // 过期时间点
         long vaildTime = generatorVaildTime(expiresIn);
 
         // 6位随机数
-        String random = RandomStringUtils.randomAlphanumeric(6);
+        String random = RandomStringUtils.randomAlphanumeric(4);
 
         StringBuffer data = new StringBuffer();
         data.append(passportID).append(CommonParameters.SEPARATOR_1);
@@ -70,7 +70,7 @@ public class TokenGenerator {
      * @return
      * @throws Exception
      */
-    public String generatorRefreshToken(String passportID, int appkey) throws Exception {
+    public static String generatorRefreshToken(String passportID, int appkey) throws Exception {
         long timestamp = System.currentTimeMillis();
         StringBuffer data = new StringBuffer();
         data.append(passportID).append(appkey).append(timestamp);
@@ -86,7 +86,7 @@ public class TokenGenerator {
      * @param expiresIn
      * @return
      */
-    public long generatorVaildTime(int expiresIn) {
+    public static long generatorVaildTime(int expiresIn) {
         DateTime dateTime = new DateTime();
         long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
         return vaildTime;
