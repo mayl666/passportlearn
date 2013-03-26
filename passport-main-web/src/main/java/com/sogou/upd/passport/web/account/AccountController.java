@@ -125,12 +125,15 @@ public class AccountController extends BaseController {
         Map<String, Object> mapAccount = checkAccount(mobile);
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, appkey + "");
+        if(checkSmsInfo == false){
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE)  ;
+        }
         //TODO 先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
         //再读数据库，验证该手机用户是否已经注册过了
         boolean as = accountService.checkIsRegisterAccount(new Account(mobile, passwd));
         String ip = getIp(request);
         Account account = null;
-        if (as == true && mapAccount == null && checkSmsInfo == true) {     //如果用户没有被注册，手机号码格式验证通过，并且与验证码匹配，则注册用户，并返回access_token和refresh_token
+        if (as == true) {     //如果用户没有被注册，手机号码格式验证通过，并且与验证码匹配，则注册用户，并返回access_token和refresh_token
             account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
             if (account != null) {  //如果对象不为空，说明注册成功
                 //往account_auth表里插一条用户状态记录
