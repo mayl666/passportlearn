@@ -136,6 +136,7 @@ public class AccountController extends BaseController {
                 //往account_auth表里插一条用户状态记录
                 AccountAuth accountAuth = accountService.initialAccountAuth(account, appkey);
                 if(accountAuth != null){
+                    //TODO 往缓存里写入一条AccountAuth记录
                     String accessToken = accountAuth.getAccessToken();
                     String refreshToken = accountAuth.getRefreshToken();
                     Map<String , Object> mapResult = new HashMap<String, Object>();
