@@ -26,4 +26,8 @@
         insert into account(passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type) values (#{passportId},#{passwd},#{mobile},#{regTime},#{regIp},#{status},#{version},#{accountType})
     </insert>
 
+    <select id="getUserAccount" parameterType="map" resultMap="accountMap">
+          select id,passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type from account where mobile=#{mobile} and  passwd=#{passwd}
+    </select>
+
 </mapper>

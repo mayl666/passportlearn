@@ -168,9 +168,46 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) {
+    public Map<String, Object> handleLogin(String mobile, String passwd,String access_token, int appkey, PostUserProfile postData) {
+        Account userAccount = getUserAccount(mobile,passwd);
+
+//        if (userAccount == null) {
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+//        }
+//        if (userAccount.isExpUser()) {
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_EXPUSERLOGIN);
+//        } else {
+//            User user = userDao.getUserById(userAccount.getUserid());
+//            String shapw = shaPasswd(passwd);
+//            if (shapw.equals(user.passwd)) {
+//                // 重新生成access token
+//                UserStatus status = loginGetUserStatus(user, appid);
+//
+//                // 异步记录统计信息
+//                UserLoginInfo userLoginInfo = UserLoginInfoServiceImpl.buildUserLoginInfo(user.id, user.openid,
+//                        postData, appid);
+//                userLoginInfoService.insertLoginSysInfo(userLoginInfo, true);
+//
+//                // 成功
+//                Map<String, Object> data = Maps.newHashMap();
+//                data.put("access_token", status.accessToken);
+//                return ErrorUtil.buildSuccess("登录成功", data);
+//
+//            }
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
+//        }
+        return null;
+    }
+
+    @Override
+    public Account getUserAccount(String mobile, String passwd) {
+        Map<String,String> mapResult=Maps.newHashMap();
+        mapResult.put("mobile",mobile);
+        mapResult.put("passwd",passwd);
+        Account accountResult=accountMapper.getUserAccount(mapResult);
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
 
     @Override
     public boolean checkSmsInfoFromCache(String account, String smsCode, String appkey) {
@@ -224,28 +261,28 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountAuth initialAccountAuth(Account account, int appkey) {
-        long userid = account.getId();
-        String passportID = account.getPassportId();
-        TokenGenerator generator = new TokenGenerator();
-        long vaildTime = generator.generatorAccessVaildTime(appkey);
-        String accessToken;
-        String refreshToken;
-        try {
-            accessToken = generator.generatorAccessToken(passportID, appkey);
-            refreshToken = generator.generatorRefreshToken(passportID, appkey);
-        } catch (Exception e) {
-            // TODO record error log
-            return null;
-        }
+//        long userid = account.getId();
+//        String passportID = account.getPassportId();
+//        TokenGenerator generator = new TokenGenerator();
+//        long vaildTime = generator.generatorAccessVaildTime(appkey);
+//        String accessToken;
+//        String refreshToken;
+//        try {
+//            accessToken = generator.generatorAccessToken(passportID, appkey);
+//            refreshToken = generator.generatorRefreshToken(passportID, appkey);
+//        } catch (Exception e) {
+//            // TODO record error log
+//            return null;
+//        }
 
-        AccountAuth accountAuth = new AccountAuth();
-        accountAuth.setUserId(userid);
-        accountAuth.setAppkey(appkey);
-        accountAuth.setAccessToken(accessToken);
-        accountAuth.setAccessValidTime(vaildTime);
-        accountAuth.setRefreshToken(refreshToken);
+//        AccountAuth accountAuth = new AccountAuth();
+//        accountAuth.setUserId(userid);
+//        accountAuth.setAppkey(appkey);
+//        accountAuth.setAccessToken(accessToken);
+//        accountAuth.setAccessValidTime(vaildTime);
+//        accountAuth.setRefreshToken(refreshToken);
 
         // TODO DAO insert AccountAuth table
-        return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }
