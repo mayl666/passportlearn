@@ -68,8 +68,22 @@ public class AccountServiceImpl implements AccountService {
 
             //设置每日最多发送短信验证码条数
             String keySendNumCache = CACHE_PREFIX_ACCOUNT_SENDNUM + account;
-            jedis.hset(keySendNumCache, "sendNum", "1");
-            jedis.expire(keySendNumCache, SMSUtil.SMS_ONEDAY);
+
+            if (!jedis.exists(keySendNumCache)) {
+                jedis.hset(keySendNumCache, "sendNum", "1");
+                jedis.expire(keySendNumCache, SMSUtil.SMS_ONEDAY);
+            } else {
+                //如果存在，判断是否已经超出日发送最高限额   (比如30分钟后失效了，再次获取验证码 需要和此用户当天发送的总的条数对比)
+                Map<String, String> mapCacheSendNumResult = jedis.hgetAll(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
+                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
+                    int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
+                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
+                        jedis.hincrBy(CACHE_PREFIX_ACCOUNT_SENDNUM + account, "sendNum", 1);
+                    } else {
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
+                    }
+                }
+            }
             //todo 内容从缓存中读取
             isSend = SMSUtil.sendSMS(account, "test");
             if (isSend) {
@@ -125,13 +139,13 @@ public class AccountServiceImpl implements AccountService {
                             if (isSend) {
                                 //30分钟之内返回原先验证码
                                 mapResult.put("smscode", smsCode);
-                                return mapResult;
-                            } else {
-                                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
+                                return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
                             }
                         } else {
-                            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
+                            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
                         }
+                    } else {
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
                     }
                 }
             }
@@ -188,7 +202,7 @@ public class AccountServiceImpl implements AccountService {
         a.setVersion(Account.NEW_ACCOUNT_VERSION);
         a.setMobile(account);
         long id = accountMapper.userRegister(a);
-        if(id != 0){
+        if (id != 0) {
             a.setId(id);
             return a;
         }
