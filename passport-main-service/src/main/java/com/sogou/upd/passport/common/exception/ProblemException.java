@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.common.exception;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 public class ProblemException extends Exception {
 
@@ -41,10 +41,10 @@ public class ProblemException extends Exception {
 	@Override
 	public String getMessage() {
 		StringBuffer b = new StringBuffer();
-		if (!StringUtils.isEmpty(error)) {
+        if (!Strings.isNullOrEmpty(error)) {
 			b.append("error:").append(error);
 		}
-		if (!StringUtils.isEmpty(description)) {
+		if (!Strings.isNullOrEmpty(description)) {
 			b.append(", ").append("description:").append(description);
 		}
 		return b.toString();

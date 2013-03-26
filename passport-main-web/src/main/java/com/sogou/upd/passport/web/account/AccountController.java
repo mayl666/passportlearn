@@ -125,7 +125,7 @@ public class AccountController extends BaseController {
         //验证手机号码是否为空，格式及位数是否正确
         Map<String, Object> mapAccount = checkAccount(mobile);
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, appkey + "");
+        boolean checkSmsInfo = accountService.checkSmsInfoCache(mobile, smsCode, appkey + "");
         //验证密码是否明文传送
         //TODO 调用密码是否明文传送的接口
         //验证该手机用户是否已经注册过了

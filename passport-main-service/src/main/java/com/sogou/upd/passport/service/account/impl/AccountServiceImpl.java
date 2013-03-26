@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
@@ -9,9 +10,11 @@ import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,9 +37,10 @@ import java.util.Map;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
-    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";   //account与smscode映射
+    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
-    private static final String CACHE_PREFIX_USERID = "PASSPORT:ID_USERID_";     //passport_id与userID映射
+    @Inject
+    private AppConfigService appConfigService;
     @Inject
     private AccountMapper accountMapper;
     @Inject
@@ -213,7 +217,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public boolean checkSmsInfoFromCache(String account, String smsCode, String appkey) {
+    public boolean checkSmsInfoCache(String account, String smsCode, String appkey) {
         try {
             jedis = shardedJedisPool.getResource();
             String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + appkey;
@@ -263,26 +267,47 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountAuth initialAccountAuth(Account account, int appkey) {
-        long userid = account.getId();
+    public AccountAuth initialAccountAuth(Account account, int appkey) throws SystemException {
+        long userID = account.getId();
         String passportID = account.getPassportId();
+        AccountAuth accountAuth = newAccountAuth(userID, passportID, appkey);
+        long id = accountAuthMapper.saveAccountAuth(accountAuth);
+        if(id != 0){
+            accountAuth.setId(id);
+            return accountAuth;
+        }
+        return null;
+    }
+
+    /**
+     * 构造一个新的AccountAuth
+     *
+     * @param userid
+     * @param passportID
+     * @param appKey
+     * @return
+     */
+    private AccountAuth newAccountAuth(long userid, String passportID, int appKey) throws SystemException {
+        AppConfig appConfig = appConfigService.getAppConfig(appKey);
+        int accessTokenExpiresin = appConfig.getAccessTokenExpiresin();
+        int refreshTokenExpiresin = appConfig.getRefreshTokenExpiresin();
+
         TokenGenerator generator = new TokenGenerator();
-        long vaildTime = 0;
         String accessToken;
         String refreshToken;
         try {
-            accessToken = generator.generatorAccessToken(passportID, appkey);
-            refreshToken = generator.generatorRefreshToken(passportID, appkey);
+            accessToken = generator.generatorAccessToken(passportID, appKey, accessTokenExpiresin);
+            refreshToken = generator.generatorRefreshToken(passportID, appKey);
         } catch (Exception e) {
-            // TODO record error log
-            return null;
+            throw new SystemException(e);
         }
         AccountAuth accountAuth = new AccountAuth();
         accountAuth.setUserId(userid);
-        accountAuth.setAppkey(appkey);
+        accountAuth.setAppkey(appKey);
         accountAuth.setAccessToken(accessToken);
-        accountAuth.setAccessValidTime(vaildTime);
+        accountAuth.setAccessValidTime(generator.generatorVaildTime(accessTokenExpiresin));
         accountAuth.setRefreshToken(refreshToken);
+        accountAuth.setRefreshValidTime(generator.generatorVaildTime(refreshTokenExpiresin));
         long id = accountAuthMapper.saveAccountAuth(accountAuth);
         if(id != 0){
             accountAuth.setId(id);
