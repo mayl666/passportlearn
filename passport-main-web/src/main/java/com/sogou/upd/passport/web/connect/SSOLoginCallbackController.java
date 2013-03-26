@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.connect;
 
+import com.google.common.base.Preconditions;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -58,6 +59,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
 
             long userid;
             if (user_connect == null) {
+
                 if (CollectionUtils.isEmpty(accountConnectList)) {  // TODO 换成Guava
                     // 初始化Account
                     Account account = accountService.initialConnectAccount(oar.getConnectUid(), getIp(req), provider);

@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.common.parameter;
 
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import java.util.HashMap;
@@ -21,7 +24,7 @@ public enum AccountTypeEnum {
     RENREN(4); // 人人
 
     // provider数字与字符串映射字典表
-    private static Map<String, Integer> PROVIDER_MAPPING_DICT = new HashMap<String, Integer>();
+    private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
 
     static {
         PROVIDER_MAPPING_DICT.put("email", EMAIL.getValue());
@@ -46,13 +49,7 @@ public enum AccountTypeEnum {
     }
 
     public static String getProviderStr(int provider) {
-        Set<String> keySet = PROVIDER_MAPPING_DICT.keySet();
-        for (String str : keySet) {
-            if (provider == PROVIDER_MAPPING_DICT.get(str)) {
-                return str;
-            }
-        }
-        return "unknown";
+        return PROVIDER_MAPPING_DICT.inverse().get(provider);
     }
 
     public static boolean isPhone(String account, int provider) {
