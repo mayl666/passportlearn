@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -13,6 +14,7 @@ import com.sogou.upd.passport.model.account.PostUserProfile;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
@@ -63,7 +65,6 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> mapResult = Maps.newHashMap();
         boolean isSend = true;
         try {
-
             //设置每日最多发送短信验证码条数
             String keySendNumCache = CACHE_PREFIX_ACCOUNT_SENDNUM + account;
             jedis = shardedJedisPool.getResource();
@@ -180,7 +181,7 @@ public class AccountServiceImpl implements AccountService {
         //判断用户是否存在
         Account userAccount = getUserAccount(mobile, passwd);
         if (userAccount == null) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
         }
         //判读access_token有效性，是否在有效的范围内
         AccountAuth accountAuth = getUserAuthByAccessToken(access_token, appkey);
@@ -252,10 +253,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account initialAccount(String account, String pwd, String ip, int provider) {
+    public Account initialAccount(String account, String pwd, String ip, int provider) throws SystemException {
         Account accountReturn = new Account();
         accountReturn.setPassportId(PassportIDGenerator.generator(account, provider));
-        accountReturn.setPasswd(pwd);
+        String passwdSign = null;
+        if (!Strings.isNullOrEmpty(pwd)) {
+            passwdSign = PwdGenerator.generatorPwdSign(pwd);
+        }
+        accountReturn.setPasswd(passwdSign);
         accountReturn.setRegTime(new Date());
         accountReturn.setRegIp(ip);
         accountReturn.setAccountType(provider);
@@ -271,7 +276,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account initialConnectAccount(String account, String ip, int provider) {
+    public Account initialConnectAccount(String account, String ip, int provider) throws SystemException {
         return initialAccount(account, null, ip, provider);
     }
 
@@ -289,9 +294,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void addPassportIdMapUserId(String passportId, long userId) {
-        //TODO 写缓存
-        //To change body of implemented methods use File | Settings | File Templates.
+    public boolean addPassportIdMapUserId(String passportId, long userId) {
+        try {
+            jedis = shardedJedisPool.getResource();
+
+        } catch (Exception e) {
+            logger.error("[SMS] service method checkSmsInfo error.{}", e);
+        } finally {
+            shardedJedisPool.returnResource(jedis);
+        }
+        return false;
     }
 
     @Override
@@ -329,7 +341,7 @@ public class AccountServiceImpl implements AccountService {
         accountAuth.setRefreshToken(refreshToken);
         accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresin));
         long id = accountAuthMapper.saveAccountAuth(accountAuth);
-        if(id != 0){
+        if (id != 0) {
             accountAuth.setId(id);
             return accountAuth;
         }

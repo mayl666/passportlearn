@@ -19,7 +19,7 @@ public class PwdGenerator {
      * @return
      * @throws SystemException
      */
-    public String generatorPwdSign(String pwd) throws SystemException {
+    public static String generatorPwdSign(String pwd) throws SystemException {
         byte[] encryByte;
         try {
             encryByte = Coder.encryptHMAC(pwd.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);

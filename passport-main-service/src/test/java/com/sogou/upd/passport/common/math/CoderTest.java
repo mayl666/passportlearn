@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.common.math;
 
-import com.sogou.upd.passport.common.parameter.CommonParameters;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -31,7 +30,7 @@ public class CoderTest {
 
     @Test
     public void testEncryptHMAC() throws Exception {
-         byte[] encryByte = Coder.encryptHMAC(str.getBytes(), CommonParameters.HMAC_SHA_KEY);
+         byte[] encryByte = Coder.encryptHMAC(str.getBytes(), TokenGenerator.HMAC_SHA_KEY);
         String str1 = RSA.toHexString(encryByte);
         System.out.println("str1:" + str1);
 
