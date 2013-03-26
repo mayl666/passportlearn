@@ -12,6 +12,8 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -164,5 +166,32 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public long initialConnectAccount(String account, String ip, int provider) {
         return initialAccount(account, null, ip, provider);
+    }
+
+    @Override
+    public AccountAuth initialAccountAuth(Account account, int appkey) {
+        long userid = account.getId();
+        String passportID = account.getPassportId();
+        TokenGenerator generator = new TokenGenerator();
+        long vaildTime = generator.generatorVaildTime(appkey);
+        String accessToken;
+        String refreshToken;
+        try {
+            accessToken = generator.generatorAccessToken(passportID, appkey);
+            refreshToken = generator.generatorRefreshToken(passportID, appkey);
+        } catch (Exception e) {
+            // TODO record error log
+            return null;
+        }
+
+        AccountAuth accountAuth = new AccountAuth();
+        accountAuth.setUserId(userid);
+        accountAuth.setAppkey(appkey);
+        accountAuth.setAccessToken(accessToken);
+        accountAuth.setValidTime(vaildTime);
+        accountAuth.setRefreshToken(refreshToken);
+
+        // TODO DAO insert AccountAuth table
+        return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

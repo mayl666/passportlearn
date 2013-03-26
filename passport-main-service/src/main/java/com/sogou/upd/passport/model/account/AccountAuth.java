@@ -11,7 +11,7 @@ public class AccountAuth {
     private String accessToken;
     private String refreshToken;
     private long validTime;
-    private String appId;
+    private int appkey;
 
     public long getId() {
         return id;
@@ -53,11 +53,11 @@ public class AccountAuth {
         this.validTime = validTime;
     }
 
-    public String getAppId() {
-        return appId;
+    public int getAppkey() {
+        return appkey;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setAppkey(int appkey) {
+        this.appkey = appkey;
     }
 }
