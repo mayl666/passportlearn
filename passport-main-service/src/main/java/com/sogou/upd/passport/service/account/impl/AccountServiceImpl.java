@@ -97,46 +97,35 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> updateCacheStatusByAccount(String keyCache) {
-        keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + keyCache;
+    public Map<String, Object> updateCacheStatusByAccount(String cacheKey) {
+
         Map<String, Object> mapResult = Maps.newHashMap();
         try {
             jedis = shardedJedisPool.getResource();
 
-            Map<String, String> mapCacheResult = jedis.hgetAll(keyCache);
+            Map<String, String> mapCacheResult = jedis.hgetAll(cacheKey);
             if (MapUtils.isNotEmpty(mapCacheResult)) {
-                //获取缓存数据
                 long sendTime = Long.parseLong(mapCacheResult.get("sendTime"));
+                int sendNum = Integer.parseInt(mapCacheResult.get("sendNum"));
                 String smsCode = mapCacheResult.get("smsCode");
-                String account = mapCacheResult.get("mobile");
-                Map<String, String> mapCacheSendNumResult = jedis.hgetAll(account);
-                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
-                    int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
-                    long curtime = System.currentTimeMillis();
-                    boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
-                    if (valid) {
-                        if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                            jedis.hincrBy(account, "sendNum", 1);
-                            jedis.hset(keyCache, "sendTime", Long.toString(System.currentTimeMillis()));
-                            //todo 内容从缓存中读取
-                            boolean isSend = SMSUtil.sendSMS(account, "test");
-                            if (isSend) {
-                                //30分钟之内返回原先验证码
-                                mapResult.put("smscode", smsCode);
-                                return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
-                            }
-                        } else {
-                            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限"+SMSUtil.MAX_SMS_COUNT_ONEDAY+"条");
-                        }
+
+                long curtime = System.currentTimeMillis();
+                boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
+                if (valid) {
+                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //在30分钟内返回之前的smsCode
+                        jedis.hincrBy(cacheKey, "sendNum", 1);
+                        jedis.hset(cacheKey, "sendTime", Long.toString(System.currentTimeMillis()));
+                        mapResult.put("smscode", smsCode);
+                        return mapResult;
                     } else {
-                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS,"短信发送已达今天的最高上限20条");
                     }
+                } else {
+                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT,"1分钟只能发送一条短信");
                 }
-
-
             }
-        } catch (Exception e) {
-            logger.error("[SMS] service method updateCacheStatusByAccount error.{}", e);
+        }catch (Exception e){
+            logger.error("[SMS] service method updateCacheStatusByAccount error.{}",e);
         } finally {
             shardedJedisPool.returnResource(jedis);
         }
@@ -175,7 +164,6 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
-
 
     @Override
     public long initialAccount(String account, String pwd, String ip, int provider) {
