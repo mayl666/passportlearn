@@ -41,8 +41,6 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
     private static final String CACHE_PREFIX_USERID = "PASSPORT:ID_USERID_";     //passport_id与userID映射
     @Inject
-    private AppConfigService appConfigService;
-    @Inject
     private AccountMapper accountMapper;
     @Inject
     private AccountAuthMapper accountAuthMapper;
@@ -228,7 +226,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public boolean checkSmsInfoCache(String account, String smsCode, String appkey) {
+    public boolean checkSmsInfoFromCache(String account, String smsCode, String appkey) {
         try {
             jedis = shardedJedisPool.getResource();
             String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + appkey;
