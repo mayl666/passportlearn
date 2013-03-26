@@ -15,6 +15,16 @@ public interface AccountService {
 
     public long userRegister(Account account);
 
+
+
+    /**
+     * 注册时检测手机号，验证码，应用ID
+     *
+     * @param account
+     * @return
+     */
+    public boolean checkSmsInfo(String account,String smsCode,String appkey);
+
     /**
      * 检查此用户是否发送过验证码，并是否在有效期内
      *
