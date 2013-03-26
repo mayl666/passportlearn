@@ -29,7 +29,7 @@ public interface AccountService {
      * @param account
      * @return
      */
-    public boolean checkSmsInfoCache(String account,String smsCode,String appkey);
+    public boolean checkSmsInfoFromCache(String account,String smsCode,String appkey);
 
     /**
      * 检查此用户是否发送过验证码，并是否在有效期内

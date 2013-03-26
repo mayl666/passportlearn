@@ -46,6 +46,8 @@ public class AccountServiceImpl implements AccountService {
     private AccountAuthMapper accountAuthMapper;
     @Inject
     private ShardedJedisPool shardedJedisPool;
+    @Inject
+    private AppConfigService appConfigService;
 
     private ShardedJedis jedis;
 
@@ -64,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
 
             //设置每日最多发送短信验证码条数
             String keySendNumCache = CACHE_PREFIX_ACCOUNT_SENDNUM + account;
-
+            jedis = shardedJedisPool.getResource();
             if (!jedis.exists(keySendNumCache)) {
                 jedis.hset(keySendNumCache, "sendNum", "1");
                 jedis.expire(keySendNumCache, SMSUtil.SMS_ONEDAY);
@@ -89,7 +91,6 @@ public class AccountServiceImpl implements AccountService {
             map.put("mobile", account);        //发送手机号
             map.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
 
-            jedis = shardedJedisPool.getResource();
             jedis.hmset(keyCache, map);
             jedis.expire(keyCache, SMSUtil.SMS_VALID);      //有效时长30分钟  ，1800秒
 
