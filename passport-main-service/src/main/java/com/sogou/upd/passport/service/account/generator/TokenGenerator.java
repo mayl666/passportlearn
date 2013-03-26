@@ -3,8 +3,10 @@ package com.sogou.upd.passport.service.account.generator;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.parameter.CommonParameters;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTime;
 
 import javax.inject.Inject;
 import java.util.Calendar;
@@ -33,9 +35,6 @@ public class TokenGenerator {
             "bqTdtJtiRKTFU8EkBwIgBSByKOE8MeFq3FWHbnG+sp3vieMT3EexUJdwrJ8P5lcCIBYHVsR8dRsu\n" +
             "8oRItTFdtqWyoC4LjGTUWy5fUa5Zz2qhAh9rQb9VP0rnQPP3Hm9z9SFccXUZaPiC9a8+r5g5WUen";
 
-    @Inject
-    private AppConfigService appConfigService;
-
     /**
      * 生成access_token
      * 构成格式 passportID|appkey|vaild_timestamp(过期时间点，单位毫秒)|6位随机数
@@ -44,14 +43,10 @@ public class TokenGenerator {
      * @param appkey
      * @return
      */
-    public String generatorAccessToken(String passportID, int appkey) throws Exception {
+    public String generatorAccessToken(String passportID, int appkey, int expiresIn) throws Exception {
 
         // 过期时间点
-        int expiresIn = appConfigService.getAccessTokenExpiresIn(appkey);
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.SECOND, expiresIn);
-        long vaild_time = c.getTimeInMillis();
+        long vaildTime = generatorVaildTime(expiresIn);
 
         // 6位随机数
         String random = RandomStringUtils.randomAlphanumeric(6);
@@ -59,7 +54,7 @@ public class TokenGenerator {
         StringBuffer data = new StringBuffer();
         data.append(passportID).append(CommonParameters.SEPARATOR_1);
         data.append(appkey).append(CommonParameters.SEPARATOR_1);
-        data.append(vaild_time).append(CommonParameters.SEPARATOR_1);
+        data.append(vaildTime).append(CommonParameters.SEPARATOR_1);
         data.append(random);
 
         byte[] encbyte = RSA.encryptByPrivateKey(data.toString().getBytes(), PRIVATE_KEY);
@@ -87,11 +82,15 @@ public class TokenGenerator {
         return Coder.toHexString(encryByte);
     }
 
-    public long generatorVaildTime(int appkey) {
-        int expiresIn = appConfigService.getAccessTokenExpiresIn(appkey);
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.SECOND, expiresIn);
-        return c.getTimeInMillis();
+    /**
+     * 生成A过期时间点
+     * @param expiresIn
+     * @return
+     */
+    public long generatorVaildTime(int expiresIn) {
+        DateTime dateTime = new DateTime();
+        long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
+        return vaildTime;
     }
+
 }
