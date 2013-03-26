@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
@@ -36,6 +37,8 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
     @Inject
     private AccountMapper accountMapper;
+    @Inject
+    private AccountAuthMapper accountAuthMapper;
     @Inject
     private ShardedJedisPool shardedJedisPool;
 
@@ -237,8 +240,11 @@ public class AccountServiceImpl implements AccountService {
         accountAuth.setAccessToken(accessToken);
         accountAuth.setAccessValidTime(vaildTime);
         accountAuth.setRefreshToken(refreshToken);
-
-        // TODO DAO insert AccountAuth table
-        return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
+        long id = accountAuthMapper.saveAccountAuth(accountAuth);
+        if(id != 0){
+            accountAuth.setId(id);
+            return accountAuth;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

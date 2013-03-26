@@ -98,16 +98,18 @@ public class AccountController extends BaseController {
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfo(mobile, smsCode, appkey + "");
         //验证密码是否明文传送
-        //TODO add service implement of validate
+        //TODO 调用密码是否明文传送的接口
         //验证该手机用户是否已经注册过了
         boolean as = accountService.checkIsRegisterAccount(new Account(mobile, passwd));
         Account account = null;
         if (as == true) {     //如果用户没有被注册，则注册用户，并返回access_token和refresh_token
             account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
             if (account != null) {  //如果对象不为空，说明注册成功
+                //TODO 往缓存里写入一条Account记录
                 //往account_auth表里插一条用户状态记录
                 AccountAuth accountAuth = accountService.initialAccountAuth(account, appkey);
                 if(accountAuth != null){
+                    //TODO 往缓存里写入一条AccountAuth记录
                     String accessToken = accountAuth.getAccessToken();
                     String refreshToken = accountAuth.getRefreshToken();
                     Map<String , Object> mapResult = new HashMap<String, Object>();
