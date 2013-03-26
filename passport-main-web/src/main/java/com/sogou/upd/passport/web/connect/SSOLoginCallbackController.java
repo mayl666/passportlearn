@@ -60,7 +60,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
             long userid;
             if (user_connect == null) {
 
-                if (CollectionUtils.isEmpty(accountConnectList)) {  // TODO 换成Guava
+                if (CollectionUtils.isEmpty(accountConnectList)) {
                     // 初始化Account
                     Account account = accountService.initialConnectAccount(oar.getConnectUid(), getIp(req), provider);
                     userid = account.getId();
