@@ -13,6 +13,12 @@ import com.sogou.upd.passport.common.parameter.CommonParameters;
  */
 public class PwdGenerator {
 
+    /**
+     * 对明文密码采用HMAC_SHA加密
+     * @param pwd
+     * @return
+     * @throws SystemException
+     */
     public String generatorPwdSign(String pwd) throws SystemException {
         byte[] encryByte;
         try {
