@@ -21,8 +21,6 @@ import java.util.Date;
  */
 public class TokenGenerator {
 
-    // HMAC_SHA1密钥
-    public static final String HMAC_SHA_KEY = "q2SyvfJ8dTwjK3t0x1pnL78Mrq9FkN5tF00p2wEgQg0HmCFx4GXGONOf5FQykc45Evt8odc9OXjGLNX9KnPNWw==";
 
     // 公钥
     public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
@@ -77,13 +75,14 @@ public class TokenGenerator {
         StringBuffer data = new StringBuffer();
         data.append(passportID).append(appkey).append(timestamp);
 
-        byte[] encryByte = Coder.encryptHMAC(data.toString().getBytes(), TokenGenerator.HMAC_SHA_KEY);
+        byte[] encryByte = Coder.encryptHMAC(data.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);
 
         return Coder.toHexString(encryByte);
     }
 
     /**
-     * 生成A过期时间点
+     * 生成过期时间点
+     *
      * @param expiresIn
      * @return
      */

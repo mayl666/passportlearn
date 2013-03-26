@@ -10,6 +10,9 @@ public class CommonParameters {
 	public static final String UTF8 = "UTF-8";
 	public static final String SEPARATOR_0 = ",";
     public static final String SEPARATOR_1 = "|";
+
+    // HMAC_SHA1密钥
+    public static final String HMAC_SHA_KEY = "q2SyvfJ8dTwjK3t0x1pnL78Mrq9FkN5tF00p2wEgQg0HmCFx4GXGONOf5FQykc45Evt8odc9OXjGLNX9KnPNWw==";
 	
 	public static final String DEFAULT_URL = "http://id.sogou.com";
 	public static final String API_ID_SOGOU_DOMAIN = "api.id.sogou.com";
