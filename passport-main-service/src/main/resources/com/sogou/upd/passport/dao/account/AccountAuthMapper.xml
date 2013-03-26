@@ -15,7 +15,8 @@
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT @@IDENTITY
         </selectKey>
-        insert into account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,appkey) values (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{appkey})
+        insert into account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,appkey) values
+        (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{appkey})
     </insert>
 
 </mapper>
