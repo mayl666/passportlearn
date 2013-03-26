@@ -21,7 +21,14 @@ public interface AccountService {
      * @param
      * @return
      */
-    public Map<String,Object> handleLogin(String mobile, String passwd,int appkey,PostUserProfile postData);
+    public Map<String,Object> handleLogin(String mobile, String passwd,String access_token, int appkey, PostUserProfile postData);
+
+    /**
+     * 根据用户名密码获取用户
+     * @param
+     * @return
+     */
+    public Account getUserAccount(String account, String passwd);
 
     /**
      * 注册时检测手机号，验证码，应用ID

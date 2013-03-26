@@ -98,10 +98,10 @@ public class AccountController extends BaseController {
     public Object userlogin(HttpServletRequest request, HttpServletResponse response,
                             @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int appkey,
                             @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                            @RequestParam(defaultValue = "") String client_signature) throws Exception {
-        boolean empty = hasEmpty(mobile, passwd);
+                            @RequestParam(defaultValue = "") String access_token) throws Exception {
+        boolean empty = hasEmpty(mobile, passwd,access_token);
         if (empty || appkey == 0) { return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE); }
-        return accountService.handleLogin(mobile, passwd, appkey, postData);
+        return accountService.handleLogin(mobile, passwd,access_token, appkey, postData);
     }
 
 
