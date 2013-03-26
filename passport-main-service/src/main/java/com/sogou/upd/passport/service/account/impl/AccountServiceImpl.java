@@ -37,10 +37,9 @@ import java.util.Map;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
-    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";
+    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";   //account与smscode映射
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
-    @Inject
-    private AppConfigService appConfigService;
+    private static final String CACHE_PREFIX_USERID = "PASSPORT:ID_USERID_";     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
@@ -175,49 +174,58 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd,String access_token, int appkey, PostUserProfile postData) {
-        Account userAccount = getUserAccount(mobile,passwd);
+    public Map<String, Object> handleLogin(String mobile, String passwd, String access_token, int appkey, PostUserProfile postData) {
 
-//        if (userAccount == null) {
-//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-//        }
-//        if (userAccount.isExpUser()) {
-//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_EXPUSERLOGIN);
-//        } else {
-//            User user = userDao.getUserById(userAccount.getUserid());
-//            String shapw = shaPasswd(passwd);
-//            if (shapw.equals(user.passwd)) {
-//                // 重新生成access token
-//                UserStatus status = loginGetUserStatus(user, appid);
-//
-//                // 异步记录统计信息
-//                UserLoginInfo userLoginInfo = UserLoginInfoServiceImpl.buildUserLoginInfo(user.id, user.openid,
-//                        postData, appid);
-//                userLoginInfoService.insertLoginSysInfo(userLoginInfo, true);
-//
-//                // 成功
-//                Map<String, Object> data = Maps.newHashMap();
-//                data.put("access_token", status.accessToken);
-//                return ErrorUtil.buildSuccess("登录成功", data);
-//
-//            }
-//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
-//        }
-        return null;
+        //判断用户是否存在
+        Account userAccount = getUserAccount(mobile, passwd);
+        if (userAccount == null) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        }
+        //判读access_token有效性，是否在有效的范围内
+        AccountAuth accountAuth = getUserAuthByAccessToken(access_token, appkey);
+        if (accountAuth == null) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED);
+        }
+        long curtime = System.currentTimeMillis();
+        boolean valid = curtime < accountAuth.getAccessValidTime();
+        if(valid){
+            return ErrorUtil.buildSuccess("登录成功",null);
+        }
+
+        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
     }
 
-    @Override
+    /**
+     * 根据AccessToken获取AccountAuth信息
+     *
+     * @param
+     * @return
+     */
+    public AccountAuth getUserAuthByAccessToken(String access_token, int appkey) {
+        Map<String, String> mapResult = Maps.newHashMap();
+        mapResult.put("access_token", access_token);
+        mapResult.put("appkey", Integer.toString(appkey));
+        AccountAuth accountAuth = accountMapper.getUserAuthByAccessToken(mapResult);
+        return accountAuth != null ? accountAuth : null;
+    }
+
+    /**
+     * 根据用户名密码获取用户Account
+     *
+     * @param
+     * @return
+     */
     public Account getUserAccount(String mobile, String passwd) {
-        Map<String,String> mapResult=Maps.newHashMap();
-        mapResult.put("mobile",mobile);
-        mapResult.put("passwd",passwd);
-        Account accountResult=accountMapper.getUserAccount(mapResult);
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Map<String, String> mapResult = Maps.newHashMap();
+        mapResult.put("mobile", mobile);
+        mapResult.put("passwd", passwd);
+        Account accountResult = accountMapper.getUserAccount(mapResult);
+        return accountResult != null ? accountResult : null;
     }
 
 
     @Override
-    public boolean checkSmsInfoCache(String account, String smsCode, String appkey) {
+    public boolean checkSmsInfoFromCache(String account, String smsCode, String appkey) {
         try {
             jedis = shardedJedisPool.getResource();
             String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + appkey;

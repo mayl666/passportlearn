@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountAuth;
 
 import java.util.Map;
 
@@ -26,11 +27,15 @@ public interface AccountMapper {
      */
     public int userRegister(Account account);
     /**
-     * 根据用户名密码获取用户
+     * 根据用户名密码获取用户Account
      * @param
      * @return
      */
     public Account getUserAccount(Map<String,String> queryMap);
-
-
+    /**
+     * 根据AccessToken获取AccountAuth信息
+     * @param
+     * @return
+     */
+    public AccountAuth getUserAuthByAccessToken(Map<String,String> queryMap);
 }
