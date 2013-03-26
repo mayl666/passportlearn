@@ -4,24 +4,20 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.web.BaseController;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -93,8 +89,6 @@ public class AccountController extends BaseController {
         //验证手机号码是否为空，格式及位数是否正确
         checkAccount(mobile);
         //验证手机号码与验证码是否匹配
-
-
         //todo add service implement of app table
         //验证密码是否明文传送
         //todo add service implement of validate
