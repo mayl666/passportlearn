@@ -2,11 +2,14 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.dao.account.AccountDao;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
@@ -20,7 +23,9 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
+import javax.print.DocFlavor;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,7 +38,7 @@ import java.util.Map;
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Inject
-    private AccountDao accountDao;
+    private AccountMapper accountMapper;
     @Inject
     private ShardedJedisPool shardedJedisPool;
 
@@ -42,7 +47,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
-        return accountDao.checkIsRegisterAccount(account);
+        Account a = accountMapper.checkIsRegisterAccount(account);
+        return a == null ? true : false;
     }
 
     @Override
@@ -129,7 +135,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public long userRegister(Account account) {
-        return accountDao.userRegister(account);
+        return accountMapper.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -155,7 +161,7 @@ public class AccountServiceImpl implements AccountService {
         a.setStatus(AccountStatusEnum.REGULAR.getValue());
         a.setVersion(Account.NEW_ACCOUNT_VERSION);
         a.setMobile(account);
-        return accountDao.userRegister(a);
+        return accountMapper.userRegister(a);
     }
 
     @Override
