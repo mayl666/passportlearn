@@ -10,7 +10,8 @@ public class AccountAuth {
     private long userId;
     private String accessToken;
     private String refreshToken;
-    private long validTime;
+    private long accessValidTime;
+    private long refreshValidTime;
     private int appkey;
 
     public long getId() {
@@ -45,12 +46,20 @@ public class AccountAuth {
         this.refreshToken = refreshToken;
     }
 
-    public long getValidTime() {
-        return validTime;
+    public long getAccessValidTime() {
+        return accessValidTime;
     }
 
-    public void setValidTime(long validTime) {
-        this.validTime = validTime;
+    public void setAccessValidTime(long accessValidTime) {
+        this.accessValidTime = accessValidTime;
+    }
+
+    public long getRefreshValidTime() {
+        return refreshValidTime;
+    }
+
+    public void setRefreshValidTime(long refreshValidTime) {
+        this.refreshValidTime = refreshValidTime;
     }
 
     public int getAppkey() {
