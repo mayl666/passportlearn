@@ -71,18 +71,13 @@
             <artifactId>cglib</artifactId>
             <version>2.2.2</version>
         </dependency>
-        <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>3.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.8.1.GA</version>
-        </dependency>
 
         <!-- common -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.1</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -131,13 +126,6 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.8.5</version>
         </dependency>
-        <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.2.2</version>
-            <classifier>jdk15</classifier>
-        </dependency>
-
 
         <dependency>
             <groupId>com.google.guava</groupId>
