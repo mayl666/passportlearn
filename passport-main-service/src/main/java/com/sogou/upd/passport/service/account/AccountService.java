@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
@@ -69,7 +70,7 @@ public interface AccountService {
      * @param provider
      * @return
      */
-    public Account initialAccount(String account, String pwd, String ip, int provider);
+    public Account initialAccount(String account, String pwd, String ip, int provider) throws SystemException;
 
     /**
      * 初始化第三方用户账号
@@ -78,7 +79,7 @@ public interface AccountService {
      * @param provider
      * @return
      */
-    public Account initialConnectAccount(String account, String ip, int provider);
+    public Account initialConnectAccount(String account, String ip, int provider) throws SystemException;
 
     /**
      * 初始化账号授权信息
