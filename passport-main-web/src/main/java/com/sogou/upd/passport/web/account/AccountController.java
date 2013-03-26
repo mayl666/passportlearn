@@ -136,6 +136,7 @@ public class AccountController extends BaseController {
         if (as == true) {     //如果用户没有被注册，手机号码格式验证通过，并且与验证码匹配，则注册用户，并返回access_token和refresh_token
             account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
             if (account != null) {  //如果对象不为空，说明注册成功
+                //TODO 往缓存里写入一条Account记录
                 //往account_auth表里插一条用户状态记录
                 AccountAuth accountAuth = accountService.initialAccountAuth(account, appkey);
                 if (accountAuth != null) {
