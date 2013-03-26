@@ -177,7 +177,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public long initialAccount(String account, String pwd, String ip, int provider) {
+    public Account initialAccount(String account, String pwd, String ip, int provider) {
         Account a = new Account();
         a.setPassportId(PassportIDGenerator.generator(account, provider));
         a.setPasswd(pwd);
@@ -187,11 +187,16 @@ public class AccountServiceImpl implements AccountService {
         a.setStatus(AccountStatusEnum.REGULAR.getValue());
         a.setVersion(Account.NEW_ACCOUNT_VERSION);
         a.setMobile(account);
-        return accountMapper.userRegister(a);
+        long id = accountMapper.userRegister(a);
+        if(id != 0){
+            a.setId(id);
+            return a;
+        }
+        return null;
     }
 
     @Override
-    public long initialConnectAccount(String account, String ip, int provider) {
+    public Account initialConnectAccount(String account, String ip, int provider) {
         return initialAccount(account, null, ip, provider);
     }
 
