@@ -15,6 +15,7 @@ public class AppConfig {
     private long appkey;
     public String smsText;
     private int accessTokenExpiresin;
+    private int refreshTokenExpiresin;
     private String appSecret;
     private String appClientSecret;
     private Date createTime;
@@ -50,6 +51,14 @@ public class AppConfig {
 
     public void setAccessTokenExpiresin(int accessTokenExpiresin) {
         this.accessTokenExpiresin = accessTokenExpiresin;
+    }
+
+    public int getRefreshTokenExpiresin() {
+        return refreshTokenExpiresin;
+    }
+
+    public void setRefreshTokenExpiresin(int refreshTokenExpiresin) {
+        this.refreshTokenExpiresin = refreshTokenExpiresin;
     }
 
     public String getAppSecret() {
