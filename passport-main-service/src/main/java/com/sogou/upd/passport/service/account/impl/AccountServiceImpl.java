@@ -340,11 +340,6 @@ public class AccountServiceImpl implements AccountService {
         accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresin));
         accountAuth.setRefreshToken(refreshToken);
         accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresin));
-        long id = accountAuthMapper.saveAccountAuth(accountAuth);
-        if (id != 0) {
-            accountAuth.setId(id);
-            return accountAuth;
-        }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
