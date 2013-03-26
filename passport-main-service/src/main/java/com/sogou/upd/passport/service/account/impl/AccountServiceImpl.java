@@ -5,7 +5,7 @@ import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
-import com.sogou.upd.passport.dao.account.AccountDao;
+import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Inject
-    private AccountDao accountDao;
+    private AccountMapper accountMapper;
     @Inject
     private ShardedJedisPool shardedJedisPool;
 
@@ -42,7 +42,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
-        return accountDao.checkIsRegisterAccount(account);
+        Account accountReturn = accountMapper.checkIsRegisterAccount(account);
+        return accountReturn == null ? true : false;
     }
 
     @Override
@@ -129,19 +130,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public long userRegister(Account account) {
-        return accountDao.userRegister(account);
+        return accountMapper.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public long userRegiterDetail(String mobile, String passwd, String regIp, String smsCode) {
-        int accountType = AccountTypeEnum.PHONE.getValue();
-        String passportId = PassportIDGenerator.generator(mobile, accountType);
-        int status = AccountStatusEnum.REGULAR.getValue();
-        int version = Account.NEW_ACCOUNT_VERSION;
-        Account account = new Account(0, passportId, passwd, mobile, new Date(), regIp, status, version, accountType);
-        return accountDao.userRegister(account);
-        //TODO add insert smsCode into app table
     }
 
     @Override
@@ -155,7 +145,7 @@ public class AccountServiceImpl implements AccountService {
         a.setStatus(AccountStatusEnum.REGULAR.getValue());
         a.setVersion(Account.NEW_ACCOUNT_VERSION);
         a.setMobile(account);
-        return accountDao.userRegister(a);
+        return accountMapper.userRegister(a);
     }
 
     @Override
