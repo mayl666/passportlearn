@@ -11,7 +11,7 @@
         <id property="appkey" column="appkey"></id>
     </resultMap>
 
-    <insert id="saveAccountAuth" parameterType="account">
+    <insert id="saveAccountAuth" parameterType="accountAuth">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT @@IDENTITY
         </selectKey>
