@@ -264,29 +264,19 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountAuth initialAccountAuth(Account account, int appkey) {
-//        long userid = account.getId();
-//        String passportID = account.getPassportId();
-//        TokenGenerator generator = new TokenGenerator();
-//        long vaildTime = generator.generatorAccessVaildTime(appkey);
-//        String accessToken;
-//        String refreshToken;
-//        try {
-//            accessToken = generator.generatorAccessToken(passportID, appkey);
-//            refreshToken = generator.generatorRefreshToken(passportID, appkey);
-//        } catch (Exception e) {
-//            // TODO record error log
-//            return null;
-//        }
-
-//        AccountAuth accountAuth = new AccountAuth();
-//        accountAuth.setUserId(userid);
-//        accountAuth.setAppkey(appkey);
-//        accountAuth.setAccessToken(accessToken);
-//        accountAuth.setAccessValidTime(vaildTime);
-//        accountAuth.setRefreshToken(refreshToken);
-
-        // TODO DAO insert AccountAuth table
-        return null;
+        long userid = account.getId();
+        String passportID = account.getPassportId();
+        TokenGenerator generator = new TokenGenerator();
+        long vaildTime = generator.generatorAccessVaildTime(appkey);
+        String accessToken;
+        String refreshToken;
+        try {
+            accessToken = generator.generatorAccessToken(passportID, appkey);
+            refreshToken = generator.generatorRefreshToken(passportID, appkey);
+        } catch (Exception e) {
+            // TODO record error log
+            return null;
+        }
         AccountAuth accountAuth = new AccountAuth();
         accountAuth.setUserId(userid);
         accountAuth.setAppkey(appkey);
