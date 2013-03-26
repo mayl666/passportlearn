@@ -267,7 +267,7 @@ public class AccountServiceImpl implements AccountService {
         long userid = account.getId();
         String passportID = account.getPassportId();
         TokenGenerator generator = new TokenGenerator();
-        long vaildTime = generator.generatorAccessVaildTime(appkey);
+        long vaildTime = 0;
         String accessToken;
         String refreshToken;
         try {
