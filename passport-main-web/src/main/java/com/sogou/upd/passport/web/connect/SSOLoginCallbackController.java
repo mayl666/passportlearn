@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web.connect;
 
+import com.google.common.base.Preconditions;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.model.account.AccountConnect;
@@ -57,9 +59,11 @@ public class SSOLoginCallbackController extends BaseConnectController {
 
             long userid;
             if (user_connect == null) {
+
                 if (CollectionUtils.isEmpty(accountConnectList)) {  // TODO 换成Guava
                     // 初始化Account
-                    userid = accountService.initialConnectAccount(oar.getConnectUid(), getIp(req), provider);
+                    Account account = accountService.initialConnectAccount(oar.getConnectUid(), getIp(req), provider);
+                    userid = account.getId();
                 } else {  // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
                     userid = accountConnectList.get(0).getUserid();
                 }
