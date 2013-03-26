@@ -9,6 +9,7 @@ import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.web.BaseController;
+import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -92,11 +94,11 @@ public class AccountController extends BaseController {
                                      @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey
             , @RequestParam(defaultValue = "") String ip) throws Exception {
         //验证手机号码是否为空，格式及位数是否正确
-        Map<String, Object> map = checkAccount(mobile);
+        Map<String, Object> mapAccount = checkAccount(mobile);
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfo(mobile, smsCode, appkey + "");
         //验证密码是否明文传送
-        //todo add service implement of validate
+        //TODO add service implement of validate
         //验证该手机用户是否已经注册过了
         boolean as = accountService.checkIsRegisterAccount(new Account(mobile, passwd));
         Account account = null;
@@ -108,12 +110,19 @@ public class AccountController extends BaseController {
                 if(accountAuth != null){
                     String accessToken = accountAuth.getAccessToken();
                     String refreshToken = accountAuth.getRefreshToken();
+                    Map<String , Object> mapResult = new HashMap<String, Object>();
+                    mapResult.put("account",account);
+                    mapResult.put("accessToken",accessToken);
+                    mapResult.put("refreshToken",refreshToken);
+                    return ErrorUtil.buildSuccess("用户注册成功！",mapResult);
+                }else{
+                    //  TODO  这个地方是异常抛出来还是build状态码及提示信息，待定！
                 }
             }else{
-                //用户注册失败
+                //用户注册失败 TODO 同上，待定！
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
-        } else {                    //否则，不允许手机用户重复注册
+        } else {  //否则，不允许手机用户重复注册
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
         return null;
