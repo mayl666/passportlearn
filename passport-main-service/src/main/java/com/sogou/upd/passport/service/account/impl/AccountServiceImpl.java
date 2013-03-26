@@ -289,9 +289,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void addPassportIdMapUserId(String passportId, long userId) {
-        //TODO 写缓存
-        //To change body of implemented methods use File | Settings | File Templates.
+    public boolean addPassportIdMapUserId(String passportId, long userId) {
+        try {
+            jedis = shardedJedisPool.getResource();
+
+        } catch (Exception e) {
+            logger.error("[SMS] service method checkSmsInfo error.{}", e);
+        } finally {
+            shardedJedisPool.returnResource(jedis);
+        }
+        return false;
     }
 
     @Override

@@ -92,7 +92,7 @@ public interface AccountService {
      * @param passportId
      * @param userId
      */
-    public void addPassportIdMapUserId(String passportId,long userId);
+    public boolean addPassportIdMapUserId(String passportId,long userId);
 
     /**
      * Account读缓存
