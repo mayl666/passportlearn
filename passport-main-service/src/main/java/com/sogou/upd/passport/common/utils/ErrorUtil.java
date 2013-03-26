@@ -172,7 +172,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_VERIFY_FIELDS,"昵称格式有误，只能包含中文、英文大小写,-,_,字母或空格");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND,"手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED,"用户注册失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED,"验证access_token失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED,"验证access_token和appkey失败");
 
 
 		// profile

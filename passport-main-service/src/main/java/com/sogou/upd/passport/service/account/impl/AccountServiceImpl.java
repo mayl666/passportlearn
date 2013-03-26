@@ -180,7 +180,7 @@ public class AccountServiceImpl implements AccountService {
         //判断用户是否存在
         Account userAccount = getUserAccount(mobile, passwd);
         if (userAccount == null) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
         }
         //判读access_token有效性，是否在有效的范围内
         AccountAuth accountAuth = getUserAuthByAccessToken(access_token, appkey);
