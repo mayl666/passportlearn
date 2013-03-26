@@ -325,12 +325,11 @@ public class AccountServiceImpl implements AccountService {
         int accessTokenExpiresin = appConfig.getAccessTokenExpiresin();
         int refreshTokenExpiresin = appConfig.getRefreshTokenExpiresin();
 
-        TokenGenerator generator = new TokenGenerator();
         String accessToken;
         String refreshToken;
         try {
-            accessToken = generator.generatorAccessToken(passportID, appKey, accessTokenExpiresin);
-            refreshToken = generator.generatorRefreshToken(passportID, appKey);
+            accessToken = TokenGenerator.generatorAccessToken(passportID, appKey, accessTokenExpiresin);
+            refreshToken = TokenGenerator.generatorRefreshToken(passportID, appKey);
         } catch (Exception e) {
             throw new SystemException(e);
         }
@@ -338,9 +337,9 @@ public class AccountServiceImpl implements AccountService {
         accountAuth.setUserId(userid);
         accountAuth.setAppkey(appKey);
         accountAuth.setAccessToken(accessToken);
-        accountAuth.setAccessValidTime(generator.generatorVaildTime(accessTokenExpiresin));
+        accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresin));
         accountAuth.setRefreshToken(refreshToken);
-        accountAuth.setRefreshValidTime(generator.generatorVaildTime(refreshTokenExpiresin));
+        accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresin));
         long id = accountAuthMapper.saveAccountAuth(accountAuth);
         if (id != 0) {
             accountAuth.setId(id);
