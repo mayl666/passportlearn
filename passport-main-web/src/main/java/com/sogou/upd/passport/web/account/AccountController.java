@@ -47,24 +47,24 @@ public class AccountController extends BaseController {
      * 手机账号获取，重发手机验证码接口
      *
      * @param mobile 传入的手机号码
-     * @param clientId 传入的密码
+     * @param clientid 传入的密码
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendmobilecode(@RequestParam(defaultValue = "0") int clientId, @RequestParam(defaultValue = "") String mobile)
+    public Object sendmobilecode(@RequestParam(defaultValue = "0") int clientid, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
         //参数验证
         boolean empty = hasEmpty(mobile);
-        if (empty || clientId == 0) {
+        if (empty || clientid == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
         //对mobile手机号验证
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
         //判断账号是否被缓存
-        String cacheKey = mobile + "_" + clientId;
+        String cacheKey = mobile + "_" + clientid;
         boolean isExistFromCache = accountService.checkIsExistFromCache(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
@@ -75,7 +75,7 @@ public class AccountController extends BaseController {
             boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
             if (isReg) {
                 //未注册过
-                mapResult = accountService.handleSendSms(mobile, clientId);
+                mapResult = accountService.handleSendSms(mobile, clientid);
                 if (MapUtils.isNotEmpty(mapResult)) {
                     return mapResult;
                 } else {
@@ -159,12 +159,12 @@ public class AccountController extends BaseController {
         if (ret != null) return ret;
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, clientId + "");
-        if (checkSmsInfo) {
+        if (!checkSmsInfo) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
         //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
         String passportId = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
-        if (passportId != null) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
+        if (!Strings.isNullOrEmpty(passportId)) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
             String userId = accountService.getUserIdOrMobileByPassportId(passportId, "userId");
             if (userId != null) {      //如果缓存中有该手机账号，则用户已经注册过了！
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);

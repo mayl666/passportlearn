@@ -108,7 +108,7 @@ public class AccountServiceImpl implements AccountService {
             jedis.expire(keyCache, SMSUtil.SMS_VALID);      //有效时长30分钟  ，1800秒
 
             //todo 内容从缓存中读取
-            isSend = SMSUtil.sendSMS(account, "test");
+            isSend = SMSUtil.sendSMS(account, randomCode);
             if (isSend) {
                 mapResult.put("smscode", randomCode);
                 return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
@@ -161,7 +161,7 @@ public class AccountServiceImpl implements AccountService {
                             jedis.hincrBy(CACHE_PREFIX_ACCOUNT_SENDNUM + account, "sendNum", 1);
                             jedis.hset(cacheKey, "sendTime", Long.toString(System.currentTimeMillis()));
                             //todo 内容从缓存中读取
-                            boolean isSend = SMSUtil.sendSMS(account, "test");
+                            boolean isSend = SMSUtil.sendSMS(account, smsCode);
                             if (isSend) {
                                 //30分钟之内返回原先验证码
                                 mapResult.put("smscode", smsCode);
@@ -322,7 +322,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean addPassportIdMapUserId(final String passportId, final String userId, final String mobile) {
         Object obj = null;
         try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
+            obj = redisTemplate.execute(new RedisCallback() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     String cacheKey = CACHE_PREFIX_PASSPORT + passportId;
@@ -459,24 +459,27 @@ public class AccountServiceImpl implements AccountService {
      */
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
         AppConfig appConfig = appConfigService.getAppConfig(clientId);
-        int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
-        int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresIn();
-
-        String accessToken;
-        String refreshToken;
-        try {
-            accessToken = TokenGenerator.generatorAccessToken(passportID, clientId, accessTokenExpiresIn);
-            refreshToken = TokenGenerator.generatorRefreshToken(passportID, clientId);
-        } catch (Exception e) {
-            throw new SystemException(e);
-        }
         AccountAuth accountAuth = new AccountAuth();
-        accountAuth.setUserId(userId);
-        accountAuth.setClientId(clientId);
-        accountAuth.setAccessToken(accessToken);
-        accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresIn));
-        accountAuth.setRefreshToken(refreshToken);
-        accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresIn));
+        if(appConfig!=null){
+            int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
+            int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresIn();
+
+            String accessToken;
+            String refreshToken;
+            try {
+                accessToken = TokenGenerator.generatorAccessToken(passportID, clientId, accessTokenExpiresIn);
+                refreshToken = TokenGenerator.generatorRefreshToken(passportID, clientId);
+            } catch (Exception e) {
+                throw new SystemException(e);
+            }
+            accountAuth.setUserId(userId);
+            accountAuth.setClientId(clientId);
+            accountAuth.setAccessToken(accessToken);
+            accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresIn));
+            accountAuth.setRefreshToken(refreshToken);
+            accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresIn));
+        }
+
         return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
