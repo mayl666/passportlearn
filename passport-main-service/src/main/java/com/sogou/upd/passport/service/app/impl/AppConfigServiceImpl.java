@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class AppConfigServiceImpl implements AppConfigService{
 
     @Override
-    public long getMaxAppid() {
+    public long getMaxClientId() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -25,17 +25,17 @@ public class AppConfigServiceImpl implements AppConfigService{
     }
 
     @Override
-    public AppConfig getAppConfig(int appKey) {
+    public AppConfig getAppConfig(int clientId) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public int getAccessTokenExpiresIn(int appKey) {
+    public int getAccessTokenExpiresIn(int clientId) {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public int getRefreshTokenExpiresIn(int appKey) {
+    public int getRefreshTokenExpiresIn(int clientId) {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
