@@ -111,7 +111,7 @@ public interface AccountService {
      * @param passportId
      * @param userId
      */
-    public boolean addUserIdMapPassportId(String passportId,String userId);
+    public boolean addUserIdMapPassportId(String userId,String passportId);
 
     /**
      * 根据PassportId 获取UserId或者mobile （缓存读取）
