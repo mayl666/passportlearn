@@ -122,7 +122,7 @@ public class AccountController extends BaseController {
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
                                      @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey) throws Exception {
         //验证手机号码是否为空，格式及位数是否正确
-        Map<String, Object> mapAccount = checkAccount(mobile);
+        checkAccount(mobile);
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, appkey + "");
         if(checkSmsInfo == false){
@@ -147,8 +147,8 @@ public class AccountController extends BaseController {
                 AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), appkey);
                 if (accountAuth != null) {   //如果用户状态表插入也成功，则说明注册成功
                     //往缓存里写入一条Account记录,后一条大史会用到
-                    accountService.addPassportIdMapUserId(passportId,account.getId()+"");
-                    accountService.addUserIdMapPassportId(passportId,account.getId()+"");
+                    accountService.addPassportIdMapUserId(passportId,account.getId());
+                    accountService.addUserIdMapPassportId(passportId,account.getId());
                     //TODO 清除验证码的缓存
                     String accessToken = accountAuth.getAccessToken();
                     long accessValidTime = accountAuth.getAccessValidTime();
