@@ -108,13 +108,13 @@ public interface AccountService {
      * @param passportId
      * @return
      */
-    public long getUserIdByPassportId(String passportId);
+    public long getUserIdByPassportId(long passportId);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId
      * @return
      */
-    public long getPassportIdByUserId(String userId);
+    public long getPassportIdByUserId(long userId);
 
 
     /**
