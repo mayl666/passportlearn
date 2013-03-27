@@ -17,17 +17,17 @@ public class TokenGeneratorTest {
 
     @Test
     public void testGeneratorAccountAuth() {
-        long userid = 100342;
+        long userId = 100342;
         String passportID = "13621009174@sohu.com";
-        int appkey = 1003;
+        int clientId = 1003;
 
         long start = System.currentTimeMillis();
         int expiresIn = 3600 * 24;
         String accessToken = null;
         String refreshToken = null;
         try {
-            accessToken = TokenGenerator.generatorAccessToken(passportID, appkey, expiresIn);
-            refreshToken = TokenGenerator.generatorRefreshToken(passportID, appkey);
+            accessToken = TokenGenerator.generatorAccessToken(passportID, clientId, expiresIn);
+            refreshToken = TokenGenerator.generatorRefreshToken(passportID, clientId);
             System.out.println("accessToken:" + accessToken);
             System.out.println("refreshToken:" + refreshToken);
         } catch (Exception e) {
@@ -35,8 +35,8 @@ public class TokenGeneratorTest {
         }
 
         AccountAuth accountAuth = new AccountAuth();
-        accountAuth.setUserId(userid);
-        accountAuth.setAppkey(appkey);
+        accountAuth.setUserId(userId);
+        accountAuth.setClientId(clientId);
         accountAuth.setAccessToken(accessToken);
         accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(expiresIn));
         accountAuth.setRefreshToken(refreshToken);
