@@ -78,7 +78,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
                 // TODO 是否有必要并行更新Account_Auth和Account_Connect?
                 // 更新当前应用的Account_Auth，处于安全考虑refresh_token和access_token重新生成
                 String passportId = accountService.getPassportIdByUserId(userId);
-                accountService.updateAccountAuth(userId, passportId, clientId);
+//                accountService.updateAccountAuth(userId, passportId, clientId);
                 // 更新当前应用的Account_Connect
                 AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
                 accountConnectService.updateAccountConnect(accountConnect);

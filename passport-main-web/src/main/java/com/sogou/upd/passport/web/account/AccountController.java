@@ -149,7 +149,7 @@ public class AccountController extends BaseController {
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
                                      @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int client_id) throws Exception {
         //验证手机号码是否为空，格式及位数是否正确
-        Map<String, Object> mapAccount = checkAccount(mobile);
+        checkAccount(mobile);
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, client_id + "");
         if (checkSmsInfo == false) {

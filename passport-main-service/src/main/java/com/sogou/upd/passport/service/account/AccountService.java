@@ -90,6 +90,16 @@ public interface AccountService {
     public AccountAuth initialAccountAuth(long userId, String passportId, int appKey) throws Exception;
 
     /**
+     *
+     * @param userId
+     * @param passportId
+     * @param appKey
+     * @return
+     * @throws Exception
+     */
+    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception;
+
+    /**
      * PassportId与UserId缓存映射
      * @param passportId
      * @param userId
@@ -124,5 +134,12 @@ public interface AccountService {
      * @return
      */
     public int updateAccountAuth(AccountAuth accountAuth);
+
+    /**
+     * 根据passportId获取手机号码
+      * @param passportId
+     * @return
+     */
+    public String getMobileByPassportId(String passportId);
 
 }

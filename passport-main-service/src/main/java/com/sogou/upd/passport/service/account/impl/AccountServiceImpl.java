@@ -294,12 +294,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountAuth initialAccountAuth(long userId, String passportId, int client_id) throws SystemException {
-        AccountAuth accountAuth = newAccountAuth(userId, passportId, client_id);
+    public AccountAuth initialAccountAuth(long userId, String passportId, int clientId) throws SystemException {
+        AccountAuth accountAuth = newAccountAuth(userId, passportId, clientId);
         long id = accountAuthMapper.saveAccountAuth(accountAuth);
         if (id != 0) {
             accountAuth.setId(id);
             return accountAuth;
+        }
+        return null;
+    }
+
+    @Override
+    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception {
+        AccountAuth accountAuth = newAccountAuth(userId, passportId, appKey);
+        if (accountAuth != null) {
+            int accountRow = accountAuthMapper.updateAccountAuth(accountAuth);
+            return accountRow == 0 ? null : accountAuth;
         }
         return null;
     }
@@ -405,6 +415,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * 根据passportId获取手机号码
+     * @param passportId
+     * @return
+     */
+    @Override
+    public String getMobileByPassportId(String passportId) {
+        if(passportId != null){
+            String mobile = accountMapper.getMobileByPassportId(passportId);
+            return mobile == null ? null : mobile;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
      * 构造一个新的AccountAuth
      *
      * @param userId
@@ -414,13 +438,13 @@ public class AccountServiceImpl implements AccountService {
      */
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
         AppConfig appConfig = appConfigService.getAppConfig(clientId);
-        int accessTokenExpiresin = appConfig.getAccessTokenExpiresIn();
-        int refreshTokenExpiresin = appConfig.getRefreshTokenExpiresIn();
+        int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
+        int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresIn();
 
         String accessToken;
         String refreshToken;
         try {
-            accessToken = TokenGenerator.generatorAccessToken(passportID, clientId, accessTokenExpiresin);
+            accessToken = TokenGenerator.generatorAccessToken(passportID, clientId, accessTokenExpiresIn);
             refreshToken = TokenGenerator.generatorRefreshToken(passportID, clientId);
         } catch (Exception e) {
             throw new SystemException(e);
@@ -429,9 +453,9 @@ public class AccountServiceImpl implements AccountService {
         accountAuth.setUserId(userId);
         accountAuth.setClientId(clientId);
         accountAuth.setAccessToken(accessToken);
-        accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresin));
+        accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresIn));
         accountAuth.setRefreshToken(refreshToken);
-        accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresin));
+        accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresIn));
         return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
