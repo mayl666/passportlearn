@@ -245,6 +245,7 @@ public class RSA extends Coder {
     /**
      * 提供给T3使用的access_token解密方法
      * 构成格式 passportID|appkey|vaild_timestamp(过期时间点)|6位随机数
+     * 解密完成后需要验证appKey是否正确，vaild_timestamp是否大于当前时刻
      * @param accessToken
      * @return
      * @throws Exception
@@ -252,7 +253,6 @@ public class RSA extends Coder {
     public static String[] decryptAccessToken(String accessToken) throws Exception {
         byte[] tokenByte = Coder.decryptBASE64(accessToken);
         String decryTokenStr = RSA.decryptByPublicKey(tokenByte, PUBLIC_KEY);
-        // TODO 需要验证appKey是否正确，vaild_timestamp是否大于当前时刻
         return decryTokenStr.split("|");
     }
 

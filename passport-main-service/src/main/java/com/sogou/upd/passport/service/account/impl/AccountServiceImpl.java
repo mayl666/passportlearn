@@ -197,7 +197,7 @@ public class AccountServiceImpl implements AccountService {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
         }
         //判读access_token有效性，是否在有效的范围内
-        AccountAuth accountAuth = accountAuthMapper.getUserAuthByUserId(userAccount.getId());
+        AccountAuth accountAuth= accountAuthMapper.getUserAuthByUserId(userAccount.getId());
 
         long curtime = System.currentTimeMillis();
         boolean valid = curtime < accountAuth.getAccessValidTime();
