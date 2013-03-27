@@ -91,6 +91,16 @@ public interface AccountService {
     public AccountAuth initialAccountAuth(long userId, String passportId, int appKey) throws Exception;
 
     /**
+     *
+     * @param userId
+     * @param passportId
+     * @param appKey
+     * @return
+     * @throws Exception
+     */
+    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception;
+
+    /**
      * Account写缓存
      * @param passportId
      * @param userId

@@ -292,6 +292,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception {
+        AccountAuth accountAuth = newAccountAuth(userId, passportId, appKey);
+        // TODO  DAO implement
+        return null;
+    }
+
+    @Override
     public boolean addPassportIdMapUserId(String passportId, long userId) {
         try {
             jedis = shardedJedisPool.getResource();
