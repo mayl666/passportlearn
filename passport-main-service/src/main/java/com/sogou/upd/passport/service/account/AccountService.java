@@ -104,12 +104,12 @@ public interface AccountService {
     public boolean addUserIdMapPassportId(String passportId,String userId);
 
     /**
-     * 根据PassportId 获取UserId （缓存读取）
+     * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId
      * @param keyType 需要获取userId传userId，需要获取mobile传mobile
      * @return
      */
-    public String getUserIdByPassportId(String passportId,String keyType);
+    public String getUserIdOrMobileByPassportId(String passportId,String keyType);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId

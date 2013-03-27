@@ -338,7 +338,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getUserIdByPassportId(final String passportId, final String keyType) {
+    public String getUserIdOrMobileByPassportId(final String passportId, final String keyType) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
