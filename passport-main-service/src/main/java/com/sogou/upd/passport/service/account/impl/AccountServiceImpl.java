@@ -207,7 +207,7 @@ public class AccountServiceImpl implements AccountService {
         Map<String, String> mapResult = Maps.newHashMap();
         mapResult.put("access_token", access_token);
         mapResult.put("appkey", Integer.toString(appkey));
-        AccountAuth accountAuth = accountMapper.getUserAuthByAccessToken(mapResult);
+        AccountAuth accountAuth = accountAuthMapper.getUserAuthByAccessToken(mapResult);
         return accountAuth != null ? accountAuth : null;
     }
 

@@ -12,15 +12,6 @@
         <id property="version" column="version"></id>
         <id property="accountType" column="account_type"></id>
     </resultMap>
-    <resultMap id="accountAuthMap" type="accountAuth">
-        <id property="id" column="id"></id>
-        <id property="userId" column="user_id"></id>
-        <id property="accessToken" column="access_token"></id>
-        <id property="refreshToken" column="refresh_token"></id>
-        <id property="accessValidTime" column="access_valid_time"></id>
-        <id property="refreshValidTime" column="refresh_valid_time"></id>
-        <id property="appkey" column="appkey"></id>
-    </resultMap>
 
     <select id="checkIsRegisterAccount" parameterType="account" resultMap="accountMap">
         select id,passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type from account where
@@ -42,9 +33,5 @@
           where mobile=#{mobile} and  passwd=#{passwd}
     </select>
 
-    <select id="getUserAuthByAccessToken" parameterType="map" resultMap="accountAuthMap">
-          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,appkey from account_auth
-          where  access_token=#{access_token} and appkey=#{appkey}
-    </select>
 
 </mapper>

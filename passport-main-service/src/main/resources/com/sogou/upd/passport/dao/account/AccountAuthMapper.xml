@@ -31,4 +31,9 @@
         id=#{id}
     </update>
 
+    <select id="getUserAuthByAccessToken" parameterType="map" resultMap="accountAuthMap">
+          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,appkey from account_auth
+          where  access_token=#{access_token} and appkey=#{appkey}
+    </select>
+
 </mapper>
