@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
+import com.sogou.upd.passport.model.app.AppConfig;
 
 import java.util.Map;
 
@@ -114,6 +115,12 @@ public interface AccountService {
     public boolean addUserIdMapPassportId(String userId,String passportId);
 
     /**
+     * ClientId与AppConfig缓存映射
+     * @param clientId
+     * @param appConfig
+     */
+    public boolean addClientIdMapAppConfig(String clientId,AppConfig appConfig);
+    /**
      * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId
      * @param keyType 需要获取userId传userId，需要获取mobile传mobile
@@ -126,7 +133,12 @@ public interface AccountService {
      * @return
      */
     public String getPassportIdByUserId(long userId);
-
+    /**
+     * 根据ClientId 获取AppConfig （缓存读取）
+     * @param clientId
+     * @return
+     */
+    public AppConfig getAppConfigByClientId(int clientId);
 
     /**
      * 修改用户状态表
