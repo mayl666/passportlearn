@@ -116,7 +116,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/account", method = RequestMethod.POST)
+    @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
                                      @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey) throws Exception {
