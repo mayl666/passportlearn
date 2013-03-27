@@ -181,7 +181,6 @@ public class AccountController extends BaseController {
                     long accessValidTime = accountAuth.getAccessValidTime();
                     String refreshToken = accountAuth.getRefreshToken();
                     Map<String, Object> mapResult = new HashMap<String, Object>();
-                    mapResult.put("account", account);
                     mapResult.put("accessToken", accessToken);
                     mapResult.put("accessValidTime", accessValidTime);
                     mapResult.put("refreshToken", refreshToken);
