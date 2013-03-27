@@ -331,14 +331,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public long getUserIdByPassportId(final String passportId) {
+    public long getUserIdByPassportId(final long passportId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     String strValue = null;
-                    byte[] key = RedisUtils.stringToByteArry(passportId);
+                    byte[] key = RedisUtils.stringToByteArry(Long.toString(passportId));
                     if (connection.exists(key)) {
                         byte[] value = connection.get(key);
                         strValue = RedisUtils.byteArryToString(value);
@@ -353,14 +353,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public long getPassportIdByUserId(final String userId) {
+    public long getPassportIdByUserId(final long userId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     String strValue = null;
-                    byte[] key = RedisUtils.stringToByteArry(userId);
+                    byte[] key = RedisUtils.stringToByteArry(Long.toString(userId));
                     if (connection.exists(key)) {
                         byte[] value = connection.get(key);
                         strValue = RedisUtils.byteArryToString(value);
