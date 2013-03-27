@@ -90,35 +90,26 @@ public interface AccountService {
     public AccountAuth initialAccountAuth(long userId, String passportId, int appKey) throws Exception;
 
     /**
-     *
-     * @param userId
-     * @param passportId
-     * @param appKey
-     * @return
-     * @throws Exception
-     */
-    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception;
-
-    /**
      * PassportId与UserId缓存映射
      * @param passportId
      * @param userId
      */
-    public boolean addPassportIdMapUserId(String passportId,long userId);
+    public boolean addPassportIdMapUserId(String passportId,String userId,String mobile);
 
     /**
      * userId与passportId缓存映射
      * @param passportId
      * @param userId
      */
-    public boolean addUserIdMapPassportId(String passportId,long userId);
+    public boolean addUserIdMapPassportId(String passportId,String userId);
 
     /**
-     * 根据PassportId 获取UserId （缓存读取）
+     * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId
+     * @param keyType 需要获取userId传userId，需要获取mobile传mobile
      * @return
      */
-    public String getUserIdByPassportId(String passportId);
+    public String getUserIdOrMobileByPassportId(String passportId,String keyType);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -106,6 +107,32 @@ public class AccountController extends BaseController {
         return accountService.handleLogin(mobile, passwd, appkey, postData);
     }
 
+    /**
+     * 根据passportId获取mobile
+     *
+     * @param passportid 查询passportid
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/v2/getphone", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getphone(@RequestParam(defaultValue = "") String passportid) throws Exception {
+        boolean empty = hasEmpty(passportid);
+        if (empty) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+        }
+
+        String mobile = accountService.getUserIdOrMobileByPassportId(passportid, "mobile");
+        Map<String, Object> mapResult = Maps.newHashMap();
+        if (Strings.isNullOrEmpty(mobile)) {
+           //从数据库读取 todo
+        } else {
+            mapResult.put("mobile", mobile);
+            return buildSuccess("获取手机号成功", mapResult);
+        }
+        return null;
+    }
+
 
     /**
      * 手机账号正式注册调用
@@ -125,15 +152,15 @@ public class AccountController extends BaseController {
         Map<String, Object> mapAccount = checkAccount(mobile);
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, appkey + "");
-        if(checkSmsInfo == false){
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE)  ;
+        if (checkSmsInfo == false) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
         //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
-        String passportId = PassportIDGenerator.generator(mobile,AccountTypeEnum.PHONE.getValue());
-        if(passportId != null){     //如果passportId拼串成功，就去缓存里查是否有该手机账号
-            String userId = accountService.getUserIdByPassportId(passportId);
-            if(userId != null){      //如果缓存中有该手机账号，则用户已经注册过了！
-                  return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+        String passportId = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
+        if (passportId != null) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
+            String userId = accountService.getUserIdOrMobileByPassportId(passportId, "userId");
+            if (userId != null) {      //如果缓存中有该手机账号，则用户已经注册过了！
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             }
         }
         //再读数据库，验证该手机用户是否已经注册过了
@@ -147,8 +174,8 @@ public class AccountController extends BaseController {
                 AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), appkey);
                 if (accountAuth != null) {   //如果用户状态表插入也成功，则说明注册成功
                     //往缓存里写入一条Account记录,后一条大史会用到
-                    accountService.addPassportIdMapUserId(passportId,account.getId()+"");
-                    accountService.addUserIdMapPassportId(passportId,account.getId()+"");
+                    accountService.addPassportIdMapUserId(passportId, account.getId() + "", mobile);
+                    accountService.addUserIdMapPassportId(passportId, account.getId() + "");
                     //TODO 清除验证码的缓存
                     String accessToken = accountAuth.getAccessToken();
                     long accessValidTime = accountAuth.getAccessValidTime();
@@ -156,7 +183,7 @@ public class AccountController extends BaseController {
                     Map<String, Object> mapResult = new HashMap<String, Object>();
                     mapResult.put("account", account);
                     mapResult.put("accessToken", accessToken);
-                    mapResult.put("accessValidTime",accessValidTime);
+                    mapResult.put("accessValidTime", accessValidTime);
                     mapResult.put("refreshToken", refreshToken);
                     return buildSuccess("用户注册成功！", mapResult);
                 } else {

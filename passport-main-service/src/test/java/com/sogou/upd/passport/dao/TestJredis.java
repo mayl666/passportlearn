@@ -1,12 +1,19 @@
 package com.sogou.upd.passport.dao;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import redis.clients.jedis.ShardedJedis;
@@ -28,6 +35,8 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private ShardedJedisPool shardedJedisPool;
+    @Inject
+    private RedisTemplate redisTemplate;
 
     private ShardedJedis jedis;
 
@@ -38,16 +47,85 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void test() {
-        System.out.println(jedis.exists("1111"));
+       redisTemplate.execute(new RedisCallback<Object>(){
+           @Override
+           public Object doInRedis(RedisConnection connection) throws DataAccessException {
+               connection.set(RedisUtils.stringToByteArry("test"),
+                       RedisUtils.stringToByteArry("21123"));
+               return true;
+           }
+       });
     }
 
-    public long generalCodeValidTime() {
-        Date ct = new Date();
-        String dayOfYear = DateUtil.formatCompactDate(ct);
-        Calendar c = Calendar.getInstance();
-        c.setTime(ct);
-        c.add(Calendar.MINUTE, SMSUtil.SMS_VALID);
-        return c.getTimeInMillis();
+    @Test
+    public void testSetPassportIdToMobile(){
+          Object obj=redisTemplate.execute(new RedisCallback() {
+              @Override
+              public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                  String passportId="13520069535@sohu.com";
+                  String userId="12" ;
+                  String mobile="13520069535";
+
+                  Map<byte[],byte[]> mapResult= Maps.newHashMap();
+                  //  passportId 与 userId
+                  mapResult.put(RedisUtils.stringToByteArry("userId"),RedisUtils.stringToByteArry(userId));
+                  //  passportId 与 mobile
+                  mapResult.put(RedisUtils.stringToByteArry("mobile"),RedisUtils.stringToByteArry(mobile));
+
+                  connection.hMSet(RedisUtils.stringToByteArry(passportId),mapResult);
+                  return true;
+              }
+          }) ;
+
+        System.out.println(obj);
+    }
+    @Test
+    public void testgetPassportIdToMobile(){
+        redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                String passportId="13520069535@sohu.com";
+                String userId="12" ;
+                String mobile="13520069535";
+
+                String keyType="mobile" ;
+
+                Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(passportId));
+                if(MapUtils.isNotEmpty(mapResult)){
+                    byte []value= mapResult.get(RedisUtils.stringToByteArry(keyType));
+                        String strValue = RedisUtils.byteArryToString(value);
+                    System.out.println(strValue);
+                }
+//                Iterator it = mapCacheResult.entrySet().iterator();
+//                while (it.hasNext()) {
+//                    Map.Entry m = (Map.Entry) it.next();
+//                    System.out.println(RedisUtils.byteArryToString((byte[])m.getKey()) + ":" + RedisUtils.byteArryToString((byte[]) m.getValue()));
+//                }
+                return null;
+            }
+        }) ;
+    }
+
+    public String getPassportIdByUserId(final String userId) {
+        Object obj=null;
+        try {
+            obj=redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    String strValue =null;
+                    byte[] key = RedisUtils.stringToByteArry(userId);
+                    if (connection.exists(key)) {
+                        byte[] value = connection.get(key);
+                        strValue = RedisUtils.byteArryToString(value);
+                    }
+                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method getUserIdByPassportId error.{}", e);
+        }
+
+        return (String)obj;  // To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void initRedis(String mobile, String randomCode) {
