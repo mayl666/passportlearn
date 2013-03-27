@@ -47,24 +47,24 @@ public class AccountController extends BaseController {
      * 手机账号获取，重发手机验证码接口
      *
      * @param mobile 传入的手机号码
-     * @param client_id 传入的密码
+     * @param clientId 传入的密码
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendmobilecode(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
+    public Object sendmobilecode(@RequestParam(defaultValue = "0") int clientId, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
         //参数验证
         boolean empty = hasEmpty(mobile);
-        if (empty || client_id == 0) {
+        if (empty || clientId == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
         //对mobile手机号验证
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
         //判断账号是否被缓存
-        String cacheKey = mobile + "_" + client_id;
+        String cacheKey = mobile + "_" + clientId;
         boolean isExistFromCache = accountService.checkIsExistFromCache(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
@@ -75,7 +75,7 @@ public class AccountController extends BaseController {
             boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
             if (isReg) {
                 //未注册过
-                mapResult = accountService.handleSendSms(mobile, client_id);
+                mapResult = accountService.handleSendSms(mobile, clientId);
                 if (MapUtils.isNotEmpty(mapResult)) {
                     return mapResult;
                 } else {
@@ -91,20 +91,20 @@ public class AccountController extends BaseController {
      * 手机账号登录接口
      *
      * @param mobile 传入的手机号码
-     * @param client_id 传入的密码
+     * @param clientId 传入的密码
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/login", method = RequestMethod.POST)
     @ResponseBody
     public Object userlogin(HttpServletRequest request, HttpServletResponse response,
-                            @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int client_id,
+                            @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int clientId,
                             @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd) throws Exception {
         boolean empty = hasEmpty(mobile, passwd);
-        if (empty || client_id == 0) {
+        if (empty || clientId == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
-        return accountService.handleLogin(mobile, passwd, client_id, postData);
+        return accountService.handleLogin(mobile, passwd, clientId, postData);
     }
 
     /**
@@ -140,18 +140,18 @@ public class AccountController extends BaseController {
      * @param mobile  传入的手机号码
      * @param passwd  传入的密码
      * @param smsCode 传入的验证码
-     * @param client_id  传入的应用id
+     * @param clientId  传入的应用id
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                                     @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int client_id) throws Exception {
+                                     @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int clientId) throws Exception {
         //验证手机号码是否为空，格式及位数是否正确
         checkAccount(mobile);
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, client_id + "");
+        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, clientId + "");
         if (checkSmsInfo == false) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
@@ -171,7 +171,7 @@ public class AccountController extends BaseController {
             account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
             if (account != null) {  //     如果插入account表成功，则插入用户状态表
                 //生成token并向account_auth表里插一条用户状态记录
-                AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), client_id);
+                AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), clientId);
                 if (accountAuth != null) {   //如果用户状态表插入也成功，则说明注册成功
                     //往缓存里写入一条Account记录,后一条大史会用到
                     accountService.addPassportIdMapUserId(passportId, account.getId() + "", mobile);
