@@ -47,24 +47,24 @@ public class AccountController extends BaseController {
      * 手机账号获取，重发手机验证码接口
      *
      * @param mobile 传入的手机号码
-     * @param appkey 传入的密码
+     * @param client_id 传入的密码
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendmobilecode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
+    public Object sendmobilecode(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
         //参数验证
         boolean empty = hasEmpty(mobile);
-        if (empty || appkey == 0) {
+        if (empty || client_id == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
         //对mobile手机号验证
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
         //判断账号是否被缓存
-        String cacheKey = mobile + "_" + appkey;
+        String cacheKey = mobile + "_" + client_id;
         boolean isExistFromCache = accountService.checkIsExistFromCache(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
@@ -75,7 +75,7 @@ public class AccountController extends BaseController {
             boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
             if (isReg) {
                 //未注册过
-                mapResult = accountService.handleSendSms(mobile, appkey);
+                mapResult = accountService.handleSendSms(mobile, client_id);
                 if (MapUtils.isNotEmpty(mapResult)) {
                     return mapResult;
                 } else {
@@ -91,20 +91,20 @@ public class AccountController extends BaseController {
      * 手机账号登录接口
      *
      * @param mobile 传入的手机号码
-     * @param appkey 传入的密码
+     * @param client_id 传入的密码
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/login", method = RequestMethod.POST)
     @ResponseBody
     public Object userlogin(HttpServletRequest request, HttpServletResponse response,
-                            @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int appkey,
+                            @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int client_id,
                             @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd) throws Exception {
         boolean empty = hasEmpty(mobile, passwd);
-        if (empty || appkey == 0) {
+        if (empty || client_id == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
-        return accountService.handleLogin(mobile, passwd, appkey, postData);
+        return accountService.handleLogin(mobile, passwd, client_id, postData);
     }
 
     /**
@@ -140,27 +140,27 @@ public class AccountController extends BaseController {
      * @param mobile  传入的手机号码
      * @param passwd  传入的密码
      * @param smsCode 传入的验证码
-     * @param appkey  传入的应用id
+     * @param client_id  传入的应用id
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                                     @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey) throws Exception {
+                                     @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int client_id) throws Exception {
         //验证手机号码是否为空，格式及位数是否正确
         checkAccount(mobile);
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, appkey + "");
-        if(checkSmsInfo == false){
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE)  ;
+        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, client_id + "");
+        if (checkSmsInfo == false) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
         //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
-        String passportId = PassportIDGenerator.generator(mobile,AccountTypeEnum.PHONE.getValue());
-        if(passportId != null){     //如果passportId拼串成功，就去缓存里查是否有该手机账号
-            String userId = accountService.getUserIdByPassportId(passportId);
-            if(userId != null){      //如果缓存中有该手机账号，则用户已经注册过了！
-                  return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+        String passportId = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
+        if (passportId != null) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
+            String userId = accountService.getUserIdOrMobileByPassportId(passportId, "userId");
+            if (userId != null) {      //如果缓存中有该手机账号，则用户已经注册过了！
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             }
         }
         //再读数据库，验证该手机用户是否已经注册过了
@@ -171,7 +171,7 @@ public class AccountController extends BaseController {
             account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
             if (account != null) {  //     如果插入account表成功，则插入用户状态表
                 //生成token并向account_auth表里插一条用户状态记录
-                AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), appkey);
+                AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), client_id);
                 if (accountAuth != null) {   //如果用户状态表插入也成功，则说明注册成功
                     //往缓存里写入一条Account记录,后一条大史会用到
                     accountService.addPassportIdMapUserId(passportId, account.getId() + "", mobile);
@@ -183,7 +183,7 @@ public class AccountController extends BaseController {
                     Map<String, Object> mapResult = new HashMap<String, Object>();
                     mapResult.put("account", account);
                     mapResult.put("accessToken", accessToken);
-                    mapResult.put("accessValidTime",accessValidTime);
+                    mapResult.put("accessValidTime", accessValidTime);
                     mapResult.put("refreshToken", refreshToken);
                     return buildSuccess("用户注册成功！", mapResult);
                 } else {
