@@ -68,9 +68,9 @@ public class SSOLoginCallbackController extends BaseConnectController {
                     userId = accountConnectList.get(0).getUserid();
                 }
                 // TODO 是否有必要并行初始化Account_Auth和Account_Connect？
-                // 初始化Account_Auth
                 String passportId = accountService.getPassportIdByUserId(userId);
-                accountService.initialAccountAuth(userId,passportId,appkey);
+                // 初始化Account_Auth
+                accountService.initialAccountAuth(userId, passportId, appkey);
                 // 初始化Account_Connect
                 AccountConnect accountConnect = buildAccountConnect(userId, appkey, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
                 accountConnectService.initialAccountConnect(accountConnect);
@@ -79,7 +79,8 @@ public class SSOLoginCallbackController extends BaseConnectController {
                 userId = user_connect.getUserid();
                 // TODO 是否有必要并行更新Account_Auth和Account_Connect?
                 // 更新当前应用的Account_Auth，处于安全考虑refresh_token和access_token重新生成
-
+                String passportId = accountService.getPassportIdByUserId(userId);
+                accountService.updateAccountAuth(userId, passportId, appkey);
                 // 更新当前应用的Account_Connect
                 AccountConnect accountConnect = buildAccountConnect(userId, appkey, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
                 accountConnectService.updateAccountConnect(accountConnect);

@@ -297,13 +297,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addPassportIdMapUserId(final String passportId, final String userId) {
+    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception {
+        AccountAuth accountAuth = newAccountAuth(userId, passportId, appKey);
+        // TODO  DAO implement
+        return null;
+    }
+
+    @Override
+    public boolean addPassportIdMapUserId(final String passportId, final long userId) {
         try {
             redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     connection.set(RedisUtils.stringToByteArry(passportId),
-                            RedisUtils.stringToByteArry(userId));
+                            RedisUtils.stringToByteArry(String.valueOf(userId)));
                     return true;
                 }
             });
@@ -314,12 +321,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addUserIdMapPassportId(final String passportId, final String userId) {
+    public boolean addUserIdMapPassportId(final String passportId, final long userId) {
         try {
             redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    connection.set(RedisUtils.stringToByteArry(userId),
+                    connection.set(RedisUtils.stringToByteArry(String.valueOf(userId)),
                             RedisUtils.stringToByteArry(passportId));
                     return true;
                 }
