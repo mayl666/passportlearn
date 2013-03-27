@@ -49,9 +49,9 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/authcode", method = RequestMethod.GET)
+    @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
-    public Object authcode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
+    public Object sendmobilecode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
         //参数验证
         boolean empty = hasEmpty(mobile);
@@ -93,17 +93,16 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/mobile/userlogin", method = RequestMethod.POST)
+    @RequestMapping(value = "/v2/mobile/login", method = RequestMethod.POST)
     @ResponseBody
     public Object userlogin(HttpServletRequest request, HttpServletResponse response,
                             @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int appkey,
-                            @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                            @RequestParam(defaultValue = "") String access_token) throws Exception {
-        boolean empty = hasEmpty(mobile, passwd, access_token);
+                            @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd) throws Exception {
+        boolean empty = hasEmpty(mobile, passwd);
         if (empty || appkey == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
-        return accountService.handleLogin(mobile, passwd, access_token, appkey, postData);
+        return accountService.handleLogin(mobile, passwd, appkey, postData);
     }
 
 
