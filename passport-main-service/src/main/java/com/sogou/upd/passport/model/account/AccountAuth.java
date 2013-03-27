@@ -1,4 +1,5 @@
 package com.sogou.upd.passport.model.account;
+
 /**
  * User: mayan
  * Date: 13-3-22
@@ -12,7 +13,7 @@ public class AccountAuth {
     private String refreshToken;
     private long accessValidTime;
     private long refreshValidTime;
-    private int appkey;
+    private int clientId;
 
     public long getId() {
         return id;
@@ -62,11 +63,11 @@ public class AccountAuth {
         this.refreshValidTime = refreshValidTime;
     }
 
-    public int getAppkey() {
-        return appkey;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setAppkey(int appkey) {
-        this.appkey = appkey;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 }

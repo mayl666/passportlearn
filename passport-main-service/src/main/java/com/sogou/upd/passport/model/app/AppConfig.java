@@ -12,12 +12,12 @@ import java.util.Date;
 public class AppConfig {
 
     private long id;
-    private long appkey;
+    private int clientId;
     public String smsText;
-    private int accessTokenExpiresin;
-    private int refreshTokenExpiresin;
-    private String appSecret;
-    private String appClientSecret;
+    private int accessTokenExpiresIn;
+    private int refreshTokenExpiresIn;
+    private String serverSecret;
+    private String ClientSecret;
     private Date createTime;
     private Date updateTime;
 
@@ -29,12 +29,12 @@ public class AppConfig {
         this.id = id;
     }
 
-    public long getAppkey() {
-        return appkey;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setAppkey(long appkey) {
-        this.appkey = appkey;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
     public String getSmsText() {
@@ -45,36 +45,36 @@ public class AppConfig {
         this.smsText = smsText;
     }
 
-    public int getAccessTokenExpiresin() {
-        return accessTokenExpiresin;
+    public int getAccessTokenExpiresIn() {
+        return accessTokenExpiresIn;
     }
 
-    public void setAccessTokenExpiresin(int accessTokenExpiresin) {
-        this.accessTokenExpiresin = accessTokenExpiresin;
+    public void setAccessTokenExpiresIn(int accessTokenExpiresIn) {
+        this.accessTokenExpiresIn = accessTokenExpiresIn;
     }
 
-    public int getRefreshTokenExpiresin() {
-        return refreshTokenExpiresin;
+    public int getRefreshTokenExpiresIn() {
+        return refreshTokenExpiresIn;
     }
 
-    public void setRefreshTokenExpiresin(int refreshTokenExpiresin) {
-        this.refreshTokenExpiresin = refreshTokenExpiresin;
+    public void setRefreshTokenExpiresIn(int refreshTokenExpiresIn) {
+        this.refreshTokenExpiresIn = refreshTokenExpiresIn;
     }
 
-    public String getAppSecret() {
-        return appSecret;
+    public String getServerSecret() {
+        return serverSecret;
     }
 
-    public void setAppSecret(String appSecret) {
-        this.appSecret = appSecret;
+    public void setServerSecret(String serverSecret) {
+        this.serverSecret = serverSecret;
     }
 
-    public String getAppClientSecret() {
-        return appClientSecret;
+    public String getClientSecret() {
+        return ClientSecret;
     }
 
-    public void setAppClientSecret(String appClientSecret) {
-        this.appClientSecret = appClientSecret;
+    public void setClientSecret(String clientSecret) {
+        ClientSecret = clientSecret;
     }
 
     public Date getCreateTime() {

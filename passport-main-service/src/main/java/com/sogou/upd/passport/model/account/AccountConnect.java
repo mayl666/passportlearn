@@ -15,38 +15,38 @@ public class AccountConnect {
     public static final int STUTAS_BIND = 1;  // 绑定账号
 
     private long id; // 主键
-    private long userid; // 用户id主键
+    private long userId; // 用户id主键
     private int provider; // 第三方来源
     private String connectUid; // 第三方openid
     private String connectAccessToken; // 第三方access_token
     private long connectExpireIn; // 第三方access_token有效期
     private String connectRefreshToken; // 第三方refresh_token
     private int accountRelation; // 0-登录账号；1-绑定账号
-    private int appkey; // 应用id
+    private int clientId; // 应用id
     private Date update_time; // 更新时间
     private Date create_time; // 创建时间
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getUserid() {
-        return userid;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setUserid(Long userid) {
-        this.userid = userid;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
-    public Integer getProvider() {
+    public int getProvider() {
         return provider;
     }
 
-    public void setProvider(Integer provider) {
+    public void setProvider(int provider) {
         this.provider = provider;
     }
 
@@ -66,11 +66,11 @@ public class AccountConnect {
         this.connectAccessToken = connectAccessToken;
     }
 
-    public Long getConnectExpireIn() {
+    public long getConnectExpireIn() {
         return connectExpireIn;
     }
 
-    public void setConnectExpireIn(Long connectExpireIn) {
+    public void setConnectExpireIn(long connectExpireIn) {
         this.connectExpireIn = connectExpireIn;
     }
 
@@ -82,20 +82,20 @@ public class AccountConnect {
         this.connectRefreshToken = connectRefreshToken;
     }
 
-    public Integer getAccountRelation() {
+    public int getAccountRelation() {
         return accountRelation;
     }
 
-    public void setAccountRelation(Integer accountRelation) {
+    public void setAccountRelation(int accountRelation) {
         this.accountRelation = accountRelation;
     }
 
-    public Integer getAppkey() {
-        return appkey;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setAppkey(Integer appkey) {
-        this.appkey = appkey;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
     public Date getUpdate_time() {
