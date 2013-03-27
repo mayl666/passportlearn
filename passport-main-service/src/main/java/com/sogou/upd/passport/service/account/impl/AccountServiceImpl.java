@@ -2,9 +2,12 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Bytes;
+import com.mchange.lang.ByteUtils;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JSONUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
@@ -366,6 +369,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean addClientIdMapAppConfig(final String clientId, final AppConfig appConfig) {
+        Object obj = null;
+        try {
+            obj = redisTemplate.execute(new RedisCallback() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+
+                    connection.set(RedisUtils.stringToByteArry(clientId),
+                            RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
+        }
+        return obj != null ? (Boolean) obj : false;
+    }
+
+    @Override
     public String getUserIdOrMobileByPassportId(final String passportId, final String keyType) {
         Object obj = null;
         try {
@@ -407,6 +429,27 @@ public class AccountServiceImpl implements AccountService {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
         return obj != null ? (String) obj : null;
+    }
+
+    @Override
+    public AppConfig getAppConfigByClientId(final int clientId) {
+        Object obj = null;
+        try {
+            obj = redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    AppConfig appConfigResult=null;
+                    byte[] value=connection.get(RedisUtils.stringToByteArry(Integer.toString(clientId)));
+                    if(value!=null && value.length>0){
+                        appConfigResult=JSONUtils.jsonToObject(RedisUtils.byteArryToString(value),AppConfig.class);
+                    }
+                    return appConfigResult;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
+        }
+        return obj != null ? (AppConfig) obj : null;
     }
 
     /**
@@ -460,7 +503,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
         AppConfig appConfig = appConfigService.getAppConfig(clientId);
         AccountAuth accountAuth = new AccountAuth();
-        if(appConfig!=null){
+        if (appConfig != null) {
             int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
             int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresIn();
 
