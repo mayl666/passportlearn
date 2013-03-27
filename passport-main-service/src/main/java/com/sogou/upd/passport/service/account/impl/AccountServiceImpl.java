@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
@@ -22,6 +24,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
@@ -52,6 +58,9 @@ public class AccountServiceImpl implements AccountService {
     private AppConfigService appConfigService;
 
     private ShardedJedis jedis;
+
+    @Inject
+    private RedisTemplate redisTemplate;
 
 
     @Override
@@ -176,20 +185,30 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd, String access_token, int appkey, PostUserProfile postData) {
-
+    public Map<String, Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) throws SystemException {
+        Account userAccount = null;
         //判断用户是否存在
-        Account userAccount = getUserAccount(mobile, passwd);
+        try {
+            userAccount = getUserAccount(mobile, passwd);
+        } catch (Exception e) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
+        }
         if (userAccount == null) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
         }
         //判读access_token有效性，是否在有效的范围内
-        AccountAuth accountAuth = getUserAuthByAccessToken(access_token, appkey);
-        if (accountAuth == null) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED);
-        }
+        AccountAuth accountAuth= accountAuthMapper.getUserAuthByUserId(userAccount.getId());
+
         long curtime = System.currentTimeMillis();
         boolean valid = curtime < accountAuth.getAccessValidTime();
+
+//        AccountAuth accountAuth=newAccountAuth(userAccount.getId(),userAccount.getPassportId(),appkey);
+//        int updateNum=accountAuthMapper.updateAccountAuth(accountAuth);
+//
+//        if (accountAuth == null) {
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED);
+//        }
+
         if (valid) {
             return ErrorUtil.buildSuccess("登录成功", null);
         }
@@ -198,29 +217,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * 根据AccessToken获取AccountAuth信息
-     *
-     * @param
-     * @return
-     */
-    public AccountAuth getUserAuthByAccessToken(String access_token, int appkey) {
-        Map<String, String> mapResult = Maps.newHashMap();
-        mapResult.put("access_token", access_token);
-        mapResult.put("appkey", Integer.toString(appkey));
-        AccountAuth accountAuth = accountMapper.getUserAuthByAccessToken(mapResult);
-        return accountAuth != null ? accountAuth : null;
-    }
-
-    /**
      * 根据用户名密码获取用户Account
      *
      * @param
      * @return
      */
-    public Account getUserAccount(String mobile, String passwd) {
+    public Account getUserAccount(String mobile, String passwd) throws SystemException {
         Map<String, String> mapResult = Maps.newHashMap();
         mapResult.put("mobile", mobile);
-        mapResult.put("passwd", passwd);
+        mapResult.put("passwd", Strings.isNullOrEmpty(passwd) ? "" : PwdGenerator.generatorPwdSign(passwd));
         Account accountResult = accountMapper.getUserAccount(mapResult);
         return accountResult != null ? accountResult : null;
     }
@@ -301,25 +306,93 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean addPassportIdMapUserId(String passportId, long userId) {
         try {
-            jedis = shardedJedisPool.getResource();
-
+            redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    connection.set(RedisUtils.stringToByteArry(passportId),
+                            RedisUtils.stringToByteArry(userId));
+                    return true;
+                }
+            });
         } catch (Exception e) {
-            logger.error("[SMS] service method checkSmsInfo error.{}", e);
-        } finally {
-            shardedJedisPool.returnResource(jedis);
+            logger.error("[SMS] service method addPassportIdMapUserId error.{}", e);
         }
         return false;
     }
 
     @Override
-    public long getUserIdByPassportId(String passportId) {
-        //TODO 读缓存
-        return 0;  // To change body of implemented methods use File | Settings | File Templates.
+    public boolean addUserIdMapPassportId(final String passportId, final String userId) {
+        try {
+            redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    connection.set(RedisUtils.stringToByteArry(userId),
+                            RedisUtils.stringToByteArry(passportId));
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method addUserIdMapPassportId error.{}", e);
+        }
+        return false;
     }
 
     @Override
-    public String getPassportIdByUserId(long userId) {
-        return null;  //todo
+    public String getUserIdByPassportId(final String passportId) {
+        Object obj = null;
+        try {
+            obj = redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    String strValue = null;
+                    byte[] key = RedisUtils.stringToByteArry(passportId);
+                    if (connection.exists(key)) {
+                        byte[] value = connection.get(key);
+                        strValue = RedisUtils.byteArryToString(value);
+                    }
+                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method getUserIdByPassportId error.{}", e);
+        }
+        return obj != null ? (String) obj : null;
+    }
+
+    @Override
+    public String getPassportIdByUserId(final long userId) {
+        Object obj = null;
+        try {
+            obj = redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    String strValue = null;
+                    byte[] key = RedisUtils.stringToByteArry(Long.toString(userId));
+                    if (connection.exists(key)) {
+                        byte[] value = connection.get(key);
+                        strValue = RedisUtils.byteArryToString(value);
+                    }
+                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
+        }
+        return obj != null ? (String) obj : null;
+    }
+
+    /**
+     * 修改用户状态表
+     * @param accountAuth
+     * @return
+     */
+    @Override
+    public int updateAccountAuth(AccountAuth accountAuth) {
+        if(accountAuth != null){
+            int accountRow = accountAuthMapper.updateAccountAuth(accountAuth);
+            return accountRow == 0 ? 0 : accountRow;
+        }
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**

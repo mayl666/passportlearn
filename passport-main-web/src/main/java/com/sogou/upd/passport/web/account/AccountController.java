@@ -9,6 +9,7 @@ import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.web.BaseController;
 import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.commons.collections.MapUtils;
@@ -49,9 +50,9 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/authcode", method = RequestMethod.GET)
+    @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
-    public Object authcode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
+    public Object sendmobilecode(@RequestParam(defaultValue = "0") int appkey, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
         //参数验证
         boolean empty = hasEmpty(mobile);
@@ -93,17 +94,16 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/mobile/userlogin", method = RequestMethod.POST)
+    @RequestMapping(value = "/v2/mobile/login", method = RequestMethod.POST)
     @ResponseBody
     public Object userlogin(HttpServletRequest request, HttpServletResponse response,
                             @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int appkey,
-                            @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                            @RequestParam(defaultValue = "") String access_token) throws Exception {
-        boolean empty = hasEmpty(mobile, passwd, access_token);
+                            @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd) throws Exception {
+        boolean empty = hasEmpty(mobile, passwd);
         if (empty || appkey == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
-        return accountService.handleLogin(mobile, passwd, access_token, appkey, postData);
+        return accountService.handleLogin(mobile, passwd, appkey, postData);
     }
 
 
@@ -117,7 +117,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/account", method = RequestMethod.POST)
+    @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
                                      @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int appkey) throws Exception {
@@ -128,18 +128,28 @@ public class AccountController extends BaseController {
         if(checkSmsInfo == false){
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE)  ;
         }
-        //TODO 先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
+        //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
+        String passportId = PassportIDGenerator.generator(mobile,AccountTypeEnum.PHONE.getValue());
+        if(passportId != null){     //如果passportId拼串成功，就去缓存里查是否有该手机账号
+            String userId = accountService.getUserIdByPassportId(passportId);
+            if(userId != null){      //如果缓存中有该手机账号，则用户已经注册过了！
+                  return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            }
+        }
         //再读数据库，验证该手机用户是否已经注册过了
         boolean as = accountService.checkIsRegisterAccount(new Account(mobile, passwd));
         String ip = getIp(request);
         Account account = null;
-        if (as == true) {     //如果用户没有被注册，手机号码格式验证通过，并且与验证码匹配，则注册用户，并返回access_token和refresh_token
+        if (as) {     //如果用户没有被注册，手机号码格式验证通过，并且与验证码匹配，则注册用户，并返回access_token和refresh_token
             account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
-            if (account != null) {  //如果对象不为空，说明注册成功
-                //往account_auth表里插一条用户状态记录
+            if (account != null) {  //     如果插入account表成功，则插入用户状态表
+                //生成token并向account_auth表里插一条用户状态记录
                 AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), appkey);
-                if (accountAuth != null) {
-                    //TODO 往缓存里写入一条Account记录
+                if (accountAuth != null) {   //如果用户状态表插入也成功，则说明注册成功
+                    //往缓存里写入一条Account记录,后一条大史会用到
+                    accountService.addPassportIdMapUserId(passportId,account.getId()+"");
+                    accountService.addUserIdMapPassportId(passportId,account.getId()+"");
+                    //TODO 清除验证码的缓存
                     String accessToken = accountAuth.getAccessToken();
                     long accessValidTime = accountAuth.getAccessValidTime();
                     String refreshToken = accountAuth.getRefreshToken();

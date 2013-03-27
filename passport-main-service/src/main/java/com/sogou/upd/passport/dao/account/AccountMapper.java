@@ -32,10 +32,5 @@ public interface AccountMapper {
      * @return
      */
     public Account getUserAccount(Map<String,String> queryMap);
-    /**
-     * 根据AccessToken获取AccountAuth信息
-     * @param
-     * @return
-     */
-    public AccountAuth getUserAuthByAccessToken(Map<String,String> queryMap);
+
 }

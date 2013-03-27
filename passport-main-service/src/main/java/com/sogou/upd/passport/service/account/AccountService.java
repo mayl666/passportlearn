@@ -22,11 +22,10 @@ public interface AccountService {
      * @param
      * @return
      */
-    public Map<String,Object> handleLogin(String mobile, String passwd,String access_token, int appkey, PostUserProfile postData);
+    public Map<String,Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) throws SystemException;
 
-       /**
-     * 注册时检测手机号，验证码，应用ID
-     *
+    /**
+     * 注册时检查手机号，发送验证码是否正确
      * @param account
      * @return
      */
@@ -41,7 +40,7 @@ public interface AccountService {
     public boolean checkIsExistFromCache(String account);
 
     /**
-     * 验证码重发缓存更新
+     * 重发验证码时更新缓存状态
      * @param cacheKey
      * @return
      */
@@ -101,24 +100,38 @@ public interface AccountService {
     public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception;
 
     /**
-     * Account写缓存
+     * PassportId与UserId缓存映射
      * @param passportId
      * @param userId
      */
     public boolean addPassportIdMapUserId(String passportId,long userId);
 
     /**
-     * Account读缓存
+     * userId与passportId缓存映射
+     * @param passportId
+     * @param userId
+     */
+    public boolean addUserIdMapPassportId(String passportId,long userId);
+
+    /**
+     * 根据PassportId 获取UserId （缓存读取）
      * @param passportId
      * @return
      */
-    public long getUserIdByPassportId(String passportId);
-
+    public String getUserIdByPassportId(String passportId);
     /**
-     * 根据userId获取passportId
+     * 根据UserId 获取PassportId （缓存读取）
      * @param userId
      * @return
      */
     public String getPassportIdByUserId(long userId);
+
+
+    /**
+     * 修改用户状态表
+     * @param accountAuth
+     * @return
+     */
+    public int updateAccountAuth(AccountAuth accountAuth);
 
 }

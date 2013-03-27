@@ -60,7 +60,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
     //用户允许注册，但注册失败
     public static final String ERR_CODE_ACCOUNT_REGISTER_FAILED = "20214";
-    //用户access_token校验错误
+    //验证access_token和appkey失败
     public static final String ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED = "20215";
     //手机号码和验证码不匹配
     public static final String ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE = "20216";
