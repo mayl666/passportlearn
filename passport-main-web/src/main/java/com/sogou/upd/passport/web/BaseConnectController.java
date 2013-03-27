@@ -14,10 +14,10 @@ import java.util.Date;
  */
 public class BaseConnectController extends BaseController {
 
-    protected AccountConnect buildAccountConnect(long userid, int appkey, int provider, int accountRelation, OAuthToken authToken) {
+    protected AccountConnect buildAccountConnect(long userId, int clientId, int provider, int accountRelation, OAuthToken authToken) {
         AccountConnect connect = new AccountConnect();
-        connect.setUserid(userid);
-        connect.setAppkey(appkey);
+        connect.setUserId(userId);
+        connect.setClientId(clientId);
         connect.setProvider(provider);
         connect.setAccountRelation(accountRelation);
         connect.setConnectUid(authToken.getConnectUid());

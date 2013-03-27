@@ -17,14 +17,14 @@ import java.util.List;
 @Service
 public interface AppConfigService {
 
-    public long getMaxAppid();
+    public long getMaxClientId();
 
     public AppConfig regApp(AppConfig app);
 
-    public AppConfig getAppConfig(int appKey);
+    public AppConfig getAppConfig(int clientId);
 
-    public int getAccessTokenExpiresIn(int appKey);
+    public int getAccessTokenExpiresIn(int clientId);
 
-    public int getRefreshTokenExpiresIn(int appKey);
+    public int getRefreshTokenExpiresIn(int clientId);
 
 }
