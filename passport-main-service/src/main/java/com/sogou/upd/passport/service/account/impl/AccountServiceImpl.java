@@ -118,17 +118,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean checkIsExistFromCache(String cacheKey) {
-        boolean flag = true;
+    public boolean checkIsExistFromCache(final String cacheKey) {
+        Object obj = null;
         try {
-            jedis = shardedJedisPool.getResource();
-            flag = jedis.exists(CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey);
+            obj = redisTemplate.execute(new RedisCallback() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    boolean flag = connection.exists(RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey));
+                    return flag;
+                }
+            });
         } catch (Exception e) {
-            flag = false;
-        } finally {
-            shardedJedisPool.returnResource(jedis);
+            logger.error("[SMS] service method checkIsExistFromCache error.{}", e);
         }
-        return flag;
+        return obj != null ? (Boolean) obj : false;
     }
 
     @Override
@@ -196,7 +199,7 @@ public class AccountServiceImpl implements AccountService {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
         }
         //判读access_token有效性，是否在有效的范围内
-        AccountAuth accountAuth= accountAuthMapper.getUserAuthByUserId(userAccount.getId());
+        AccountAuth accountAuth = accountAuthMapper.getUserAuthByUserId(userAccount.getId());
 
         long curtime = System.currentTimeMillis();
         boolean valid = curtime < accountAuth.getAccessValidTime();
@@ -231,29 +234,35 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public boolean checkSmsInfoFromCache(String account, String smsCode, String client_id) {
+    public boolean checkSmsInfoFromCache(final String account, final String smsCode, final String client_id) {
+        Object obj = null;
         try {
-            jedis = shardedJedisPool.getResource();
-            String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + client_id;
-            Map<String, String> mapCacheResult = jedis.hgetAll(keyCache);
-            if (MapUtils.isNotEmpty(mapCacheResult)) {
-                String smsCodeResult = mapCacheResult.get("smsCode");
-                if (StringUtils.isNotBlank(smsCodeResult)) {
-                    if (smsCodeResult.equals(smsCode)) {
-                        return true;
+            obj = redisTemplate.execute(new RedisCallback() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + client_id;
+                    String strValue = null;
+                    Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(keyCache));
+                    if (MapUtils.isNotEmpty(mapResult)) {
+                        byte[] value = mapResult.get(RedisUtils.stringToByteArry("smsCode"));
+                        strValue = RedisUtils.byteArryToString(value);
+                        if (StringUtils.isNotBlank(strValue)) {
+                            if (strValue.equals(smsCode)) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
                     } else {
                         return false;
                     }
+                    return false;
                 }
-            } else {
-                return false;
-            }
+            });
         } catch (Exception e) {
-            logger.error("[SMS] service method checkSmsInfo error.{}", e);
-        } finally {
-            shardedJedisPool.returnResource(jedis);
+            logger.error("[SMS] service method checkSmsInfoFromCache error.{}", e);
         }
-        return false;
+        return obj != null ? (Boolean) obj : false;
     }
 
     @Override
