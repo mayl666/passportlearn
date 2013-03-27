@@ -11,29 +11,34 @@ import org.junit.Test;
  * To change this template use File | Settings | File Templates.
  */
 public class TokenGeneratorTest {
+    //MLZaNnm0kJ4sDB4nCJDB+v23jmNODxRhpdVAkrhCajm6uZigFZCL7PeD2LzfIDLIZm5MKMilDaJQdISsLG7UB3AF51WTyFRn8iGgYe2KTAcaudMDbroULBWbaroEReIP7e4wdc/8Oy3gG2/z8cIn/amNFlbY64+baJkLO/i00Dg=
+    //SnI7xWL7qXKNecIK7yYYdXAsAYcrxiaaxMAWo/hG5BmbOYVSvh+V79LgxWAWr4D8bbXTu2WpayW20wgas0SHeQ==
+
+
     @Test
-    public void testGeneratorAccountAuth() throws Exception {
+    public void testGeneratorAccountAuth() {
         long userid = 100342;
-        String passportID = "098833A6A59C54E24DC58635D32141D6@qq.sohu.com";
+        String passportID = "13621009174@sohu.com";
         int appkey = 1003;
 
         long start = System.currentTimeMillis();
-        TokenGenerator generator = new TokenGenerator();
         int expiresIn = 3600 * 24;
         String accessToken = null;
         String refreshToken = null;
         try {
-            accessToken = generator.generatorAccessToken(passportID, appkey, expiresIn);
-            refreshToken = generator.generatorRefreshToken(passportID, appkey);
+            accessToken = TokenGenerator.generatorAccessToken(passportID, appkey, expiresIn);
+            refreshToken = TokenGenerator.generatorRefreshToken(passportID, appkey);
+            System.out.println("accessToken:" + accessToken);
+            System.out.println("refreshToken:" + refreshToken);
         } catch (Exception e) {
-            // TODO record error log
+            e.printStackTrace();
         }
 
         AccountAuth accountAuth = new AccountAuth();
         accountAuth.setUserId(userid);
         accountAuth.setAppkey(appkey);
         accountAuth.setAccessToken(accessToken);
-        accountAuth.setAccessValidTime(generator.generatorVaildTime(expiresIn));
+        accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(expiresIn));
         accountAuth.setRefreshToken(refreshToken);
         long end = System.currentTimeMillis();
         System.out.println("use time:" + (end - start) + "ms");

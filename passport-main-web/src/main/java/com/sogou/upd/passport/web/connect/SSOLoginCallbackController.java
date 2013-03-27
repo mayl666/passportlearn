@@ -57,30 +57,31 @@ public class SSOLoginCallbackController extends BaseConnectController {
             List<AccountConnect> accountConnectList = accountConnectService.listAccountConnectByQuery(query);
             AccountConnect user_connect = getAppointAppKeyAccountConnect(accountConnectList, appkey);
 
-            long userid;
+            long userId;
             if (user_connect == null) {
 
                 if (CollectionUtils.isEmpty(accountConnectList)) {
                     // 初始化Account
                     Account account = accountService.initialConnectAccount(oar.getConnectUid(), getIp(req), provider);
-                    userid = account.getId();
+                    userId = account.getId();
                 } else {  // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
-                    userid = accountConnectList.get(0).getUserid();
+                    userId = accountConnectList.get(0).getUserid();
                 }
                 // TODO 是否有必要并行初始化Account_Auth和Account_Connect？
                 // 初始化Account_Auth
-
+                String passportId = accountService.getPassportIdByUserId(userId);
+                accountService.initialAccountAuth(userId,passportId,appkey);
                 // 初始化Account_Connect
-                AccountConnect accountConnect = buildAccountConnect(userid, appkey, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
+                AccountConnect accountConnect = buildAccountConnect(userId, appkey, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
                 accountConnectService.initialAccountConnect(accountConnect);
 
             } else {   // 此账号在当前应用第N次登录
-                userid = user_connect.getUserid();
+                userId = user_connect.getUserid();
                 // TODO 是否有必要并行更新Account_Auth和Account_Connect?
                 // 更新当前应用的Account_Auth，处于安全考虑refresh_token和access_token重新生成
 
                 // 更新当前应用的Account_Connect
-                AccountConnect accountConnect = buildAccountConnect(userid, appkey, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
+                AccountConnect accountConnect = buildAccountConnect(userId, appkey, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
                 accountConnectService.updateAccountConnect(accountConnect);
             }
 
