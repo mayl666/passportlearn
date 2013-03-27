@@ -108,7 +108,7 @@ public interface AccountService {
      * @param passportId
      * @return
      */
-    public String getUserIdByPassportId(long passportId);
+    public String getUserIdByPassportId(String passportId);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId
