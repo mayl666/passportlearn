@@ -23,6 +23,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
@@ -47,6 +48,7 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";   //account与smscode映射
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
     private static final String CACHE_PREFIX_PASSPORT = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
+    private static final String CACHE_PREFIX_USERID = "PASSPORT:ACCOUNT_USERID_";     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
@@ -57,6 +59,8 @@ public class AccountServiceImpl implements AccountService {
     private AppConfigService appConfigService;
 
     private ShardedJedis jedis;
+    @Inject
+    private TaskExecutor taskExecutor;
 
     @Inject
     private RedisTemplate redisTemplate;
@@ -321,13 +325,16 @@ public class AccountServiceImpl implements AccountService {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    Map<byte[], byte[]> mapResult = Maps.newHashMap();
-                    //  passportId 与 userId映射
-                    mapResult.put(RedisUtils.stringToByteArry("userId"), RedisUtils.stringToByteArry(userId));
-                    //  passportId 与 mobile映射
-                    mapResult.put(RedisUtils.stringToByteArry("mobile"), RedisUtils.stringToByteArry(mobile));
-
-                    connection.hMSet(RedisUtils.stringToByteArry(CACHE_PREFIX_PASSPORT + passportId), mapResult);
+                    String cacheKey = CACHE_PREFIX_PASSPORT + passportId;
+                    //判断缓存是否存在
+                    if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
+                        Map<byte[], byte[]> mapResult = Maps.newHashMap();
+                        //  passportId 与 userId映射
+                        mapResult.put(RedisUtils.stringToByteArry("userId"), RedisUtils.stringToByteArry(userId));
+                        //  passportId 与 mobile映射
+                        mapResult.put(RedisUtils.stringToByteArry("mobile"), RedisUtils.stringToByteArry(mobile));
+                        connection.hMSet(RedisUtils.stringToByteArry(cacheKey), mapResult);
+                    }
                     return true;
                 }
             });
@@ -338,14 +345,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addUserIdMapPassportId(final String passportId, final String userId) {
+    public boolean addUserIdMapPassportId(final String userId, final String passportId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    connection.set(RedisUtils.stringToByteArry(userId),
-                            RedisUtils.stringToByteArry(passportId));
+                    String cacheKey = CACHE_PREFIX_USERID + userId;
+                    if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
+                        connection.set(RedisUtils.stringToByteArry(cacheKey),
+                                RedisUtils.stringToByteArry(passportId));
+                    }
                     return true;
                 }
             });
@@ -416,16 +426,27 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 根据passportId获取手机号码
+     *
      * @param passportId
      * @return
      */
     @Override
     public String getMobileByPassportId(String passportId) {
-        if(passportId != null){
-            String mobile = accountMapper.getMobileByPassportId(passportId);
-            return mobile == null ? null : mobile;
+        Account account = null;
+        if (!Strings.isNullOrEmpty(passportId)) {
+            account = accountMapper.getAccountByPassportId(passportId);
+            if (account != null) {
+                final Account finalAccount = account;
+                taskExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //写缓存
+                        addPassportIdMapUserId(finalAccount.getPassportId(), Long.toString(finalAccount.getId()), finalAccount.getMobile());
+                    }
+                });
+            }
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return account != null ? account.getMobile() : null;
     }
 
     /**

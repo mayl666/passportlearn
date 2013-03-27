@@ -46,7 +46,7 @@ public class AccountController extends BaseController {
     /**
      * 手机账号获取，重发手机验证码接口
      *
-     * @param mobile 传入的手机号码
+     * @param mobile    传入的手机号码
      * @param client_id 传入的密码
      * @return
      * @throws Exception
@@ -90,7 +90,7 @@ public class AccountController extends BaseController {
     /**
      * 手机账号登录接口
      *
-     * @param mobile 传入的手机号码
+     * @param mobile    传入的手机号码
      * @param client_id 传入的密码
      * @return
      * @throws Exception
@@ -121,26 +121,32 @@ public class AccountController extends BaseController {
         if (empty) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
-
+       //读取缓存
         String mobile = accountService.getUserIdOrMobileByPassportId(passportid, "mobile");
         Map<String, Object> mapResult = Maps.newHashMap();
         if (Strings.isNullOrEmpty(mobile)) {
-           //从数据库读取 todo
+            //从数据库读取并写缓存
+            mobile = accountService.getMobileByPassportId(passportid);
+            if(!Strings.isNullOrEmpty(mobile)){
+                mapResult.put("mobile", mobile);
+                return buildSuccess("获取手机号成功", mapResult);
+            }else {
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
+            }
         } else {
             mapResult.put("mobile", mobile);
             return buildSuccess("获取手机号成功", mapResult);
         }
-        return null;
     }
 
 
     /**
      * 手机账号正式注册调用
      *
-     * @param mobile  传入的手机号码
-     * @param passwd  传入的密码
-     * @param smsCode 传入的验证码
-     * @param client_id  传入的应用id
+     * @param mobile    传入的手机号码
+     * @param passwd    传入的密码
+     * @param smsCode   传入的验证码
+     * @param client_id 传入的应用id
      * @return
      * @throws Exception
      */

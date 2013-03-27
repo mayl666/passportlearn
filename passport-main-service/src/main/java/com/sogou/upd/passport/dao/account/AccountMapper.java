@@ -34,10 +34,10 @@ public interface AccountMapper {
     public Account getUserAccount(Map<String,String> queryMap);
 
     /**
-     * 根据passportId查询Mobile
+     * 根据passportId查询Account
      * @param passportId
      * @return
      */
-    public String getMobileByPassportId(String passportId);
+    public Account getAccountByPassportId(String passportId);
 
 }
