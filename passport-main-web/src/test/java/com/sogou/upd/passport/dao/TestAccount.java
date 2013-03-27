@@ -87,4 +87,14 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
         int row = accountService.updateAccountAuth(aa);
         System.out.println(row);
     }
+
+    /**
+     * 测试根据passportId获取手机号码
+     */
+    @Test
+    public void testGetMobileByPassportId(){
+        String passportId = "13545210241@sohu.com";
+        String mobile = accountService.getMobileByPassportId(passportId);
+        System.out.println(mobile);
+    }
 }

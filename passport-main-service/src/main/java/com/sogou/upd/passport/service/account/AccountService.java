@@ -135,4 +135,11 @@ public interface AccountService {
      */
     public int updateAccountAuth(AccountAuth accountAuth);
 
+    /**
+     * 根据passportId获取手机号码
+      * @param passportId
+     * @return
+     */
+    public String getMobileByPassportId(String passportId);
+
 }

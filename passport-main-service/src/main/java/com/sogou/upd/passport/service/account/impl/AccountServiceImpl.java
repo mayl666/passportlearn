@@ -407,6 +407,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * 根据passportId获取手机号码
+     * @param passportId
+     * @return
+     */
+    @Override
+    public String getMobileByPassportId(String passportId) {
+        if(passportId != null){
+            String mobile = accountMapper.getMobileByPassportId(passportId);
+            return mobile == null ? null : mobile;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
      * 构造一个新的AccountAuth
      *
      * @param userId
