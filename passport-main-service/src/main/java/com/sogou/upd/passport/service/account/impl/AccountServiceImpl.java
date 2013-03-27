@@ -331,7 +331,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public long getUserIdByPassportId(final long passportId) {
+    public String getUserIdByPassportId(final long passportId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -343,17 +343,17 @@ public class AccountServiceImpl implements AccountService {
                         byte[] value = connection.get(key);
                         strValue = RedisUtils.byteArryToString(value);
                     }
-                    return Strings.isNullOrEmpty(strValue) ? 0 : Long.parseLong(strValue);
+                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
                 }
             });
         } catch (Exception e) {
             logger.error("[SMS] service method getUserIdByPassportId error.{}", e);
         }
-        return obj != null ? (Long) obj : null;
+        return obj != null ? (String) obj : null;
     }
 
     @Override
-    public long getPassportIdByUserId(final long userId) {
+    public String getPassportIdByUserId(final long userId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -365,13 +365,13 @@ public class AccountServiceImpl implements AccountService {
                         byte[] value = connection.get(key);
                         strValue = RedisUtils.byteArryToString(value);
                     }
-                    return Strings.isNullOrEmpty(strValue) ? 0 : Long.parseLong(strValue);
+                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
                 }
             });
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
-        return obj != null ? (Long) obj : null;
+        return obj != null ? (String) obj : null;
     }
 
     /**
