@@ -94,7 +94,7 @@ public interface AccountService {
      * @param passportId
      * @param userId
      */
-    public boolean addPassportIdMapUserId(String passportId,String userId);
+    public boolean addPassportIdMapUserId(String passportId,String userId,String mobile);
 
     /**
      * userId与passportId缓存映射
@@ -106,9 +106,10 @@ public interface AccountService {
     /**
      * 根据PassportId 获取UserId （缓存读取）
      * @param passportId
+     * @param keyType 需要获取userId传userId，需要获取mobile传mobile
      * @return
      */
-    public String getUserIdByPassportId(String passportId);
+    public String getUserIdByPassportId(String passportId,String keyType);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId

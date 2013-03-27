@@ -47,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";   //account与smscode映射
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
-    private static final String CACHE_PREFIX_USERID = "PASSPORT:ID_USERID_";     //passport_id与userID映射
+    private static final String CACHE_PREFIX_PASSPORT = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
@@ -197,7 +197,7 @@ public class AccountServiceImpl implements AccountService {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
         }
         //判读access_token有效性，是否在有效的范围内
-        AccountAuth accountAuth= accountAuthMapper.getUserAuthByUserId(userAccount.getId());
+        AccountAuth accountAuth = accountAuthMapper.getUserAuthByUserId(userAccount.getId());
 
         long curtime = System.currentTimeMillis();
         boolean valid = curtime < accountAuth.getAccessValidTime();
@@ -297,26 +297,33 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addPassportIdMapUserId(final String passportId, final String userId) {
+    public boolean addPassportIdMapUserId(final String passportId, final String userId, final String mobile) {
+        Object obj = null;
         try {
-            redisTemplate.execute(new RedisCallback<Object>() {
+            obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    connection.set(RedisUtils.stringToByteArry(passportId),
-                            RedisUtils.stringToByteArry(userId));
+                    Map<byte[], byte[]> mapResult = Maps.newHashMap();
+                    //  passportId 与 userId映射
+                    mapResult.put(RedisUtils.stringToByteArry("userId"), RedisUtils.stringToByteArry(userId));
+                    //  passportId 与 mobile映射
+                    mapResult.put(RedisUtils.stringToByteArry("mobile"), RedisUtils.stringToByteArry(mobile));
+
+                    connection.hMSet(RedisUtils.stringToByteArry(CACHE_PREFIX_PASSPORT + passportId), mapResult);
                     return true;
                 }
             });
         } catch (Exception e) {
             logger.error("[SMS] service method addPassportIdMapUserId error.{}", e);
         }
-        return false;
+        return obj != null ? (Boolean) obj : false;
     }
 
     @Override
     public boolean addUserIdMapPassportId(final String passportId, final String userId) {
+        Object obj = null;
         try {
-            redisTemplate.execute(new RedisCallback<Object>() {
+            obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     connection.set(RedisUtils.stringToByteArry(userId),
@@ -327,20 +334,20 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             logger.error("[SMS] service method addUserIdMapPassportId error.{}", e);
         }
-        return false;
+        return obj != null ? (Boolean) obj : false;
     }
 
     @Override
-    public String getUserIdByPassportId(final String passportId) {
+    public String getUserIdByPassportId(final String passportId, final String keyType) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     String strValue = null;
-                    byte[] key = RedisUtils.stringToByteArry(passportId);
-                    if (connection.exists(key)) {
-                        byte[] value = connection.get(key);
+                    Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(CACHE_PREFIX_PASSPORT + passportId));
+                    if (MapUtils.isNotEmpty(mapResult)) {
+                        byte[] value = mapResult.get(RedisUtils.stringToByteArry(keyType));
                         strValue = RedisUtils.byteArryToString(value);
                     }
                     return Strings.isNullOrEmpty(strValue) ? null : strValue;
@@ -376,12 +383,13 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 修改用户状态表
+     *
      * @param accountAuth
      * @return
      */
     @Override
     public int updateAccountAuth(AccountAuth accountAuth) {
-        if(accountAuth != null){
+        if (accountAuth != null) {
             int accountRow = accountAuthMapper.updateAccountAuth(accountAuth);
             return accountRow == 0 ? 0 : accountRow;
         }
