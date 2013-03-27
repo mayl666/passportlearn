@@ -22,7 +22,7 @@ public interface AccountService {
      * @param
      * @return
      */
-    public Map<String,Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData);
+    public Map<String,Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) throws SystemException;
 
     /**
      * 注册时检查手机号，发送验证码是否正确
@@ -108,20 +108,14 @@ public interface AccountService {
      * @param passportId
      * @return
      */
-    public String getUserIdByPassportId(String passportId);
+    public long getUserIdByPassportId(String passportId);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId
      * @return
      */
-    public String getPassportIdByUserId(String userId);
+    public long getPassportIdByUserId(String userId);
 
-    /**
-     * 根据userId获取passportId
-     * @param userId
-     * @return
-     */
-    public String getPassportIdByUserId(long userId);
 
     /**
      * 修改用户状态表

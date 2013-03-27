@@ -185,7 +185,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) {
+    public Map<String, Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) throws SystemException {
         Account userAccount = null;
         //判断用户是否存在
         try {
@@ -197,31 +197,23 @@ public class AccountServiceImpl implements AccountService {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
         }
         //判读access_token有效性，是否在有效的范围内
-        AccountAuth accountAuth = updateUserAuthByUserId(userAccount.getId(), appkey);
-        if (accountAuth == null) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED);
-        }
+        AccountAuth accountAuth= accountAuthMapper.getUserAuthByUserId(userAccount.getId());
+
         long curtime = System.currentTimeMillis();
         boolean valid = curtime < accountAuth.getAccessValidTime();
+
+//        AccountAuth accountAuth=newAccountAuth(userAccount.getId(),userAccount.getPassportId(),appkey);
+//        int updateNum=accountAuthMapper.updateAccountAuth(accountAuth);
+//
+//        if (accountAuth == null) {
+//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED);
+//        }
+
         if (valid) {
             return ErrorUtil.buildSuccess("登录成功", null);
         }
 
         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
-    }
-
-    /**
-     * 根据AccessToken获取AccountAuth信息
-     *
-     * @param
-     * @return
-     */
-    public AccountAuth updateUserAuthByUserId(long userId, int appkey) {
-        Map<String, String> mapResult = Maps.newHashMap();
-//        mapResult.put("access_token", access_token);
-        mapResult.put("appkey", Integer.toString(appkey));
-        AccountAuth accountAuth = accountAuthMapper.getUserAuthByAccessToken(mapResult);
-        return accountAuth != null ? accountAuth : null;
     }
 
     /**
@@ -339,7 +331,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getUserIdByPassportId(final String passportId) {
+    public long getUserIdByPassportId(final String passportId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -351,17 +343,17 @@ public class AccountServiceImpl implements AccountService {
                         byte[] value = connection.get(key);
                         strValue = RedisUtils.byteArryToString(value);
                     }
-                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
+                    return Strings.isNullOrEmpty(strValue) ? 0 : Long.parseLong(strValue);
                 }
             });
         } catch (Exception e) {
             logger.error("[SMS] service method getUserIdByPassportId error.{}", e);
         }
-        return obj != null ? (String) obj : null;
+        return obj != null ? (Long) obj : null;
     }
 
     @Override
-    public String getPassportIdByUserId(final String userId) {
+    public long getPassportIdByUserId(final String userId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -373,18 +365,13 @@ public class AccountServiceImpl implements AccountService {
                         byte[] value = connection.get(key);
                         strValue = RedisUtils.byteArryToString(value);
                     }
-                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
+                    return Strings.isNullOrEmpty(strValue) ? 0 : Long.parseLong(strValue);
                 }
             });
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
-        return obj != null ? (String) obj : null;
-    }
-
-    @Override
-    public String getPassportIdByUserId(long userId) {
-        return null;  //todo
+        return obj != null ? (Long) obj : null;
     }
 
     /**

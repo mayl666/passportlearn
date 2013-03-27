@@ -31,9 +31,9 @@ public interface AccountAuthMapper {
     public int updateAccountAuth(AccountAuth accountAuth);
 
     /**
-     * 根据AccessToken获取AccountAuth信息
+     * 根据UserId获取AccountAuth信息
      * @param
      * @return
      */
-    public AccountAuth getUserAuthByAccessToken(Map<String,String> queryMap);
+    public AccountAuth getUserAuthByUserId(long userId);
 }
