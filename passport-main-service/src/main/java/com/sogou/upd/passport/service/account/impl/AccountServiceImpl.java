@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.exception.SystemException;
@@ -399,27 +398,27 @@ public class AccountServiceImpl implements AccountService {
     /**
      * 构造一个新的AccountAuth
      *
-     * @param userid
+     * @param userId
      * @param passportID
-     * @param client_id
+     * @param clientId
      * @return
      */
-    private AccountAuth newAccountAuth(long userid, String passportID, int client_id) throws SystemException {
-        AppConfig appConfig = appConfigService.getAppConfig(client_id);
-        int accessTokenExpiresin = appConfig.getAccessTokenExpiresin();
-        int refreshTokenExpiresin = appConfig.getRefreshTokenExpiresin();
+    private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
+        AppConfig appConfig = appConfigService.getAppConfig(clientId);
+        int accessTokenExpiresin = appConfig.getAccessTokenExpiresIn();
+        int refreshTokenExpiresin = appConfig.getRefreshTokenExpiresIn();
 
         String accessToken;
         String refreshToken;
         try {
-            accessToken = TokenGenerator.generatorAccessToken(passportID, client_id, accessTokenExpiresin);
-            refreshToken = TokenGenerator.generatorRefreshToken(passportID, client_id);
+            accessToken = TokenGenerator.generatorAccessToken(passportID, clientId, accessTokenExpiresin);
+            refreshToken = TokenGenerator.generatorRefreshToken(passportID, clientId);
         } catch (Exception e) {
             throw new SystemException(e);
         }
         AccountAuth accountAuth = new AccountAuth();
-        accountAuth.setUserId(userid);
-        accountAuth.setAppkey(client_id);
+        accountAuth.setUserId(userId);
+        accountAuth.setClientId(clientId);
         accountAuth.setAccessToken(accessToken);
         accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresin));
         accountAuth.setRefreshToken(refreshToken);
