@@ -33,7 +33,7 @@
           where mobile=#{mobile} and  passwd=#{passwd}
     </select>
 
-    <select id="getAccountByPassportId" parameterType="java.lang.String" resultType="accountMap">
+    <select id="getAccountByPassportId" parameterType="java.lang.String" resultMap="accountMap">
           select id,passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type from account where passport_id=#{passportId}
     </select>
 
