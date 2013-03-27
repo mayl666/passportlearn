@@ -22,14 +22,14 @@ public interface AccountService {
      * @param
      * @return
      */
-    public Map<String,Object> handleLogin(String mobile, String passwd, int appkey, PostUserProfile postData) throws SystemException;
+    public Map<String,Object> handleLogin(String mobile, String passwd, int clientId, PostUserProfile postData) throws SystemException;
 
     /**
      * 注册时检查手机号，发送验证码是否正确
      * @param account
      * @return
      */
-    public boolean checkSmsInfoFromCache(String account,String smsCode,String appkey);
+    public boolean checkSmsInfoFromCache(String account,String smsCode,String clientId);
 
     /**
      * 检查此用户是否发送过验证码，并是否在有效期内
@@ -59,7 +59,7 @@ public interface AccountService {
      * @param account
      * @return
      */
-    public Map<String, Object> handleSendSms(String account, int appkey);
+    public Map<String, Object> handleSendSms(String account, int clientId);
 
     /**
      * 初始化非第三方用户账号
@@ -84,20 +84,20 @@ public interface AccountService {
      * 初始化账号授权信息
      * @param userId
      * @param passportId
-     * @param appKey
+     * @param clientId
      * @return
      */
-    public AccountAuth initialAccountAuth(long userId, String passportId, int appKey) throws Exception;
+    public AccountAuth initialAccountAuth(long userId, String passportId, int clientId) throws Exception;
 
     /**
      *
      * @param userId
      * @param passportId
-     * @param appKey
+     * @param clientId
      * @return
      * @throws Exception
      */
-    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception;
+    public AccountAuth updateAccountAuth(long userId, String passportId, int clientId) throws Exception;
 
     /**
      * PassportId与UserId缓存映射
