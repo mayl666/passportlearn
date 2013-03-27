@@ -72,7 +72,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
                   //  passportId 与 mobile
                   mapResult.put(RedisUtils.stringToByteArry("mobile"),RedisUtils.stringToByteArry(mobile));
 
-                  connection.hMSet(RedisUtils.stringToByteArry(passportId),mapResult);
+                  connection.hMSet(RedisUtils.stringToByteArry("PASSPORT:ACCOUNT_PASSPORTID_"+passportId),mapResult);
                   return true;
               }
           }) ;
