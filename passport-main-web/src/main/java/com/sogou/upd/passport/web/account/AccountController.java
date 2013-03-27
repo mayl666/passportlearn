@@ -46,7 +46,7 @@ public class AccountController extends BaseController {
     /**
      * 手机账号获取，重发手机验证码接口
      *
-     * @param mobile 传入的手机号码
+     * @param mobile   传入的手机号码
      * @param clientId 传入的密码
      * @return
      * @throws Exception
@@ -90,7 +90,7 @@ public class AccountController extends BaseController {
     /**
      * 手机账号登录接口
      *
-     * @param mobile 传入的手机号码
+     * @param mobile   传入的手机号码
      * @param clientId 传入的密码
      * @return
      * @throws Exception
@@ -125,7 +125,7 @@ public class AccountController extends BaseController {
         String mobile = accountService.getUserIdOrMobileByPassportId(passportid, "mobile");
         Map<String, Object> mapResult = Maps.newHashMap();
         if (Strings.isNullOrEmpty(mobile)) {
-           //从数据库读取 todo
+            //从数据库读取 todo
         } else {
             mapResult.put("mobile", mobile);
             return buildSuccess("获取手机号成功", mapResult);
@@ -137,10 +137,10 @@ public class AccountController extends BaseController {
     /**
      * 手机账号正式注册调用
      *
-     * @param mobile  传入的手机号码
-     * @param passwd  传入的密码
-     * @param smsCode 传入的验证码
-     * @param clientId  传入的应用id
+     * @param mobile   传入的手机号码
+     * @param passwd   传入的密码
+     * @param smsCode  传入的验证码
+     * @param clientId 传入的应用id
      * @return
      * @throws Exception
      */
@@ -148,11 +148,12 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
                                      @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int clientId) throws Exception {
-        //验证手机号码是否为空，格式及位数是否正确
-        checkAccount(mobile);
+        //对mobile手机号验证,是否为空，格式及位数是否正确
+        Map<String, Object> ret = checkAccount(mobile);
+        if (ret != null) return ret;
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, clientId + "");
-        if (checkSmsInfo == false) {
+        if (checkSmsInfo) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
         //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
@@ -160,6 +161,7 @@ public class AccountController extends BaseController {
         if (passportId != null) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
             String userId = accountService.getUserIdOrMobileByPassportId(passportId, "userId");
             if (userId != null) {      //如果缓存中有该手机账号，则用户已经注册过了！
+
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             }
         }
