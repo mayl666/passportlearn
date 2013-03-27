@@ -3,8 +3,10 @@ package com.sogou.upd.passport.dao;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -23,6 +25,9 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private AccountService accountService;
+
+    @Inject
+    private AppConfigService appConfigService;
 
     /**
      * 测试手机账号是否存在
@@ -96,5 +101,15 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
         String passportId = "13545210241@sohu.com";
         String mobile = accountService.getMobileByPassportId(passportId);
         System.out.println(mobile);
+    }
+
+    @Test
+    public void testGetAppConfigByClientId(){
+       int clientId = 1004;
+       AppConfig appConfig = appConfigService.getAppConfig(clientId);
+       if(appConfig != null){
+           System.out.println(appConfig.getId());
+       }
+
     }
 }

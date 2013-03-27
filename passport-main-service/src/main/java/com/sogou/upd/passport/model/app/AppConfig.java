@@ -17,7 +17,7 @@ public class AppConfig {
     private int accessTokenExpiresIn;
     private int refreshTokenExpiresIn;
     private String serverSecret;
-    private String ClientSecret;
+    private String clientSecret;
     private Date createTime;
     private Date updateTime;
 
@@ -70,11 +70,11 @@ public class AppConfig {
     }
 
     public String getClientSecret() {
-        return ClientSecret;
+        return clientSecret;
     }
 
     public void setClientSecret(String clientSecret) {
-        ClientSecret = clientSecret;
+        this.clientSecret = clientSecret;
     }
 
     public Date getCreateTime() {

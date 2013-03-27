@@ -7,5 +7,6 @@
         <typeAlias alias="userProfile" type="com.sogou.upd.passport.model.UserProfile"/>
         <typeAlias alias="account" type="com.sogou.upd.passport.model.account.Account" />
         <typeAlias alias="accountAuth" type="com.sogou.upd.passport.model.account.AccountAuth" />
+        <typeAlias alias="appConfig" type="com.sogou.upd.passport.model.app.AppConfig" />
     </typeAliases>
 </configuration>
