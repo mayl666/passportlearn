@@ -297,8 +297,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountAuth updateAccountAuth(long userId, String passportId, int appKey) throws Exception {
-        AccountAuth accountAuth = newAccountAuth(userId, passportId, appKey);
+    public AccountAuth updateAccountAuth(long userId, String passportId, int clientId) throws Exception {
+        AccountAuth accountAuth = newAccountAuth(userId, passportId, clientId);
         if (accountAuth != null) {
             int accountRow = accountAuthMapper.updateAccountAuth(accountAuth);
             return accountRow == 0 ? null : accountAuth;
