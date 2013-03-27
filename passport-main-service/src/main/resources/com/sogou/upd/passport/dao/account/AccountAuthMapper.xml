@@ -19,4 +19,16 @@
         (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{appkey})
     </insert>
 
+    <update id="updateAccountAuth" parameterType="accountAuth">
+        update account_auth
+        <set>
+            <if test="accessToken != null">access_token=#{accessToken},</if>
+            <if test="refreshToken != null">refresh_token=#{refreshToken},</if>
+            <if test="accessValidTime != null">access_valid_time=#{accessValidTime},</if>
+            <if test="refreshValidTime != null">refresh_valid_time=#{refreshValidTime}</if>
+        </set>
+        where
+        id=#{id}
+    </update>
+
 </mapper>

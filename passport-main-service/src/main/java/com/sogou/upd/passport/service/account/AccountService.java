@@ -111,4 +111,11 @@ public interface AccountService {
      */
     public String getPassportIdByUserId(long userId);
 
+    /**
+     * 修改用户状态表
+     * @param accountAuth
+     * @return
+     */
+    public int updateAccountAuth(AccountAuth accountAuth);
+
 }

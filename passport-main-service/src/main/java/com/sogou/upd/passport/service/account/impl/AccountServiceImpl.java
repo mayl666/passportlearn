@@ -316,6 +316,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * 修改用户状态表
+     * @param accountAuth
+     * @return
+     */
+    @Override
+    public int updateAccountAuth(AccountAuth accountAuth) {
+        if(accountAuth != null){
+            int accountRow = accountAuthMapper.updateAccountAuth(accountAuth);
+            return accountRow == 0 ? 0 : accountRow;
+        }
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
      * 构造一个新的AccountAuth
      *
      * @param userid
