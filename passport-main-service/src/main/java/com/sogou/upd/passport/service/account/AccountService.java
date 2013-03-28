@@ -105,40 +105,40 @@ public interface AccountService {
      * @param passportId
      * @param userId
      */
-    public boolean addPassportIdMapUserId(String passportId,String userId,String mobile);
+    public boolean addPassportIdMapUserIdToCache(String passportId,String userId,String mobile);
 
     /**
      * userId与passportId缓存映射
      * @param passportId
      * @param userId
      */
-    public boolean addUserIdMapPassportId(String userId,String passportId);
+    public boolean addUserIdMapPassportIdToCache(String userId,String passportId);
 
     /**
      * ClientId与AppConfig缓存映射
      * @param clientId
      * @param appConfig
      */
-    public boolean addClientIdMapAppConfig(String clientId,AppConfig appConfig);
+    public boolean addClientIdMapAppConfigFromCache(String clientId,AppConfig appConfig);
     /**
      * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId
      * @param keyType 需要获取userId传userId，需要获取mobile传mobile
      * @return
      */
-    public String getUserIdOrMobileByPassportId(String passportId,String keyType);
+    public String getUserIdOrMobileByPassportIdFromCache(String passportId,String keyType);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId
      * @return
      */
-    public String getPassportIdByUserId(long userId);
+    public String getPassportIdByUserIdFromCache(long userId);
     /**
      * 根据ClientId 获取AppConfig （缓存读取）
      * @param clientId
      * @return
      */
-    public AppConfig getAppConfigByClientId(int clientId);
+    public AppConfig getAppConfigByClientIdFromCache(int clientId);
 
     /**
      * 修改用户状态表

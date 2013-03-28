@@ -323,7 +323,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addPassportIdMapUserId(final String passportId, final String userId, final String mobile) {
+    public boolean addPassportIdMapUserIdToCache(final String passportId, final String userId, final String mobile) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback() {
@@ -349,7 +349,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addUserIdMapPassportId(final String userId, final String passportId) {
+    public boolean addUserIdMapPassportIdToCache(final String userId, final String passportId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -370,7 +370,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addClientIdMapAppConfig(final String clientId, final AppConfig appConfig) {
+    public boolean addClientIdMapAppConfigFromCache(final String clientId, final AppConfig appConfig) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback() {
@@ -391,7 +391,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getUserIdOrMobileByPassportId(final String passportId, final String keyType) {
+    public String getUserIdOrMobileByPassportIdFromCache(final String passportId, final String keyType) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -413,7 +413,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getPassportIdByUserId(final long userId) {
+    public String getPassportIdByUserIdFromCache(final long userId) {
         String passportId = null;
         try {
             String cacheKey = CACHE_PREFIX_USERID + userId;
@@ -425,7 +425,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AppConfig getAppConfigByClientId(final int clientId) {
+    public AppConfig getAppConfigByClientIdFromCache(final int clientId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -478,7 +478,7 @@ public class AccountServiceImpl implements AccountService {
                     @Override
                     public void run() {
                         //写缓存
-                        addPassportIdMapUserId(finalAccount.getPassportId(), Long.toString(finalAccount.getId()), finalAccount.getMobile());
+                        addPassportIdMapUserIdToCache(finalAccount.getPassportId(), Long.toString(finalAccount.getId()), finalAccount.getMobile());
                     }
                 });
             }
