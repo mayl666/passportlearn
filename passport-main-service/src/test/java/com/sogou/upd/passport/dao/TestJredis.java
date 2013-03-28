@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,23 +50,24 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void test() {
-//       redisTemplate.execute(new RedisCallback<Object>(){
-//           @Override
-//           public Object doInRedis(RedisConnection connection) throws DataAccessException {
-//               connection.set(RedisUtils.stringToByteArry("test"),
-//                       RedisUtils.stringToByteArry("21123"));
-//               return true;
-//           }
-//       });
+       Object obj=redisTemplate.execute(new RedisCallback<Object>(){
+           @Override
+           public Object doInRedis(RedisConnection connection) throws DataAccessException {
+               String key = "mayanTest";
+               BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(key);
+               Map<String, String> data = new HashMap<String, String>();
+               data.put("name", "name");
+               data.put("age", "35");
+               boundHashOperations.putAll(data);
+               return true;
+           }
+       });
+        System.out.println(obj);
 //        System.out.println(setAppConfigByClientId());
 //        AppConfig appConfig= getAppConfigByClientId();
 //        System.out.println();
 
-        try {
-            System.out.println(RedisUtils.get("mayan"));
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+
     }
 
     @Test
