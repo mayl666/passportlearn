@@ -150,7 +150,8 @@ public class AccountController extends BaseController {
                     //往缓存里写入一条Account记录,后一条大史会用到
                     accountService.addPassportIdMapUserIdToCache(passportId, account.getId() + "");
 //                    accountService.addUserIdMapPassportIdToCache(passportId, account.getId() + "");
-                    //TODO 清除验证码的缓存
+                    //清除验证码的缓存
+                    accountService.deleteSmsCache(mobile,String.valueOf(clientid));
                     String accessToken = accountAuth.getAccessToken();
                     long accessValidTime = accountAuth.getAccessValidTime();
                     String refreshToken = accountAuth.getRefreshToken();
