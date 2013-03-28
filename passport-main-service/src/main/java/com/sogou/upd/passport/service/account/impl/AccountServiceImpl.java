@@ -29,14 +29,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -57,17 +60,15 @@ public class AccountServiceImpl implements AccountService {
     private AccountMapper accountMapper;
     @Inject
     private AccountAuthMapper accountAuthMapper;
-    @Inject
-    private ShardedJedisPool shardedJedisPool;
+
     @Inject
     private AppConfigService appConfigService;
 
-    private ShardedJedis jedis;
     @Inject
     private TaskExecutor taskExecutor;
 
     @Inject
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate redisTemplate;
 
 
     @Override
@@ -77,52 +78,63 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleSendSms(String account, int client_id) {
-        Map<String, Object> mapResult = Maps.newHashMap();
-        boolean isSend = true;
+    public Map<String, Object> handleSendSms(final String account, final int client_id) {
+        final Map<String, Object> mapResult = Maps.newHashMap();
+        Object obj = null;
         try {
-            //设置每日最多发送短信验证码条数
-            String keySendNumCache = CACHE_PREFIX_ACCOUNT_SENDNUM + account;
-            jedis = shardedJedisPool.getResource();
-            if (!jedis.exists(keySendNumCache)) {
-                jedis.hset(keySendNumCache, "sendNum", "1");
-                jedis.expire(keySendNumCache, SMSUtil.SMS_ONEDAY);
-            } else {
-                //如果存在，判断是否已经超出日发送最高限额   (比如30分钟后失效了，再次获取验证码 需要和此用户当天发送的总的条数对比)
-                Map<String, String> mapCacheSendNumResult = jedis.hgetAll(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
-                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
-                    int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
-                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                        jedis.hincrBy(CACHE_PREFIX_ACCOUNT_SENDNUM + account, "sendNum", 1);
+            obj = redisTemplate.execute(new RedisCallback() {
+                boolean isSend = true;
+
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    //设置每日最多发送短信验证码条数
+                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
+                    byte[] keySendNum = RedisUtils.stringToByteArry("sendNum");
+                    if (!connection.exists(keySendNumCache)) {
+                        boolean flag = connection.hSetNX(keySendNumCache,
+                                keySendNum,
+                                RedisUtils.stringToByteArry("1"));
+                        if (flag) {
+                            connection.expire(keySendNumCache, SMSUtil.SMS_ONEDAY);
+                        }
                     } else {
-                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
+                        //如果存在，判断是否已经超出日发送最高限额   (比如30分钟后失效了，再次获取验证码 需要和此用户当天发送的总的条数对比)
+                        Map<byte[], byte[]> mapCacheSendNumResult = connection.hGetAll(keySendNumCache);
+                        if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
+                            int sendNum = RedisUtils.byteArryToInteger(mapCacheSendNumResult.get(keySendNum));
+                            if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
+                                connection.hIncrBy(keySendNumCache, keySendNum, 1);
+                            } else {
+                                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
+                            }
+                        }
                     }
+                    //生成随机数
+                    String randomCode = RandomStringUtils.randomNumeric(5);
+                    //写入缓存
+                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + client_id;
+                    BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(keyCache);
+                    Map<String, String> mapData = Maps.newHashMap();
+                    mapData.put("smsCode", randomCode);    //初始化验证码
+                    mapData.put("mobile", account);        //发送手机号
+                    mapData.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
+                    boundHashOperations.putAll(mapData);
+
+                    //设置失效时间 30分钟  ，1800秒
+                    connection.expire(RedisUtils.stringToByteArry(keyCache), SMSUtil.SMS_VALID);
+//                    //todo 内容从缓存中读取
+                    isSend = SMSUtil.sendSMS(account, randomCode);
+                    if (isSend) {
+                        mapResult.put("smscode", randomCode);
+                        return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                    }
+                    return null;
                 }
-            }
-            //生成随机数
-            String randomCode = RandomStringUtils.randomNumeric(5);
-            //写入缓存
-            String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + client_id;
-            Map<String, String> map = Maps.newHashMap();
-            map.put("smsCode", randomCode);    //初始化验证码
-            map.put("mobile", account);        //发送手机号
-            map.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
-
-            jedis.hmset(keyCache, map);
-            jedis.expire(keyCache, SMSUtil.SMS_VALID);      //有效时长30分钟  ，1800秒
-
-            //todo 内容从缓存中读取
-            isSend = SMSUtil.sendSMS(account, randomCode);
-            if (isSend) {
-                mapResult.put("smscode", randomCode);
-                return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
-            }
+            });
         } catch (Exception e) {
             logger.error("[SMS] service method handleSendSms error.{}", e);
-        } finally {
-            shardedJedisPool.returnResource(jedis);
         }
-        return null;
+        return obj != null ? (Map<String, Object>) obj : null;
     }
 
     @Override
@@ -143,49 +155,62 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> updateCacheStatusByAccount(String cacheKey) {
-        cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
-        Map<String, Object> mapResult = Maps.newHashMap();
+    public Map<String, Object> updateCacheStatusByAccount(final String cacheKey) {
+        Object obj = null;
         try {
-            jedis = shardedJedisPool.getResource();
+            obj = redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    byte[] cacheKeyByteArr = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey);
+                    Map<String, Object> mapResult = Maps.newHashMap();
+                    Map<byte[], byte[]> mapCacheResult = connection.hGetAll(cacheKeyByteArr);
 
-            Map<String, String> mapCacheResult = jedis.hgetAll(cacheKey);
-            if (MapUtils.isNotEmpty(mapCacheResult)) {
-                //获取缓存数据
-                long sendTime = Long.parseLong(mapCacheResult.get("sendTime"));
-                String smsCode = mapCacheResult.get("smsCode");
-                String account = mapCacheResult.get("mobile");
-                Map<String, String> mapCacheSendNumResult = jedis.hgetAll(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
-                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
-                    int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
-                    long curtime = System.currentTimeMillis();
-                    boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
-                    if (valid) {
-                        if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                            jedis.hincrBy(CACHE_PREFIX_ACCOUNT_SENDNUM + account, "sendNum", 1);
-                            jedis.hset(cacheKey, "sendTime", Long.toString(System.currentTimeMillis()));
-                            //todo 内容从缓存中读取
-                            boolean isSend = SMSUtil.sendSMS(account, smsCode);
-                            if (isSend) {
-                                //30分钟之内返回原先验证码
-                                mapResult.put("smscode", smsCode);
-                                return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                    //初始化缓存元素
+                    byte[]  sendTimeByte= RedisUtils.stringToByteArry("sendTime");
+                    byte[]  smsCodeByte= RedisUtils.stringToByteArry("smsCode");
+                    byte[]  mobileByte= RedisUtils.stringToByteArry("mobile");
+                    byte[]  sendNumByte= RedisUtils.stringToByteArry("sendNum");
+                    if (MapUtils.isNotEmpty(mapCacheResult)) {
+
+                        //获取缓存数据
+                        long sendTime = RedisUtils.byteArryToLong(mapCacheResult.get(sendTimeByte));
+                        String smsCode = RedisUtils.byteArryToString(mapCacheResult.get(smsCodeByte));
+                        String account = RedisUtils.byteArryToString(mapCacheResult.get(mobileByte));
+
+                        byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
+                        Map<byte[], byte[]> mapCacheSendNumResult = connection.hGetAll(keySendNumCache);
+                        if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
+                            int sendNum = RedisUtils.byteArryToInteger(mapCacheSendNumResult.get(sendNumByte));
+                            long curtime = System.currentTimeMillis();
+                            boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
+                            if (valid) {
+                                if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
+                                    connection.hIncrBy(keySendNumCache, sendNumByte, 1);
+                                    connection.hSet(cacheKeyByteArr,
+                                            sendTimeByte,
+                                            RedisUtils.stringToByteArry(String.valueOf(System.currentTimeMillis())));
+                                    //todo 内容从缓存中读取
+                                    boolean isSend = SMSUtil.sendSMS(account, smsCode);
+                                    if (isSend) {
+                                        //30分钟之内返回原先验证码
+                                        mapResult.put("smscode", smsCode);
+                                        return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                                    }
+                                } else {
+                                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
+                                }
+                            } else {
+                                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
                             }
-                        } else {
-                            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
                         }
-                    } else {
-                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT, "1分钟只能发送一条短信");
                     }
+                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
                 }
-            }
+            });
         } catch (Exception e) {
             logger.error("[SMS] service method updateCacheStatusByAccount error.{}", e);
-        } finally {
-            shardedJedisPool.returnResource(jedis);
         }
-
-        return null;
+        return obj != null ? (Map<String, Object>) obj : null;
     }
 
     @Override
