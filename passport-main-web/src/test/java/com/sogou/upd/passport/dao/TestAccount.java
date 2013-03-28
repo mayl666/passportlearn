@@ -157,4 +157,18 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
             System.out.println("");
         }
     }
+
+    /**
+     *测试根据passportId获取account表的主键ID
+     */
+    @Test
+    public void testGetUserIdByPassportId(){
+        String passportId = "13621009174@sohu.com";
+        long userId = accountService.getUserIdByPassportId(passportId);
+        if(userId != 0){
+            System.out.println(userId);
+        } else {
+            System.out.println("零！！！");
+        }
+    }
 }

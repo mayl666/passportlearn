@@ -41,4 +41,8 @@
           select passport_id from account where id=#{userId}
     </select>
 
+    <select id="getUserIdByPassportId" parameterType="java.lang.String" resultType="java.lang.Long">
+          select id from account where passport_id=#{passportId}
+    </select>
+
 </mapper>

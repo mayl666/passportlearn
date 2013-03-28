@@ -47,4 +47,11 @@ public interface AccountMapper {
      */
     public String getPassportIdByUserId(long userId);
 
+    /**
+     * 根据passportId查询对应的主键Id
+     * @param passportId
+     * @return
+     */
+    public long getUserIdByPassportId(String passportId);
+
 }

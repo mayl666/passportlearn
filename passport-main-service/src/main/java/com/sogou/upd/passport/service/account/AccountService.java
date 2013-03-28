@@ -161,4 +161,11 @@ public interface AccountService {
      */
     public String getPassportIdByUserId(long userId);
 
+
+    /**
+     * 根据主键ID获取passportId
+     * @param passportId
+     * @return
+     */
+    public long getUserIdByPassportId(String passportId);
 }
