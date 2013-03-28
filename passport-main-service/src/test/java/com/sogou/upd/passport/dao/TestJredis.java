@@ -10,6 +10,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
@@ -36,38 +37,38 @@ import java.util.*;
 @ContextConfiguration(locations = {"classpath:spring-config-jredis.xml"})
 public class TestJredis extends AbstractJUnit4SpringContextTests {
 
-    @Inject
-    private ShardedJedisPool shardedJedisPool;
+
     @Inject
     private RedisTemplate redisTemplate;
 
-    private ShardedJedis jedis;
 
     @Before
     public void init() {
-        jedis = shardedJedisPool.getResource();
     }
 
     @Test
     public void test() {
-       Object obj=redisTemplate.execute(new RedisCallback<Object>(){
-           @Override
-           public Object doInRedis(RedisConnection connection) throws DataAccessException {
-               String key = "mayanTest";
-               BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(key);
-               Map<String, String> data = new HashMap<String, String>();
-               data.put("name", "name");
-               data.put("age", "35");
-               boundHashOperations.putAll(data);
-               return true;
-           }
-       });
-        System.out.println(obj);
+//       Object obj=redisTemplate.execute(new RedisCallback<Object>(){
+//           @Override
+//           public Object doInRedis(RedisConnection connection) throws DataAccessException {
+//               String key = "mayanTest";
+//               BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(key);
+//               Map<String, String> data = new HashMap<String, String>();
+//               data.put("name", "name");
+//               data.put("age", "35");
+//               boundHashOperations.putAll(data);
+//               return true;
+//           }
+//       });
+//        System.out.println(obj);
 //        System.out.println(setAppConfigByClientId());
 //        AppConfig appConfig= getAppConfigByClientId();
 //        System.out.println();
 
+        String tips = "您的“碰头”验证码为：%s，20分钟内有效哦";
 
+        String sms = String.format(tips, "12345");
+        System.out.println(sms);
     }
 
     @Test
@@ -191,54 +192,54 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
         map.put("sendNum", "1");
         map.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
 
-        jedis.hmset(mobile, map);
-        jedis.expire(mobile, 6 * 60);      //有效时长
+//        jedis.hmset(mobile, map);
+//        jedis.expire(mobile, 6 * 60);      //有效时长
 
     }
 
     @Test
     public void testJredisConnection() {
-        try {
-            //生成5位随机数
-            String randomCode = RandomStringUtils.randomNumeric(5);
-            //手机号
-            String mobile = "13520066363";
-            //初始化redis
-//            initRedis(mobile,randomCode);
-
-
-            Map<String, String> mapResult = jedis.hgetAll(mobile);
-//            Iterator it = mapResult.entrySet().iterator();
-//            while (it.hasNext()) {
-//                Map.Entry m = (Map.Entry) it.next();
-//                System.out.println("passport-" + m.getKey() + ":" + m.getValue());
+//        try {
+//            //生成5位随机数
+//            String randomCode = RandomStringUtils.randomNumeric(5);
+//            //手机号
+//            String mobile = "13520066363";
+//            //初始化redis
+////            initRedis(mobile,randomCode);
+//
+//
+//            Map<String, String> mapResult = jedis.hgetAll(mobile);
+////            Iterator it = mapResult.entrySet().iterator();
+////            while (it.hasNext()) {
+////                Map.Entry m = (Map.Entry) it.next();
+////                System.out.println("passport-" + m.getKey() + ":" + m.getValue());
+////            }
+//
+//            if (MapUtils.isNotEmpty(mapResult)) {
+//                long sendTime = Long.parseLong(mapResult.get("sendTime"));
+//                int sendNum = Integer.parseInt(mapResult.get("sendNum"));
+//                String smsCode = mapResult.get("smsCode");
+//
+//                long curtime = System.currentTimeMillis();
+//                //
+//                boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
+//                if (valid) {
+//                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {
+//                        System.out.println("在30分钟内返回之前的smsCode:" + smsCode);
+//                        jedis.hincrBy(mobile, "sendNum", 1);
+//                        jedis.hset(mobile,"sendTime",Long.toString(System.currentTimeMillis()));
+////                        return smsCode;
+//                    } else {
+//                        System.out.println("一天最多可发送5条短信");
+//                    }
+//
+//                } else {
+//                    System.out.println("1分钟只能发送一条短信");
+//                }
 //            }
-
-            if (MapUtils.isNotEmpty(mapResult)) {
-                long sendTime = Long.parseLong(mapResult.get("sendTime"));
-                int sendNum = Integer.parseInt(mapResult.get("sendNum"));
-                String smsCode = mapResult.get("smsCode");
-
-                long curtime = System.currentTimeMillis();
-                //
-                boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
-                if (valid) {
-                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {
-                        System.out.println("在30分钟内返回之前的smsCode:" + smsCode);
-                        jedis.hincrBy(mobile, "sendNum", 1);
-                        jedis.hset(mobile,"sendTime",Long.toString(System.currentTimeMillis()));
-//                        return smsCode;
-                    } else {
-                        System.out.println("一天最多可发送5条短信");
-                    }
-
-                } else {
-                    System.out.println("1分钟只能发送一条短信");
-                }
-            }
-        } finally {
-            shardedJedisPool.returnResource(jedis);
-        }
+//        } finally {
+//            shardedJedisPool.returnResource(jedis);
+//        }
     }
 
 }

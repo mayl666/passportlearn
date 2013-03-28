@@ -105,7 +105,7 @@ public interface AccountService {
      * @param passportId
      * @param userId
      */
-    public boolean addPassportIdMapUserIdToCache(String passportId,String userId,String mobile);
+    public boolean addPassportIdMapUserIdToCache(String passportId,String userId);
 
     /**
      * userId与passportId缓存映射
@@ -123,10 +123,9 @@ public interface AccountService {
     /**
      * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId
-     * @param keyType 需要获取userId传userId，需要获取mobile传mobile
      * @return
      */
-    public String getUserIdOrMobileByPassportIdFromCache(String passportId,String keyType);
+    public String getUserIdByPassportIdFromCache(String passportId);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId
@@ -146,13 +145,6 @@ public interface AccountService {
      * @return
      */
     public int updateAccountAuth(AccountAuth accountAuth);
-
-    /**
-     * 根据passportId获取手机号码
-      * @param passportId
-     * @return
-     */
-    public String getMobileByPassportId(String passportId);
 
     /**
      * 根据主键ID获取passportId
