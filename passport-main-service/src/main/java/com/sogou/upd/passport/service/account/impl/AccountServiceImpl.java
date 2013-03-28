@@ -397,7 +397,7 @@ public class AccountServiceImpl implements AccountService {
                 //读取数据库
                 userId = getUserIdByPassportId(passportId);
                 if (!Strings.isNullOrEmpty(userId)) {
-                    addPassportIdMapUserIdToCache(passportId,userId);
+                    addPassportIdMapUserIdToCache(passportId, userId);
                 }
             }
         } catch (Exception e) {
@@ -458,7 +458,7 @@ public class AccountServiceImpl implements AccountService {
                 //读取数据库
                 passportId = getPassportIdByUserId(userId);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    addUserIdMapPassportIdToCache(String.valueOf(userId),passportId);
+                    addUserIdMapPassportIdToCache(String.valueOf(userId), passportId);
                 }
             }
 
@@ -506,6 +506,25 @@ public class AccountServiceImpl implements AccountService {
         return appConfig;
     }
 
+    public boolean deleteSmsCache(final String mobile, final String clientId) {
+        Object obj = null;
+        try {
+            obj = redisTemplate.execute(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    byte[] keyCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId);
+                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
+                    connection.del(keyCache);
+                    connection.del(keySendNumCache);
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method deleteSmsCache error.{}", e);
+        }
+        return obj != null ? (Boolean) obj : false;
+    }
+
     /**
      * 修改用户状态表
      *
@@ -524,28 +543,31 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 根据主键ID获取passportId
+     *
      * @param userId
      * @return
      */
     @Override
     public String getPassportIdByUserId(long userId) {
         String passportId = null;
-        if(userId != 0){
+        if (userId != 0) {
             passportId = getPassportIdByUserId(userId);
-            return passportId == null ? null : passportId ;
+            return passportId == null ? null : passportId;
         }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
     /**
      * 根据主键ID获取passportId
+     *
      * @param passportId
      * @return
      */
     @Override
     public long getUserIdByPassportId(String passportId) {
         long userId = 0;
-        if(passportId != null){
-           userId = accountMapper.getUserIdByPassportId(passportId);
+        if (passportId != null) {
+            userId = accountMapper.getUserIdByPassportId(passportId);
             return userId == 0 ? 0 : userId;
         }
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
