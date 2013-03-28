@@ -30,6 +30,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -126,7 +127,6 @@ public class AccountServiceImpl implements AccountService {
                     } else {
                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                     }
-
                     return null;
                 }
             });
@@ -367,28 +367,22 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
-        Object obj = null;
+        boolean flag = true;
         try {
-            obj = redisTemplate.execute(new RedisCallback() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-                    if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
-                        connection.set(RedisUtils.stringToByteArry(String.valueOf(clientId)),
-                                RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
-                    }
-                    return true;
-                }
-            });
+            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
+
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.setIfAbsent(String.valueOf(clientId), JSONUtils.objectToJson(appConfig));
         } catch (Exception e) {
+            flag = false;
             logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
         }
-        return obj != null ? (Boolean) obj : false;
+        return flag;
     }
 
     @Override
     public long getUserIdByPassportIdFromCache(final String passportId) {
-        long userIdResult=0;
+        long userIdResult = 0;
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
             String userId = getFromCache(cacheKey);
@@ -398,8 +392,8 @@ public class AccountServiceImpl implements AccountService {
                 if (userIdResult != 0) {
                     addPassportIdMapUserIdToCache(passportId, userId);
                 }
-            }  else{
-                userIdResult=Long.parseLong(userId);
+            } else {
+                userIdResult = Long.parseLong(userId);
             }
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
@@ -409,44 +403,34 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean addPassportIdMapUserIdToCache(final String passportId, final String userId) {
-        Object obj = null;
+        boolean flag = true;
         try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-                    if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
-                        connection.set(RedisUtils.stringToByteArry(cacheKey),
-                                RedisUtils.stringToByteArry(userId));
-                    }
-                    return true;
-                }
-            });
+            String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
+
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.setIfAbsent(cacheKey, userId);
+
         } catch (Exception e) {
+            flag = false;
             logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
         }
-        return obj != null ? (Boolean) obj : false;
+        return flag;
     }
 
     @Override
     public boolean addUserIdMapPassportIdToCache(final String userId, final String passportId) {
-        Object obj = null;
+        boolean flag = true;
         try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String cacheKey = CACHE_PREFIX_USERID + userId;
-                    if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
-                        connection.set(RedisUtils.stringToByteArry(cacheKey),
-                                RedisUtils.stringToByteArry(passportId));
-                    }
-                    return true;
-                }
-            });
+            String cacheKey = CACHE_PREFIX_USERID + userId;
+
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.setIfAbsent(cacheKey, passportId);
+
         } catch (Exception e) {
+            flag = false;
             logger.error("[SMS] service method addUserIdMapPassportId error.{}", e);
         }
-        return obj != null ? (Boolean) obj : false;
+        return flag;
     }
 
     @Override
@@ -472,23 +456,15 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AppConfig getAppConfigByClientIdFromCache(final int clientId) {
         AppConfig appConfig = null;
-        Object obj = null;
         try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-                    AppConfig appConfigResult = null;
-                    byte[] value = connection.get(RedisUtils.stringToByteArry(cacheKey));
-                    if (value != null && value.length > 0) {
-                        appConfigResult = JSONUtils.jsonToObject(RedisUtils.byteArryToString(value), AppConfig.class);
-                    }
-                    return appConfigResult;
-                }
-            });
-            if (obj != null && obj instanceof AppConfig) {
-                appConfig = (AppConfig) obj;
-            } else {
+            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
+            //缓存根据clientId读取AppConfig
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            String valAppConfig = valueOperations.get(cacheKey);
+            if (!Strings.isNullOrEmpty(valAppConfig)) {
+                appConfig = JSONUtils.jsonToObject(valAppConfig, AppConfig.class);
+            }
+            if (appConfig == null) {
                 //读取数据库
                 appConfig = appConfigMapper.getAppConfigByClientId(clientId);
                 if (appConfig != null) {
@@ -500,6 +476,7 @@ public class AccountServiceImpl implements AccountService {
         }
         return appConfig;
     }
+
     @Override
     public boolean deleteSmsCache(final String mobile, final String clientId) {
         Object obj = null;
@@ -572,24 +549,14 @@ public class AccountServiceImpl implements AccountService {
      * 根据key从缓存中获取value
      */
     public String getFromCache(final String key) throws Exception {
-        Object obj = null;
+        String valResult = null;
         try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String strValue = null;
-                    byte[] keyByteArry = RedisUtils.stringToByteArry(key);
-                    if (connection.exists(keyByteArry)) {
-                        byte[] value = connection.get(keyByteArry);
-                        strValue = RedisUtils.byteArryToString(value);
-                    }
-                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
-                }
-            });
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valResult = valueOperations.get(key);
         } catch (Exception e) {
             logger.error("[SMS] service method getFromCache error.{}", e);
         }
-        return obj != null ? (String) obj : null;
+        return valResult;
     }
 
     /**
