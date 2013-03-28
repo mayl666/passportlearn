@@ -10,18 +10,20 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * To change this template use File | Settings | File Templates.
  */
 public class RedisUtils {
+
     /*
      * 字符串转换byte数组
      */
-    public static byte [] stringToByteArry(String str){
-        RedisSerializer<String> stringSerializer = new StringRedisSerializer()  ;
-        return  stringSerializer.serialize(str);
+    public static byte[] stringToByteArry(String str) {
+        RedisSerializer<String> stringSerializer = new StringRedisSerializer();
+        return stringSerializer.serialize(str);
     }
+
     /*
    * byte数组转换字符串
    */
-    public static String byteArryToString(byte [] bytes){
-        RedisSerializer<String> stringSerializer = new StringRedisSerializer()  ;
-        return  stringSerializer.deserialize(bytes);
+    public static String byteArryToString(byte[] bytes) {
+        RedisSerializer<String> stringSerializer = new StringRedisSerializer();
+        return stringSerializer.deserialize(bytes);
     }
 }

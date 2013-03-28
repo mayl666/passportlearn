@@ -50,8 +50,9 @@ public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";   //account与smscode映射
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
-    private static final String CACHE_PREFIX_PASSPORT = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
+    private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
     private static final String CACHE_PREFIX_USERID = "PASSPORT:ACCOUNT_USERID_";     //passport_id与userID映射
+    private static final String CACHE_PREFIX_CLIENTID = "PASSPORT:ACCOUNT_CLIENTID_";     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
@@ -328,7 +329,7 @@ public class AccountServiceImpl implements AccountService {
             obj = redisTemplate.execute(new RedisCallback() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String cacheKey = CACHE_PREFIX_PASSPORT + passportId;
+                    String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
                     //判断缓存是否存在
                     if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
                         Map<byte[], byte[]> mapResult = Maps.newHashMap();
@@ -375,9 +376,11 @@ public class AccountServiceImpl implements AccountService {
             obj = redisTemplate.execute(new RedisCallback() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-
-                    connection.set(RedisUtils.stringToByteArry(clientId),
-                            RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
+                    String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
+                    if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
+                        connection.set(RedisUtils.stringToByteArry(clientId),
+                                RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
+                    }
                     return true;
                 }
             });
@@ -395,7 +398,7 @@ public class AccountServiceImpl implements AccountService {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     String strValue = null;
-                    Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(CACHE_PREFIX_PASSPORT + passportId));
+                    Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(CACHE_PREFIX_PASSPORTID + passportId));
                     if (MapUtils.isNotEmpty(mapResult)) {
                         byte[] value = mapResult.get(RedisUtils.stringToByteArry(keyType));
                         strValue = RedisUtils.byteArryToString(value);
@@ -411,24 +414,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String getPassportIdByUserId(final long userId) {
-        Object obj = null;
+        String passportId = null;
         try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String strValue = null;
-                    byte[] key = RedisUtils.stringToByteArry(Long.toString(userId));
-                    if (connection.exists(key)) {
-                        byte[] value = connection.get(key);
-                        strValue = RedisUtils.byteArryToString(value);
-                    }
-                    return Strings.isNullOrEmpty(strValue) ? null : strValue;
-                }
-            });
+            passportId = getFromCache(Long.toString(userId));
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
-        return obj != null ? (String) obj : null;
+        return passportId != null ? passportId : null;
     }
 
     @Override
@@ -438,10 +430,11 @@ public class AccountServiceImpl implements AccountService {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    AppConfig appConfigResult=null;
-                    byte[] value=connection.get(RedisUtils.stringToByteArry(Integer.toString(clientId)));
-                    if(value!=null && value.length>0){
-                        appConfigResult=JSONUtils.jsonToObject(RedisUtils.byteArryToString(value),AppConfig.class);
+                    String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
+                    AppConfig appConfigResult = null;
+                    byte[] value = connection.get(RedisUtils.stringToByteArry(cacheKey));
+                    if (value != null && value.length > 0) {
+                        appConfigResult = JSONUtils.jsonToObject(RedisUtils.byteArryToString(value), AppConfig.class);
                     }
                     return appConfigResult;
                 }
@@ -492,6 +485,25 @@ public class AccountServiceImpl implements AccountService {
         return account != null ? account.getMobile() : null;
     }
 
+    /*
+     * 根据key从缓存中获取value
+     */
+    public String getFromCache(final String key) throws Exception {
+        Object obj = redisTemplate.execute(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                String strValue = null;
+                byte[] keyByteArry = RedisUtils.stringToByteArry(key);
+                if (connection.exists(keyByteArry)) {
+                    byte[] value = connection.get(keyByteArry);
+                    strValue = RedisUtils.byteArryToString(value);
+                }
+                return Strings.isNullOrEmpty(strValue) ? null : strValue;
+            }
+        });
+        return obj != null ? (String) obj : null;
+    }
+
     /**
      * 构造一个新的AccountAuth
      *
@@ -525,4 +537,6 @@ public class AccountServiceImpl implements AccountService {
 
         return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+
 }
