@@ -118,7 +118,7 @@ public class AccountServiceImpl implements AccountService {
                     //读取短信内容
                     String smsText = getSmsText(clientId, randomCode);
                     if (!Strings.isNullOrEmpty(smsText)) {
-                        isSend = SMSUtil.sendSMS(account, randomCode);
+                        isSend = SMSUtil.sendSMS(account, smsText);
                         if (isSend) {
                             mapResult.put("smscode", randomCode);
                             return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
@@ -204,7 +204,7 @@ public class AccountServiceImpl implements AccountService {
                                     //读取短信内容
                                     String smsText = getSmsText(clientId, smsCode);
                                     if (!Strings.isNullOrEmpty(smsText)) {
-                                        boolean isSend = SMSUtil.sendSMS(account, smsCode);
+                                        boolean isSend = SMSUtil.sendSMS(smsText, smsCode);
                                         if (isSend) {
                                             //30分钟之内返回原先验证码
                                             mapResult.put("smscode", smsCode);
