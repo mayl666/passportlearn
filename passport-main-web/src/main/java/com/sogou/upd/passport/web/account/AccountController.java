@@ -132,8 +132,8 @@ public class AccountController extends BaseController {
         //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
         String passportId = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
         if (!Strings.isNullOrEmpty(passportId)) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
-            String userId = accountService.getUserIdByPassportIdFromCache(passportId);
-            if (userId != null) {      //如果缓存中有该手机账号，则用户已经注册过了！
+            long userId = accountService.getUserIdByPassportIdFromCache(passportId);
+            if (userId != 0) {      //如果缓存中有该手机账号，则用户已经注册过了！
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             }
         }

@@ -125,7 +125,7 @@ public interface AccountService {
      * @param passportId
      * @return
      */
-    public String getUserIdByPassportIdFromCache(String passportId);
+    public long getUserIdByPassportIdFromCache(String passportId);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId

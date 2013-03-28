@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleSendSms(final String account, final int clientId) {
+    public Map<String, Object> handleSendSms(final String account, final int client_id) {
         final Map<String, Object> mapResult = Maps.newHashMap();
         Object obj = null;
         try {
@@ -105,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
                     //生成随机数
                     String randomCode = RandomStringUtils.randomNumeric(5);
                     //写入缓存
-                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
+                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + client_id;
                     BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(keyCache);
                     Map<String, String> mapData = Maps.newHashMap();
                     mapData.put("smsCode", randomCode);    //初始化验证码
@@ -116,7 +116,7 @@ public class AccountServiceImpl implements AccountService {
                     //设置失效时间 30分钟  ，1800秒
                     connection.expire(RedisUtils.stringToByteArry(keyCache), SMSUtil.SMS_VALID);
                     //读取短信内容
-                    String smsText = getSmsText(clientId, randomCode);
+                    String smsText = getSmsText(client_id, randomCode);
                     if (!Strings.isNullOrEmpty(smsText)) {
                         isSend = SMSUtil.sendSMS(account, randomCode);
                         if (isSend) {
@@ -233,12 +233,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public long userRegister(Account account) {
-        return accountMapper.saveAccount(account);
+        return accountMapper.userRegister(account);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd, int clientId, PostUserProfile postData) throws SystemException {
+    public Map<String, Object> handleLogin(String mobile, String passwd, int client_id, PostUserProfile postData) throws SystemException {
         Account userAccount = null;
         //判断用户是否存在
         try {
@@ -285,13 +285,13 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public boolean checkSmsInfoFromCache(final String account, final String smsCode, final String clientId) {
+    public boolean checkSmsInfoFromCache(final String account, final String smsCode, final String client_id) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
+                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + client_id;
                     String strValue = null;
                     Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(keyCache));
                     if (MapUtils.isNotEmpty(mapResult)) {
@@ -331,7 +331,7 @@ public class AccountServiceImpl implements AccountService {
         accountReturn.setStatus(AccountStatusEnum.REGULAR.getValue());
         accountReturn.setVersion(Account.NEW_ACCOUNT_VERSION);
         accountReturn.setMobile(account);
-        long id = accountMapper.saveAccount(accountReturn);
+        long id = accountMapper.userRegister(accountReturn);
         if (id != 0) {
             accountReturn.setId(id);
             return accountReturn;
@@ -388,22 +388,24 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getUserIdByPassportIdFromCache(final String passportId) {
-        String userId = null;
+    public long getUserIdByPassportIdFromCache(final String passportId) {
+        long userIdResult=0;
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-            userId = getFromCache(cacheKey);
+            String userId = getFromCache(cacheKey);
             if (Strings.isNullOrEmpty(userId)) {
                 //读取数据库
-                userId = getUserIdByPassportId(passportId);
-                if (!Strings.isNullOrEmpty(userId)) {
+                userIdResult = getUserIdByPassportId(passportId);
+                if (userIdResult != 0) {
                     addPassportIdMapUserIdToCache(passportId, userId);
                 }
+            }  else{
+                userIdResult=Long.parseLong(userId);
             }
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
-        return userId;
+        return userIdResult;
     }
 
     @Override
