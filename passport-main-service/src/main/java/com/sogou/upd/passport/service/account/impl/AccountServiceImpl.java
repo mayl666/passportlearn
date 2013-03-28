@@ -537,6 +537,20 @@ public class AccountServiceImpl implements AccountService {
         }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+    /**
+     * 根据主键ID获取passportId
+     * @param passportId
+     * @return
+     */
+    @Override
+    public long getUserIdByPassportId(String passportId) {
+        long userId = 0;
+        if(passportId != null){
+           userId = accountMapper.getUserIdByPassportId(passportId);
+            return userId == 0 ? 0 : userId;
+        }
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     /*
      * 根据key从缓存中获取value
