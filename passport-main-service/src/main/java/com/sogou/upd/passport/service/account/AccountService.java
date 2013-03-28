@@ -38,7 +38,7 @@ public interface AccountService {
      * @param account
      * @return
      */
-    public boolean checkIsExistFromCache(String account);
+    public boolean checkKeyIsExistFromCache(String account);
 
     /**
      * 重发验证码时更新缓存状态

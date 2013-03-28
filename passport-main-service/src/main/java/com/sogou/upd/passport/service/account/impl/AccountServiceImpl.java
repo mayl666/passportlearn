@@ -143,31 +143,21 @@ public class AccountServiceImpl implements AccountService {
         return obj != null ? (Map<String, Object>) obj : null;
     }
 
+    /*
+     * 获取sms信息
+     */
     public String getSmsText(final int clientId, String smsCode) {
         //缓存中根据clientId获取AppConfig
         AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
-        if (appConfig == null) {
-            // todo 从数据库中读取
-            appConfig = getAppConfigByClientId(clientId);
-            if (appConfig != null) {
-                //写缓存
-                final AppConfig finalAppConfig = appConfig;
-                taskExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        addClientIdMapAppConfigToCache(clientId, finalAppConfig);
-                    }
-                });
-                return String.format(appConfig.getSmsText(), smsCode);
-            }
-        } else {
+        if (appConfig != null) {
             return String.format(appConfig.getSmsText(), smsCode);
         }
         return null;
     }
 
+
     @Override
-    public boolean checkIsExistFromCache(final String cacheKey) {
+    public boolean checkKeyIsExistFromCache(final String cacheKey) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback() {
@@ -227,7 +217,7 @@ public class AccountServiceImpl implements AccountService {
                                             mapResult.put("smscode", smsCode);
                                             return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
                                         }
-                                    }else{
+                                    } else {
                                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                                     }
 
@@ -486,6 +476,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AppConfig getAppConfigByClientIdFromCache(final int clientId) {
+        AppConfig appConfig = null;
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -500,10 +491,25 @@ public class AccountServiceImpl implements AccountService {
                     return appConfigResult;
                 }
             });
+            if (obj != null && obj instanceof AppConfig) {
+                appConfig = (AppConfig) obj;
+            } else {
+                //读取数据库
+                appConfig = getAppConfigByClientId(clientId);
+                if (appConfig != null) {
+                    final AppConfig finalAppConfig = appConfig;
+                    taskExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            addClientIdMapAppConfigToCache(clientId, finalAppConfig);
+                        }
+                    });
+                }
+            }
         } catch (Exception e) {
             logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
         }
-        return obj != null ? (AppConfig) obj : null;
+        return appConfig;
     }
 
     /**
