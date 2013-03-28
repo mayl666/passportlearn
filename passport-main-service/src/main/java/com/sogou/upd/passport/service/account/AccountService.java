@@ -160,4 +160,13 @@ public interface AccountService {
      * @return
      */
     public long getUserIdByPassportId(String passportId);
+
+
+    /**
+     * 注册成功后清除sms缓存信息
+     * @param mobile
+     * @param clientId
+     * @return
+     */
+    public boolean deleteSmsCache(final String mobile, final String clientId);
 }
