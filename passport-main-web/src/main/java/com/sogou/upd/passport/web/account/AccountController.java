@@ -69,7 +69,7 @@ public class AccountController extends BaseController {
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateCacheStatusByAccount(cacheKey);
+            mapResult = accountService.updateSmsInfoByAccountFromCache(cacheKey,clientid);
             return mapResult;
         } else {
             boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));

@@ -45,7 +45,7 @@ public interface AccountService {
      * @param cacheKey
      * @return
      */
-    public Map<String, Object> updateCacheStatusByAccount(String cacheKey);
+    public Map<String, Object> updateSmsInfoByAccountFromCache(String cacheKey,int clientId);
 
     /**
      * 检查此用户是否注册过，从用户账号表查
@@ -119,7 +119,7 @@ public interface AccountService {
      * @param clientId
      * @param appConfig
      */
-    public boolean addClientIdMapAppConfigFromCache(String clientId,AppConfig appConfig);
+    public boolean addClientIdMapAppConfigToCache(int clientId,AppConfig appConfig);
     /**
      * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId

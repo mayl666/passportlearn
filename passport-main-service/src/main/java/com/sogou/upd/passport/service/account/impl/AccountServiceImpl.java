@@ -122,12 +122,18 @@ public class AccountServiceImpl implements AccountService {
 
                     //设置失效时间 30分钟  ，1800秒
                     connection.expire(RedisUtils.stringToByteArry(keyCache), SMSUtil.SMS_VALID);
-//                    //todo 内容从缓存中读取
-                    isSend = SMSUtil.sendSMS(account, randomCode);
-                    if (isSend) {
-                        mapResult.put("smscode", randomCode);
-                        return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                    //读取短信内容
+                    String smsText = getSmsText(client_id, randomCode);
+                    if (!Strings.isNullOrEmpty(smsText)) {
+                        isSend = SMSUtil.sendSMS(account, randomCode);
+                        if (isSend) {
+                            mapResult.put("smscode", randomCode);
+                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                        }
+                    } else {
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                     }
+
                     return null;
                 }
             });
@@ -135,6 +141,29 @@ public class AccountServiceImpl implements AccountService {
             logger.error("[SMS] service method handleSendSms error.{}", e);
         }
         return obj != null ? (Map<String, Object>) obj : null;
+    }
+
+    public String getSmsText(final int clientId, String smsCode) {
+        //缓存中根据clientId获取AppConfig
+        AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
+        if (appConfig == null) {
+            // todo 从数据库中读取
+            appConfig = getAppConfigByClientId(clientId);
+            if (appConfig != null) {
+                //写缓存
+                final AppConfig finalAppConfig = appConfig;
+                taskExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        addClientIdMapAppConfigToCache(clientId, finalAppConfig);
+                    }
+                });
+                return String.format(appConfig.getSmsText(), smsCode);
+            }
+        } else {
+            return String.format(appConfig.getSmsText(), smsCode);
+        }
+        return null;
     }
 
     @Override
@@ -155,7 +184,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> updateCacheStatusByAccount(final String cacheKey) {
+    public Map<String, Object> updateSmsInfoByAccountFromCache(final String cacheKey, final int clientId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -166,10 +195,10 @@ public class AccountServiceImpl implements AccountService {
                     Map<byte[], byte[]> mapCacheResult = connection.hGetAll(cacheKeyByteArr);
 
                     //初始化缓存元素
-                    byte[]  sendTimeByte= RedisUtils.stringToByteArry("sendTime");
-                    byte[]  smsCodeByte= RedisUtils.stringToByteArry("smsCode");
-                    byte[]  mobileByte= RedisUtils.stringToByteArry("mobile");
-                    byte[]  sendNumByte= RedisUtils.stringToByteArry("sendNum");
+                    byte[] sendTimeByte = RedisUtils.stringToByteArry("sendTime");
+                    byte[] smsCodeByte = RedisUtils.stringToByteArry("smsCode");
+                    byte[] mobileByte = RedisUtils.stringToByteArry("mobile");
+                    byte[] sendNumByte = RedisUtils.stringToByteArry("sendNum");
                     if (MapUtils.isNotEmpty(mapCacheResult)) {
 
                         //获取缓存数据
@@ -189,13 +218,19 @@ public class AccountServiceImpl implements AccountService {
                                     connection.hSet(cacheKeyByteArr,
                                             sendTimeByte,
                                             RedisUtils.stringToByteArry(String.valueOf(System.currentTimeMillis())));
-                                    //todo 内容从缓存中读取
-                                    boolean isSend = SMSUtil.sendSMS(account, smsCode);
-                                    if (isSend) {
-                                        //30分钟之内返回原先验证码
-                                        mapResult.put("smscode", smsCode);
-                                        return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                                    //读取短信内容
+                                    String smsText = getSmsText(clientId, smsCode);
+                                    if (!Strings.isNullOrEmpty(smsText)) {
+                                        boolean isSend = SMSUtil.sendSMS(account, smsCode);
+                                        if (isSend) {
+                                            //30分钟之内返回原先验证码
+                                            mapResult.put("smscode", smsCode);
+                                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                                        }
+                                    }else{
+                                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                                     }
+
                                 } else {
                                     return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
                                 }
@@ -395,7 +430,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addClientIdMapAppConfigFromCache(final String clientId, final AppConfig appConfig) {
+    public boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback() {
@@ -403,7 +438,7 @@ public class AccountServiceImpl implements AccountService {
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
                     if (!connection.exists(RedisUtils.stringToByteArry(cacheKey))) {
-                        connection.set(RedisUtils.stringToByteArry(clientId),
+                        connection.set(RedisUtils.stringToByteArry(String.valueOf(clientId)),
                                 RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
                     }
                     return true;
