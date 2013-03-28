@@ -146,15 +146,6 @@ public interface AccountService {
      */
     public int updateAccountAuth(AccountAuth accountAuth);
 
-<<<<<<< HEAD
-=======
-    /**
-     * 根据passportId获取手机号码
-      * @param passportId
-     * @return
-     */
-    public String getMobileByPassportId(String passportId);
-
     /**
      * 根据主键ID获取passportId
      * @param userId
@@ -162,5 +153,4 @@ public interface AccountService {
      */
     public String getPassportIdByUserId(long userId);
 
->>>>>>> 12e0383756c7c9046f19d92e48802eb069b2a1c3
 }

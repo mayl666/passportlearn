@@ -19,7 +19,6 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -523,32 +522,6 @@ public class AccountServiceImpl implements AccountService {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-<<<<<<< HEAD
-=======
-    /**
-     * 根据passportId获取手机号码
-     *
-     * @param passportId
-     * @return
-     */
-    @Override
-    public String getMobileByPassportId(String passportId) {
-        Account account = null;
-        if (!Strings.isNullOrEmpty(passportId)) {
-            account = accountMapper.getAccountByPassportId(passportId);
-            if (account != null) {
-                final Account finalAccount = account;
-                taskExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        //写缓存
-                        addPassportIdMapUserIdToCache(finalAccount.getPassportId(), Long.toString(finalAccount.getId()), finalAccount.getMobile());
-                    }
-                });
-            }
-        }
-        return account != null ? account.getMobile() : null;
-    }
 
     /**
      * 根据主键ID获取passportId
@@ -559,13 +532,12 @@ public class AccountServiceImpl implements AccountService {
     public String getPassportIdByUserId(long userId) {
         String passportId = null;
         if(userId != 0){
-            passportId = accountMapper.getPassportIdByUserId(userId);
+            passportId = getPassportIdByUserId(userId);
             return passportId == null ? null : passportId ;
         }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
->>>>>>> 12e0383756c7c9046f19d92e48802eb069b2a1c3
     /*
      * 根据key从缓存中获取value
      */
