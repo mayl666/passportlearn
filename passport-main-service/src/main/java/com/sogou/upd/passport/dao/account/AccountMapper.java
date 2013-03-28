@@ -40,4 +40,11 @@ public interface AccountMapper {
      */
     public Account getAccountByPassportId(String passportId);
 
+    /**
+     * 根据主键id获取passportId
+     * @param userId
+     * @return
+     */
+    public String getPassportIdByUserId(long userId);
+
 }

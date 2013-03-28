@@ -131,6 +131,9 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
         System.out.println(mobile);
     }
 
+    /**
+     * 测试根据clientId获取配置信息
+     */
     @Test
     public void testGetAppConfigByClientId() {
         int clientId = 1004;
@@ -139,5 +142,19 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
             System.out.println(appConfig.getSmsText());
         }
 
+    }
+
+    /**
+     *测试根据account表的主键ID获取passportId
+     */
+    @Test
+    public void testGetPassportIdByUserId(){
+        long userId = 21;
+        String passportId = accountService.getPassportIdByUserId(userId);
+        if(passportId != null){
+            System.out.println(passportId);
+        } else {
+            System.out.println("");
+        }
     }
 }

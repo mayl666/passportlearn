@@ -553,6 +553,21 @@ public class AccountServiceImpl implements AccountService {
         return account != null ? account.getMobile() : null;
     }
 
+    /**
+     * 根据主键ID获取passportId
+     * @param userId
+     * @return
+     */
+    @Override
+    public String getPassportIdByUserId(long userId) {
+        String passportId = null;
+        if(userId != 0){
+            passportId = accountMapper.getPassportIdByUserId(userId);
+            return passportId == null ? null : passportId ;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /*
      * 根据key从缓存中获取value
      */
