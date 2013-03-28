@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sogou.upd.passport.dao.app.AppConfigMapperr">
+<mapper namespace="com.sogou.upd.passport.dao.app.AppConfigMapper">
     <resultMap id="appConfigMap" type="appConfig">
         <id property="id" column="id"></id>
         <id property="clientId" column="client_id"></id>
@@ -13,9 +13,8 @@
         <id property="updateTime" column="update_time"></id>
     </resultMap>
 
-    <select id="getAppConfigByClientId" parameterType="java.lang.Integer" resultMap="appConfigMap">
-        select * from app_config where
-        <if test="clientId!=null">and client_id=#{clientId}</if>
+    <select id="getAppConfigByClientId" parameterType="int" resultMap="appConfigMap">
+        select * from app_config where client_id=#{clientId}
     </select>
 
 </mapper>

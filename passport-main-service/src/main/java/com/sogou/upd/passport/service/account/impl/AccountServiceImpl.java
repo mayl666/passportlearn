@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
+import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
@@ -59,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
     @Inject
     private ShardedJedisPool shardedJedisPool;
     @Inject
-    private AppConfigService appConfigService;
+    private AppConfigMapper appConfigMapper;
 
     private ShardedJedis jedis;
     @Inject
@@ -501,7 +502,8 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
-        AppConfig appConfig = appConfigService.getAppConfig(clientId);
+        //TODO 读缓存
+        AppConfig appConfig = appConfigMapper.getAppConfigByClientId(clientId);
         AccountAuth accountAuth = new AccountAuth();
         if (appConfig != null) {
             int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();

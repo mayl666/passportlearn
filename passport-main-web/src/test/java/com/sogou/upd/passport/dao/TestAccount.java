@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.dao;
 
+import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
@@ -33,9 +34,9 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
      * 测试手机账号是否存在
      */
     @Test
-    public void testCheckIsRegisterAccount(){
-        String mobile = "13545210241";
-        String passwd = "123456";
+    public void testCheckIsRegisterAccount() {
+        String mobile = "13565090053";
+        String passwd = "liuling";
         String passportId = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
         Account account = new Account();
         account.setMobile(mobile);
@@ -49,9 +50,9 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        if(as == true){
+        if (as == true) {
             System.out.println("用户没有注册过，允许注册！");
-        }else{
+        } else {
             System.out.println("用户已经注册过，不允许再次注册！");
         }
     }
@@ -60,24 +61,51 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
      * 测试用户正式注册
      */
     @Test
-    public void testUserRegister(){
-        String account = "13545210241";
-        String passwd = "123456";
+    public void testUserRegister() {
+        String mobile = "13545210241";
+        String passwd = "liuling";
         String ip = "192.168.0.1";
-        Account a = new Account();
-        a.setMobile(account);
-        a.setPasswd(passwd);
-        a.setRegIp(ip);
-        a.setAccountType(AccountTypeEnum.PHONE.getValue());
-        long l = accountService.userRegister(a);
-        System.out.println(l);
+        Account account = null;
+        try {
+            account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
+        } catch (SystemException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        if (account != null) {
+            System.out.println(account.getPasswd());
+        } else {
+            System.out.println("");
+        }
+
+    }
+
+    /**
+     * 测试初始化用户状态信息
+     */
+    @Test
+    public void testInitialAccountAuth() {
+        long id = 13;
+        String passportId = "13545210241@sohu.com";
+        int clientId = 1004;
+        AccountAuth accountAuth = null;
+        try {
+            accountAuth = accountService.initialAccountAuth(id, passportId, clientId);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        if(accountAuth != null){
+            System.out.println(accountAuth.getAccessValidTime());
+        }else{
+            System.out.println("");
+        }
+
     }
 
     /**
      * 测试更新用户状态表
      */
     @Test
-    public void testUpdateAccountAuth(){
+    public void testUpdateAccountAuth() {
         String accessToken = "123456";
         String refreshToken = "jfdroe";
         long accessValidTime = 30;
@@ -97,19 +125,19 @@ public class TestAccount extends AbstractJUnit4SpringContextTests {
      * 测试根据passportId获取手机号码
      */
     @Test
-    public void testGetMobileByPassportId(){
-        String passportId = "13545210241@sohu.com";
+    public void testGetMobileByPassportId() {
+        String passportId = "13520069535@sohu.com";
         String mobile = accountService.getMobileByPassportId(passportId);
         System.out.println(mobile);
     }
 
     @Test
-    public void testGetAppConfigByClientId(){
-       int clientId = 1004;
-       AppConfig appConfig = appConfigService.getAppConfig(clientId);
-       if(appConfig != null){
-           System.out.println(appConfig.getId());
-       }
+    public void testGetAppConfigByClientId() {
+        int clientId = 1004;
+        AppConfig appConfig = appConfigService.getAppConfig(clientId);
+        if (appConfig != null) {
+            System.out.println(appConfig.getSmsText());
+        }
 
     }
 }

@@ -8,15 +8,15 @@
         <id property="refreshToken" column="refresh_token"></id>
         <id property="accessValidTime" column="access_valid_time"></id>
         <id property="refreshValidTime" column="refresh_valid_time"></id>
-        <id property="appkey" column="appkey"></id>
+        <id property="clientId" column="client_id"></id>
     </resultMap>
 
     <insert id="saveAccountAuth" parameterType="accountAuth">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT @@IDENTITY
         </selectKey>
-        insert into account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,appkey) values
-        (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{appkey})
+        insert into account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id) values
+        (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId})
     </insert>
 
     <update id="updateAccountAuth" parameterType="accountAuth">
@@ -32,7 +32,7 @@
     </update>
 
     <select id="getUserAuthByUserId" parameterType="long" resultMap="accountAuthMap">
-          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,appkey from account_auth
+          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id from account_auth
           where  user_id=#{userId}
     </select>
 
