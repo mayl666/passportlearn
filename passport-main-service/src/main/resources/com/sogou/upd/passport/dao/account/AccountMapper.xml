@@ -20,7 +20,7 @@
         <if test="passportId!=null">and passport_id=#{passportId}</if>
     </select>
 
-    <insert id="userRegister" parameterType="account">
+    <insert id="saveAccount" parameterType="account">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT @@IDENTITY
         </selectKey>
