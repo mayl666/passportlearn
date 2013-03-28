@@ -601,8 +601,8 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
-        //TODO 读缓存
-        AppConfig appConfig = appConfigMapper.getAppConfigByClientId(clientId);
+
+        AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
         AccountAuth accountAuth = new AccountAuth();
         if (appConfig != null) {
             int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
