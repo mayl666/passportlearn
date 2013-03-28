@@ -400,11 +400,10 @@ public class AccountServiceImpl implements AccountService {
                     addPassportIdMapUserIdToCache(passportId,userId);
                 }
             }
-
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
-        return passportId != null ? passportId : null;
+        return userId;
     }
 
     @Override
@@ -466,7 +465,7 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
-        return passportId != null ? passportId : null;
+        return passportId;
     }
 
     @Override
