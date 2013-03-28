@@ -65,7 +65,7 @@ public class AccountController extends BaseController {
         if (ret != null) return ret;
         //判断账号是否被缓存
         String cacheKey = mobile + "_" + clientid;
-        boolean isExistFromCache = accountService.checkIsExistFromCache(cacheKey);
+        boolean isExistFromCache = accountService.checkKeyIsExistFromCache(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
             //更新缓存状态

@@ -14,7 +14,6 @@ import java.util.List;
  * Time: 下午11:41
  * To change this template use File | Settings | File Templates.
  */
-@Service
 public interface AppConfigService {
 
     public long getMaxClientId();

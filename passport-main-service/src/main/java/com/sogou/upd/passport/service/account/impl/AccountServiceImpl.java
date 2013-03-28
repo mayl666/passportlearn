@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
+import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
@@ -56,7 +57,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountAuthMapper accountAuthMapper;
 
     @Inject
-    private AppConfigService appConfigService;
+    private AppConfigMapper appConfigMapper;
 
     @Inject
     private TaskExecutor taskExecutor;
@@ -490,7 +491,7 @@ public class AccountServiceImpl implements AccountService {
                 appConfig = (AppConfig) obj;
             } else {
                 //读取数据库
-                appConfig = getAppConfigByClientId(clientId);
+                appConfig = appConfigMapper.getAppConfigByClientId(clientId);
                 if (appConfig != null) {
                     final AppConfig finalAppConfig = appConfig;
                     taskExecutor.execute(new Runnable() {
@@ -522,6 +523,49 @@ public class AccountServiceImpl implements AccountService {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * 根据passportId获取手机号码
+     *
+     * @param passportId
+     * @return
+     */
+    @Override
+    public String getMobileByPassportId(String passportId) {
+        Account account = null;
+        if (!Strings.isNullOrEmpty(passportId)) {
+            account = accountMapper.getAccountByPassportId(passportId);
+            if (account != null) {
+                final Account finalAccount = account;
+                taskExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //写缓存
+                        addPassportIdMapUserIdToCache(finalAccount.getPassportId(), Long.toString(finalAccount.getId()), finalAccount.getMobile());
+                    }
+                });
+            }
+        }
+        return account != null ? account.getMobile() : null;
+    }
+
+    /**
+     * 根据主键ID获取passportId
+     * @param userId
+     * @return
+     */
+    @Override
+    public String getPassportIdByUserId(long userId) {
+        String passportId = null;
+        if(userId != 0){
+            passportId = accountMapper.getPassportIdByUserId(userId);
+            return passportId == null ? null : passportId ;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+>>>>>>> 12e0383756c7c9046f19d92e48802eb069b2a1c3
     /*
      * 根据key从缓存中获取value
      */
@@ -555,7 +599,8 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
-        AppConfig appConfig = appConfigService.getAppConfig(clientId);
+        //TODO 读缓存
+        AppConfig appConfig = appConfigMapper.getAppConfigByClientId(clientId);
         AccountAuth accountAuth = new AccountAuth();
         if (appConfig != null) {
             int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();

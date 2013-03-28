@@ -12,5 +12,5 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface TestService {
-    public List<UserProfile> getAllUserProfile();
+//    public List<UserProfile> getAllUserProfile();
 }
