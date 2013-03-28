@@ -213,7 +213,6 @@ public class AccountServiceImpl implements AccountService {
                                     } else {
                                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                                     }
-
                                 } else {
                                     return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
                                 }
@@ -493,13 +492,7 @@ public class AccountServiceImpl implements AccountService {
                 //读取数据库
                 appConfig = appConfigMapper.getAppConfigByClientId(clientId);
                 if (appConfig != null) {
-                    final AppConfig finalAppConfig = appConfig;
-                    taskExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            addClientIdMapAppConfigToCache(clientId, finalAppConfig);
-                        }
-                    });
+                    addClientIdMapAppConfigToCache(clientId, appConfig);
                 }
             }
         } catch (Exception e) {
@@ -507,7 +500,7 @@ public class AccountServiceImpl implements AccountService {
         }
         return appConfig;
     }
-
+    @Override
     public boolean deleteSmsCache(final String mobile, final String clientId) {
         Object obj = null;
         try {
