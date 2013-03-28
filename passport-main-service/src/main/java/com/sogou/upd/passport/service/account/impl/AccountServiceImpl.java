@@ -496,7 +496,7 @@ public class AccountServiceImpl implements AccountService {
                 appConfig = (AppConfig) obj;
             } else {
                 //读取数据库
-                appConfig = getAppConfigByClientId(clientId);
+                appConfig = appConfigMapper.getAppConfigByClientId(clientId);
                 if (appConfig != null) {
                     final AppConfig finalAppConfig = appConfig;
                     taskExecutor.execute(new Runnable() {
