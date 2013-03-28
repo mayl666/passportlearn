@@ -416,7 +416,8 @@ public class AccountServiceImpl implements AccountService {
     public String getPassportIdByUserId(final long userId) {
         String passportId = null;
         try {
-            passportId = getFromCache(Long.toString(userId));
+            String cacheKey = CACHE_PREFIX_USERID + userId;
+            passportId = getFromCache(cacheKey);
         } catch (Exception e) {
             logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
         }
