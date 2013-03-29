@@ -12,8 +12,8 @@
     </resultMap>
 
     <insert id="saveAccountAuth" parameterType="accountAuth">
-        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
-            SELECT @@IDENTITY
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
         </selectKey>
         insert into account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id) values
         (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId})

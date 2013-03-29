@@ -357,7 +357,8 @@ public class AccountServiceImpl implements AccountService {
         accountReturn.setMobile(account);
         long id = accountMapper.saveAccount(accountReturn);
         if (id != 0) {
-            accountReturn.setId(id);
+//            System.out.println(accountReturn.getId());
+//            accountReturn.setId(id);
             return accountReturn;
         }
         return null;
@@ -373,7 +374,7 @@ public class AccountServiceImpl implements AccountService {
         AccountAuth accountAuth = newAccountAuth(userId, passportId, clientId);
         long id = accountAuthMapper.saveAccountAuth(accountAuth);
         if (id != 0) {
-            accountAuth.setId(id);
+//            accountAuth.setId(id);
             return accountAuth;
         }
         return null;
