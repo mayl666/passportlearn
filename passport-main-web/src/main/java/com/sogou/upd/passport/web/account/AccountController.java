@@ -161,16 +161,16 @@ public class AccountController extends BaseController {
                     mapResult.put("refreshToken", refreshToken);
                     return buildSuccess("用户注册成功！", mapResult);
                 } else {
-                    //  TODO  这个地方是异常抛出来还是build状态码及提示信息，待定！
+                    //用户注册失败
+                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                 }
             } else {
-                //用户注册失败 TODO 同上，待定！
+                //用户注册失败
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
         } else {  //否则，不允许手机用户重复注册
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
-        return null;
     }
 
     /**
