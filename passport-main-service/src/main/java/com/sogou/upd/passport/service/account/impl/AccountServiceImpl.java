@@ -98,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleSendSms(final String account, final int clientId) {
+    public Map<String, Object> handleSendSms(final String mobile, final int clientId) {
         final Map<String, Object> mapResult = Maps.newHashMap();
         Object obj = null;
         try {
@@ -108,7 +108,7 @@ public class AccountServiceImpl implements AccountService {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     //设置每日最多发送短信验证码条数
-                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
+                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
                     byte[] keySendNum = RedisUtils.stringToByteArry("sendNum");
                     if (!connection.exists(keySendNumCache)) {
                         boolean flag = connection.hSetNX(keySendNumCache,
@@ -132,11 +132,11 @@ public class AccountServiceImpl implements AccountService {
                     //生成随机数
                     String randomCode = RandomStringUtils.randomNumeric(5);
                     //写入缓存
-                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
+                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
                     BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(keyCache);
                     Map<String, String> mapData = Maps.newHashMap();
                     mapData.put("smsCode", randomCode);    //初始化验证码
-                    mapData.put("mobile", account);        //发送手机号
+                    mapData.put("mobile", mobile);        //发送手机号
                     mapData.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
                     boundHashOperations.putAll(mapData);
 
@@ -145,7 +145,7 @@ public class AccountServiceImpl implements AccountService {
                     //读取短信内容
                     String smsText = getSmsText(clientId, randomCode);
                     if (!Strings.isNullOrEmpty(smsText)) {
-                        isSend = SMSUtil.sendSMS(account, smsText);
+                        isSend = SMSUtil.sendSMS(mobile, smsText);
                         if (isSend) {
                             mapResult.put("smscode", randomCode);
                             return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
@@ -212,9 +212,9 @@ public class AccountServiceImpl implements AccountService {
                         //获取缓存数据
                         long sendTime = RedisUtils.byteArryToLong(mapCacheResult.get(sendTimeByte));
                         String smsCode = RedisUtils.byteArryToString(mapCacheResult.get(smsCodeByte));
-                        String account = RedisUtils.byteArryToString(mapCacheResult.get(mobileByte));
+                        String mobile = RedisUtils.byteArryToString(mapCacheResult.get(mobileByte));
 
-                        byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
+                        byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
                         Map<byte[], byte[]> mapCacheSendNumResult = connection.hGetAll(keySendNumCache);
                         if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
                             int sendNum = RedisUtils.byteArryToInteger(mapCacheSendNumResult.get(sendNumByte));
@@ -229,7 +229,7 @@ public class AccountServiceImpl implements AccountService {
                                     //读取短信内容
                                     String smsText = getSmsText(clientId, smsCode);
                                     if (!Strings.isNullOrEmpty(smsText)) {
-                                        boolean isSend = SMSUtil.sendSMS(smsText, smsCode);
+                                        boolean isSend = SMSUtil.sendSMS(mobile, smsText);
                                         if (isSend) {
                                             //30分钟之内返回原先验证码
                                             mapResult.put("smscode", smsCode);
