@@ -88,26 +88,6 @@ public class AccountController extends BaseController {
     }
 
     /**
-     * 手机账号登录接口
-     *
-     * @param mobile 传入的手机号码
-     * @param clientid 传入的密码
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/v2/mobile/login", method = RequestMethod.POST)
-    @ResponseBody
-    public Object userlogin(HttpServletRequest request, HttpServletResponse response,
-                            @ModelAttribute("postData") PostUserProfile postData, @RequestParam(defaultValue = "0") int clientid,
-                            @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd) throws Exception {
-        boolean empty = hasEmpty(mobile, passwd);
-        if (empty || clientid == 0) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
-        }
-        return accountService.handleLogin(mobile, passwd, clientid, postData);
-    }
-
-    /**
      * 手机账号正式注册调用
      *
      * @param mobile  传入的手机号码

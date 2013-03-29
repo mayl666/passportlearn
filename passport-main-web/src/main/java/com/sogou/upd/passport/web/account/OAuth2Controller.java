@@ -2,16 +2,14 @@ package com.sogou.upd.passport.web.account;
 
 import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.exception.SystemException;
-import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthASResponse;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.OAuthResponse;
 import com.sogou.upd.passport.oauth2.common.types.GrantType;
+import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,15 +51,18 @@ public class OAuth2Controller {
         try {
             oauthRequest = new OAuthTokenRequest(request);
 
+            int clientId = Integer.valueOf(oauthRequest.getClientId());
+
             // 检查client_id和client_secret是否有效
-            if (!appConfigService.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
-                response =
-                        OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                                .setError(OAuthError.Response.INVALID_CLIENT).setErrorDescription("client_id or client_secret not found")
-                                .buildJSONMessage();
+            if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.INVALID_CLIENT)
+                        .setErrorDescription("client_id or client_secret not found")
+                        .buildJSONMessage();
             }
 
-            //do checking for different grant types
+            // 檢查不同的grant types是否正確
+            // TODO 消除if-else
             if (oauthRequest.getGrantType()
                     .equals(GrantType.PASSWORD.toString())) {
                 if (!accountService.verifyUserVaild(oauthRequest.getUsername(), oauthRequest.getPassword())) {
@@ -91,6 +92,11 @@ public class OAuth2Controller {
                         .setRefreshToken("")
                         .buildJSONMessage();
             }
+        } catch (NumberFormatException ex) {
+            logger.error("{} is not Number", oauthRequest.getClientId());
+            ProblemException problem = OAuthUtils.handleOAuthProblemException(oauthRequest.getClientId() + " is not Number");
+            OAuthResponse res = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(problem)
+                    .buildJSONMessage();
         } catch (ProblemException e) {
             OAuthResponse res = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e)
                     .buildJSONMessage();
