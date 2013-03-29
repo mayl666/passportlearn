@@ -181,7 +181,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             });
         } catch (Exception e) {
-            logger.error("[SMS] service method checkIsExistFromCache error.{}", e);
+            logger.error("[SMS] service method checkKeyIsExistFromCache error.{}", e);
         }
         return obj != null ? (Boolean) obj : false;
     }
@@ -245,7 +245,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             });
         } catch (Exception e) {
-            logger.error("[SMS] service method updateCacheStatusByAccount error.{}", e);
+            logger.error("[SMS] service method updateSmsInfoByAccountFromCache error.{}", e);
         }
         return obj != null ? (Map<String, Object>) obj : null;
     }
@@ -369,7 +369,7 @@ public class AccountServiceImpl implements AccountService {
                 userIdResult = Long.parseLong(userId);
             }
         } catch (Exception e) {
-            logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
+            logger.error("[SMS] service method getUserIdByPassportIdFromCache error.{}", e);
         }
         return userIdResult;
     }
@@ -401,7 +401,7 @@ public class AccountServiceImpl implements AccountService {
 
         } catch (Exception e) {
             flag = false;
-            logger.error("[SMS] service method addUserIdMapPassportId error.{}", e);
+            logger.error("[SMS] service method addUserIdMapPassportIdToCache error.{}", e);
         }
         return flag;
     }
@@ -421,7 +421,7 @@ public class AccountServiceImpl implements AccountService {
             }
 
         } catch (Exception e) {
-            logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
+            logger.error("[SMS] service method getPassportIdByUserIdFromCache error.{}", e);
         }
         return passportId;
     }

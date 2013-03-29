@@ -84,7 +84,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             valueOperations.setIfAbsent(String.valueOf(cacheKey), gson.toJson(appConfig));
         } catch (Exception e) {
             flag = false;
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
+            logger.error("[SMS] service method addClientIdMapAppConfigToCache error.{}", e);
         }
         return flag;
     }
