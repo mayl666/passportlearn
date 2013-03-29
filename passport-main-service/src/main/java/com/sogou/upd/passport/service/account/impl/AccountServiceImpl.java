@@ -64,7 +64,6 @@ public class AccountServiceImpl implements AccountService {
     @Inject
     private StringRedisTemplate redisTemplate;
 
-
     @Override
     public boolean checkIsRegisterAccount(Account account) {
         Account accountReturn = accountMapper.checkIsRegisterAccount(account);
@@ -372,7 +371,7 @@ public class AccountServiceImpl implements AccountService {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
 
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfAbsent(String.valueOf(clientId), JSONUtils.objectToJson(appConfig));
+            valueOperations.setIfAbsent(String.valueOf(cacheKey), JSONUtils.objectToJson(appConfig));
         } catch (Exception e) {
             flag = false;
             logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
