@@ -104,7 +104,6 @@ public class AccountController extends BaseController {
         //对mobile手机号验证,是否为空，格式及位数是否正确
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
-
         //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
         String passportId = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
         if (!Strings.isNullOrEmpty(passportId)) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
@@ -118,7 +117,6 @@ public class AccountController extends BaseController {
         if (!checkSmsInfo) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
-
         //再读数据库，验证该手机用户是否已经注册过了
         String ip = getIp(request);
         Account account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
