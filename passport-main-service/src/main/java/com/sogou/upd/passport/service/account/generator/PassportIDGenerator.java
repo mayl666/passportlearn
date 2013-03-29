@@ -13,18 +13,18 @@ public class PassportIDGenerator {
 
     /**
      * 根据account生成passportid
-     * @param account
+     * @param username
      * @param provider
      * @return
      */
-    public static String generator(String account, int provider) {
+    public static String generator(String username, int provider) {
         String passportID = null;
-        if (AccountTypeEnum.isPhone(account, provider)) {
-            passportID = account + "@sohu.com";
+        if (AccountTypeEnum.isPhone(username, provider)) {
+            passportID = username + "@sohu.com";
         } else if (AccountTypeEnum.isConnect(provider)) {
-            passportID = account + "@" + AccountTypeEnum.getProviderStr(provider) + ".sohu.com";
+            passportID = username + "@" + AccountTypeEnum.getProviderStr(provider) + ".sohu.com";
         } else {
-            passportID = account;
+            passportID = username;
         }
 
         return passportID;

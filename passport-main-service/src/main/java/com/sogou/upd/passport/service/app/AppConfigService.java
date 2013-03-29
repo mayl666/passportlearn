@@ -16,14 +16,35 @@ import java.util.List;
  */
 public interface AppConfigService {
 
+    /**
+     * 验证client合法性
+     * @param clientId
+     * @param clientSecret
+     * @return
+     */
+    public boolean verifyClientVaild(String clientId, String clientSecret);
+
+    /**
+     * 根据ClientId 获取AppConfig （缓存读取）
+     * @param clientId
+     * @return
+     */
+    public AppConfig getAppConfigByClientIdFromCache(int clientId);
+
+    /**
+     * ClientId与AppConfig缓存映射
+     * @param clientId
+     * @param appConfig
+     */
+    public boolean addClientIdMapAppConfigToCache(int clientId,AppConfig appConfig);
+
     public long getMaxClientId();
 
     public AppConfig regApp(AppConfig app);
 
-    public AppConfig getAppConfig(int clientId);
-
     public int getAccessTokenExpiresIn(int clientId);
 
     public int getRefreshTokenExpiresIn(int clientId);
+
 
 }

@@ -21,8 +21,11 @@
     </select>
 
     <insert id="saveAccount" parameterType="account">
-        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
-            SELECT @@IDENTITY
+        <!--<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">-->
+        <!--SELECT @@IDENTITY-->
+        <!--</selectKey>-->
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
         </selectKey>
         insert into account(passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type) values
         (#{passportId},#{passwd},#{mobile},#{regTime},#{regIp},#{status},#{version},#{accountType})

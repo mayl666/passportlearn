@@ -21,7 +21,6 @@ import java.util.Date;
  */
 public class TokenGenerator {
 
-
     // 公钥
     public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
             "7rU/9UWJqy8li64i5bYtx7rE8+I4EdC00To5kz6D61UCAwEAAQ==";
@@ -35,13 +34,13 @@ public class TokenGenerator {
 
     /**
      * 生成access_token
-     * 构成格式 passportID|appkey|vaild_timestamp(过期时间点，单位毫秒)|4位随机数
-     *
+     * 构成格式 passportID|clientId|instanceId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数
+     * TODO
      * @param passportID
-     * @param appkey
+     * @param clientId
      * @return
      */
-    public static String generatorAccessToken(String passportID, int appkey, int expiresIn) throws Exception {
+    public static String generatorAccessToken(String passportID, int clientId, int expiresIn) throws Exception {
 
         // 过期时间点
         long vaildTime = generatorVaildTime(expiresIn);
@@ -51,33 +50,33 @@ public class TokenGenerator {
 
         StringBuffer data = new StringBuffer();
         data.append(passportID).append(CommonParameters.SEPARATOR_1);
-        data.append(appkey).append(CommonParameters.SEPARATOR_1);
+        data.append(clientId).append(CommonParameters.SEPARATOR_1);
         data.append(vaildTime).append(CommonParameters.SEPARATOR_1);
         data.append(random);
 
-        byte[] encbyte = RSA.encryptByPrivateKey(data.toString().getBytes(), PRIVATE_KEY);
-        String encBase64Str = Coder.encryptBASE64(encbyte);
+        byte[] encByte = RSA.encryptByPrivateKey(data.toString().getBytes(), PRIVATE_KEY);
+        String encBase64Str = Coder.encryptBASE64(encByte);
 
         return encBase64Str;
     }
 
     /**
      * 生成refresh_token
-     * 构成格式 passportID|appkey|timestamp(当前时间戳，单位毫秒)
+     * 构成格式 passportID|clientId|instanceId|timestamp(当前时间戳，单位毫秒)
      *
      * @param passportID
-     * @param appkey
+     * @param clientId
      * @return
      * @throws Exception
      */
-    public static String generatorRefreshToken(String passportID, int appkey) throws Exception {
+    public static String generatorRefreshToken(String passportID, int clientId) throws Exception {
         long timestamp = System.currentTimeMillis();
         StringBuffer data = new StringBuffer();
-        data.append(passportID).append(appkey).append(timestamp);
+        data.append(passportID).append(clientId).append(timestamp);
 
-        byte[] encryByte = Coder.encryptHMAC(data.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);
+        byte[] encByte = Coder.encryptHMAC(data.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);
 
-        return Coder.toHexString(encryByte);
+        return Coder.toHexString(encByte);
     }
 
     /**
