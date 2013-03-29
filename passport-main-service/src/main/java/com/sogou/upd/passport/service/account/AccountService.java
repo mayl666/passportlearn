@@ -15,6 +15,14 @@ import java.util.Map;
  */
 public interface AccountService {
 
+    /**
+     * 验证用户名密码是否正确
+     * @param username
+     * @param password
+     * @return
+     */
+    public boolean verifyUserVaild(String username, String password);
+
     public long userRegister(Account account);
 
     /**

@@ -7,9 +7,10 @@ public class CommonParameters {
 	public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
 	public static final String RESPONSE_DATA = "data"; // 响应结果数据
 
-	public static final String UTF8 = "UTF-8";
-	public static final String SEPARATOR_0 = ",";
+	public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
+    public static final String PARAMETER_SEPARATOR = "&";
+    public static final String NAME_VALUE_SEPARATOR = "=";
 
     // HMAC_SHA1密钥
     public static final String HMAC_SHA_KEY = "q2SyvfJ8dTwjK3t0x1pnL78Mrq9FkN5tF00p2wEgQg0HmCFx4GXGONOf5FQykc45Evt8odc9OXjGLNX9KnPNWw==";

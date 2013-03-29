@@ -17,11 +17,12 @@ import java.util.Set;
  */
 public enum AccountTypeEnum {
 
-    EMAIL(0), // 邮箱
-    PHONE(1), // 手机号码
-    QQ(2), // QQ
-    SINA(3), // Sina微博
-    RENREN(4); // 人人
+    UNKNOW(0), //未知
+    EMAIL(1), // 邮箱
+    PHONE(2), // 手机号码
+    QQ(3), // QQ
+    SINA(4), // Sina微博
+    RENREN(5); // 人人
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -53,19 +54,21 @@ public enum AccountTypeEnum {
     }
 
     public static boolean isPhone(String account, int provider) {
-        if (provider == PHONE.getValue() && PhoneUtil.verifyPhoneNumberFormat(account)) {
-            return true;
-        } else {
-            return false;
+        if (PhoneUtil.verifyPhoneNumberFormat(account)) {
+            if (provider == PHONE.getValue() || provider == UNKNOW.getValue()) {
+                return true;
+            }
         }
+        return false;
     }
 
     public static boolean isEmail(String account, int provider) {
-        if (provider == EMAIL.getValue() && account.contains("@")) {
-            return true;
-        } else {
-            return false;
+        if (account.contains("@")) {
+            if (provider == EMAIL.getValue() || provider == UNKNOW.getValue()) {
+                return true;
+            }
         }
+        return false;
     }
 
     public static boolean isConnect(int provider) {

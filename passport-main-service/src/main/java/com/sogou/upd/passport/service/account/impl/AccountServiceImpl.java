@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
@@ -62,6 +63,30 @@ public class AccountServiceImpl implements AccountService {
     @Inject
     private RedisTemplate redisTemplate;
 
+    @Override
+    public boolean verifyUserVaild(String username, String password) {
+        if (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) {
+            String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.UNKNOW.getValue());
+            String pwdSign;
+            try {
+                pwdSign = PwdGenerator.generatorPwdSign(password);
+            } catch (SystemException e) {
+                logger.error("username:{} passport:{} sign fail", username, password);
+                return false;
+            }
+            //判断用户是否存在
+            Account userAccount = getAccountByPassportId(passportId);
+            if (userAccount != null && pwdSign.equals(userAccount.getPasswd())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Account getAccountByPassportId(String passportId) {
+        // TODO implement
+        return null;
+    }
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
@@ -408,12 +433,13 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 根据passportId获取手机号码
+     *
      * @param passportId
      * @return
      */
     @Override
     public String getMobileByPassportId(String passportId) {
-        if(passportId != null){
+        if (passportId != null) {
             String mobile = accountMapper.getMobileByPassportId(passportId);
             return mobile == null ? null : mobile;
         }

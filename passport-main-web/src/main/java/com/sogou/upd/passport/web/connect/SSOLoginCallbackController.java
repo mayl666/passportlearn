@@ -2,12 +2,12 @@ package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.model.account.AccountConnect;
 import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
-import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.service.account.AccountConnectService;
-import com.sogou.upd.passport.service.connect.message.response.OAuthSinaSSOTokenResponse;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.web.BaseConnectController;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,11 +44,12 @@ public class SSOLoginCallbackController extends BaseConnectController {
             // TODO record param error
             return;
         }
+        OAuthSinaSSOTokenRequest oauthRequest = null;
 
         // 获取第三方用户信息
         try {
-            OAuthSinaSSOTokenResponse oar = OAuthSinaSSOTokenResponse.oauthCodeAuthzResponse(req);
-            String connectUid = oar.getConnectUid();
+            oauthRequest = new OAuthSinaSSOTokenRequest(req);
+            String connectUid = oauthRequest.getConnectUid();
 
             // 判断账号是否已经存在
             AccountConnectQuery query = buildAccountConnectQuery(connectUid, provider);
@@ -60,7 +61,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
 
                 if (CollectionUtils.isEmpty(accountConnectList)) {
                     // 初始化Account
-                    Account account = accountService.initialConnectAccount(oar.getConnectUid(), getIp(req), provider);
+                    Account account = accountService.initialConnectAccount(oauthRequest.getConnectUid(), getIp(req), provider);
                     userId = account.getId();
                 } else {  // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
                     userId = accountConnectList.get(0).getUserId();
@@ -70,7 +71,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
                 // 初始化Account_Auth
                 accountService.initialAccountAuth(userId, passportId, clientId);
                 // 初始化Account_Connect
-                AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
+                AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oauthRequest.getOAuthToken());
                 accountConnectService.initialAccountConnect(accountConnect);
 
             } else {   // 此账号在当前应用第N次登录
@@ -80,7 +81,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
                 String passportId = accountService.getPassportIdByUserId(userId);
                 accountService.updateAccountAuth(userId, passportId, clientId);
                 // 更新当前应用的Account_Connect
-                AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oar.getOAuthToken());
+                AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oauthRequest.getOAuthToken());
                 accountConnectService.updateAccountConnect(accountConnect);
             }
 

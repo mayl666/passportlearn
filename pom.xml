@@ -8,6 +8,7 @@
     <modules>
         <module>passport-main-service</module>
         <module>passport-main-web</module>
+        <module>passport-oauth2</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -120,11 +121,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>1.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.8.5</version>
         </dependency>
 
         <dependency>

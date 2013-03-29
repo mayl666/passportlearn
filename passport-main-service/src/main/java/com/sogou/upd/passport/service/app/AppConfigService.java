@@ -17,6 +17,14 @@ import java.util.List;
 @Service
 public interface AppConfigService {
 
+    /**
+     * 验证client合法性
+     * @param clientId
+     * @param clientSecret
+     * @return
+     */
+    public boolean verifyClientVaild(String clientId, String clientSecret);
+
     public long getMaxClientId();
 
     public AppConfig regApp(AppConfig app);
@@ -26,5 +34,6 @@ public interface AppConfigService {
     public int getAccessTokenExpiresIn(int clientId);
 
     public int getRefreshTokenExpiresIn(int clientId);
+
 
 }
