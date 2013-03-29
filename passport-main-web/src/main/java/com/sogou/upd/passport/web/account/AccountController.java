@@ -112,7 +112,7 @@ public class AccountController extends BaseController {
      *
      * @param mobile  传入的手机号码
      * @param passwd  传入的密码
-     * @param smsCode 传入的验证码
+     * @param smscode 传入的验证码
      * @param clientid  传入的应用id
      * @return
      * @throws Exception
@@ -120,12 +120,12 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                                     @RequestParam(defaultValue = "") String smsCode, @RequestParam(defaultValue = "0") int clientid) throws Exception {
+                                     @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "0") int clientid) throws Exception {
         //对mobile手机号验证,是否为空，格式及位数是否正确
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, clientid + "");
+        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientid + "");
         if (!checkSmsInfo) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
