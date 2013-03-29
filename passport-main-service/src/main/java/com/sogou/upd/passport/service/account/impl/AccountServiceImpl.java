@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.exception.SystemException;
@@ -12,7 +11,6 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
-import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
@@ -55,7 +53,6 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
     private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
     private static final String CACHE_PREFIX_USERID = "PASSPORT:ACCOUNT_USERID_";     //userID与passport_id映射
-    private static final String CACHE_PREFIX_CLIENTID = "PASSPORT:ACCOUNT_CLIENTID_";     //clientid与appConfig映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
@@ -64,9 +61,6 @@ public class AccountServiceImpl implements AccountService {
     private ShardedJedisPool shardedJedisPool;
     @Inject
     private AppConfigService appConfigService;
-
-    private ShardedJedis jedis;
-
     @Inject
     private TaskExecutor taskExecutor;
     @Inject
@@ -173,7 +167,7 @@ public class AccountServiceImpl implements AccountService {
      */
     public String getSmsText(final int clientId, String smsCode) {
         //缓存中根据clientId获取AppConfig
-        AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
+        AppConfig appConfig = appConfigService.getAppConfigByClientIdFromCache(clientId);
         if (appConfig != null) {
             return String.format(appConfig.getSmsText(), smsCode);
         }
@@ -396,21 +390,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
-        boolean flag = true;
-        try {
-            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfAbsent(String.valueOf(cacheKey), JSONUtils.objectToJson(appConfig));
-        } catch (Exception e) {
-            flag = false;
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-        }
-        return flag;
-    }
-
-    @Override
     public long getUserIdByPassportIdFromCache(final String passportId) {
         long userIdResult = 0;
         try {
@@ -484,30 +463,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AppConfig getAppConfigByClientIdFromCache(final int clientId) {
-        AppConfig appConfig = null;
-        try {
-            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-            //缓存根据clientId读取AppConfig
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            String valAppConfig = valueOperations.get(cacheKey);
-            if (!Strings.isNullOrEmpty(valAppConfig)) {
-                appConfig = JSONUtils.jsonToObject(valAppConfig, AppConfig.class);
-            }
-            if (appConfig == null) {
-                //读取数据库
-                appConfig = appConfigMapper.getAppConfigByClientId(clientId);
-                if (appConfig != null) {
-                    addClientIdMapAppConfigToCache(clientId, appConfig);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-        }
-        return appConfig;
-    }
-
-    @Override
     public boolean deleteSmsCache(final String mobile, final String clientId) {
         Object obj = null;
         try {
@@ -543,20 +498,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * 根据passportId获取手机号码
-     * @param passportId
-     * @return
-     */
-    @Override
-    public String getMobileByPassportId(String passportId) {
-        if(passportId != null){
-            String mobile = accountMapper.getMobileByPassportId(passportId);
-            return mobile == null ? null : mobile;
-        }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
      * 根据主键ID获取passportId
      *
      * @param passportId
@@ -570,6 +511,22 @@ public class AccountServiceImpl implements AccountService {
             return userId == 0 ? 0 : userId;
         }
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * 根据主键ID获取passportId
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public String getPassportIdByUserId(long userId) {
+        String passportId = null;
+        if (userId != 0) {
+            passportId = getPassportIdByUserId(userId);    // TODO
+            return passportId == null ? null : passportId;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*
@@ -596,7 +553,7 @@ public class AccountServiceImpl implements AccountService {
      */
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
 
-        AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
+        AppConfig appConfig = appConfigService.getAppConfigByClientIdFromCache(clientId);
         AccountAuth accountAuth = new AccountAuth();
         if (appConfig != null) {
             int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();

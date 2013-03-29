@@ -123,12 +123,6 @@ public interface AccountService {
     public boolean addUserIdMapPassportIdToCache(String userId,String passportId);
 
     /**
-     * ClientId与AppConfig缓存映射
-     * @param clientId
-     * @param appConfig
-     */
-    public boolean addClientIdMapAppConfigToCache(int clientId,AppConfig appConfig);
-    /**
      * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId
      * @return
@@ -140,12 +134,6 @@ public interface AccountService {
      * @return
      */
     public String getPassportIdByUserIdFromCache(long userId);
-    /**
-     * 根据ClientId 获取AppConfig （缓存读取）
-     * @param clientId
-     * @return
-     */
-    public AppConfig getAppConfigByClientIdFromCache(int clientId);
 
     /**
      * 修改用户状态表
