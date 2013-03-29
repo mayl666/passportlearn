@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.service.app.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.utils.JSONUtils;
+import com.google.gson.Gson;
 import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -57,7 +57,8 @@ public class AppConfigServiceImpl implements AppConfigService {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             String valAppConfig = valueOperations.get(cacheKey);
             if (!Strings.isNullOrEmpty(valAppConfig)) {
-                appConfig = JSONUtils.jsonToObject(valAppConfig, AppConfig.class);
+                Gson gson = new Gson();
+                appConfig = gson.fromJson(valAppConfig, AppConfig.class);
             }
             if (appConfig == null) {
                 //读取数据库
@@ -79,7 +80,8 @@ public class AppConfigServiceImpl implements AppConfigService {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
 
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfAbsent(String.valueOf(cacheKey), JSONUtils.objectToJson(appConfig));
+            Gson gson = new Gson();
+            valueOperations.setIfAbsent(String.valueOf(cacheKey), gson.toJson(appConfig));
         } catch (Exception e) {
             flag = false;
             logger.error("[SMS] service method addClientIdMapAppConfigToCache error.{}", e);

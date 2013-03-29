@@ -2,29 +2,19 @@ package com.sogou.upd.passport.dao;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.utils.DateUtil;
-import com.sogou.upd.passport.common.utils.JSONUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.model.app.AppConfig;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import redis.clients.jedis.ShardedJedis;
-import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -141,48 +131,48 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
         return (String)obj;  // To change body of implemented methods use File | Settings | File Templates.
     }
-    public boolean setAppConfigByClientId(){
-
-        Object obj = null;
-        try {
-            obj = redisTemplate.execute(new RedisCallback() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    AppConfig appConfig=new AppConfig();
-                    appConfig.setAccessTokenExpiresIn(21212);
-                    appConfig.setClientId(1003);
-                    appConfig.setClientSecret("4343");
-                    appConfig.setRefreshTokenExpiresIn(565645);
-
-                    connection.set(RedisUtils.stringToByteArry("1003"),
-                            RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
-                    return true;
-                }
-            });
-        } catch (Exception e) {
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-        }
-        return obj != null ? (Boolean) obj : false;
-    }
-    public AppConfig getAppConfigByClientId(){
-        Object obj = null;
-        try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    AppConfig appConfigResult=null;
-                    byte[] value=connection.get(RedisUtils.stringToByteArry("1003"));
-                    if(value!=null && value.length>0){
-                        appConfigResult= JSONUtils.jsonToObject(RedisUtils.byteArryToString(value), AppConfig.class);
-                    }
-                    return appConfigResult;
-                }
-            });
-        } catch (Exception e) {
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-        }
-        return obj != null ? (AppConfig) obj : null;
-    }
+//    public boolean setAppConfigByClientId(){
+//
+//        Object obj = null;
+//        try {
+//            obj = redisTemplate.execute(new RedisCallback() {
+//                @Override
+//                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+//                    AppConfig appConfig=new AppConfig();
+//                    appConfig.setAccessTokenExpiresIn(21212);
+//                    appConfig.setClientId(1003);
+//                    appConfig.setClientSecret("4343");
+//                    appConfig.setRefreshTokenExpiresIn(565645);
+//
+//                    connection.set(RedisUtils.stringToByteArry("1003"),
+//                            RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
+//                    return true;
+//                }
+//            });
+//        } catch (Exception e) {
+//            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
+//        }
+//        return obj != null ? (Boolean) obj : false;
+//    }
+//    public AppConfig getAppConfigByClientId(){
+//        Object obj = null;
+//        try {
+//            obj = redisTemplate.execute(new RedisCallback<Object>() {
+//                @Override
+//                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+//                    AppConfig appConfigResult=null;
+//                    byte[] value=connection.get(RedisUtils.stringToByteArry("1003"));
+//                    if(value!=null && value.length>0){
+//                        appConfigResult= JSONUtils.jsonToObject(RedisUtils.byteArryToString(value), AppConfig.class);
+//                    }
+//                    return appConfigResult;
+//                }
+//            });
+//        } catch (Exception e) {
+//            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
+//        }
+//        return obj != null ? (AppConfig) obj : null;
+//    }
 
     public void initRedis(String mobile, String randomCode) {
 
