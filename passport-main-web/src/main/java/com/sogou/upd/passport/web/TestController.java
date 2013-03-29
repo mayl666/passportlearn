@@ -28,7 +28,7 @@ public class TestController {
                        @RequestParam(defaultValue = "0") int appid
                        )
             throws Exception {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("!!!!!!!!!!!!!!!!");
 
          return buildSuccess("",null);
     }
