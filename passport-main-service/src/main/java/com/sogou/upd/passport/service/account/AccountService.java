@@ -27,13 +27,6 @@ public interface AccountService {
     public long userRegister(Account account);
 
     /**
-     * 用户登录接口
-     * @param
-     * @return
-     */
-    public Map<String,Object> handleLogin(String mobile, String passwd, int clientId, PostUserProfile postData) throws SystemException;
-
-    /**
      * 注册时检查手机号，发送验证码是否正确
      * @param account
      * @return
