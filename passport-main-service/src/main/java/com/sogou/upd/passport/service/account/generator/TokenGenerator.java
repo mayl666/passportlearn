@@ -54,8 +54,8 @@ public class TokenGenerator {
         data.append(vaildTime).append(CommonParameters.SEPARATOR_1);
         data.append(random);
 
-        byte[] encbyte = RSA.encryptByPrivateKey(data.toString().getBytes(), PRIVATE_KEY);
-        String encBase64Str = Coder.encryptBASE64(encbyte);
+        byte[] encByte = RSA.encryptByPrivateKey(data.toString().getBytes(), PRIVATE_KEY);
+        String encBase64Str = Coder.encryptBASE64(encByte);
 
         return encBase64Str;
     }
@@ -74,9 +74,9 @@ public class TokenGenerator {
         StringBuffer data = new StringBuffer();
         data.append(passportID).append(clientId).append(timestamp);
 
-        byte[] encryByte = Coder.encryptHMAC(data.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);
+        byte[] encByte = Coder.encryptHMAC(data.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);
 
-        return Coder.toHexString(encryByte);
+        return Coder.toHexString(encByte);
     }
 
     /**
