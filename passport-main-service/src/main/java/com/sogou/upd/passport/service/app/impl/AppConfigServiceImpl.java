@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.app.impl;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -53,17 +54,18 @@ public class AppConfigServiceImpl implements AppConfigService {
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
             //缓存根据clientId读取AppConfig
-//            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-//            String valAppConfig = valueOperations.get(cacheKey);
-//            if (!Strings.isNullOrEmpty(valAppConfig)) {
-//                appConfig = JSONUtils.jsonToObject(valAppConfig, AppConfig.class);
-//            }
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            String valAppConfig = valueOperations.get(cacheKey);
+            if (!Strings.isNullOrEmpty(valAppConfig)) {
+                Gson gson = new Gson();
+                appConfig = gson.fromJson(valAppConfig, AppConfig.class);
+            }
             if (appConfig == null) {
                 //读取数据库
                 appConfig = appConfigMapper.getAppConfigByClientId(clientId);
-//                if (appConfig != null) {
-//                    addClientIdMapAppConfigToCache(clientId, appConfig);
-//                }
+                if (appConfig != null) {
+                    addClientIdMapAppConfigToCache(clientId, appConfig);
+                }
             }
         } catch (Exception e) {
             logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
@@ -74,15 +76,16 @@ public class AppConfigServiceImpl implements AppConfigService {
     @Override
     public boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
         boolean flag = true;
-//        try {
-//            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-//
-//            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-//            valueOperations.setIfAbsent(String.valueOf(cacheKey), JSONUtils.objectToJson(appConfig));
-//        } catch (Exception e) {
-//            flag = false;
-//            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-//        }
+        try {
+            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
+
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            Gson gson = new Gson();
+            valueOperations.setIfAbsent(String.valueOf(cacheKey), gson.toJson(appConfig));
+        } catch (Exception e) {
+            flag = false;
+            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
+        }
         return flag;
     }
 
