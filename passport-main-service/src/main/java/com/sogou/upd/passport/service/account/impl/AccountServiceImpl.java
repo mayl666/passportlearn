@@ -232,7 +232,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public long userRegister(Account account) {
-        return accountMapper.userRegister(account);
+        return accountMapper.saveAccount(account);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -330,7 +330,7 @@ public class AccountServiceImpl implements AccountService {
         accountReturn.setStatus(AccountStatusEnum.REGULAR.getValue());
         accountReturn.setVersion(Account.NEW_ACCOUNT_VERSION);
         accountReturn.setMobile(account);
-        long id = accountMapper.userRegister(accountReturn);
+        long id = accountMapper.saveAccount(accountReturn);
         if (id != 0) {
             accountReturn.setId(id);
             return accountReturn;
