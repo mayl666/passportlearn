@@ -25,7 +25,7 @@ public interface AccountMapper {
      * 验证合法，用户注册
      * @param account
      */
-    public int userRegister(Account account);
+    public int saveAccount(Account account);
     /**
      * 根据用户名密码获取用户Account
      * @param
