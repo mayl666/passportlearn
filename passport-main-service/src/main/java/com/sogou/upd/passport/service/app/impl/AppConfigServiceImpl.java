@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.app.impl;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -12,6 +13,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.lang.reflect.Type;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,8 +59,8 @@ public class AppConfigServiceImpl implements AppConfigService {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             String valAppConfig = valueOperations.get(cacheKey);
             if (!Strings.isNullOrEmpty(valAppConfig)) {
-                Gson gson = new Gson();
-                appConfig = gson.fromJson(valAppConfig, AppConfig.class);
+                Type type = new TypeToken<AppConfig>() {}.getType();
+                appConfig = new Gson().fromJson(valAppConfig, type);
             }
             if (appConfig == null) {
                 //读取数据库
@@ -80,11 +82,10 @@ public class AppConfigServiceImpl implements AppConfigService {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
 
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            Gson gson = new Gson();
-            valueOperations.setIfAbsent(String.valueOf(cacheKey), gson.toJson(appConfig));
+            valueOperations.setIfAbsent(String.valueOf(cacheKey), new Gson().toJson(appConfig));
         } catch (Exception e) {
             flag = false;
-            logger.error("[SMS] service method addClientIdMapAppConfigToCache error.{}", e);
+            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
         }
         return flag;
     }
