@@ -261,38 +261,6 @@ public class AccountServiceImpl implements AccountService {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public Map<String, Object> handleLogin(String mobile, String passwd, int clientId, PostUserProfile postData) throws SystemException {
-        Account userAccount = null;
-        //判断用户是否存在
-        try {
-            userAccount = getUserAccount(mobile, passwd);
-        } catch (Exception e) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
-        }
-        if (userAccount == null) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
-        }
-        //判读access_token有效性，是否在有效的范围内
-        AccountAuth accountAuth = accountAuthMapper.getUserAuthByUserId(userAccount.getId());
-
-        long curtime = System.currentTimeMillis();
-        boolean valid = curtime < accountAuth.getAccessValidTime();
-
-//        AccountAuth accountAuth=newAccountAuth(userAccount.getId(),userAccount.getPassportId(),appkey);
-//        int updateNum=accountAuthMapper.updateAccountAuth(accountAuth);
-//
-//        if (accountAuth == null) {
-//            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED);
-//        }
-
-        if (valid) {
-            return ErrorUtil.buildSuccess("登录成功", null);
-        }
-
-        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGINERROR);
-    }
-
     /**
      * 根据用户名密码获取用户Account
      *

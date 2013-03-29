@@ -22,7 +22,7 @@ public interface AppConfigService {
      * @param clientSecret
      * @return
      */
-    public boolean verifyClientVaild(String clientId, String clientSecret);
+    public boolean verifyClientVaild(int clientId, String clientSecret);
 
     /**
      * 根据ClientId 获取AppConfig （缓存读取）

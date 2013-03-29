@@ -32,10 +32,9 @@ public class AppConfigServiceImpl implements AppConfigService {
     private StringRedisTemplate redisTemplate;
 
     @Override
-    public boolean verifyClientVaild(String clientId, String clientSecret) {
+    public boolean verifyClientVaild(int clientId, String clientSecret) {
         try {
-            int client_id = Integer.parseInt(clientId);
-            AppConfig appConfig = getAppConfigByClientIdFromCache(client_id);
+            AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
             // TODO 如果不存在返回的是null还是new AppConfig？
             if (appConfig == null) {
                 return false;
