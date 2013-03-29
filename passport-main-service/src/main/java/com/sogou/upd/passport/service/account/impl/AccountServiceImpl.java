@@ -4,13 +4,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JSONUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
-import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,8 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -50,19 +53,43 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
     private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
     private static final String CACHE_PREFIX_USERID = "PASSPORT:ACCOUNT_USERID_";     //userID与passport_id映射
-    private static final String CACHE_PREFIX_CLIENTID = "PASSPORT:ACCOUNT_CLIENTID_";     //clientid与appConfig映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
     private AccountAuthMapper accountAuthMapper;
-
     @Inject
-    private AppConfigMapper appConfigMapper;
-
+    private ShardedJedisPool shardedJedisPool;
+    @Inject
+    private AppConfigService appConfigService;
     @Inject
     private TaskExecutor taskExecutor;
     @Inject
     private StringRedisTemplate redisTemplate;
+
+    @Override
+    public boolean verifyUserVaild(String username, String password) {
+        if (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) {
+            String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.UNKNOW.getValue());
+            String pwdSign;
+            try {
+                pwdSign = PwdGenerator.generatorPwdSign(password);
+            } catch (SystemException e) {
+                logger.error("username:{} passport:{} sign fail", username, password);
+                return false;
+            }
+            //判断用户是否存在
+            Account userAccount = getAccountByPassportId(passportId);
+            if (userAccount != null && pwdSign.equals(userAccount.getPasswd())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Account getAccountByPassportId(String passportId) {
+        // TODO implement
+        return null;
+    }
 
     @Override
     public boolean checkIsRegisterAccount(Account account) {
@@ -71,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> handleSendSms(final String account, final int clientId) {
+    public Map<String, Object> handleSendSms(final String mobile, final int clientId) {
         final Map<String, Object> mapResult = Maps.newHashMap();
         Object obj = null;
         try {
@@ -81,7 +108,7 @@ public class AccountServiceImpl implements AccountService {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     //设置每日最多发送短信验证码条数
-                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
+                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
                     byte[] keySendNum = RedisUtils.stringToByteArry("sendNum");
                     if (!connection.exists(keySendNumCache)) {
                         boolean flag = connection.hSetNX(keySendNumCache,
@@ -105,11 +132,11 @@ public class AccountServiceImpl implements AccountService {
                     //生成随机数
                     String randomCode = RandomStringUtils.randomNumeric(5);
                     //写入缓存
-                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
+                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
                     BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(keyCache);
                     Map<String, String> mapData = Maps.newHashMap();
                     mapData.put("smsCode", randomCode);    //初始化验证码
-                    mapData.put("mobile", account);        //发送手机号
+                    mapData.put("mobile", mobile);        //发送手机号
                     mapData.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
                     boundHashOperations.putAll(mapData);
 
@@ -118,7 +145,7 @@ public class AccountServiceImpl implements AccountService {
                     //读取短信内容
                     String smsText = getSmsText(clientId, randomCode);
                     if (!Strings.isNullOrEmpty(smsText)) {
-                        isSend = SMSUtil.sendSMS(account, smsText);
+                        isSend = SMSUtil.sendSMS(mobile, smsText);
                         if (isSend) {
                             mapResult.put("smscode", randomCode);
                             return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
@@ -131,7 +158,7 @@ public class AccountServiceImpl implements AccountService {
             });
         } catch (Exception e) {
             logger.error("[SMS] service method handleSendSms error.{}", e);
-        }
+        } 
         return obj != null ? (Map<String, Object>) obj : null;
     }
 
@@ -140,13 +167,12 @@ public class AccountServiceImpl implements AccountService {
      */
     public String getSmsText(final int clientId, String smsCode) {
         //缓存中根据clientId获取AppConfig
-        AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
+        AppConfig appConfig = appConfigService.getAppConfigByClientIdFromCache(clientId);
         if (appConfig != null) {
             return String.format(appConfig.getSmsText(), smsCode);
         }
         return null;
     }
-
 
     @Override
     public boolean checkKeyIsExistFromCache(final String cacheKey) {
@@ -186,9 +212,9 @@ public class AccountServiceImpl implements AccountService {
                         //获取缓存数据
                         long sendTime = RedisUtils.byteArryToLong(mapCacheResult.get(sendTimeByte));
                         String smsCode = RedisUtils.byteArryToString(mapCacheResult.get(smsCodeByte));
-                        String account = RedisUtils.byteArryToString(mapCacheResult.get(mobileByte));
+                        String mobile = RedisUtils.byteArryToString(mapCacheResult.get(mobileByte));
 
-                        byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + account);
+                        byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
                         Map<byte[], byte[]> mapCacheSendNumResult = connection.hGetAll(keySendNumCache);
                         if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
                             int sendNum = RedisUtils.byteArryToInteger(mapCacheSendNumResult.get(sendNumByte));
@@ -203,7 +229,7 @@ public class AccountServiceImpl implements AccountService {
                                     //读取短信内容
                                     String smsText = getSmsText(clientId, smsCode);
                                     if (!Strings.isNullOrEmpty(smsText)) {
-                                        boolean isSend = SMSUtil.sendSMS(smsText, smsCode);
+                                        boolean isSend = SMSUtil.sendSMS(mobile, smsText);
                                         if (isSend) {
                                             //30分钟之内返回原先验证码
                                             mapResult.put("smscode", smsCode);
@@ -364,22 +390,6 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-
-    @Override
-    public boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
-        boolean flag = true;
-        try {
-            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfAbsent(String.valueOf(cacheKey), JSONUtils.objectToJson(appConfig));
-        } catch (Exception e) {
-            flag = false;
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-        }
-        return flag;
-    }
-
     @Override
     public long getUserIdByPassportIdFromCache(final String passportId) {
         long userIdResult = 0;
@@ -454,30 +464,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AppConfig getAppConfigByClientIdFromCache(final int clientId) {
-        AppConfig appConfig = null;
-        try {
-            String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-            //缓存根据clientId读取AppConfig
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            String valAppConfig = valueOperations.get(cacheKey);
-            if (!Strings.isNullOrEmpty(valAppConfig)) {
-                appConfig = JSONUtils.jsonToObject(valAppConfig, AppConfig.class);
-            }
-            if (appConfig == null) {
-                //读取数据库
-                appConfig = appConfigMapper.getAppConfigByClientId(clientId);
-                if (appConfig != null) {
-                    addClientIdMapAppConfigToCache(clientId, appConfig);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-        }
-        return appConfig;
-    }
-
-    @Override
     public boolean deleteSmsCache(final String mobile, final String clientId) {
         Object obj = null;
         try {
@@ -512,23 +498,6 @@ public class AccountServiceImpl implements AccountService {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-
-    /**
-     * 根据主键ID获取passportId
-     *
-     * @param userId
-     * @return
-     */
-    @Override
-    public String getPassportIdByUserId(long userId) {
-        String passportId = null;
-        if (userId != 0) {
-            passportId = getPassportIdByUserId(userId);
-            return passportId == null ? null : passportId;
-        }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     /**
      * 根据主键ID获取passportId
      *
@@ -543,6 +512,22 @@ public class AccountServiceImpl implements AccountService {
             return userId == 0 ? 0 : userId;
         }
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * 根据主键ID获取passportId
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public String getPassportIdByUserId(long userId) {
+        String passportId = null;
+        if (userId != 0) {
+            passportId = getPassportIdByUserId(userId);    // TODO
+            return passportId == null ? null : passportId;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*
@@ -569,7 +554,7 @@ public class AccountServiceImpl implements AccountService {
      */
     private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
 
-        AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
+        AppConfig appConfig = appConfigService.getAppConfigByClientIdFromCache(clientId);
         AccountAuth accountAuth = new AccountAuth();
         if (appConfig != null) {
             int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
@@ -593,6 +578,4 @@ public class AccountServiceImpl implements AccountService {
 
         return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
     }
-
-
 }

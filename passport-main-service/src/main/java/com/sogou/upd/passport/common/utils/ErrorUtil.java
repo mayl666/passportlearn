@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sogou.upd.passport.common.parameter.CommonParameters;
-import com.sogou.upd.passport.common.parameter.CommonParameters;
 
 public class ErrorUtil {
 
@@ -106,7 +105,7 @@ public class ErrorUtil {
 	// 不支持的响应结果类型
 	public static final String UNSUPPORTED_RESPONSE_TYPE = "30008";
 	// 无效的登录授权请求
-	public static final String INVALID_REQUEST = "30009";
+	public static final String INVALID_OPENOAUTH_REQUEST = "30009";
 	// 用户未授权
 	public static final String REQUEST_NO_AUTHORITY = "30010";
 	// 第三方自定义错误
@@ -199,7 +198,7 @@ public class ErrorUtil {
 		ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");
 		ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
 		ERR_CODE_MSG_MAP.put(UNSUPPORTED_RESPONSE_TYPE, "不支持的响应结果类型");
-		ERR_CODE_MSG_MAP.put(INVALID_REQUEST, "无效的请求");
+		ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
 		ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
 		ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_NOT_EXIST, "第三方关联帐号不存在，请先关联");
 
