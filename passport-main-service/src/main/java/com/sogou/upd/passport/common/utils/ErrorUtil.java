@@ -63,6 +63,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED = "20215";
     //手机号码和验证码不匹配
     public static final String ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE = "20216";
+    //手机号获取失败,没有此用户
+    public static final String ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS = "20217";
 	//***************************account 服务的错误代码end*********************************
 
 
@@ -175,6 +177,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED,"用户注册失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED,"验证access_token和appkey失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE,"手机号码和验证码不匹配");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS,"手机号获取失败，或没有此用户");
 
 
 		// profile

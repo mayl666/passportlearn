@@ -25,7 +25,7 @@ public interface AccountMapper {
      * 验证合法，用户注册
      * @param account
      */
-    public int userRegister(Account account);
+    public int saveAccount(Account account);
     /**
      * 根据用户名密码获取用户Account
      * @param
@@ -34,10 +34,24 @@ public interface AccountMapper {
     public Account getUserAccount(Map<String,String> queryMap);
 
     /**
-     * 根据passportId查询Mobile
+     * 根据passportId查询Account
      * @param passportId
      * @return
      */
-    public String getMobileByPassportId(String passportId);
+    public Account getAccountByPassportId(String passportId);
+
+    /**
+     * 根据主键id获取passportId
+     * @param userId
+     * @return
+     */
+    public String getPassportIdByUserId(long userId);
+
+    /**
+     * 根据passportId查询对应的主键Id
+     * @param passportId
+     * @return
+     */
+    public long getUserIdByPassportId(String passportId);
 
 }

@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.PostUserProfile;
+import com.sogou.upd.passport.model.app.AppConfig;
 
 import java.util.Map;
 
@@ -45,14 +46,14 @@ public interface AccountService {
      * @param account
      * @return
      */
-    public boolean checkIsExistFromCache(String account);
+    public boolean checkKeyIsExistFromCache(String account);
 
     /**
      * 重发验证码时更新缓存状态
      * @param cacheKey
      * @return
      */
-    public Map<String, Object> updateCacheStatusByAccount(String cacheKey);
+    public Map<String, Object> updateSmsInfoByAccountFromCache(String cacheKey,int clientId);
 
     /**
      * 检查此用户是否注册过，从用户账号表查
@@ -112,29 +113,39 @@ public interface AccountService {
      * @param passportId
      * @param userId
      */
-    public boolean addPassportIdMapUserId(String passportId,String userId,String mobile);
+    public boolean addPassportIdMapUserIdToCache(String passportId,String userId);
 
     /**
      * userId与passportId缓存映射
      * @param passportId
      * @param userId
      */
-    public boolean addUserIdMapPassportId(String passportId,String userId);
+    public boolean addUserIdMapPassportIdToCache(String userId,String passportId);
 
+    /**
+     * ClientId与AppConfig缓存映射
+     * @param clientId
+     * @param appConfig
+     */
+    public boolean addClientIdMapAppConfigToCache(int clientId,AppConfig appConfig);
     /**
      * 根据PassportId 获取UserId或者mobile （缓存读取）
      * @param passportId
-     * @param keyType 需要获取userId传userId，需要获取mobile传mobile
      * @return
      */
-    public String getUserIdOrMobileByPassportId(String passportId,String keyType);
+    public long getUserIdByPassportIdFromCache(String passportId);
     /**
      * 根据UserId 获取PassportId （缓存读取）
      * @param userId
      * @return
      */
-    public String getPassportIdByUserId(long userId);
-
+    public String getPassportIdByUserIdFromCache(long userId);
+    /**
+     * 根据ClientId 获取AppConfig （缓存读取）
+     * @param clientId
+     * @return
+     */
+    public AppConfig getAppConfigByClientIdFromCache(int clientId);
 
     /**
      * 修改用户状态表
@@ -144,10 +155,25 @@ public interface AccountService {
     public int updateAccountAuth(AccountAuth accountAuth);
 
     /**
-     * 根据passportId获取手机号码
-      * @param passportId
+     * 根据主键ID获取passportId
+     * @param userId
      * @return
      */
-    public String getMobileByPassportId(String passportId);
+    public String getPassportIdByUserId(long userId);
 
+    /**
+     * 根据主键ID获取passportId
+     * @param passportId
+     * @return
+     */
+    public long getUserIdByPassportId(String passportId);
+
+
+    /**
+     * 注册成功后清除sms缓存信息
+     * @param mobile
+     * @param clientId
+     * @return
+     */
+    public boolean deleteSmsCache(final String mobile, final String clientId);
 }

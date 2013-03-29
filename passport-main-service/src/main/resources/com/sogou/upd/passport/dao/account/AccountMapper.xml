@@ -20,7 +20,7 @@
         <if test="passportId!=null">and passport_id=#{passportId}</if>
     </select>
 
-    <insert id="userRegister" parameterType="account">
+    <insert id="saveAccount" parameterType="account">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT @@IDENTITY
         </selectKey>
@@ -33,8 +33,16 @@
           where mobile=#{mobile} and  passwd=#{passwd}
     </select>
 
-    <select id="getMobileByPassportId" parameterType="java.lang.String" resultType="java.lang.String">
-          select mobile from account where passport_id=#{passportId}
+    <select id="getAccountByPassportId" parameterType="java.lang.String" resultMap="accountMap">
+          select id,passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type from account where passport_id=#{passportId}
+    </select>
+
+    <select id="getPassportIdByUserId" parameterType="long" resultType="java.lang.String">
+          select passport_id from account where id=#{userId}
+    </select>
+
+    <select id="getUserIdByPassportId" parameterType="java.lang.String" resultType="java.lang.Long">
+          select id from account where passport_id=#{passportId}
     </select>
 
 </mapper>
