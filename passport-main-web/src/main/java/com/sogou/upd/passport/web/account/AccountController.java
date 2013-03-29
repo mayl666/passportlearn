@@ -126,13 +126,13 @@ public class AccountController extends BaseController {
             //生成token并向account_auth表里插一条用户状态记录
             AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), clientid);
             if (accountAuth != null) {   //如果用户状态表插入也成功，则说明注册成功
-
+                accountService.addPassportIdMapUserIdToCache(account.getPassportId(),Long.toString(account.getId()));
                 //清除验证码的缓存
                 accountService.deleteSmsCache(mobile, String.valueOf(clientid));
                 String accessToken = accountAuth.getAccessToken();
                 long accessValidTime = accountAuth.getAccessValidTime();
                 String refreshToken = accountAuth.getRefreshToken();
-                Map<String, Object> mapResult = new HashMap<String, Object>();
+                Map<String, Object> mapResult = Maps.newHashMap();
                 mapResult.put("accessToken", accessToken);
                 mapResult.put("accessValidTime", accessValidTime);
                 mapResult.put("refreshToken", refreshToken);
