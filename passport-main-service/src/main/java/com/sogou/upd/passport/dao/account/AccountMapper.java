@@ -17,21 +17,10 @@ import java.util.Map;
  */
 public interface AccountMapper {
     /**
-     * 根据传入的参数，手机号码和密码,查询该手机是否已经注册
-     * @return
-     */
-    public Account checkIsRegisterAccount(Account account);
-    /**
      * 验证合法，用户注册
      * @param account
      */
     public int saveAccount(Account account);
-    /**
-     * 根据用户名密码获取用户Account
-     * @param
-     * @return
-     */
-    public Account getUserAccount(Map<String,String> queryMap);
 
     /**
      * 根据passportId查询Account
@@ -39,6 +28,14 @@ public interface AccountMapper {
      * @return
      */
     public Account getAccountByPassportId(String passportId);
+
+    /**
+     * 根据手机号码查询Account
+     * todo 和getAccountByPassportId合并，动态查询sql
+     * @param mobile
+     * @return
+     */
+    public Account getAccountByMobile(String mobile);
 
     /**
      * 根据主键id获取passportId

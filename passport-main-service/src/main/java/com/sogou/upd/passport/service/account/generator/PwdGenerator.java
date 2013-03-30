@@ -13,8 +13,12 @@ import com.sogou.upd.passport.common.parameter.CommonParameters;
  */
 public class PwdGenerator {
 
+    // HMAC_SHA1密钥
+    public static final String HMAC_SHA_KEY = "q2SyvfJ8dTwjK3t0x1pnL78Mrq9FkN5tF00p2wEgQg0HmCFx4GXGONOf5FQykc45Evt8odc9OXjGLNX9KnPNWw==";
+
     /**
      * 对明文密码采用HMAC_SHA加密
+     *
      * @param pwd
      * @return
      * @throws SystemException
@@ -22,7 +26,7 @@ public class PwdGenerator {
     public static String generatorPwdSign(String pwd) throws SystemException {
         byte[] encryByte;
         try {
-            encryByte = Coder.encryptHMAC(pwd.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);
+            encryByte = Coder.encryptHMAC(pwd.toString().getBytes(), HMAC_SHA_KEY);
         } catch (Exception e) {
             // todo record error log
             throw new SystemException(e);

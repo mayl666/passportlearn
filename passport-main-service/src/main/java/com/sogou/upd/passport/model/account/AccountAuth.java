@@ -15,6 +15,8 @@ public class AccountAuth {
     private long refreshValidTime;
     private int clientId;
 
+    private String instanceId;
+
     public long getId() {
         return id;
     }
@@ -69,5 +71,13 @@ public class AccountAuth {
 
     public void setClientId(int clientId) {
         this.clientId = clientId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 }

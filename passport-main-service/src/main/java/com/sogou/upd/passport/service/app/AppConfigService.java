@@ -29,22 +29,6 @@ public interface AppConfigService {
      * @param clientId
      * @return
      */
-    public AppConfig getAppConfigByClientIdFromCache(int clientId);
-
-    /**
-     * ClientId与AppConfig缓存映射
-     * @param clientId
-     * @param appConfig
-     */
-    public boolean addClientIdMapAppConfigToCache(int clientId,AppConfig appConfig);
-
-    public long getMaxClientId();
-
-    public AppConfig regApp(AppConfig app);
-
-    public int getAccessTokenExpiresIn(int clientId);
-
-    public int getRefreshTokenExpiresIn(int clientId);
-
+    public AppConfig getAppConfigByClientId(int clientId);
 
 }
