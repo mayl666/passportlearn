@@ -10,7 +10,6 @@ import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.Utils;
 import com.sogou.upd.passport.web.form.MobileRegParams;

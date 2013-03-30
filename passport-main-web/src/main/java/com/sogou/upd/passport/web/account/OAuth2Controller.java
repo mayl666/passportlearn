@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account;
 
 import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
@@ -10,7 +9,6 @@ import com.sogou.upd.passport.oauth2.authzserver.response.OAuthASResponse;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.OAuthResponse;
 import com.sogou.upd.passport.oauth2.common.types.GrantType;
-import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;

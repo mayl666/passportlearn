@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.form;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
