@@ -38,7 +38,7 @@ public abstract class OAuthRequest {
         try {
             validator = initValidator();
             validator.validateMethod(request);
-            validator.validateContentType(request);
+//            validator.validateContentType(request);
             validator.validateRequiredParameters(request);
         } catch (ProblemException e) {
             try {

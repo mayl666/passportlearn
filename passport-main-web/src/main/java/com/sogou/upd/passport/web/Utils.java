@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.exception.ApplicationException;
 import com.sogou.upd.passport.common.exception.ProblemException;
+import com.sogou.upd.passport.common.parameter.CommonParameters;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.ConstraintViolation;
@@ -30,7 +31,7 @@ public class Utils {
 
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(requestParams);
         for (ConstraintViolation<T> constraintViolation : constraintViolations) {
-            sb.append(constraintViolation.getMessage()).append("|");
+            sb.append(constraintViolation.getMessage()).append(CommonParameters.SEPARATOR_1);
         }
 
         return sb.toString();

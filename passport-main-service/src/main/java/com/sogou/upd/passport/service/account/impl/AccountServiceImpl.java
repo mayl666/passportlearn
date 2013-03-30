@@ -267,7 +267,7 @@ public class AccountServiceImpl implements AccountService {
         account.setVersion(Account.NEW_ACCOUNT_VERSION);
         String mobile = null;
         if (AccountTypeEnum.isPhone(username, provider)) {
-            username = mobile;
+            mobile = username;
         }
         account.setMobile(mobile);
         long id = accountMapper.saveAccount(account);

@@ -47,7 +47,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             logger.error("{} is not Number", clientId);
             return false;
         }
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account;
 
 import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.exception.SystemException;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
@@ -47,7 +48,7 @@ public class OAuth2Controller {
 
     @RequestMapping(value = "/token", method = RequestMethod.POST)
     @ResponseBody
-    public Object authorize(HttpServletRequest request) throws SystemException {
+    public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenRequest oauthRequest = null;
         OAuthResponse response = null;
 
@@ -61,58 +62,65 @@ public class OAuth2Controller {
             if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
                 response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                         .setError(OAuthError.Response.INVALID_CLIENT)
-                        .setErrorDescription("client_id or client_secret not found")
-                        .buildJSONMessage();
+                        .setErrorDescription("client_id or client_secret not found").buildJSONMessage();
+                return response.getBody();
             }
 
             // 檢查不同的grant types是否正確
             // TODO 消除if-else
             AccountAuth renewAccountAuth = null;
-            if (oauthRequest.getGrantType()
-                    .equals(GrantType.PASSWORD.toString())) {
-                Account account = accountService.verifyUserVaild(oauthRequest.getUsername(), oauthRequest.getPassword());
+            if (oauthRequest.getGrantType().equals(GrantType.PASSWORD.toString())) {
+                Account account = accountService
+                        .verifyUserVaild(oauthRequest.getUsername(), oauthRequest.getPassword());
                 if (account == null) {
-                    response = OAuthASResponse
-                            .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                    response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                             .setError(OAuthError.Response.INVALID_GRANT)
-                            .setErrorDescription("invalid username or password")
-                            .buildJSONMessage();
+                            .setErrorDescription("invalid username or password").buildJSONMessage();
+                    return response.getBody();
                 } else {
-                    renewAccountAuth = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
+                    renewAccountAuth = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(),
+                            clientId, instanceId);
                 }
-            } else if (oauthRequest.getGrantType()
-                    .equals(GrantType.REFRESH_TOKEN.toString())) {
+            } else if (oauthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN.toString())) {
                 String refreshToken = oauthRequest.getRefreshToken();
                 AccountAuth accountAuth = accountAuthService.verifyRefreshToken(refreshToken);
                 if (accountAuth == null) {
-                    response = OAuthASResponse
-                            .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                            .setError(OAuthError.Response.INVALID_GRANT)
-                            .setErrorDescription("invalid refresh_token")
+                    response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                            .setError(OAuthError.Response.INVALID_GRANT).setErrorDescription("invalid refresh_token")
                             .buildJSONMessage();
+                    return response.getBody();
                 } else {
                     String passportId = TokenGenerator.parsePassportIdFromRefreshToken(refreshToken);
-                    renewAccountAuth = accountAuthService.updateAccountAuth(accountAuth.getId(), passportId, clientId, instanceId);
+                    renewAccountAuth = accountAuthService.updateAccountAuth(accountAuth.getId(), passportId, clientId,
+                            instanceId);
                 }
             }
 
-            if (response.getResponseStatus() != HttpServletResponse.SC_BAD_REQUEST && renewAccountAuth != null) {
-                response = OAuthASResponse
-                        .tokenResponse(HttpServletResponse.SC_OK)
+            if (renewAccountAuth != null) { // 登录成功
+                response = OAuthASResponse.tokenResponse(HttpServletResponse.SC_OK)
                         .setAccessToken(renewAccountAuth.getAccessToken())
                         .setExpiresTime(renewAccountAuth.getAccessValidTime())
-                        .setRefreshToken(renewAccountAuth.getRefreshToken())
+                        .setRefreshToken(renewAccountAuth.getRefreshToken()).buildJSONMessage();
+                return response.getBody();
+            } else { // 登录失败，更新AccountAuth表发生异常
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail")
                         .buildJSONMessage();
+                return response.getBody();
             }
         } catch (NumberFormatException ex) {
             logger.error("{} is not Number", oauthRequest.getClientId());
-            ProblemException problem = OAuthUtils.handleOAuthProblemException(oauthRequest.getClientId() + " is not Number");
-            OAuthResponse res = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(problem)
-                    .buildJSONMessage();
+            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                    .setError(OAuthError.Response.INVALID_REQUEST)
+                    .setErrorDescription(oauthRequest.getClientId() + " is not Number").buildJSONMessage();
+            return response.getBody();
         } catch (ProblemException e) {
-            OAuthResponse res = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e)
-                    .buildJSONMessage();
-        } finally {
+            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e).buildJSONMessage();
+            return response.getBody();
+        } catch (Exception e) {
+            logger.error("OAuth Authorize Fail:", e);
+            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                    .setError(ErrorUtil.ERR_CODE_COM_EXCEPTION).setErrorDescription("unknown error").buildJSONMessage();
             return response.getBody();
         }
     }
