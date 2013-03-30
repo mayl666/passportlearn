@@ -105,8 +105,8 @@ public class OAuthASResponse extends OAuthResponse {
             return this;
         }
 
-        public OAuthTokenResponseBuilder setExpiresIn(String expiresIn) {
-            this.parameters.put(OAuth.OAUTH_EXPIRES_TIME, expiresIn == null ? null : Long.valueOf(expiresIn));
+        public OAuthTokenResponseBuilder setExpiresTime(long expiresTime) {
+            this.parameters.put(OAuth.OAUTH_EXPIRES_TIME, expiresTime);
             return this;
         }
 
