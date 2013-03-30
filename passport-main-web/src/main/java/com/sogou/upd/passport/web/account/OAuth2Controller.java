@@ -2,6 +2,8 @@ package com.sogou.upd.passport.web.account;
 
 import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.exception.SystemException;
+import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthASResponse;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
@@ -10,6 +12,7 @@ import com.sogou.upd.passport.oauth2.common.types.GrantType;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,7 @@ public class OAuth2Controller {
             oauthRequest = new OAuthTokenRequest(request);
 
             int clientId = Integer.valueOf(oauthRequest.getClientId());
+            String instanceId = oauthRequest.getInstanceId();
 
             // 检查client_id和client_secret是否有效
             if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
@@ -63,33 +67,41 @@ public class OAuth2Controller {
 
             // 檢查不同的grant types是否正確
             // TODO 消除if-else
+            AccountAuth renewAccountAuth = null;
             if (oauthRequest.getGrantType()
                     .equals(GrantType.PASSWORD.toString())) {
-                if (!accountService.verifyUserVaild(oauthRequest.getUsername(), oauthRequest.getPassword())) {
+                Account account = accountService.verifyUserVaild(oauthRequest.getUsername(), oauthRequest.getPassword());
+                if (account == null) {
                     response = OAuthASResponse
                             .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                             .setError(OAuthError.Response.INVALID_GRANT)
                             .setErrorDescription("invalid username or password")
                             .buildJSONMessage();
+                } else {
+                    renewAccountAuth = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
                 }
             } else if (oauthRequest.getGrantType()
                     .equals(GrantType.REFRESH_TOKEN.toString())) {
-                if (!accountAuthService.verifyRefreshToken(oauthRequest.getRefreshToken())) {
+                String refreshToken = oauthRequest.getRefreshToken();
+                AccountAuth accountAuth = accountAuthService.verifyRefreshToken(refreshToken);
+                if (accountAuth == null) {
                     response = OAuthASResponse
                             .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                             .setError(OAuthError.Response.INVALID_GRANT)
                             .setErrorDescription("invalid refresh_token")
                             .buildJSONMessage();
+                } else {
+                    String passportId = TokenGenerator.parsePassportIdFromRefreshToken(refreshToken);
+                    renewAccountAuth = accountAuthService.updateAccountAuth(accountAuth.getId(), passportId, clientId, instanceId);
                 }
             }
 
-            if (response.getResponseStatus() != HttpServletResponse.SC_BAD_REQUEST) {
-                // TODO 数据库操作
+            if (response.getResponseStatus() != HttpServletResponse.SC_BAD_REQUEST && renewAccountAuth != null) {
                 response = OAuthASResponse
                         .tokenResponse(HttpServletResponse.SC_OK)
-                        .setAccessToken("")
-                        .setExpiresIn("3600")
-                        .setRefreshToken("")
+                        .setAccessToken(renewAccountAuth.getAccessToken())
+                        .setExpiresTime(renewAccountAuth.getAccessValidTime())
+                        .setRefreshToken(renewAccountAuth.getRefreshToken())
                         .buildJSONMessage();
             }
         } catch (NumberFormatException ex) {
