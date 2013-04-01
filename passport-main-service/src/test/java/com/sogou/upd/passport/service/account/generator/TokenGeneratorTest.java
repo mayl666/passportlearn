@@ -20,7 +20,7 @@ public class TokenGeneratorTest {
     public void testGeneratorAccountAuth() {
         long userId = 100342;
         String passportID = "13621009174@sohu.com";
-        int clientId = 1003;
+        int clientId = 1001;
         String instance_id = "dafadsfasdfa";
 
         long start = System.currentTimeMillis();
@@ -48,9 +48,19 @@ public class TokenGeneratorTest {
 
     @Test
     public void testParsePassportIdFromRefreshToken() throws Exception {
-        String refreshToken = "a5YbARxr-rd0jV48xRdPm4CoBhdB6P0evJpxGVHzGH851DpeC84GIVMhpUFteOlEsLm2Ph0Tn-44N90bEQqmQA";
+        String refreshToken = "a5YbARxr-rd0jV48xRdPm3PZG7sZJG6W120YC2nCuwsmSwf51mLnNnr1TSEKWA68eBp0u_S5VL4pFsdrhaQrSA";
         String passportId = TokenGenerator.parsePassportIdFromRefreshToken(refreshToken);
         System.out.println("passportId : " + passportId);
+        Assert.assertEquals(passportId, "13621009174@sohu.com");
+    }
+
+    @Test
+    public void testParsePassportIdFromAccessToken() throws Exception {
+        String accessToken = "KrlquCryiVymgx9GlDbf3kXQmUzQY5C0TXNwoo48tBNcIQilybT1r+qdgFqillGHUFpefbUs+fkId2eVH8HjSIQs4NwnTP1kFTjLKxruXQ0TwaQOY03MB7X/V4mOKmMuo4RXn6A116jKO2AgLRl0KXXOmgOmvxKC90YFeZmT1tQ=";
+        String passportId = AccessTokenDecrypt.decryptAccessToken(accessToken);
+        if(passportId == null){
+            System.out.println("accessToken is invalid");
+        }
         Assert.assertEquals(passportId, "13621009174@sohu.com");
     }
 }

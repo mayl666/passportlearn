@@ -91,7 +91,7 @@ public class TokenGenerator {
      */
     public static String parsePassportIdFromRefreshToken(String refreshToken) throws Exception {
         String decrypt = AES.decrypt(refreshToken, SECRET_KEY);
-        String[] array = decrypt.split(CommonParameters.SEPARATOR_1);
+        String[] array = decrypt.split("\\|");
         return array[0];
     }
 

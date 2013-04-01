@@ -8,7 +8,7 @@ public class CommonParameters {
 	public static final String RESPONSE_DATA = "data"; // 响应结果数据
 
 	public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
-    public static final String SEPARATOR_1 = "\\|";
+    public static final String SEPARATOR_1 = "|";
     public static final String PARAMETER_SEPARATOR = "&";
     public static final String NAME_VALUE_SEPARATOR = "=";
 
