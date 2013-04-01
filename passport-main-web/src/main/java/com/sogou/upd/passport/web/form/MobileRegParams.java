@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.form;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
@@ -32,6 +33,11 @@ public class MobileRegParams {
             return true;
         }
         return false;
+    }
+
+    @AssertTrue(message = "密码格式不正确")
+    private boolean isValidPassword(String password) {
+        return StringUtils.isAsciiPrintable(password) && password.length() >= 6;
     }
 
     public String getMobile() {
