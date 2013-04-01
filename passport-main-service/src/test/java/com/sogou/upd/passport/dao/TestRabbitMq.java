@@ -22,12 +22,12 @@ public class TestRabbitMq extends AbstractJUnit4SpringContextTests {
     RabbitTemplate rabbitTemplate;
 
     @Test
-    public void testProducer(){
+    public void testProducer() {
         rabbitTemplate.convertAndSend("test test3");
     }
 
     @Test
-    public void testConsumer(){
+    public void testConsumer() {
         System.out.println("Received: " + rabbitTemplate.receiveAndConvert());
     }
 
