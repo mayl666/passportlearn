@@ -29,11 +29,11 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     private AccountAuthMapper accountAuthMapper;
 
     @Override
-    public AccountAuth verifyRefreshToken(String refreshToken) {
+    public AccountAuth verifyRefreshToken(String refreshToken, String instanceId) {
         // TODO 加缓存
         if (!Strings.isNullOrEmpty(refreshToken)) {
             AccountAuth accountAuth = accountAuthMapper.getAccountAuthByRefreshToken(refreshToken);
-            if (accountAuth != null && accountAuth.getRefreshValidTime() > System.currentTimeMillis()) {
+            if (isValid(accountAuth, instanceId)) {
                 return accountAuth;
             }
         }
@@ -58,6 +58,20 @@ public class AccountAuthServiceImpl implements AccountAuthService {
             return accountRow == 0 ? null : accountAuth;
         }
         return null;
+    }
+
+    /**
+     * 验证refresh是否在有效期内，instanceId是否正确
+     * @param accountAuth
+     * @param instanceId
+     * @return
+     */
+    private boolean isValid(AccountAuth accountAuth, String instanceId) {
+        if (accountAuth != null && accountAuth.getRefreshValidTime() > System.currentTimeMillis() && instanceId.equals(accountAuth.getInstanceId())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

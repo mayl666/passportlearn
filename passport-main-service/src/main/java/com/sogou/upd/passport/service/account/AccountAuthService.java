@@ -17,7 +17,7 @@ public interface AccountAuthService {
      * @param refreshToken
      * @return
      */
-    public AccountAuth verifyRefreshToken(String refreshToken);
+    public AccountAuth verifyRefreshToken(String refreshToken, String instanceId);
 
     /**
      * 初始化账号授权信息

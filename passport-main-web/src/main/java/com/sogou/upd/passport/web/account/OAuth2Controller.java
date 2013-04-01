@@ -81,7 +81,7 @@ public class OAuth2Controller {
                 }
             } else if (oauthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN.toString())) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                AccountAuth accountAuth = accountAuthService.verifyRefreshToken(refreshToken);
+                AccountAuth accountAuth = accountAuthService.verifyRefreshToken(refreshToken, instanceId);
                 if (accountAuth == null) {
                     response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                             .setError(OAuthError.Response.INVALID_GRANT).setErrorDescription("invalid refresh_token")
