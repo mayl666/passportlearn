@@ -7,10 +7,12 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
+import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.Utils;
+import com.sogou.upd.passport.web.form.MobileRegParams;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,43 +41,44 @@ public class AccountController extends BaseController {
 
     @Inject
     private AccountService accountService;
-
+    @Inject
+    private AccountAuthService accountAuthService;
     @Inject
     private AccountConnectService accountConnectService;
 
     /**
      * 手机账号获取，重发手机验证码接口
      *
-     * @param mobile   传入的手机号码
-     * @param clientid 传入的密码
+     * @param mobile    传入的手机号码
+     * @param client_id 传入的密码
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendmobilecode(@RequestParam(defaultValue = "0") int clientid, @RequestParam(defaultValue = "") String mobile)
+    public Object sendMobileCode(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
         //参数验证
         boolean empty = hasEmpty(mobile);
-        if (empty || clientid == 0) {
+        if (empty || client_id == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
         //对mobile手机号验证
         Map<String, Object> ret = checkAccount(mobile);
         if (ret != null) return ret;
         //判断账号是否被缓存
-        String cacheKey = mobile + "_" + clientid;
+        String cacheKey = mobile + "_" + client_id;
         boolean isExistFromCache = accountService.checkKeyIsExistFromCache(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateSmsInfoByAccountFromCache(cacheKey, clientid);
+            mapResult = accountService.updateSmsInfoByAccountFromCache(cacheKey, client_id);
             return mapResult;
         } else {
-            boolean isReg = accountService.checkIsRegisterAccount(new Account(mobile));
-            if (isReg) {
+            Account account = accountService.getAccountByUserName(mobile);
+            if (account == null) {
                 //未注册过
-                mapResult = accountService.handleSendSms(mobile, clientid);
+                mapResult = accountService.handleSendSms(mobile, client_id);
                 if (MapUtils.isNotEmpty(mapResult)) {
                     return mapResult;
                 } else {
@@ -90,50 +93,57 @@ public class AccountController extends BaseController {
     /**
      * 手机账号正式注册调用
      *
-     * @param mobile   传入的手机号码
-     * @param passwd   传入的密码
-     * @param smscode  传入的验证码
-     * @param clientid 传入的应用id
+     * @param request
+     * @param response
+     * @param regParams
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
-    public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String mobile, @RequestParam(defaultValue = "") String passwd,
-                                     @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "0") int clientid) throws Exception {
-        //对mobile手机号验证,是否为空，格式及位数是否正确
-        Map<String, Object> ret = checkAccount(mobile);
-        if (ret != null) return ret;
+    public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, MobileRegParams regParams) throws Exception {
+        // 请求参数校验，必填参数是否正确，手机号码格式是否正确
+        String validateResult = Utils.validateParams(regParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+
+        String mobile = regParams.getMobile();
+        String smscode = regParams.getSmscode();
+        int clientId = regParams.getClient_id();
+        String password = regParams.getPassword();
+        String instanceId = regParams.getInstance_id();
+
         //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
-        String passportId = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
-        if (!Strings.isNullOrEmpty(passportId)) {     //如果passportId拼串成功，就去缓存里查是否有该手机账号
-            long userId = accountService.getUserIdByPassportIdFromCache(passportId);
-            if (userId != 0) {      //如果缓存中有该手机账号，则用户已经注册过了！
-                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-            }
+        // todo error 直接查询Account的mobile字段,shipengzhi
+        Account existAccount = accountService.getAccountByUserName(mobile);
+        if (existAccount != null) {     //说明用户已经注册过了
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientid + "");
+        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientId + "");
         if (!checkSmsInfo) {
+            // todo 这么多return看着好乱，service层抛出problemException，统一捕获
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
-        //再读数据库，验证该手机用户是否已经注册过了
+
+        //再读数据库，验证该手机用户是否已经注册过了 todo 为什么还要读数据库？
         String ip = getIp(request);
-        Account account = accountService.initialAccount(mobile, passwd, ip, AccountTypeEnum.PHONE.getValue());
-        if (account != null) {  //     如果插入account表成功，则插入用户状态表
+        Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
+        if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
             //生成token并向account_auth表里插一条用户状态记录
-            AccountAuth accountAuth = accountService.initialAccountAuth(account.getId(), account.getPassportId(), clientid);
-            if (accountAuth != null) {   //如果用户状态表插入也成功，则说明注册成功
+            AccountAuth accountAuth = accountAuthService.initialAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
+            if (accountAuth != null) {   //如果用户授权信息表插入也成功，则说明注册成功
                 accountService.addPassportIdMapUserIdToCache(account.getPassportId(), Long.toString(account.getId()));
                 //清除验证码的缓存
-                accountService.deleteSmsCache(mobile, String.valueOf(clientid));
+                accountService.deleteSmsCache(mobile, String.valueOf(clientId));
                 String accessToken = accountAuth.getAccessToken();
                 long accessValidTime = accountAuth.getAccessValidTime();
                 String refreshToken = accountAuth.getRefreshToken();
                 Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put("accessToken", accessToken);
-                mapResult.put("accessValidTime", accessValidTime);
-                mapResult.put("refreshToken", refreshToken);
+                mapResult.put("access_token", accessToken);
+                mapResult.put("expires_Time", accessValidTime);
+                mapResult.put("refresh_token", refreshToken);
                 return buildSuccess("用户注册成功！", mapResult);
             } else {
                 //用户注册失败
@@ -152,10 +162,6 @@ public class AccountController extends BaseController {
      * @return
      */
     private Map<String, Object> checkAccount(String mobile) {
-        boolean empty = hasEmpty(mobile);
-        if (empty) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
-        }
         if (!PhoneUtil.verifyPhoneNumberFormat(mobile)) {
             return ErrorUtil
                     .buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-        "D:\mybatis-3-config.dtd">
+        "classpath:mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
         <typeAlias alias="userProfile" type="com.sogou.upd.passport.model.UserProfile"/>

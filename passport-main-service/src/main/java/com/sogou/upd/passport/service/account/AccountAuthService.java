@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.model.account.AccountAuth;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -11,8 +13,29 @@ public interface AccountAuthService {
 
     /**
      * 验证refresh_token的合法性
+     *
      * @param refreshToken
      * @return
      */
-    public boolean verifyRefreshToken(String refreshToken);
+    public AccountAuth verifyRefreshToken(String refreshToken);
+
+    /**
+     * 初始化账号授权信息
+     *
+     * @param userId
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    public AccountAuth initialAccountAuth(long userId, String passportId, int clientId, String instanceId) throws Exception;
+
+    /**
+     * @param userId
+     * @param passportId
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public AccountAuth updateAccountAuth(long userId, String passportId, int clientId, String instanceId) throws Exception;
+
 }

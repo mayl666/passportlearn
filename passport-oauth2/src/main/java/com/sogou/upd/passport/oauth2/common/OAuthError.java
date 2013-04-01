@@ -92,6 +92,12 @@ public abstract class OAuthError {
          * invalid for other reasons.
          */
         public static final String INVALID_TOKEN = "109";
+        
+        /**
+         * login/authorize fail
+         */
+        public static final String AUTHORIZE_FAIL = "110";
+        
     }
 
 }

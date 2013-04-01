@@ -1,13 +1,19 @@
 package com.sogou.upd.passport.web.connect;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.AccountConnect;
 import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
+import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.web.BaseConnectController;
+import com.sogou.upd.passport.web.Utils;
+import com.sogou.upd.passport.web.form.SinaSSOCallbackParams;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,14 +39,20 @@ public class SSOLoginCallbackController extends BaseConnectController {
     @Inject
     private AccountService accountService;
     @Inject
+    private AccountAuthService accountAuthService;
+    @Inject
     private AccountConnectService accountConnectService;
 
-    @RequestMapping("/ssologincallback/{providerStr}")
+    @RequestMapping("/ssologincallback/sina")
     public void handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
-                                       @PathVariable("providerStr") String providerStr, @RequestParam(defaultValue = "0") int clientId) throws Exception {
-        int provider = AccountTypeEnum.getProvider(providerStr);
+                                       SinaSSOCallbackParams sinaSSOParams) throws Exception {
+        int provider = AccountTypeEnum.SINA.getValue();
+        int clientId = sinaSSOParams.getClient_id();
+        String instanceId = sinaSSOParams.getInstance_id();
 
-        if (provider != AccountTypeEnum.SINA.getValue() || clientId == 0) {
+        // 请求参数校验，必填参数是否正确，手机号码格式是否正确
+        String validateResult = Utils.validateParams(sinaSSOParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
             // TODO record param error
             return;
         }
@@ -69,7 +81,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
                 // TODO 是否有必要并行初始化Account_Auth和Account_Connect？
                 String passportId = accountService.getPassportIdByUserIdFromCache(userId);
                 // 初始化Account_Auth
-                accountService.initialAccountAuth(userId, passportId, clientId);
+                accountAuthService.initialAccountAuth(userId, passportId, clientId, instanceId);
                 // 初始化Account_Connect
                 AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oauthRequest.getOAuthToken());
                 accountConnectService.initialAccountConnect(accountConnect);
@@ -86,7 +98,7 @@ public class SSOLoginCallbackController extends BaseConnectController {
             }
 
         } catch (Exception e) {
-            handleException(e, providerStr, req.getRequestURI());
+            handleException(e, "sina", req.getRequestURI());
         } finally {
             return;
         }

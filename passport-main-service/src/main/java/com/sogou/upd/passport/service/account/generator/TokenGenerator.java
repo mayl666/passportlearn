@@ -1,16 +1,11 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.parameter.CommonParameters;
-import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTime;
-
-import javax.inject.Inject;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Token生成器，生成access_token和refresh_token
@@ -21,10 +16,10 @@ import java.util.Date;
  */
 public class TokenGenerator {
 
-    // 公钥
+    // 非对称加密算法-公钥
     public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
             "7rU/9UWJqy8li64i5bYtx7rE8+I4EdC00To5kz6D61UCAwEAAQ==";
-    // 私钥
+    // 非对称加密算法-私钥
     public static final String PRIVATE_KEY = "MIIBUgIBADANBgkqhkiG9w0BAQEFAASCATwwggE4AgEAAkEAqD6eZzVTCkwYodA/nyOEmD+Eu5yb\n" +
             "igsFMEzJEGYIAorutT/1RYmrLyWLriLlti3HusTz4jgR0LTROjmTPoPrVQIDAQABAkAaMgW/1BGl\n" +
             "3MtJBn+ha4pNmjY0b+HX0HdyWcJEh15f5rkqhcrAxzaHo5vHnnW+mYrIIGdeqF8QTbB1lMKYuIxR\n" +
@@ -32,27 +27,32 @@ public class TokenGenerator {
             "bqTdtJtiRKTFU8EkBwIgBSByKOE8MeFq3FWHbnG+sp3vieMT3EexUJdwrJ8P5lcCIBYHVsR8dRsu\n" +
             "8oRItTFdtqWyoC4LjGTUWy5fUa5Zz2qhAh9rQb9VP0rnQPP3Hm9z9SFccXUZaPiC9a8+r5g5WUen";
 
+    // 对称加密算法-密钥
+    public static final String SECRET_KEY = "187e4310dd2dd9966dddcc10d1732241c96ba131";
+
     /**
      * 生成access_token
-     * 构成格式 passportID|clientId|instanceId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数
+     * 构成格式 passportID|clientId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数|instanceId
      * TODO
+     *
      * @param passportID
      * @param clientId
      * @return
      */
-    public static String generatorAccessToken(String passportID, int clientId, int expiresIn) throws Exception {
+    public static String generatorAccessToken(String passportID, int clientId, int expiresIn, String instanceId) throws Exception {
 
         // 过期时间点
         long vaildTime = generatorVaildTime(expiresIn);
 
-        // 6位随机数
+        // 4位随机数
         String random = RandomStringUtils.randomAlphanumeric(4);
 
-        StringBuffer data = new StringBuffer();
+        StringBuilder data = new StringBuilder();
         data.append(passportID).append(CommonParameters.SEPARATOR_1);
         data.append(clientId).append(CommonParameters.SEPARATOR_1);
         data.append(vaildTime).append(CommonParameters.SEPARATOR_1);
-        data.append(random);
+        data.append(random).append(CommonParameters.SEPARATOR_1);
+        data.append(instanceId);
 
         byte[] encByte = RSA.encryptByPrivateKey(data.toString().getBytes(), PRIVATE_KEY);
         String encBase64Str = Coder.encryptBASE64(encByte);
@@ -62,21 +62,37 @@ public class TokenGenerator {
 
     /**
      * 生成refresh_token
-     * 构成格式 passportID|clientId|instanceId|timestamp(当前时间戳，单位毫秒)
+     * 构成格式 passportID|clientId|timestamp(当前时间戳，单位毫秒)|instanceId
      *
      * @param passportID
      * @param clientId
      * @return
      * @throws Exception
      */
-    public static String generatorRefreshToken(String passportID, int clientId) throws Exception {
+    public static String generatorRefreshToken(String passportID, int clientId, String instanceId) throws Exception {
         long timestamp = System.currentTimeMillis();
-        StringBuffer data = new StringBuffer();
-        data.append(passportID).append(clientId).append(timestamp);
 
-        byte[] encByte = Coder.encryptHMAC(data.toString().getBytes(), CommonParameters.HMAC_SHA_KEY);
+        StringBuilder data = new StringBuilder();
+        data.append(passportID).append(CommonParameters.SEPARATOR_1);
+        data.append(clientId).append(CommonParameters.SEPARATOR_1);
+        data.append(timestamp).append(CommonParameters.SEPARATOR_1);
+        data.append(instanceId);
 
-        return Coder.toHexString(encByte);
+        String encrypt = AES.encrypt(data.toString(), SECRET_KEY);
+        return encrypt;
+    }
+
+    /**
+     * 根据refreshToken解密,并返回passportId
+     *
+     * @param refreshToken
+     * @return
+     * @throws Exception
+     */
+    public static String parsePassportIdFromRefreshToken(String refreshToken) throws Exception {
+        String decrypt = AES.decrypt(refreshToken, SECRET_KEY);
+        String[] array = decrypt.split(CommonParameters.SEPARATOR_1);
+        return array[0];
     }
 
     /**

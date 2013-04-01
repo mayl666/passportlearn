@@ -18,6 +18,15 @@ import java.util.Map;
 public interface AccountAuthMapper {
     /**
      * 往用户状态表中插入一条记录
+     *
+     * @param accountAuth
+     * @return
+     */
+    public int insertAccountAuth(AccountAuth accountAuth);
+
+    /**
+     * 往用户状态表中插入一条记录
+     *
      * @param accountAuth
      * @return
      */
@@ -25,6 +34,7 @@ public interface AccountAuthMapper {
 
     /**
      * 更新用户状态表
+     *
      * @param accountAuth
      * @return
      */
@@ -32,8 +42,18 @@ public interface AccountAuthMapper {
 
     /**
      * 根据UserId获取AccountAuth信息
+     *
      * @param
      * @return
      */
-    public AccountAuth getUserAuthByUserId(long userId);
+    public AccountAuth getAccountAuthByUserId(long userId);
+
+    /**
+     * 根据refresh_token获取AccountAuth信息
+     * todo 是否可以和getUserAuthByUserId()合并，缓存怎么存？分表怎么查？
+     *
+     * @param
+     * @return
+     */
+    public AccountAuth getAccountAuthByRefreshToken(String refreshToken);
 }

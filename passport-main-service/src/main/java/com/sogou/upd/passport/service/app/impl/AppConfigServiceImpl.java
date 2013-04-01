@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.app.impl;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -12,6 +13,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.lang.reflect.Type;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +36,7 @@ public class AppConfigServiceImpl implements AppConfigService {
     @Override
     public boolean verifyClientVaild(int clientId, String clientSecret) {
         try {
-            AppConfig appConfig = getAppConfigByClientIdFromCache(clientId);
+            AppConfig appConfig = getAppConfigByClientId(clientId);
             // TODO 如果不存在返回的是null还是new AppConfig？
             if (appConfig == null) {
                 return false;
@@ -45,11 +47,11 @@ public class AppConfigServiceImpl implements AppConfigService {
             logger.error("{} is not Number", clientId);
             return false;
         }
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     @Override
-    public AppConfig getAppConfigByClientIdFromCache(final int clientId) {
+    public AppConfig getAppConfigByClientId(final int clientId) {
         AppConfig appConfig = null;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
@@ -57,8 +59,8 @@ public class AppConfigServiceImpl implements AppConfigService {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             String valAppConfig = valueOperations.get(cacheKey);
             if (!Strings.isNullOrEmpty(valAppConfig)) {
-                Gson gson = new Gson();
-                appConfig = gson.fromJson(valAppConfig, AppConfig.class);
+                Type type = new TypeToken<AppConfig>() {}.getType();
+                appConfig = new Gson().fromJson(valAppConfig, type);
             }
             if (appConfig == null) {
                 //读取数据库
@@ -68,44 +70,23 @@ public class AppConfigServiceImpl implements AppConfigService {
                 }
             }
         } catch (Exception e) {
-            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
+            logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
         }
         return appConfig;
     }
 
-    @Override
-    public boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
+    private boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
         boolean flag = true;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
 
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            Gson gson = new Gson();
-            valueOperations.setIfAbsent(String.valueOf(cacheKey), gson.toJson(appConfig));
+            valueOperations.setIfAbsent(String.valueOf(cacheKey), new Gson().toJson(appConfig));
         } catch (Exception e) {
             flag = false;
-            logger.error("[SMS] service method addClientIdMapAppConfigToCache error.{}", e);
+            logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
         }
         return flag;
     }
 
-    @Override
-    public long getMaxClientId() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public AppConfig regApp(AppConfig app) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public int getAccessTokenExpiresIn(int clientId) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public int getRefreshTokenExpiresIn(int clientId) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }
