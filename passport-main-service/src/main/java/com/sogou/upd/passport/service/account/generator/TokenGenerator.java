@@ -38,7 +38,7 @@ public class TokenGenerator {
 
     /**
      * 生成access_token
-     * 构成格式 passportID|clientId|instanceId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数
+     * 构成格式 passportID|clientId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数|instanceId
      * TODO
      *
      * @param passportID
@@ -56,9 +56,9 @@ public class TokenGenerator {
         StringBuilder data = new StringBuilder();
         data.append(passportID).append(CommonParameters.SEPARATOR_1);
         data.append(clientId).append(CommonParameters.SEPARATOR_1);
-        data.append(instanceId).append(CommonParameters.SEPARATOR_1);
         data.append(vaildTime).append(CommonParameters.SEPARATOR_1);
-        data.append(random);
+        data.append(random).append(CommonParameters.SEPARATOR_1);
+        data.append(instanceId);
 
         byte[] encByte = RSA.encryptByPrivateKey(data.toString().getBytes(), PRIVATE_KEY);
         String encBase64Str = Coder.encryptBASE64(encByte);
@@ -68,7 +68,7 @@ public class TokenGenerator {
 
     /**
      * 生成refresh_token
-     * 构成格式 passportID|clientId|instanceId|timestamp(当前时间戳，单位毫秒)
+     * 构成格式 passportID|clientId|timestamp(当前时间戳，单位毫秒)|instanceId
      *
      * @param passportID
      * @param clientId
@@ -81,8 +81,8 @@ public class TokenGenerator {
         StringBuilder data = new StringBuilder();
         data.append(passportID).append(CommonParameters.SEPARATOR_1);
         data.append(clientId).append(CommonParameters.SEPARATOR_1);
-        data.append(instanceId).append(CommonParameters.SEPARATOR_1);
-        data.append(timestamp);
+        data.append(timestamp).append(CommonParameters.SEPARATOR_1);
+        data.append(instanceId);
 
         String encrypt = AES.encrypt(data.toString(), SECRET_KEY);
         return encrypt;

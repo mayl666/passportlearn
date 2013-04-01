@@ -22,7 +22,7 @@
         (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId},#{instanceId})
     </insert>
 
-	<!-- 有多个唯一索引时不要使用 -->
+    <!-- 有多个唯一索引时不要使用 -->
     <insert id="saveAccountAuth" parameterType="accountAuth">
         <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID() AS id
@@ -32,10 +32,10 @@
         values
         (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId},#{instanceId})
         ON DUPLICATE KEY UPDATE
-            <if test="accessToken != null">access_token=#{accessToken},</if>
-            <if test="refreshToken != null">refresh_token=#{refreshToken},</if>
-            <if test="accessValidTime != null">access_valid_time=#{accessValidTime},</if>
-            <if test="refreshValidTime != null">refresh_valid_time=#{refreshValidTime}</if>
+        <if test="accessToken != null">access_token=#{accessToken},</if>
+        <if test="refreshToken != null">refresh_token=#{refreshToken},</if>
+        <if test="accessValidTime != null">access_valid_time=#{accessValidTime},</if>
+        <if test="refreshValidTime != null">refresh_valid_time=#{refreshValidTime}</if>
     </insert>
 
     <update id="updateAccountAuth" parameterType="accountAuth">
@@ -59,7 +59,6 @@
           select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id from account_auth
           where  refresh_token=#{refreshToken}
     </select>
-
 
 
 </mapper>

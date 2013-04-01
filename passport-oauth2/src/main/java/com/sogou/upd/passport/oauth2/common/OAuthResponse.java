@@ -8,9 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
- *
- *
+ * OAuth2.0响应类
  */
 public class OAuthResponse implements OAuthMessage {
 
