@@ -28,14 +28,14 @@ public class MobileRegParams {
     @NotNull(message = "instance_id不允许为空!")
     private String instance_id;
 
-    @AssertTrue(message = "不支持的第三方!")
+    @AssertTrue(message = "不支持的手机号格式!")
     private boolean isValidPhone() {
         if (PhoneUtil.verifyPhoneNumberFormat(mobile)) { return true; }
         return false;
     }
 
     @AssertTrue(message = "密码必须为字母或数字且长度大于6位!")
-    private boolean isValidPassword(String password) {
+    private boolean isValidPassword() {
         return StringUtils.isAsciiPrintable(password) && password.length() >= 6;
     }
 
