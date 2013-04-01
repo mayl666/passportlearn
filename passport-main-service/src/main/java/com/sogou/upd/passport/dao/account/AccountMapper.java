@@ -51,4 +51,11 @@ public interface AccountMapper {
      */
     public long getUserIdByPassportId(String passportId);
 
+    /**
+     * 根据passportId删除用户的Account信息，内部调试接口使用
+     * @param passportId
+     * @return
+     */
+    public void deleteAccountByPassportId(String passportId);
+
 }

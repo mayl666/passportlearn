@@ -60,5 +60,9 @@
           where  refresh_token=#{refreshToken}
     </select>
 
+    <select id="deleteAccountAuthByUserId" parameterType="java.lang.String">
+          delete from account_auth where user_id=#{userId}
+    </select>
+
 
 </mapper>

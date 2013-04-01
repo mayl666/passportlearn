@@ -56,4 +56,11 @@ public interface AccountAuthMapper {
      * @return
      */
     public AccountAuth getAccountAuthByRefreshToken(String refreshToken);
+
+    /**
+     * 根据userid删除AccountAuth信息，内部调试接口使用
+     * @param userId
+     * @return
+     */
+    public void deleteAccountAuthByUserId(long userId);
 }

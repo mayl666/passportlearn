@@ -40,4 +40,8 @@
           select id from account where passport_id=#{passportId}
     </select>
 
+    <select id="deleteAccountByPassportId" parameterType="java.lang.String">
+          delete from account where passport_id=#{passportId}
+    </select>
+
 </mapper>
