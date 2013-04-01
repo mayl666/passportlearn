@@ -1,11 +1,12 @@
 package com.sogou.upd.passport.web.form;
 
-import com.sogou.upd.passport.common.utils.PhoneUtil;
-import org.apache.commons.lang3.StringUtils;
-
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 /**
  * 桌面/移动客户端手机账号注册请求参数类
@@ -16,26 +17,24 @@ import javax.validation.constraints.NotNull;
  */
 public class MobileRegParams {
 
-    @NotNull(message = "手机号码不允许为空！")
+    @NotNull(message = "手机号码不允许为空!")
     private String mobile;
-    @NotNull(message = "密码不允许为空！")
+    @NotNull(message = "密码不允许为空!")
     private String password;
-    @NotNull(message = "验证码不允许为空！")
+    @NotNull(message = "验证码不允许为空!")
     private String smscode;
-    @Min(value = 1, message = "client_id不允许为空")
+    @Min(value = 1, message = "client_id不允许为空!")
     private int client_id;
-    @NotNull(message = "instance_id不允许为空！")
+    @NotNull(message = "instance_id不允许为空!")
     private String instance_id;
 
-    @AssertTrue(message = "不支持的第三方")
+    @AssertTrue(message = "不支持的第三方!")
     private boolean isValidPhone() {
-        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-            return true;
-        }
+        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) { return true; }
         return false;
     }
 
-    @AssertTrue(message = "密码格式不正确")
+    @AssertTrue(message = "密码必须为字母或数字且长度大于6位!")
     private boolean isValidPassword(String password) {
         return StringUtils.isAsciiPrintable(password) && password.length() >= 6;
     }
