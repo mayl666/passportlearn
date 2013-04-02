@@ -195,7 +195,7 @@ public class AccountController extends BaseController {
         Map<String, Object> map = checkParams(client_id, mobile, smscode, password);
         if (map != null) return map;
         boolean resetPwd = accountService.resetPassword(mobile, password);
-        // TODO 重置密码成功后，是否生成新的access_token？ from liuling
+        // TODO 重置密码成功后，是否生成新的access_token?
         return resetPwd == true ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
     }
 
@@ -219,7 +219,7 @@ public class AccountController extends BaseController {
             Map<String, Object> ret = checkAccount(mobile);
             if (ret != null) return ret;
         }
-        //密码格式是否正确
+        //再者，密码格式是否正确
         if (password != null) {
             if (!checkPasswd(password)) {
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
