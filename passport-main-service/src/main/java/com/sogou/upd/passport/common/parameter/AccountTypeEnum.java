@@ -3,12 +3,7 @@ package com.sogou.upd.passport.common.parameter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 账号类型，第三方，邮箱，手机号码

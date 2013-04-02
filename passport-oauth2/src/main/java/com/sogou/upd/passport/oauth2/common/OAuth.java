@@ -71,7 +71,7 @@ public class OAuth {
     //Authorization response params
     public static final String OAUTH_CODE = "code";
     public static final String OAUTH_ACCESS_TOKEN = "access_token";
-    public static final String OAUTH_EXPIRES_TIME = "expires_time";   // sogou-passport特殊的过期时间点
+    public static final String OAUTH_EXPIRES_TIME = "expires_time";   // sogou-passport返回结果中的过期时间点
     public static final String OAUTH_EXPIRES_IN = "expires_in";
     public static final String OAUTH_REFRESH_TOKEN = "refresh_token";
 

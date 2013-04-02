@@ -2,8 +2,6 @@ package com.sogou.upd.passport.web.Debug;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +23,6 @@ import com.sogou.upd.passport.model.account.Account;
  */
 @Controller
 public class AccoutDebugController {
-
-	private static final Logger logger = LoggerFactory.getLogger(AccoutDebugController.class);
 
 	@Inject
 	private AccountMapper accountMapper;

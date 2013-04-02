@@ -9,42 +9,33 @@ package com.sogou.upd.passport.model.account.query;
  */
 public class AccountConnectQuery {
     private String connectUid;
-
-    private int provider;
-
-    private int appkey;
-
+    private int connectType;
+    private int clientId;
     private long userid;
+    
+	public String getConnectUid() {
+		return connectUid;
+	}
+	public void setConnectUid(String connectUid) {
+		this.connectUid = connectUid;
+	}
+	public int getConnectType() {
+		return connectType;
+	}
+	public void setConnectType(int connectType) {
+		this.connectType = connectType;
+	}
+	public int getClientId() {
+		return clientId;
+	}
+	public void setClientId(int clientId) {
+		this.clientId = clientId;
+	}
+	public long getUserid() {
+		return userid;
+	}
+	public void setUserid(long userid) {
+		this.userid = userid;
+	}
 
-    public String getConnectUid() {
-        return connectUid;
-    }
-
-    public void setConnectUid(String connectUid) {
-        this.connectUid = connectUid;
-    }
-
-    public int getProvider() {
-        return provider;
-    }
-
-    public void setProvider(int provider) {
-        this.provider = provider;
-    }
-
-    public int getAppkey() {
-        return appkey;
-    }
-
-    public void setAppkey(int appkey) {
-        this.appkey = appkey;
-    }
-
-    public long getUserid() {
-        return userid;
-    }
-
-    public void setUserid(long userid) {
-        this.userid = userid;
-    }
 }

@@ -1,9 +1,6 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountAuth;
-
-import java.util.Map;
 
 /**
  * User: mayan

@@ -1,13 +1,15 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.sogou.upd.passport.model.account.AccountConnect;
-import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
-import com.sogou.upd.passport.model.connect.OAuthToken;
-import com.sogou.upd.passport.service.account.AccountConnectService;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
+import com.sogou.upd.passport.dao.account.AccountConnectMapper;
+import com.sogou.upd.passport.model.account.AccountConnect;
+import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
+import com.sogou.upd.passport.service.account.AccountConnectService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,21 +19,29 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-public class AccountConnectServiceImpl implements AccountConnectService{
-    @Override
-    public List<AccountConnect> listAccountConnectByQuery(AccountConnectQuery query) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+public class AccountConnectServiceImpl implements AccountConnectService {
 
-    @Override
-    public boolean initialAccountConnect(AccountConnect accountConnect) {
-        // TODO add dao implement，return userid
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Inject
+	private AccountConnectMapper accountConnectMapper;
 
-    @Override
-    public boolean updateAccountConnect(AccountConnect accountConnect) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public List<AccountConnect> listAccountConnectByQuery(AccountConnectQuery query) {
+
+		return accountConnectMapper.getAccountConnectByQuery(query);
+	}
+
+	@Override
+	public boolean initialAccountConnect(AccountConnect accountConnect) {
+		int id = accountConnectMapper.insertAccountConnect(accountConnect);
+		if (id != 0) { return true; }
+		return false;
+	}
+
+	@Override
+	public boolean updateAccountConnect(AccountConnect accountConnect) {
+		int row = accountConnectMapper.updateAccountConnect(accountConnect);
+		if (row != 0) { return true; }
+		return false;
+	}
 
 }
