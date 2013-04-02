@@ -158,8 +158,6 @@ public class AccountController extends BaseController {
     /**
      * 找回用户密码
      *
-     * @param request
-     * @param response
      * @param client_id
      * @param mobile
      * @return
@@ -167,28 +165,21 @@ public class AccountController extends BaseController {
      */
     @RequestMapping(value = "/v2/findpwd", method = RequestMethod.GET)
     @ResponseBody
-    public Object findPassword(HttpServletRequest request, HttpServletResponse response,
-                               @RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
+    public Object findPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
-        Map<String, Object> ret = checkAccount(mobile);
-        if (ret != null) return ret;
+        Map<String, Object> map = checkParams(client_id, mobile, null, null);
+        if (map != null) return map;
         Account account = accountService.getAccountByUserName(mobile);
         if (account == null) {   //提示该手机用户不存在
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_NOUSER);
         }
         Map<String, Object> mapResult = accountService.handleSendSms(mobile, client_id);
-        if (MapUtils.isNotEmpty(mapResult)) {
-            return mapResult;
-        } else {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-        }
+        return MapUtils.isNotEmpty(mapResult) == true ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
     }
 
     /**
      * 重置密码
      *
-     * @param request
-     * @param response
      * @param client_id
      * @param mobile
      * @param smscode
@@ -198,31 +189,50 @@ public class AccountController extends BaseController {
      */
     @RequestMapping(value = "/v2/resetpwd", method = RequestMethod.POST)
     @ResponseBody
-    public Object resetPassword(HttpServletRequest request, HttpServletResponse response,
-                           @RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
-                           @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password) throws Exception {
+    public Object resetPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
+                                @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password) throws Exception {
 
+        Map<String, Object> map = checkParams(client_id, mobile, smscode, password);
+        if (map != null) return map;
+        boolean resetPwd = accountService.resetPassword(mobile, password);
+        // TODO 重置密码成功后，是否生成新的access_token？ from liuling
+        return resetPwd == true ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
+    }
+
+    /**
+     * 验证找回和重置密码时，各种参数的合法性
+     *
+     * @param client_id
+     * @param mobile
+     * @param smscode
+     * @param password
+     * @return
+     */
+    private Map<String, Object> checkParams(int client_id, String mobile, String smscode, String password) {
+        //先验证参数是否为空
         boolean empty = hasEmpty(mobile, smscode, password);
         if (empty || client_id == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
-        Map<String, Object> ret = checkAccount(mobile);
-        if (ret != null) return ret;
-        // 验证手机验证码是否匹配
-        boolean smscodeValid = accountService.checkSmsInfoFromCache(mobile, smscode, client_id + "");
-        if (!smscodeValid) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+        //其次，手机号码格式是否正确
+        if (mobile != null) {
+            Map<String, Object> ret = checkAccount(mobile);
+            if (ret != null) return ret;
         }
-        if (!checkPasswd(password)) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
+        //密码格式是否正确
+        if (password != null) {
+            if (!checkPasswd(password)) {
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
+            }
         }
-        boolean resetPwd = accountService.resetPassword(mobile, password);
-        if (resetPwd) {
-            // 是否返回token
-            return ErrorUtil.buildSuccess("重置密码成功", null);
-        } else
-            return ErrorUtil.buildExceptionError("重置密码失败");
-
+        if (mobile != null && smscode != null && client_id != 0) {
+            //最后,验证手机号与验证码是否匹配
+            boolean smscodeValid = accountService.checkSmsInfoFromCache(mobile, smscode, client_id + "");
+            if (!smscodeValid) {
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+            }
+        }
+        return null;
     }
 
     /**
