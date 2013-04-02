@@ -127,7 +127,7 @@ public class AccountController extends BaseController {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
 
-        //再读数据库，验证该手机用户是否已经注册过了 todo 为什么还要读数据库？
+        //读数据库，验证该手机用户是否已经注册过了 todo 为什么还要读数据库？
         String ip = getIp(request);
         Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
         if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
@@ -153,6 +153,86 @@ public class AccountController extends BaseController {
             //用户注册失败
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
         }
+    }
+
+    /**
+     * 找回用户密码
+     *
+     * @param request
+     * @param response
+     * @param client_id
+     * @param mobile
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/v2/findpwd", method = RequestMethod.GET)
+    @ResponseBody
+    public Object findPassword(HttpServletRequest request, HttpServletResponse response,
+                               @RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
+            throws Exception {
+        Map<String, Object> ret = checkAccount(mobile);
+        if (ret != null) return ret;
+        Account account = accountService.getAccountByUserName(mobile);
+        if (account == null) {   //提示该手机用户不存在
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_NOUSER);
+        }
+        Map<String, Object> mapResult = accountService.handleSendSms(mobile, client_id);
+        if (MapUtils.isNotEmpty(mapResult)) {
+            return mapResult;
+        } else {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+        }
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param request
+     * @param response
+     * @param client_id
+     * @param mobile
+     * @param smscode
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/v2/resetpwd", method = RequestMethod.POST)
+    @ResponseBody
+    public Object resetPassword(HttpServletRequest request, HttpServletResponse response,
+                           @RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
+                           @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password) throws Exception {
+
+        boolean empty = hasEmpty(mobile, smscode, password);
+        if (empty || client_id == 0) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+        }
+        Map<String, Object> ret = checkAccount(mobile);
+        if (ret != null) return ret;
+        // 验证手机验证码是否匹配
+        boolean smscodeValid = accountService.checkSmsInfoFromCache(mobile, smscode, client_id + "");
+        if (!smscodeValid) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+        }
+        if (!checkPasswd(password)) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
+        }
+        boolean resetPwd = accountService.resetPassword(mobile, password);
+        if (resetPwd) {
+            // 是否返回token
+            return ErrorUtil.buildSuccess("重置密码成功", null);
+        } else
+            return ErrorUtil.buildExceptionError("重置密码失败");
+
+    }
+
+    /**
+     * 验证密码格式是否正确
+     *
+     * @param passwd
+     * @return
+     */
+    private boolean checkPasswd(String passwd) {
+        return StringUtils.isAsciiPrintable(passwd) && passwd.length() >= 6 && passwd.length() <= 16;
     }
 
     /**

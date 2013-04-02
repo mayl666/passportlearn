@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -403,6 +404,23 @@ public class AccountServiceImpl implements AccountService {
             logger.error("[SMS] service method deleteSmsCache error.{}", e);
         }
         return obj != null ? (Boolean) obj : false;
+    }
+
+    @Override
+    public boolean resetPassword(String mobile, String password) throws SystemException {
+        Account account = accountMapper.getAccountByMobile(mobile);
+        String passwordSign = null;
+        if (!Strings.isNullOrEmpty(password)) {
+            passwordSign = PwdGenerator.generatorPwdSign(password);
+        }
+        Account accountResult = new Account();
+        accountResult.setMobile(mobile);
+        accountResult.setPasswd(passwordSign);
+        if (account != null) {
+            accountResult.setId(account.getId());
+        }
+        int row = accountMapper.updateAccount(accountResult);
+        return row == 0 ? false : true;
     }
 
     /**
