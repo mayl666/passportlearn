@@ -11,6 +11,8 @@ import com.sogou.upd.passport.service.app.AppConfigService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -61,7 +63,22 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     }
 
     /**
+     * 根据userId查询list集合
+     *
+     * @param userId
+     * @return
+     */
+    public List<AccountAuth> findAccountAuthListByUserId(long userId) {
+        List<AccountAuth> accountAuthList = new ArrayList<AccountAuth>();
+        if (userId != 0) {
+            accountAuthList = accountAuthMapper.batchGetAccountAuthByUserId(userId);
+        }
+        return accountAuthList.size() > 0 ? accountAuthList : null;
+    }
+
+    /**
      * 验证refresh是否在有效期内，instanceId是否正确
+     *
      * @param accountAuth
      * @param instanceId
      * @return
@@ -109,4 +126,6 @@ public class AccountAuthServiceImpl implements AccountAuthService {
 
         return accountAuth;
     }
+
+
 }

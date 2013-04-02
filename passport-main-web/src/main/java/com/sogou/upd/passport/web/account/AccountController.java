@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -195,7 +196,17 @@ public class AccountController extends BaseController {
         Map<String, Object> map = checkParams(client_id, mobile, smscode, password);
         if (map != null) return map;
         boolean resetPwd = accountService.resetPassword(mobile, password);
-        // TODO 重置密码成功后，是否生成新的access_token?
+        Account account = accountService.getAccountByUserName(mobile);
+        List<AccountAuth> listAccountAuth = null;
+        //重置密码成功后，生成新的access_token和refresh_token,并将auth表中所有此用户的token都更新为新生成的token
+        if (account != null) {
+            listAccountAuth = accountAuthService.findAccountAuthListByUserId(account.getId());
+            if (listAccountAuth != null) {
+                for (AccountAuth accountAuth : listAccountAuth) {
+                    accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), accountAuth.getClientId(), accountAuth.getInstanceId());
+                }
+            }
+        }
         return resetPwd == true ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
     }
 

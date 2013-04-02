@@ -2,6 +2,8 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.model.account.AccountAuth;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -37,5 +39,12 @@ public interface AccountAuthService {
      * @throws Exception
      */
     public AccountAuth updateAccountAuth(long userId, String passportId, int clientId, String instanceId) throws Exception;
+
+    /**
+     * 根据userId查询list集合
+     * @param userId
+     * @return
+     */
+    public List<AccountAuth> findAccountAuthListByUserId(long userId);
 
 }
