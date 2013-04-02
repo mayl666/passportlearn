@@ -143,7 +143,7 @@ public class AccountController extends BaseController {
                 String refreshToken = accountAuth.getRefreshToken();
                 Map<String, Object> mapResult = Maps.newHashMap();
                 mapResult.put("access_token", accessToken);
-                mapResult.put("expires_Time", accessValidTime);
+                mapResult.put("expires_time", accessValidTime);
                 mapResult.put("refresh_token", refreshToken);
                 return buildSuccess("用户注册成功！", mapResult);
             } else {

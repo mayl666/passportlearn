@@ -21,8 +21,9 @@ public class TokenGeneratorTest {
         long userId = 100342;
         String passportID = "13621009174@sohu.com";
         int clientId = 1001;
-        String instance_id = "dafadsfasdfa";
-
+        String instance_id = "02020110011111F4E7587A9D4893420EB97D1C1365DF95";
+        long start1 = System.currentTimeMillis();
+        for(int i=0;i<100;i++){
         long start = System.currentTimeMillis();
         int expiresIn = 3600 * 24;
         String accessToken = null;
@@ -44,6 +45,9 @@ public class TokenGeneratorTest {
         accountAuth.setRefreshToken(refreshToken);
         long end = System.currentTimeMillis();
         System.out.println("use time:" + (end - start) + "ms");
+        }
+        long end1 = System.currentTimeMillis();
+        System.out.println("use time:" + (end1 - start1) + "ms");
     }
 
     @Test
@@ -56,7 +60,7 @@ public class TokenGeneratorTest {
 
     @Test
     public void testParsePassportIdFromAccessToken() throws Exception {
-        String accessToken = "KrlquCryiVymgx9GlDbf3kXQmUzQY5C0TXNwoo48tBNcIQilybT1r+qdgFqillGHUFpefbUs+fkId2eVH8HjSIQs4NwnTP1kFTjLKxruXQ0TwaQOY03MB7X/V4mOKmMuo4RXn6A116jKO2AgLRl0KXXOmgOmvxKC90YFeZmT1tQ=";
+        String accessToken = "iNQWUpdtdDwIEs_2o5Ohcou5O4nAJY6E7mOvv2CI5jNxZDWLTEHhxGMreKpHZrlHTDwZYr0zqNpCLxLexyf-VICpUfnuzobT5XmUv-76eTZwEKTnGsUccfhIjzehOEjmSYjjMdIYUg-ITnMXQdAlTC29suEUhrT4JGavx8s0790";
         String passportId = AccessTokenDecrypt.decryptAccessToken(accessToken);
         if(passportId == null){
             System.out.println("accessToken is invalid");
