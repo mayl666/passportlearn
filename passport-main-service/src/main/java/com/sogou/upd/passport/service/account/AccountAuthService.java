@@ -47,4 +47,10 @@ public interface AccountAuthService {
      */
     public List<AccountAuth> findAccountAuthListByUserId(long userId);
 
+    /**
+     * 批量更新某个用户的状态记录表信息
+     * @param list
+     */
+    public void batchUpdateAccountAuth(List<AccountAuth> list);
+
 }

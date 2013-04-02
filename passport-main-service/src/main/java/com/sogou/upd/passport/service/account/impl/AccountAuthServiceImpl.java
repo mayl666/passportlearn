@@ -77,6 +77,19 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     }
 
     /**
+     * 批量更新某个用户的状态记录表信息
+     *
+     * @param list
+     */
+    @Override
+    public void batchUpdateAccountAuth(List<AccountAuth> list) {
+        if (list != null && list.size() > 0) {
+            accountAuthMapper.batchUpdateAccountAuth(list);
+        }
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
      * 验证refresh是否在有效期内，instanceId是否正确
      *
      * @param accountAuth
