@@ -103,27 +103,27 @@ public class AccountServiceImpl implements AccountService {
 					mapData.put("sendTime", Long.toString(System.currentTimeMillis())); //发送时间
 					boundHashOperations.putAll(mapData);
 
-					//设置失效时间 30分钟  ，1800秒
-					connection.expire(RedisUtils.stringToByteArry(keyCache), SMSUtil.SMS_VALID);
-					//读取短信内容
-					String smsText = getSmsText(clientId, randomCode);
-					if (!Strings.isNullOrEmpty(smsText)) {
-						isSend = SMSUtil.sendSMS(mobile, smsText);
-						if (isSend) {
-							mapResult.put("smscode", randomCode);
-							return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
-						}
-					} else {
-						return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-					}
-					return null;
-				}
-			});
-		} catch (Exception e) {
-			logger.error("[SMS] service method handleSendSms error.{}", e);
-		}
-		return obj != null ? (Map<String, Object>) obj : null;
-	}
+                    //设置失效时间 30分钟  ，1800秒
+                    connection.expire(RedisUtils.stringToByteArry(keyCache), SMSUtil.SMS_VALID);
+                    //读取短信内容
+                    String smsText = getSmsText(clientId, randomCode);
+                    if (!Strings.isNullOrEmpty(smsText)) {
+                        isSend = SMSUtil.sendSMS(mobile, smsText);
+                        if (isSend) {
+                            mapResult.put("smscode", randomCode);
+                            return ErrorUtil.buildSuccess("获取验证码成功", mapResult);
+                        }
+                    } else {
+                        return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("[SMS] service method handleSendSms error.{}", e);
+        }
+        return obj != null ? (Map<String, Object>) obj : null;
+    }
 
 	/*
 	 * 获取sms信息

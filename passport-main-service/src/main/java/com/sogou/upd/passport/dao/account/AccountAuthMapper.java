@@ -10,6 +10,9 @@ package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.AccountAuth;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 用户状态表的接口mapper文件
  */
@@ -61,4 +64,11 @@ public interface AccountAuthMapper {
      * @return
      */
     public void deleteAccountAuthByUserId(long userId);
+
+    /**
+     * 根据userId查询所有记录，返回list集合
+     * @param userId
+     * @return
+     */
+    public List<AccountAuth> batchGetAccountAuthByUserId(long userId);
 }

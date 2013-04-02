@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -127,7 +128,7 @@ public class AccountController extends BaseController {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
 
-        //再读数据库，验证该手机用户是否已经注册过了 todo 为什么还要读数据库？
+        //读数据库，验证该手机用户是否已经注册过了 todo 为什么还要读数据库？
         String ip = getIp(request);
         Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
         if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
@@ -153,6 +154,106 @@ public class AccountController extends BaseController {
             //用户注册失败
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
         }
+    }
+
+    /**
+     * 找回用户密码
+     *
+     * @param client_id
+     * @param mobile
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/v2/findpwd", method = RequestMethod.GET)
+    @ResponseBody
+    public Object findPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
+            throws Exception {
+        Map<String, Object> map = checkParams(client_id, mobile, null, null);
+        if (map != null) return map;
+        Account account = accountService.getAccountByUserName(mobile);
+        if (account == null) {   //提示该手机用户不存在
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_NOUSER);
+        }
+        Map<String, Object> mapResult = accountService.handleSendSms(mobile, client_id);
+        return MapUtils.isNotEmpty(mapResult) == true ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param client_id
+     * @param mobile
+     * @param smscode
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/v2/resetpwd", method = RequestMethod.POST)
+    @ResponseBody
+    public Object resetPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
+                                @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password) throws Exception {
+
+        Map<String, Object> map = checkParams(client_id, mobile, smscode, password);
+        if (map != null) return map;
+        boolean resetPwd = accountService.resetPassword(mobile, password);
+        Account account = accountService.getAccountByUserName(mobile);
+        List<AccountAuth> listAccountAuth = null;
+        //重置密码成功后，生成新的access_token和refresh_token,并将auth表中所有此用户的token都更新为新生成的token
+        if (account != null) {
+            listAccountAuth = accountAuthService.findAccountAuthListByUserId(account.getId());
+            if (listAccountAuth != null) {
+                for (AccountAuth accountAuth : listAccountAuth) {
+                    accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), accountAuth.getClientId(), accountAuth.getInstanceId());
+                }
+            }
+        }
+        return resetPwd == true ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
+    }
+
+    /**
+     * 验证找回和重置密码时，各种参数的合法性
+     *
+     * @param client_id
+     * @param mobile
+     * @param smscode
+     * @param password
+     * @return
+     */
+    private Map<String, Object> checkParams(int client_id, String mobile, String smscode, String password) {
+        //先验证参数是否为空
+        boolean empty = hasEmpty(mobile, smscode, password);
+        if (empty || client_id == 0) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+        }
+        //其次，手机号码格式是否正确
+        if (mobile != null) {
+            Map<String, Object> ret = checkAccount(mobile);
+            if (ret != null) return ret;
+        }
+        //再者，密码格式是否正确
+        if (password != null) {
+            if (!checkPasswd(password)) {
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
+            }
+        }
+        if (mobile != null && smscode != null && client_id != 0) {
+            //最后,验证手机号与验证码是否匹配
+            boolean smscodeValid = accountService.checkSmsInfoFromCache(mobile, smscode, client_id + "");
+            if (!smscodeValid) {
+                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 验证密码格式是否正确
+     *
+     * @param passwd
+     * @return
+     */
+    private boolean checkPasswd(String passwd) {
+        return StringUtils.isAsciiPrintable(passwd) && passwd.length() >= 6 && passwd.length() <= 16;
     }
 
     /**

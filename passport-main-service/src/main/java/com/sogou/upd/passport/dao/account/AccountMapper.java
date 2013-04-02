@@ -55,4 +55,11 @@ public interface AccountMapper {
      */
     public void deleteAccountByPassportId(String passportId);
 
+    /**
+     * 修改用户信息
+     * @param account
+     * @return
+     */
+    public int updateAccount(Account account);
+
 }

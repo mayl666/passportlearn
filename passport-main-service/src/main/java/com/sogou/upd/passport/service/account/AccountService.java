@@ -114,4 +114,12 @@ public interface AccountService {
      * @return
      */
     public boolean deleteSmsCache(final String mobile, final String clientId);
+
+    /**
+     * 重置密码
+     * @param mobile
+     * @param password
+     * @return
+     */
+    public boolean resetPassword(String mobile,String password) throws SystemException;
 }

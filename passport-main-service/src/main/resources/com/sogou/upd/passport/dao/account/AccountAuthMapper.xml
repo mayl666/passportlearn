@@ -9,7 +9,7 @@
         <id property="accessValidTime" column="access_valid_time"></id>
         <id property="refreshValidTime" column="refresh_valid_time"></id>
         <id property="clientId" column="client_id"></id>
-        <id property="instanceId" column="instanceId"></id>
+        <id property="instanceId" column="instance_id"></id>
     </resultMap>
 
     <insert id="insertAccountAuth" parameterType="accountAuth">
@@ -64,5 +64,8 @@
           delete from account_auth where user_id=#{userId}
     </select>
 
+    <select id="batchGetAccountAuthByUserId" parameterType="long" resultMap="accountAuthMap">
+        select * from account_auth where user_id=#{userId}
+    </select>
 
 </mapper>
