@@ -364,7 +364,25 @@ public class AccountServiceImpl implements AccountService {
 		return obj != null ? (Boolean) obj : false;
 	}
 
-	/**
+    @Override
+    public boolean resetPassword(String mobile, String password) throws SystemException {
+        Account account = accountMapper.getAccountByMobile(mobile);
+        String passwordSign = null;
+        if (!Strings.isNullOrEmpty(password)) {
+            passwordSign = PwdGenerator.generatorPwdSign(password);
+        }
+        Account accountResult = new Account();
+        accountResult.setMobile(mobile);
+        accountResult.setPasswd(passwordSign);
+        if (account != null) {
+            accountResult.setId(account.getId());
+        }
+        int row = accountMapper.updateAccount(accountResult);
+        return row == 0 ? false : true;
+    }
+
+
+    /**
 	 * 根据主键ID获取passportId
 	 *
 	 * @param passportId
