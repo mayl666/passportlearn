@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -198,7 +199,7 @@ public class AccountController extends BaseController {
         boolean resetPwd = accountService.resetPassword(mobile, password);
         Account account = accountService.getAccountByUserName(mobile);
         List<AccountAuth> listAccountAuth = null;
-        //重置密码成功后，生成新的access_token和refresh_token,并将auth表中所有此用户的token都更新为新生成的token
+        //方法一：业务逻辑实现的批量更新。重置密码成功后，生成新的access_token和refresh_token,并将auth表中所有此用户的token都更新为新生成的token
         if (account != null) {
             listAccountAuth = accountAuthService.findAccountAuthListByUserId(account.getId());
             if (listAccountAuth != null) {
@@ -207,6 +208,17 @@ public class AccountController extends BaseController {
                 }
             }
         }
+        //方法二：SQL语句实现的批量更新
+//        List<AccountAuth> listNew = new ArrayList<AccountAuth>();
+//        List<AccountAuth> listResult = null;
+//        if (account != null) {
+//            listResult = accountAuthService.findAccountAuthListByUserId(account.getId());
+//            if (listResult != null && listResult.size() > 0)
+//                for (AccountAuth aa : listResult) {
+//
+//                }
+//        }
+
         return resetPwd == true ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
     }
 

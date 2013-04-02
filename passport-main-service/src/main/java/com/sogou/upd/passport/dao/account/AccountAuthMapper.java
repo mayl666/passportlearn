@@ -71,4 +71,10 @@ public interface AccountAuthMapper {
      * @return
      */
     public List<AccountAuth> batchGetAccountAuthByUserId(long userId);
+
+    /**
+     * 批量更新某用户对应的状态记录
+     * @param list
+     */
+    public void batchUpdateAccountAuth(List<AccountAuth> list);
 }
