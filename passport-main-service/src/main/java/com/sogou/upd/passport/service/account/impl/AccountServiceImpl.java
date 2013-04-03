@@ -32,7 +32,6 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
@@ -426,38 +425,4 @@ public class AccountServiceImpl implements AccountService {
         return valResult;
     }
 
-    /**
-     * 构造一个新的AccountAuth
-     *
-     * @param userId
-     * @param passportID
-     * @param clientId
-     * @return
-     */
-    private AccountAuth newAccountAuth(long userId, String passportID, int clientId) throws SystemException {
-
-        AppConfig appConfig = appConfigService.getAppConfigByClientId(clientId);
-        AccountAuth accountAuth = new AccountAuth();
-        if (appConfig != null) {
-            int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
-            int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresIn();
-
-            String accessToken;
-            String refreshToken;
-            try {
-                accessToken = TokenGenerator.generatorAccessToken(passportID, clientId, accessTokenExpiresIn);
-                refreshToken = TokenGenerator.generatorRefreshToken(passportID, clientId);
-            } catch (Exception e) {
-                throw new SystemException(e);
-            }
-            accountAuth.setUserId(userId);
-            accountAuth.setClientId(clientId);
-            accountAuth.setAccessToken(accessToken);
-            accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresIn));
-            accountAuth.setRefreshToken(refreshToken);
-            accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresIn));
-        }
-
-        return accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }
