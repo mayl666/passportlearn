@@ -175,7 +175,18 @@ public class AccountController extends BaseController {
         if (account == null) {   //提示该手机用户不存在
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_NOUSER);
         }
-        Map<String, Object> mapResult = accountService.handleSendSms(mobile, client_id);
+        //判断账号是否被缓存
+        String cacheKey = mobile + "_" + client_id;
+        boolean isExistFromCache = accountService.checkKeyIsExistFromCache(cacheKey);
+        Map<String, Object> mapResult = Maps.newHashMap();
+        if (isExistFromCache) {
+            //更新缓存状态
+            mapResult = accountService.updateSmsInfoByAccountFromCache(cacheKey, client_id);
+            return mapResult;
+        } else {
+            mapResult = accountService.handleSendSms(mobile, client_id);
+        }
+
         return MapUtils.isNotEmpty(mapResult) == true ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
     }
 
