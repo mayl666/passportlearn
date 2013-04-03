@@ -46,13 +46,5 @@ public interface AccountAuthService {
      */
     public void asynUpdateAccountAuthBySql(final String mobile, final int clientId, final String instanceId) throws SystemException;
 
-    /**
-     * 根据userId查询list集合
-     *
-     * @param userId
-     * @return
-     */
-    public List<AccountAuth> findAccountAuthListByUserId(long userId);
-
 
 }

@@ -70,10 +70,10 @@ public interface AccountAuthMapper {
     /**
      * 根据userId查询所有记录，返回list集合
      *
-     * @param userId
+     * @param accountAuth
      * @return
      */
-    public List<AccountAuth> batchFindAccountAuthByUserId(long userId);
+    public List<AccountAuth> batchFindAccountAuthByUserId(AccountAuth accountAuth);
 
     /**
      * 批量更新某用户对应的状态记录
