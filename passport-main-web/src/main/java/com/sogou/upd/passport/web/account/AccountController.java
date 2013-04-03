@@ -192,34 +192,22 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/v2/resetpwd", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
-                                @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password) throws Exception {
+                                @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password,
+                                @RequestParam(defaultValue = "") String instance_id) throws Exception {
 
         Map<String, Object> map = checkParams(client_id, mobile, smscode, password);
         if (map != null) return map;
+        //重置密码
         boolean resetPwd = accountService.resetPassword(mobile, password);
+        //根据mobile查询手机用户信息
         Account account = accountService.getAccountByUserName(mobile);
-        List<AccountAuth> listAccountAuth = null;
-        //方法一：业务逻辑实现的批量更新。重置密码成功后，生成新的access_token和refresh_token,并将auth表中所有此用户的token都更新为新生成的token
+        //先更新当前客户端实例对应的access_token和refresh_token，再异步更新该用户其它客户端的两个token
+        AccountAuth accountAuthResult = null;
         if (account != null) {
-            listAccountAuth = accountAuthService.findAccountAuthListByUserId(account.getId());
-            if (listAccountAuth != null) {
-                for (AccountAuth accountAuth : listAccountAuth) {
-                    accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), accountAuth.getClientId(), accountAuth.getInstanceId());
-                }
-            }
+            accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), client_id, instance_id);
         }
-        //方法二：SQL语句实现的批量更新
-//        List<AccountAuth> listNew = new ArrayList<AccountAuth>();
-//        List<AccountAuth> listResult = null;
-//        if (account != null) {
-//            listResult = accountAuthService.findAccountAuthListByUserId(account.getId());
-//            if (listResult != null && listResult.size() > 0)
-//                for (AccountAuth aa : listResult) {
-//
-//                }
-//        }
 
-        return resetPwd == true ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
+        return resetPwd == true && accountAuthResult != null ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
     }
 
     /**

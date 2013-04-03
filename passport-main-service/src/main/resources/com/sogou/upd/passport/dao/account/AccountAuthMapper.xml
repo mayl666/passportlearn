@@ -50,9 +50,9 @@
         user_id=#{userId} and client_id=#{clientId} and instance_id=#{instanceId}
     </update>
 
-    <select id="getAccountAuthByUserId" parameterType="long" resultMap="accountAuthMap">
+    <select id="getAccountAuthByQuery" parameterType="accountAuth" resultMap="accountAuthMap">
           select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id from account_auth
-          where  user_id=#{userId}
+          where  user_id=#{userId} and client_id=#{clientId} and instance_id=#{instanceId}
     </select>
 
     <select id="getAccountAuthByRefreshToken" parameterType="string" resultMap="accountAuthMap">

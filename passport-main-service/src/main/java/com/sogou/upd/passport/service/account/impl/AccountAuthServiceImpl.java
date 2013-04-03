@@ -3,6 +3,8 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
+import com.sogou.upd.passport.dao.account.AccountMapper;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountAuthService;
@@ -30,6 +32,9 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     @Inject
     private AccountAuthMapper accountAuthMapper;
 
+    @Inject
+    private AccountMapper accountMapper;
+
     @Override
     public AccountAuth verifyRefreshToken(String refreshToken, String instanceId) {
         // TODO 加缓存
@@ -53,6 +58,7 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     }
 
     @Override
+
     public AccountAuth updateAccountAuth(long userId, String passportId, int clientId, String instanceId) throws Exception {
         AccountAuth accountAuth = newAccountAuth(userId, passportId, clientId, instanceId);
         if (accountAuth != null) {
@@ -63,7 +69,27 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     }
 
     /**
-     * 根据userId查询list集合
+     * 根据以下三个id查询用户状态信息
+     * @param userId
+     * @param clientId
+     * @param instanceId
+     * @return
+     */
+    @Override
+    public AccountAuth findAccountAuthByQuery(long userId, int clientId, String instanceId) {
+        AccountAuth accountAuthParams = new AccountAuth();
+        accountAuthParams.setUserId(userId);
+        accountAuthParams.setClientId(clientId);
+        accountAuthParams.setInstanceId(instanceId);
+        AccountAuth accountAuth = null;
+        if (userId != 0) {
+            accountAuth = accountAuthMapper.getAccountAuthByQuery(accountAuthParams);
+        }
+        return accountAuth == null ? null : accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * 方法一：根据userId查询list集合
      *
      * @param userId
      * @return
@@ -77,16 +103,32 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     }
 
     /**
-     * 批量更新某个用户的状态记录表信息
-     *
-     * @param list
+     * 方法二：SQL批量更新某个用户的状态记录表信息
      */
     @Override
-    public void batchUpdateAccountAuth(List<AccountAuth> list) {
-        if (list != null && list.size() > 0) {
-            accountAuthMapper.batchUpdateAccountAuth(list);
+    public void batchUpdateAccountAuthBySql(String mobile, String clientId) throws SystemException {
+        Account account = null;
+        if (mobile != null) {
+            //根据手机号查询该用户信息
+            account = accountMapper.getAccountByMobile(mobile);
         }
-        //To change body of implemented methods use File | Settings | File Templates.
+        List<AccountAuth> listNew = new ArrayList<AccountAuth>();
+        List<AccountAuth> listResult = null;
+        if (account != null) {
+            //根据该用户的id去auth表里查询用户状态记录，返回list
+            listResult = accountAuthMapper.batchGetAccountAuthByUserId(account.getId());
+            if (listResult != null && listResult.size() > 0)
+                for (AccountAuth aa : listResult) {
+                    //生成token及对应的auth对象，添加至listNew列表中，批量更新数据库
+                    AccountAuth accountAuth = newAccountAuth(account.getId(), account.getPassportId(), aa.getClientId(), aa.getInstanceId());
+                    if (accountAuth != null) {
+                        listNew.add(accountAuth);
+                    }
+                }
+        }
+        if (listNew != null && listNew.size() > 0) {
+            accountAuthMapper.batchUpdateAccountAuth(listNew);
+        }
     }
 
     /**
