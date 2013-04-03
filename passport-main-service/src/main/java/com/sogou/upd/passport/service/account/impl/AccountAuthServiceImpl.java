@@ -58,7 +58,6 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     }
 
     @Override
-
     public AccountAuth updateAccountAuth(long userId, String passportId, int clientId, String instanceId) throws Exception {
         AccountAuth accountAuth = newAccountAuth(userId, passportId, clientId, instanceId);
         if (accountAuth != null) {
