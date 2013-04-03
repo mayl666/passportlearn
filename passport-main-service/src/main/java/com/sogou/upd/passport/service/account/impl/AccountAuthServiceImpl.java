@@ -71,15 +71,27 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         return null;
     }
 
+
+    private AccountAuth findAccountAuthByQuery(long userId, int clientId, String instanceId) {
+        AccountAuth aa = new AccountAuth();
+        aa.setUserId(userId);
+        aa.setInstanceId(instanceId);
+        aa.setClientId(clientId);
+        AccountAuth accountAuth = accountAuthMapper.getAccountAuthByQuery(aa);
+        return accountAuth == null ? null : accountAuth;
+    }
+
     @Override
-    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId) throws SystemException {
+    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId,final String instanceId) throws SystemException {
         taskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 Account account = null;
+//                AccountAuth accountAuthSignal = null;
                 if (mobile != null) {
                     //根据手机号查询该用户信息
                     account = accountMapper.getAccountByMobile(mobile);
+//                    accountAuthSignal = findAccountAuthByQuery(account.getId(),clientId,instanceId);
                 }
                 List<AccountAuth> listNew = new ArrayList<AccountAuth>();
                 List<AccountAuth> listResult = null;
@@ -87,6 +99,7 @@ public class AccountAuthServiceImpl implements AccountAuthService {
                     //根据该用户的id去auth表里查询用户状态记录，返回list
                     listResult = accountAuthMapper.batchFindAccountAuthByUserId(account.getId());
                     if (listResult != null && listResult.size() > 0)
+//                        listResult
                         for (AccountAuth aa : listResult) {
                             //生成token及对应的auth对象，添加至listNew列表中，批量更新数据库
                             AccountAuth accountAuth = null;

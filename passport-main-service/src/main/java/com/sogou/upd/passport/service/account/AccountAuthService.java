@@ -44,7 +44,7 @@ public interface AccountAuthService {
     /**
      * 异步更新某用户其它状态信息
      */
-    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId) throws SystemException;
+    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId, final String instanceId) throws SystemException;
 
     /**
      * 根据userId查询list集合
