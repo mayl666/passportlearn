@@ -12,12 +12,10 @@ import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -32,7 +30,6 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -114,7 +111,7 @@ public class AccountServiceImpl implements AccountService {
                         isSend = SMSUtil.sendSMS(mobile, smsText);
                         if (isSend) {
                             mapResult.put("smscode", randomCode);
-                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                            return ErrorUtil.buildSuccess("获取验证码成功", mapResult);
                         }
                     } else {
                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
@@ -199,7 +196,7 @@ public class AccountServiceImpl implements AccountService {
                                         if (isSend) {
                                             //30分钟之内返回原先验证码
                                             mapResult.put("smscode", smsCode);
-                                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                                            return ErrorUtil.buildSuccess("获取验证码成功", mapResult);
                                         }
                                     } else {
                                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
