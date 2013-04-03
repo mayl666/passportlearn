@@ -60,10 +60,13 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //        AppConfig appConfig= getAppConfigByClientId();
 //        System.out.println();
 
-        String tips = "您的“碰头”验证码为：%s，20分钟内有效哦";
+//        String tips = "您的“碰头”验证码为：%s，20分钟内有效哦";
+//
+//        String sms = String.format(tips, "12345");
+//        System.out.println(sms);
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        System.out.println(valueOperations.setIfAbsent("12345","234456"));
 
-        String sms = String.format(tips, "12345");
-        System.out.println(sms);
     }
 
     @Test

@@ -73,7 +73,7 @@ public class OAuth2Controller {
                 if (account == null) {
                     response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                             .setError(OAuthError.Response.INVALID_GRANT)
-                            .setErrorDescription("invalid username or password").buildJSONMessage();
+                            .setErrorDescription("invalid username or password or abnormal account").buildJSONMessage();
                     return response.getBody();
                 } else {
                     renewAccountAuth = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(),
