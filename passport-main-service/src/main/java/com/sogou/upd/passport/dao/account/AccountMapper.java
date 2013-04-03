@@ -1,9 +1,6 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountAuth;
-
-import java.util.Map;
 
 /**
  * User: mayan
@@ -17,21 +14,10 @@ import java.util.Map;
  */
 public interface AccountMapper {
     /**
-     * 根据传入的参数，手机号码和密码,查询该手机是否已经注册
-     * @return
-     */
-    public Account checkIsRegisterAccount(Account account);
-    /**
      * 验证合法，用户注册
      * @param account
      */
     public int saveAccount(Account account);
-    /**
-     * 根据用户名密码获取用户Account
-     * @param
-     * @return
-     */
-    public Account getUserAccount(Map<String,String> queryMap);
 
     /**
      * 根据passportId查询Account
@@ -39,6 +25,14 @@ public interface AccountMapper {
      * @return
      */
     public Account getAccountByPassportId(String passportId);
+
+    /**
+     * 根据手机号码查询Account
+     * todo 和getAccountByPassportId合并，动态查询sql
+     * @param mobile
+     * @return
+     */
+    public Account getAccountByMobile(String mobile);
 
     /**
      * 根据主键id获取passportId
@@ -53,5 +47,19 @@ public interface AccountMapper {
      * @return
      */
     public long getUserIdByPassportId(String passportId);
+
+    /**
+     * 根据passportId删除用户的Account信息，内部调试接口使用
+     * @param passportId
+     * @return
+     */
+    public void deleteAccountByPassportId(String passportId);
+
+    /**
+     * 修改用户信息
+     * @param account
+     * @return
+     */
+    public int updateAccount(Account account);
 
 }

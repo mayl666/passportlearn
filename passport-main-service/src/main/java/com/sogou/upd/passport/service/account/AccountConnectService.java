@@ -1,10 +1,9 @@
 package com.sogou.upd.passport.service.account;
 
+import java.util.List;
+
 import com.sogou.upd.passport.model.account.AccountConnect;
 import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
-import com.sogou.upd.passport.model.connect.OAuthToken;
-
-import java.util.List;
 
 /**
  * Account_Connect表服务接口

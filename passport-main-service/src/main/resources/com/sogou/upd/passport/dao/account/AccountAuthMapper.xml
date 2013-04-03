@@ -9,14 +9,33 @@
         <id property="accessValidTime" column="access_valid_time"></id>
         <id property="refreshValidTime" column="refresh_valid_time"></id>
         <id property="clientId" column="client_id"></id>
+        <id property="instanceId" column="instance_id"></id>
     </resultMap>
 
+    <insert id="insertAccountAuth" parameterType="accountAuth">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into
+        account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id)
+        values
+        (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId},#{instanceId})
+    </insert>
+
+    <!-- 有多个唯一索引时不要使用， -->
     <insert id="saveAccountAuth" parameterType="accountAuth">
         <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID() AS id
         </selectKey>
-        insert into account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id) values
-        (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId})
+        insert into
+        account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id)
+        values
+        (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId},#{instanceId})
+        ON DUPLICATE KEY UPDATE
+        <if test="accessToken != null">access_token=#{accessToken},</if>
+        <if test="refreshToken != null">refresh_token=#{refreshToken},</if>
+        <if test="accessValidTime != null">access_valid_time=#{accessValidTime},</if>
+        <if test="refreshValidTime != null">refresh_valid_time=#{refreshValidTime}</if>
     </insert>
 
     <update id="updateAccountAuth" parameterType="accountAuth">
@@ -28,12 +47,39 @@
             <if test="refreshValidTime != null">refresh_valid_time=#{refreshValidTime}</if>
         </set>
         where
-        id=#{id}
+        user_id=#{userId} and client_id=#{clientId} and instance_id=#{instanceId}
     </update>
 
-    <select id="getUserAuthByUserId" parameterType="long" resultMap="accountAuthMap">
-          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id from account_auth
+    <select id="getAccountAuthByUserId" parameterType="long" resultMap="accountAuthMap">
+          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id from account_auth
           where  user_id=#{userId}
     </select>
+
+    <select id="getAccountAuthByRefreshToken" parameterType="string" resultMap="accountAuthMap">
+          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id from account_auth
+          where  refresh_token=#{refreshToken}
+    </select>
+
+    <select id="deleteAccountAuthByUserId" parameterType="java.lang.String">
+          delete from account_auth where user_id=#{userId}
+    </select>
+
+    <select id="batchGetAccountAuthByUserId" parameterType="long" resultMap="accountAuthMap">
+        select * from account_auth where user_id=#{userId}
+    </select>
+
+    <update id="batchUpdateAccountAuth" parameterType="java.util.List">
+        update account_auth
+        <foreach collection="list" item="accountAuth" index="index">
+            <set>
+                <if test="accountAuth.accessToken != null">access_token=#{accessToken},</if>
+                <if test="accountAuth.refreshToken != null">refresh_token=#{refreshToken},</if>
+                <if test="accountAuth.accessValidTime != null">access_valid_time=#{accessValidTime},</if>
+                <if test="accountAuth.refreshValidTime != null">refresh_valid_time=#{refreshValidTime}</if>
+            </set>
+            where user_id=#{accountAuth.userId} and client_id=#{accountAuth.clientId} and
+            instance_id=#{accountAuth.instanceId}
+        </foreach>
+    </update>
 
 </mapper>

@@ -1,9 +1,8 @@
 package com.sogou.upd.passport.web;
 
-import com.sogou.upd.passport.model.account.AccountConnect;
-import com.sogou.upd.passport.model.connect.OAuthToken;
-
 import java.util.Date;
+
+import com.sogou.upd.passport.model.account.AccountConnect;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,17 +13,18 @@ import java.util.Date;
  */
 public class BaseConnectController extends BaseController {
 
-    protected AccountConnect buildAccountConnect(long userId, int clientId, int provider, int accountRelation, OAuthToken authToken) {
-        AccountConnect connect = new AccountConnect();
-        connect.setUserId(userId);
-        connect.setClientId(clientId);
-        connect.setProvider(provider);
-        connect.setAccountRelation(accountRelation);
-        connect.setConnectUid(authToken.getConnectUid());
-        connect.setConnectAccessToken(authToken.getAccessToken());
-        connect.setConnectExpireIn(authToken.getExpiresIn());
-        connect.setConnectRefreshToken(authToken.getRefreshToken());
-        connect.setCreate_time(new Date());
-        return connect;
-    }
+	protected AccountConnect buildAccountConnect(long userId, int clientId, int accountType, int accountRelation,
+			String connectUid, String accessToken, long expiresIn, String refreshToken) {
+		AccountConnect connect = new AccountConnect();
+		connect.setUserId(userId);
+		connect.setClientId(clientId);
+		connect.setAccountType(accountType);
+		connect.setAccountRelation(accountRelation);
+		connect.setConnectUid(connectUid);
+		connect.setConnectAccessToken(accessToken);
+		connect.setConnectExpiresIn(expiresIn);
+		connect.setConnectRefreshToken(refreshToken);
+		connect.setCreateTime(new Date());
+		return connect;
+	}
 }

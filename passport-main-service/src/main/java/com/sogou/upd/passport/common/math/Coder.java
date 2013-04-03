@@ -44,7 +44,7 @@ public class Coder {
 	 * @throws Exception 
 	 */
 	public static String encryptBASE64(byte[] key) throws Exception {
-		return Base64.encodeBase64String(key);
+		return Base64.encodeBase64URLSafeString(key);
 	}
 
 	/** 

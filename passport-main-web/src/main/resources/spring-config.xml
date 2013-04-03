@@ -32,7 +32,6 @@
 
     <!-- import the dataSource definition -->
     <import resource="classpath:spring-config-dao.xml" />
-    <!--<import resource="classpath:mybatis-config.xml"/>-->
     <import resource="classpath:mybatis-config-account.xml"/>
     <import resource="classpath:mybatis-config-appconfig.xml"/>
 

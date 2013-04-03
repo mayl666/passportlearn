@@ -2,17 +2,24 @@ package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.AccountConnect;
 import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
+import com.sogou.upd.passport.oauth2.authzserver.response.OAuthASResponse;
+import com.sogou.upd.passport.oauth2.common.OAuthError;
+import com.sogou.upd.passport.oauth2.common.OAuthResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
+import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.web.BaseConnectController;
+import com.sogou.upd.passport.web.form.SinaSSOCallbackParams;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -27,90 +34,115 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/connect")
+@RequestMapping("/v2/connect")
 public class SSOLoginCallbackController extends BaseConnectController {
 
-    @Inject
-    private AccountService accountService;
-    @Inject
-    private AccountConnectService accountConnectService;
+	@Inject
+	private AccountService accountService;
+	@Inject
+	private AccountAuthService accountAuthService;
+	@Inject
+	private AccountConnectService accountConnectService;
 
-    @RequestMapping("/ssologincallback/{providerStr}")
-    public void handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
-                                       @PathVariable("providerStr") String providerStr, @RequestParam(defaultValue = "0") int clientId) throws Exception {
-        int provider = AccountTypeEnum.getProvider(providerStr);
+	@RequestMapping(value = "/ssologin/sina", method = RequestMethod.POST)
+	@ResponseBody
+	public Object handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
+			SinaSSOCallbackParams sinaSSOParams) throws Exception {
 
-        if (provider != AccountTypeEnum.SINA.getValue() || clientId == 0) {
-            // TODO record param error
-            return;
-        }
-        OAuthSinaSSOTokenRequest oauthRequest = null;
+		OAuthSinaSSOTokenRequest oauthRequest = new OAuthSinaSSOTokenRequest(req);
 
-        // 获取第三方用户信息
-        try {
-            oauthRequest = new OAuthSinaSSOTokenRequest(req);
-            String connectUid = oauthRequest.getConnectUid();
+		int accountType = AccountTypeEnum.SINA.getValue();
+		int clientId = sinaSSOParams.getClient_id();
+		String instanceId = sinaSSOParams.getInstance_id();
+		String connectUid = oauthRequest.getConnectUid();
 
-            // 判断账号是否已经存在
-            AccountConnectQuery query = buildAccountConnectQuery(connectUid, provider);
-            List<AccountConnect> accountConnectList = accountConnectService.listAccountConnectByQuery(query);
-            AccountConnect user_connect = getAppointAppKeyAccountConnect(accountConnectList, clientId);
+		OAuthResponse response = null;
+		AccountAuth accountAuth;
 
-            long userId;
-            if (user_connect == null) {
+		// 获取第三方用户信息
+		try {
+			AccountConnectQuery query = buildAccountConnectQuery(connectUid, clientId);
+			List<AccountConnect> accountConnectList = accountConnectService.listAccountConnectByQuery(query);
+			AccountConnect oldAccountConnect = getAppointAppKeyAccountConnect(accountConnectList, clientId);
 
-                if (CollectionUtils.isEmpty(accountConnectList)) {
-                    // 初始化Account
-                    Account account = accountService.initialConnectAccount(oauthRequest.getConnectUid(), getIp(req), provider);
-                    userId = account.getId();
-                } else {  // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
-                    userId = accountConnectList.get(0).getUserId();
-                }
-                // TODO 是否有必要并行初始化Account_Auth和Account_Connect？
-                String passportId = accountService.getPassportIdByUserIdFromCache(userId);
-                // 初始化Account_Auth
-                accountService.initialAccountAuth(userId, passportId, clientId);
-                // 初始化Account_Connect
-                AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oauthRequest.getOAuthToken());
-                accountConnectService.initialAccountConnect(accountConnect);
+			long userId;
+			if (oldAccountConnect == null) { // 此账号未授权当前应用
+				if (CollectionUtils.isEmpty(accountConnectList)) { // 此账号未授权过任何应用 
+					Account newAccount = accountService.initialConnectAccount(connectUid, getIp(req), accountType);
+					if (newAccount == null) {
+						response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+								.setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail")
+								.buildJSONMessage();
+						return response.getBody();
+					}
+					userId = newAccount.getId();
+				} else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
+					userId = accountConnectList.get(0).getUserId();
+				}
+				// TODO 是否有必要并行初始化Account_Auth和Account_Connect？
+				String passportId = PassportIDGenerator.generator(connectUid, accountType);
+				accountAuth = accountAuthService.initialAccountAuth(userId, passportId, clientId, instanceId);
+				AccountConnect newAccountConnect = buildAccountConnect(userId, clientId, accountType,
+						AccountConnect.STUTAS_LONGIN, connectUid, oauthRequest.getAccessToken(),
+						oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
+				boolean isInitalAccountConnect = accountConnectService.initialAccountConnect(newAccountConnect);
+				if (accountAuth == null || !isInitalAccountConnect) {
+					response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+							.setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail")
+							.buildJSONMessage();
+					return response.getBody();
+				}
 
-            } else {   // 此账号在当前应用第N次登录
-                userId = user_connect.getUserId();
-                // TODO 是否有必要并行更新Account_Auth和Account_Connect?
-                // 更新当前应用的Account_Auth，处于安全考虑refresh_token和access_token重新生成
-                String passportId = accountService.getPassportIdByUserIdFromCache(userId);
-//                accountService.updateAccountAuth(userId, passportId, clientId);
-                // 更新当前应用的Account_Connect
-                AccountConnect accountConnect = buildAccountConnect(userId, clientId, provider, AccountConnect.STUTAS_LONGIN, oauthRequest.getOAuthToken());
-                accountConnectService.updateAccountConnect(accountConnect);
-            }
+			} else { // 此账号在当前应用第N次登录
+				userId = oldAccountConnect.getUserId();
+				// 更新当前应用的Account_Auth，处于安全考虑refresh_token和access_token重新生成
+				String passportId = PassportIDGenerator.generator(connectUid, accountType);
+				accountAuth = accountAuthService.updateAccountAuth(userId, passportId, clientId, instanceId);
+				// 更新当前应用的Account_Connect
+				AccountConnect accountConnect = buildAccountConnect(userId, clientId, accountType,
+						AccountConnect.STUTAS_LONGIN, connectUid, oauthRequest.getAccessToken(),
+						oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
+				boolean isUpdateAccountConnect = accountConnectService.updateAccountConnect(accountConnect);
+				if (accountAuth == null || !isUpdateAccountConnect) {
+					response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+							.setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail")
+							.buildJSONMessage();
+					return response.getBody();
+				}
+			}
+			// TODO 如何保证数据一致性，采用insertAndUpdate()？
 
-        } catch (Exception e) {
-            handleException(e, providerStr, req.getRequestURI());
-        } finally {
-            return;
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+					.setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail").buildJSONMessage();
+			return response.getBody();
+		}
+		response = OAuthASResponse.tokenResponse(HttpServletResponse.SC_OK)
+				.setAccessToken(accountAuth.getAccessToken()).setExpiresTime(accountAuth.getAccessValidTime())
+				.setRefreshToken(accountAuth.getRefreshToken()).buildJSONMessage();
+		return response.getBody();
+	}
 
-    private AccountConnectQuery buildAccountConnectQuery(String connectUid, int provider) {
-        AccountConnectQuery query = new AccountConnectQuery();
-        query.setConnectUid(connectUid);
-        query.setProvider(provider);
-        return query;
-    }
+	private AccountConnectQuery buildAccountConnectQuery(String connectUid, int clientId) {
+		AccountConnectQuery query = new AccountConnectQuery();
+		query.setConnectUid(connectUid);
+		query.setClientId(clientId);
+		return query;
+	}
 
-    /*
-    该账号是否在当前应用登录过
-     */
-    private AccountConnect getAppointAppKeyAccountConnect(List<AccountConnect> accountConnectList, int clientId) {
-        AccountConnect accountConnect = null;
-        for (AccountConnect connect : accountConnectList) {
-            if (clientId == connect.getClientId()) {
-                accountConnect = connect;
-                break;
-            }
-        }
-        return accountConnect;
-    }
+	/*
+	该账号是否在当前应用登录过
+	 */
+	private AccountConnect getAppointAppKeyAccountConnect(List<AccountConnect> accountConnectList, int clientId) {
+		AccountConnect accountConnect = null;
+		for (AccountConnect connect : accountConnectList) {
+			if (clientId == connect.getClientId()) {
+				accountConnect = connect;
+				break;
+			}
+		}
+		return accountConnect;
+	}
 
 }

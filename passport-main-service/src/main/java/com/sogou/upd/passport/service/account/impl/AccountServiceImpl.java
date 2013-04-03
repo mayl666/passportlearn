@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
@@ -16,7 +17,6 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -31,6 +31,8 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -53,44 +55,14 @@ public class AccountServiceImpl implements AccountService {
     private AccountMapper accountMapper;
     @Inject
     private AccountAuthMapper accountAuthMapper;
-
+    @Inject
+    private ShardedJedisPool shardedJedisPool;
     @Inject
     private AppConfigService appConfigService;
     @Inject
     private TaskExecutor taskExecutor;
     @Inject
     private StringRedisTemplate redisTemplate;
-
-    @Override
-    public boolean verifyUserVaild(String username, String password) {
-        if (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) {
-            String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.UNKNOW.getValue());
-            String pwdSign;
-            try {
-                pwdSign = PwdGenerator.generatorPwdSign(password);
-            } catch (SystemException e) {
-                logger.error("username:{} passport:{} sign fail", username, password);
-                return false;
-            }
-            //判断用户是否存在
-            Account userAccount = getAccountByPassportId(passportId);
-            if (userAccount != null && pwdSign.equals(userAccount.getPasswd())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Account getAccountByPassportId(String passportId) {
-        // TODO implement
-        return null;
-    }
-
-    @Override
-    public boolean checkIsRegisterAccount(Account account) {
-        Account accountReturn = accountMapper.checkIsRegisterAccount(account);
-        return accountReturn == null ? true : false;
-    }
 
     @Override
     public Map<String, Object> handleSendSms(final String mobile, final int clientId) {
@@ -120,7 +92,8 @@ public class AccountServiceImpl implements AccountService {
                             if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
                                 connection.hIncrBy(keySendNumCache, keySendNum, 1);
                             } else {
-                                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限" + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
+                                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限"
+                                        + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
                             }
                         }
                     }
@@ -153,7 +126,7 @@ public class AccountServiceImpl implements AccountService {
             });
         } catch (Exception e) {
             logger.error("[SMS] service method handleSendSms error.{}", e);
-        }
+        } 
         return obj != null ? (Map<String, Object>) obj : null;
     }
 
@@ -251,27 +224,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public long userRegister(Account account) {
-        return accountMapper.saveAccount(account);
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
-     * 根据用户名密码获取用户Account
-     *
-     * @param
-     * @return
-     */
-    public Account getUserAccount(String mobile, String passwd) throws SystemException {
-        Map<String, String> mapResult = Maps.newHashMap();
-        mapResult.put("mobile", mobile);
-        mapResult.put("passwd", Strings.isNullOrEmpty(passwd) ? "" : PwdGenerator.generatorPwdSign(passwd));
-        Account accountResult = accountMapper.getUserAccount(mapResult);
-        return accountResult != null ? accountResult : null;
-    }
-
-
-    @Override
     public boolean checkSmsInfoFromCache(final String account, final String smsCode, final String clientId) {
         Object obj = null;
         try {
@@ -304,53 +256,68 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account initialAccount(String account, String pwd, String ip, int provider) throws SystemException {
-        Account accountReturn = new Account();
-        accountReturn.setPassportId(PassportIDGenerator.generator(account, provider));
-        String passwdSign = null;
-        if (!Strings.isNullOrEmpty(pwd)) {
-            passwdSign = PwdGenerator.generatorPwdSign(pwd);
+    public Account initialAccount(String username, String password, String ip, int provider) throws SystemException {
+        Account account = new Account();
+        account.setPassportId(PassportIDGenerator.generator(username, provider));
+        String passwordSign = null;
+        if (!Strings.isNullOrEmpty(password)) {
+            passwordSign = PwdGenerator.generatorPwdSign(password);
         }
-        accountReturn.setPasswd(passwdSign);
-        accountReturn.setRegTime(new Date());
-        accountReturn.setRegIp(ip);
-        accountReturn.setAccountType(provider);
-        accountReturn.setStatus(AccountStatusEnum.REGULAR.getValue());
-        accountReturn.setVersion(Account.NEW_ACCOUNT_VERSION);
-        accountReturn.setMobile(account);
-        long id = accountMapper.saveAccount(accountReturn);
+        account.setPasswd(passwordSign);
+        account.setRegTime(new Date());
+        account.setRegIp(ip);
+        account.setAccountType(provider);
+        account.setStatus(AccountStatusEnum.REGULAR.getValue());
+        account.setVersion(Account.NEW_ACCOUNT_VERSION);
+        String mobile = null;
+        if (AccountTypeEnum.isPhone(username, provider)) {
+            mobile = username;
+        }
+        account.setMobile(mobile);
+        long id = accountMapper.saveAccount(account);
         if (id != 0) {
-//            System.out.println(accountReturn.getId());
-//            accountReturn.setId(id);
-            return accountReturn;
+            return account;
         }
         return null;
     }
 
     @Override
-    public Account initialConnectAccount(String account, String ip, int provider) throws SystemException {
-        return initialAccount(account, null, ip, provider);
+    public Account initialConnectAccount(String connectUid, String ip, int provider) throws SystemException {
+        return initialAccount(connectUid, null, ip, provider);
     }
 
     @Override
-    public AccountAuth initialAccountAuth(long userId, String passportId, int clientId) throws SystemException {
-        AccountAuth accountAuth = newAccountAuth(userId, passportId, clientId);
-        long id = accountAuthMapper.saveAccountAuth(accountAuth);
-        if (id != 0) {
-//            accountAuth.setId(id);
-            return accountAuth;
+    public Account verifyUserVaild(String username, String password) {
+        if (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) {
+            String pwdSign;
+            try {
+                pwdSign = PwdGenerator.generatorPwdSign(password);
+            } catch (SystemException e) {
+                logger.error("username:{} passport:{} sign fail", username, password);
+                return null;
+            }
+            Account userAccount = getAccountByUserName(username);
+            if (isVaildAccount(userAccount, pwdSign)) {
+                return userAccount;
+            }
         }
         return null;
     }
 
+    private boolean isVaildAccount(Account userAccount, String pwdSign) {
+        return userAccount != null && pwdSign.equals(userAccount.getPasswd()) && userAccount.getStatus() == AccountStatusEnum.REGULAR.getValue();
+    }
+
     @Override
-    public AccountAuth updateAccountAuth(long userId, String passportId, int clientId) throws Exception {
-        AccountAuth accountAuth = newAccountAuth(userId, passportId, clientId);
-        if (accountAuth != null) {
-            int accountRow = accountAuthMapper.updateAccountAuth(accountAuth);
-            return accountRow == 0 ? null : accountAuth;
+    public Account getAccountByUserName(String username) {
+        // TODO 加缓存,两个方法可以合并，采用动态查询sql,但合并的话缓存写起来不太方便
+        Account account = null;
+        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+            account = accountMapper.getAccountByMobile(username);
+        } else {
+            account = accountMapper.getAccountByPassportId(username);
         }
-        return null;
+        return account;
     }
 
     @Override
@@ -369,7 +336,7 @@ public class AccountServiceImpl implements AccountService {
                 userIdResult = Long.parseLong(userId);
             }
         } catch (Exception e) {
-            logger.error("[SMS] service method getPassportIdByUserId error.{}", e);
+            logger.error("[SMS] service method getUserIdByPassportIdFromCache error.{}", e);
         }
         return userIdResult;
     }
@@ -446,20 +413,23 @@ public class AccountServiceImpl implements AccountService {
         return obj != null ? (Boolean) obj : false;
     }
 
-    /**
-     * 修改用户状态表
-     *
-     * @param accountAuth
-     * @return
-     */
     @Override
-    public int updateAccountAuth(AccountAuth accountAuth) {
-        if (accountAuth != null) {
-            int accountRow = accountAuthMapper.updateAccountAuth(accountAuth);
-            return accountRow == 0 ? 0 : accountRow;
+    public boolean resetPassword(String mobile, String password) throws SystemException {
+        Account account = accountMapper.getAccountByMobile(mobile);
+        String passwordSign = null;
+        if (!Strings.isNullOrEmpty(password)) {
+            passwordSign = PwdGenerator.generatorPwdSign(password);
         }
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        Account accountResult = new Account();
+        accountResult.setMobile(mobile);
+        accountResult.setPasswd(passwordSign);
+        if (account != null) {
+            accountResult.setId(account.getId());
+        }
+        int row = accountMapper.updateAccount(accountResult);
+        return row == 0 ? false : true;
     }
+
 
     /**
      * 根据主键ID获取passportId
@@ -474,7 +444,7 @@ public class AccountServiceImpl implements AccountService {
             userId = accountMapper.getUserIdByPassportId(passportId);
             return userId == 0 ? 0 : userId;
         }
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     /**

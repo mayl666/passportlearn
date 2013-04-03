@@ -1,15 +1,13 @@
 package com.sogou.upd.passport.oauth2.openresource.response;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.exception.SystemException;
-import com.sogou.upd.passport.model.connect.OAuthToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthRequest;
-import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.common.validators.OAuthValidator;
 import com.sogou.upd.passport.oauth2.openresource.OpenOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.OAuthSinaSSOTokenValidator;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -24,12 +22,8 @@ public class OAuthSinaSSOTokenRequest extends OAuthRequest {
     }
 
     @Override
-    protected OAuthValidator<HttpServletRequest> initValidator() throws ProblemException, SystemException {
+    protected OAuthValidator<HttpServletRequest> initValidator() throws ProblemException {
         return new OAuthSinaSSOTokenValidator();
-    }
-
-    public OAuthToken getOAuthToken(){
-        return new OAuthToken(getAccessToken(), getExpiresIn(), getRefreshToken(), getScope(), getConnectUid());
     }
 
 	public String getAccessToken() {
