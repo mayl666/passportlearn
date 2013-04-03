@@ -111,7 +111,7 @@ public class AccountServiceImpl implements AccountService {
                         isSend = SMSUtil.sendSMS(mobile, smsText);
                         if (isSend) {
                             mapResult.put("smscode", randomCode);
-                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                            return ErrorUtil.buildSuccess("获取验证码成功", mapResult);
                         }
                     } else {
                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
@@ -196,7 +196,7 @@ public class AccountServiceImpl implements AccountService {
                                         if (isSend) {
                                             //30分钟之内返回原先验证码
                                             mapResult.put("smscode", smsCode);
-                                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                                            return ErrorUtil.buildSuccess("获取验证码成功", mapResult);
                                         }
                                     } else {
                                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
