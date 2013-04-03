@@ -189,7 +189,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/resetpwd", method = RequestMethod.POST)
+    @RequestMapping(value = "/v2/mobile/resetpwd", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
                                 @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password,
@@ -206,8 +206,15 @@ public class AccountController extends BaseController {
         if (account != null) {
             accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), client_id, instance_id);
         }
+        //TODO 异步更新该用户其它状态信息
+        if (resetPwd == true && accountAuthResult != null) {
+            //清除验证码的缓存
+            accountService.deleteSmsCache(mobile, String.valueOf(client_id));
+            return ErrorUtil.buildSuccess("重置密码成功", null);
+        } else {
+            return ErrorUtil.buildExceptionError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
+        }
 
-        return resetPwd == true && accountAuthResult != null ? ErrorUtil.buildSuccess("重置密码成功", null) : ErrorUtil.buildExceptionError("重置密码失败");
     }
 
     /**

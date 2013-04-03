@@ -42,12 +42,9 @@ public interface AccountAuthService {
     public AccountAuth updateAccountAuth(long userId, String passportId, int clientId, String instanceId) throws Exception;
 
     /**
-     * 根据userId查询用户状态信息
-     *
-     * @param userId
-     * @return
+     * 异步更新某用户其它状态信息
      */
-    public AccountAuth findAccountAuthByQuery(long userId, int clientId, String instanceId);
+    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId) throws SystemException;
 
     /**
      * 根据userId查询list集合
@@ -57,13 +54,5 @@ public interface AccountAuthService {
      */
     public List<AccountAuth> findAccountAuthListByUserId(long userId);
 
-    /**
-     * SQL语句批量更新某个用户的状态记录表信息
-     *
-     * @param mobile
-     * @param clientId
-     * @return
-     */
-    public void batchUpdateAccountAuthBySql(String mobile, String clientId) throws SystemException;
 
 }
