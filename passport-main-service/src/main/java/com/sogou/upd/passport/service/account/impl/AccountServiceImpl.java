@@ -56,8 +56,6 @@ public class AccountServiceImpl implements AccountService {
     @Inject
     private AccountAuthMapper accountAuthMapper;
     @Inject
-    private ShardedJedisPool shardedJedisPool;
-    @Inject
     private AppConfigService appConfigService;
     @Inject
     private TaskExecutor taskExecutor;
