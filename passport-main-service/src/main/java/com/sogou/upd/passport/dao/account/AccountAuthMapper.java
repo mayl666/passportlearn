@@ -73,7 +73,7 @@ public interface AccountAuthMapper {
      * @param userId
      * @return
      */
-    public List<AccountAuth> batchGetAccountAuthByUserId(long userId);
+    public List<AccountAuth> batchFindAccountAuthByUserId(long userId);
 
     /**
      * 批量更新某用户对应的状态记录

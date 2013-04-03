@@ -64,7 +64,7 @@
           delete from account_auth where user_id=#{userId}
     </select>
 
-    <select id="batchGetAccountAuthByUserId" parameterType="long" resultMap="accountAuthMap">
+    <select id="batchFindAccountAuthByUserId" parameterType="long" resultMap="accountAuthMap">
         select * from account_auth where user_id=#{userId}
     </select>
 

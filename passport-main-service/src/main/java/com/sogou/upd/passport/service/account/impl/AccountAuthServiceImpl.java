@@ -10,6 +10,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -34,6 +35,9 @@ public class AccountAuthServiceImpl implements AccountAuthService {
 
     @Inject
     private AccountMapper accountMapper;
+
+    @Inject
+    private TaskExecutor taskExecutor;
 
     @Override
     public AccountAuth verifyRefreshToken(String refreshToken, String instanceId) {
@@ -67,28 +71,44 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         return null;
     }
 
-    /**
-     * 根据以下三个id查询用户状态信息
-     * @param userId
-     * @param clientId
-     * @param instanceId
-     * @return
-     */
     @Override
-    public AccountAuth findAccountAuthByQuery(long userId, int clientId, String instanceId) {
-        AccountAuth accountAuthParams = new AccountAuth();
-        accountAuthParams.setUserId(userId);
-        accountAuthParams.setClientId(clientId);
-        accountAuthParams.setInstanceId(instanceId);
-        AccountAuth accountAuth = null;
-        if (userId != 0) {
-            accountAuth = accountAuthMapper.getAccountAuthByQuery(accountAuthParams);
-        }
-        return accountAuth == null ? null : accountAuth;  //To change body of implemented methods use File | Settings | File Templates.
+    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId) throws SystemException {
+        taskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Account account = null;
+                if (mobile != null) {
+                    //根据手机号查询该用户信息
+                    account = accountMapper.getAccountByMobile(mobile);
+                }
+                List<AccountAuth> listNew = new ArrayList<AccountAuth>();
+                List<AccountAuth> listResult = null;
+                if (account != null) {
+                    //根据该用户的id去auth表里查询用户状态记录，返回list
+                    listResult = accountAuthMapper.batchFindAccountAuthByUserId(account.getId());
+                    if (listResult != null && listResult.size() > 0)
+                        for (AccountAuth aa : listResult) {
+                            //生成token及对应的auth对象，添加至listNew列表中，批量更新数据库
+                            AccountAuth accountAuth = null;
+                            try {
+                                accountAuth = newAccountAuth(account.getId(), account.getPassportId(), aa.getClientId(), aa.getInstanceId());
+                            } catch (SystemException e) {
+                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            }
+                            if (accountAuth != null) {
+                                listNew.add(accountAuth);
+                            }
+                        }
+                }
+                if (listNew != null && listNew.size() > 0) {
+                    accountAuthMapper.batchUpdateAccountAuth(listNew);
+                }
+            }
+        });
     }
 
     /**
-     * 方法一：根据userId查询list集合
+     * 根据userId查询list集合
      *
      * @param userId
      * @return
@@ -96,38 +116,9 @@ public class AccountAuthServiceImpl implements AccountAuthService {
     public List<AccountAuth> findAccountAuthListByUserId(long userId) {
         List<AccountAuth> accountAuthList = new ArrayList<AccountAuth>();
         if (userId != 0) {
-            accountAuthList = accountAuthMapper.batchGetAccountAuthByUserId(userId);
+            accountAuthList = accountAuthMapper.batchFindAccountAuthByUserId(userId);
         }
         return accountAuthList.size() > 0 ? accountAuthList : null;
-    }
-
-    /**
-     * 方法二：SQL批量更新某个用户的状态记录表信息
-     */
-    @Override
-    public void batchUpdateAccountAuthBySql(String mobile, String clientId) throws SystemException {
-        Account account = null;
-        if (mobile != null) {
-            //根据手机号查询该用户信息
-            account = accountMapper.getAccountByMobile(mobile);
-        }
-        List<AccountAuth> listNew = new ArrayList<AccountAuth>();
-        List<AccountAuth> listResult = null;
-        if (account != null) {
-            //根据该用户的id去auth表里查询用户状态记录，返回list
-            listResult = accountAuthMapper.batchGetAccountAuthByUserId(account.getId());
-            if (listResult != null && listResult.size() > 0)
-                for (AccountAuth aa : listResult) {
-                    //生成token及对应的auth对象，添加至listNew列表中，批量更新数据库
-                    AccountAuth accountAuth = newAccountAuth(account.getId(), account.getPassportId(), aa.getClientId(), aa.getInstanceId());
-                    if (accountAuth != null) {
-                        listNew.add(accountAuth);
-                    }
-                }
-        }
-        if (listNew != null && listNew.size() > 0) {
-            accountAuthMapper.batchUpdateAccountAuth(listNew);
-        }
     }
 
     /**
