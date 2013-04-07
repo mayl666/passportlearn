@@ -22,12 +22,12 @@ public interface AccountService {
     public boolean checkSmsInfoFromCache(String account, String smsCode, String clientId);
 
     /**
-     * 检查此用户是否发送过验证码，并是否在有效期内
+     * 检查缓存中是否存在此key
      *
      * @param account
      * @return
      */
-    public boolean checkKeyIsExistFromCache(String account);
+    public boolean checkCacheKeyIsExist(String account);
 
     /**
      * 重发验证码时更新缓存状态
@@ -35,7 +35,7 @@ public interface AccountService {
      * @param cacheKey
      * @return
      */
-    public Map<String, Object> updateSmsInfoByAccountFromCache(String cacheKey, int clientId);
+    public Map<String, Object> updateSmsInfoByCacheKeyAndClientid(String cacheKey, int clientId);
 
     /**
      * 手机验证码的获取与重发

@@ -26,7 +26,7 @@ import java.lang.reflect.Type;
 public class AppConfigServiceImpl implements AppConfigService {
 
     private Logger logger = LoggerFactory.getLogger(AppConfigService.class);
-    private static final String CACHE_PREFIX_CLIENTID = "PASSPORT:ACCOUNT_CLIENTID_";     //clientid与appConfig映射
+    private static final String CACHE_PREFIX_CLIENTID = "PASSPORT:CLIENTID_APPCONFIG_";     //clientid与appConfig映射
 
     @Inject
     private AppConfigMapper appConfigMapper;
