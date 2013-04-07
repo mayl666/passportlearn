@@ -17,7 +17,7 @@ public interface AccountAuthService {
      * 验证refresh_token的合法性
      *
      * @param refreshToken
-     * @return
+     * @return refreshToken不存在或过期则返回null
      */
     public AccountAuth verifyRefreshToken(String refreshToken, String instanceId);
 

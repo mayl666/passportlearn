@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -66,5 +67,11 @@ public class TokenGeneratorTest {
             System.out.println("accessToken is invalid");
         }
         Assert.assertEquals(passportId, "13621009174@sohu.com");
+    }
+
+    @Test
+    public void testPwdGenerator() throws SystemException {
+        String pwd = "111111";
+        System.out.println(PwdGenerator.generatorPwdSign(pwd));
     }
 }

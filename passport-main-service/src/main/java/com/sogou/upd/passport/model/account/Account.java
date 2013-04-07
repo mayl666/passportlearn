@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.model.account;
 
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+
 import java.util.Date;
 
 /**
@@ -50,6 +52,10 @@ public class Account {
         this.status = status;
         this.version = version;
         this.accountType = accountType;
+    }
+
+    public boolean isNormalAccount() {
+        return this.status == AccountStatusEnum.REGULAR.getValue();
     }
 
     public long getId() {

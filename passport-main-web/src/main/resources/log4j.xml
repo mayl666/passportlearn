@@ -28,12 +28,12 @@
 
     <category name="java.sql" additivity="false">
         <priority value="${passport.log.level}"/>
-        <appender-ref ref="CONSOLE-DEBUG"/>
+        <appender-ref ref="CONSOLE-INFO"/>
     </category>
 
     <root>
         <priority value="${passport.log.level}"/>
-        <appender-ref ref="CONSOLE-DEBUG"/>
+        <appender-ref ref="CONSOLE-INFO"/>
     </root>
 
 

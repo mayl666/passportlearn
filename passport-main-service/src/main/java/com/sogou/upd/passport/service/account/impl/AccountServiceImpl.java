@@ -12,12 +12,10 @@ import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -55,8 +53,6 @@ public class AccountServiceImpl implements AccountService {
     private AccountMapper accountMapper;
     @Inject
     private AccountAuthMapper accountAuthMapper;
-    @Inject
-    private ShardedJedisPool shardedJedisPool;
     @Inject
     private AppConfigService appConfigService;
     @Inject
@@ -126,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
             });
         } catch (Exception e) {
             logger.error("[SMS] service method handleSendSms error.{}", e);
-        } 
+        }
         return obj != null ? (Map<String, Object>) obj : null;
     }
 
@@ -287,7 +283,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account verifyUserVaild(String username, String password) {
+    public Account verifyUserPwdVaild(String username, String password) {
         if (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) {
             String pwdSign;
             try {
@@ -297,15 +293,11 @@ public class AccountServiceImpl implements AccountService {
                 return null;
             }
             Account userAccount = getAccountByUserName(username);
-            if (isVaildAccount(userAccount, pwdSign)) {
+            if (userAccount != null && pwdSign.equals(userAccount.getPasswd())) {
                 return userAccount;
             }
         }
         return null;
-    }
-
-    private boolean isVaildAccount(Account userAccount, String pwdSign) {
-        return userAccount != null && pwdSign.equals(userAccount.getPasswd()) && userAccount.getStatus() == AccountStatusEnum.REGULAR.getValue();
     }
 
     @Override
@@ -318,6 +310,15 @@ public class AccountServiceImpl implements AccountService {
             account = accountMapper.getAccountByPassportId(username);
         }
         return account;
+    }
+
+    @Override
+    public Account verifyAccountVaild(long userId) {
+        Account account = accountMapper.getAccountByUserId(userId);
+        if (account.isNormalAccount()) {
+            return account;
+        }
+        return null;
     }
 
     @Override
