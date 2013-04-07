@@ -72,15 +72,53 @@
 
     <update id="batchUpdateAccountAuth" parameterType="java.util.List">
         update account_auth
-            <foreach collection="list" item="accountAuth" index="index">
-                <set>
-                    <if test="accountAuth.accessToken != null">access_token=#{accountAuth.accessToken},</if>
-                    <if test="accountAuth.refreshToken != null">refresh_token=#{accountAuth.refreshToken},</if>
-                    <if test="accountAuth.accessValidTime != null">access_valid_time=#{accountAuth.accessValidTime},</if>
-                    <if test="accountAuth.refreshValidTime != null">refresh_valid_time=#{accountAuth.refreshValidTime}</if>
-                </set>
-                where user_id=#{accountAuth.userId} and client_id=#{accountAuth.clientId} and
-                instance_id=#{accountAuth.instanceId}
-            </foreach>
+        <trim prefix="set" suffixOverrides=",">
+
+            <trim prefix="access_token=case" suffix="end,">
+                <foreach collection="list" item="accountAuth" index="index">
+                    <if test="accountAuth.accessToken != null">
+                        when (user_id=#{accountAuth.userId} and
+                        client_id=#{accountAuth.clientId} and
+                        instance_id=#{accountAuth.instanceId}) then #{accountAuth.accessToken}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="refresh_token=case" suffix="end,">
+                <foreach collection="list" item="accountAuth" index="index">
+                    <if test="accountAuth.refreshToken != null">
+                        when (user_id=#{accountAuth.userId} and
+                        client_id=#{accountAuth.clientId} and
+                        instance_id=#{accountAuth.instanceId}) then #{accountAuth.refreshToken}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="access_valid_time=case" suffix="end,">
+                <foreach collection="list" item="accountAuth" index="index">
+                    <if test="accountAuth.accessValidTime != null">
+                        when (user_id=#{accountAuth.userId} and
+                        client_id=#{accountAuth.clientId} and
+                        instance_id=#{accountAuth.instanceId}) then #{accountAuth.accessValidTime}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="refresh_valid_time=case" suffix="end,">
+                <foreach collection="list" item="accountAuth" index="index">
+                    <if test="accountAuth.refreshValidTime != null">
+                        when (user_id=#{accountAuth.userId} and
+                        client_id=#{accountAuth.clientId} and
+                        instance_id=#{accountAuth.instanceId}) then #{accountAuth.refreshValidTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" separator="or" item="accountAuth" index="index">
+            (user_id=#{accountAuth.userId} and
+            client_id=#{accountAuth.clientId} and
+            instance_id=#{accountAuth.instanceId})
+        </foreach>
     </update>
 </mapper>

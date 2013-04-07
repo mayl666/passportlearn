@@ -218,7 +218,7 @@ public class AccountController extends BaseController {
             accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), client_id, instance_id);
         }
         //TODO 异步更新该用户其它状态信息
-//        accountAuthService.asynUpdateAccountAuthBySql(mobile,client_id,instance_id);
+        accountAuthService.asynUpdateAccountAuthBySql(mobile,client_id,instance_id);
         if (resetPwd == true && accountAuthResult != null) {
             //清除验证码的缓存
             accountService.deleteSmsCache(mobile, String.valueOf(client_id));
