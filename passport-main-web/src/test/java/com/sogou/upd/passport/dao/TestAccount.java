@@ -23,7 +23,6 @@ public class TestAccount {
     @Inject
     private AccountService accountService;
 
-
     /**
      * 测试手机账号是否存在
      */
