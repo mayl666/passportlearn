@@ -44,10 +44,9 @@ import java.util.Map;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
-    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";   //account与smscode映射
-    private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
-    private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
-    private static final String CACHE_PREFIX_USERID = "PASSPORT:ACCOUNT_USERID_";     //userID与passport_id映射
+    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:MOBILE_SMSCODE_";   //account与smscode映射
+    private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:MOBILE_SENDNUM_";
+    private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:PASSPORTID__USERID";     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
