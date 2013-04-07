@@ -30,7 +30,6 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.ShardedJedisPool;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -45,10 +44,9 @@ import java.util.Map;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
-    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:ACCOUNT_SMSCODE_";   //account与smscode映射
-    private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:ACCOUNT_SENDNUM_";
-    private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:ACCOUNT_PASSPORTID_";     //passport_id与userID映射
-    private static final String CACHE_PREFIX_USERID = "PASSPORT:ACCOUNT_USERID_";     //userID与passport_id映射
+    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:MOBILE_SMSCODE_";   //account与smscode映射
+    private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:MOBILE_SENDNUM_";
+    private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:PASSPORTID__USERID";     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
     @Inject
@@ -112,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
                         isSend = SMSUtil.sendSMS(mobile, smsText);
                         if (isSend) {
                             mapResult.put("smscode", randomCode);
-                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                            return ErrorUtil.buildSuccess("获取验证码成功", mapResult);
                         }
                     } else {
                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
@@ -139,7 +137,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean checkKeyIsExistFromCache(final String cacheKey) {
+    public boolean checkCacheKeyIsExist(final String cacheKey) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback() {
@@ -150,13 +148,13 @@ public class AccountServiceImpl implements AccountService {
                 }
             });
         } catch (Exception e) {
-            logger.error("[SMS] service method checkIsExistFromCache error.{}", e);
+            logger.error("[SMS] service method checkCacheKeyIsExist error.{}", e);
         }
         return obj != null ? (Boolean) obj : false;
     }
 
     @Override
-    public Map<String, Object> updateSmsInfoByAccountFromCache(final String cacheKey, final int clientId) {
+    public Map<String, Object> updateSmsInfoByCacheKeyAndClientid(final String cacheKey, final int clientId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -197,7 +195,7 @@ public class AccountServiceImpl implements AccountService {
                                         if (isSend) {
                                             //30分钟之内返回原先验证码
                                             mapResult.put("smscode", smsCode);
-                                            return ErrorUtil.buildSuccess("获取注册验证码成功", mapResult);
+                                            return ErrorUtil.buildSuccess("获取验证码成功", mapResult);
                                         }
                                     } else {
                                         return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
@@ -214,7 +212,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             });
         } catch (Exception e) {
-            logger.error("[SMS] service method updateCacheStatusByAccount error.{}", e);
+            logger.error("[SMS] service method updateSmsInfoByCacheKeyAndClientid error.{}", e);
         }
         return obj != null ? (Map<String, Object>) obj : null;
     }

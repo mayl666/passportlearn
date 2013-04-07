@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.model.account.AccountAuth;
 
 import java.util.List;
@@ -41,16 +42,9 @@ public interface AccountAuthService {
     public AccountAuth updateAccountAuth(long userId, String passportId, int clientId, String instanceId) throws Exception;
 
     /**
-     * 根据userId查询list集合
-     * @param userId
-     * @return
+     * 异步更新某用户其它状态信息
      */
-    public List<AccountAuth> findAccountAuthListByUserId(long userId);
+    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId, final String instanceId) throws SystemException;
 
-    /**
-     * 批量更新某个用户的状态记录表信息
-     * @param list
-     */
-    public void batchUpdateAccountAuth(List<AccountAuth> list);
 
 }

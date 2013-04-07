@@ -42,12 +42,12 @@ public interface AccountAuthMapper {
     public int updateAccountAuth(AccountAuth accountAuth);
 
     /**
-     * 根据UserId获取AccountAuth信息
+     * 根据userId、clientId、instanceId三个条件获取AccountAuth信息
      *
      * @param
      * @return
      */
-    public AccountAuth getAccountAuthByUserId(long userId);
+    public AccountAuth getAccountAuthByQuery(AccountAuth accountAuth);
 
     /**
      * 根据refresh_token获取AccountAuth信息
@@ -59,7 +59,7 @@ public interface AccountAuthMapper {
     public AccountAuth getAccountAuthByRefreshToken(String refreshToken);
 
     /**
-     * 根据refresh_token获取AccountAuth信息
+     * 根据access_token获取AccountAuth信息
      * todo 可以和getUserAuthByUserId()合并，缓存怎么存？分表怎么查？
      *
      * @param
@@ -69,7 +69,6 @@ public interface AccountAuthMapper {
 
     /**
      * 根据userid删除AccountAuth信息，内部调试接口使用
-     *
      * @param userId
      * @return
      */
@@ -77,15 +76,13 @@ public interface AccountAuthMapper {
 
     /**
      * 根据userId查询所有记录，返回list集合
-     *
-     * @param userId
+     * @param accountAuth
      * @return
      */
-    public List<AccountAuth> batchGetAccountAuthByUserId(long userId);
+    public List<AccountAuth> batchFindAccountAuthByUserId(AccountAuth accountAuth);
 
     /**
      * 批量更新某用户对应的状态记录
-     *
      * @param list
      */
     public void batchUpdateAccountAuth(List<AccountAuth> list);

@@ -3,11 +3,14 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
+import com.sogou.upd.passport.dao.account.AccountMapper;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -29,6 +32,12 @@ public class AccountAuthServiceImpl implements AccountAuthService {
 
     @Inject
     private AccountAuthMapper accountAuthMapper;
+
+    @Inject
+    private AccountMapper accountMapper;
+
+    @Inject
+    private TaskExecutor taskExecutor;
 
     @Override
     public AccountAuth verifyRefreshToken(String refreshToken, String instanceId) {
@@ -62,31 +71,64 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         return null;
     }
 
-    /**
-     * 根据userId查询list集合
-     *
-     * @param userId
-     * @return
-     */
-    public List<AccountAuth> findAccountAuthListByUserId(long userId) {
-        List<AccountAuth> accountAuthList = new ArrayList<AccountAuth>();
-        if (userId != 0) {
-            accountAuthList = accountAuthMapper.batchGetAccountAuthByUserId(userId);
-        }
-        return accountAuthList.size() > 0 ? accountAuthList : null;
+
+    private AccountAuth findAccountAuthByQuery(long userId, int clientId, String instanceId) {
+        AccountAuth aa = new AccountAuth();
+        aa.setUserId(userId);
+        aa.setInstanceId(instanceId);
+        aa.setClientId(clientId);
+        AccountAuth accountAuth = accountAuthMapper.getAccountAuthByQuery(aa);
+        return accountAuth == null ? null : accountAuth;
     }
 
     /**
-     * 批量更新某个用户的状态记录表信息
+     * 异步生成某用户的除当前客户端外的其它客户端的用户状态信息
      *
-     * @param list
+     * @param mobile
+     * @param clientId
+     * @param instanceId
+     * @throws SystemException
      */
     @Override
-    public void batchUpdateAccountAuth(List<AccountAuth> list) {
-        if (list != null && list.size() > 0) {
-            accountAuthMapper.batchUpdateAccountAuth(list);
-        }
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId, final String instanceId) throws SystemException {
+        taskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Account account = null;
+                if (mobile != null) {
+                    //根据手机号查询该用户信息
+                    account = accountMapper.getAccountByMobile(mobile);
+                }
+                List<AccountAuth> listNew = new ArrayList<AccountAuth>();
+                List<AccountAuth> listResult = null;
+                if (account != null) {
+                    //根据该用户的id去auth表里查询用户状态记录，返回list
+                    AccountAuth accountAuthNew = new AccountAuth();
+                    accountAuthNew.setUserId(account.getId());
+                    accountAuthNew.setInstanceId(instanceId);
+                    accountAuthNew.setClientId(clientId);
+                    //此步没执行成功
+                    listResult = accountAuthMapper.batchFindAccountAuthByUserId(accountAuthNew);
+                    if (listResult != null && listResult.size() > 0)
+                        for (AccountAuth aa : listResult) {
+                            //生成token及对应的auth对象，添加至listNew列表中，批量更新数据库
+                            AccountAuth accountAuth = null;
+                            try {
+                                accountAuth = newAccountAuth(account.getId(), account.getPassportId(), aa.getClientId(), aa.getInstanceId());
+                                accountAuth.setId(aa.getId());
+                            } catch (SystemException e) {
+                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            }
+                            if (accountAuth != null) {
+                                listNew.add(accountAuth);
+                            }
+                        }
+                }
+                if (listNew != null && listNew.size() > 0) {
+                    accountAuthMapper.batchUpdateAccountAuth(listNew);
+                }
+            }
+        });
     }
 
     /**
