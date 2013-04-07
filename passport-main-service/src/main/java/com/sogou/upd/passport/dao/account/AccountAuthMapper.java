@@ -42,14 +42,6 @@ public interface AccountAuthMapper {
     public int updateAccountAuth(AccountAuth accountAuth);
 
     /**
-     * 根据userId、clientId、instanceId三个条件获取AccountAuth信息
-     *
-     * @param
-     * @return
-     */
-    public AccountAuth getAccountAuthByQuery(AccountAuth accountAuth);
-
-    /**
      * 根据refresh_token获取AccountAuth信息
      * todo 可以和getUserAuthByUserId()合并，缓存怎么存？分表怎么查？
      *

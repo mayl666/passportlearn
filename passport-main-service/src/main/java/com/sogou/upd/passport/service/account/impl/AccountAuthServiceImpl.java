@@ -71,16 +71,6 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         return null;
     }
 
-
-    private AccountAuth findAccountAuthByQuery(long userId, int clientId, String instanceId) {
-        AccountAuth aa = new AccountAuth();
-        aa.setUserId(userId);
-        aa.setInstanceId(instanceId);
-        aa.setClientId(clientId);
-        AccountAuth accountAuth = accountAuthMapper.getAccountAuthByQuery(aa);
-        return accountAuth == null ? null : accountAuth;
-    }
-
     /**
      * 异步生成某用户的除当前客户端外的其它客户端的用户状态信息
      *
