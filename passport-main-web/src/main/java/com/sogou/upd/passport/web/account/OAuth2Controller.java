@@ -68,7 +68,7 @@ public class OAuth2Controller {
             // 檢查不同的grant types是否正確
             // TODO 消除if-else
             AccountAuth renewAccountAuth = null;
-            if (oauthRequest.getGrantType().equals(GrantType.PASSWORD.toString())) {
+            if (GrantType.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
                 Account account = accountService
                         .verifyUserPwdVaild(oauthRequest.getUsername(), oauthRequest.getPassword());
                 if (account == null) {
@@ -85,7 +85,7 @@ public class OAuth2Controller {
                     renewAccountAuth = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(),
                             clientId, instanceId);
                 }
-            } else if (oauthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN.toString())) {
+            } else if (GrantType.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
                 AccountAuth accountAuth = accountAuthService.verifyRefreshToken(refreshToken, instanceId);
                 if (accountAuth == null) {
