@@ -137,7 +137,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean checkKeyIsExistFromCache(final String cacheKey) {
+    public boolean checkCacheKeyIsExist(final String cacheKey) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback() {
@@ -148,13 +148,13 @@ public class AccountServiceImpl implements AccountService {
                 }
             });
         } catch (Exception e) {
-            logger.error("[SMS] service method checkIsExistFromCache error.{}", e);
+            logger.error("[SMS] service method checkCacheKeyIsExist error.{}", e);
         }
         return obj != null ? (Boolean) obj : false;
     }
 
     @Override
-    public Map<String, Object> updateSmsInfoByAccountFromCache(final String cacheKey, final int clientId) {
+    public Map<String, Object> updateSmsInfoByCacheKeyAndClientid(final String cacheKey, final int clientId) {
         Object obj = null;
         try {
             obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -212,7 +212,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             });
         } catch (Exception e) {
-            logger.error("[SMS] service method updateCacheStatusByAccount error.{}", e);
+            logger.error("[SMS] service method updateSmsInfoByCacheKeyAndClientid error.{}", e);
         }
         return obj != null ? (Map<String, Object>) obj : null;
     }
