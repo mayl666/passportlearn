@@ -81,30 +81,40 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         return accountAuth == null ? null : accountAuth;
     }
 
+    /**
+     * 异步生成某用户的除当前客户端外的其它客户端的用户状态信息
+     * @param mobile
+     * @param clientId
+     * @param instanceId
+     * @throws SystemException
+     */
     @Override
-    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId,final String instanceId) throws SystemException {
+    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId, final String instanceId) throws SystemException {
         taskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 Account account = null;
-//                AccountAuth accountAuthSignal = null;
                 if (mobile != null) {
                     //根据手机号查询该用户信息
                     account = accountMapper.getAccountByMobile(mobile);
-//                    accountAuthSignal = findAccountAuthByQuery(account.getId(),clientId,instanceId);
                 }
                 List<AccountAuth> listNew = new ArrayList<AccountAuth>();
                 List<AccountAuth> listResult = null;
                 if (account != null) {
                     //根据该用户的id去auth表里查询用户状态记录，返回list
-                    listResult = accountAuthMapper.batchFindAccountAuthByUserId(account.getId());
+                    AccountAuth accountAuthNew = new AccountAuth();
+                    accountAuthNew.setUserId(account.getId());
+                    accountAuthNew.setInstanceId(instanceId);
+                    accountAuthNew.setClientId(clientId);
+                    //此步没执行成功
+                    listResult = accountAuthMapper.batchFindAccountAuthByUserId(accountAuthNew);
                     if (listResult != null && listResult.size() > 0)
-//                        listResult
                         for (AccountAuth aa : listResult) {
                             //生成token及对应的auth对象，添加至listNew列表中，批量更新数据库
                             AccountAuth accountAuth = null;
                             try {
                                 accountAuth = newAccountAuth(account.getId(), account.getPassportId(), aa.getClientId(), aa.getInstanceId());
+                                accountAuth.setId(aa.getId());
                             } catch (SystemException e) {
                                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                             }
@@ -120,19 +130,6 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         });
     }
 
-    /**
-     * 根据userId查询list集合
-     *
-     * @param userId
-     * @return
-     */
-    public List<AccountAuth> findAccountAuthListByUserId(long userId) {
-        List<AccountAuth> accountAuthList = new ArrayList<AccountAuth>();
-        if (userId != 0) {
-            accountAuthList = accountAuthMapper.batchFindAccountAuthByUserId(userId);
-        }
-        return accountAuthList.size() > 0 ? accountAuthList : null;
-    }
 
     /**
      * 验证refresh是否在有效期内，instanceId是否正确
