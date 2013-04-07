@@ -107,7 +107,6 @@ public class AccountAuthServiceImpl implements AccountAuthService {
                     accountAuthNew.setUserId(account.getId());
                     accountAuthNew.setInstanceId(instanceId);
                     accountAuthNew.setClientId(clientId);
-                    //此步没执行成功
                     listResult = accountAuthMapper.batchFindAccountAuthByUserId(accountAuthNew);
                     if (listResult != null && listResult.size() > 0)
                         for (AccountAuth aa : listResult) {
