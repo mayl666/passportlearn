@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.dao;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountService;
