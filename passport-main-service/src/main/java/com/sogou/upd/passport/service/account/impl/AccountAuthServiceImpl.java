@@ -83,6 +83,7 @@ public class AccountAuthServiceImpl implements AccountAuthService {
 
     /**
      * 异步生成某用户的除当前客户端外的其它客户端的用户状态信息
+     *
      * @param mobile
      * @param clientId
      * @param instanceId
@@ -129,7 +130,6 @@ public class AccountAuthServiceImpl implements AccountAuthService {
             }
         });
     }
-
 
     /**
      * 验证refresh是否在有效期内，instanceId是否正确
