@@ -42,7 +42,7 @@
 		account_connect
 		where
 		<if test="connectUid != null">connect_uid=#{connectUid} and </if>
-		<if test="clientId != null">client_id=#{clientId}</if>
+		<if test="accountType != null">account_type=#{accountType}</if>
 	</select>
 
 	<!-- 更新account_connect表里记录 -->

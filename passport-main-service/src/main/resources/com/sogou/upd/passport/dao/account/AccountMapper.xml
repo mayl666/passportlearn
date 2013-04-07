@@ -32,6 +32,10 @@
           select id,passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type from account where mobile=#{mobile}
     </select>
 
+    <select id="getAccountByUserId" parameterType="java.lang.Long" resultMap="accountMap">
+          select id,passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type from account where id=#{userId}
+    </select>
+
     <select id="getPassportIdByUserId" parameterType="long" resultType="java.lang.String">
           select passport_id from account where id=#{userId}
     </select>

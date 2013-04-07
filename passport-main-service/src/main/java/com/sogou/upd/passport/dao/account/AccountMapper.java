@@ -20,19 +20,26 @@ public interface AccountMapper {
     public int saveAccount(Account account);
 
     /**
-     * 根据passportId查询Account
+     * 根据passportId获取Account
      * @param passportId
      * @return
      */
     public Account getAccountByPassportId(String passportId);
 
     /**
-     * 根据手机号码查询Account
+     * 根据手机号码获取Account
      * todo 和getAccountByPassportId合并，动态查询sql
      * @param mobile
      * @return
      */
     public Account getAccountByMobile(String mobile);
+
+    /**
+     * 根据userId获取Account
+     * @param userId
+     * @return
+     */
+    public Account getAccountByUserId(long userId);
 
     /**
      * 根据主键id获取passportId

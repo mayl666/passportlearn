@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account;
 
 import com.sogou.upd.passport.common.exception.ProblemException;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
@@ -53,38 +54,43 @@ public class OAuth2Controller {
         try {
             oauthRequest = new OAuthTokenRequest(request);
 
-            int clientId = Integer.valueOf(oauthRequest.getClientId());
+            int clientId = oauthRequest.getClientId();
             String instanceId = oauthRequest.getInstanceId();
 
             // 检查client_id和client_secret是否有效
             if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
                 response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                         .setError(OAuthError.Response.INVALID_CLIENT)
-                        .setErrorDescription("client_id or client_secret not found").buildJSONMessage();
+                        .setErrorDescription("client_id or client_secret mismatch").buildJSONMessage();
                 return response.getBody();
             }
 
             // 檢查不同的grant types是否正確
             // TODO 消除if-else
             AccountAuth renewAccountAuth = null;
-            if (oauthRequest.getGrantType().equals(GrantType.PASSWORD.toString())) {
+            if (GrantType.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
                 Account account = accountService
-                        .verifyUserVaild(oauthRequest.getUsername(), oauthRequest.getPassword());
+                        .verifyUserPwdVaild(oauthRequest.getUsername(), oauthRequest.getPassword());
                 if (account == null) {
                     response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                            .setError(OAuthError.Response.INVALID_GRANT)
-                            .setErrorDescription("invalid username or password or abnormal account").buildJSONMessage();
+                            .setError(OAuthError.Response.USERNAME_PWD_MISMATCH)
+                            .setErrorDescription("username or password mismatch").buildJSONMessage();
+                    return response.getBody();
+                } else if (account.isNormalAccount()) {
+                    response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                            .setError(OAuthError.Response.INVALID_USER)
+                            .setErrorDescription("user account invalid").buildJSONMessage();
                     return response.getBody();
                 } else {
                     renewAccountAuth = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(),
                             clientId, instanceId);
                 }
-            } else if (oauthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN.toString())) {
+            } else if (GrantType.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
                 AccountAuth accountAuth = accountAuthService.verifyRefreshToken(refreshToken, instanceId);
                 if (accountAuth == null) {
                     response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                            .setError(OAuthError.Response.INVALID_GRANT).setErrorDescription("invalid refresh_token")
+                            .setError(OAuthError.Response.INVALID_REFRESH_TOKEN).setErrorDescription("refresh_token not exist or expired")
                             .buildJSONMessage();
                     return response.getBody();
                 } else {
@@ -92,6 +98,11 @@ public class OAuth2Controller {
                     renewAccountAuth = accountAuthService.updateAccountAuth(accountAuth.getId(), passportId, clientId,
                             instanceId);
                 }
+            } else {
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.UNSUPPORTED_GRANT_TYPE)
+                        .setErrorDescription("unsupported_grant_type").buildJSONMessage();
+                return response.getBody();
             }
 
             if (renewAccountAuth != null) { // 登录成功
@@ -106,12 +117,6 @@ public class OAuth2Controller {
                         .buildJSONMessage();
                 return response.getBody();
             }
-        } catch (NumberFormatException ex) {
-            logger.error("{} is not Number", oauthRequest.getClientId());
-            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                    .setError(OAuthError.Response.INVALID_REQUEST)
-                    .setErrorDescription(oauthRequest.getClientId() + " is not Number").buildJSONMessage();
-            return response.getBody();
         } catch (ProblemException e) {
             response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e).buildJSONMessage();
             return response.getBody();
