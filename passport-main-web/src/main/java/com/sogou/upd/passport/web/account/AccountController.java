@@ -70,11 +70,11 @@ public class AccountController extends BaseController {
         if (ret != null) return ret;
         //判断账号是否被缓存
         String cacheKey = mobile + "_" + client_id;
-        boolean isExistFromCache = accountService.checkKeyIsExistFromCache(cacheKey);
+        boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateSmsInfoByAccountFromCache(cacheKey, client_id);
+            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, client_id);
             return mapResult;
         } else {
             Account account = accountService.getAccountByUserName(mobile);
@@ -177,11 +177,11 @@ public class AccountController extends BaseController {
         }
         //判断账号是否被缓存
         String cacheKey = mobile + "_" + client_id;
-        boolean isExistFromCache = accountService.checkKeyIsExistFromCache(cacheKey);
+        boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
         Map<String, Object> mapResult = Maps.newHashMap();
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateSmsInfoByAccountFromCache(cacheKey, client_id);
+            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, client_id);
             return mapResult;
         } else {
             mapResult = accountService.handleSendSms(mobile, client_id);
