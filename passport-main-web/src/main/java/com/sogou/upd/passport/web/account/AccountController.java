@@ -13,6 +13,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.form.MobileRegParams;
+import com.sogou.upd.passport.web.form.MoblieCodeParams;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -49,36 +50,36 @@ public class AccountController extends BaseController {
     /**
      * 手机账号获取，重发手机验证码接口
      *
-     * @param mobile    传入的手机号码
-     * @param client_id 传入的密码
+     * @param reqParams 传入的参数
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendMobileCode(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
+    public Object sendMobileCode(MoblieCodeParams reqParams)
             throws Exception {
         //参数验证
-        boolean empty = hasEmpty(mobile);
-        if (empty || client_id == 0) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-        //对mobile手机号验证
-        Map<String, Object> ret = checkAccount(mobile);
-        if (ret != null) return ret;
+
+        String mobile = reqParams.getMobile();
+        int clientId = reqParams.getClient_id();
+
         //判断账号是否被缓存
-        String cacheKey = mobile + "_" + client_id;
+        String cacheKey = mobile + "_" + clientId;
         boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
         Map<String, Object> mapResult;
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, client_id);
+            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, clientId);
             return mapResult;
         } else {
             Account account = accountService.getAccountByUserName(mobile);
             if (account == null) {
                 //未注册过
-                mapResult = accountService.handleSendSms(mobile, client_id);
+                mapResult = accountService.handleSendSms(mobile, clientId);
                 if (MapUtils.isNotEmpty(mapResult)) {
                     return mapResult;
                 } else {
@@ -94,14 +95,13 @@ public class AccountController extends BaseController {
      * 手机账号正式注册调用
      *
      * @param request
-     * @param response
      * @param regParams
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
-    public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, MobileRegParams regParams) throws Exception {
+    public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) throws Exception {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
         String validateResult = ControllerHelper.validateParams(regParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -126,7 +126,6 @@ public class AccountController extends BaseController {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
 
-        //读数据库，验证该手机用户是否已经注册过了 todo 为什么还要读数据库？
         String ip = getIp(request);
         Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
         if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
@@ -157,31 +156,37 @@ public class AccountController extends BaseController {
     /**
      * 找回用户密码
      *
-     * @param client_id
-     * @param mobile
+     * @param reqParams
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/findpwd", method = RequestMethod.GET)
     @ResponseBody
-    public Object findPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
+    public Object findPassword(MoblieCodeParams reqParams)
             throws Exception {
-        Map<String, Object> map = checkParams(client_id, mobile);
-        if (map != null) return map;
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+
+        String mobile = reqParams.getMobile();
+        int clientId = reqParams.getClient_id();
+
         Account account = accountService.getAccountByUserName(mobile);
         if (account == null) {   //提示该手机用户不存在
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_NOUSER);
         }
         //判断账号是否被缓存
-        String cacheKey = mobile + "_" + client_id;
+        String cacheKey = mobile + "_" + clientId;
         boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
         Map<String, Object> mapResult;
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, client_id);
+            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, clientId);
             return mapResult;
         } else {
-            mapResult = accountService.handleSendSms(mobile, client_id);
+            mapResult = accountService.handleSendSms(mobile, clientId);
         }
 
         return MapUtils.isNotEmpty(mapResult) ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
@@ -195,17 +200,17 @@ public class AccountController extends BaseController {
      */
     @RequestMapping(value = "/v2/mobile/resetpwd", method = RequestMethod.POST)
     @ResponseBody
-    public Object resetPassword(MobileRegParams regParams) throws Exception {
+    public Object resetPassword(MobileRegParams reqParams) throws Exception {
         // 校验参数
-        String validateResult = ControllerHelper.validateParams(regParams);
+        String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-        String mobile = regParams.getMobile();
-        String smscode = regParams.getSmscode();
-        int clientId = regParams.getClient_id();
-        String password = regParams.getPassword();
-        String instanceId = regParams.getInstance_id();
+        String mobile = reqParams.getMobile();
+        String smscode = reqParams.getSmscode();
+        int clientId = reqParams.getClient_id();
+        String password = reqParams.getPassword();
+        String instanceId = reqParams.getInstance_id();
 
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientId + "");
