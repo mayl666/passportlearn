@@ -146,8 +146,8 @@ public class OAuthResponse implements OAuthMessage {
         public OAuthErrorResponseBuilder error(ProblemException ex) {
             this.parameters.put(OAuthError.OAUTH_ERROR, ex.getError());
             this.parameters.put(OAuthError.OAUTH_ERROR_DESCRIPTION, ex.getDescription());
-            this.parameters.put(OAuthError.OAUTH_ERROR_URI, ex.getUri());
-            this.parameters.put(OAuth.OAUTH_STATE, ex.getState());
+//            this.parameters.put(OAuthError.OAUTH_ERROR_URI, ex.getUri());
+//            this.parameters.put(OAuth.OAUTH_STATE, ex.getState());
             return this;
         }
 

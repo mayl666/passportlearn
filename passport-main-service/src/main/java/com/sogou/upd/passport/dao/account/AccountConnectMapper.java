@@ -22,6 +22,13 @@ public interface AccountConnectMapper {
 	public List<AccountConnect> getAccountConnectByQuery(AccountConnectQuery query);
 
     /**
+     * 查询主账号的绑定列表和副账号是否已经注册或绑定过
+     * @param query
+     * @return
+     */
+    public List<AccountConnect> findBindConnectByQuery(AccountConnectQuery query);
+
+    /**
      * 更新AccountConnect
      * @param accountConnect
      * @return

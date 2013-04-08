@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web.connect;
 
+import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.CommonParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.model.account.AccountConnect;
@@ -55,87 +57,67 @@ public class ConnectSSOBindController extends BaseConnectController {
     @ResponseBody
     public Object handleSSOBind(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-        OAuthSinaSSOBindTokenRequest oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
         OAuthResponse response = null;
+        try {
+            OAuthSinaSSOBindTokenRequest oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
 
-        int accountType = AccountTypeEnum.SINA.getValue();
-        int clientId = oauthRequest.getClientId();
-        String instanceId = oauthRequest.getInstanceId();
-        String connectUid = oauthRequest.getOpenid();
 
-        if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
+            int accountType = AccountTypeEnum.SINA.getValue();
+            int clientId = oauthRequest.getClientId();
+            String connectUid = oauthRequest.getOpenid();
+            String bindAccessToken = oauthRequest.getBindToken();
+            // 检查client_id和client_secret是否有效
+            if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.INVALID_CLIENT)
+                        .setErrorDescription("client_id or client_secret not found").buildJSONMessage();
+                return response.getBody();
+            }
+
+            // 检查主账号access_token是否有效
+            AccountAuth bindAccountAuth = accountAuthService.verifyAccessToken(bindAccessToken);
+            if (bindAccessToken == null) {
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.INVALID_ACCESS_TOKEN).setErrorDescription("access_token not exist or expired")
+                        .buildJSONMessage();
+                return response.getBody();
+            }
+
+            // 检查主账号access_token是否可以绑定此第三方账号
+            long userId = bindAccountAuth.getUserId();
+            if (!accountAuthService.isAbleBind(userId, connectUid, accountType, clientId)) {
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.UNABLE_BIND_ACCESS_TOKEN).setErrorDescription("access_token cannot bind")
+                        .buildJSONMessage();
+                return response.getBody();
+            }
+
+            // 写入数据库
+            AccountConnect newAccountConnect = buildAccountConnect(userId, clientId, accountType,
+                    AccountConnect.STUTAS_BIND, connectUid, oauthRequest.getAccessToken(),
+                    oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
+            boolean isInitalAccountConnect = accountConnectService.initialAccountConnect(newAccountConnect);
+            if (!isInitalAccountConnect) {
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.BIND_FAIL).setErrorDescription("bind account fail")
+                        .buildJSONMessage();
+                return response.getBody();
+            }
+
+            response = OAuthASResponse.tokenResponse(HttpServletResponse.SC_OK)
+                        .setParam(CommonParameters.RESPONSE_STATUS,"0")
+                        .setParam(CommonParameters.RESPONSE_STATUS_TEXT, "OK")
+                        .buildJSONMessage();
+            return response.getBody();
+        } catch (ProblemException e) {
+            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e).buildJSONMessage();
+            return response.getBody();
+        } catch (Exception e) {
+            log.error("sso bind account fail", e);
             response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                    .setError(OAuthError.Response.INVALID_CLIENT)
-                    .setErrorDescription("client_id or client_secret not found").buildJSONMessage();
+                    .setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login exception").buildJSONMessage();
             return response.getBody();
         }
-
-//        AccountAuth accountAuth;
-//
-//        // 获取第三方用户信息
-//        try {
-//            AccountConnectQuery query = buildAccountConnectQuery(connectUid, accountType);
-//            List<AccountConnect> accountConnectList = accountConnectService.listAccountConnectByQuery(query);
-//            AccountConnect oldAccountConnect = getAppointClientIdAccountConnect(accountConnectList, clientId);
-//
-//            long userId;
-//            if (oldAccountConnect == null) { // 此账号未授权当前应用
-//                if (CollectionUtils.isEmpty(accountConnectList)) { // 此账号未授权过任何应用
-//                    Account newAccount = accountService.initialConnectAccount(connectUid, getIp(req), accountType);
-//                    if (newAccount == null) {
-//                        response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-//                                .setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail")
-//                                .buildJSONMessage();
-//                        return response.getBody();
-//                    }
-//                    userId = newAccount.getId();
-//                } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
-//                    userId = accountConnectList.get(0).getUserId();
-//                }
-//                // TODO 是否有必要并行初始化Account_Auth和Account_Connect？
-//                String passportId = PassportIDGenerator.generator(connectUid, accountType);
-//                accountAuth = accountAuthService.initialAccountAuth(userId, passportId, clientId, instanceId);
-//                AccountConnect newAccountConnect = buildAccountConnect(userId, clientId, accountType,
-//                        AccountConnect.STUTAS_LONGIN, connectUid, oauthRequest.getAccessToken(),
-//                        oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
-//                boolean isInitalAccountConnect = accountConnectService.initialAccountConnect(newAccountConnect);
-//                if (accountAuth == null || !isInitalAccountConnect) {
-//                    response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-//                            .setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail")
-//                            .buildJSONMessage();
-//                    return response.getBody();
-//                }
-//
-//            } else { // 此账号在当前应用第N次登录
-//                userId = oldAccountConnect.getUserId();
-//                // 更新当前应用的Account_Auth，处于安全考虑refresh_token和access_token重新生成
-//                String passportId = PassportIDGenerator.generator(connectUid, accountType);
-//                accountAuth = accountAuthService.updateAccountAuth(userId, passportId, clientId, instanceId);
-//                // 更新当前应用的Account_Connect
-//                AccountConnect accountConnect = buildAccountConnect(userId, clientId, accountType,
-//                        AccountConnect.STUTAS_LONGIN, connectUid, oauthRequest.getAccessToken(),
-//                        oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
-//                boolean isUpdateAccountConnect = accountConnectService.updateAccountConnect(accountConnect);
-//                if (accountAuth == null || !isUpdateAccountConnect) {
-//                    response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-//                            .setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail")
-//                            .buildJSONMessage();
-//                    return response.getBody();
-//                }
-//            }
-//            // TODO 如何保证数据一致性，采用insertAndUpdate()？
-//
-//        } catch (Exception e) {
-//            log.error("sso login fail", e);
-//            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-//                    .setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login fail").buildJSONMessage();
-//            return response.getBody();
-//        }
-//        response = OAuthASResponse.tokenResponse(HttpServletResponse.SC_OK)
-//                .setAccessToken(accountAuth.getAccessToken()).setExpiresTime(accountAuth.getAccessValidTime())
-//                .setRefreshToken(accountAuth.getRefreshToken()).buildJSONMessage();
-//        return response.getBody();
-        return null;
     }
 
 

@@ -3,9 +3,12 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
+import com.sogou.upd.passport.dao.account.AccountConnectMapper;
 import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
+import com.sogou.upd.passport.model.account.AccountConnect;
+import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
@@ -29,13 +32,12 @@ public class AccountAuthServiceImpl implements AccountAuthService {
 
     @Inject
     private AppConfigService appConfigService;
-
     @Inject
     private AccountAuthMapper accountAuthMapper;
-
     @Inject
     private AccountMapper accountMapper;
-
+    @Inject
+    private AccountConnectMapper accountConnectMapper;
     @Inject
     private TaskExecutor taskExecutor;
 
@@ -44,11 +46,40 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         // TODO 加缓存
         if (!Strings.isNullOrEmpty(refreshToken)) {
             AccountAuth accountAuth = accountAuthMapper.getAccountAuthByRefreshToken(refreshToken);
-            if (isValid(accountAuth, instanceId)) {
+            if (isValidRefreshToken(accountAuth, instanceId)) {
                 return accountAuth;
             }
         }
         return null;
+    }
+
+    @Override
+    public AccountAuth verifyAccessToken(String accessToken) {
+        // TODO 加缓存
+        if (!Strings.isNullOrEmpty(accessToken)) {
+            AccountAuth accountAuth = accountAuthMapper.getAccountAuthByAccessToken(accessToken);
+            if (accountAuth != null && accountAuth.getAccessValidTime() > System.currentTimeMillis()) {
+                return accountAuth;
+            }
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isAbleBind(long userId, String connectUid, int accountType, int clientId) {
+        Account account = accountMapper.getAccountByUserId(userId);
+        if (account == null || !account.isNormalAccount()) {  // 账号是否存在且正常
+            return false;
+        }
+        if(account.getAccountType() == accountType){ // 与主账号同一类型的账号不允许被绑定
+            return false;
+        }
+        AccountConnectQuery query = new AccountConnectQuery(connectUid,accountType,clientId, userId);
+        List<AccountConnect> accountConnect = accountConnectMapper.findBindConnectByQuery(query);
+        if(!accountConnect.isEmpty()){
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -127,7 +158,7 @@ public class AccountAuthServiceImpl implements AccountAuthService {
      * @param instanceId
      * @return
      */
-    private boolean isValid(AccountAuth accountAuth, String instanceId) {
+    private boolean isValidRefreshToken(AccountAuth accountAuth, String instanceId) {
         if (accountAuth != null && accountAuth.getRefreshValidTime() > System.currentTimeMillis() && instanceId.equals(accountAuth.getInstanceId())) {
             return true;
         } else {
