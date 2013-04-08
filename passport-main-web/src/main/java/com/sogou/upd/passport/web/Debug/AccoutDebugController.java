@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.Debug;
+package com.sogou.upd.passport.web.debug;
 
 import javax.inject.Inject;
 

@@ -116,10 +116,9 @@ public class AccountController extends BaseController {
         String password = regParams.getPassword();
         String instanceId = regParams.getInstance_id();
 
-        //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
-        // todo error 直接查询Account的mobile字段,shipengzhi
+        //直接查询Account的mobile字段,shipengzhi
         Account existAccount = accountService.getAccountByUserName(mobile);
-        if (existAccount != null) {     //说明用户已经注册过了
+        if (existAccount != null) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
         //验证手机号码与验证码是否匹配
@@ -193,21 +192,29 @@ public class AccountController extends BaseController {
     /**
      * 重置密码
      *
-     * @param client_id
-     * @param mobile
-     * @param smscode
-     * @param password
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/resetpwd", method = RequestMethod.POST)
     @ResponseBody
-    public Object resetPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
-                                @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password,
-                                @RequestParam(defaultValue = "") String instance_id) throws Exception {
+    public Object resetPassword(MobileRegParams regParams) throws Exception {
+        // 校验参数
+        String validateResult = Utils.validateParams(regParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+        String mobile = regParams.getMobile();
+        String smscode = regParams.getSmscode();
+        int clientId = regParams.getClient_id();
+        String password = regParams.getPassword();
+        String instanceId = regParams.getInstance_id();
 
-        Map<String, Object> map = checkParams(client_id, mobile, smscode, password);
-        if (map != null) return map;
+        //验证手机号码与验证码是否匹配
+        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientId + "");
+        if (!checkSmsInfo) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+        }
+
         //重置密码
         boolean resetPwd = accountService.resetPassword(mobile, password);
         //根据mobile查询手机用户信息
@@ -215,13 +222,13 @@ public class AccountController extends BaseController {
         //先更新当前客户端实例对应的access_token和refresh_token，再异步更新该用户其它客户端的两个token
         AccountAuth accountAuthResult = null;
         if (account != null) {
-            accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), client_id, instance_id);
+            accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
         }
         //TODO 异步更新该用户其它状态信息
-        accountAuthService.asynUpdateAccountAuthBySql(mobile,client_id,instance_id);
+        accountAuthService.asynUpdateAccountAuthBySql(mobile,clientId,instanceId);
         if (resetPwd == true && accountAuthResult != null) {
             //清除验证码的缓存
-            accountService.deleteSmsCache(mobile, String.valueOf(client_id));
+            accountService.deleteSmsCache(mobile, String.valueOf(clientId));
             return ErrorUtil.buildSuccess("重置密码成功", null);
         } else {
             return ErrorUtil.buildExceptionError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
