@@ -26,7 +26,7 @@ public class PwdGenerator {
     public static String generatorPwdSign(String pwd) throws SystemException {
         byte[] encryByte;
         try {
-            encryByte = Coder.encryptHMAC(pwd.toString().getBytes(), HMAC_SHA_KEY);
+            encryByte = Coder.encryptHMAC(pwd.getBytes(), HMAC_SHA_KEY);
         } catch (Exception e) {
             // todo record error log
             throw new SystemException(e);

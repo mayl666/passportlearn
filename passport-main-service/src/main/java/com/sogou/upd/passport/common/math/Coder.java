@@ -112,14 +112,14 @@ public class Coder {
 
     public static String toHexString(byte[] b) {
         StringBuilder sb = new StringBuilder(b.length * 2);
-        for (int i = 0; i < b.length; i++) {
-            sb.append(HEXCHAR[(b[i] & 0xf0) >>> 4]);
-            sb.append(HEXCHAR[b[i] & 0x0f]);
+        for (byte by : b) {
+            sb.append(HEXCHAR[(by & 0xf0) >>> 4]);
+            sb.append(HEXCHAR[by & 0x0f]);
         }
         return sb.toString();
     }
 
-    public static final byte[] toBytes(String s) {
+    public static byte[] toBytes(String s) {
         byte[] bytes;
         bytes = new byte[s.length() / 2];
         for (int i = 0; i < bytes.length; i++) {

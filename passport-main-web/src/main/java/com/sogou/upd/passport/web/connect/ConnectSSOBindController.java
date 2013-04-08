@@ -57,7 +57,7 @@ public class ConnectSSOBindController extends BaseConnectController {
     @ResponseBody
     public Object handleSSOBind(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-        OAuthResponse response = null;
+        OAuthResponse response;
         try {
             OAuthSinaSSOBindTokenRequest oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
 

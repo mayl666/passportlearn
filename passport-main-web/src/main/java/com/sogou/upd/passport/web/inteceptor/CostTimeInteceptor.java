@@ -37,7 +37,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 //			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms-"+map.toString());
 			
 			String param = getRequests(request);
-			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms, params : "+param.toString());
+			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms, params : "+param);
 			
 		}
 	}
