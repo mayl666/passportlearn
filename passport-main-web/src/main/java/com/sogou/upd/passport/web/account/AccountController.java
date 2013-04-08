@@ -282,30 +282,4 @@ public class AccountController extends BaseController {
         return null;
     }
 
-    /**
-     * 验证参数是否有空参数
-     *
-     * @param args
-     * @return
-     */
-    protected boolean hasEmpty(String... args) {
-
-        if (args == null) {
-            return false;
-        }
-
-        Object[] argArray = getArguments(args);
-        for (Object obj : argArray) {
-            if (obj instanceof String && StringUtils.isEmpty((String) obj)) return true;
-        }
-        return false;
-    }
-
-    private Object[] getArguments(Object[] varArgs) {
-        if (varArgs.length == 1 && varArgs[0] instanceof Object[]) {
-            return (Object[]) varArgs[0];
-        } else {
-            return varArgs;
-        }
-    }
 }

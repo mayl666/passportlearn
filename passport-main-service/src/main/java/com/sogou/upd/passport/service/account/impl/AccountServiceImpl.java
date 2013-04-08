@@ -381,13 +381,11 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountMapper.getAccountByMobile(mobile);
         int row = 0;
         if (account != null) {
-            if (!Strings.isNullOrEmpty(password)) {
                 Account accountResult = new Account();
                 accountResult.setMobile(mobile);
                 accountResult.setPasswd(PwdGenerator.generatorPwdSign(password));
                 accountResult.setId(account.getId());
                 row = accountMapper.updateAccount(accountResult);
-            }
         }
         return row == 0 ? null : account;
     }
