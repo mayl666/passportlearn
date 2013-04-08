@@ -166,7 +166,7 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object findPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile)
             throws Exception {
-        Map<String, Object> map = checkParams(client_id, mobile, null, null);
+        Map<String, Object> map = checkParams(client_id, mobile);
         if (map != null) return map;
         Account account = accountService.getAccountByUserName(mobile);
         if (account == null) {   //提示该手机用户不存在
@@ -184,7 +184,7 @@ public class AccountController extends BaseController {
             mapResult = accountService.handleSendSms(mobile, client_id);
         }
 
-        return MapUtils.isNotEmpty(mapResult) == true ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+        return MapUtils.isNotEmpty(mapResult) ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
     }
 
     /**
@@ -221,7 +221,7 @@ public class AccountController extends BaseController {
             accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
         }
         //TODO 异步更新该用户其它状态信息
-        accountAuthService.asynUpdateAccountAuthBySql(mobile,clientId,instanceId);
+        accountAuthService.asynUpdateAccountAuthBySql(mobile, clientId, instanceId);
         if (accountAuthResult != null) {
             //清除验证码的缓存
             accountService.deleteSmsCache(mobile, String.valueOf(clientId));
@@ -237,13 +237,11 @@ public class AccountController extends BaseController {
      *
      * @param client_id
      * @param mobile
-     * @param smscode
-     * @param password
      * @return
      */
-    private Map<String, Object> checkParams(int client_id, String mobile, String smscode, String password) {
+    private Map<String, Object> checkParams(int client_id, String mobile) {
         //先验证参数是否为空
-        boolean empty = hasEmpty(mobile, smscode, password);
+        boolean empty = hasEmpty(mobile);
         if (empty || client_id == 0) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
         }
@@ -251,19 +249,6 @@ public class AccountController extends BaseController {
         if (mobile != null) {
             Map<String, Object> ret = checkAccount(mobile);
             if (ret != null) return ret;
-        }
-        //再者，密码格式是否正确
-        if (password != null) {
-            if (!ControllerHelper.checkPasswd(password)) {
-                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
-            }
-        }
-        if (mobile != null && smscode != null && client_id != 0) {
-            //最后,验证手机号与验证码是否匹配
-            boolean smscodeValid = accountService.checkSmsInfoFromCache(mobile, smscode, client_id + "");
-            if (!smscodeValid) {
-                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-            }
         }
         return null;
     }
