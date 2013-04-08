@@ -31,6 +31,10 @@ public class OAuthResponse implements OAuthMessage {
         return new OAuthErrorResponseBuilder(code);
     }
 
+    public static OAuthErrorResponseBuilder errorResponse() {
+        return new OAuthErrorResponseBuilder();
+    }
+
     @Override
     public String getLocationUri() {
         return uri;
@@ -82,6 +86,9 @@ public class OAuthResponse implements OAuthMessage {
         protected int responseCode;
         protected String location;
 
+        public OAuthResponseBuilder() {
+        }
+
         public OAuthResponseBuilder(int responseCode) {
             this.responseCode = responseCode;
         }
@@ -104,29 +111,33 @@ public class OAuthResponse implements OAuthMessage {
         public OAuthResponse buildQueryMessage() throws SystemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new QueryParameterApplier();
-            return (OAuthResponse)applier.applyOAuthParameters(msg, parameters);
+            return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
         }
 
         public OAuthResponse buildBodyMessage() throws SystemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new BodyURLEncodedParametersApplier();
-            return (OAuthResponse)applier.applyOAuthParameters(msg, parameters);
+            return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
         }
 
         public OAuthResponse buildJSONMessage() throws SystemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new JSONBodyParametersApplier();
-            return (OAuthResponse)applier.applyOAuthParameters(msg, parameters);
+            return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
         }
 
         public OAuthResponse buildHeaderMessage() throws SystemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new WWWAuthHeaderParametersApplier();
-            return (OAuthResponse)applier.applyOAuthParameters(msg, parameters);
+            return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
         }
     }
 
     public static class OAuthErrorResponseBuilder extends OAuthResponseBuilder {
+
+        public OAuthErrorResponseBuilder() {
+            super();
+        }
 
         public OAuthErrorResponseBuilder(int responseCode) {
             super(responseCode);
@@ -135,8 +146,8 @@ public class OAuthResponse implements OAuthMessage {
         public OAuthErrorResponseBuilder error(ProblemException ex) {
             this.parameters.put(OAuthError.OAUTH_ERROR, ex.getError());
             this.parameters.put(OAuthError.OAUTH_ERROR_DESCRIPTION, ex.getDescription());
-            this.parameters.put(OAuthError.OAUTH_ERROR_URI, ex.getUri());
-            this.parameters.put(OAuth.OAUTH_STATE, ex.getState());
+//            this.parameters.put(OAuthError.OAUTH_ERROR_URI, ex.getUri());
+//            this.parameters.put(OAuth.OAUTH_STATE, ex.getState());
             return this;
         }
 

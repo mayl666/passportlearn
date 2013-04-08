@@ -287,7 +287,7 @@
                 <passport.jdbc.username>sogou_passport</passport.jdbc.username>
                 <passport.jdbc.password>sogou_passport</passport.jdbc.password>
                 <!--log level and path-->
-                <passport.log.level>DEBUG</passport.log.level>
+                <passport.log.level>INFO</passport.log.level>
                 <passport.log.path>d:/logs</passport.log.path>
 
                 <!-- redis-->

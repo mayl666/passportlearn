@@ -11,7 +11,7 @@ import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.web.BaseController;
-import com.sogou.upd.passport.web.Utils;
+import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.form.MobileRegParams;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -105,7 +103,7 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, MobileRegParams regParams) throws Exception {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
-        String validateResult = Utils.validateParams(regParams);
+        String validateResult = ControllerHelper.validateParams(regParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
@@ -116,10 +114,9 @@ public class AccountController extends BaseController {
         String password = regParams.getPassword();
         String instanceId = regParams.getInstance_id();
 
-        //先读缓存，看有没有缓存该手机账号 缓存没有才读数据库表
-        // todo error 直接查询Account的mobile字段,shipengzhi
+        //直接查询Account的mobile字段,shipengzhi
         Account existAccount = accountService.getAccountByUserName(mobile);
-        if (existAccount != null) {     //说明用户已经注册过了
+        if (existAccount != null) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
         //验证手机号码与验证码是否匹配
@@ -193,36 +190,42 @@ public class AccountController extends BaseController {
     /**
      * 重置密码
      *
-     * @param client_id
-     * @param mobile
-     * @param smscode
-     * @param password
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/v2/mobile/resetpwd", method = RequestMethod.POST)
     @ResponseBody
-    public Object resetPassword(@RequestParam(defaultValue = "0") int client_id, @RequestParam(defaultValue = "") String mobile,
-                                @RequestParam(defaultValue = "") String smscode, @RequestParam(defaultValue = "") String password,
-                                @RequestParam(defaultValue = "") String instance_id) throws Exception {
+    public Object resetPassword(MobileRegParams regParams) throws Exception {
+        // 校验参数
+        String validateResult = ControllerHelper.validateParams(regParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+        String mobile = regParams.getMobile();
+        String smscode = regParams.getSmscode();
+        int clientId = regParams.getClient_id();
+        String password = regParams.getPassword();
+        String instanceId = regParams.getInstance_id();
 
-        Map<String, Object> map = checkParams(client_id, mobile, smscode, password);
-        if (map != null) return map;
+        //验证手机号码与验证码是否匹配
+        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientId + "");
+        if (!checkSmsInfo) {
+            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+        }
+
         //重置密码
-        boolean resetPwd = accountService.resetPassword(mobile, password);
-        //根据mobile查询手机用户信息
-        Account account = accountService.getAccountByUserName(mobile);
+        Account account = accountService.resetPassword(mobile, password);
         //先更新当前客户端实例对应的access_token和refresh_token，再异步更新该用户其它客户端的两个token
         AccountAuth accountAuthResult = null;
         if (account != null) {
-            accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), client_id, instance_id);
+            accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
         }
         //TODO 异步更新该用户其它状态信息
-        accountAuthService.asynUpdateAccountAuthBySql(mobile,client_id,instance_id);
-        if (resetPwd == true && accountAuthResult != null) {
+        accountAuthService.asynUpdateAccountAuthBySql(mobile,clientId,instanceId);
+        if (accountAuthResult != null) {
             //清除验证码的缓存
-            accountService.deleteSmsCache(mobile, String.valueOf(client_id));
-            return ErrorUtil.buildSuccess("重置密码成功", null);
+            accountService.deleteSmsCache(mobile, String.valueOf(clientId));
+            return buildSuccess("重置密码成功", null);
         } else {
             return ErrorUtil.buildExceptionError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
@@ -251,7 +254,7 @@ public class AccountController extends BaseController {
         }
         //再者，密码格式是否正确
         if (password != null) {
-            if (!checkPasswd(password)) {
+            if (!ControllerHelper.checkPasswd(password)) {
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
             }
         }
@@ -263,16 +266,6 @@ public class AccountController extends BaseController {
             }
         }
         return null;
-    }
-
-    /**
-     * 验证密码格式是否正确
-     *
-     * @param passwd
-     * @return
-     */
-    private boolean checkPasswd(String passwd) {
-        return StringUtils.isAsciiPrintable(passwd) && passwd.length() >= 6 && passwd.length() <= 16;
     }
 
     /**
@@ -289,30 +282,4 @@ public class AccountController extends BaseController {
         return null;
     }
 
-    /**
-     * 验证参数是否有空参数
-     *
-     * @param args
-     * @return
-     */
-    protected boolean hasEmpty(String... args) {
-
-        if (args == null) {
-            return false;
-        }
-
-        Object[] argArray = getArguments(args);
-        for (Object obj : argArray) {
-            if (obj instanceof String && StringUtils.isEmpty((String) obj)) return true;
-        }
-        return false;
-    }
-
-    private Object[] getArguments(Object[] varArgs) {
-        if (varArgs.length == 1 && varArgs[0] instanceof Object[]) {
-            return (Object[]) varArgs[0];
-        } else {
-            return varArgs;
-        }
-    }
 }

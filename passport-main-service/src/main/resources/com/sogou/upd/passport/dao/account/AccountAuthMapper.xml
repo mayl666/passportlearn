@@ -22,7 +22,7 @@
         (#{userId},#{accessToken},#{refreshToken},#{accessValidTime},#{refreshValidTime},#{clientId},#{instanceId})
     </insert>
 
-    <!-- 有多个唯一索引时不要使用， -->
+    <!-- 有多个唯一索引时不要使用，存在则更新，不存在则插入， -->
     <insert id="saveAccountAuth" parameterType="accountAuth">
         <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID() AS id
@@ -50,14 +50,14 @@
         user_id=#{userId} and client_id=#{clientId} and instance_id=#{instanceId}
     </update>
 
-    <select id="getAccountAuthByQuery" parameterType="accountAuth" resultMap="accountAuthMap">
-          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id from account_auth
-          where  user_id=#{userId} and client_id=#{clientId} and instance_id=#{instanceId}
-    </select>
-
     <select id="getAccountAuthByRefreshToken" parameterType="string" resultMap="accountAuthMap">
           select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id from account_auth
           where  refresh_token=#{refreshToken}
+    </select>
+
+    <select id="getAccountAuthByAccessToken" parameterType="string" resultMap="accountAuthMap">
+          select id,user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,client_id,instance_id from account_auth
+          where  access_token=#{accessToken}
     </select>
 
     <select id="deleteAccountAuthByUserId" parameterType="java.lang.String">

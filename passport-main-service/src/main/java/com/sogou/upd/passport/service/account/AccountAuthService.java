@@ -18,9 +18,26 @@ public interface AccountAuthService {
      * 验证refresh_token的合法性
      *
      * @param refreshToken
-     * @return
+     * @return refreshToken不存在或过期则返回null
      */
     public AccountAuth verifyRefreshToken(String refreshToken, String instanceId);
+
+    /**
+     * 验证access_token的合法性
+     *
+     * @param accessToken
+     * @return refreshToken不存在或过期则返回null
+     */
+    public AccountAuth verifyAccessToken(String accessToken);
+
+    /**
+     * @param userId
+     * @param connectUid
+     * @param accountType
+     * @param clientId
+     * @return
+     */
+    public boolean isAbleBind(long userId, String connectUid, int accountType, int clientId);
 
     /**
      * 初始化账号授权信息

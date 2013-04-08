@@ -72,14 +72,22 @@ public interface AccountService {
      * @return
      */
     public Account getAccountByUserName(String username);
+
+    /**
+     * 验证账号的有效性，是否为正常用户
+     * @param userId
+     * @return 验证不通过，则返回null
+     */
+    public Account verifyAccountVaild(long userId);
+
     /**
      * 验证用户名密码是否正确
      *
      * @param username
      * @param password
-     * @return
+     * @return 用户名或密码不匹配，则返回null
      */
-    public Account verifyUserVaild(String username, String password);
+    public Account verifyUserPwdVaild(String username, String password);
 
     /**
      * PassportId与UserId缓存映射
@@ -121,5 +129,5 @@ public interface AccountService {
      * @param password
      * @return
      */
-    public boolean resetPassword(String mobile,String password) throws SystemException;
+    public Account resetPassword(String mobile,String password) throws SystemException;
 }

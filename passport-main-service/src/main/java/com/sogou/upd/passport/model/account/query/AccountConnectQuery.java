@@ -9,33 +9,54 @@ package com.sogou.upd.passport.model.account.query;
  */
 public class AccountConnectQuery {
     private String connectUid;
-    private int connectType;
     private int clientId;
-    private long userid;
-    
-	public String getConnectUid() {
-		return connectUid;
-	}
-	public void setConnectUid(String connectUid) {
-		this.connectUid = connectUid;
-	}
-	public int getConnectType() {
-		return connectType;
-	}
-	public void setConnectType(int connectType) {
-		this.connectType = connectType;
-	}
-	public int getClientId() {
-		return clientId;
-	}
-	public void setClientId(int clientId) {
-		this.clientId = clientId;
-	}
-	public long getUserid() {
-		return userid;
-	}
-	public void setUserid(long userid) {
-		this.userid = userid;
-	}
+    private int accountType;
+    private long userId;
 
+    public AccountConnectQuery(String connectUid, int accountType) {
+        this.connectUid = connectUid;
+        this.accountType = accountType;
+    }
+
+    public AccountConnectQuery(String connectUid, int accountType, int clientId) {
+        this(connectUid, accountType);
+        this.clientId = clientId;
+    }
+
+    public AccountConnectQuery(String connectUid, int accountType, int clientId, long userId) {
+        this(connectUid, accountType,clientId);
+        this.userId = userId;
+    }
+
+    public String getConnectUid() {
+        return connectUid;
+    }
+
+    public void setConnectUid(String connectUid) {
+        this.connectUid = connectUid;
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
+
+    public int getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(int accountType) {
+        this.accountType = accountType;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 }

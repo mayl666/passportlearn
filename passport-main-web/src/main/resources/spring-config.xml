@@ -45,6 +45,14 @@
 
     <!-- spring mvc setting -->
 
+    <!-- Inteceptor -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
     <!-- 特定对象mapper，用于注入对特定字符进行转义的类 -->
     <!-- <bean id="CustomObjectMapper" class="com.sogou.upd.passport.common.web.CustomObjectMapper"/> -->
     <bean

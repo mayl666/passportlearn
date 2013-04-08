@@ -4,6 +4,7 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.sogou.upd.passport.web.ControllerHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -30,13 +31,15 @@ public class MobileRegParams {
 
     @AssertTrue(message = "不支持的手机号格式!")
     private boolean isValidPhone() {
-        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) { return true; }
+        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+            return true;
+        }
         return false;
     }
 
     @AssertTrue(message = "密码必须为字母或数字且长度大于6位!")
     private boolean isValidPassword() {
-        return StringUtils.isAsciiPrintable(password) && password.length() >= 6;
+        return ControllerHelper.checkPasswd(this.password);
     }
 
     public String getMobile() {

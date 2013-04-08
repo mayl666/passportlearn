@@ -22,7 +22,7 @@ public abstract class OAuthError {
         public static final String INVALID_REQUEST = "100";
 
         /**
-         * invalid_client
+         * client_id或client_secret不匹配
          * <p/>
          * Client authentication failed (e.g. unknown client, no
          * client authentication included, or unsupported
@@ -48,7 +48,7 @@ public abstract class OAuthError {
         public static final String INVALID_GRANT = "102";
 
         /**
-         * unsupported_grant_type
+         * 错误的grant_type
          * The authorization grant type is not supported by the
          * authorization server.
          */
@@ -75,28 +75,44 @@ public abstract class OAuthError {
         public static final String INSUFFICIENT_SCOPE = "106";
 
         /**
-         * access_denied
-         * The resource owner or authorization server denied the
-         * request.
-         */
-        public static final String ACCESS_DENIED = "107";
-
-        /**
          * expired_token
          */
-        public static final String EXPIRED_TOKEN = "108";
+        public static final String EXPIRED_TOKEN = "107";
 
         /**
-         * invalid_token
-         * The access token provided is expired, revoked, malformed, or
-         * invalid for other reasons.
+         * access_token不存在或已过期
          */
-        public static final String INVALID_TOKEN = "109";
+        public static final String INVALID_ACCESS_TOKEN = "108";
+
+        /**
+         * refresh_token不存在或已过期
+         */
+        public static final String INVALID_REFRESH_TOKEN = "109";
         
         /**
-         * login/authorize fail
+         * login/authorize fail,数据库写入失败
          */
         public static final String AUTHORIZE_FAIL = "110";
+
+        /**
+         * 用户名密码不匹配
+         */
+        public static final String USERNAME_PWD_MISMATCH = "111";
+
+        /**
+         * 用户不是有效账号，无法登录
+         */
+        public static final String INVALID_USER="112";
+
+        /**
+         * 此账号不允许绑定其他账号
+         */
+        public static final String UNABLE_BIND_ACCESS_TOKEN = "113";
+
+        /**
+         * 绑定账号时,数据库写入失败
+         */
+        public static final String BIND_FAIL = "114";
         
     }
 

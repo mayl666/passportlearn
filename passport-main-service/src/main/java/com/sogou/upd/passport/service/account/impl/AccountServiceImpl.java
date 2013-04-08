@@ -120,7 +120,7 @@ public class AccountServiceImpl implements AccountService {
             });
         } catch (Exception e) {
             logger.error("[SMS] service method handleSendSms error.{}", e);
-        } 
+        }
         return obj != null ? (Map<String, Object>) obj : null;
     }
 
@@ -281,7 +281,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account verifyUserVaild(String username, String password) {
+    public Account verifyUserPwdVaild(String username, String password) {
         if (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)) {
             String pwdSign;
             try {
@@ -291,15 +291,11 @@ public class AccountServiceImpl implements AccountService {
                 return null;
             }
             Account userAccount = getAccountByUserName(username);
-            if (isVaildAccount(userAccount, pwdSign)) {
+            if (userAccount != null && pwdSign.equals(userAccount.getPasswd())) {
                 return userAccount;
             }
         }
         return null;
-    }
-
-    private boolean isVaildAccount(Account userAccount, String pwdSign) {
-        return userAccount != null && pwdSign.equals(userAccount.getPasswd()) && userAccount.getStatus() == AccountStatusEnum.REGULAR.getValue();
     }
 
     @Override
@@ -312,6 +308,15 @@ public class AccountServiceImpl implements AccountService {
             account = accountMapper.getAccountByPassportId(username);
         }
         return account;
+    }
+
+    @Override
+    public Account verifyAccountVaild(long userId) {
+        Account account = accountMapper.getAccountByUserId(userId);
+        if (account.isNormalAccount()) {
+            return account;
+        }
+        return null;
     }
 
     @Override
@@ -372,20 +377,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean resetPassword(String mobile, String password) throws SystemException {
+    public Account resetPassword(String mobile, String password) throws SystemException {
         Account account = accountMapper.getAccountByMobile(mobile);
-        String passwordSign = null;
-        if (!Strings.isNullOrEmpty(password)) {
-            passwordSign = PwdGenerator.generatorPwdSign(password);
-        }
-        Account accountResult = new Account();
-        accountResult.setMobile(mobile);
-        accountResult.setPasswd(passwordSign);
+        int row = 0;
         if (account != null) {
-            accountResult.setId(account.getId());
+                Account accountResult = new Account();
+                accountResult.setMobile(mobile);
+                accountResult.setPasswd(PwdGenerator.generatorPwdSign(password));
+                accountResult.setId(account.getId());
+                row = accountMapper.updateAccount(accountResult);
         }
-        int row = accountMapper.updateAccount(accountResult);
-        return row == 0 ? false : true;
+        return row == 0 ? null : account;
     }
 
 

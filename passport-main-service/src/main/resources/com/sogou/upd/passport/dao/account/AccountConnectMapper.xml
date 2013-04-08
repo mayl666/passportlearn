@@ -2,61 +2,72 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sogou.upd.passport.dao.account.AccountConnectMapper">
 
-	<!-- <typeAlias alias="accountConnectQuery" type="com.sogou.upd.passport.model.account.query.AccountConnectQuery" 
-		/> -->
+    <resultMap id="accountConnectMap" type="accountConnect">
+        <id property="id" column="id"></id>
+        <id property="userId" column="user_id"></id>
+        <id property="clientId" column="client_id"></id>
+        <id property="accountRelation" column="account_relation"></id>
+        <id property="accountType" column="account_type"></id>
+        <id property="connectUid" column="connect_uid"></id>
+        <id property="connectAccessToken" column="connect_access_token"></id>
+        <id property="connectExpiresIn" column="connect_expires_in"></id>
+        <id property="connectRefreshToken" column="connect_refresh_token"></id>
+        <id property="updateTime" column="update_time"></id>
+        <id property="createTime" column="create_time"></id>
+    </resultMap>
 
-	<resultMap id="accountConnectMap" type="accountConnect">
-		<id property="id" column="id"></id>
-		<id property="userId" column="user_id"></id>
-		<id property="clientId" column="client_id"></id>
-		<id property="accountRelation" column="account_relation"></id>
-		<id property="accountType" column="account_type"></id>
-		<id property="connectUid" column="connect_uid"></id>
-		<id property="connectAccessToken" column="connect_access_token"></id>
-		<id property="connectExpiresIn" column="connect_expires_in"></id>
-		<id property="connectRefreshToken" column="connect_refresh_token"></id>
-		<id property="updateTime" column="update_time"></id>
-		<id property="createTime" column="create_time"></id>
-	</resultMap>
+    <insert id="insertAccountConnect" parameterType="accountConnect">
+        <selectKey resultType="java.lang.Integer" order="AFTER"
+                   keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into
+        account_connect(user_id,client_id,account_relation,account_type,connect_uid,connect_access_token,
+        connect_expires_in,connect_refresh_token,create_time)
+        values
+        (#{userId},#{clientId},#{accountRelation},#{accountType},#{connectUid},#{connectAccessToken},
+        #{connectExpiresIn},#{connectRefreshToken},#{createTime})
+    </insert>
 
-	<insert id="insertAccountConnect" parameterType="accountConnect">
-		<selectKey resultType="java.lang.Integer" order="AFTER"
-			keyProperty="id">
-			SELECT LAST_INSERT_ID() AS id
-		</selectKey>
-		insert into
-		account_connect(user_id,client_id,account_relation,account_type,connect_uid,connect_access_token,
-		connect_expires_in,connect_refresh_token,create_time)
-		values
-		(#{userId},#{clientId},#{accountRelation},#{accountType},#{connectUid},#{connectAccessToken},
-		#{connectExpiresIn},#{connectRefreshToken},#{createTime})
-	</insert>
+    <!-- 通过AccountConnectQuery对象查询account_connect表 -->
+    <select id="getAccountConnectByQuery" resultMap="accountConnectMap"
+            parameterType="accountConnectQuery">
+        select
+        id,user_id,client_id,account_relation,account_type,connect_uid,connect_access_token,
+        connect_expires_in,connect_refresh_token,update_time,create_time
+        from
+        account_connect
+        where
+        <if test="connectUid != null">connect_uid=#{connectUid} and</if>
+        <if test="accountType != null">account_type=#{accountType}</if>
+    </select>
 
-	<!-- 通过AccountConnectQuery对象查询account_connect表 -->
-	<select id="getAccountConnectByQuery" resultMap="accountConnectMap"
-		parameterType="com.sogou.upd.passport.model.account.query.AccountConnectQuery">
-		select
-		id,user_id,client_id,account_relation,account_type,connect_uid,connect_access_token,
-		connect_expires_in,connect_refresh_token,update_time,create_time
-		from
-		account_connect
-		where
-		<if test="connectUid != null">connect_uid=#{connectUid} and </if>
-		<if test="clientId != null">client_id=#{clientId}</if>
-	</select>
+    <!-- 查询主账号的绑定列表和副账号是否已经注册或绑定过-->
+    <select id="findBindConnectByQuery" resultMap="accountConnectMap"
+            parameterType="accountConnectQuery">
+        <![CDATA[
+        select
+        id,user_id,client_id,account_relation,account_type,connect_uid,connect_access_token,
+        connect_expires_in,connect_refresh_token,update_time,create_time
+        from
+        account_connect
+        where
+        (user_id=#{userId} and account_type=#{accountType} and client_id=#{clientId}) or (connect_uid=#{connectUid} and account_type=#{accountType} and client_id=#{clientId})
+        ]]>
+    </select>
 
-	<!-- 更新account_connect表里记录 -->
-	<update id="updateAccountConnect" parameterType="accountConnect">
-		update account_connect
-		<set>
-			<if test="accountRelation != null">account_relation=#{accountRelation},</if>
-			<if test="connectAccessToken != null">connect_access_token=#{connectAccessToken},</if>
-			<if test="connectExpiresIn != null">connect_expires_in=#{connectExpiresIn},</if>
-			<if test="connectRefreshToken != null">connect_refresh_token=#{connectRefreshToken},</if>
-		</set>
-		where
-		user_id=#{userId} and connect_uid=#{connectUid} and
-		account_type=#{accountType} and client_id=#{clientId}
-	</update>
+    <!-- 更新account_connect表里记录 -->
+    <update id="updateAccountConnect" parameterType="accountConnect">
+        update account_connect
+        <set>
+            <if test="accountRelation != null">account_relation=#{accountRelation},</if>
+            <if test="connectAccessToken != null">connect_access_token=#{connectAccessToken},</if>
+            <if test="connectExpiresIn != null">connect_expires_in=#{connectExpiresIn},</if>
+            <if test="connectRefreshToken != null">connect_refresh_token=#{connectRefreshToken},</if>
+        </set>
+        where
+        user_id=#{userId} and connect_uid=#{connectUid} and
+        account_type=#{accountType} and client_id=#{clientId}
+    </update>
 
 </mapper>
