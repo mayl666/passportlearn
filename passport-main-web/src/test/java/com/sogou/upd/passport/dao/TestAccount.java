@@ -7,9 +7,9 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.inject.Inject;
-
 /**
  * Created with IntelliJ IDEA.
  * User: liuling
@@ -18,9 +18,23 @@ import javax.inject.Inject;
  * To change this template use File | Settings | File Templates.
  */
 @ContextConfiguration(locations = {"classpath:spring-config.xml"})
-public class TestAccount {
+public class TestAccount extends AbstractJUnit4SpringContextTests {
     @Inject
     private AccountService accountService;
+
+    private static final String MOBILE = "13545210241";
+    private static final String PASSWORD = "liuling";
+
+    @Test
+    public void testCheckCacheKeyIsExist() {
+        String mobile = MOBILE;
+        boolean flag = accountService.checkCacheKeyIsExist(mobile);
+        if (flag) {
+            System.out.println("手机号码存在缓存中");
+        } else {
+            System.out.println("手机号码不存在缓存中");
+        }
+    }
 
     /**
      * 测试手机账号是否存在
