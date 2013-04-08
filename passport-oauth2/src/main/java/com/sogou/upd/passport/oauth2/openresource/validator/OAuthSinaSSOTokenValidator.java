@@ -14,7 +14,6 @@ public class OAuthSinaSSOTokenValidator extends AbstractValidator<HttpServletReq
         requiredParams.add(OpenOAuth.DEFAULT_OPEN_UID);
         requiredParams.add(OpenOAuth.OAUTH_ACCESS_TOKEN);
         requiredParams.add(OpenOAuth.OAUTH_EXPIRES_IN);
-        requiredParams.add(OpenOAuth.OAUTH_REFRESH_TOKEN);
         requiredParams.add(OpenOAuth.OAUTH_INSTANCE_ID);
 
     }
