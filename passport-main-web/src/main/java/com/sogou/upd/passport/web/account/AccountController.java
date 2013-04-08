@@ -216,9 +216,7 @@ public class AccountController extends BaseController {
         }
 
         //重置密码
-        boolean resetPwd = accountService.resetPassword(mobile, password);
-        //根据mobile查询手机用户信息
-        Account account = accountService.getAccountByUserName(mobile);
+        Account account = accountService.resetPassword(mobile, password);
         //先更新当前客户端实例对应的access_token和refresh_token，再异步更新该用户其它客户端的两个token
         AccountAuth accountAuthResult = null;
         if (account != null) {
@@ -226,7 +224,7 @@ public class AccountController extends BaseController {
         }
         //TODO 异步更新该用户其它状态信息
         accountAuthService.asynUpdateAccountAuthBySql(mobile,clientId,instanceId);
-        if (resetPwd == true && accountAuthResult != null) {
+        if (accountAuthResult != null) {
             //清除验证码的缓存
             accountService.deleteSmsCache(mobile, String.valueOf(clientId));
             return ErrorUtil.buildSuccess("重置密码成功", null);

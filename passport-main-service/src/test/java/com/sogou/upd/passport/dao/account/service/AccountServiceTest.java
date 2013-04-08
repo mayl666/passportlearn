@@ -175,8 +175,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testResetPassword() throws SystemException {
-        boolean flag = accountService.resetPassword(MOBILE, PASSWORD);
-        if (flag) {
+        Account flag = accountService.resetPassword(MOBILE, PASSWORD);
+        if (flag != null) {
             System.out.println("重置成功...");
         } else {
             System.out.println("重置失败!!!");

@@ -129,5 +129,5 @@ public interface AccountService {
      * @param password
      * @return
      */
-    public boolean resetPassword(String mobile,String password) throws SystemException;
+    public Account resetPassword(String mobile,String password) throws SystemException;
 }

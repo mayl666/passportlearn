@@ -377,20 +377,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean resetPassword(String mobile, String password) throws SystemException {
+    public Account resetPassword(String mobile, String password) throws SystemException {
         Account account = accountMapper.getAccountByMobile(mobile);
-        String passwordSign = null;
-        if (!Strings.isNullOrEmpty(password)) {
-            passwordSign = PwdGenerator.generatorPwdSign(password);
-        }
-        Account accountResult = new Account();
-        accountResult.setMobile(mobile);
-        accountResult.setPasswd(passwordSign);
+        int row = 0;
         if (account != null) {
-            accountResult.setId(account.getId());
+            if (!Strings.isNullOrEmpty(password)) {
+                Account accountResult = new Account();
+                accountResult.setMobile(mobile);
+                accountResult.setPasswd(PwdGenerator.generatorPwdSign(password));
+                accountResult.setId(account.getId());
+                row = accountMapper.updateAccount(accountResult);
+            }
         }
-        int row = accountMapper.updateAccount(accountResult);
-        return row == 0 ? false : true;
+        return row == 0 ? null : account;
     }
 
 
