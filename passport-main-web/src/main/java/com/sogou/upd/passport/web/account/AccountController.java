@@ -11,7 +11,7 @@ import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountConnectService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.web.BaseController;
-import com.sogou.upd.passport.web.Utils;
+import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.form.MobileRegParams;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -105,7 +103,7 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, HttpServletResponse response, MobileRegParams regParams) throws Exception {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
-        String validateResult = Utils.validateParams(regParams);
+        String validateResult = ControllerHelper.validateParams(regParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
@@ -199,7 +197,7 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object resetPassword(MobileRegParams regParams) throws Exception {
         // 校验参数
-        String validateResult = Utils.validateParams(regParams);
+        String validateResult = ControllerHelper.validateParams(regParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
@@ -256,7 +254,7 @@ public class AccountController extends BaseController {
         }
         //再者，密码格式是否正确
         if (password != null) {
-            if (!checkPasswd(password)) {
+            if (!ControllerHelper.checkPasswd(password)) {
                 return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PASSWDFORMAT);
             }
         }
@@ -268,16 +266,6 @@ public class AccountController extends BaseController {
             }
         }
         return null;
-    }
-
-    /**
-     * 验证密码格式是否正确
-     *
-     * @param passwd
-     * @return
-     */
-    private boolean checkPasswd(String passwd) {
-        return StringUtils.isAsciiPrintable(passwd) && passwd.length() >= 6 && passwd.length() <= 16;
     }
 
     /**

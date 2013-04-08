@@ -18,7 +18,7 @@ import java.util.Set;
  * Time: 下午3:20
  * To change this template use File | Settings | File Templates.
  */
-public class Utils {
+public class ControllerHelper {
 
     private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -35,5 +35,15 @@ public class Utils {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * 检查密码格式
+     *
+     * @param passwd
+     * @return
+     */
+    public static boolean checkPasswd(String passwd) {
+        return StringUtils.isAsciiPrintable(passwd) && passwd.length() >= 6 && passwd.length() <= 16;
     }
 }
