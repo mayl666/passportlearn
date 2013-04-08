@@ -237,39 +237,4 @@ public class AccountController extends BaseController {
 
     }
 
-    /**
-     * 验证找回和重置密码时，各种参数的合法性
-     *
-     * @param client_id
-     * @param mobile
-     * @return
-     */
-    private Map<String, Object> checkParams(int client_id, String mobile) {
-        //先验证参数是否为空
-        boolean empty = hasEmpty(mobile);
-        if (empty || client_id == 0) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
-        }
-        //其次，手机号码格式是否正确
-        if (mobile != null) {
-            Map<String, Object> ret = checkAccount(mobile);
-            if (ret != null) return ret;
-        }
-        return null;
-    }
-
-    /**
-     * 验证手机号码是否为空，格式是否正确
-     *
-     * @param mobile
-     * @return
-     */
-    private Map<String, Object> checkAccount(String mobile) {
-        if (!PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-            return ErrorUtil
-                    .buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
-        }
-        return null;
-    }
-
 }
