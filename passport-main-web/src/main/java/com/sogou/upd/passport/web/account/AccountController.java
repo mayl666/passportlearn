@@ -225,7 +225,7 @@ public class AccountController extends BaseController {
         if (accountAuthResult != null) {
             //清除验证码的缓存
             accountService.deleteSmsCache(mobile, String.valueOf(clientId));
-            return ErrorUtil.buildSuccess("重置密码成功", null);
+            return buildSuccess("重置密码成功", null);
         } else {
             return ErrorUtil.buildExceptionError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
