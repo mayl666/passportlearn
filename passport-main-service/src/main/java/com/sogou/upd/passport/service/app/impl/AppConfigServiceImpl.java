@@ -70,7 +70,7 @@ public class AppConfigServiceImpl implements AppConfigService {
                 }
             }
         } catch (Exception e) {
-            logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
+            logger.error("[App] service method getAppConfigByClientId error.{}", e);
         }
         return appConfig;
     }

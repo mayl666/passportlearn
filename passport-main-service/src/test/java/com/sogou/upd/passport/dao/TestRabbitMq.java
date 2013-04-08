@@ -14,7 +14,7 @@ import javax.inject.Inject;
  * Time: 下午6:39
  * To change this template use File | Settings | File Templates.
  */
-@ContextConfiguration(locations = {"classpath:mq/rabbitConfiguration.xml"})
+//@ContextConfiguration(locations = {"classpath:mq/rabbitConfiguration.xml"})
 
 public class TestRabbitMq extends AbstractJUnit4SpringContextTests {
 
