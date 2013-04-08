@@ -224,9 +224,9 @@ public class AccountController extends BaseController {
         AccountAuth accountAuthResult = null;
         if (account != null) {
             accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
+            //TODO 存在分库分表问题
+            accountAuthService.asynUpdateAccountAuthBySql(mobile, clientId, instanceId);
         }
-        //TODO 异步更新该用户其它状态信息
-        accountAuthService.asynUpdateAccountAuthBySql(mobile, clientId, instanceId);
         if (accountAuthResult != null) {
             //清除验证码的缓存
             accountService.deleteSmsCache(mobile, String.valueOf(clientId));
