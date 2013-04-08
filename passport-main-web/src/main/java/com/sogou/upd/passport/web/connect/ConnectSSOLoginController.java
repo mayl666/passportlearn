@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.connect;
 
+import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
@@ -54,33 +55,34 @@ public class ConnectSSOLoginController extends BaseConnectController {
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-        OAuthSinaSSOTokenRequest oauthRequest = new OAuthSinaSSOTokenRequest(req);
         OAuthResponse response = null;
 
-        int accountType = AccountTypeEnum.SINA.getValue();
-        int clientId = oauthRequest.getClientId();
-        String instanceId = oauthRequest.getInstanceId();
-        String connectUid = oauthRequest.getOpenid();
-
-        // 检查client_id和client_secret是否有效
-        if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
-            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                    .setError(OAuthError.Response.INVALID_CLIENT)
-                    .setErrorDescription("client_id or client_secret mismatch").buildJSONMessage();
-            return response.getBody();
-        }
-
-        AccountAuth accountAuth;
-
-        // 获取第三方用户信息
         try {
-            AccountConnectQuery query = buildAccountConnectQuery(connectUid, accountType);
+            OAuthSinaSSOTokenRequest oauthRequest = new OAuthSinaSSOTokenRequest(req);
+
+            int accountType = AccountTypeEnum.SINA.getValue();
+            int clientId = oauthRequest.getClientId();
+            String instanceId = oauthRequest.getInstanceId();
+            String connectUid = oauthRequest.getOpenid();
+
+            // 检查client_id和client_secret是否有效
+            if (!appConfigService.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
+                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                        .setError(OAuthError.Response.INVALID_CLIENT)
+                        .setErrorDescription("client_id or client_secret mismatch").buildJSONMessage();
+                return response.getBody();
+            }
+
+            AccountAuth accountAuth;
+
+            // 获取第三方用户信息
+            AccountConnectQuery query = new AccountConnectQuery(connectUid, accountType);
             List<AccountConnect> accountConnectList = accountConnectService.listAccountConnectByQuery(query);
             AccountConnect oldAccountConnect = getAppointClientIdAccountConnect(accountConnectList, clientId);
 
             long userId;
             Account account;
-            if (oldAccountConnect == null) { // 此账号未授权当前应用
+            if (oldAccountConnect == null) { // 此账号未在当前应用登录过
                 if (CollectionUtils.isEmpty(accountConnectList)) { // 此账号未授权过任何应用
                     account = accountService.initialConnectAccount(connectUid, getIp(req), accountType);
                     if (account == null) {
@@ -103,7 +105,7 @@ public class ConnectSSOLoginController extends BaseConnectController {
                 // TODO 是否有必要并行初始化Account_Auth和Account_Connect？
                 accountAuth = accountAuthService.initialAccountAuth(userId, account.getPassportId(), clientId, instanceId);
                 AccountConnect newAccountConnect = buildAccountConnect(userId, clientId, accountType,
-                        oldAccountConnect.getAccountRelation(), connectUid, oauthRequest.getAccessToken(),
+                        AccountConnect.STUTAS_LONGIN, connectUid, oauthRequest.getAccessToken(),
                         oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
                 boolean isInitalAccountConnect = accountConnectService.initialAccountConnect(newAccountConnect);
                 if (accountAuth == null || !isInitalAccountConnect) {
@@ -138,24 +140,19 @@ public class ConnectSSOLoginController extends BaseConnectController {
                 }
             }
             // TODO 如何保证数据一致性，采用insertAndUpdate()？
-
+            response = OAuthASResponse.tokenResponse(HttpServletResponse.SC_OK)
+                    .setAccessToken(accountAuth.getAccessToken()).setExpiresTime(accountAuth.getAccessValidTime())
+                    .setRefreshToken(accountAuth.getRefreshToken()).buildJSONMessage();
+            return response.getBody();
+        } catch (ProblemException e) {
+            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e).buildJSONMessage();
+            return response.getBody();
         } catch (Exception e) {
             log.error("sso login fail", e);
             response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                     .setError(OAuthError.Response.AUTHORIZE_FAIL).setErrorDescription("login exception").buildJSONMessage();
             return response.getBody();
         }
-        response = OAuthASResponse.tokenResponse(HttpServletResponse.SC_OK)
-                .setAccessToken(accountAuth.getAccessToken()).setExpiresTime(accountAuth.getAccessValidTime())
-                .setRefreshToken(accountAuth.getRefreshToken()).buildJSONMessage();
-        return response.getBody();
-    }
-
-    private AccountConnectQuery buildAccountConnectQuery(String connectUid, int accountType) {
-        AccountConnectQuery query = new AccountConnectQuery();
-        query.setConnectUid(connectUid);
-        query.setAccountType(accountType);
-        return query;
     }
 
     /*

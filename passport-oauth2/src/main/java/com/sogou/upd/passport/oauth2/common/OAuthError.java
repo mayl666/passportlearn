@@ -75,16 +75,14 @@ public abstract class OAuthError {
         public static final String INSUFFICIENT_SCOPE = "106";
 
         /**
-         * access_denied
-         * The resource owner or authorization server denied the
-         * request.
-         */
-        public static final String ACCESS_DENIED = "107";
-
-        /**
          * expired_token
          */
-        public static final String EXPIRED_TOKEN = "108";
+        public static final String EXPIRED_TOKEN = "107";
+
+        /**
+         * access_token不存在或已过期
+         */
+        public static final String INVALID_ACCESS_TOKEN = "108";
 
         /**
          * refresh_token不存在或已过期
@@ -105,6 +103,16 @@ public abstract class OAuthError {
          * 用户不是有效账号，无法登录
          */
         public static final String INVALID_USER="112";
+
+        /**
+         * 此账号不允许绑定其他账号
+         */
+        public static final String UNABLE_BIND_ACCESS_TOKEN = "113";
+
+        /**
+         * 绑定账号时,数据库写入失败
+         */
+        public static final String BIND_FAIL = "114";
         
     }
 

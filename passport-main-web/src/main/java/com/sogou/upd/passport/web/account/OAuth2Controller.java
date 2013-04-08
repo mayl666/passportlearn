@@ -76,7 +76,7 @@ public class OAuth2Controller {
                             .setError(OAuthError.Response.USERNAME_PWD_MISMATCH)
                             .setErrorDescription("username or password mismatch").buildJSONMessage();
                     return response.getBody();
-                } else if (account.isNormalAccount()) {
+                } else if (!account.isNormalAccount()) {
                     response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                             .setError(OAuthError.Response.INVALID_USER)
                             .setErrorDescription("user account invalid").buildJSONMessage();
