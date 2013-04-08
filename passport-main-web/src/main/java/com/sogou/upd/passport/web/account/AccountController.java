@@ -225,7 +225,7 @@ public class AccountController extends BaseController {
         if (accountAuthResult != null) {
             //清除验证码的缓存
             accountService.deleteSmsCache(mobile, String.valueOf(clientId));
-            return ErrorUtil.buildSuccess("重置密码成功", null);
+            return buildSuccess("重置密码成功", null);
         } else {
             return ErrorUtil.buildExceptionError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
@@ -282,30 +282,4 @@ public class AccountController extends BaseController {
         return null;
     }
 
-    /**
-     * 验证参数是否有空参数
-     *
-     * @param args
-     * @return
-     */
-    protected boolean hasEmpty(String... args) {
-
-        if (args == null) {
-            return false;
-        }
-
-        Object[] argArray = getArguments(args);
-        for (Object obj : argArray) {
-            if (obj instanceof String && StringUtils.isEmpty((String) obj)) return true;
-        }
-        return false;
-    }
-
-    private Object[] getArguments(Object[] varArgs) {
-        if (varArgs.length == 1 && varArgs[0] instanceof Object[]) {
-            return (Object[]) varArgs[0];
-        } else {
-            return varArgs;
-        }
-    }
 }
