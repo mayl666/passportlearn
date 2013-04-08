@@ -225,7 +225,7 @@ public class AccountServiceImpl implements AccountService {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
-                    String strValue = null;
+                    String strValue;
                     Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(keyCache));
                     if (MapUtils.isNotEmpty(mapResult)) {
                         byte[] value = mapResult.get(RedisUtils.stringToByteArry("smsCode"));
@@ -301,7 +301,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account getAccountByUserName(String username) {
         // TODO 加缓存,两个方法可以合并，采用动态查询sql,但合并的话缓存写起来不太方便
-        Account account = null;
+        Account account;
         if (PhoneUtil.verifyPhoneNumberFormat(username)) {
             account = accountMapper.getAccountByMobile(username);
         } else {
@@ -399,7 +399,7 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public long getUserIdByPassportId(String passportId) {
-        long userId = 0;
+        long userId;
         if (passportId != null) {
             userId = accountMapper.getUserIdByPassportId(passportId);
             return userId == 0 ? 0 : userId;

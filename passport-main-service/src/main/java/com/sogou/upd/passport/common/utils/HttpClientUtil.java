@@ -158,7 +158,7 @@ public class HttpClientUtil {
 		// check by header
 		if (charset == null) {
 			charset = getCharsetFromHeader(method);
-			if (charset == "gb2312" || charset == "gbk") charset = "gb18030";
+			if (charset.equals("gb2312") || charset.equals("gbk")) charset = "gb18030";
 			if (charset == null) charset = "utf-8";
 		}
 		return new InputStreamReader(in, charset);

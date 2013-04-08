@@ -55,7 +55,7 @@ public class ConnectSSOLoginController extends BaseConnectController {
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-        OAuthResponse response = null;
+        OAuthResponse response;
 
         try {
             OAuthSinaSSOTokenRequest oauthRequest = new OAuthSinaSSOTokenRequest(req);

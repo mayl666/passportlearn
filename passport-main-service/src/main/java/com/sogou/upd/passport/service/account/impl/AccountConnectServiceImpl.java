@@ -33,15 +33,13 @@ public class AccountConnectServiceImpl implements AccountConnectService {
 	@Override
 	public boolean initialAccountConnect(AccountConnect accountConnect) {
 		int id = accountConnectMapper.insertAccountConnect(accountConnect);
-		if (id != 0) { return true; }
-		return false;
+        return id!=0;
 	}
 
 	@Override
 	public boolean updateAccountConnect(AccountConnect accountConnect) {
 		int row = accountConnectMapper.updateAccountConnect(accountConnect);
-		if (row != 0) { return true; }
-		return false;
+		return row!=0;
 	}
 
 }

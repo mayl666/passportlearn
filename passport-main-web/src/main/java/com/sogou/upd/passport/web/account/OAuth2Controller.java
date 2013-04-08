@@ -48,8 +48,8 @@ public class OAuth2Controller {
     @RequestMapping(value = "/token", method = RequestMethod.POST)
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
-        OAuthTokenRequest oauthRequest = null;
-        OAuthResponse response = null;
+        OAuthTokenRequest oauthRequest;
+        OAuthResponse response;
 
         try {
             oauthRequest = new OAuthTokenRequest(request);
@@ -67,7 +67,7 @@ public class OAuth2Controller {
 
             // 檢查不同的grant types是否正確
             // TODO 消除if-else
-            AccountAuth renewAccountAuth = null;
+            AccountAuth renewAccountAuth;
             if (GrantType.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
                 Account account = accountService
                         .verifyUserPwdVaild(oauthRequest.getUsername(), oauthRequest.getPassword());

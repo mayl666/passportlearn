@@ -18,7 +18,7 @@ public class PassportIDGenerator {
      * @return
      */
     public static String generator(String username, int provider) {
-        String passportID = null;
+        String passportID;
         if (AccountTypeEnum.isPhone(username, provider)) {
             passportID = username + "@sohu.com";
         } else if (AccountTypeEnum.isConnect(provider)) {

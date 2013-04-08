@@ -206,7 +206,7 @@ public class DateUtil {
 	static ThreadLocal<Map<String, SimpleDateFormat>> _simpleDateFormatCache = new ThreadLocal<Map<String, SimpleDateFormat>>() {
 		protected Map<String, SimpleDateFormat> initialValue() {
 			return new ConcurrentHashMap<String, SimpleDateFormat>();
-		};
+		}
 	};
 	static final Date _emptyDate = new Date(0);
 }

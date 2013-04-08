@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 
 public class PhoneUtil {
@@ -13,25 +14,20 @@ public class PhoneUtil {
 	 * 新电信 （中国电信 <http://baike.baidu.com/view/3214.htm>+中国卫通）手机号码开头数字 133、153、189、180、181
 	 */
 	public static boolean verifyPhoneNumberFormat(String photo) {
-
-		if (!StringUtils.isEmpty(photo)) {
-			return photo.matches(PHONE_FORMAT);
-		} else {
-			return false;
-		}
+        return !Strings.isNullOrEmpty(photo) && photo.matches(PHONE_FORMAT);
 	}
 
 	public static void main(String[] args) {
 		String[] phones = new String[] { "1523620111", "11011363254", "15811363254", "15811364216", "15811364216",
 				"13011111111", "15811364216", "022-6232903-22", "022-6232903", "+8615811364216", "8615811224181" };
-		for (int i = 0; i < phones.length; i++) {
-			System.out.print(phones[i] + "  ");
-			System.out.println(PhoneUtil.verifyPhoneNumberFormat(phones[i]));
+		for (String phone : phones) {
+			System.out.print(phone + "  ");
+			System.out.println(PhoneUtil.verifyPhoneNumberFormat(phone));
 		}
 
 		String phone = "8615811224181";
 		if (phone.length() > PhoneUtil.PHONE_LENTH) {
-			phone = phone.substring(phone.length() - PhoneUtil.PHONE_LENTH);
+			phone.substring(phone.length() - PhoneUtil.PHONE_LENTH);
 		}
 	}
 }
