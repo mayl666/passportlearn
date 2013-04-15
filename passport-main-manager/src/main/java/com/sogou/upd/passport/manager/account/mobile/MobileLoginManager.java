@@ -7,5 +7,5 @@ package com.sogou.upd.passport.manager.account.mobile;
  * Time: 上午11:38
  * To change this template use File | Settings | File Templates.
  */
-public class MobileLoginManager {
+public interface MobileLoginManager {
 }
