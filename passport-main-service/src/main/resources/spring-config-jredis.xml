@@ -26,4 +26,8 @@
     <!-- redis template definition -->
     <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="jedisConnectionFactory"/>
+
+    <bean id="redisUtils" class="com.sogou.upd.passport.common.utils.RedisUtils">
+        <property name="redisTemplate" ref="redisTemplate" />
+    </bean>
 </beans>

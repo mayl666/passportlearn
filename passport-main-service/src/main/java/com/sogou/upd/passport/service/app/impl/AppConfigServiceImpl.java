@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.app.impl;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -26,7 +27,7 @@ import java.lang.reflect.Type;
 public class AppConfigServiceImpl implements AppConfigService {
 
     private Logger logger = LoggerFactory.getLogger(AppConfigService.class);
-    private static final String CACHE_PREFIX_CLIENTID = "PASSPORT:CLIENTID_APPCONFIG_";     //clientid与appConfig映射
+    private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG;     //clientid与appConfig映射
 
     @Inject
     private AppConfigMapper appConfigMapper;
