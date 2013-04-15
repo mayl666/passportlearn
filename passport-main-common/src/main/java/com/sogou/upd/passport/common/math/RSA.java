@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.math;
+package common.math;
 
 import org.apache.commons.lang3.ArrayUtils;
 

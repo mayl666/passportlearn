@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.sogou.upd.passport.common.math;
+package common.math;
 
 /**
  * The HMAC-SHA1 签名算法.

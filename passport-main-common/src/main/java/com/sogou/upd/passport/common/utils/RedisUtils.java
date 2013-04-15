@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.utils;
+package common.utils;
 
 import com.google.common.base.Strings;
 import org.springframework.data.redis.core.RedisTemplate;

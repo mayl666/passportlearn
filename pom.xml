@@ -10,6 +10,7 @@
         <module>passport-main-web</module>
         <module>passport-oauth2</module>
         <module>passport-main-manager</module>
+        <module>passport-main-common</module>
     </modules>
     <packaging>pom</packaging>
 
