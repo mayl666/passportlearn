@@ -9,6 +9,7 @@
         <module>passport-main-service</module>
         <module>passport-main-web</module>
         <module>passport-oauth2</module>
+        <module>passport-main-manager</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -273,7 +274,6 @@
         </plugins>
     </build>
     <profiles>
-
         <profile>
             <id>development</id>
             <properties>
@@ -298,6 +298,32 @@
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <!--properties of sp_account data source-->
+                <passport.jdbc.sp_account.url>jdbc:mysql://10.11.211.18:3306/sp_account?characterEncoding=utf-8
+                </passport.jdbc.sp_account.url>
+                <!--properties of sp_app data source-->
+                <passport.jdbc.sp_app.url>jdbc:mysql://10.11.211.18:3306/sp_app?characterEncoding=utf-8
+                </passport.jdbc.sp_app.url>
+                <!--public data source-->
+                <passport.jdbc.datasource.type>c3p0</passport.jdbc.datasource.type>
+                <passport.jdbc.driver>com.mysql.jdbc.Driver</passport.jdbc.driver>
+                <passport.jdbc.username>sogou_passport</passport.jdbc.username>
+                <passport.jdbc.password>sogou_passport</passport.jdbc.password>
+                <!--log level and path-->
+                <passport.log.level>INFO</passport.log.level>
+                <passport.log.path>d:/logs</passport.log.path>
+
+                <!-- redis-->
+                <passport.redis.url>10.12.139.204</passport.redis.url>
+                <passport.redis.port>6379</passport.redis.port>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
     </profiles>
