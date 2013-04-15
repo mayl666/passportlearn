@@ -1,12 +1,12 @@
-package com.sogou.upd.passport.common.utils;
-
-import java.util.Collections;
-import java.util.Map;
+package common.utils;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sogou.upd.passport.common.parameter.CommonParameters;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class ErrorUtil {
 

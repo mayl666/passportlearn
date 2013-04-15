@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.utils;
+package common.utils;
 
 import com.sogou.upd.passport.common.parameter.CommonParameters;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -18,7 +18,7 @@ public class StringUtil {
     static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
 
     public static boolean isEmpty(String str) {
-        return org.apache.commons.lang3.StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
+        return StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
     }
 
     /**

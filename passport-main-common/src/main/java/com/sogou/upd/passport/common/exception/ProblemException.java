@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.exception;
+package common.exception;
 
 import com.google.common.base.Strings;
 

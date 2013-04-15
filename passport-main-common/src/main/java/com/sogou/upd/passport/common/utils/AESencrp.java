@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.utils;
+package common.utils;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.codec.binary.Base64;

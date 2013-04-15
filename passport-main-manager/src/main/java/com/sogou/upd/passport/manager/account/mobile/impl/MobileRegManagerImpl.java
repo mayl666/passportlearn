@@ -1,11 +1,7 @@
 package com.sogou.upd.passport.manager.account.mobile.impl;
 
 import com.sogou.upd.passport.manager.account.mobile.MobileRegManager;
-import com.sogou.upd.passport.service.account.AccountAuthService;
-import com.sogou.upd.passport.service.account.AccountService;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
 
 /**
  * User: mayan
@@ -15,10 +11,4 @@ import javax.inject.Inject;
  */
 @Component
 public class MobileRegManagerImpl implements MobileRegManager {
-
-    @Inject
-    private AccountService accountService;
-
-    @Inject
-    private AccountAuthService accountAuthService;
 }

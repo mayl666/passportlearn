@@ -1,7 +1,6 @@
-package com.sogou.upd.passport.common.utils;
+package common.utils;
 
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
 
 public class PhoneUtil {
 
