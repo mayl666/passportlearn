@@ -8,4 +8,5 @@ package com.sogou.upd.passport.manager.account.mobile;
  * To change this template use File | Settings | File Templates.
  */
 public interface MobileRegManager {
+
 }
