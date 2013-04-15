@@ -1,4 +1,4 @@
-package common.exception;
+package com.sogou.upd.passport.common.exception;
 
 public class SystemException extends Exception {
 

@@ -1,5 +1,6 @@
-package common.math;
+package com.sogou.upd.passport.common.math;
 
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.crypto.Cipher;

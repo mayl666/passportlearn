@@ -1,4 +1,4 @@
-package common.parameter;
+package com.sogou.upd.passport.common.parameter;
 
 /**
  * Created with IntelliJ IDEA.

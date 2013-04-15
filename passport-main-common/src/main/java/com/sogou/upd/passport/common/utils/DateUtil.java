@@ -1,4 +1,4 @@
-package common.utils;
+package com.sogou.upd.passport.common.utils;
 
 /**
  * 提供日期的加减转换等功能 包含多数常用的日期格式
