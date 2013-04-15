@@ -1,4 +1,4 @@
-package common.utils;
+package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.parameter.CommonParameters;
 import org.apache.commons.lang3.StringEscapeUtils;
