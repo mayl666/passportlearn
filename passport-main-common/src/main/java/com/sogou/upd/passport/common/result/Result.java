@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.result;
+package com.sogou.upd.passport.common.result;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.Set;
  * Time: 下午5:19
  * To change this template use File | Settings | File Templates.
  */
-public class Result  {
+public class Result {
     /**
      * 是否成功
      */
