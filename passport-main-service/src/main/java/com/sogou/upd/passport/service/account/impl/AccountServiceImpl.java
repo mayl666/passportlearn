@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -44,9 +45,9 @@ import java.util.Map;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
-    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = "PASSPORT:MOBILE_SMSCODE_";   //account与smscode映射
-    private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = "PASSPORT:MOBILE_SENDNUM_";
-    private static final String CACHE_PREFIX_PASSPORTID = "PASSPORT:PASSPORTID__USERID";     //passport_id与userID映射
+    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE;   //account与smscode映射
+    private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = CacheConstant.CACHE_PREFIX_MOBILE_SENDNUM;
+    private static final String CACHE_PREFIX_PASSPORTID = CacheConstant.CACHE_PREFIX_PASSPORTID_USERID;     //passport_id与userID映射
     @Inject
     private AccountMapper accountMapper;
     @Inject

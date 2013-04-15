@@ -3,6 +3,7 @@ package com.sogou.upd.passport.common.utils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * User: mayan
  * Date: 13-3-22

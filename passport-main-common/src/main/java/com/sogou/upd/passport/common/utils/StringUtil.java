@@ -18,7 +18,7 @@ public class StringUtil {
     static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
 
     public static boolean isEmpty(String str) {
-        return org.apache.commons.lang3.StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
+        return StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
     }
 
     /**

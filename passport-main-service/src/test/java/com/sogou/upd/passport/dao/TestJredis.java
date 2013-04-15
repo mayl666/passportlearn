@@ -36,7 +36,8 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
     @Inject
     private RedisTemplate redisTemplate;
 
-
+    @Inject
+    private RedisUtils redisUtils;
     @Before
     public void init() {
     }
@@ -64,9 +65,10 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //
 //        String sms = String.format(tips, "12345");
 //        System.out.println(sms);
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        System.out.println(valueOperations.setIfAbsent("12345","234456"));
-
+//        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+//        System.out.println(valueOperations.setIfAbsent("12345","234456"));
+        redisUtils.set("zhangsan1","lisi1");
+        System.out.println(redisUtils.get("zhangsan1"));
     }
 
     @Test
