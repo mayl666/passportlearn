@@ -32,13 +32,13 @@ public class AccountRegManagerImpl implements AccountRegManager {
 
     @Override
     public Result mobileRegister(RegisterParameters regParams) throws Exception {
-        //TODO 入口参数regParams验证
+        //TODO 入口参数校验?
         String mobile = regParams.getMobile();
         String smsCode = regParams.getSmscode();
         String password = regParams.getPassword();
         String ip = regParams.getIp();
-        int clientId = regParams.getClientId();
-        String instanceId = regParams.getInstanceId();
+        int clientId = regParams.getClient_id();
+        String instanceId = regParams.getInstance_id();
         //直接查询Account的mobile字段
         Account existAccount = accountService.getAccountByUserName(mobile);
         if (existAccount != null) {
