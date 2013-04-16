@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
 
 /**
  * 账户安全相关
@@ -17,4 +18,21 @@ public interface AccountSecureManager {
      * @return
      */
     public Result sendMobileCode(String mobile,int clientId) ;
+
+    /**
+     * 手机用户找回密码
+     *
+     * @param mobile   手机号码
+     * @param clientId 客户端ID
+     * @return Result格式的返回值，成功则发送验证码；失败，提示失败信息
+     */
+    public Result findPassword(String mobile, int clientId);
+
+    /**
+     * 手机用户重置密码
+     *
+     * @param regParams
+     * @return Result格式的返回值, 成功或失败，返回提示信息
+     */
+    public Result resetPassword(RegisterParameters regParams) throws Exception;
 }

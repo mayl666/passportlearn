@@ -6,9 +6,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
-import com.sogou.upd.passport.service.account.AccountAuthService;
-import com.sogou.upd.passport.service.account.AccountConnectService;
-import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.form.MobileRegParams;
@@ -39,13 +36,6 @@ public class AccountController extends BaseController {
 
     @Inject
     private AccountRegManager accountRegManager;
-
-    @Inject
-    private AccountService accountService;
-    @Inject
-    private AccountAuthService accountAuthService;
-    @Inject
-    private AccountConnectService accountConnectService;
 
     /**
      * 手机账号获取，重发手机验证码接口
@@ -118,7 +108,7 @@ public class AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-        Result result = accountRegManager.findPassword(reqParams.getMobile(), reqParams.getClient_id());
+        Result result = accountSecureManager.findPassword(reqParams.getMobile(), reqParams.getClient_id());
         return result;
     }
 
@@ -142,7 +132,7 @@ public class AccountController extends BaseController {
         registerParameters.setSmscode(reqParams.getSmscode());
         registerParameters.setClientId(reqParams.getClient_id());
         registerParameters.setInstanceId(reqParams.getInstance_id());
-        Result result = accountRegManager.resetPassword(registerParameters);
+        Result result = accountSecureManager.resetPassword(registerParameters);
         return result;
     }
 }
