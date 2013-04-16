@@ -161,8 +161,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, final int clientId) {
-        Result result = new Result();
-        String error_code = null;
+        Result result = null;
         try {
             cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
             BoundHashOperations hashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -193,41 +192,29 @@ public class AccountServiceImpl implements AccountService {
                                 boolean isSend = SMSUtil.sendSMS(mobile, smsText);
                                 if (isSend) {
                                     //30分钟之内返回原先验证码
-                                    result.addDefaultModel("smscode", smsCode);
-                                    result.setStatus("0");
-                                    result.setStatusText("获取验证码成功");
+                                    result=Result.buildSuccess("获取验证码成功","smscode", smsCode) ;
                                     return result;
                                 }
                             } else {
-                                error_code = ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND;
-                                result.setStatus(error_code);
-                                result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+                                result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND) ;
                                 return result;
                             }
                         } else {
-                            error_code = ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS;
-                            result.setStatus(error_code);
-                            result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+                            result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
                             return result;
                         }
                     } else {
-                        error_code = ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT;
-                        result.setStatus(error_code);
-                        result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+                        result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
                         return result;
                     }
                 }
             } else {
-                error_code = ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND;
-                result.setStatus(error_code);
-                result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+                result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 return result;
             }
 
         } catch (Exception e) {
-            error_code = ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND;
-            result.setStatus(error_code);
-            result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+            result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
             logger.error("[SMS] service method updateSmsCacheInfoByKeyAndClientId error.{}", e);
         }
 

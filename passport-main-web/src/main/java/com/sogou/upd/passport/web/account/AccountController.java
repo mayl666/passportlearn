@@ -58,9 +58,7 @@ public class AccountController extends BaseController {
         String mobile = reqParams.getMobile();
         int clientId = reqParams.getClient_id();
 
-        Result result = accountSecureManager.sendMobileCode(mobile, clientId);
-
-
+        Result result=accountSecureManager.sendMobileCode(mobile,clientId);
         return result;
 
     }
@@ -127,4 +125,5 @@ public class AccountController extends BaseController {
         Result result = accountSecureManager.resetPassword(registerParameters);
         return result;
     }
+
 }
