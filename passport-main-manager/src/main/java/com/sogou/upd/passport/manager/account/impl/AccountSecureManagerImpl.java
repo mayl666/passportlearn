@@ -33,8 +33,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         //判断账号是否被缓存
         String cacheKey = mobile + "_" + clientId;
         boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
-        Result result = new Result();
-        String error_code=null;
+        Result result = null;
         if (isExistFromCache) {
             //更新缓存状态
             result = accountService.updateSmsCacheInfoByKeyAndClientId(cacheKey, clientId);
@@ -47,15 +46,11 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 if (result!=null) {
                     return result;
                 } else {
-                    error_code=ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND;
-                    result.setStatus(error_code);
-                    result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+                    result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                     return result;
                 }
             } else {
-                error_code=ErrorUtil.ERR_CODE_ACCOUNT_REGED;
-                result.setStatus(error_code);
-                result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+                result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result;
             }
         }

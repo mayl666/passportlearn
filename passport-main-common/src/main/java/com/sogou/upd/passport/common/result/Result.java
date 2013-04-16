@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.common.result;
 
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.T;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.MapUtils;
+import org.springframework.core.env.MapPropertySource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +49,7 @@ public class Result {
      * @return
      */
     public Object addDefaultModel(Object obj) {
-        return data.put(DEFAULT_MODEL_KEY, obj);
+        return data=(Map)obj;
     }
 
 
@@ -85,19 +88,24 @@ public class Result {
      * 根据错误码返回result对象
      *
      * @param statusText 成功信息描述
-     * @param key    成功信息key
-     * @param object 封装的数据
+     * @param key        成功信息key
+     * @param object     封装的数据
      * @return 含错误码及相应的提示信息
      */
     public static Result buildSuccess(String statusText, String key, Object object) {
         Result result = new Result();
         if (object != null) {
-            result.addDefaultModel(key, object);
+            if(object instanceof Map){
+                result.addDefaultModel(object);
+            }else {
+                result.addDefaultModel(key, object);
+            }
         }
         result.setStatus("0");
         result.setStatusText(statusText);
         return result;
     }
+
     /**
      * 根据错误码返回result对象
      *

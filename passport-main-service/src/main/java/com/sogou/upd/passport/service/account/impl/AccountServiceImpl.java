@@ -162,7 +162,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, final int clientId) {
         Result result = null;
-        String error_code = null;
         try {
             cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
             BoundHashOperations hashOperations = redisTemplate.boundHashOps(cacheKey);
