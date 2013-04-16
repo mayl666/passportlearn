@@ -5,11 +5,9 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
-import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * User: mayan

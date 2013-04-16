@@ -69,8 +69,6 @@ public class AccountController extends BaseController {
         int clientId = reqParams.getClient_id();
 
         Result result=accountSecureManager.sendMobileCode(mobile,clientId);
-
-
         return result;
 
     }
