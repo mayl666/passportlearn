@@ -69,7 +69,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testUpdateSmsInfoByCacheKeyAndClientid() {
-        Map<String, Object> mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(CACHE_KEY, CLIENT_ID_INT);
+        Map<String, Object> mapResult = null;
+//                accountService.updateSmsInfoByCacheKeyAndClientid(CACHE_KEY, CLIENT_ID_INT);
         if (MapUtils.isNotEmpty(mapResult)) {
             System.out.println(mapResult.size());
         } else {
@@ -82,7 +83,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testHandleSendSms() {
-        Map<String, Object> mapResult = accountService.handleSendSms(MOBILE, CLIENT_ID_INT);
+        Map<String, Object> mapResult = null;
+//        accountService.handleSendSms(MOBILE, CLIENT_ID_INT);
         if (MapUtils.isNotEmpty(mapResult)) {
             System.out.println(mapResult.size());
         } else {

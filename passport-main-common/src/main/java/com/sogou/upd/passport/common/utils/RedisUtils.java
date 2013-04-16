@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import net.sf.json.util.JSONUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -17,14 +19,38 @@ public class RedisUtils {
 
     private static RedisTemplate redisTemplate;
 
+    /*
+    * 设置缓存内容
+    */
     public static void set(String key, String value) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(key,value);
+        valueOperations.set(key, value);
+    }
+    /*
+    * 设置缓存内容
+    */
+    public static void set(String key, Object obj) {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(key, new Gson().toJson(obj));
     }
 
+    /*
+   * 根据key取缓存内容
+   */
     public static String get(String key) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(key);
+    }
+
+
+    /*
+   * 判断key是否存在
+   */
+    public static boolean checkKeyIsExist(String key) {
+        if (redisTemplate.hasKey(key)) {
+            return true;
+        }
+        return false;
     }
 
     /*

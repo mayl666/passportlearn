@@ -1,20 +1,16 @@
 package com.sogou.upd.passport.web.account;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountAuth;
-import com.sogou.upd.passport.service.account.AccountAuthService;
-import com.sogou.upd.passport.service.account.AccountConnectService;
-import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.form.MobileRegParams;
 import com.sogou.upd.passport.web.form.MoblieCodeParams;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * 移动用户注册登录
@@ -41,11 +36,7 @@ public class AccountController extends BaseController {
     private AccountSecureManager accountSecureManager;
 
     @Inject
-    private AccountService accountService;
-    @Inject
-    private AccountAuthService accountAuthService;
-    @Inject
-    private AccountConnectService accountConnectService;
+    private AccountRegManager accountRegManager;
 
     /**
      * 手机账号获取，重发手机验证码接口
@@ -67,28 +58,9 @@ public class AccountController extends BaseController {
         String mobile = reqParams.getMobile();
         int clientId = reqParams.getClient_id();
 
-        //判断账号是否被缓存
-        String cacheKey = mobile + "_" + clientId;
-        boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
-        Map<String, Object> mapResult;
-        if (isExistFromCache) {
-            //更新缓存状态
-            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, clientId);
-            return mapResult;
-        } else {
-            Account account = accountService.getAccountByUserName(mobile);
-            if (account == null) {
-                //未注册过
-                mapResult = accountService.handleSendSms(mobile, clientId);
-                if (MapUtils.isNotEmpty(mapResult)) {
-                    return mapResult;
-                } else {
-                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                }
-            } else {
-                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-            }
-        }
+        Result result = accountSecureManager.sendMobileCode(mobile, clientId);
+        return result;
+
     }
 
     /**
@@ -107,50 +79,11 @@ public class AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-
-        String mobile = regParams.getMobile();
-        String smscode = regParams.getSmscode();
-        int clientId = regParams.getClient_id();
-        String password = regParams.getPassword();
-        String instanceId = regParams.getInstance_id();
-
-        //直接查询Account的mobile字段,shipengzhi
-        Account existAccount = accountService.getAccountByUserName(mobile);
-        if (existAccount != null) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-        }
-        //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientId + "");
-        if (!checkSmsInfo) {
-            // todo 这么多return看着好乱，service层抛出problemException，统一捕获
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-        }
-
-        String ip = getIp(request);
-        Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
-        if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
-            //生成token并向account_auth表里插一条用户状态记录
-            AccountAuth accountAuth = accountAuthService.initialAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
-            if (accountAuth != null) {   //如果用户授权信息表插入也成功，则说明注册成功
-                accountService.addPassportIdMapUserIdToCache(account.getPassportId(), Long.toString(account.getId()));
-                //清除验证码的缓存
-                accountService.deleteSmsCache(mobile, String.valueOf(clientId));
-                String accessToken = accountAuth.getAccessToken();
-                long accessValidTime = accountAuth.getAccessValidTime();
-                String refreshToken = accountAuth.getRefreshToken();
-                Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put("access_token", accessToken);
-                mapResult.put("expires_time", accessValidTime);
-                mapResult.put("refresh_token", refreshToken);
-                return buildSuccess("用户注册成功！", mapResult);
-            } else {
-                //用户注册失败
-                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-            }
-        } else {
-            //用户注册失败
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-        }
+        RegisterParameters registerParameters = new RegisterParameters();
+        BeanUtils.copyProperties(registerParameters, regParams);
+        registerParameters.setIp(getIp(request));
+        Result result = accountRegManager.mobileRegister(registerParameters);
+        return result;
     }
 
     /**
@@ -169,27 +102,8 @@ public class AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-
-        String mobile = reqParams.getMobile();
-        int clientId = reqParams.getClient_id();
-
-        Account account = accountService.getAccountByUserName(mobile);
-        if (account == null) {   //提示该手机用户不存在
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_NOUSER);
-        }
-        //判断账号是否被缓存
-        String cacheKey = mobile + "_" + clientId;
-        boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
-        Map<String, Object> mapResult;
-        if (isExistFromCache) {
-            //更新缓存状态
-            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, clientId);
-            return mapResult;
-        } else {
-            mapResult = accountService.handleSendSms(mobile, clientId);
-        }
-
-        return MapUtils.isNotEmpty(mapResult) ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+        Result result = accountSecureManager.findPassword(reqParams.getMobile(), reqParams.getClient_id());
+        return result;
     }
 
     /**
@@ -206,35 +120,10 @@ public class AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-        String mobile = reqParams.getMobile();
-        String smscode = reqParams.getSmscode();
-        int clientId = reqParams.getClient_id();
-        String password = reqParams.getPassword();
-        String instanceId = reqParams.getInstance_id();
-
-        //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientId + "");
-        if (!checkSmsInfo) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-        }
-
-        //重置密码
-        Account account = accountService.resetPassword(mobile, password);
-        //先更新当前客户端实例对应的access_token和refresh_token，再异步更新该用户其它客户端的两个token
-        AccountAuth accountAuthResult = null;
-        if (account != null) {
-            accountAuthResult = accountAuthService.updateAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
-            //TODO 存在分库分表问题
-            accountAuthService.asynUpdateAccountAuthBySql(mobile, clientId, instanceId);
-        }
-        if (accountAuthResult != null) {
-            //清除验证码的缓存
-            accountService.deleteSmsCache(mobile, String.valueOf(clientId));
-            return buildSuccess("重置密码成功", null);
-        } else {
-            return ErrorUtil.buildExceptionError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
-        }
-
+        RegisterParameters registerParameters = new RegisterParameters();
+        BeanUtils.copyProperties(registerParameters, reqParams);
+        Result result = accountSecureManager.resetPassword(registerParameters);
+        return result;
     }
 
 }

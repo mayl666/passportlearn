@@ -1,11 +1,10 @@
 package com.sogou.upd.passport.common.result;
 
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import net.sf.json.JSONObject;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Service返回值对象
@@ -16,54 +15,40 @@ import java.util.Set;
  */
 public class Result {
 
-    private boolean success;
-
     /**
      * service返回的对象
      */
-    private Map<String,Object> data = new HashMap<String,Object>();
+    private Map<String, Object> data = new HashMap<String, Object>();
 
     private String status;
     private String statusText;
+
+    public static final String DEFAULT_MODEL_KEY = "value";
 
     public Result() {
     }
 
     /**
      * 新增一个带key的返回结果
+     *
      * @param key
      * @param obj
      * @return
      */
-    public Object addDefaultModel(String key,Object obj) {
-        return data.put(key,obj);
-    }
-    /**
-     * 取出整个map对象
-     * @return
-     */
-    public Map<String,Object> getData() {
-        return data;
-    }
-    /**
-     * 返回是否成功
-     * @return
-     */
-    public boolean getSuccess() {
-        return success;
-    }
-
-    public boolean isSuccess() {
-        return success;
+    public Object addDefaultModel(String key, Object obj) {
+        return data.put(key, obj);
     }
 
     /**
-     * 设置返回是否成功
-     * @param success
+     * 新增一个返回结果
+     *
+     * @param obj
+     * @return
      */
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public Object addDefaultModel(Object obj) {
+        return data=(Map)obj;
     }
+
 
     public String getStatus() {
         return status;
@@ -81,18 +66,54 @@ public class Result {
         this.statusText = statusText;
     }
 
-    public static void main(String[] args) {
-        Result result1=new Result();
-        result1.setSuccess(true);
-
-        result1.addDefaultModel("smscode","65652") ;
-        result1.setStatus("1000");
-        result1.setStatusText("获取注册验证码成功");
-
-        JSONObject jsonObject= JSONObject.fromObject(result1);
-
-
-        System.out.println(jsonObject.toString());
+    /**
+     * 取出整个map对象
+     *
+     * @return
+     */
+    public Map<String, Object> getData() {
+        return data;
     }
 
+
+    public String toJson(Result result) {
+        JSONObject jsonObject = JSONObject.fromObject(result);
+        return jsonObject.toString();
+    }
+
+    /**
+     * 根据错误码返回result对象
+     *
+     * @param statusText 成功信息描述
+     * @param key        成功信息key
+     * @param object     封装的数据
+     * @return 含错误码及相应的提示信息
+     */
+    public static Result buildSuccess(String statusText, String key, Object object) {
+        Result result = new Result();
+        if (object != null) {
+            if(object instanceof Map){
+                result.addDefaultModel(object);
+            }else {
+                result.addDefaultModel(key, object);
+            }
+        }
+        result.setStatus("0");
+        result.setStatusText(statusText);
+        return result;
+    }
+
+    /**
+     * 根据错误码返回result对象
+     *
+     * @param status 或错误码
+     * @return 含错误码及相应的提示信息
+     */
+    public static Result buildError(String status) {
+        Result result = new Result();
+
+        result.setStatus(status);
+        result.setStatusText(ErrorUtil.getERR_CODE_MSG(status));
+        return result;
+    }
 }
