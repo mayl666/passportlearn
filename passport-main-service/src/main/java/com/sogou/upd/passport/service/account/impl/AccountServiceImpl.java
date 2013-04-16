@@ -323,7 +323,7 @@ public class AccountServiceImpl implements AccountService {
                 //读取数据库
                 userIdResult = getUserIdByPassportId(passportId);
                 if (userIdResult != 0) {
-                    addPassportIdMapUserIdToCache(passportId, userId);
+                    redisUtils.setNx(cacheKey,userId);
                 }
             } else {
                 userIdResult = Long.parseLong(userId);
@@ -335,20 +335,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addPassportIdMapUserIdToCache(final String passportId, final String userId) {
-        boolean flag = true;
-        try {
-            String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-            redisUtils.setNx(cacheKey,userId);
-        } catch (Exception e) {
-            flag = false;
-            logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
-        }
-        return flag;
-    }
-
-    @Override
-    public boolean deleteSmsCache(final String mobile, final String clientId) {
+    public boolean deleteSmsCache(String mobile, String clientId) {
         boolean flag=true;
         try {
             redisUtils.delete(CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId);

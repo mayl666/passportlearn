@@ -91,14 +91,6 @@ public interface AccountService {
     public Account verifyUserPwdVaild(String username, String password);
 
     /**
-     * PassportId与UserId缓存映射
-     *
-     * @param passportId
-     * @param userId
-     */
-    public boolean addPassportIdMapUserIdToCache(String passportId, String userId);
-
-    /**
      * 根据主键ID获取passportId
      *
      * @param passportId
