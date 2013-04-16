@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
+import com.sogou.upd.passport.model.account.Account;
 
 /**
  * 注册管理
@@ -36,38 +37,5 @@ public interface AccountRegManager {
      * @return Result格式的返回值, 成功或失败，返回提示信息
      */
     public Result resetPassword(RegisterParameters regParams) throws Exception;
-
-    /**
-     * 根据passportId从account表中查询主键id
-     *
-     * @param passportId
-     * @return Result格式的返回值，返回userId，也即account表的主键id
-     */
-    public Result getUserIdByPassportId(String passportId);
-
-    /**
-     * 验证account账户是否有效，是否为正常用户
-     *
-     * @param userId
-     * @return 返回成功为account对象
-     */
-    public Result checkAccountIsValid(long userId);
-
-    /**
-     * 根据用户名获取Account对象
-     *
-     * @param username
-     * @return 成功返回account对象的result格式的返回值
-     */
-    public Result getAccountByUserName(String username);
-
-    /**
-     * 验证用户名和密码是否正确
-     *
-     * @param username
-     * @param password
-     * @return 返回result格式的返回值
-     */
-    public Result checkUserPwdIsValid(String username, String password);
 
 }
