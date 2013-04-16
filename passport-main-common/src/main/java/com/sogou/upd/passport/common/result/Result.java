@@ -2,10 +2,8 @@ package com.sogou.upd.passport.common.result;
 
 import net.sf.json.JSONObject;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Service返回值对象
@@ -16,54 +14,61 @@ import java.util.Set;
  */
 public class Result {
 
-    private boolean success;
-
     /**
      * service返回的对象
      */
-    private Map<String,Object> data = new HashMap<String,Object>();
+    private Map<String, Object> data = new HashMap<String, Object>();
 
     private String status;
     private String statusText;
+
+    public static final String DEFAULT_MODEL_KEY = "value";
 
     public Result() {
     }
 
     /**
      * 新增一个带key的返回结果
+     *
      * @param key
      * @param obj
      * @return
      */
-    public Object addDefaultModel(String key,Object obj) {
-        return data.put(key,obj);
+    public Object addDefaultModel(String key, Object obj) {
+        return data.put(key, obj);
     }
+
+    /**
+     * 新增一个返回结果
+     *
+     * @param obj
+     * @return
+     */
+    public Object addDefaultModel(Object obj) {
+        return data.put(DEFAULT_MODEL_KEY, obj);
+    }
+
     /**
      * 取出整个map对象
+     *
      * @return
      */
-    public Map<String,Object> getData() {
+    public Map<String, Object> getData() {
         return data;
     }
+
     /**
      * 返回是否成功
+     *
      * @return
      */
-    public boolean getSuccess() {
-        return success;
-    }
-
     public boolean isSuccess() {
-        return success;
+        if ("0".equals(status)) {
+            return true;
+        }
+        return false;
     }
 
-    /**
-     * 设置返回是否成功
-     * @param success
-     */
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
 
     public String getStatus() {
         return status;
@@ -82,14 +87,17 @@ public class Result {
     }
 
     public static void main(String[] args) {
-        Result result1=new Result();
-        result1.setSuccess(true);
+        Result result1 = new Result();
 
-        result1.addDefaultModel("smscode","65652") ;
+//        result1.addDefaultModel("smscode","65652") ;
         result1.setStatus("1000");
         result1.setStatusText("获取注册验证码成功");
 
-        JSONObject jsonObject= JSONObject.fromObject(result1);
+
+//        result1.addDefaultModel();
+
+
+        JSONObject jsonObject = JSONObject.fromObject(result1);
 
 
         System.out.println(jsonObject.toString());
