@@ -28,5 +28,10 @@
             <groupId>sogou-passport</groupId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <artifactId>passport-oauth2</artifactId>
+            <groupId>sogou-passport</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
