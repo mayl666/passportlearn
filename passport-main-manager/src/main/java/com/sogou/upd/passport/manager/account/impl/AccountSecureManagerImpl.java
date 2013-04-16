@@ -29,7 +29,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
     @Override
     public Result sendMobileCode(String mobile, int clientId) {
-
         //判断账号是否被缓存
         String cacheKey = mobile + "_" + clientId;
         boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
@@ -43,14 +42,14 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (account == null) {
                 //未注册过
                 result = accountService.handleSendSms(mobile, clientId);
-                if (result!=null) {
+                if (result != null) {
                     return result;
                 } else {
-                    result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                    result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                     return result;
                 }
             } else {
-                result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result;
             }
         }
@@ -78,18 +77,17 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
     @Override
     public Result resetPassword(RegisterParameters regParams) throws Exception {
-        //TODO 入口参数验证
+        //TODO 入口参数验证?
         String mobile = regParams.getMobile();
         String smsCode = regParams.getSmscode();
         String password = regParams.getPassword();
-        int clientId = regParams.getClientId();
-        String instanceId = regParams.getInstanceId();
+        int clientId = regParams.getClient_id();
+        String instanceId = regParams.getInstance_id();
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, String.valueOf(clientId));
         if (!checkSmsInfo) {
             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
-
         //重置密码
         Account account = accountService.resetPassword(mobile, password);
         //先更新当前客户端实例对应的access_token和refresh_token，再异步更新该用户其它客户端的两个token

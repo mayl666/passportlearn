@@ -12,28 +12,10 @@ public class RegisterParameters {
 
     private String mobile;
     private String smscode;
-    private int clientId;
+    private int client_id;
     private String password;
-    private String instanceId;
+    private String instance_id;
     private String ip;
-
-    public int getProvider() {
-        return provider;
-    }
-
-    public void setProvider(int provider) {
-        this.provider = provider;
-    }
-
-    private int provider;
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
 
     public String getMobile() {
         return mobile;
@@ -51,12 +33,12 @@ public class RegisterParameters {
         this.smscode = smscode;
     }
 
-    public int getClientId() {
-        return clientId;
+    public int getClient_id() {
+        return client_id;
     }
 
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
+    public void setClient_id(int client_id) {
+        this.client_id = client_id;
     }
 
     public String getPassword() {
@@ -67,11 +49,19 @@ public class RegisterParameters {
         this.password = password;
     }
 
-    public String getInstanceId() {
-        return instanceId;
+    public String getInstance_id() {
+        return instance_id;
     }
 
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
+    public void setInstance_id(String instance_id) {
+        this.instance_id = instance_id;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

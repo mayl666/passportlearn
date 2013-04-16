@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.web.account;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
@@ -12,7 +10,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.form.MobileRegParams;
 import com.sogou.upd.passport.web.form.MoblieCodeParams;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * 移动用户注册登录
@@ -61,7 +58,7 @@ public class AccountController extends BaseController {
         String mobile = reqParams.getMobile();
         int clientId = reqParams.getClient_id();
 
-        Result result=accountSecureManager.sendMobileCode(mobile,clientId);
+        Result result = accountSecureManager.sendMobileCode(mobile, clientId);
         return result;
 
     }
@@ -82,13 +79,8 @@ public class AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-
         RegisterParameters registerParameters = new RegisterParameters();
-        registerParameters.setClientId(regParams.getClient_id());
-        registerParameters.setInstanceId(regParams.getInstance_id());
-        registerParameters.setMobile(regParams.getMobile());
-        registerParameters.setPassword(regParams.getPassword());
-        registerParameters.setSmscode(regParams.getSmscode());
+        BeanUtils.copyProperties(registerParameters, regParams);
         registerParameters.setIp(getIp(request));
         Result result = accountRegManager.mobileRegister(registerParameters);
         return result;
@@ -129,11 +121,7 @@ public class AccountController extends BaseController {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         RegisterParameters registerParameters = new RegisterParameters();
-        registerParameters.setPassword(reqParams.getPassword());
-        registerParameters.setMobile(reqParams.getMobile());
-        registerParameters.setSmscode(reqParams.getSmscode());
-        registerParameters.setClientId(reqParams.getClient_id());
-        registerParameters.setInstanceId(reqParams.getInstance_id());
+        BeanUtils.copyProperties(registerParameters, reqParams);
         Result result = accountSecureManager.resetPassword(registerParameters);
         return result;
     }
