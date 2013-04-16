@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.result;
 
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import net.sf.json.JSONObject;
 
 import java.util.HashMap;
@@ -49,7 +50,6 @@ public class Result {
     }
 
 
-
     public String getStatus() {
         return status;
     }
@@ -76,25 +76,39 @@ public class Result {
     }
 
 
-    public String toJson(Result result){
+    public String toJson(Result result) {
         JSONObject jsonObject = JSONObject.fromObject(result);
         return jsonObject.toString();
     }
 
-    public static void main(String[] args) {
-        Result result1 = new Result();
-
-//        result1.addDefaultModel("smscode","65652") ;
-        result1.setStatus("1000");
-        result1.setStatusText("获取注册验证码成功");
-
-
-//        result1.addDefaultModel();
-
-
-        JSONObject jsonObject = JSONObject.fromObject(result1);
-
-        System.out.println(jsonObject.toString());
+    /**
+     * 根据错误码返回result对象
+     *
+     * @param statusText 成功信息描述
+     * @param key    成功信息key
+     * @param object 封装的数据
+     * @return 含错误码及相应的提示信息
+     */
+    public static Result buildSuccess(String statusText, String key, Object object) {
+        Result result = new Result();
+        if (object != null) {
+            result.addDefaultModel(key, object);
+        }
+        result.setStatus("0");
+        result.setStatusText(statusText);
+        return result;
     }
+    /**
+     * 根据错误码返回result对象
+     *
+     * @param status 或错误码
+     * @return 含错误码及相应的提示信息
+     */
+    public static Result buildError(String status) {
+        Result result = new Result();
 
+        result.setStatus(status);
+        result.setStatusText(ErrorUtil.getERR_CODE_MSG(status));
+        return result;
+    }
 }
