@@ -306,9 +306,15 @@ public class AccountServiceImpl implements AccountService {
         }
         return null;
     }
-
+    /**
+     * 根据主键ID获取passportId
+     *
+     * @param passportId
+     * @return
+     */
     @Override
-    public long getUserIdByPassportIdFromCache(final String passportId) {
+    public long getUserIdByPassportId(String passportId) {
+
         long userIdResult = 0;
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
@@ -323,7 +329,7 @@ public class AccountServiceImpl implements AccountService {
                 userIdResult = Long.parseLong(userId);
             }
         } catch (Exception e) {
-            logger.error("[SMS] service method getUserIdByPassportIdFromCache error.{}", e);
+            logger.error("[SMS] service method getUserIdByPassportId error.{}", e);
         }
         return userIdResult;
     }
@@ -369,21 +375,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-    /**
-     * 根据主键ID获取passportId
-     *
-     * @param passportId
-     * @return
-     */
-    @Override
-    public long getUserIdByPassportId(String passportId) {
-        long userId;
-        if (passportId != null) {
-            userId = accountMapper.getUserIdByPassportId(passportId);
-            return userId == 0 ? 0 : userId;
-        }
-        return 0;
-    }
+
 
     /*
      * 根据key从缓存中获取value
