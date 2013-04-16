@@ -4,13 +4,12 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigMapper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -32,7 +31,7 @@ public class AppConfigServiceImpl implements AppConfigService {
     @Inject
     private AppConfigMapper appConfigMapper;
     @Inject
-    private StringRedisTemplate redisTemplate;
+    private RedisUtils redisUtils;
 
     @Override
     public boolean verifyClientVaild(int clientId, String clientSecret) {
@@ -52,15 +51,15 @@ public class AppConfigServiceImpl implements AppConfigService {
     }
 
     @Override
-    public AppConfig getAppConfigByClientId(final int clientId) {
+    public AppConfig getAppConfigByClientId(int clientId) {
         AppConfig appConfig = null;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
             //缓存根据clientId读取AppConfig
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            String valAppConfig = valueOperations.get(cacheKey);
+            String valAppConfig = redisUtils.get(cacheKey);
             if (!Strings.isNullOrEmpty(valAppConfig)) {
-                Type type = new TypeToken<AppConfig>() {}.getType();
+                Type type = new TypeToken<AppConfig>() {
+                }.getType();
                 appConfig = new Gson().fromJson(valAppConfig, type);
             }
             if (appConfig == null) {
@@ -76,13 +75,11 @@ public class AppConfigServiceImpl implements AppConfigService {
         return appConfig;
     }
 
-    private boolean addClientIdMapAppConfigToCache(final int clientId, final AppConfig appConfig) {
+    private boolean addClientIdMapAppConfigToCache(int clientId, AppConfig appConfig) {
         boolean flag = true;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfAbsent(String.valueOf(cacheKey), new Gson().toJson(appConfig));
+            redisUtils.set(cacheKey, appConfig);
         } catch (Exception e) {
             flag = false;
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);

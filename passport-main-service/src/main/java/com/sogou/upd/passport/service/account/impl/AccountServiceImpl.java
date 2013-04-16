@@ -25,9 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -112,7 +112,7 @@ public class AccountServiceImpl implements AccountService {
                 return result;
             }
         } catch (Exception e) {
-            result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND) ;
+            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
             logger.error("[SMS] service method handleSendSms error.{}", e);
         }
         return result;
@@ -121,7 +121,7 @@ public class AccountServiceImpl implements AccountService {
     /*
      * 获取sms信息
      */
-    public String getSmsText(final int clientId, String smsCode) {
+    public String getSmsText(int clientId, String smsCode) {
         //缓存中根据clientId获取AppConfig
         AppConfig appConfig = appConfigService.getAppConfigByClientId(clientId);
         if (appConfig != null) {
@@ -206,35 +206,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean checkSmsInfoFromCache(final String account, final String smsCode, final String clientId) {
-        Object obj = null;
+    public boolean checkSmsInfoFromCache(String account, String smsCode, String clientId) {
         try {
-            obj = redisTemplate.execute(new RedisCallback() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
-                    String strValue;
-                    Map<byte[], byte[]> mapResult = connection.hGetAll(RedisUtils.stringToByteArry(keyCache));
-                    if (MapUtils.isNotEmpty(mapResult)) {
-                        byte[] value = mapResult.get(RedisUtils.stringToByteArry("smsCode"));
-                        strValue = RedisUtils.byteArryToString(value);
-                        if (StringUtils.isNotBlank(strValue)) {
-                            if (strValue.equals(smsCode)) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
+            String cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
+            Map<String, String> mapResult = redisUtils.hGetAll(cacheKey);
+            if (MapUtils.isNotEmpty(mapResult)) {
+                String strValue = mapResult.get("smsCode");
+                if (StringUtils.isNotBlank(strValue)) {
+                    if (strValue.equals(smsCode)) {
+                        return true;
                     } else {
                         return false;
                     }
+                } else {
                     return false;
                 }
-            });
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             logger.error("[SMS] service method checkSmsInfoFromCache error.{}", e);
         }
-        return obj != null ? (Boolean) obj : false;
+        return false;
     }
 
     @Override
@@ -306,6 +299,7 @@ public class AccountServiceImpl implements AccountService {
         }
         return null;
     }
+
     /**
      * 根据主键ID获取passportId
      *
@@ -323,8 +317,8 @@ public class AccountServiceImpl implements AccountService {
                 //读取数据库
                 userIdResult = getUserIdByPassportId(passportId);
                 if (userIdResult != 0) {
-                    redisUtils.setNx(cacheKey,userId);
-                    addPassportIdMapUserIdToCache(passportId,userId);
+                    redisUtils.setNx(cacheKey, userId);
+                    addPassportIdMapUserIdToCache(passportId, userId);
                 }
             } else {
                 userIdResult = Long.parseLong(userId);
@@ -336,7 +330,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean addPassportIdMapUserIdToCache(String passportId,String userId) {
+    public boolean addPassportIdMapUserIdToCache(String passportId, String userId) {
         boolean flag = true;
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
@@ -350,12 +344,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean deleteSmsCache(String mobile, String clientId) {
-        boolean flag=true;
+        boolean flag = true;
         try {
             redisUtils.delete(CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId);
             redisUtils.delete(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
         } catch (Exception e) {
-            flag=false;
+            flag = false;
             logger.error("[SMS] service method deleteSmsCache error.{}", e);
         }
         return flag;
@@ -374,8 +368,6 @@ public class AccountServiceImpl implements AccountService {
         }
         return row == 0 ? null : account;
     }
-
-
 
 
     /*

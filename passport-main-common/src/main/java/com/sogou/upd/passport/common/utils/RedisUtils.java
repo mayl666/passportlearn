@@ -27,7 +27,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    public static void set(String key, String value) {
+    public void set(String key, String value) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(key, value);
     }
@@ -35,7 +35,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    public static void set(String key, Object obj) {
+    public void set(String key, Object obj) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(key, new Gson().toJson(obj));
     }
@@ -52,7 +52,7 @@ public class RedisUtils {
     /*
    * 根据key取缓存内容
    */
-    public static String get(String key) {
+    public String get(String key) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(key);
     }
