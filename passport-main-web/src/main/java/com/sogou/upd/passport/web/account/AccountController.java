@@ -58,7 +58,7 @@ public class AccountController extends BaseController {
         String mobile = reqParams.getMobile();
         int clientId = reqParams.getClient_id();
 
-        Result result=accountSecureManager.sendMobileCode(mobile,clientId);
+        Result result = accountSecureManager.sendMobileCode(mobile, clientId);
         return result;
 
     }
@@ -80,7 +80,7 @@ public class AccountController extends BaseController {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         RegisterParameters registerParameters = new RegisterParameters();
-        BeanUtils.copyProperties(registerParameters,regParams);
+        BeanUtils.copyProperties(registerParameters, regParams);
         registerParameters.setIp(getIp(request));
         Result result = accountRegManager.mobileRegister(registerParameters);
         return result;
@@ -121,7 +121,7 @@ public class AccountController extends BaseController {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         RegisterParameters registerParameters = new RegisterParameters();
-        BeanUtils.copyProperties(registerParameters,reqParams);
+        BeanUtils.copyProperties(registerParameters, reqParams);
         Result result = accountSecureManager.resetPassword(registerParameters);
         return result;
     }

@@ -42,14 +42,14 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (account == null) {
                 //未注册过
                 result = accountService.handleSendSms(mobile, clientId);
-                if (result!=null) {
+                if (result != null) {
                     return result;
                 } else {
-                    result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                    result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                     return result;
                 }
             } else {
-                result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result;
             }
         }
