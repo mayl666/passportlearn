@@ -39,7 +39,7 @@
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-validator:4.3.0.Final" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.0.0.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.1.0.CR2" level="project" />
-    <orderEntry type="library" name="Maven: sogou-passport:passport-main-common:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="passport-main-common" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aspects:3.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjrt:1.6.11" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.6.11" level="project" />

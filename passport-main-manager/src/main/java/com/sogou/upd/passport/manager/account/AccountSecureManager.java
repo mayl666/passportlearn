@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.result.Result;
+
 /**
  * 账户安全相关
  * User: mayan
@@ -8,4 +10,11 @@ package com.sogou.upd.passport.manager.account;
  * To change this template use File | Settings | File Templates.
  */
 public interface AccountSecureManager {
+    /**
+     * 发送短信验证码
+     * @param mobile
+     * @param clientId
+     * @return
+     */
+    public Result sendMobileCode(String mobile,int clientId) ;
 }

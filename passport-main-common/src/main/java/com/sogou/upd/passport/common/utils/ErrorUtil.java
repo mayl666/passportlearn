@@ -67,6 +67,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS = "20217";
     //重置密码失败
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED = "20218";
+
 	//***************************account 服务的错误代码end*********************************
 
 

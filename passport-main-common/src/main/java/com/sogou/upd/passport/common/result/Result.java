@@ -48,26 +48,6 @@ public class Result {
         return data.put(DEFAULT_MODEL_KEY, obj);
     }
 
-    /**
-     * 取出整个map对象
-     *
-     * @return
-     */
-    public Map<String, Object> getData() {
-        return data;
-    }
-
-    /**
-     * 返回是否成功
-     *
-     * @return
-     */
-    public boolean isSuccess() {
-        if ("0".equals(status)) {
-            return true;
-        }
-        return false;
-    }
 
 
     public String getStatus() {
@@ -86,6 +66,21 @@ public class Result {
         this.statusText = statusText;
     }
 
+    /**
+     * 取出整个map对象
+     *
+     * @return
+     */
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+
+    public String toJson(Result result){
+        JSONObject jsonObject = JSONObject.fromObject(result);
+        return jsonObject.toString();
+    }
+
     public static void main(String[] args) {
         Result result1 = new Result();
 
@@ -98,7 +93,6 @@ public class Result {
 
 
         JSONObject jsonObject = JSONObject.fromObject(result1);
-
 
         System.out.println(jsonObject.toString());
     }
