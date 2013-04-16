@@ -324,6 +324,7 @@ public class AccountServiceImpl implements AccountService {
                 userIdResult = getUserIdByPassportId(passportId);
                 if (userIdResult != 0) {
                     redisUtils.setNx(cacheKey,userId);
+                    addPassportIdMapUserIdToCache(passportId,userId);
                 }
             } else {
                 userIdResult = Long.parseLong(userId);
@@ -332,6 +333,19 @@ public class AccountServiceImpl implements AccountService {
             logger.error("[SMS] service method getUserIdByPassportId error.{}", e);
         }
         return userIdResult;
+    }
+
+    @Override
+    public boolean addPassportIdMapUserIdToCache(String passportId,String userId) {
+        boolean flag = true;
+        try {
+            String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
+
+        } catch (Exception e) {
+            flag = false;
+            logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
+        }
+        return flag;
     }
 
     @Override
