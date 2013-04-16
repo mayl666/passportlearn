@@ -10,7 +10,6 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountService;
-import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -43,12 +42,12 @@ public class AccountRegManagerImpl implements AccountRegManager {
         //直接查询Account的mobile字段
         Account existAccount = accountService.getAccountByUserName(mobile);
         if (existAccount != null) {
-            return returnResult(ErrorUtil.ERR_CODE_ACCOUNT_REGED, null);
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smsCode, String.valueOf(clientId));
         if (!checkSmsInfo) {
-            return returnResult(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, null);
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
         }
         Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
         if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
@@ -65,12 +64,12 @@ public class AccountRegManagerImpl implements AccountRegManager {
                 mapResult.put("access_token", accessToken);
                 mapResult.put("expires_time", accessValidTime);
                 mapResult.put("refresh_token", refreshToken);
-                return returnResult("0", mapResult);
+                return Result.buildSuccess("注册成功！","mapResult",mapResult);
             } else {
-                return returnResult(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED, null);
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
         } else {
-            return returnResult(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED, null);
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
         }
     }
 
@@ -127,21 +126,4 @@ public class AccountRegManagerImpl implements AccountRegManager {
 //        }
 //    }
 
-
-    /**
-     * 公共方法提取，根据错误码返回result对象
-     *
-     * @param errorCode 错误码
-     * @param object    封装的数据
-     * @return 含错误码及相应的提示信息
-     */
-    private Result returnResult(String errorCode, Object object) {
-        Result result = new Result();
-        if (object != null) {
-            result.addDefaultModel("data", object);
-        }
-        result.setStatus(errorCode);
-        result.setStatusText(ErrorUtil.getERR_CODE_MSG(errorCode));
-        return result;
-    }
 }
