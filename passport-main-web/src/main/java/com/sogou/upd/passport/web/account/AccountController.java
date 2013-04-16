@@ -5,7 +5,9 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountAuthService;
@@ -42,6 +44,9 @@ public class AccountController extends BaseController {
     private AccountSecureManager accountSecureManager;
 
     @Inject
+    private AccountRegManager accountRegManager;
+
+    @Inject
     private AccountService accountService;
     @Inject
     private AccountAuthService accountAuthService;
@@ -68,7 +73,7 @@ public class AccountController extends BaseController {
         String mobile = reqParams.getMobile();
         int clientId = reqParams.getClient_id();
 
-        Result result=accountSecureManager.sendMobileCode(mobile,clientId);
+        Result result = accountSecureManager.sendMobileCode(mobile, clientId);
 
 
         return result;
@@ -92,49 +97,17 @@ public class AccountController extends BaseController {
             return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
 
-        String mobile = regParams.getMobile();
-        String smscode = regParams.getSmscode();
-        int clientId = regParams.getClient_id();
-        String password = regParams.getPassword();
-        String instanceId = regParams.getInstance_id();
+        RegisterParameters rp = new RegisterParameters();
+        rp.setClientId(regParams.getClient_id());
+        rp.setInstanceId(regParams.getInstance_id());
+        rp.setMobile(regParams.getMobile());
+        rp.setPassword(regParams.getPassword());
+        rp.setSmscode(regParams.getSmscode());
+        rp.setIp(getIp(request));
 
-        //直接查询Account的mobile字段,shipengzhi
-        Account existAccount = accountService.getAccountByUserName(mobile);
-        if (existAccount != null) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-        }
-        //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = accountService.checkSmsInfoFromCache(mobile, smscode, clientId + "");
-        if (!checkSmsInfo) {
-            // todo 这么多return看着好乱，service层抛出problemException，统一捕获
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-        }
+        Result result = accountRegManager.mobileRegister(rp);
 
-        String ip = getIp(request);
-        Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
-        if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
-            //生成token并向account_auth表里插一条用户状态记录
-            AccountAuth accountAuth = accountAuthService.initialAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
-            if (accountAuth != null) {   //如果用户授权信息表插入也成功，则说明注册成功
-                accountService.addPassportIdMapUserIdToCache(account.getPassportId(), Long.toString(account.getId()));
-                //清除验证码的缓存
-                accountService.deleteSmsCache(mobile, String.valueOf(clientId));
-                String accessToken = accountAuth.getAccessToken();
-                long accessValidTime = accountAuth.getAccessValidTime();
-                String refreshToken = accountAuth.getRefreshToken();
-                Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put("access_token", accessToken);
-                mapResult.put("expires_time", accessValidTime);
-                mapResult.put("refresh_token", refreshToken);
-                return buildSuccess("用户注册成功！", mapResult);
-            } else {
-                //用户注册失败
-                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-            }
-        } else {
-            //用户注册失败
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-        }
+        return result;
     }
 
     /**
