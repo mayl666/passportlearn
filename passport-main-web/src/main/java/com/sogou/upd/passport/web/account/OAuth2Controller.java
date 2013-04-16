@@ -56,7 +56,7 @@ public class OAuth2Controller {
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenRequest oauthRequest;
         OAuthResponse response;
-
+        String result=null;
         try {
             oauthRequest = new OAuthTokenRequest(request);
 
@@ -71,14 +71,14 @@ public class OAuth2Controller {
                 return response.getBody();
             }
             //todo 返回Result
-            String result=accountLoginManager.authorize(oauthRequest);
+            result=accountLoginManager.authorize(oauthRequest);
         } catch (Exception e) {
             logger.error("OAuth Authorize Fail:", e);
             response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                     .setError(ErrorUtil.ERR_CODE_COM_EXCEPTION).setErrorDescription("unknown error").buildJSONMessage();
             return response.getBody();
         }
-        return null;
+        return result;
     }
 
 }

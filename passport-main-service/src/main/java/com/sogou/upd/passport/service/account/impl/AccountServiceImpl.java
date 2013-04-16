@@ -56,79 +56,63 @@ public class AccountServiceImpl implements AccountService {
     private TaskExecutor taskExecutor;
     @Inject
     private StringRedisTemplate redisTemplate;
+    @Inject
+    private RedisUtils redisUtils;
 
     @Override
     public Result handleSendSms(final String mobile, final int clientId) {
-        final Map<String, Object> mapResult = Maps.newHashMap();
-        final Result result = new Result();
-        Object obj = null;
+        Result result = null;
         try {
-            obj = redisTemplate.execute(new RedisCallback() {
-                boolean isSend = true;
+            String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
 
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    //设置每日最多发送短信验证码条数
-                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
-                    byte[] keySendNum = RedisUtils.stringToByteArry("sendNum");
-                    if (!connection.exists(keySendNumCache)) {
-                        boolean flag = connection.hSetNX(keySendNumCache,
-                                keySendNum,
-                                RedisUtils.stringToByteArry("1"));
-                        if (flag) {
-                            connection.expire(keySendNumCache, SMSUtil.SMS_ONEDAY);
-                        }
+            if (!RedisUtils.checkKeyIsExist(cacheKey)) {
+                boolean flag = redisUtils.hPutIfAbsent(cacheKey, "sendNum", "1");
+                if (flag) {
+                    redisUtils.expire(cacheKey, SMSUtil.SMS_ONEDAY);
+                }
+            } else {
+                //如果存在，判断是否已经超出日发送最高限额   (比如30分钟后失效了，再次获取验证码 需要和此用户当天发送的总的条数对比)
+                Map<String, String> mapCacheSendNumResult = redisUtils.hGetAll(cacheKey);
+                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
+                    int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
+                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
+                        redisUtils.hIncrBy(cacheKey, "sendNum");
                     } else {
-                        //如果存在，判断是否已经超出日发送最高限额   (比如30分钟后失效了，再次获取验证码 需要和此用户当天发送的总的条数对比)
-                        Map<byte[], byte[]> mapCacheSendNumResult = connection.hGetAll(keySendNumCache);
-                        if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
-                            int sendNum = RedisUtils.byteArryToInteger(mapCacheSendNumResult.get(keySendNum));
-                            if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                                connection.hIncrBy(keySendNumCache, keySendNum, 1);
-                            } else {
-                                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS, "短信发送已达今天的最高上限"
-                                        + SMSUtil.MAX_SMS_COUNT_ONEDAY + "条");
-                            }
-                        }
-                    }
-                    //生成随机数
-                    String randomCode = RandomStringUtils.randomNumeric(5);
-                    //写入缓存
-                    String keyCache = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
-                    BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(keyCache);
-                    Map<String, String> mapData = Maps.newHashMap();
-                    mapData.put("smsCode", randomCode);    //初始化验证码
-                    mapData.put("mobile", mobile);        //发送手机号
-                    mapData.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
-                    boundHashOperations.putAll(mapData);
-
-                    //设置失效时间 30分钟  ，1800秒
-                    connection.expire(RedisUtils.stringToByteArry(keyCache), SMSUtil.SMS_VALID);
-                    //读取短信内容
-                    String smsText = getSmsText(clientId, randomCode);
-
-
-                    if (!Strings.isNullOrEmpty(smsText)) {
-                        isSend = SMSUtil.sendSMS(mobile, smsText);
-                        if (isSend) {
-                            result.addDefaultModel("smscode", randomCode);
-                            result.setStatus("0");
-                            result.setStatusText("获取验证码成功");
-                            return result;
-                        }
-                    } else {
-                        String error_code = ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND;
-                        result.setStatus(error_code);
-                        result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+                        result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
                         return result;
                     }
-                    return null;
                 }
-            });
+            }
+            //生成随机数
+            String randomCode = RandomStringUtils.randomNumeric(5);
+            //写入缓存
+            cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
+            //初始化缓存映射
+            Map<String, String> mapData = Maps.newHashMap();
+            mapData.put("smsCode", randomCode);    //初始化验证码
+            mapData.put("mobile", mobile);        //发送手机号
+            mapData.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
+
+            redisUtils.hPutAll(cacheKey, mapData);
+
+            //设置失效时间 30分钟  ，1800秒
+            redisUtils.expire(cacheKey, SMSUtil.SMS_VALID);
+
+            //读取短信内容
+            String smsText = getSmsText(clientId, randomCode);
+            boolean isSend = false;
+            if (!Strings.isNullOrEmpty(smsText)) {
+                isSend = SMSUtil.sendSMS(mobile, smsText);
+                if (isSend) {
+                    result = Result.buildSuccess("获取验证码成功", "smscode", randomCode);
+                    return result;
+                }
+            } else {
+                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                return result;
+            }
         } catch (Exception e) {
-            String error_code = ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND;
-            result.setStatus(error_code);
-            result.setStatusText(ErrorUtil.getERR_CODE_MSG(error_code));
+            result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND) ;
             logger.error("[SMS] service method handleSendSms error.{}", e);
         }
         return result;
@@ -192,29 +176,29 @@ public class AccountServiceImpl implements AccountService {
                                 boolean isSend = SMSUtil.sendSMS(mobile, smsText);
                                 if (isSend) {
                                     //30分钟之内返回原先验证码
-                                    result=Result.buildSuccess("获取验证码成功","smscode", smsCode) ;
+                                    result = Result.buildSuccess("获取验证码成功", "smscode", smsCode);
                                     return result;
                                 }
                             } else {
-                                result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND) ;
+                                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                                 return result;
                             }
                         } else {
-                            result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
+                            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
                             return result;
                         }
                     } else {
-                        result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
+                        result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
                         return result;
                     }
                 }
             } else {
-                result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 return result;
             }
 
         } catch (Exception e) {
-            result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
             logger.error("[SMS] service method updateSmsCacheInfoByKeyAndClientId error.{}", e);
         }
 
@@ -349,10 +333,7 @@ public class AccountServiceImpl implements AccountService {
         boolean flag = true;
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfAbsent(cacheKey, userId);
-
+            redisUtils.setNx(cacheKey,userId);
         } catch (Exception e) {
             flag = false;
             logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
@@ -362,22 +343,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean deleteSmsCache(final String mobile, final String clientId) {
-        Object obj = null;
+        boolean flag=true;
         try {
-            obj = redisTemplate.execute(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    byte[] keyCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId);
-                    byte[] keySendNumCache = RedisUtils.stringToByteArry(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
-                    connection.del(keyCache);
-                    connection.del(keySendNumCache);
-                    return true;
-                }
-            });
+            redisUtils.delete(CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId);
+            redisUtils.delete(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
         } catch (Exception e) {
+            flag=false;
             logger.error("[SMS] service method deleteSmsCache error.{}", e);
         }
-        return obj != null ? (Boolean) obj : false;
+        return flag;
     }
 
     @Override
