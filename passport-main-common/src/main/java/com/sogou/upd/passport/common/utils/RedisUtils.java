@@ -3,10 +3,15 @@ package com.sogou.upd.passport.common.utils;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import net.sf.json.util.JSONUtils;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Redis工具类
@@ -22,22 +27,32 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    public static void set(String key, String value) {
+    public void set(String key, String value) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(key, value);
     }
+
     /*
     * 设置缓存内容
     */
-    public static void set(String key, Object obj) {
+    public void set(String key, Object obj) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(key, new Gson().toJson(obj));
     }
 
     /*
+    * 设置缓存内容
+    * 冲突不覆盖
+    */
+    public boolean setNx(String cacheKey, Object obj) {
+        BoundValueOperations boundValueOperation = redisTemplate.boundValueOps(cacheKey);
+        return boundValueOperation.setIfAbsent(obj);
+    }
+
+    /*
    * 根据key取缓存内容
    */
-    public static String get(String key) {
+    public String get(String key) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(key);
     }
@@ -51,6 +66,40 @@ public class RedisUtils {
             return true;
         }
         return false;
+    }
+
+    /*
+   * 获取hash中所有的映射关系
+   */
+    public Map<String, String> hGetAll(String cacheKey) {
+        BoundHashOperations boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+        return boundHashOperations.entries();
+    }
+
+    /*
+  * 设置hash映射关系
+  */
+    public void hPutAll(String cacheKey, Map<String, String> mapData) {
+        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+        boundHashOperations.putAll(mapData);
+    }
+
+    public boolean hPutIfAbsent(String cacheKey,String key,String value){
+        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+        return boundHashOperations.putIfAbsent(key,value);
+    }
+
+    public void hIncrBy(String cacheKey,String key){
+        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+        boundHashOperations.increment(key, 1);
+    }
+
+    public void expire(String cacheKey,long timeout){
+        redisTemplate.expire(cacheKey, timeout, TimeUnit.SECONDS);
+    }
+
+    public void delete(String cacheKey){
+        redisTemplate.delete(cacheKey);
     }
 
     /*
