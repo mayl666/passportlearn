@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
-import com.sogou.upd.passport.model.account.Account;
 
 /**
  * 注册管理
@@ -28,7 +27,7 @@ public interface AccountRegManager {
      * @param clientId 客户端ID
      * @return Result格式的返回值，成功则发送验证码；失败，提示失败信息
      */
-//    public Result findPassword(String mobile, int clientId);
+    public Result findPassword(String mobile, int clientId);
 
     /**
      * 手机用户重置密码
@@ -36,6 +35,6 @@ public interface AccountRegManager {
      * @param regParams
      * @return Result格式的返回值, 成功或失败，返回提示信息
      */
-//    public Result resetPassword(RegisterParameters regParams) throws Exception;
+    public Result resetPassword(RegisterParameters regParams) throws Exception;
 
 }
