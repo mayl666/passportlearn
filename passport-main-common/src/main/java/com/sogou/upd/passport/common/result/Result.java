@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.common.result;
 
-import java.util.Collection;
+import net.sf.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Service返回值对象
@@ -13,145 +13,94 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class Result {
-    /**
-     * 是否成功
-     */
-    private boolean success;
 
     /**
      * service返回的对象
      */
-    private Map<String,Object> result = new HashMap<String,Object>();
+    private Map<String, Object> data = new HashMap<String, Object>();
 
-    /**
-     * 默认的key
-     */
+    private String status;
+    private String statusText;
+
     public static final String DEFAULT_MODEL_KEY = "value";
 
-    /**
-     * 当前的key
-     */
-    private String modelKey =DEFAULT_MODEL_KEY;
-
-    /**
-     * 返回码
-     */
-    private String resultCode;
-    private String[] resultCodeParams;
-
-    /**
-     * 带是否成功的构造方法
-     * @param success
-     */
-    public Result(boolean success) {
-        this.success = success;
-    }
-
-    /**
-     * 默认构造方法
-     */
     public Result() {
     }
 
     /**
+     * 新增一个带key的返回结果
+     *
+     * @param key
+     * @param obj
+     * @return
+     */
+    public Object addDefaultModel(String key, Object obj) {
+        return data.put(key, obj);
+    }
+
+    /**
      * 新增一个返回结果
+     *
      * @param obj
      * @return
      */
     public Object addDefaultModel(Object obj) {
-        return result.put(DEFAULT_MODEL_KEY,obj);
-    }
-
-    /**
-     * 新增一个带key的返回结果
-     * @param key
-     * @param obj
-     * @return
-     */
-    public Object addDefaultModel(String key,Object obj) {
-        modelKey=key;
-        return result.put(key,obj);
-    }
-
-    /**
-     * 取出所有的key
-     * @return
-     */
-    public Set<String> keySet() {
-        return result.keySet();
+        return data.put(DEFAULT_MODEL_KEY, obj);
     }
 
     /**
      * 取出整个map对象
+     *
      * @return
      */
-    public Map<String,Object> getMap() {
-        return result;
-    }
-    /**
-     * 取出默认的值
-     * @return
-     */
-    public Object get() {
-        return result.get(modelKey);
-    }
-
-    /**
-     * 取出值
-     * @param key
-     * @return
-     */
-    public Object get(String key) {
-        return result.get(key);
-    }
-
-    /**
-     * 取出值集合
-     * @return
-     */
-    public Collection values() {
-        return result.values();
+    public Map<String, Object> getData() {
+        return data;
     }
 
     /**
      * 返回是否成功
+     *
      * @return
      */
-    public boolean getSuccess() {
-        return success;
-    }
-
     public boolean isSuccess() {
-        return success;
+        if ("0".equals(status)) {
+            return true;
+        }
+        return false;
     }
 
-    /**
-     * 设置返回是否成功
-     * @param success
-     */
-    public void setSuccess(boolean success) {
-        this.success = success;
+
+    public String getStatus() {
+        return status;
     }
 
-    public String getResultCode() {
-        return resultCode;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public void setResultCode(String resultCode) {
-        this.resultCode = resultCode;
+    public String getStatusText() {
+        return statusText;
     }
 
-    public void setResultCode(String resultCode, String... args) {
-        this.resultCode = resultCode;
-        this.resultCodeParams=args;
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
     }
 
-    public String[] getResultCodeParams() {
-        return resultCodeParams;
-    }
+    public static void main(String[] args) {
+        Result result1 = new Result();
 
-    public void setResultCodeParams(String[] resultCodeParams) {
-        this.resultCodeParams = resultCodeParams;
+//        result1.addDefaultModel("smscode","65652") ;
+        result1.setStatus("1000");
+        result1.setStatusText("获取注册验证码成功");
+
+
+//        result1.addDefaultModel();
+
+
+        JSONObject jsonObject = JSONObject.fromObject(result1);
+
+
+        System.out.println(jsonObject.toString());
     }
 
 }
