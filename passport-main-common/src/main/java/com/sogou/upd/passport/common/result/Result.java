@@ -48,14 +48,7 @@ public class Result {
         return data.put(DEFAULT_MODEL_KEY, obj);
     }
 
-    /**
-     * 取出整个map对象
-     *
-     * @return
-     */
-    public Map<String, Object> getData() {
-        return data;
-    }
+
 
     public String getStatus() {
         return status;
@@ -72,6 +65,16 @@ public class Result {
     public void setStatusText(String statusText) {
         this.statusText = statusText;
     }
+
+    /**
+     * 取出整个map对象
+     *
+     * @return
+     */
+    public Map<String, Object> getData() {
+        return data;
+    }
+
 
     public String toJson(Result result){
         JSONObject jsonObject = JSONObject.fromObject(result);

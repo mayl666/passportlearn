@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.exception.SystemException;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.Account;
 
 import java.util.Map;
@@ -35,7 +36,7 @@ public interface AccountService {
      * @param cacheKey
      * @return
      */
-    public Map<String, Object> updateSmsInfoByCacheKeyAndClientid(String cacheKey, int clientId);
+    public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, int clientId);
 
     /**
      * 手机验证码的获取与重发
@@ -43,7 +44,7 @@ public interface AccountService {
      * @param account
      * @return
      */
-    public Map<String, Object> handleSendSms(String account, int clientId);
+    public Result handleSendSms(String account, int clientId);
 
     /**
      * 初始化非第三方用户账号

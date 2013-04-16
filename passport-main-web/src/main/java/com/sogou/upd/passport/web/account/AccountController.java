@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.model.account.Account;
@@ -67,28 +68,11 @@ public class AccountController extends BaseController {
         String mobile = reqParams.getMobile();
         int clientId = reqParams.getClient_id();
 
-        //判断账号是否被缓存
-        String cacheKey = mobile + "_" + clientId;
-        boolean isExistFromCache = accountService.checkCacheKeyIsExist(cacheKey);
-        Map<String, Object> mapResult;
-        if (isExistFromCache) {
-            //更新缓存状态
-            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, clientId);
-            return mapResult;
-        } else {
-            Account account = accountService.getAccountByUserName(mobile);
-            if (account == null) {
-                //未注册过
-                mapResult = accountService.handleSendSms(mobile, clientId);
-                if (MapUtils.isNotEmpty(mapResult)) {
-                    return mapResult;
-                } else {
-                    return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                }
-            } else {
-                return ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-            }
-        }
+        Result result=accountSecureManager.sendMobileCode(mobile,clientId);
+
+
+        return result;
+
     }
 
     /**
@@ -183,13 +167,17 @@ public class AccountController extends BaseController {
         Map<String, Object> mapResult;
         if (isExistFromCache) {
             //更新缓存状态
-            mapResult = accountService.updateSmsInfoByCacheKeyAndClientid(cacheKey, clientId);
-            return mapResult;
+            //todo
+//            mapResult = accountService.updateSmsCacheInfoByKeyAndClientId(cacheKey, clientId);
+//            return mapResult;
+            return null;
         } else {
-            mapResult = accountService.handleSendSms(mobile, clientId);
+            //todo
+//            mapResult = accountService.handleSendSms(mobile, clientId);
         }
-
-        return MapUtils.isNotEmpty(mapResult) ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+        //todo
+//        return MapUtils.isNotEmpty(mapResult) ? mapResult : ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+        return null;
     }
 
     /**
