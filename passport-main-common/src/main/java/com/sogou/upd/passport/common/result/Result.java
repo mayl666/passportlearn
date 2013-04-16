@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.common.result;
 
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.T;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.MapUtils;
-import org.springframework.core.env.MapPropertySource;
 
 import java.util.HashMap;
 import java.util.Map;
