@@ -80,21 +80,4 @@ public class Result {
         JSONObject jsonObject = JSONObject.fromObject(result);
         return jsonObject.toString();
     }
-
-    public static void main(String[] args) {
-        Result result1 = new Result();
-
-//        result1.addDefaultModel("smscode","65652") ;
-        result1.setStatus("1000");
-        result1.setStatusText("获取注册验证码成功");
-
-
-//        result1.addDefaultModel();
-
-
-        JSONObject jsonObject = JSONObject.fromObject(result1);
-
-        System.out.println(jsonObject.toString());
-    }
-
 }

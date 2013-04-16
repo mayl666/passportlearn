@@ -17,14 +17,30 @@ public class RedisUtils {
 
     private static RedisTemplate redisTemplate;
 
+    /*
+    * 设置缓存内容
+    */
     public static void set(String key, String value) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(key,value);
+        valueOperations.set(key, value);
     }
 
+    /*
+   * 根据key取缓存内容
+   */
     public static String get(String key) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(key);
+    }
+
+    /*
+   * 判断key是否存在
+   */
+    public static boolean checkKeyIsExist(String key) {
+        if (redisTemplate.hasKey(key)) {
+            return true;
+        }
+        return false;
     }
 
     /*
