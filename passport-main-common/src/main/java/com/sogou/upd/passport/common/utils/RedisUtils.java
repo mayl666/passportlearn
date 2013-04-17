@@ -83,6 +83,10 @@ public class RedisUtils {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
         boundHashOperations.putAll(mapData);
     }
+    public void hPut(String cacheKey, String key,String value) {
+        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+        boundHashOperations.put(key,value);
+    }
 
     public boolean hPutIfAbsent(String cacheKey,String key,String value){
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);

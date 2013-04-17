@@ -146,30 +146,26 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, final int clientId) {
         Result result = null;
-        try {
+        try{
             cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
-            BoundHashOperations hashOperations = redisTemplate.boundHashOps(cacheKey);
-
-            Map<String, String> mapCacheResult = hashOperations.entries();
-
-            if (MapUtils.isNotEmpty(mapCacheResult)) {
+            Map<String, String> mapCacheResult=redisUtils.hGetAll(cacheKey);
+            if(MapUtils.isNotEmpty(mapCacheResult)){
                 //获取缓存数据
                 long sendTime = Long.parseLong(mapCacheResult.get("sendTime"));
                 String smsCode = mapCacheResult.get("smsCode");
                 String mobile = mapCacheResult.get("mobile");
                 //获取当天发送次数
                 String cacheKeySendNum = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
-                BoundHashOperations keySendNumCacheOperations = redisTemplate.boundHashOps(cacheKeySendNum);
 
-                Map<String, String> mapCacheSendNumResult = keySendNumCacheOperations.entries();
-                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
+                Map<String, String> mapCacheSendNumResult=redisUtils.hGetAll(cacheKeySendNum);
+                if(MapUtils.isNotEmpty(mapCacheSendNumResult)){
                     int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
                     long curtime = System.currentTimeMillis();
                     boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
                     if (valid) {
                         if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                            keySendNumCacheOperations.increment("sendNum", 1);
-                            hashOperations.put("sendTime", String.valueOf(System.currentTimeMillis()));
+                            redisUtils.hIncrBy(cacheKeySendNum,"sendNum");
+                            redisUtils.hPut(cacheKey,"sendTime",String.valueOf(curtime));
                             //读取短信内容
                             String smsText = getSmsText(clientId, smsCode);
                             if (!Strings.isNullOrEmpty(smsText)) {
@@ -192,16 +188,14 @@ public class AccountServiceImpl implements AccountService {
                         return result;
                     }
                 }
-            } else {
+            }else {
                 result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 return result;
             }
-
-        } catch (Exception e) {
+        }catch (Exception e){
             result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
             logger.error("[SMS] service method updateSmsCacheInfoByKeyAndClientId error.{}", e);
         }
-
         return result;
     }
 
