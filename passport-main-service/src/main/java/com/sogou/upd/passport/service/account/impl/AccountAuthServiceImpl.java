@@ -179,8 +179,8 @@ public class AccountAuthServiceImpl implements AccountAuthService {
         AppConfig appConfig = appConfigService.getAppConfigByClientId(clientId);
         AccountAuth accountAuth = new AccountAuth();
         if (appConfig != null) {
-            int accessTokenExpiresIn = appConfig.getAccessTokenExpiresIn();
-            int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresIn();
+            int accessTokenExpiresIn = appConfig.getAccessTokenExpiresin();
+            int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresin();
 
             String accessToken;
             String refreshToken;

@@ -14,8 +14,8 @@ public class AppConfig {
     private long id;
     private int clientId;
     public String smsText;
-    private int accessTokenExpiresIn;
-    private int refreshTokenExpiresIn;
+    private int accessTokenExpiresin;
+    private int refreshTokenExpiresin;
     private String serverSecret;
     private String clientSecret;
     private Date createTime;
@@ -45,20 +45,20 @@ public class AppConfig {
         this.smsText = smsText;
     }
 
-    public int getAccessTokenExpiresIn() {
-        return accessTokenExpiresIn;
+    public int getAccessTokenExpiresin() {
+        return accessTokenExpiresin;
     }
 
-    public void setAccessTokenExpiresIn(int accessTokenExpiresIn) {
-        this.accessTokenExpiresIn = accessTokenExpiresIn;
+    public void setAccessTokenExpiresin(int accessTokenExpiresin) {
+        this.accessTokenExpiresin = accessTokenExpiresin;
     }
 
-    public int getRefreshTokenExpiresIn() {
-        return refreshTokenExpiresIn;
+    public int getRefreshTokenExpiresin() {
+        return refreshTokenExpiresin;
     }
 
-    public void setRefreshTokenExpiresIn(int refreshTokenExpiresIn) {
-        this.refreshTokenExpiresIn = refreshTokenExpiresIn;
+    public void setRefreshTokenExpiresin(int refreshTokenExpiresin) {
+        this.refreshTokenExpiresin = refreshTokenExpiresin;
     }
 
     public String getServerSecret() {

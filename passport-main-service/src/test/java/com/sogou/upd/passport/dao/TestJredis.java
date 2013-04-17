@@ -185,10 +185,10 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //                @Override
 //                public Object doInRedis(RedisConnection connection) throws DataAccessException {
 //                    AppConfig appConfig=new AppConfig();
-//                    appConfig.setAccessTokenExpiresIn(21212);
+//                    appConfig.setAccessTokenExpiresin(21212);
 //                    appConfig.setClientId(1003);
 //                    appConfig.setClientSecret("4343");
-//                    appConfig.setRefreshTokenExpiresIn(565645);
+//                    appConfig.setRefreshTokenExpiresin(565645);
 //
 //                    connection.set(RedisUtils.stringToByteArry("1003"),
 //                            RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
@@ -283,8 +283,8 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
         AppConfig appConfig = new AppConfig();
         appConfig.setClientId(1001);
         appConfig.setSmsText("您的“T3”验证码为：%s，30分钟内有效哦");
-        appConfig.setAccessTokenExpiresIn(604800);
-        appConfig.setRefreshTokenExpiresIn(15552000);
+        appConfig.setAccessTokenExpiresin(604800);
+        appConfig.setRefreshTokenExpiresin(15552000);
         appConfig.setClientSecret("1001136453922995472gMLyjj7u");
         appConfig.setServerSecret("1001136453922993981IaBLDFL3");
         appConfig.setUpdateTime(new Date());
