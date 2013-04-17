@@ -46,6 +46,7 @@
     <select id="findBindConnectByQuery" resultMap="accountConnectMap"
             parameterType="accountConnectQuery">
         <![CDATA[
+
         select
         id,user_id,client_id,account_relation,account_type,connect_uid,connect_access_token,
         connect_expires_in,connect_refresh_token,update_time,create_time
@@ -53,6 +54,7 @@
         account_connect
         where
         (user_id=#{userId} and account_type=#{accountType} and client_id=#{clientId}) or (connect_uid=#{connectUid} and account_type=#{accountType} and client_id=#{clientId})
+
         ]]>
     </select>
 
@@ -69,5 +71,7 @@
         user_id=#{userId} and connect_uid=#{connectUid} and
         account_type=#{accountType} and client_id=#{clientId}
     </update>
+
+    <!--todo 根据userId获取Uid-->
 
 </mapper>

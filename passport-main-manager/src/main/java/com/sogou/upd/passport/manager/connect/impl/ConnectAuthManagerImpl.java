@@ -236,6 +236,18 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
         }
     }
 
+    @Override
+    public Result getUidByPassportId(String passportId) {
+        String uid = null;
+        if (passportId != null) {
+            long id = accountService.getUserIdByPassportId(passportId);
+            if (id != 0) {
+                uid = accountConnectService.getUidByUserId(id);
+            }
+        }
+        return uid == null ? Result.buildError("查询失败") : Result.buildSuccess("查询成功", "uid", uid);
+    }
+
     /**
      * 创建一个第三方账户对象
      *
