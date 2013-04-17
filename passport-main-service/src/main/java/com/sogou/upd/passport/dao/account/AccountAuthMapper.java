@@ -11,7 +11,6 @@ package com.sogou.upd.passport.dao.account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户状态表的接口mapper文件

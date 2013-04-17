@@ -7,31 +7,23 @@ import java.util.List;
 
 public interface AccountConnectMapper {
 
-    /**
-     * 插入一条新记录
-     * @param accountConnect
-     * @return
-     */
-	public int insertAccountConnect(AccountConnect accountConnect);
+  /**
+   * 插入一条新记录
+   */
+  public int insertAccountConnect(AccountConnect accountConnect);
 
-    /**
-     * 根据query查询AccountConnect
-     * @param query
-     * @return
-     */
-	public List<AccountConnect> getAccountConnectByQuery(AccountConnectQuery query);
+  /**
+   * 根据query查询AccountConnect
+   */
+  public List<AccountConnect> getAccountConnectByQuery(AccountConnectQuery query);
 
-    /**
-     * 查询主账号的绑定列表和副账号是否已经注册或绑定过
-     * @param query
-     * @return
-     */
-    public List<AccountConnect> findBindConnectByQuery(AccountConnectQuery query);
+  /**
+   * 查询主账号的绑定列表和副账号是否已经注册或绑定过
+   */
+  public List<AccountConnect> findBindConnectByQuery(AccountConnectQuery query);
 
-    /**
-     * 更新AccountConnect
-     * @param accountConnect
-     * @return
-     */
-	public int updateAccountConnect(AccountConnect accountConnect);
+  /**
+   * 更新AccountConnect
+   */
+  public int updateAccountConnect(AccountConnect accountConnect);
 }
