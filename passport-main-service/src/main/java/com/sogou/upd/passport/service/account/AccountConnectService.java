@@ -16,6 +16,7 @@ public interface AccountConnectService {
 
     /**
      * 根据query查询AccountConnect对象
+     *
      * @param query
      * @return
      */
@@ -23,6 +24,7 @@ public interface AccountConnectService {
 
     /**
      * 初始化第三方用户信息
+     *
      * @param accountConnect
      * @return
      */
@@ -30,10 +32,20 @@ public interface AccountConnectService {
 
     /**
      * 更新第三方用户信息
+     *
      * @param accountConnect
      * @return
      */
     public boolean updateAccountConnect(AccountConnect accountConnect);
+
+
+    /**
+     * 根据userId查询Uid
+     *
+     * @param userId
+     * @return
+     */
+    public String getUidByUserId(long userId);
 
 
 }

@@ -34,4 +34,13 @@ public interface ConnectAuthManager {
      * @throws SystemException
      */
     public Result connectAuthLogin(OAuthSinaSSOTokenRequest oauthRequest, ConnectParams connectParams) throws SystemException;
+
+
+    /**
+     * 根据passportId获取Uid
+     *
+     * @param passportId
+     * @return
+     */
+    public Result getUidByPassportId(String passportId);
 }
