@@ -165,7 +165,7 @@ public class AccountServiceImpl implements AccountService {
                     if (valid) {
                         if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
                             redisUtils.hIncrBy(cacheKeySendNum,"sendNum");
-                            redisUtils.hPut(cacheKey,"sendTime",String.valueOf(System.currentTimeMillis()));
+                            redisUtils.hPut(cacheKey,"sendTime",String.valueOf(curtime));
                             //读取短信内容
                             String smsText = getSmsText(clientId, smsCode);
                             if (!Strings.isNullOrEmpty(smsText)) {
