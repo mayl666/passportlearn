@@ -99,14 +99,6 @@ public interface AccountService {
     public boolean addPassportIdMapUserIdToCache(String passportId, String userId);
 
     /**
-     * 根据PassportId 获取UserId或者mobile （缓存读取）
-     *
-     * @param passportId
-     * @return
-     */
-    public long getUserIdByPassportIdFromCache(String passportId);
-
-    /**
      * 根据主键ID获取passportId
      *
      * @param passportId
