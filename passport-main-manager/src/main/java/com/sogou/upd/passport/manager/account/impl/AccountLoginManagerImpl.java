@@ -14,11 +14,12 @@ import com.sogou.upd.passport.oauth2.common.types.GrantType;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -31,9 +32,9 @@ import javax.servlet.http.HttpServletResponse;
 public class AccountLoginManagerImpl implements AccountLoginManager {
     private static final Logger logger = LoggerFactory.getLogger(AccountLoginManagerImpl.class);
 
-    @Inject
+    @Autowired
     private AccountService accountService;
-    @Inject
+    @Autowired
     private AccountAuthService accountAuthService;
     @Override
     public String authorize(OAuthTokenRequest oauthRequest) throws SystemException {

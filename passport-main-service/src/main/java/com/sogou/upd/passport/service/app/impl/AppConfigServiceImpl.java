@@ -5,11 +5,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.dao.app.AppConfigMapper;
+import com.sogou.upd.passport.dao.app.AppConfigDAO;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -26,10 +27,10 @@ import java.lang.reflect.Type;
 public class AppConfigServiceImpl implements AppConfigService {
 
     private Logger logger = LoggerFactory.getLogger(AppConfigService.class);
-    private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG;     //clientid与appConfig映射
+    private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG; //clientid与appConfig映射
 
-    @Inject
-    private AppConfigMapper appConfigMapper;
+    @Autowired
+    private AppConfigDAO appConfigDAO;
     @Inject
     private RedisUtils redisUtils;
 
@@ -64,7 +65,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             }
             if (appConfig == null) {
                 //读取数据库
-                appConfig = appConfigMapper.getAppConfigByClientId(clientId);
+                appConfig = appConfigDAO.getAppConfigByClientId(clientId);
                 if (appConfig != null) {
                     addClientIdMapAppConfigToCache(clientId, appConfig);
                 }

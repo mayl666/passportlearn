@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao;
+package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.AccountAuth;
 
@@ -18,19 +18,19 @@ public interface AccountAuthDAO {
   /**
    * 根据refresh_token获取AccountAuth信息 todo 可以和getUserAuthByUserId()合并，缓存怎么存？分表怎么查？
    */
-  @SQL("select * from account_auth where refresh_token=(:refresh_token)")
+  @SQL("select * from account_auth where refresh_token=:refresh_token")
   public AccountAuth getAccountAuthByRefreshToken(@SQLParam("refresh_token") String refresh_token);
 
   /**
    * 根据access_token获取AccountAuth信息 todo 可以和getUserAuthByUserId()合并，缓存怎么存？分表怎么查？
    */
-  @SQL("select * from account_auth where access_token=(:access_token)")
+  @SQL("select * from account_auth where access_token=:access_token")
   public AccountAuth getAccountAuthByAccessToken(@SQLParam("access_token") String access_token);
 
   /**
    * 根据userid删除AccountAuth信息，内部调试接口使用
    */
-  @SQL("delete from account_auth where user_id=(:user_id)")
+  @SQL("delete from account_auth where user_id=:user_id")
   public int deleteAccountAuthByUserId(@SQLParam("user_id") long user_id);
 
   /**
@@ -38,8 +38,8 @@ public interface AccountAuthDAO {
    */
   @SQL(
       "insert into account_auth(user_id,access_token,refresh_token,access_valid_time,refresh_valid_time,"
-      + "client_id,instance_id) values ((:a.userId),(:a.accessToken),(:a.refreshToken),(:a.accessValidTime),"
-      + "(:a.refreshValidTime),(:a.clientId),(:a.instanceId))")
+      + "client_id,instance_id) values (:a.userId,:a.accessToken,:a.refreshToken,:a.accessValidTime,"
+      + ":a.refreshValidTime,:a.clientId,:a.instanceId)")
   public int insertAccountAuth(@SQLParam("a") AccountAuth accountAuth);
 
   /**
@@ -60,13 +60,13 @@ public interface AccountAuthDAO {
        + "#if(:a.refreshToken != null){refresh_token=:a.refreshToken,}"
        + "#if(:a.accessValidTime != 0){access_valid_time=:a.accessValidTime,}"
        + "#if(:a.refreshValidTime != 0){refresh_valid_time=:a.refreshValidTime} "
-       + "where user_id=(:a.userId) and client_id=(:a.clientId) and instance_id=(:a.instanceId)")
+       + "where user_id=:a.userId and client_id=:a.clientId and instance_id=:a.instanceId")
   public int updateAccountAuth(@SQLParam("a") AccountAuth accountAuth);
 
   /**
    * 根据userId查询所有记录，返回list集合
    */
-  @SQL("select * from account_auth  where user_id=(:user_id) and client_id=(:client_id)")
+  @SQL("select * from account_auth  where user_id=:user_id and client_id=:client_id")
   public List<AccountAuth> getAccountAuthListById(@SQLParam("user_id") long user_id,
                                                   @SQLParam("client_id") int client_id);
 
@@ -77,7 +77,7 @@ public interface AccountAuthDAO {
        + "#if(:a.refreshToken != null){refresh_token=:a.refreshToken,}"
        + "#if(:a.accessValidTime != 0){access_valid_time=:a.accessValidTime,}"
        + "#if(:a.refreshValidTime != 0){refresh_valid_time=:a.refreshValidTime} "
-       + "where user_id=(:a.userId) and client_id=(:a.clientId) and instance_id=(:a.instanceId)")
+       + "where user_id=:a.userId and client_id=:a.clientId and instance_id=:a.instanceId")
   public int[] batchUpdateAccountAuth(@SQLParam("a") List<AccountAuth> list);
 
 }

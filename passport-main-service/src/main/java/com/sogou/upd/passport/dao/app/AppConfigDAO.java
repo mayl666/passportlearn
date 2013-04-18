@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao;
+package com.sogou.upd.passport.dao.app;
 
 import com.sogou.upd.passport.model.app.AppConfig;
 
@@ -16,7 +16,7 @@ public interface AppConfigDAO {
   /**
    * 根据clientId获取AppConfig对象
    */
-  @SQL("select * from app_config where client_id=(:client_id)")
+  @SQL("select * from app_config where client_id=:client_id")
   public AppConfig getAppConfigByClientId(@SQLParam("client_id") int client_id);
 
 }

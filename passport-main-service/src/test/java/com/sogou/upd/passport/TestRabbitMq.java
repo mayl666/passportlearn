@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao;
+package com.sogou.upd.passport;
 
 import org.junit.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

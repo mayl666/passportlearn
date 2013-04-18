@@ -1,18 +1,19 @@
 package com.sogou.upd.passport.dao.account;
 
-import com.sogou.upd.passport.dao.AccountAuthDAO;
+import com.sogou.upd.passport.dao.account.AccountAuthDAO;
 import com.sogou.upd.passport.model.account.AccountAuth;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-17 Time: 下午4:32 To change this template
@@ -22,7 +23,7 @@ import java.util.List;
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountAuthDAOTest {
 
-  @Autowired
+  @Inject
   private AccountAuthDAO accountAuthDAO;
 
   private static final long USER_Id = 80;
@@ -56,6 +57,9 @@ public class AccountAuthDAOTest {
     Assert.assertTrue(aa != null);
   }
 
+  /**
+   * 测试单条记录删除和插入
+   */
   @Test
   public void testDelete_Insert() {
     int row1 = accountAuthDAO.deleteAccountAuthByUserId(USER_Id);
@@ -74,6 +78,9 @@ public class AccountAuthDAOTest {
     Assert.assertEquals(row, 1);
   }
 
+  /**
+   * 测试单条记录更新
+   */
   @Test
   public void testUpdateAccountAuth() {
     AccountAuth aa = newAccountAuth();

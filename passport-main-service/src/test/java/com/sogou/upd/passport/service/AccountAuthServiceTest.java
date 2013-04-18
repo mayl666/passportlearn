@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao.account.service;
+package com.sogou.upd.passport.service;
 
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
