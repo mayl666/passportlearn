@@ -48,9 +48,9 @@ public class TestSendEmail extends AbstractJUnit4SpringContextTests {
             // String[] array = new String[] {"sun111@163.com","sun222@sohu.com"};
             // mailMessage.setTo(array);
             mailMessage.setTo("34310327@qq.com");
-            mailMessage.setFrom("userName@163.com");
-            mailMessage.setSubject(" 测试简单文本邮件发送！ ");
-            mailMessage.setText(" 测试我的简单邮件发送机制！！ ");
+            mailMessage.setFrom("testpassport22@163.com");
+            mailMessage.setSubject("你好 ");
+            mailMessage.setText("你好");
 
             senderImpl.setUsername("testpassport22@163.com"); // 根据自己的情况,设置username
             senderImpl.setPassword("qwaszx1"); // 根据自己的情况, 设置password

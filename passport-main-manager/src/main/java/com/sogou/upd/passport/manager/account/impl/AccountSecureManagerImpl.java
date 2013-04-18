@@ -18,7 +18,7 @@ import javax.inject.Inject;
  * Time: 下午4:31
  * To change this template use File | Settings | File Templates.
  */
-@Component
+@Component(value = "accountSecureManager")
 public class AccountSecureManagerImpl implements AccountSecureManager {
 
     @Inject

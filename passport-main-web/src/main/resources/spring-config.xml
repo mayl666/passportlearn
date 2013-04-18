@@ -38,6 +38,8 @@
     <import resource="classpath:spring-config-service.xml"/>
     <import resource="classpath:spring-config-jredis.xml"/>
 
+    <import resource="spring-config-mail.xml"/>
+
     <!-- 导入dubbo配置文件 -->
     <!--<import resource="classpath:dubbo/spring-dubbo-*.xml"/>-->
 

@@ -238,6 +238,8 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
 
     @Override
     public Result getUidByPassportId(String passportId) {
+
+        //todo 缓存
         String uid = null;
         if (passportId != null) {
             long id = accountService.getUserIdByPassportId(passportId);
