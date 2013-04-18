@@ -36,4 +36,6 @@
     <import resource="classpath:spring-config-service.xml" />
     <import resource="classpath:spring-config-jredis.xml"/>
 
+    <import resource="spring-config-mail.xml"/>
+
     </beans>
