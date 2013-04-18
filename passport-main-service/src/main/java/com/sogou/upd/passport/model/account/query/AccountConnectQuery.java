@@ -13,6 +13,8 @@ public class AccountConnectQuery {
     private int accountType;
     private long userId;
 
+    public AccountConnectQuery(){}
+
     public AccountConnectQuery(String connectUid, int accountType) {
         this.connectUid = connectUid;
         this.accountType = accountType;

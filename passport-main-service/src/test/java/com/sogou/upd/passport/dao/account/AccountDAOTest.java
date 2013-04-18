@@ -15,6 +15,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 
+import javax.inject.Inject;
+
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-17 Time: 下午4:32 To change this template
  * use File | Settings | File Templates.
@@ -23,9 +25,12 @@ import java.util.Date;
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountDAOTest {
 
-  @Autowired
+  @Inject
   private AccountDAO accountDAO;
 
+  /**
+   * 测试单条记录查询
+   */
   @Test
   public void testGetAccountByPassportId() {
     String passportId = "13621009174@sohu.com";
@@ -33,7 +38,7 @@ public class AccountDAOTest {
     Assert.assertTrue(account != null);
   }
 
-      /**
+  /**
    * 测试根据手机号码获取Account
    */
   @Test
@@ -66,7 +71,7 @@ public class AccountDAOTest {
   }
 
   @Test
-  public void testDeleteAccount(){
+  public void testDeleteAccount() {
     int row = accountDAO.deleteAccountByPassportId("13621009174@sohu.com");
     Assert.assertTrue(row == 1);
   }
