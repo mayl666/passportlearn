@@ -6,9 +6,15 @@ import com.sogou.upd.passport.dao.account.AccountMapper;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import junit.framework.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -20,14 +26,17 @@ import java.util.Date;
  * Time: 上午11:22
  * To change this template use File | Settings | File Templates.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@TransactionConfiguration(transactionManager = "txManager", defaultRollback = true)
+@Transactional
 @ContextConfiguration(locations = {"classpath:spring-config-test.xml"})
-public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
+public class AccountMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Inject
     private AccountMapper accountMapper;
 
-    private static final String MOBILE = "13937153065";
-    private static final String PASSWORD = "fanya";
+    private static final String MOBILE = "13671940927";
+    private static final String PASSWORD = "fanlixiao";
     private static final String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
     private static final int PROVIDER = AccountTypeEnum.PHONE.getValue();
@@ -39,6 +48,8 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
      * 测试保存用户
      */
     @Test
+    @Transactional
+    @Rollback(true)
     public void testSaveAccount() throws SystemException {
         Account account = new Account();
         account.setMobile(MOBILE);
@@ -50,7 +61,7 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
         account.setStatus(STATUS);
         account.setVersion(VERSION);
         int row = accountMapper.saveAccount(account);
-        System.out.println(row);
+        Assert.assertTrue(row == 1);
     }
 
     /**
@@ -59,11 +70,7 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAccountByPassportId() {
         Account account = accountMapper.getAccountByPassportId(PASSPORT_ID);
-        if (account != null) {
-            System.out.println("获取成功...");
-        } else {
-            System.out.println("获取失败!!!");
-        }
+        Assert.assertNotNull(account);
     }
 
     /**
@@ -72,11 +79,7 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAccountByMobile() {
         Account account = accountMapper.getAccountByMobile(MOBILE);
-        if (account != null) {
-            System.out.println("获取成功...");
-        } else {
-            System.out.println("获取失败!!!");
-        }
+        Assert.assertNotNull(account);
     }
 
     /**
@@ -85,11 +88,7 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAccountByUserId() {
         Account account = accountMapper.getAccountByUserId(USER_ID);
-        if (account != null) {
-            System.out.println("获取成功...");
-        } else {
-            System.out.println("获取失败!!!");
-        }
+        Assert.assertNotNull(account);
     }
 
     /**
@@ -98,11 +97,7 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetPassportIdByUserId() {
         String passportId = accountMapper.getPassportIdByUserId(USER_ID);
-        if (passportId != null) {
-            System.out.println("获取成功--->" + passportId);
-        } else {
-            System.out.println("获取失败!!!");
-        }
+        Assert.assertNotNull(passportId);
     }
 
     /**
@@ -111,16 +106,13 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetUserIdByPassportId() {
         long userId = accountMapper.getUserIdByPassportId(PASSPORT_ID);
-        if (userId != 0) {
-            System.out.println("获取成功--->" + userId);
-        } else {
-            System.out.println("获取失败!!!");
-        }
+        Assert.assertTrue(userId != 0);
     }
 
     /**
      * 测试修改用户
      */
+    @Rollback(true)
     @Test
     public void testUpdateAccount() throws SystemException {
         Account account = new Account();
@@ -134,6 +126,6 @@ public class AccountMapperTest extends AbstractJUnit4SpringContextTests {
         account.setStatus(STATUS);
         account.setVersion(VERSION);
         int row = accountMapper.updateAccount(account);
-        System.out.println(row);
+        Assert.assertTrue(row == 1);
     }
 }

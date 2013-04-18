@@ -78,6 +78,14 @@
             </exclusions>
         </dependency>
 
+        <!-- java mail -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${javamail.version}</version>
+        </dependency>
+
+
         <!-- Rabbit Mq-->
         <dependency>
             <groupId>com.rabbitmq</groupId>

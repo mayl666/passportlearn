@@ -2,22 +2,25 @@ package com.sogou.upd.passport.dao.account.mapper;
 
 import com.sogou.upd.passport.dao.account.AccountAuthMapper;
 import com.sogou.upd.passport.model.account.AccountAuth;
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import javax.inject.Inject;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
- * User: shipengzhi
- * Date: 13-3-30
+ * User: shipengzhi                              AbstractTransactionalJUnit4SpringContextTests
+ * Date: 13-3-30                             AbstractJUnit4SpringContextTests
  * Time: 下午6:26
  * To change this template use File | Settings | File Templates.
  */
 @ContextConfiguration(locations = {"classpath:spring-config-test.xml"})
-public class AccountAuthMapperTest extends AbstractJUnit4SpringContextTests {
+public class AccountAuthMapperTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Inject
     private AccountAuthMapper accountAuthMapper;
@@ -45,7 +48,7 @@ public class AccountAuthMapperTest extends AbstractJUnit4SpringContextTests {
         aa.setAccessValidTime(Long.parseLong(ACCESS_VALID_TIME));
         aa.setRefreshValidTime(Long.parseLong(REFRESH_VALID_TIME));
         int row = accountAuthMapper.insertAccountAuth(aa);
-        System.out.println(row);
+        Assert.assertTrue(row == 1);
     }
 
     /**
@@ -63,7 +66,7 @@ public class AccountAuthMapperTest extends AbstractJUnit4SpringContextTests {
         aa.setAccessValidTime(Long.parseLong(ACCESS_VALID_TIME));
         aa.setRefreshValidTime(Long.parseLong(REFRESH_VALID_TIME));
         int row = accountAuthMapper.saveAccountAuth(aa);
-        System.out.println(row);
+        Assert.assertTrue(row == 1);
     }
 
     /**
@@ -72,11 +75,7 @@ public class AccountAuthMapperTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAccountAuthByRefreshToken() {
         AccountAuth aa = accountAuthMapper.getAccountAuthByRefreshToken(REFRESH_TOKEN);
-        if (aa != null) {
-            System.out.println(aa.getId());
-        } else {
-            System.out.println("获取失败!!!");
-        }
+        Assert.assertNotNull(aa);
     }
 
     /**
@@ -85,11 +84,7 @@ public class AccountAuthMapperTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAccountAuthByAccessToken() {
         AccountAuth aa = accountAuthMapper.getAccountAuthByAccessToken(ACCESS_TOKEN);
-        if (aa != null) {
-            System.out.println(aa.getId());
-        } else {
-            System.out.println("获取失败!!!");
-        }
+        Assert.assertNotNull(aa);
     }
 
     /**
@@ -102,11 +97,7 @@ public class AccountAuthMapperTest extends AbstractJUnit4SpringContextTests {
         aa.setClientId(CLIENT_ID);
         aa.setInstanceId(INSTANCE_ID);
         List<AccountAuth> list = accountAuthMapper.batchFindAccountAuthByUserId(aa);
-        if (list != null && list.size() > 0) {
-            System.out.println(list.size());
-        } else {
-            System.out.println("没有记录!!!");
-        }
+        Assert.assertTrue(list != null && list.size() > 0);
     }
 
     /**
