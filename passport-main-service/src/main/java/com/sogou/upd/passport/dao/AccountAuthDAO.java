@@ -3,7 +3,6 @@ package com.sogou.upd.passport.dao;
 import com.sogou.upd.passport.model.account.AccountAuth;
 
 import net.paoding.rose.jade.annotation.DAO;
-import net.paoding.rose.jade.annotation.ReturnGeneratedKeys;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 
@@ -51,30 +50,34 @@ public interface AccountAuthDAO {
        + "instance_id) values (:a.userId,:a.accessToken,:a.refreshToken,:a.accessValidTime,:a.refreshValidTime,"
        + ":a.clientId,:a.instanceId) "
        + "ON DUPLICATE KEY UPDATE "
-       + "#if(:a.accessToken != null){access_token=:a.accessToken,}"
-       + "#if(:a.refreshToken != null){refresh_token=:a.refreshToken,}"
-       + "#if(:a.accessValidTime != null){access_valid_time=:a.accessValidTime,}"
-       + "#if(:a.refreshValidTime != null){refresh_valid_time=:a.refreshValidTime}")
+       + "access_token=:a.accessToken,refresh_token=:a.refreshToken,access_valid_time=:a.accessValidTime,refresh_valid_time=:a.refreshValidTime")
   public int saveAccountAuth(@SQLParam("a") AccountAuth accountAuth);
 
   /**
    * 更新用户状态表
    */
-  @SQL("update account_auth set #if(:a.access_token != null){access_token=:a.accessToken},"
-       + "#if(:a.refresh_token != null){refresh_token=:a.refreshToken},"
-       + "#if(:a.access_valid_time != null){access_valid_time=:a.accessValidTime},"
-       + "#if(:a.refresh_valid_time != null){refresh_valid_time=:a.refreshValidTime}"
-       + "where user_id=(:a.user_id) and client_id=(:a.client_id) and instance_id=(:a.instanceId)")
+  @SQL("update account_auth set #if(:a.accessToken != null){access_token=:a.accessToken,}"
+       + "#if(:a.refreshToken != null){refresh_token=:a.refreshToken,}"
+       + "#if(:a.accessValidTime != 0){access_valid_time=:a.accessValidTime,}"
+       + "#if(:a.refreshValidTime != 0){refresh_valid_time=:a.refreshValidTime} "
+       + "where user_id=(:a.userId) and client_id=(:a.clientId) and instance_id=(:a.instanceId)")
   public int updateAccountAuth(@SQLParam("a") AccountAuth accountAuth);
 
   /**
    * 根据userId查询所有记录，返回list集合
    */
-  public List<AccountAuth> batchFindAccountAuthByUserId(AccountAuth accountAuth);
+  @SQL("select * from account_auth  where user_id=(:user_id) and client_id=(:client_id)")
+  public List<AccountAuth> getAccountAuthListById(@SQLParam("user_id") long user_id,
+                                                  @SQLParam("client_id") int client_id);
 
   /**
    * 批量更新某用户对应的状态记录
    */
-  public void batchUpdateAccountAuth(List<AccountAuth> list);
+  @SQL("update account_auth set #if(:a.accessToken != null){access_token=:a.accessToken,}"
+       + "#if(:a.refreshToken != null){refresh_token=:a.refreshToken,}"
+       + "#if(:a.accessValidTime != 0){access_valid_time=:a.accessValidTime,}"
+       + "#if(:a.refreshValidTime != 0){refresh_valid_time=:a.refreshValidTime} "
+       + "where user_id=(:a.userId) and client_id=(:a.clientId) and instance_id=(:a.instanceId)")
+  public int[] batchUpdateAccountAuth(@SQLParam("a") List<AccountAuth> list);
 
 }

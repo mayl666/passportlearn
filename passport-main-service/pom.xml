@@ -70,6 +70,12 @@
             <groupId>com.54chen</groupId>
             <artifactId>bmwutils</artifactId>
             <version>0.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Rabbit Mq-->
