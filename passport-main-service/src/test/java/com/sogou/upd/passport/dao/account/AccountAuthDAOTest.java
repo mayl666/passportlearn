@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.dao.account;
 
-import com.sogou.upd.passport.dao.AccountAuthDAO;
+import com.sogou.upd.passport.dao.account.AccountAuthDAO;
 import com.sogou.upd.passport.model.account.AccountAuth;
 
 import junit.framework.Assert;

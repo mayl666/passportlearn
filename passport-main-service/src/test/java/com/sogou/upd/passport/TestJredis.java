@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao;
+package com.sogou.upd.passport;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;

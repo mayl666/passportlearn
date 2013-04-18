@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.common.exception.SystemException;
-import com.sogou.upd.passport.dao.AccountDAO;
+import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 

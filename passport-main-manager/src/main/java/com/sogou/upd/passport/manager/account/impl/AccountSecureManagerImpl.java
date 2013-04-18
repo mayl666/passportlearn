@@ -8,9 +8,9 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountService;
-import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * User: mayan
@@ -21,10 +21,9 @@ import javax.inject.Inject;
 @Component
 public class AccountSecureManagerImpl implements AccountSecureManager {
 
-    @Inject
+    @Autowired
     private AccountService accountService;
-
-    @Inject
+    @Autowired
     private AccountAuthService accountAuthService;
 
     @Override

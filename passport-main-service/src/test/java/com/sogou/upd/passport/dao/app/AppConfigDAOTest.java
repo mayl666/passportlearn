@@ -1,6 +1,5 @@
-package com.sogou.upd.passport.dao.account;
+package com.sogou.upd.passport.dao.app;
 
-import com.sogou.upd.passport.dao.AppConfigDAO;
 import com.sogou.upd.passport.model.app.AppConfig;
 
 import junit.framework.Assert;

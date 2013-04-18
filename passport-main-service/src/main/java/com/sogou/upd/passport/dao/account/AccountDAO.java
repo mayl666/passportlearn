@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao;
+package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.Account;
 

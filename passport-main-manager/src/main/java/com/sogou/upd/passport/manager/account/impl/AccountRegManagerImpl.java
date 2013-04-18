@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -10,9 +11,10 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.service.account.AccountAuthService;
 import com.sogou.upd.passport.service.account.AccountService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Map;
 
 /**
@@ -24,10 +26,9 @@ import java.util.Map;
 @Component
 public class AccountRegManagerImpl implements AccountRegManager {
 
-    @Inject
+    @Autowired
     private AccountService accountService;
-
-    @Inject
+    @Autowired
     private AccountAuthService accountAuthService;
 
     @Override

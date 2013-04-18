@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -11,26 +12,24 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
-import com.sogou.upd.passport.dao.account.AccountAuthMapper;
-import com.sogou.upd.passport.dao.account.AccountMapper;
+import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.Map;
 
@@ -46,17 +45,13 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE;   //account与smscode映射
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = CacheConstant.CACHE_PREFIX_MOBILE_SENDNUM;
     private static final String CACHE_PREFIX_PASSPORTID = CacheConstant.CACHE_PREFIX_PASSPORTID_USERID;     //passport_id与userID映射
-    @Inject
-    private AccountMapper accountMapper;
-    @Inject
-    private AccountAuthMapper accountAuthMapper;
-    @Inject
+    @Autowired
+    private AccountDAO accountDAO;
+    @Autowired
     private AppConfigService appConfigService;
-    @Inject
-    private TaskExecutor taskExecutor;
-    @Inject
+    @Autowired
     private StringRedisTemplate redisTemplate;
-    @Inject
+    @Autowired
     private RedisUtils redisUtils;
 
     @Override
@@ -243,7 +238,7 @@ public class AccountServiceImpl implements AccountService {
             mobile = username;
         }
         account.setMobile(mobile);
-        long id = accountMapper.saveAccount(account);
+        long id = accountDAO.insertAccount(account);
         if (id != 0) {
             return account;
         }
@@ -278,16 +273,16 @@ public class AccountServiceImpl implements AccountService {
         // TODO 加缓存,两个方法可以合并，采用动态查询sql,但合并的话缓存写起来不太方便
         Account account;
         if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            account = accountMapper.getAccountByMobile(username);
+            account = accountDAO.getAccountByMobile(username);
         } else {
-            account = accountMapper.getAccountByPassportId(username);
+            account = accountDAO.getAccountByPassportId(username);
         }
         return account;
     }
 
     @Override
     public Account verifyAccountVaild(long userId) {
-        Account account = accountMapper.getAccountByUserId(userId);
+        Account account = accountDAO.getAccountByUserId(userId);
         if (account.isNormalAccount()) {
             return account;
         }
@@ -323,7 +318,13 @@ public class AccountServiceImpl implements AccountService {
         return userIdResult;
     }
 
-    @Override
+  @Override
+  public int deleteAccountByPassportId(String passport_id) {
+    int row = accountDAO.deleteAccountByPassportId(passport_id);
+    return row;
+  }
+
+  @Override
     public boolean addPassportIdMapUserIdToCache(String passportId, String userId) {
         boolean flag = true;
         try {
@@ -351,14 +352,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account resetPassword(String mobile, String password) throws SystemException {
-        Account account = accountMapper.getAccountByMobile(mobile);
+        Account account = accountDAO.getAccountByMobile(mobile);
         int row = 0;
         if (account != null) {
             Account accountResult = new Account();
             accountResult.setMobile(mobile);
             accountResult.setPasswd(PwdGenerator.generatorPwdSign(password));
             accountResult.setId(account.getId());
-            row = accountMapper.updateAccount(accountResult);
+            row = accountDAO.updateAccount(accountResult);
         }
         return row == 0 ? null : account;
     }

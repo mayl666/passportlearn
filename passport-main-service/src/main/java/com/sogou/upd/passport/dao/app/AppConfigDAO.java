@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao;
+package com.sogou.upd.passport.dao.app;
 
 import com.sogou.upd.passport.model.app.AppConfig;
 

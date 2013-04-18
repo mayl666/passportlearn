@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.dao.account;
 
-import com.sogou.upd.passport.dao.AccountConnectDAO;
+import com.sogou.upd.passport.dao.account.AccountConnectDAO;
 import com.sogou.upd.passport.model.account.AccountConnect;
 import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
 
