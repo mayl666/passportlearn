@@ -21,4 +21,6 @@
             <value>${passport.mail.pwd}</value>
         </property>
     </bean>
+
+    <bean id="mailUtil"
 </beans>
