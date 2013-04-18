@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
- * User: shipengzhi
+ * User: shipengzhi                              AbstractTransactionalJUnit4SpringContextTests
  * Date: 13-3-30                             AbstractJUnit4SpringContextTests
  * Time: 下午6:26
  * To change this template use File | Settings | File Templates.

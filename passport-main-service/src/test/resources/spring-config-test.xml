@@ -40,4 +40,4 @@
 
     <import resource="spring-config-mail.xml"/>
 
-    </beans></beans>
+    </beans>
