@@ -18,6 +18,7 @@ import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,16 +41,10 @@ public class OAuth2Controller {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2Controller.class);
 
-    @Inject
+    @Autowired
     private AccountLoginManager accountLoginManager;
-    @Inject
+    @Autowired
     private AppConfigManager appConfigManager;
-
-    @Inject
-    private AppConfigService appConfigService;
-
-    @Inject
-    private AccountAuthService accountAuthService;
 
     @RequestMapping(value = "/token", method = RequestMethod.POST)
     @ResponseBody

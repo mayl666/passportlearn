@@ -37,6 +37,4 @@
         </property>
     </bean>
 
-    <bean class="net.paoding.rose.jade.context.spring.JadeBeanFactoryPostProcessor"/>
-
 </beans>
