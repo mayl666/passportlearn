@@ -237,7 +237,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
     }
 
     @Override
-    public Result getUidByPassportId(String passportId) {
+    public Result getOpenIdByPassportId(String passportId,int clientId,int accountType) {
 
         //todo 缓存
         String uid = null;
