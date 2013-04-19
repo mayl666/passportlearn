@@ -49,8 +49,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountDAO accountDAO;
     @Autowired
     private AppConfigService appConfigService;
-    @Autowired
-    private StringRedisTemplate redisTemplate;
+
     @Autowired
     private RedisUtils redisUtils;
 
@@ -301,7 +300,7 @@ public class AccountServiceImpl implements AccountService {
         long userIdResult = 0;
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-            String userId = getFromCache(cacheKey);
+            String userId = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(userId)) {
                 //读取数据库
                 userIdResult = getUserIdByPassportId(passportId);
@@ -363,20 +362,4 @@ public class AccountServiceImpl implements AccountService {
         }
         return row == 0 ? null : account;
     }
-
-
-    /*
-     * 根据key从缓存中获取value
-     */
-    public String getFromCache(final String key) throws Exception {
-        String valResult = null;
-        try {
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valResult = valueOperations.get(key);
-        } catch (Exception e) {
-            logger.error("[SMS] service method getFromCache error.{}", e);
-        }
-        return valResult;
-    }
-
 }
