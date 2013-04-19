@@ -115,6 +115,9 @@ public class ErrorUtil {
 	public static final String CONNECT_USER_DEFINED_ERROR = "30011";
 	// 没有第三方关联帐号，请关联
 	public static final String CONNECT_ASSOCIATE_NOT_EXIST = "30012";
+  //第三方openid获取失败,没有此用户
+  public static final String ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR = "30013";
+
 	//***************************通用的错误代码end*********************************
 
 	//***************************Friend 服务的错误代码start************************
@@ -205,6 +208,7 @@ public class ErrorUtil {
 		ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
 		ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
 		ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_NOT_EXIST, "第三方关联帐号不存在，请先关联");
+    ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败,没有此用户");
 
 		// info
 		ERR_CODE_MSG_MAP.put(PIC_URL_NOT_NULL, "图片url不能为空");
