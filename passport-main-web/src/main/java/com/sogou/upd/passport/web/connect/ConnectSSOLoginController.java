@@ -6,6 +6,8 @@ import com.sogou.upd.passport.manager.connect.ConnectAuthManager;
 import com.sogou.upd.passport.manager.connect.params.ConnectParams;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/v2/connect")
 public class ConnectSSOLoginController extends BaseConnectController {
 
-    @Inject
+    @Autowired
     private ConnectAuthManager connectAuthManager;
 
     @RequestMapping(value = "/ssologin/sina", method = RequestMethod.POST)

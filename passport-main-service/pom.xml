@@ -49,25 +49,21 @@
             <artifactId>spring-jdbc</artifactId>
             <version>${springframework.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.54chen</groupId>-->
-            <!--<artifactId>paoding-rose-jade</artifactId>-->
-            <!--<version>1.1</version>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework</groupId>-->
-                    <!--<artifactId>spring</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
+        <!--<dependency>
+            <groupId>com.54chen</groupId>
+            <artifactId>paoding-rose-jade</artifactId>
+            <version>1.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>-->
+
         <dependency>
             <groupId>com.sogou.passport</groupId>
             <artifactId>rose-jade</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sogou.passport</groupId>
-            <artifactId>rose-context</artifactId>
             <version>1.2</version>
         </dependency>
         <dependency>
