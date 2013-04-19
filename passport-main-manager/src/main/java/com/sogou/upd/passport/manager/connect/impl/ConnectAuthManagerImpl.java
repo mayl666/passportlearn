@@ -250,7 +250,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
                     new AccountConnectQuery(userId, accountType, clientId));
             }
         }
-        return Strings.isNullOrEmpty(uid) ? Result.buildError(ErrorUtil.ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR) : Result.buildSuccess("查询成功", "uid", uid);
+        return Strings.isNullOrEmpty(uid) ? Result.buildError(ErrorUtil.ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR) : Result.buildSuccess("查询成功", "openid", uid);
     }
 
     /**

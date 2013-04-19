@@ -1,13 +1,14 @@
 package com.sogou.upd.passport.web.form;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * 获取第三方id参数校验 User: 马研 Date: 13-4-19 Time: 下午3:32 To change this template use File | Settings |
  * File Templates.
  */
 public class ConnectObtainParams {
-  @Min(value = 1, message = "passport_id不允许为空!")
+  @NotNull(message = "passport_id不允许为空!")
   String passport_id;
   @Min(value = 1, message = "client_id不允许为空!")
   int client_id;
