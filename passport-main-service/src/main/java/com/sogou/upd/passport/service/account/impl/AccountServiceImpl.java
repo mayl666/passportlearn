@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
     private RedisUtils redisUtils;
 
     @Override
-    public Result handleSendSms(final String mobile, final int clientId) {
+    public Result handleSendSms(String mobile,int clientId) {
         Result result = null;
         try {
             String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
@@ -138,7 +138,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, final int clientId) {
+    public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey,int clientId) {
         Result result = null;
         try{
             cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
