@@ -89,6 +89,16 @@
             <artifactId>mail</artifactId>
             <version>${javamail.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sohu</groupId>
+            <artifactId>sendcloud</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
+        </dependency>
 
 
         <!-- Rabbit Mq-->

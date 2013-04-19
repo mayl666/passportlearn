@@ -22,5 +22,4 @@
         </property>
     </bean>
 
-    <bean id="mailUtil"
 </beans>
