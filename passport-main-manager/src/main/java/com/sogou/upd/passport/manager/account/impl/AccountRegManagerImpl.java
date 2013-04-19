@@ -14,7 +14,6 @@ import com.sogou.upd.passport.service.account.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Map;
 
 /**
