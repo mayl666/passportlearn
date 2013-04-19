@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.CommonParameters;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.connect.ConnectAuthManager;
 import com.sogou.upd.passport.manager.connect.params.ConnectParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -239,15 +242,15 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
     @Override
     public Result getOpenIdByPassportId(String passportId,int clientId,int accountType) {
 
-        //todo 缓存
         String uid = null;
-        if (passportId != null) {
-            long id = accountService.getUserIdByPassportId(passportId);
-            if (id != 0) {
-                uid = accountConnectService.getUidByUserId(id);
+        if (!Strings.isNullOrEmpty(passportId)) {
+            long userId = accountService.getUserIdByPassportId(passportId);
+            if (userId != 0) {
+                uid = accountConnectService.getOpenIdByQuery(
+                    new AccountConnectQuery(userId, accountType, clientId));
             }
         }
-        return uid == null ? Result.buildError("查询失败") : Result.buildSuccess("查询成功", "uid", uid);
+        return Strings.isNullOrEmpty(uid) ? Result.buildError(ErrorUtil.ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR) : Result.buildSuccess("查询成功", "uid", uid);
     }
 
     /**

@@ -1,64 +1,69 @@
 package com.sogou.upd.passport.model.account.query;
 
 /**
- * Created with IntelliJ IDEA.
- * User: shipengzhi
- * Date: 13-3-24
- * Time: 下午4:57
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: shipengzhi Date: 13-3-24 Time: 下午4:57 To change this template
+ * use File | Settings | File Templates.
  */
 public class AccountConnectQuery {
-    private String connectUid;
-    private int clientId;
-    private int accountType;
-    private long userId;
 
-    public AccountConnectQuery(){}
+  private String connectUid;
+  private int clientId;
+  private int accountType;
+  private long userId;
 
-    public AccountConnectQuery(String connectUid, int accountType) {
-        this.connectUid = connectUid;
-        this.accountType = accountType;
-    }
+  public AccountConnectQuery() {
+  }
 
-    public AccountConnectQuery(String connectUid, int accountType, int clientId) {
-        this(connectUid, accountType);
-        this.clientId = clientId;
-    }
+  public AccountConnectQuery(String connectUid, int accountType) {
+    this.connectUid = connectUid;
+    this.accountType = accountType;
+  }
 
-    public AccountConnectQuery(String connectUid, int accountType, int clientId, long userId) {
-        this(connectUid, accountType,clientId);
-        this.userId = userId;
-    }
+  public AccountConnectQuery(String connectUid, int accountType, int clientId) {
+    this(connectUid, accountType);
+    this.clientId = clientId;
+  }
 
-    public String getConnectUid() {
-        return connectUid;
-    }
+  public AccountConnectQuery(String connectUid, int accountType, int clientId, long userId) {
+    this(connectUid, accountType, clientId);
+    this.userId = userId;
+  }
 
-    public void setConnectUid(String connectUid) {
-        this.connectUid = connectUid;
-    }
+  public AccountConnectQuery(long userId,int accountType, int clientId) {
+    this.clientId = clientId;
+    this.accountType = accountType;
+    this.userId = userId;
+  }
 
-    public int getClientId() {
-        return clientId;
-    }
+  public String getConnectUid() {
+    return connectUid;
+  }
 
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
-    }
+  public void setConnectUid(String connectUid) {
+    this.connectUid = connectUid;
+  }
 
-    public int getAccountType() {
-        return accountType;
-    }
+  public int getClientId() {
+    return clientId;
+  }
 
-    public void setAccountType(int accountType) {
-        this.accountType = accountType;
-    }
+  public void setClientId(int clientId) {
+    this.clientId = clientId;
+  }
 
-    public long getUserId() {
-        return userId;
-    }
+  public int getAccountType() {
+    return accountType;
+  }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
+  public void setAccountType(int accountType) {
+    this.accountType = accountType;
+  }
+
+  public long getUserId() {
+    return userId;
+  }
+
+  public void setUserId(long userId) {
+    this.userId = userId;
+  }
 }

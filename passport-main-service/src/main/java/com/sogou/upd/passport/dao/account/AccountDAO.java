@@ -54,4 +54,10 @@ public interface AccountDAO {
       + ":a.accountType)")
   public int insertAccount(@SQLParam("a") Account account);
 
+  /**
+   * 根据passportId获取userId
+   */
+  @SQL("select id from account where passport_id=:passport_id")
+  public long getUserIdByPassportId(@SQLParam("passport_id") String passport_id) ;
+
 }

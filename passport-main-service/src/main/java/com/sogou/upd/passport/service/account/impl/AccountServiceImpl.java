@@ -244,6 +244,19 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+  @Override
+  public boolean addPassportIdMapUserIdToCache(String passportId, String userId) {
+    boolean flag = true;
+    try {
+      String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
+      redisUtils.set(cacheKey,userId);
+    } catch (Exception e) {
+      flag = false;
+      logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
+    }
+    return flag;
+  }
+
     @Override
     public Account initialConnectAccount(String connectUid, String ip, int provider) throws SystemException {
         return initialAccount(connectUid, null, ip, provider);
@@ -303,10 +316,9 @@ public class AccountServiceImpl implements AccountService {
             String userId = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(userId)) {
                 //读取数据库
-                userIdResult = getUserIdByPassportId(passportId);
+                userIdResult = accountDAO.getUserIdByPassportId(passportId);
                 if (userIdResult != 0) {
-                    redisUtils.setNx(cacheKey, userId);
-                    addPassportIdMapUserIdToCache(passportId, userId);
+                    redisUtils.set(cacheKey, Long.toString(userIdResult));
                 }
             } else {
                 userIdResult = Long.parseLong(userId);
@@ -322,19 +334,6 @@ public class AccountServiceImpl implements AccountService {
     int row = accountDAO.deleteAccountByPassportId(passport_id);
     return row;
   }
-
-  @Override
-    public boolean addPassportIdMapUserIdToCache(String passportId, String userId) {
-        boolean flag = true;
-        try {
-            String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-
-        } catch (Exception e) {
-            flag = false;
-            logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
-        }
-        return flag;
-    }
 
     @Override
     public boolean deleteSmsCache(String mobile, String clientId) {
