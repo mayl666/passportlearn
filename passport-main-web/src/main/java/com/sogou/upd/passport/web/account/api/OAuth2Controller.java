@@ -1,20 +1,13 @@
-package com.sogou.upd.passport.web.account;
+package com.sogou.upd.passport.web.account.api;
 
-import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.app.AppConfigManager;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountAuth;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthASResponse;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.OAuthResponse;
-import com.sogou.upd.passport.oauth2.common.types.GrantType;
 import com.sogou.upd.passport.service.account.AccountAuthService;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

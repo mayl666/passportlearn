@@ -42,5 +42,5 @@ public interface ConnectAuthManager {
      * @param passportId
      * @return
      */
-    public Result getUidByPassportId(String passportId);
+    public Result getOpenIdByPassportId(String passportId,int clientId,int accountType);
 }

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * Time: 下午4:31
  * To change this template use File | Settings | File Templates.
  */
-@Component
+@Component(value = "accountSecureManager")
 public class AccountSecureManagerImpl implements AccountSecureManager {
 
     @Autowired

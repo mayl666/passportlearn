@@ -12,4 +12,5 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_MOBILE_SENDNUM = "PASSPORT:MOBILE_SENDNUM_";  // mobile与发送条数映射
     public static final String CACHE_PREFIX_PASSPORTID_USERID = "PASSPORT:PASSPORTID_USERID_"; //passportid与userId映射
     public static final String CACHE_PREFIX_CLIENTID_APPCONFIG = "PASSPORT:CLIENTID_APPCONFIG_";     //clientid与appConfig映射
+    public static final String CACHE_PREFIX_USERID_OPENID = "PASSPORT:USERID_OPENID_";     //第三方openId与userID映射
 }

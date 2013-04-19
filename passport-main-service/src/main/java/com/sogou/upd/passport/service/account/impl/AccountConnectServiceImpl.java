@@ -1,5 +1,9 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
+
+import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountConnectDAO;
 import com.sogou.upd.passport.model.account.AccountConnect;
 import com.sogou.upd.passport.model.account.query.AccountConnectQuery;
@@ -17,8 +21,18 @@ import java.util.List;
 @Service
 public class AccountConnectServiceImpl implements AccountConnectService {
 
+
   @Autowired
   private AccountConnectDAO accountConnectDAO;
+  @Autowired
+  private RedisUtils redisUtils;
+
+  private static final
+  String
+      CACHE_PREFIX_USERID_OPENID =
+      CacheConstant.CACHE_PREFIX_USERID_OPENID;
+      //account与smscode映射
+
 
   @Override
   public List<AccountConnect> listAccountConnectByQuery(AccountConnectQuery query) {
@@ -38,11 +52,17 @@ public class AccountConnectServiceImpl implements AccountConnectService {
   }
 
   @Override
-  public String getUidByUserId(long userId) {
-    String Uid = null;
-    if (userId != 0) {
-      Uid = accountConnectDAO.getUidByUserId(userId);
+  public String getOpenIdByQuery(AccountConnectQuery accountConnectQuery) {
+
+    String cacheKey = CACHE_PREFIX_USERID_OPENID + accountConnectQuery.getUserId();
+    String openId = redisUtils.get(cacheKey);
+    if (Strings.isNullOrEmpty(openId)) {
+      //读取数据库
+      openId = accountConnectDAO.getOpenIdByQuery(accountConnectQuery);
+      if (!Strings.isNullOrEmpty(openId)) {
+        redisUtils.set(cacheKey, openId);
+      }
     }
-    return Uid == null ? null : Uid;
+    return openId;
   }
 }

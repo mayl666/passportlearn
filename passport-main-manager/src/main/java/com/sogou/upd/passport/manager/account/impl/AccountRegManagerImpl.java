@@ -54,7 +54,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
             //生成token并向account_auth表里插一条用户状态记录
             AccountAuth accountAuth = accountAuthService.initialAccountAuth(account.getId(), account.getPassportId(), clientId, instanceId);
             if (accountAuth != null) {   //如果用户授权信息表插入也成功，则说明注册成功
-                accountService.addPassportIdMapUserIdToCache(account.getPassportId(), Long.toString(account.getId()));
+              accountService.addPassportIdMapUserIdToCache(account.getPassportId(), Long.toString(account.getId()));
                 //清除验证码的缓存
                 accountService.deleteSmsCache(mobile, String.valueOf(clientId));
                 String accessToken = accountAuth.getAccessToken();

@@ -1,7 +1,6 @@
 package com.sogou.upd.passport;
 
 import org.junit.Test;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
@@ -18,17 +17,17 @@ import javax.inject.Inject;
 
 public class TestRabbitMq extends AbstractJUnit4SpringContextTests {
 
-    @Inject
-    RabbitTemplate rabbitTemplate;
-
-    @Test
-    public void testProducer() {
-        rabbitTemplate.convertAndSend("test test3");
-    }
-
-    @Test
-    public void testConsumer() {
-        System.out.println("Received: " + rabbitTemplate.receiveAndConvert());
-    }
+//    @Inject
+//    RabbitTemplate rabbitTemplate;
+//
+//    @Test
+//    public void testProducer() {
+//        rabbitTemplate.convertAndSend("test test3");
+//    }
+//
+//    @Test
+//    public void testConsumer() {
+//        System.out.println("Received: " + rabbitTemplate.receiveAndConvert());
+//    }
 
 }

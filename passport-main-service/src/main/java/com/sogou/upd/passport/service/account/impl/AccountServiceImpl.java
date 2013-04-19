@@ -49,13 +49,12 @@ public class AccountServiceImpl implements AccountService {
     private AccountDAO accountDAO;
     @Autowired
     private AppConfigService appConfigService;
-    @Autowired
-    private StringRedisTemplate redisTemplate;
+
     @Autowired
     private RedisUtils redisUtils;
 
     @Override
-    public Result handleSendSms(final String mobile, final int clientId) {
+    public Result handleSendSms(String mobile,int clientId) {
         Result result = null;
         try {
             String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
@@ -139,7 +138,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, final int clientId) {
+    public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey,int clientId) {
         Result result = null;
         try{
             cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
@@ -245,6 +244,19 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+  @Override
+  public boolean addPassportIdMapUserIdToCache(String passportId, String userId) {
+    boolean flag = true;
+    try {
+      String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
+      redisUtils.set(cacheKey,userId);
+    } catch (Exception e) {
+      flag = false;
+      logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
+    }
+    return flag;
+  }
+
     @Override
     public Account initialConnectAccount(String connectUid, String ip, int provider) throws SystemException {
         return initialAccount(connectUid, null, ip, provider);
@@ -301,13 +313,12 @@ public class AccountServiceImpl implements AccountService {
         long userIdResult = 0;
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-            String userId = getFromCache(cacheKey);
+            String userId = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(userId)) {
                 //读取数据库
-                userIdResult = getUserIdByPassportId(passportId);
+                userIdResult = accountDAO.getUserIdByPassportId(passportId);
                 if (userIdResult != 0) {
-                    redisUtils.setNx(cacheKey, userId);
-                    addPassportIdMapUserIdToCache(passportId, userId);
+                    redisUtils.set(cacheKey, Long.toString(userIdResult));
                 }
             } else {
                 userIdResult = Long.parseLong(userId);
@@ -323,19 +334,6 @@ public class AccountServiceImpl implements AccountService {
     int row = accountDAO.deleteAccountByPassportId(passport_id);
     return row;
   }
-
-  @Override
-    public boolean addPassportIdMapUserIdToCache(String passportId, String userId) {
-        boolean flag = true;
-        try {
-            String cacheKey = CACHE_PREFIX_PASSPORTID + passportId;
-
-        } catch (Exception e) {
-            flag = false;
-            logger.error("[SMS] service method addPassportIdMapUserIdToCache error.{}", e);
-        }
-        return flag;
-    }
 
     @Override
     public boolean deleteSmsCache(String mobile, String clientId) {
@@ -363,20 +361,4 @@ public class AccountServiceImpl implements AccountService {
         }
         return row == 0 ? null : account;
     }
-
-
-    /*
-     * 根据key从缓存中获取value
-     */
-    public String getFromCache(final String key) throws Exception {
-        String valResult = null;
-        try {
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valResult = valueOperations.get(key);
-        } catch (Exception e) {
-            logger.error("[SMS] service method getFromCache error.{}", e);
-        }
-        return valResult;
-    }
-
 }

@@ -40,12 +40,12 @@ public interface AccountConnectService {
 
 
     /**
-     * 根据userId查询Uid
+     * 根据userId查询openid
      *
-     * @param userId
+     * @param accountConnectQuery
      * @return
      */
-    public String getUidByUserId(long userId);
+    public String getOpenIdByQuery(AccountConnectQuery accountConnectQuery);
 
 
 }

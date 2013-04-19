@@ -85,19 +85,29 @@
             <artifactId>mail</artifactId>
             <version>${javamail.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sohu</groupId>
+            <artifactId>sendcloud</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
+        </dependency>
 
 
         <!-- Rabbit Mq-->
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>${rabbitmq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-rabbit</artifactId>
-            <version>1.1.2.RELEASE</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.rabbitmq</groupId>-->
+            <!--<artifactId>amqp-client</artifactId>-->
+            <!--<version>${rabbitmq.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.amqp</groupId>-->
+            <!--<artifactId>spring-rabbit</artifactId>-->
+            <!--<version>1.1.2.RELEASE</version>-->
+        <!--</dependency>-->
         <!--http components-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

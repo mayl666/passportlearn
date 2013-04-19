@@ -72,11 +72,14 @@ public interface AccountConnectDAO {
   public int deleteAccountConnectByUserId(@SQLParam("user_id") long user_id);
 
   /**
-   * 根据userId获取Uid todo mapper里暂没添加相应的查询方法
+   * 根据userId获取openId
    *
-   * @param userId
+   * @param accountConnectQuery
    * @return
    */
-  public String getUidByUserId(long userId);
+  @SQL("select connect_uid from account_connect where "
+       + "(user_id=:q.userId and account_type=:q.accountType and client_id=:q.clientId)")
+  public String getOpenIdByQuery(@SQLParam("q") AccountConnectQuery accountConnectQuery);
+
 
 }
