@@ -67,7 +67,7 @@ public class TestSendEmail  {
          message.setXsmtpapiJsonStr(smtpApiHeader.toString());
 
          // 组装消息发送邮件
-         SendCloud sendCloud = new SendCloud("postmaster@fengjin.sendcloud.org", "C904mW5A");
+         SendCloud sendCloud = new SendCloud("postmaster@sogou-upd-passport.sendcloud.org", "7miIOEyr");
          sendCloud.setMessage(message);
          sendCloud.send();
 
