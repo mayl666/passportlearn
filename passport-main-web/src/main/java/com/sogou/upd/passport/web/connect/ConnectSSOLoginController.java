@@ -31,6 +31,7 @@ public class ConnectSSOLoginController extends BaseConnectController {
     @Autowired
     private ConnectAuthManager connectAuthManager;
 
+
     @RequestMapping(value = "/ssologin/sina", method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -46,6 +47,13 @@ public class ConnectSSOLoginController extends BaseConnectController {
         Result result = connectAuthManager.connectAuthLogin(oauthRequest, connectParams);
         return result;
     }
+
+  @RequestMapping(value = "/v2/connect/users/getopenid",method = RequestMethod.GET)
+  @ResponseBody
+  public Object getopenid() throws Exception{
+    Result result=new Result();
+    return result;
+  }
 
     /*
     该账号是否在当前应用登录过
