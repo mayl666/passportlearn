@@ -52,7 +52,7 @@ public class AccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
 
         String mobile = reqParams.getMobile();
@@ -77,8 +77,9 @@ public class AccountController extends BaseController {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
         String validateResult = ControllerHelper.validateParams(regParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
+        // TODO refactoring 构造一个Account不就行了？
         RegisterParameters registerParameters = new RegisterParameters();
         BeanUtils.copyProperties(registerParameters, regParams);
         registerParameters.setIp(getIp(request));
@@ -100,7 +101,7 @@ public class AccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         Result result = accountSecureManager.findPassword(reqParams.getMobile(), reqParams.getClient_id());
         return result;
@@ -118,7 +119,7 @@ public class AccountController extends BaseController {
         // 校验参数
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         RegisterParameters registerParameters = new RegisterParameters();
         BeanUtils.copyProperties(registerParameters, reqParams);

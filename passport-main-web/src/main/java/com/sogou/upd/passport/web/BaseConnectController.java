@@ -2,7 +2,7 @@ package com.sogou.upd.passport.web;
 
 import java.util.Date;
 
-import com.sogou.upd.passport.model.account.AccountConnect;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,18 +13,4 @@ import com.sogou.upd.passport.model.account.AccountConnect;
  */
 public class BaseConnectController extends BaseController {
 
-	protected AccountConnect buildAccountConnect(long userId, int clientId, int accountType, int accountRelation,
-			String connectUid, String accessToken, long expiresIn, String refreshToken) {
-		AccountConnect connect = new AccountConnect();
-		connect.setUserId(userId);
-		connect.setClientId(clientId);
-		connect.setAccountType(accountType);
-		connect.setAccountRelation(accountRelation);
-		connect.setConnectUid(connectUid);
-		connect.setConnectAccessToken(accessToken);
-		connect.setConnectExpiresIn(expiresIn);
-		connect.setConnectRefreshToken(refreshToken);
-		connect.setCreateTime(new Date());
-		return connect;
-	}
 }
