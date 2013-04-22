@@ -58,7 +58,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //       });
 //        System.out.println(obj);
 //        System.out.println(setAppConfigByClientId());
-//        AppConfig appConfig= getAppConfigByClientId();
+//        AppConfig appConfig= queryAppConfigByClientId();
 //        System.out.println();
 
 //        String tips = "您的“碰头”验证码为：%s，20分钟内有效哦";
@@ -178,30 +178,9 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
         }
         Assert.assertTrue(flag);
-//
-//        Object obj = null;
-//        try {
-//            obj = redisTemplate.execute(new RedisCallback() {
-//                @Override
-//                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-//                    AppConfig appConfig=new AppConfig();
-//                    appConfig.setAccessTokenExpiresin(21212);
-//                    appConfig.setClientId(1003);
-//                    appConfig.setClientSecret("4343");
-//                    appConfig.setRefreshTokenExpiresin(565645);
-//
-//                    connection.set(RedisUtils.stringToByteArry("1003"),
-//                            RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
-//                    return true;
-//                }
-//            });
-//        } catch (Exception e) {
-//            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-//        }
-//        return obj != null ? (Boolean) obj : false;
     }
 
-//    public AppConfig getAppConfigByClientId(){
+//    public AppConfig queryAppConfigByClientId(){
 //        Object obj = null;
 //        try {
 //            obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -287,7 +266,6 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
         appConfig.setRefreshTokenExpiresin(15552000);
         appConfig.setClientSecret("1001136453922995472gMLyjj7u");
         appConfig.setServerSecret("1001136453922993981IaBLDFL3");
-        appConfig.setUpdateTime(new Date());
         appConfig.setCreateTime(new Date());
         return appConfig;
     }

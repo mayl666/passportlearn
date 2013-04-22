@@ -2,8 +2,8 @@ package com.sogou.upd.passport.service;
 
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.model.account.AccountAuth;
-import com.sogou.upd.passport.service.account.AccountAuthService;
+import com.sogou.upd.passport.model.account.AccountToken;
+import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,10 +19,10 @@ import javax.inject.Inject;
  * To change this template use File | Settings | File Templates.
  */
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
-public class AccountAuthServiceTest extends AbstractJUnit4SpringContextTests {
+public class AccountTokenServiceTest extends AbstractJUnit4SpringContextTests {
 
     @Inject
-    private AccountAuthService accountAuthService;
+    private AccountTokenService accountAuthService;
 
     private static final String REFRESH_TOKEN = "X124c4TlPMYa9Fiw1TC0pKLhI8_47b_ZqghatW3-QgIn4P915y97snN38QsVOK0MPplbTnwcUa2-34kMzgYaNhkTDbGp5Hb1LkfUkSkb_7M";
     private static final String INSTANCE_ID = "rer4543546576879htyh56njliuling1";
@@ -36,7 +36,7 @@ public class AccountAuthServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyRefreshToken() {
-        AccountAuth accountAuth = accountAuthService.verifyRefreshToken(REFRESH_TOKEN, INSTANCE_ID);
+        AccountToken accountAuth = accountAuthService.verifyRefreshToken(REFRESH_TOKEN, INSTANCE_ID);
         if (accountAuth != null) {
             System.out.println("合法...");
         } else {
@@ -49,7 +49,8 @@ public class AccountAuthServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testInitialAccountAuth() throws Exception {
-        AccountAuth accountAuth = accountAuthService.initialAccountAuth(USER_ID, PASSPORT_ID, CLIENT_ID_INT, INSTANCE_ID);
+        AccountToken
+                accountAuth = accountAuthService.initialAccountToken(PASSPORT_ID, CLIENT_ID_INT, INSTANCE_ID);
         if (accountAuth != null) {
             System.out.println("初始化成功...");
         } else {
@@ -62,7 +63,8 @@ public class AccountAuthServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testUpdateAccountAuth() throws Exception {
-        AccountAuth accountAuth = accountAuthService.updateAccountAuth(USER_ID, PASSPORT_ID, CLIENT_ID_INT, INSTANCE_ID);
+        AccountToken
+                accountAuth = accountAuthService.updateAccountToken(PASSPORT_ID, CLIENT_ID_INT, INSTANCE_ID);
         if (accountAuth != null) {
             System.out.println("插入auth表成功...");
         } else {

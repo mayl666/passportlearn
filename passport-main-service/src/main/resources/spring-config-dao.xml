@@ -7,12 +7,19 @@
      http://www.springframework.org/schema/beans 
      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="jade.dataSource.com.sogou.upd.passport.dao" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="jdbcUrl" value="jdbc:mysql://10.11.211.18:3306/sp_account?characterEncoding=utf-8" />
-        <property name="user" value="sogou_passport" />
-        <property name="password" value="sogou_passport" />
+    <bean id="jade.dataSource.com.sogou.upd.passport.dao"
+          class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="jdbcUrl">
+            <value>${passport.jdbc.sogou_passport.url}</value>
+        </property>
+        <property name="user">
+            <value>${passport.jdbc.username}</value>
+        </property>
+        <property name="password">
+            <value>${passport.jdbc.password}</value>
+        </property>
         <property name="driverClass">
-            <value>com.mysql.jdbc.Driver</value>
+            <value>${passport.jdbc.driver}</value>
         </property>
         <property name="acquireIncrement">
             <value>5</value>
@@ -37,6 +44,6 @@
         </property>
     </bean>
 
-    <bean class="net.paoding.rose.jade.context.spring.JadeBeanFactoryPostProcessor" />
+    <bean class="net.paoding.rose.jade.context.spring.JadeBeanFactoryPostProcessor"/>
 
 </beans>

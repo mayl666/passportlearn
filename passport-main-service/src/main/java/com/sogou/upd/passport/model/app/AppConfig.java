@@ -19,7 +19,6 @@ public class AppConfig {
     private String serverSecret;
     private String clientSecret;
     private Date createTime;
-    private Date updateTime;
 
     public long getId() {
         return id;
@@ -85,11 +84,4 @@ public class AppConfig {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
 }

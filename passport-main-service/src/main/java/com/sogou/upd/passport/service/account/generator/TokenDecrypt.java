@@ -1,7 +1,12 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.sogou.upd.passport.common.math.AES;
+import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import java.security.Key;
@@ -15,32 +20,48 @@ import java.security.spec.X509EncodedKeySpec;
  * Time: 下午3:23
  * To change this template use File | Settings | File Templates.
  */
-public class AccessTokenDecrypt {
+public class TokenDecrypt {
+
+    private static Logger logger = LoggerFactory.getLogger(TokenGenerator.class);
 
     // 公钥
     public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
             "7rU/9UWJqy8li64i5bYtx7rE8+I4EdC00To5kz6D61UCAwEAAQ==";
 
     /**
-     * 提供给T3使用的access_token解密方法
+     * access_token解密方法
      * 返回passportId
      * 解密完成后需要验证appKey是否正确，vaild_timestamp是否大于当前时刻
+     * 如果失效了，返回null
      *
      * @param accessToken
      * @return
      * @throws Exception
      */
-    public static String decryptAccessToken(String accessToken) throws Exception {
-        byte[] tokenByte = Base64.decodeBase64(accessToken);
-        String decryTokenStr = decryptByPublicKey(tokenByte, PUBLIC_KEY);
-        String[] tokenArray = decryTokenStr.split("\\|");
-        String passportId = tokenArray[0];
-        long vaildTimestamp = Long.valueOf(tokenArray[2]);
-        long currentTimestamp = System.currentTimeMillis();
-        if(vaildTimestamp < currentTimestamp){
-            return null;
-        }else{
-            return passportId;
+    public static AccessTokenCipherDO decryptAccessToken(String accessToken) throws Exception {
+        AccessTokenCipherDO accessTokenCipherDO;
+        try {
+            byte[] tokenByte = Base64.decodeBase64(accessToken);
+            String decryTokenStr = decryptByPublicKey(tokenByte, PUBLIC_KEY);
+            accessTokenCipherDO = AccessTokenCipherDO.parseEncryptString(decryTokenStr);
+            return accessTokenCipherDO;
+        } catch (Exception e) {
+            logger.error("Access Token decrypt fail, accessToken:{}", accessToken);
+            throw e;
+        }
+    }
+
+    /**
+     * 根据refreshToken解密,并返回passportId
+     */
+    public static RefreshTokenCipherDO decryptRefreshToken(String refreshToken) throws Exception {
+        try {
+            String decryptStr = AES.decrypt(refreshToken, TokenGenerator.SECRET_KEY);
+            RefreshTokenCipherDO refreshTokenCipherDO = RefreshTokenCipherDO.parseEncryptString(decryptStr);
+            return refreshTokenCipherDO;
+        } catch (Exception e) {
+            logger.error("Refresh Token decrypt fail, refreshToken:{}", refreshToken);
+            throw e;
         }
     }
 
