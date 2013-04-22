@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
 
@@ -11,7 +12,7 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
  * To change this template use File | Settings | File Templates.
  */
 public interface AccountLoginManager {
-    //todo 返回Result
-    public String authorize(OAuthTokenRequest oauthRequest) throws SystemException;
+
+    public Result authorize(OAuthTokenRequest oauthRequest) throws SystemException;
 
 }
