@@ -1,8 +1,8 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import net.sf.json.util.JSONUtils;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,7 +10,9 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,6 +59,23 @@ public class RedisUtils {
         return valueOperations.get(key);
     }
 
+    /**
+     * 根据key取对象
+     *
+     * @param cacheKey
+     * @param returnType
+     * @return
+     */
+    public <T> T getObject(String cacheKey, Type returnType) {
+
+        String cacheStr = get(cacheKey);
+        if (!Strings.isNullOrEmpty(cacheStr)) {
+            T object = new Gson().fromJson(cacheStr, returnType);
+            return object;
+        }
+        return null;
+    }
+
 
     /*
    * 判断key是否存在
@@ -77,33 +96,82 @@ public class RedisUtils {
     }
 
     /*
-  * 设置hash映射关系
-  */
+    * 设置hash映射关系
+    */
     public void hPutAll(String cacheKey, Map<String, String> mapData) {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
         boundHashOperations.putAll(mapData);
     }
-    public void hPut(String cacheKey, String key,String value) {
-        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-        boundHashOperations.put(key,value);
+
+    /*
+    * 设置hash映射关系
+    */
+    public <T> void hPutAllObject(String cacheKey, Map<String, T> mapData) {
+        if (mapData != null && !mapData.isEmpty()) {
+            Map<String, String> objectMap = Maps.newHashMap();
+            Set<String> keySet = mapData.keySet();
+            for (String key : keySet) {
+                T obj = mapData.get(key);
+                if (obj != null) {
+                    objectMap.put(key, new Gson().toJson(obj));
+                }
+            }
+            BoundHashOperations<String, String, Object> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.putAll(objectMap);
+        }
+
     }
 
-    public boolean hPutIfAbsent(String cacheKey,String key,String value){
+    public void hPut(String cacheKey, String key, String value) {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-        return boundHashOperations.putIfAbsent(key,value);
+        boundHashOperations.put(key, value);
     }
 
-    public void hIncrBy(String cacheKey,String key){
+    public void hPut(String cacheKey, String key, Object obj) {
+        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+        boundHashOperations.put(key, new Gson().toJson(obj));
+    }
+
+
+    public boolean hPutIfAbsent(String cacheKey, String key, String value) {
+        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+        return boundHashOperations.putIfAbsent(key, value);
+    }
+
+    public void hIncrBy(String cacheKey, String key) {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
         boundHashOperations.increment(key, 1);
     }
 
-    public void expire(String cacheKey,long timeout){
+    public void expire(String cacheKey, long timeout) {
         redisTemplate.expire(cacheKey, timeout, TimeUnit.SECONDS);
     }
 
-    public void delete(String cacheKey){
+    public void delete(String cacheKey) {
         redisTemplate.delete(cacheKey);
+    }
+
+    /**
+     * Map<String,String>转换成Map<String,Object>
+     *
+     * @param mapData
+     * @param returnType
+     * @param <T>
+     * @return
+     */
+    public static <T> Map<String, T> strMapToObjectMap(Map<String, String> mapData, Type returnType) {
+        Map<String, T> results = Maps.newHashMap();
+        if (mapData != null && !mapData.isEmpty()) {
+            Set<String> keySet = mapData.keySet();
+            for (String key : keySet) {
+                String value = mapData.get(key);
+                if (!Strings.isNullOrEmpty(value)) {
+                    T object = new Gson().fromJson(value, returnType);
+                    results.put(key, object);
+                }
+            }
+        }
+        return results;
     }
 
     /*
@@ -124,30 +192,6 @@ public class RedisUtils {
             parseResult = stringSerializer.deserialize(bytes);
         }
         return parseResult;
-    }
-
-    /*
-   * byte数组转换int
-   */
-    public static int byteArryToInteger(byte[] bytes) {
-        String parseResult = null;
-        if (bytes != null && bytes.length > 0) {
-            RedisSerializer<String> stringSerializer = new StringRedisSerializer();
-            parseResult = stringSerializer.deserialize(bytes);
-        }
-        return Strings.isNullOrEmpty(parseResult) ? 0 : Integer.parseInt(parseResult);
-    }
-
-    /*
- * byte数组转换long
- */
-    public static long byteArryToLong(byte[] bytes) {
-        String parseResult = null;
-        if (bytes != null && bytes.length > 0) {
-            RedisSerializer<String> stringSerializer = new StringRedisSerializer();
-            parseResult = stringSerializer.deserialize(bytes);
-        }
-        return Strings.isNullOrEmpty(parseResult) ? 0 : Long.parseLong(parseResult);
     }
 
     public void setRedisTemplate(RedisTemplate redisTemplate) {

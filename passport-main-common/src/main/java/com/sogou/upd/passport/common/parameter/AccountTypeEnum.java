@@ -74,4 +74,9 @@ public enum AccountTypeEnum {
         }
     }
 
+    @Override
+    public String toString() {
+        return getProviderStr(getValue());
+    }
+
 }

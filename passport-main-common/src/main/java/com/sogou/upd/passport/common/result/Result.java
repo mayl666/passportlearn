@@ -28,6 +28,17 @@ public class Result {
     public Result() {
     }
 
+    public Result(boolean success) {
+        if (success) {
+            this.status = "0";
+            this.statusText = "";
+        }
+    }
+
+    public boolean isSuccess() {
+        return status == "0";
+    }
+
     /**
      * 新增一个带key的返回结果
      *
@@ -46,7 +57,7 @@ public class Result {
      * @return
      */
     public Object addDefaultModel(Object obj) {
-        return data=(Map)obj;
+        return data = (Map) obj;
     }
 
 
@@ -92,9 +103,9 @@ public class Result {
     public static Result buildSuccess(String statusText, String key, Object object) {
         Result result = new Result();
         if (object != null) {
-            if(object instanceof Map){
+            if (object instanceof Map) {
                 result.addDefaultModel(object);
-            }else {
+            } else {
                 result.addDefaultModel(key, object);
             }
         }
@@ -114,6 +125,20 @@ public class Result {
 
         result.setStatus(status);
         result.setStatusText(ErrorUtil.getERR_CODE_MSG(status));
+        return result;
+    }
+
+    /**
+     * 根据错误码返回result对象
+     *
+     * @param status 或错误码
+     * @return 含错误码及相应的提示信息
+     */
+    public static Result buildError(String status, String statusText) {
+        Result result = new Result();
+
+        result.setStatus(status);
+        result.setStatusText(statusText);
         return result;
     }
 }
