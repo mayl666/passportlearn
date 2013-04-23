@@ -60,4 +60,25 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
     }
 
 
+    @Test
+    public void testParseAccessToken() {
+        String accessToken = "brFDqEVwJ9vRcDoKgdcr5bjYBfAGK9vs4DLAFiv3nND5LZXFPl3I7qARnCc3MF9Gr1ZOyElr3BdH1ileKDAJVWnA9VBDVUB4sEmVnGrq6IgzU1BxycyBU0qyckgueI6VL5UScz0al1d3mXkU6E9DOLKFi-LLhkwyqqS6KdKlO8Y";
+        try {
+            AccessTokenCipherDO accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
+            String passportId = accessTokenCipherDO.getPassportId();
+            long vaildTime = accessTokenCipherDO.getVaildTime();
+            if (vaildTime > System.currentTimeMillis()) {
+                System.out.println("true");
+            } else {
+                System.out.println("false");
+            }
+            System.out.println("passportId:" + passportId + " vaildTime:" + accessTokenCipherDO.getVaildTime());
+            Assert.assertEquals(passportId, "13800000000@sohu.com");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.assertTrue(false);
+        }
+    }
+
+
 }

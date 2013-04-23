@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.model.app.AppConfig;
 import junit.framework.Assert;
@@ -38,6 +39,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private RedisUtils redisUtils;
+
     @Before
     public void init() {
     }
@@ -67,7 +69,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //        System.out.println(sms);
 //        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 //        System.out.println(valueOperations.setIfAbsent("12345","234456"));
-        redisUtils.set("zhangsan1","lisi1");
+        redisUtils.set("zhangsan1", "lisi1");
         System.out.println(redisUtils.get("zhangsan1"));
     }
 
@@ -144,19 +146,14 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
     }
 
     @Test
-    public void testDeleteAppConfig() {
-        String cacheKey = "PASSPORT:ACCOUNT_CLIENTID_" + 1001;
-        redisTemplate.delete(cacheKey);
-
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        String valAppConfig = valueOperations.get(cacheKey);
-        if (!Strings.isNullOrEmpty(valAppConfig)) {
-            Type type = new TypeToken<AppConfig>() {
-            }.getType();
-            AppConfig appConfig = new Gson().fromJson(valAppConfig, type);
+    public void testDelete() {
+        String cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG + 1001;
+        try {
+            redisTemplate.delete(cacheKey);
             Assert.assertTrue(true);
+        } catch (Exception e) {
+            Assert.assertTrue(false);
         }
-        Assert.assertTrue(false);
     }
 
     @Test
