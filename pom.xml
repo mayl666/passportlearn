@@ -280,7 +280,7 @@
             <properties>
                 <!--properties of sogou_passport data source-->
                 <passport.jdbc.sogou_passport.url>
-                    jdbc:mysql://10.1.211.18:3306/sogou_passport?characterEncoding=utf-8
+                    jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8
                 </passport.jdbc.sogou_passport.url>
                 <!--public data source-->
                 <passport.jdbc.datasource.type>c3p0</passport.jdbc.datasource.type>
