@@ -28,17 +28,6 @@ public class Result {
     public Result() {
     }
 
-    public Result(boolean success) {
-        if (success) {
-            this.status = "0";
-            this.statusText = "";
-        }
-    }
-
-    public boolean isSuccess() {
-        return status == "0";
-    }
-
     /**
      * 新增一个带key的返回结果
      *

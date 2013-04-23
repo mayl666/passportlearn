@@ -68,12 +68,12 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
 
             String bindPassportId = bindAccountToken.getPassportId();
             Result inspectsPassportIdRule = isAbleBindDependBindPassportId(bindPassportId, provider, appKey);
-            if (!inspectsPassportIdRule.isSuccess()) {
+            if (!"0".equals(inspectsPassportIdRule.getStatus())) {
                 return inspectsPassportIdRule;
             }
 
             Result inspectsOpenidRule = isAbleBindDependOpenid(openid, provider, appKey);
-            if (!inspectsOpenidRule.isSuccess()) {
+            if (!"0".equals(inspectsPassportIdRule.getStatus())) {
                 return inspectsOpenidRule;
             }
 
@@ -191,7 +191,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
         if (openid == null) {
             return Result.buildError(ErrorUtil.NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT);
         }
-        return new Result(true);
+        return Result.buildSuccess("0", null, null);
     }
 
     /**
@@ -206,7 +206,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
         if (connectRelation != null) {
             return Result.buildError(ErrorUtil.ACCOUNT_ALREADY_REG_OR_BIND);
         }
-        return new Result(true);
+        return Result.buildSuccess("0", null, null);
     }
 
     /**
