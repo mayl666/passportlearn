@@ -15,19 +15,19 @@ import java.util.List;
  */
 public interface AppConfigService {
 
-  /**
-   * 验证client合法性
-   */
-  public boolean verifyClientVaild(int clientId, String clientSecret);
+    /**
+     * 验证client合法性
+     */
+    public boolean verifyClientVaild(int clientId, String clientSecret) throws ServiceException;
 
-  /*
-    * 获取sms信息
-    */
-  public String querySmsText(int clientId, String smsCode);
+    /*
+      * 获取sms信息
+      */
+    public String querySmsText(int clientId, String smsCode) throws ServiceException;
 
-  /**
-   * 根据ClientId 获取AppConfig （缓存读取）
-   */
-  public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException;
+    /**
+     * 根据ClientId 获取AppConfig （缓存读取）
+     */
+    public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException;
 
 }

@@ -40,18 +40,14 @@ public class OAuth2Controller {
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenRequest oauthRequest;
         Result result;
-        try {
-            oauthRequest = new OAuthTokenRequest(request);
-            int clientId = oauthRequest.getClientId();
+        oauthRequest = new OAuthTokenRequest(request);
+        int clientId = oauthRequest.getClientId();
 
-            // 检查client_id和client_secret是否有效
-            if (!appConfigManager.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
-                return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
-            }
-            result = accountLoginManager.authorize(oauthRequest);
-        } catch (ProblemException e) {
-            return Result.buildError(e.getError(), e.getDescription());
+        // 检查client_id和client_secret是否有效
+        if (!appConfigManager.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
+            return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
+        result = accountLoginManager.authorize(oauthRequest);
         return result;
     }
 

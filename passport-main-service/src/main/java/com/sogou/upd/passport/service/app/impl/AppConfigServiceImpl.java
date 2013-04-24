@@ -36,16 +36,11 @@ public class AppConfigServiceImpl implements AppConfigService {
     private RedisUtils redisUtils;
 
     @Override
-    public boolean verifyClientVaild(int clientId, String clientSecret) {
-        try {
-            AppConfig appConfig = queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                return false;
-            } else if (!clientSecret.equals(appConfig.getClientSecret())) {
-                return false;
-            }
-        } catch (ServiceException e) {
-            logger.error("{} is not Number", clientId);
+    public boolean verifyClientVaild(int clientId, String clientSecret) throws ServiceException {
+        AppConfig appConfig = queryAppConfigByClientId(clientId);
+        if (appConfig == null) {
+            return false;
+        } else if (!clientSecret.equals(appConfig.getClientSecret())) {
             return false;
         }
         return true;
@@ -67,7 +62,7 @@ public class AppConfigServiceImpl implements AppConfigService {
                     addClientIdMapAppConfigToCache(clientId, appConfig);
                 }
             }
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             logger.error("[App] service method queryAppConfigByClientId error.{}", e);
             throw new ServiceException(e);
         }
@@ -75,7 +70,7 @@ public class AppConfigServiceImpl implements AppConfigService {
     }
 
     @Override
-    public String querySmsText(int clientId, String smsCode) {
+    public String querySmsText(int clientId, String smsCode) throws ServiceException {
         //缓存中根据clientId获取AppConfig
         AppConfig appConfig = queryAppConfigByClientId(clientId);
         if (appConfig != null) {

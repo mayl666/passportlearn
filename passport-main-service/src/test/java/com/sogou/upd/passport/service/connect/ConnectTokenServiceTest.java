@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service;
+package com.sogou.upd.passport.service.connect;
 
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.junit.Test;

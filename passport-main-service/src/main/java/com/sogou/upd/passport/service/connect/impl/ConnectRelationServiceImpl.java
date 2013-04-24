@@ -10,6 +10,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
     public ConnectRelation querySpecifyConnectRelation(String openid, int provider, String appKey) throws ServiceException {
         Map<String, ConnectRelation> connectRelations = queryAppKeyMapping(openid, provider);
         ConnectRelation connectRelation = null;
-        if (!connectRelations.isEmpty()) {
+        if (!MapUtils.isEmpty(connectRelations)) {
             connectRelation = connectRelations.get(appKey);
         }
         return connectRelation;
@@ -53,16 +54,18 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
             Map<String, String> appKeyMappingConnectRelation = redisUtils.hGetAll(cacheKey);
             Type type = new TypeToken<ConnectRelation>() {
             }.getType();
-            connectRelations = RedisUtils.strMapToObjectMap(appKeyMappingConnectRelation, type);
-            if (connectRelations.isEmpty()) {
+            if (!MapUtils.isEmpty(appKeyMappingConnectRelation)) {
+                connectRelations = RedisUtils.strMapToObjectMap(appKeyMappingConnectRelation, type);
+            }
+            if (MapUtils.isEmpty(connectRelations)) {
                 List<ConnectRelation> connectRelationList = connectRelationDAO.listConnectRelation(openid, provider);
                 if (!CollectionUtils.isEmpty(connectRelationList)) {
                     connectRelations = mapToList(connectRelationList);
-                    redisUtils.set(cacheKey, connectRelations);
+                    redisUtils.hPutAllObject(cacheKey, connectRelations);
                 }
             }
-        } catch (ServiceException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new ServiceException(e);
         }
         return connectRelations;
     }
@@ -82,7 +85,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
             } else {
                 return false;
             }
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             throw new ServiceException(e);
         }
     }

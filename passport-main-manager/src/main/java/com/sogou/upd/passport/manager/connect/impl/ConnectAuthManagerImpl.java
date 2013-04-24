@@ -21,6 +21,7 @@ import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import com.sogou.upd.passport.service.account.dataobject.PassportIDInfoDO;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
     private ConnectRelationService connectRelationService;
 
     @Override
-    public Result connectAuthBind(OAuthSinaSSOBindTokenRequest oauthRequest, int provider) throws SystemException {
+    public Result connectAuthBind(OAuthSinaSSOBindTokenRequest oauthRequest, int provider) {
         int clientId = oauthRequest.getClientId();
         String bindAccessToken = oauthRequest.getBindToken();
         String openid = oauthRequest.getOpenid();
@@ -90,14 +91,14 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
                 return Result.buildError(ErrorUtil.BIND_CONNECT_ACCOUNT_FAIL);
             }
             return Result.buildSuccess("绑定成功", null, null);
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             logger.error("SSO bind Account Fail:", e);
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION, "unknown error");
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION);
         }
     }
 
     @Override
-    public Result connectAuthLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) throws SystemException {
+    public Result connectAuthLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
 
         int clientId = oauthRequest.getClientId();
         String openid = oauthRequest.getOpenid();
@@ -111,7 +112,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
             String passportId = getPassportIdByAppointAppKey(connectRelations, appKey);
 
             if (passportId == null) { // 此账号未在当前应用登录过
-                if (connectRelations.isEmpty()) { // 此账号未授权过任何应用
+                if (MapUtils.isEmpty(connectRelations)) { // 此账号未授权过任何应用
                     Account account = accountService.initialConnectAccount(openid, ip, provider);
                     if (account == null) {
                         return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");
@@ -165,7 +166,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
             return Result.buildSuccess("登录成功！", "mapResult", mapResult);
         } catch (ServiceException e) {
             logger.error("SSO login Fail:", e);
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION, "unknown error");
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION);
         }
     }
 
@@ -245,7 +246,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
      */
     private String getPassportIdByAppointAppKey(Map<String, ConnectRelation> connectRelations, String appKey) {
         String passportId = null;
-        if (!connectRelations.isEmpty()) {
+        if (!MapUtils.isEmpty(connectRelations)) {
             ConnectRelation connectRelation = connectRelations.get(appKey);
             if (connectRelation != null) {
                 passportId = connectRelation.getPassportId();

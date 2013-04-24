@@ -112,7 +112,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account verifyAccountVaild(String passportId) {
+    public Account verifyAccountVaild(String passportId) throws ServiceException{
         Account account = queryAccountByPassportId(passportId);
         if (account.isNormalAccount()) {
             return account;

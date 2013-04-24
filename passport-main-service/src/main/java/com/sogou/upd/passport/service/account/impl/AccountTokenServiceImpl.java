@@ -51,27 +51,37 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     @Override
     public AccountToken verifyRefreshToken(String refreshToken, String instanceId) throws ServiceException {
         AccountToken accountToken;
+        RefreshTokenCipherDO refreshTokenCipherDO;
         try {
-            RefreshTokenCipherDO refreshTokenCipherDO = TokenDecrypt.decryptRefreshToken(refreshToken);
-            String passportId = refreshTokenCipherDO.getPassportId();
-            int clientId = refreshTokenCipherDO.getClientId();
-            String tokenInstanceId = refreshTokenCipherDO.getInstanceId();
+            refreshTokenCipherDO = TokenDecrypt.decryptRefreshToken(refreshToken);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        String passportId = refreshTokenCipherDO.getPassportId();
+        int clientId = refreshTokenCipherDO.getClientId();
+        String tokenInstanceId = refreshTokenCipherDO.getInstanceId();
+        try {
             accountToken = queryAccountTokenByPassportId(passportId, clientId, tokenInstanceId);
             if (isValidRefreshToken(accountToken, instanceId)) {
                 return accountToken;
             } else {
                 return null;
             }
-        } catch (Exception e) {
-            throw new ServiceException();
+        } catch (ServiceException e) {
+            throw e;
         }
     }
 
     @Override
     public AccountToken verifyAccessToken(String accessToken) throws ServiceException {
         AccountToken accountToken;
+        AccessTokenCipherDO accessTokenCipherDO;
         try {
-            AccessTokenCipherDO accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
+            accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        try {
             String passportId = accessTokenCipherDO.getPassportId();
             int clientId = accessTokenCipherDO.getClientId();
             String tokenInstanceId = accessTokenCipherDO.getInstanceId();
@@ -81,8 +91,8 @@ public class AccountTokenServiceImpl implements AccountTokenService {
             } else {
                 return null;
             }
-        } catch (Exception e) {
-            throw new ServiceException();
+        } catch (ServiceException e) {
+            throw new ServiceException(e);
         }
     }
 
@@ -101,7 +111,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
                 }
             }
         } catch (Exception e) {
-            throw new ServiceException();
+            throw new ServiceException(e);
         }
         return accountToken;
     }

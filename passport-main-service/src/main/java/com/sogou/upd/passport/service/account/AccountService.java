@@ -49,5 +49,5 @@ public interface AccountService {
     /**
      * 重置密码
      */
-    public Account resetPassword(String passportId, String password) throws SystemException;
+    public Account resetPassword(String passportId, String password) throws ServiceException;
 }

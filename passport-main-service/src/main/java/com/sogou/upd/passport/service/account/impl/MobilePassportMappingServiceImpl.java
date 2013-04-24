@@ -42,7 +42,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
                 }
             }
         } catch (Exception e) {
-            throw new ServiceException();
+            throw new ServiceException(e);
         }
         return passportId;
     }
