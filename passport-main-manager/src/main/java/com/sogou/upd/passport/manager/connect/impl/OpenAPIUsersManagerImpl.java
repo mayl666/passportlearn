@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.exception.ServiceException;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.connect.OpenAPIUsersManager;
@@ -26,15 +27,19 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
 
     @Override
     public Result getOpenIdByPassportId(String passportId, int clientId, int provider) {
-        String appKey = connectConfigService.querySpecifyAppKey(clientId, provider);
-        if (appKey == null) {
-            Result.buildError(ErrorUtil.UNSUPPORT_THIRDPARTY);
-        }
-        String openid = connectTokenService.querySpecifyOpenId(passportId, provider, appKey);
-        if (Strings.isNullOrEmpty(openid)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR);
-        } else {
-            return Result.buildSuccess("查询成功", "openid", openid);
+        try {
+            String appKey = connectConfigService.querySpecifyAppKey(clientId, provider);
+            if (appKey == null) {
+                Result.buildError(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            }
+            String openid = connectTokenService.querySpecifyOpenId(passportId, provider, appKey);
+            if (Strings.isNullOrEmpty(openid)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR);
+            } else {
+                return Result.buildSuccess("查询成功", "openid", openid);
+            }
+        } catch (ServiceException e) {
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION);
         }
 
     }

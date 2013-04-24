@@ -70,7 +70,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     }
 
     @Override
-    public String querySpecifyOpenId(String passportId, int provider, String appKey) {
+    public String querySpecifyOpenId(String passportId, int provider, String appKey) throws ServiceException{
         ConnectToken connectToken;
         String cacheKey = buildConnectTokenCacheKey(passportId, provider, appKey);
         try {

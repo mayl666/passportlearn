@@ -39,18 +39,14 @@ public class ConnectBindController extends BaseConnectController {
     public Object handleSSOBind(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
         Result result;
         int provider = AccountTypeEnum.getProvider(providerStr);
-        try {
-            OAuthSinaSSOBindTokenRequest oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
+        OAuthSinaSSOBindTokenRequest oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
 
-            // 检查client_id和client_secret是否有效
-            if (!appConfigManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
-                return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
-            }
-
-            result = connectAuthManager.connectAuthBind(oauthRequest, provider);
-        } catch (ProblemException e) {
-            return Result.buildError(e.getError(), e.getDescription());
+        // 检查client_id和client_secret是否有效
+        if (!appConfigManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
+            return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
+
+        result = connectAuthManager.connectAuthBind(oauthRequest, provider);
         return result;
     }
 

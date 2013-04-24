@@ -22,7 +22,7 @@ public interface ConnectAuthManager {
      * @return Result格式的返回值
      * @throws SystemException
      */
-    public Result connectAuthBind(OAuthSinaSSOBindTokenRequest oauthRequest, int provider) throws SystemException;
+    public Result connectAuthBind(OAuthSinaSSOBindTokenRequest oauthRequest, int provider);
 
     /**
      * 第三方账户登录接口
@@ -32,7 +32,7 @@ public interface ConnectAuthManager {
      * @return Result格式的返回值
      * @throws SystemException
      */
-    public Result connectAuthLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) throws SystemException;
+    public Result connectAuthLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip);
 
 
 }

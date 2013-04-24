@@ -37,18 +37,14 @@ public class ConnectLoginController extends BaseConnectController {
         Result result;
         String ip = getIp(req);
         int provider = AccountTypeEnum.getProvider(providerStr);
-        try {
-            OAuthSinaSSOTokenRequest oauthRequest = new OAuthSinaSSOTokenRequest(req);
+        OAuthSinaSSOTokenRequest oauthRequest = new OAuthSinaSSOTokenRequest(req);
 
-            // 检查client_id和client_secret是否有效
-            if (!appConfigManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
-                return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
-            }
-
-            result = connectAuthManager.connectAuthLogin(oauthRequest, provider, ip);
-        } catch (ProblemException e) {
-            return Result.buildError(e.getError(), e.getDescription());
+        // 检查client_id和client_secret是否有效
+        if (!appConfigManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
+            return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
+
+        result = connectAuthManager.connectAuthLogin(oauthRequest, provider, ip);
         return result;
     }
 

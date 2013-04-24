@@ -171,6 +171,7 @@ public class ErrorUtil {
     //***************************好友类API错误代码end********************************
 
     static {
+        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "参数错误,签名过期或者不合法");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_NOUSER, "账号不存在");

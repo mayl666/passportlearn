@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.app.impl;
 
+import com.sogou.upd.passport.common.exception.ServiceException;
 import com.sogou.upd.passport.manager.app.AppConfigManager;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,11 @@ public class AppConfigManagerImpl implements AppConfigManager {
 
     @Override
     public boolean verifyClientVaild(int clientId, String clientSecret) {
-        boolean resultFlag=appConfigService.verifyClientVaild(clientId,clientSecret);
-        return resultFlag;
+        try {
+            boolean resultFlag = appConfigService.verifyClientVaild(clientId, clientSecret);
+            return resultFlag;
+        } catch (ServiceException e) {
+            return false;
+        }
     }
 }

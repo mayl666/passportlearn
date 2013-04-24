@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service;
+package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;

@@ -147,7 +147,8 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testDelete() {
-        String cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG + 1001;
+//        String cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG + 1001;
+        String cacheKey = "PASSPORT:OPENID_CONNECTRELATION_1987360834_4";
         try {
             redisTemplate.delete(cacheKey);
             Assert.assertTrue(true);
