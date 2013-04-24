@@ -32,7 +32,7 @@ public class Coder {
 	 * @return 
 	 * @throws Exception 
 	 */
-	public static byte[] decryptBASE64(String key) throws Exception {
+	public static byte[] decryptBASE64(String key) {
 		return Base64.decodeBase64(key);
 	}
 

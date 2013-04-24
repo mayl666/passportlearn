@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.model.app.AppConfig;
 import junit.framework.Assert;
@@ -38,6 +39,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private RedisUtils redisUtils;
+
     @Before
     public void init() {
     }
@@ -58,7 +60,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //       });
 //        System.out.println(obj);
 //        System.out.println(setAppConfigByClientId());
-//        AppConfig appConfig= getAppConfigByClientId();
+//        AppConfig appConfig= queryAppConfigByClientId();
 //        System.out.println();
 
 //        String tips = "您的“碰头”验证码为：%s，20分钟内有效哦";
@@ -67,7 +69,7 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //        System.out.println(sms);
 //        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 //        System.out.println(valueOperations.setIfAbsent("12345","234456"));
-        redisUtils.set("zhangsan1","lisi1");
+        redisUtils.set("zhangsan1", "lisi1");
         System.out.println(redisUtils.get("zhangsan1"));
     }
 
@@ -144,19 +146,14 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
     }
 
     @Test
-    public void testDeleteAppConfig() {
-        String cacheKey = "PASSPORT:ACCOUNT_CLIENTID_" + 1001;
-        redisTemplate.delete(cacheKey);
-
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        String valAppConfig = valueOperations.get(cacheKey);
-        if (!Strings.isNullOrEmpty(valAppConfig)) {
-            Type type = new TypeToken<AppConfig>() {
-            }.getType();
-            AppConfig appConfig = new Gson().fromJson(valAppConfig, type);
+    public void testDelete() {
+        String cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG + 1001;
+        try {
+            redisTemplate.delete(cacheKey);
             Assert.assertTrue(true);
+        } catch (Exception e) {
+            Assert.assertTrue(false);
         }
-        Assert.assertTrue(false);
     }
 
     @Test
@@ -178,30 +175,9 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
         }
         Assert.assertTrue(flag);
-//
-//        Object obj = null;
-//        try {
-//            obj = redisTemplate.execute(new RedisCallback() {
-//                @Override
-//                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-//                    AppConfig appConfig=new AppConfig();
-//                    appConfig.setAccessTokenExpiresin(21212);
-//                    appConfig.setClientId(1003);
-//                    appConfig.setClientSecret("4343");
-//                    appConfig.setRefreshTokenExpiresin(565645);
-//
-//                    connection.set(RedisUtils.stringToByteArry("1003"),
-//                            RedisUtils.stringToByteArry(JSONUtils.objectToJson(appConfig)));
-//                    return true;
-//                }
-//            });
-//        } catch (Exception e) {
-//            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-//        }
-//        return obj != null ? (Boolean) obj : false;
     }
 
-//    public AppConfig getAppConfigByClientId(){
+//    public AppConfig queryAppConfigByClientId(){
 //        Object obj = null;
 //        try {
 //            obj = redisTemplate.execute(new RedisCallback<Object>() {
@@ -287,7 +263,6 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
         appConfig.setRefreshTokenExpiresin(15552000);
         appConfig.setClientSecret("1001136453922995472gMLyjj7u");
         appConfig.setServerSecret("1001136453922993981IaBLDFL3");
-        appConfig.setUpdateTime(new Date());
         appConfig.setCreateTime(new Date());
         return appConfig;
     }

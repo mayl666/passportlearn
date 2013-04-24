@@ -55,36 +55,6 @@ public class BaseController {
 		}
 	}
 
-	protected Map<String, Object> buildSuccess(String msg, Map<String, Object> data) {
-		Map<String, Object> retMap = Maps.newHashMap();
-		retMap.put(CommonParameters.RESPONSE_STATUS, "0");
-		retMap.put(CommonParameters.RESPONSE_STATUS_TEXT, msg);
-		retMap.put(CommonParameters.RESPONSE_DATA, data == null ? Collections.emptyMap() : data);
-		return retMap;
-	}
-
-	/**
-	 * 构造statusText为空的成功结果json
-	 * @param data
-	 * @return
-	 */
-	protected Map<String, Object> buildSuccess(Map<String, Object> data) {
-		return buildSuccess("", data);
-	}
-
-	/**
-	 * 构造statusText为空，data为空的成功结果json
-	 * @return
-	 */
-	protected Map<String, Object> buildSuccess() {
-		return buildSuccess("", null);
-	}
-
-	protected String composeBaseAccessToken(String appid, String openid, long time, String version) {
-		String base = appid + "|" + openid + "|" + time + "|" + version;
-		return base;
-	}
-
 	protected static String getIp(HttpServletRequest request) {
 		String sff = request.getHeader("X-Forwarded-For");// 根据nginx的配置，获取相应的ip
 		if(sff == null)

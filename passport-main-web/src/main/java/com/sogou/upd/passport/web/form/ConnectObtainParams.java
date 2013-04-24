@@ -8,34 +8,34 @@ import javax.validation.constraints.NotNull;
  * File Templates.
  */
 public class ConnectObtainParams {
-  @NotNull(message = "passport_id不允许为空!")
-  String passport_id;
-  @Min(value = 1, message = "client_id不允许为空!")
-  int client_id;
-  @Min(value = 1, message = "provider不允许为空!")
-  int provider;
+    @NotNull(message = "passport_id不允许为空!")
+    private String passport_id;
+    @Min(value = 1, message = "client_id不允许为空!")
+    private int client_id;
+    @NotNull(message = "provider不允许为空!")
+    private String provider;
 
-  public String getPassport_id() {
-    return passport_id;
-  }
+    public String getPassport_id() {
+        return passport_id;
+    }
 
-  public void setPassport_id(String passport_id) {
-    this.passport_id = passport_id;
-  }
+    public void setPassport_id(String passport_id) {
+        this.passport_id = passport_id;
+    }
 
-  public int getClient_id() {
-    return client_id;
-  }
+    public int getClient_id() {
+        return client_id;
+    }
 
-  public void setClient_id(int client_id) {
-    this.client_id = client_id;
-  }
+    public void setClient_id(int client_id) {
+        this.client_id = client_id;
+    }
 
-  public int getProvider() {
-    return provider;
-  }
+    public String getProvider() {
+        return provider;
+    }
 
-  public void setProvider(int provider) {
-    this.provider = provider;
-  }
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 }

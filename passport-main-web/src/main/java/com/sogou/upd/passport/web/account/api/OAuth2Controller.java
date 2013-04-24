@@ -1,14 +1,12 @@
 package com.sogou.upd.passport.web.account.api;
 
-import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.app.AppConfigManager;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
-import com.sogou.upd.passport.oauth2.authzserver.response.OAuthASResponse;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
-import com.sogou.upd.passport.oauth2.common.OAuthResponse;
-import com.sogou.upd.passport.service.account.AccountAuthService;
-import com.sogou.upd.passport.service.app.AppConfigService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,28 +39,18 @@ public class OAuth2Controller {
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenRequest oauthRequest;
-        OAuthResponse response;
-        String result=null;
+        Result result;
         try {
             oauthRequest = new OAuthTokenRequest(request);
-
             int clientId = oauthRequest.getClientId();
 
             // 检查client_id和client_secret是否有效
-
             if (!appConfigManager.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
-                response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                        .setError(OAuthError.Response.INVALID_CLIENT)
-                        .setErrorDescription("client_id or client_secret mismatch").buildJSONMessage();
-                return response.getBody();
+                return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
             }
-            //todo 返回Result
-            result=accountLoginManager.authorize(oauthRequest);
-        } catch (Exception e) {
-            logger.error("OAuth Authorize Fail:", e);
-            response = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                    .setError(ErrorUtil.ERR_CODE_COM_EXCEPTION).setErrorDescription("unknown error").buildJSONMessage();
-            return response.getBody();
+            result = accountLoginManager.authorize(oauthRequest);
+        } catch (ProblemException e) {
+            return Result.buildError(e.getError(), e.getDescription());
         }
         return result;
     }

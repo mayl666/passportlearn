@@ -104,16 +104,6 @@ public abstract class OAuthError {
          */
         public static final String INVALID_USER="112";
 
-        /**
-         * 此账号不允许绑定其他账号
-         */
-        public static final String UNABLE_BIND_ACCESS_TOKEN = "113";
-
-        /**
-         * 绑定账号时,数据库写入失败
-         */
-        public static final String BIND_FAIL = "114";
-        
     }
 
 }

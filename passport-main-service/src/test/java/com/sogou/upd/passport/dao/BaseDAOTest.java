@@ -1,0 +1,43 @@
+package com.sogou.upd.passport.dao;
+
+import com.sogou.upd.passport.BaseTest;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: shipengzhi
+ * Date: 13-4-23
+ * Time: 上午1:19
+ * To change this template use File | Settings | File Templates.
+ */
+public class BaseDAOTest extends BaseTest {
+
+    // Account Test Constant
+    public static final String PASSPORT_ID = "13600000000@sohu.com";
+    public static final String NEW_PASSPORT_ID = "13600000001@sohu.com";
+    public static final String MOBILE = "13600000000";
+    public static final String PASSWORD = "111111";
+    public static final String NEW_PASSWORD = "123456";
+    public static final int ACCOUNT_TYPE = 2;
+    public static final String IP = "10.1.164.65";
+    public static final int STATUS = 1;
+    public static final int VERSION = 1;
+
+    // AccountToken Test Constant
+    public static final int CLIENT_ID = 1001;
+    public static final String OTHER_INSTANCE_ID = "02020110011111F4E7587A9D4893242DWE97D1C1365DF95";
+    public static final
+    String
+            REFRESH_TOKEN =
+            "oFohPgnYrnAC79ZRf1wdkxPbR0A3opImhXgRGDpJntExkRqf7flwUvzteCYNpQEQwO6hhSRleH97riuy6heBNdo7H2jlIeXvqqlNd-Fh2ao_dOZG0Zf67822RSIwfrzQ";
+    public static final
+    String
+            ACCESS_TOKEN =
+            "KWp2N45BvYQqW53-LAPpgTFs_Dc7KD1Z0KZQFq7iRh-OWWNguVWrNXe5rSuo74olPsVCVKB4OjP7gFgVIkGMjQ7EEbCOaOQgkkfzXf_n2AqvWCm3aQF3s25r_6-9W6EtUiFKVWH7epzOdzRVzslEK92tLICaAm1yLARXn33BXks";
+    public static final String INSTANCE_ID = "02020110011111F4E7587A9D4893420EB97D1C1365DF95";
+
+    // Connect Test Constant
+    public static final String OPENID = "shipengzhi";
+    public static final String APP_KEY = "123";
+    public static final String OTHER_APP_KEY = "abc";
+
+}

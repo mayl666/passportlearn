@@ -1,16 +1,17 @@
 package com.sogou.upd.passport.service.app.impl;
 
-import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.exception.ServiceException;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigDAO;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -37,14 +38,13 @@ public class AppConfigServiceImpl implements AppConfigService {
     @Override
     public boolean verifyClientVaild(int clientId, String clientSecret) {
         try {
-            AppConfig appConfig = getAppConfigByClientId(clientId);
-            // TODO 如果不存在返回的是null还是new AppConfig？
+            AppConfig appConfig = queryAppConfigByClientId(clientId);
             if (appConfig == null) {
                 return false;
             } else if (!clientSecret.equals(appConfig.getClientSecret())) {
                 return false;
             }
-        } catch (NumberFormatException e) {
+        } catch (ServiceException e) {
             logger.error("{} is not Number", clientId);
             return false;
         }
@@ -52,17 +52,14 @@ public class AppConfigServiceImpl implements AppConfigService {
     }
 
     @Override
-    public AppConfig getAppConfigByClientId(int clientId) {
+    public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException {
         AppConfig appConfig = null;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
             //缓存根据clientId读取AppConfig
-            String valAppConfig = redisUtils.get(cacheKey);
-            if (!Strings.isNullOrEmpty(valAppConfig)) {
-                Type type = new TypeToken<AppConfig>() {
-                }.getType();
-                appConfig = new Gson().fromJson(valAppConfig, type);
-            }
+            Type type = new TypeToken<AppConfig>() {
+            }.getType();
+            appConfig = redisUtils.getObject(cacheKey, type);
             if (appConfig == null) {
                 //读取数据库
                 appConfig = appConfigDAO.getAppConfigByClientId(clientId);
@@ -70,10 +67,21 @@ public class AppConfigServiceImpl implements AppConfigService {
                     addClientIdMapAppConfigToCache(clientId, appConfig);
                 }
             }
-        } catch (Exception e) {
-            logger.error("[App] service method getAppConfigByClientId error.{}", e);
+        } catch (DataAccessException e) {
+            logger.error("[App] service method queryAppConfigByClientId error.{}", e);
+            throw new ServiceException(e);
         }
         return appConfig;
+    }
+
+    @Override
+    public String querySmsText(int clientId, String smsCode) {
+        //缓存中根据clientId获取AppConfig
+        AppConfig appConfig = queryAppConfigByClientId(clientId);
+        if (appConfig != null) {
+            return String.format(appConfig.getSmsText(), smsCode);
+        }
+        return null;
     }
 
     private boolean addClientIdMapAppConfigToCache(int clientId, AppConfig appConfig) {
