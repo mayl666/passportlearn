@@ -53,7 +53,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     @Override
-    public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, int clientId) {
+    public Result updateSmsCacheInfo(String cacheKey, int clientId) {
         Result result = null;
         try {
             cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;

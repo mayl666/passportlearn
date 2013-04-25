@@ -16,7 +16,7 @@ public interface MobileCodeSenderService {
     /**
      * 重发验证码时更新缓存状态
      */
-    public Result updateSmsCacheInfoByKeyAndClientId(String cacheKey, int clientId);
+    public Result updateSmsCacheInfo(String cacheKey, int clientId);
 
     /**
      * 注册成功后清除sms缓存信息
