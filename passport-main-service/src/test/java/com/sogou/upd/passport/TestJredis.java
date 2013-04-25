@@ -69,8 +69,13 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //        System.out.println(sms);
 //        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 //        System.out.println(valueOperations.setIfAbsent("12345","234456"));
-        redisUtils.set("zhangsan1", "lisi1");
-        System.out.println(redisUtils.get("zhangsan1"));
+        try {
+            redisUtils.set("zhangsan1", "lisi1");
+            System.out.println(redisUtils.get("zhangsan1"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test

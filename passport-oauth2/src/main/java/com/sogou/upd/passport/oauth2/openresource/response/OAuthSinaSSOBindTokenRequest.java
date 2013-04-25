@@ -2,11 +2,9 @@ package com.sogou.upd.passport.oauth2.openresource.response;
 
 import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.exception.SystemException;
-import com.sogou.upd.passport.oauth2.authzserver.request.OAuthRequest;
 import com.sogou.upd.passport.oauth2.common.validators.OAuthValidator;
 import com.sogou.upd.passport.oauth2.openresource.OpenOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.OAuthSinaSSOBindTokenValidator;
-import com.sogou.upd.passport.oauth2.openresource.validator.OAuthSinaSSOTokenValidator;
 
 import javax.servlet.http.HttpServletRequest;
 

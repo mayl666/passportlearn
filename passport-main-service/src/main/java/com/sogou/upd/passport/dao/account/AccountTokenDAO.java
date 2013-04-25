@@ -66,10 +66,8 @@ public interface AccountTokenDAO {
     /**
      * 更新用户状态表
      */
-    @SQL("update account_token set #if(:a.accessToken != null){access_token=:a.accessToken,}"
-            + "#if(:a.refreshToken != null){refresh_token=:a.refreshToken,}"
-            + "#if(:a.accessValidTime != 0){access_valid_time=:a.accessValidTime,}"
-            + "#if(:a.refreshValidTime != 0){refresh_valid_time=:a.refreshValidTime} "
+    @SQL("update account_token set access_token=:a.accessToken,refresh_token=:a.refreshToken,access_valid_time=:a.accessValidTime,"
+            + "refresh_valid_time=:a.refreshValidTime"
             + "where passport_id=:passport_id and client_id=:a.clientId and instance_id=:a.instanceId")
     public int updateAccountToken(@SQLParam("passport_id") String passport_id, @SQLParam("a") AccountToken accountToken) throws
             DataAccessException;
