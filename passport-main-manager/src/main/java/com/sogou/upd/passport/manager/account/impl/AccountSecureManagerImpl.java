@@ -44,7 +44,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Result result = null;
             if (isExistFromCache) {
                 //更新缓存状态
-                result = mobileCodeSenderService.updateSmsCacheInfoByKeyAndClientId(cacheKey, clientId);
+                result = mobileCodeSenderService.updateSmsCacheInfo(cacheKey, clientId);
                 return result;
             } else {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
@@ -69,8 +69,13 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         }
     }
 
+  @Override
+  public Result updateSmsCacheInfo(String cacheKey, int clientId) {
+    return null;
+  }
 
-    @Override
+
+  @Override
     public Result findPassword(String mobile, int clientId) {
         // TODO refactoring 是否和sendMobileCode一样？已经存在的就要复用
         try {
@@ -84,7 +89,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Result mapResult;
             if (isExistFromCache) {
                 //更新缓存状态
-                mapResult = mobileCodeSenderService.updateSmsCacheInfoByKeyAndClientId(cacheKey, clientId);
+                mapResult = mobileCodeSenderService.updateSmsCacheInfo(cacheKey, clientId);
             } else {
                 mapResult = mobileCodeSenderService.handleSendSms(mobile, clientId);
             }

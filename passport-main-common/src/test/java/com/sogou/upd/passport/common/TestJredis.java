@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.utils.RedisUtils;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -37,7 +39,5 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 //        System.out.println(boundValueOperation.get());
 //        System.out.println(boundValueOperation.setIfAbsent("test"));
 
-        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps("PASSPORT:MOBILE_SENDNUM_13400001111");
-        boundHashOperations.increment("sendNum", 1);
     }
 }
