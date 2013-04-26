@@ -125,7 +125,6 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
                         return Result.buildError(OAuthError.Response.INVALID_USER, "user account invalid");
                     }
                 }
-                // todo 并行插入
                 accountToken = accountTokenService.initialAccountToken(passportId, clientId, instanceId);
                 if (accountToken == null) {
                     return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");

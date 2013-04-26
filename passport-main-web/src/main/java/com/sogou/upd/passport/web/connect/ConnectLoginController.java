@@ -1,13 +1,12 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.exception.ProblemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.manager.app.AppConfigManager;
 import com.sogou.upd.passport.manager.connect.ConnectAuthManager;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
-import com.sogou.upd.passport.web.BaseConnectController;
+import com.sogou.upd.passport.web.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("/v2/connect")
-public class ConnectLoginController extends BaseConnectController {
+public class ConnectLoginController extends BaseController {
 
     @Autowired
     private ConnectAuthManager connectAuthManager;
