@@ -137,7 +137,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     public AccountToken updateAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             AccountToken accountToken = newAccountToken(passportId, clientId, instanceId);
-            int accountRow = accountTokenDAO.saveAccountToken(passportId, accountToken);
+            int accountRow = accountTokenDAO.updateAccountToken(passportId, accountToken);
             if (accountRow != 0) {
                 String cacheKey = buildAccountTokenKey(passportId, clientId, instanceId);
                 redisUtils.set(cacheKey, accountToken);

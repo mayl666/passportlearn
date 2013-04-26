@@ -4,6 +4,8 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;

@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.common.result;
 
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import net.sf.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,12 +72,6 @@ public class Result {
      */
     public Map<String, Object> getData() {
         return data;
-    }
-
-
-    public String toJson(Result result) {
-        JSONObject jsonObject = JSONObject.fromObject(result);
-        return jsonObject.toString();
     }
 
     /**

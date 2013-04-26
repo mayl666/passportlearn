@@ -33,27 +33,36 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    public void set(String key, String value) {
+    public void set(String key, String value) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value);
         } catch (Exception e) {
-            log.error("[Cache] set cache fail, key:" + key + "value:" + value, e);
-            // TODO 是否delete，如果delete再失败，则记录log手动删除
-            // TODO 或者delete方法抛出异常，此异常向外抛
+            log.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
+            try {
+                delete(key);
+            } catch (Exception ex) {
+                log.error("[Cache] set and delete cache fail, key:" + key + " value:" + value, e);
+                throw e;
+            }
         }
     }
 
     /*
     * 设置缓存内容
     */
-    public void set(String key, Object obj) {
+    public void set(String key, Object obj) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, new Gson().toJson(obj));
         } catch (Exception e) {
-            log.error("[Cache] set cache fail, key:" + key + "value:" + obj, e);
-            // TODO 是否delete，如果delete再失败，则记录log手动删除
+            log.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
+            try {
+                delete(key);
+            } catch (Exception ex) {
+                log.error("[Cache] set and delete cache fail, key:" + key + " value:" + obj, e);
+                throw e;
+            }
         }
     }
 
@@ -66,7 +75,7 @@ public class RedisUtils {
             BoundValueOperations boundValueOperation = redisTemplate.boundValueOps(cacheKey);
             return boundValueOperation.setIfAbsent(obj);
         } catch (Exception e) {
-            log.error("[Cache] set if absent cache fail, key:" + cacheKey + "value:" + obj, e);
+            log.error("[Cache] set if absent cache fail, key:" + cacheKey + " value:" + obj, e);
             return false;
         }
     }
@@ -133,25 +142,45 @@ public class RedisUtils {
     /*
     * 设置hash映射关系
     */
-    public void hPutAll(String cacheKey, Map<String, String> mapData) {
-        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-        boundHashOperations.putAll(mapData);
+    public void hPutAll(String cacheKey, Map<String, String> mapData) throws Exception {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.putAll(mapData);
+        } catch (Exception e) {
+            log.error("[Cache] hPutAll cache fail, cacheKey:" + cacheKey, e);
+            try {
+                delete(cacheKey);
+            } catch (Exception ex) {
+                log.error("[Cache] hPutAll and delete cache fail, cacheKey:" + cacheKey, e);
+                throw e;
+            }
+        }
     }
 
     /*
     * 设置hash映射关系
     */
-    public <T> void hPutAllObject(String cacheKey, Map<String, T> mapData) {
-        Map<String, String> objectMap = Maps.newHashMap();
-        Set<String> keySet = mapData.keySet();
-        for (String key : keySet) {
-            T obj = mapData.get(key);
-            if (obj != null) {
-                objectMap.put(key, new Gson().toJson(obj));
+    public <T> void hPutAllObject(String cacheKey, Map<String, T> mapData) throws Exception {
+        try {
+            Map<String, String> objectMap = Maps.newHashMap();
+            Set<String> keySet = mapData.keySet();
+            for (String key : keySet) {
+                T obj = mapData.get(key);
+                if (obj != null) {
+                    objectMap.put(key, new Gson().toJson(obj));
+                }
+            }
+            BoundHashOperations<String, String, Object> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.putAll(objectMap);
+        } catch (Exception e) {
+            log.error("[Cache] hPutAllObject cache fail, cacheKey:" + cacheKey, e);
+            try {
+                delete(cacheKey);
+            } catch (Exception ex) {
+                log.error("[Cache] hPutAllObject and delete cache fail, cacheKey:" + cacheKey, e);
+                throw e;
             }
         }
-        BoundHashOperations<String, String, Object> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-        boundHashOperations.putAll(objectMap);
     }
 
     /**
@@ -161,9 +190,19 @@ public class RedisUtils {
      * @param key
      * @param value
      */
-    public void hPut(String cacheKey, String key, String value) {
-        BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-        boundHashOperations.put(key, value);
+    public void hPut(String cacheKey, String key, String value) throws Exception {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.put(key, value);
+        } catch (Exception e) {
+            log.error("[Cache] hPut cache fail, cacheKey:" + cacheKey + " mapKey:" + key + " mapValue:" + value, e);
+            try {
+                delete(cacheKey);
+            } catch (Exception ex) {
+                log.error("[Cache] hPut and delete cache fail, cacheKey:" + cacheKey + " mapKey:" + key + " mapValue:" + value, e);
+                throw e;
+            }
+        }
     }
 
     public void hPut(String cacheKey, String key, Object obj) {
