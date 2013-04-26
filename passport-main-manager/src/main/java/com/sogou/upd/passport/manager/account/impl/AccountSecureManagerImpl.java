@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.exception.ServiceException;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
 import com.sogou.upd.passport.model.account.Account;
@@ -13,10 +16,15 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.app.AppConfigService;
+
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * User: mayan Date: 13-4-15 Time: 下午4:31 To change this template use File | Settings | File Templates.
@@ -33,7 +41,12 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     @Autowired
     private AccountTokenService accountTokenService;
     @Autowired
+    private AppConfigService appConfigService;
+    @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+  //account与smscode映射
+  private static final String CACHE_PREFIX_ACCOUNT_SMSCODE =CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE;
+  private static final String CACHE_PREFIX_ACCOUNT_SENDNUM =CacheConstant.CACHE_PREFIX_MOBILE_SENDNUM;
 
     @Override
     public Result sendMobileCode(String mobile, int clientId) {
@@ -44,7 +57,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Result result = null;
             if (isExistFromCache) {
                 //更新缓存状态
-                result = mobileCodeSenderService.updateSmsCacheInfo(cacheKey, clientId);
+                result = updateSmsCacheInfo(cacheKey, clientId);
                 return result;
             } else {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
@@ -61,7 +74,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                     result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                     return result;
                 }
-
             }
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
@@ -71,7 +83,58 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
   @Override
   public Result updateSmsCacheInfo(String cacheKey, int clientId) {
-    return null;
+    Result result = null;
+    try {
+      String cacheKeySmscode = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
+      Map<String, String> mapCacheResult = mobileCodeSenderService.getCacheMapByKey(cacheKeySmscode);
+      if (MapUtils.isNotEmpty(mapCacheResult)) {
+        //获取缓存数据
+        long sendTime = Long.parseLong(mapCacheResult.get("sendTime"));
+        String smsCode = mapCacheResult.get("smsCode");
+        String mobile = mapCacheResult.get("mobile");
+        //获取当天发送次数
+        String cacheKeySendNum = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
+
+        Map<String, String> mapCacheSendNumResult = mobileCodeSenderService.getCacheMapByKey(
+            cacheKeySendNum);
+        if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
+          int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
+          long curtime = System.currentTimeMillis();
+          boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
+          if (valid) {
+            if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
+              mobileCodeSenderService.updateSmsCacheInfo(cacheKeySendNum,cacheKeySmscode,String.valueOf(curtime));
+              //读取短信内容
+              String smsText = appConfigService.querySmsText(clientId, smsCode);
+              if (!Strings.isNullOrEmpty(smsText)) {
+                boolean isSend = SMSUtil.sendSMS(mobile, smsText);
+                if (isSend) {
+                  //30分钟之内返回原先验证码
+                  result = Result.buildSuccess("获取验证码成功", "smscode", smsCode);
+                  return result;
+                }
+              } else {
+                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                return result;
+              }
+            } else {
+              result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
+              return result;
+            }
+          } else {
+            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
+            return result;
+          }
+        }
+      } else {
+        result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+        return result;
+      }
+    } catch (Exception e) {
+      result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+      logger.error("[SMS] service method updateSmsCacheInfoByKeyAndClientId error.{}", e);
+    }
+    return result;
   }
 
 
@@ -89,7 +152,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Result mapResult;
             if (isExistFromCache) {
                 //更新缓存状态
-                mapResult = mobileCodeSenderService.updateSmsCacheInfo(cacheKey, clientId);
+                mapResult = updateSmsCacheInfo(cacheKey, clientId);
             } else {
                 mapResult = mobileCodeSenderService.handleSendSms(mobile, clientId);
             }

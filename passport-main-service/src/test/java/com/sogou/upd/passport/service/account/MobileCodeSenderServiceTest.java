@@ -88,9 +88,9 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
      * 测试重发验证码时更新缓存状态
      */
     @Test
-    public void testUpdateSmsInfoByCacheKeyAndClientid() {
+    public void testUpdateSmsInfo() {
         Map<String, Object> mapResult = null;
-        mobileCodeSenderService.updateSmsCacheInfoByKeyAndClientId(CACHE_KEY, CLIENT_ID);
+        mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "","");
         if (MapUtils.isNotEmpty(mapResult)) {
             System.out.println(mapResult.size());
         } else {
