@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.exception;
+package com.sogou.upd.passport.exception;
 
 /**
  * Service层异常

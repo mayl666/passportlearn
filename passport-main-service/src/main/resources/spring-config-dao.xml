@@ -10,7 +10,7 @@
     <bean id="jade.dataSource.com.sogou.upd.passport.dao"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <value>${passport.jdbc.sogou_passport.url}</value>
+            <value>${passport.jdbc.url}</value>
         </property>
         <property name="user">
             <value>${passport.jdbc.username}</value>

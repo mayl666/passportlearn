@@ -3,7 +3,7 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.RedisUtils;
@@ -112,7 +112,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account verifyAccountVaild(String passportId) throws ServiceException{
+    public Account verifyAccountVaild(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
         if (account.isNormalAccount()) {
             return account;
@@ -140,7 +140,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             Account account = verifyAccountVaild(passportId);
             String passwdSign = PwdGenerator.generatorPwdSign(password);
-            int row = accountDAO.modifyPassword(passportId, passwdSign);
+            int row = accountDAO.modifyPassword(passwdSign, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPasswd(passwdSign);

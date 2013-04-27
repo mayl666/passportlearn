@@ -1,9 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.parameter.CommonParameters;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

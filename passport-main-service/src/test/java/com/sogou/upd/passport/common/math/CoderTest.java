@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.common.math;
 
-import com.sogou.upd.passport.common.parameter.CommonParameters;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import junit.framework.Assert;
 import org.junit.Test;
 

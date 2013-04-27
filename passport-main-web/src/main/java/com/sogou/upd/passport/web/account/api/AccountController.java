@@ -3,13 +3,14 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
+import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
+import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.form.MobileRegParams;
-import com.sogou.upd.passport.web.form.MoblieCodeParams;
+import com.sogou.upd.passport.manager.form.MoblieCodeParams;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +35,10 @@ public class AccountController extends BaseController {
 
     @Autowired
     private AccountSecureManager accountSecureManager;
-
     @Autowired
     private AccountRegManager accountRegManager;
+    @Autowired
+    private AccountManager accountManager;
 
     /**
      * 手机账号获取，重发手机验证码接口
@@ -73,17 +75,23 @@ public class AccountController extends BaseController {
      */
     @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
-    public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) throws Exception {
+    public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
         String validateResult = ControllerHelper.validateParams(regParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-        // TODO refactoring 构造一个Account不就行了？
-        RegisterParameters registerParameters = new RegisterParameters();
-        BeanUtils.copyProperties(registerParameters, regParams);
-        registerParameters.setIp(getIp(request));
-        Result result = accountRegManager.mobileRegister(registerParameters);
+        String ip = getIp(request);
+        String mobile = regParams.getMobile();
+        try {
+            if (accountManager.isAccountExists(mobile)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            }
+        } catch (Exception e) {
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+
+        Result result = accountRegManager.mobileRegister(regParams, ip);
         return result;
     }
 
@@ -103,6 +111,15 @@ public class AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
+
+        String mobile = reqParams.getMobile();
+        try {
+            if (!accountManager.isAccountExists(mobile)) {
+                return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+            }
+        } catch (Exception e) {
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
         Result result = accountSecureManager.findPassword(reqParams.getMobile(), reqParams.getClient_id());
         return result;
     }
@@ -115,15 +132,14 @@ public class AccountController extends BaseController {
      */
     @RequestMapping(value = "/v2/mobile/resetpwd", method = RequestMethod.POST)
     @ResponseBody
-    public Object resetPassword(MobileRegParams reqParams) throws Exception {
-        // 校验参数
-        String validateResult = ControllerHelper.validateParams(reqParams);
+    public Object resetPassword(MobileModifyPwdParams regParams) throws Exception {
+
+        String validateResult = ControllerHelper.validateParams(regParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-        RegisterParameters registerParameters = new RegisterParameters();
-        BeanUtils.copyProperties(registerParameters, reqParams);
-        Result result = accountSecureManager.resetPassword(registerParameters);
+
+        Result result = accountSecureManager.resetPassword(regParams);
         return result;
     }
 

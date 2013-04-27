@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
 
@@ -13,6 +12,6 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
  */
 public interface AccountLoginManager {
 
-    public Result authorize(OAuthTokenRequest oauthRequest) throws SystemException;
+    public Result authorize(OAuthTokenRequest oauthRequest);
 
 }

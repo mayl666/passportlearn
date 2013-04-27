@@ -1,9 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.apache.commons.collections.MapUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

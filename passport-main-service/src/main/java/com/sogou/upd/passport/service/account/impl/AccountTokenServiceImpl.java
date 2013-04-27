@@ -2,19 +2,18 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.exception.ServiceException;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountTokenDAO;
-import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,11 +38,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     @Autowired
     private AccountTokenDAO accountTokenDAO;
     @Autowired
-    private AccountService accountService;
-    @Autowired
-    private MobilePassportMappingServiceImpl mobilePassportMappingService;
-    @Autowired
-    private TaskExecutor taskExecutor;
+    private TaskExecutor batchOperateExecutor;
     @Autowired
     private RedisUtils redisUtils;
 
@@ -171,54 +165,18 @@ public class AccountTokenServiceImpl implements AccountTokenService {
      * 异步生成某用户的除当前客户端外的其它客户端的用户状态信息
      */
     @Override
-    public void asynUpdateAccountAuthBySql(final String username, final int clientId,
-                                           final String instanceId) throws ServiceException {
-        taskExecutor.execute(new Runnable() {
+    public void asynbatchUpdateAccountToken(final String passportId, final int clientId) throws ServiceException {
+        batchOperateExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                //根据手机号查询该用户信息
-                String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
-                Account account = accountService.queryAccountByPassportId(passportId);
-                // todo refactoring listNew-->needUpdateAccountTokens；listResult-->allAccountTokens；原来的名字看不出来啥意思
-                List<AccountToken> listNew = new ArrayList<AccountToken>();
-                List<AccountToken> listResult = null;
-                if (account != null) {
-                    //根据该用户的id去auth表里查询用户状态记录，返回list
-                    // todo refactoring 在service封装一下这个方法，先从缓存读取再从mysql读
-                    listResult = accountTokenDAO.listAccountTokenByPassportIdAndClientId(passportId, clientId);
-                    //过滤掉同步执行过的实例，异步更新剩余实例
-                    filterCurrentInstance(listResult, instanceId);
-
-                    if (listResult != null && listResult.size() > 0) {  // todo refactoring for循环不需要加判断了
-                        for (AccountToken accountToken : listResult) {
-                            //生成token及对应的auth对象，添加至listNew列表中，批量更新数据库
-                            AccountToken accountAuth = null;
-                            try {
-                                accountAuth = newAccountToken(account.getPassportId(), accountToken.getClientId(),
-                                        accountToken.getInstanceId());
-                                accountAuth.setId(accountToken.getId());
-                            } catch (ServiceException e) {
-                                e.printStackTrace();  // todo refactoring 这行还不删了？
-                            }
-                            if (accountAuth != null) {
-                                listNew.add(accountAuth);
-                            }
-                        }
-                    }
-                }
-                if (listNew != null && listNew.size() > 0) {
-                    accountTokenDAO.batchUpdateAccountToken(listNew);
+                //根据该用户的id去auth表里查询用户状态记录，返回list
+                List<AccountToken> allAccountTokens = accountTokenDAO.listAccountTokenByPassportIdAndClientId(passportId);
+                buildUpdateAccountTokens(allAccountTokens, clientId);
+                if (CollectionUtils.isNotEmpty(allAccountTokens)) {
+                    accountTokenDAO.batchUpdateAccountToken(allAccountTokens);
                 }
             }
         });
-    }
-
-    private void filterCurrentInstance(List<AccountToken> listResult, String instanceId) {
-        for (AccountToken accountAuth : listResult) {
-            if (instanceId.equals(accountAuth.getInstanceId())) {
-                listResult.remove(accountAuth);
-            }
-        }
     }
 
 
@@ -273,6 +231,26 @@ public class AccountTokenServiceImpl implements AccountTokenService {
         }
 
         return accountAuth;
+    }
+
+    private void buildUpdateAccountTokens(List<AccountToken> accountTokens, int clientId) throws ServiceException {
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+        int accessExpiresIn = appConfig.getAccessTokenExpiresin();
+
+        for (AccountToken accountToken : accountTokens) {
+            String passportId = accountToken.getPassportId();
+            String instanceId = accountToken.getInstanceId();
+            try {
+                String newAccessToken = TokenGenerator.generatorAccessToken(passportId, clientId, accessExpiresIn, instanceId);
+                String newRefreshToken = TokenGenerator.generatorRefreshToken(passportId, clientId, instanceId);
+                accountToken.setAccessToken(newAccessToken);
+                accountToken.setRefreshToken(newRefreshToken);
+            } catch (Exception e) {
+                logger.error("New AccessToken or RefreshToken Generator fail, NO update Account Token, passportId:" +
+                        passportId + " clientId:" + clientId + " instanceId:" + instanceId, e);
+            }
+
+        }
     }
 
     private String buildAccountTokenKey(String passportId, int clientId, String instanceId) {

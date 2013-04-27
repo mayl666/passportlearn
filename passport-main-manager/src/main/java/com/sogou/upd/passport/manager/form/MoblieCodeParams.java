@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.form;
+package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 

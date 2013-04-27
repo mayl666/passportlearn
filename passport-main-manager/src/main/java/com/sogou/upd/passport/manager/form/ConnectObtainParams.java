@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.form;
+package com.sogou.upd.passport.manager.form;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

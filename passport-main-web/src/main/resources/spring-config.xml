@@ -30,14 +30,21 @@
 
     <!--<import resource="spring-config-mail.xml"/>-->
 
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:deploy_config.properties</value>
+            </list>
+        </property>
+    </bean>
+
     <!-- 导入dubbo配置文件 -->
     <!--<import resource="classpath:dubbo/spring-dubbo-*.xml"/>-->
-
     <!-- ========================= RESOURCE DEFINITIONS ========================= -->
 
     <!-- spring mvc setting -->
 
-    <!-- Inteceptor -->
+    <!-- Inteceptor 记录API请求url和执行时间 -->
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>

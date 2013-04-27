@@ -1,7 +1,10 @@
-package com.sogou.upd.passport.common.parameter;
+package com.sogou.upd.passport.common;
 
 
-public class CommonParameters {
+/**
+ * passport通用常量类
+ */
+public class CommonConstant {
 	
 	public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
 	public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -13,7 +16,7 @@ public class CommonParameters {
     public static final String NAME_VALUE_SEPARATOR = "=";
 
 	public static final String DEFAULT_URL = "http://id.sogou.com";
-	public static final String API_ID_SOGOU_DOMAIN = "api.id.sogou.com";
+	public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
 //	public static final String API_ID_SOGOU_DOMAIN = "test01.id.sogou.com";
 	public static final String API_ID_SOGOU_INTERNAL_DOMAIN = "api.id.sogou.com.z.sogou-op.org";
 	

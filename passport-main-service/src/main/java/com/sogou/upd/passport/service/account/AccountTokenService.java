@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 
 /**
@@ -53,7 +53,7 @@ public interface AccountTokenService {
     /**
      * 异步更新某用户其它状态信息
      */
-    public void asynUpdateAccountAuthBySql(final String mobile, final int clientId, final String instanceId) throws ServiceException;
+    public void asynbatchUpdateAccountToken(final String passportId, final int clientId) throws ServiceException;
 
 
 }

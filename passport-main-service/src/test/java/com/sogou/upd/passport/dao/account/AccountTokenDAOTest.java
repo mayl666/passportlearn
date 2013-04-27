@@ -57,7 +57,7 @@ public class AccountTokenDAOTest extends BaseDAOTest {
      */
     @Test
     public void testListAccountTokenByPassportIdAndClientId() {
-        List<AccountToken> list = accountAuthDAO.listAccountTokenByPassportIdAndClientId(PASSPORT_ID, CLIENT_ID);
+        List<AccountToken> list = accountAuthDAO.listAccountTokenByPassportIdAndClientId(PASSPORT_ID);
         Assert.assertEquals(list.size(), 2);
 
     }

@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.service.account.dataobject.PassportIDInfoDO;

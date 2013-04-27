@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.sogou.upd.passport.common.parameter.CommonParameters;
+import com.sogou.upd.passport.common.CommonConstant;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +81,7 @@ public class StringUtil {
    * 将参数URLEncode为UTF-8
    */
   public static String urlEncodeUTF8(String params) throws UnsupportedEncodingException {
-    String en = URLEncoder.encode(params, CommonParameters.DEFAULT_CONTENT_CHARSET);
+    String en = URLEncoder.encode(params, CommonConstant.DEFAULT_CONTENT_CHARSET);
     en = en.replace("+", "%20");
     en = en.replace("*", "%2A");
     return en;
@@ -95,7 +95,7 @@ public class StringUtil {
       String
           en =
           URLEncoder.encode(params,
-                            encoding != null ? encoding : CommonParameters.DEFAULT_CONTENT_CHARSET);
+                            encoding != null ? encoding : CommonConstant.DEFAULT_CONTENT_CHARSET);
       en = en.replace("+", "%20");
       en = en.replace("*", "%2A");
       return en;
@@ -134,8 +134,8 @@ public class StringUtil {
   public static String strToUTF8(String str) throws UnsupportedEncodingException {
     String s = "";
     if (!StringUtils.isEmpty(str)) {
-      byte[] bytes = str.getBytes(CommonParameters.DEFAULT_CONTENT_CHARSET);
-      s = new String(bytes, CommonParameters.DEFAULT_CONTENT_CHARSET);
+      byte[] bytes = str.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET);
+      s = new String(bytes, CommonConstant.DEFAULT_CONTENT_CHARSET);
     }
     return s;
   }

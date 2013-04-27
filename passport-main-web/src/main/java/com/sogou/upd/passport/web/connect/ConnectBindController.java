@@ -2,10 +2,12 @@ package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.manager.app.AppConfigManager;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.ConnectAuthManager;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOBindTokenRequest;
+import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,22 +28,27 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("/v2/connect")
-public class ConnectBindController extends BaseController {
+public class ConnectBindController extends BaseConnectController {
 
     @Autowired
     private ConnectAuthManager connectAuthManager;
     @Autowired
-    private AppConfigManager appConfigManager;
+    private ConfigureManager configureManager;
 
     @RequestMapping(value = "/ssobind/{providerStr}", method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOBind(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
         Result result;
         int provider = AccountTypeEnum.getProvider(providerStr);
-        OAuthSinaSSOBindTokenRequest oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
+        OAuthSinaSSOBindTokenRequest oauthRequest;
+        try {
+            oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
+        } catch (OAuthProblemException e) {
+            return Result.buildError(e.getError(), e.getDescription());
+        }
 
         // 检查client_id和client_secret是否有效
-        if (!appConfigManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
+        if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
             return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
 

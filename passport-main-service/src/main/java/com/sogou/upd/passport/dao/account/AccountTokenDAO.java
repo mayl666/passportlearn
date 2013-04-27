@@ -76,9 +76,8 @@ public interface AccountTokenDAO {
      * 根据passportId和clientId查询所有记录，返回list集合
      * 查除当前instanceId以外的列表也用该方法，因为sql不能出现‘<>’
      */
-    @SQL("select * from account_token  where passport_id=:passport_id and client_id=:client_id")
-    public List<AccountToken> listAccountTokenByPassportIdAndClientId(@SQLParam("passport_id") String passport_id,
-                                                                      @SQLParam("client_id") int client_id) throws
+    @SQL("select * from account_token  where passport_id=:passport_id")
+    public List<AccountToken> listAccountTokenByPassportIdAndClientId(@SQLParam("passport_id") String passport_id) throws
             DataAccessException;
 
     /**

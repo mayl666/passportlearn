@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.service.app;
 
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import org.springframework.stereotype.Service;
 
