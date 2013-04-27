@@ -29,10 +29,9 @@ import java.util.Map;
 
 /**
  *
- *
- *
  */
 public class JSONBodyParametersApplier implements OAuthParametersApplier {
+
     public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
         Gson gson = new Gson();
         String json = gson.toJson(params);

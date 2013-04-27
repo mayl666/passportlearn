@@ -22,7 +22,7 @@
 package com.sogou.upd.passport.oauth2.common.validators;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.exception.ProblemException;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 
@@ -42,14 +42,14 @@ public abstract class AbstractValidator<T extends HttpServletRequest> implements
 
 
     @Override
-    public void validateMethod(T request) throws ProblemException {
+    public void validateMethod(T request) throws OAuthProblemException {
         if (!request.getMethod().equals(OAuth.HttpMethod.POST)) {
             throw OAuthUtils.handleOAuthProblemException("Method not set to POST.");
         }
     }
 
     @Override
-    public void validateContentType(T request) throws ProblemException {
+    public void validateContentType(T request) throws OAuthProblemException {
         String contentType = request.getContentType();
         final String expectedContentType = OAuth.ContentType.URL_ENCODED;
         if (!OAuthUtils.hasContentType(contentType, expectedContentType)) {
@@ -58,7 +58,7 @@ public abstract class AbstractValidator<T extends HttpServletRequest> implements
     }
 
     @Override
-    public void validateRequiredParameters(T request) throws ProblemException {
+    public void validateRequiredParameters(T request) throws OAuthProblemException {
         Set<String> missingParameters = new HashSet<String>();
         for (String requiredParam : requiredParams) {
             String val = request.getParameter(requiredParam);
@@ -72,7 +72,7 @@ public abstract class AbstractValidator<T extends HttpServletRequest> implements
     }
 
     @Override
-    public void validateOptionalParameters(T request) throws ProblemException {
+    public void validateOptionalParameters(T request) throws OAuthProblemException {
 
         Set<String> missingParameters = new HashSet<String>();
 
@@ -98,7 +98,7 @@ public abstract class AbstractValidator<T extends HttpServletRequest> implements
     }
 
     @Override
-    public void validateNotAllowedParameters(T request) throws ProblemException {
+    public void validateNotAllowedParameters(T request) throws OAuthProblemException {
         List<String> notAllowedParameters = new ArrayList<String>();
         for (String requiredParam : notAllowedParams) {
             String val = request.getParameter(requiredParam);
@@ -112,7 +112,7 @@ public abstract class AbstractValidator<T extends HttpServletRequest> implements
     }
 
     @Override
-    public void performAllValidations(T request) throws ProblemException {
+    public void performAllValidations(T request) throws OAuthProblemException {
         this.validateContentType(request);
         this.validateMethod(request);
         this.validateRequiredParameters(request);

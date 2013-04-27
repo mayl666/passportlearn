@@ -1,15 +1,16 @@
 package com.sogou.upd.passport.oauth2.common.utils;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.exception.SystemException;
-import com.sogou.upd.passport.common.parameter.CommonParameters;
+import com.google.common.collect.Sets;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.oauth2.common.OAuthError;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,9 +18,14 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class OAuthUtils {
+
+    private static Logger log = LoggerFactory.getLogger(OAuthUtils.class);
 
     /**
      * 格式化 into <code>application/x-www-form-urlencoded</code> String
@@ -40,10 +46,10 @@ public class OAuthUtils {
                 final String encodedName = StringUtil.encode(parameter.getKey(), encoding);
                 final String encodedValue = value != null ? StringUtil.encode(value, encoding) : "";
                 if (result.length() > 0) {
-                    result.append(CommonParameters.PARAMETER_SEPARATOR);
+                    result.append(CommonConstant.PARAMETER_SEPARATOR);
                 }
                 result.append(encodedName);
-                result.append(CommonParameters.NAME_VALUE_SEPARATOR);
+                result.append(CommonConstant.NAME_VALUE_SEPARATOR);
                 result.append(encodedValue);
             }
         }
@@ -74,7 +80,7 @@ public class OAuthUtils {
 
         String charset = defaultCharset;
         if (charset == null) {
-            charset = CommonParameters.DEFAULT_CONTENT_CHARSET;
+            charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
         }
         Reader reader = new InputStreamReader(is, charset);
         StringBuilder sb = new StringBuilder();
@@ -91,7 +97,7 @@ public class OAuthUtils {
     }
 
     public static Set<String> decodeScopes(String s) {
-        Set<String> scopes = new HashSet<String>();
+        Set<String> scopes = Sets.newHashSet();
         if (!Strings.isNullOrEmpty(s)) {
             String[] scopeArray = s.split(",");
             for (String scope : scopeArray) {
@@ -128,7 +134,7 @@ public class OAuthUtils {
 
 	/*====================  Exception Handle Method========================*/
 
-    public static ProblemException handleBadContentTypeException(String expectedContentType) {
+    public static OAuthProblemException handleBadContentTypeException(String expectedContentType) {
         StringBuilder errorMsg = new StringBuilder("Bad request content type. Expecting: ").append(
                 expectedContentType);
         return handleOAuthProblemException(errorMsg.toString());
@@ -140,7 +146,7 @@ public class OAuthUtils {
      * @param missingParams 缺失的参数
      * @return OAuthProblemException 这个类中包含缺失oauth参数的信息
      */
-    public static ProblemException handleMissingParameters(Set<String> missingParams) {
+    public static OAuthProblemException handleMissingParameters(Set<String> missingParams) {
         StringBuffer sb = new StringBuffer("Missing parameters: ");
         if (!CollectionUtils.isEmpty(missingParams)) {
             for (String miss : missingParams) {
@@ -156,7 +162,7 @@ public class OAuthUtils {
      * @param notAllowedParams
      * @return
      */
-    public static ProblemException handleNotAllowedParametersOAuthException(
+    public static OAuthProblemException handleNotAllowedParametersOAuthException(
             List<String> notAllowedParams) {
         StringBuffer sb = new StringBuffer("Not allowed parameters: ");
         if (!CollectionUtils.isEmpty(notAllowedParams)) {
@@ -167,8 +173,8 @@ public class OAuthUtils {
         return handleOAuthProblemException(sb.toString().trim());
     }
 
-    public static ProblemException handleOAuthProblemException(String message) {
-        return ProblemException.error(OAuthError.Response.INVALID_REQUEST).description(message);
+    public static OAuthProblemException handleOAuthProblemException(String message) {
+        return OAuthProblemException.error(ErrorUtil.ERR_CODE_COM_REQURIE).description(message);
     }
 
     /*=========================== Utils ==============================*/
@@ -184,16 +190,17 @@ public class OAuthUtils {
         return false;
     }
 
-    public static <T> T instantiateClass(Class<T> clazz) throws SystemException {
+    public static <T> T instantiateClass(Class<T> clazz) throws OAuthProblemException {
         try {
             return (T) clazz.newInstance();
         } catch (Exception e) {
-            throw new SystemException(e);
+            log.error("Instantiate Class Exception! Class:" + clazz.getName(), e);
+            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
 
     public static Object instantiateClassWithParameters(Class clazz, Class[] paramsTypes,
-                                                        Object[] paramValues) throws SystemException {
+                                                        Object[] paramValues) throws OAuthProblemException {
         try {
             if (paramsTypes != null && paramValues != null) {
                 if (!(paramsTypes.length == paramValues.length)) {
@@ -210,13 +217,17 @@ public class OAuthUtils {
             }
             return clazz.newInstance();
         } catch (NoSuchMethodException e) {
-            throw new SystemException(e);
+            log.error("Instantiate Class With Parameters NoSuchMethodException! Class:" + clazz.getName(), e);
+            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (InstantiationException e) {
-            throw new SystemException(e);
+            log.error("Instantiate Class With Parameters InstantiationException! Class:" + clazz.getName(), e);
+            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (IllegalAccessException e) {
-            throw new SystemException(e);
+            log.error("Instantiate Class With Parameters IllegalAccessException! Class:" + clazz.getName(), e);
+            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (InvocationTargetException e) {
-            throw new SystemException(e);
+            log.error("Instantiate Class With Parameters InvocationTargetException! Class:" + clazz.getName(), e);
+            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.oauth2.common;
 
-import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.exception.SystemException;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.*;
 
 import java.util.HashMap;
@@ -108,25 +107,25 @@ public class OAuthResponse implements OAuthMessage {
             return this;
         }
 
-        public OAuthResponse buildQueryMessage() throws SystemException {
+        public OAuthResponse buildQueryMessage() throws OAuthProblemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new QueryParameterApplier();
             return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
         }
 
-        public OAuthResponse buildBodyMessage() throws SystemException {
+        public OAuthResponse buildBodyMessage() throws OAuthProblemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new BodyURLEncodedParametersApplier();
             return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
         }
 
-        public OAuthResponse buildJSONMessage() throws SystemException {
+        public OAuthResponse buildJSONMessage() throws OAuthProblemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new JSONBodyParametersApplier();
             return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
         }
 
-        public OAuthResponse buildHeaderMessage() throws SystemException {
+        public OAuthResponse buildHeaderMessage() throws OAuthProblemException {
             OAuthResponse msg = new OAuthResponse(location, responseCode);
             this.applier = new WWWAuthHeaderParametersApplier();
             return (OAuthResponse) applier.applyOAuthParameters(msg, parameters);
@@ -143,7 +142,7 @@ public class OAuthResponse implements OAuthMessage {
             super(responseCode);
         }
 
-        public OAuthErrorResponseBuilder error(ProblemException ex) {
+        public OAuthErrorResponseBuilder error(OAuthProblemException ex) {
             this.parameters.put(OAuthError.OAUTH_ERROR, ex.getError());
             this.parameters.put(OAuthError.OAUTH_ERROR_DESCRIPTION, ex.getDescription());
 //            this.parameters.put(OAuthError.OAUTH_ERROR_URI, ex.getUri());

@@ -21,8 +21,7 @@
 
 package com.sogou.upd.passport.oauth2.common.parameters;
 
-import com.sogou.upd.passport.common.exception.SystemException;
-import com.sogou.upd.passport.common.parameter.CommonParameters;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.oauth2.common.OAuthMessage;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 
@@ -35,10 +34,9 @@ import java.util.Map;
  */
 public class BodyURLEncodedParametersApplier implements OAuthParametersApplier {
 
-    public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params)
-            throws SystemException {
+    public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
 
-        String body = OAuthUtils.format(params.entrySet(), CommonParameters.DEFAULT_CONTENT_CHARSET);
+        String body = OAuthUtils.format(params.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET);
         message.setBody(body);
         return message;
 

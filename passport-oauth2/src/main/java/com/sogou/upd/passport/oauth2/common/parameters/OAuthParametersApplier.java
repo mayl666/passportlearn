@@ -1,12 +1,11 @@
 package com.sogou.upd.passport.oauth2.common.parameters;
 
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.oauth2.common.OAuthMessage;
 
 import java.util.Map;
 
 /**
- * Applies given parameters to the OAuth message.
+ * 将应用传递来的参数转换为OAuth Request信息
  * Provided implementations include OAuth parameters in one of those:
  * <ul>
  * <li>HTTP request URI Query</li>
@@ -16,13 +15,8 @@ import java.util.Map;
  * </ul>
  * <p/>
  * Additional implementations can be provided.
- *
- *
- *
- *
  */
 public interface OAuthParametersApplier {
 
-    OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) throws
-            SystemException;
+    OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params);
 }

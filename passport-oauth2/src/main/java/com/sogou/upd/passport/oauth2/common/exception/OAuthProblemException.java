@@ -1,11 +1,12 @@
-package com.sogou.upd.passport.common.exception;
+package com.sogou.upd.passport.oauth2.common.exception;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProblemException extends Exception {
+public class OAuthProblemException extends Exception {
 
     private String error;
     private String description;
@@ -18,51 +19,51 @@ public class ProblemException extends Exception {
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    private ProblemException(String error) {
-        this(error, "");
+    public OAuthProblemException(String error) {
+        this(error, ErrorUtil.ERR_CODE_MSG_MAP.get(error));
     }
 
-    private ProblemException(String error, String description) {
+    private OAuthProblemException(String error, String description) {
         super(error + " " + description);
         this.description = description;
         this.error = error;
     }
 
 
-    public static ProblemException error(String error) {
-        return new ProblemException(error);
+    public static OAuthProblemException error(String error) {
+        return new OAuthProblemException(error);
     }
 
-    public static ProblemException error(String error, String description) {
-        return new ProblemException(error, description);
+    public static OAuthProblemException error(String error, String description) {
+        return new OAuthProblemException(error, description);
     }
 
-    public ProblemException description(String description) {
+    public OAuthProblemException description(String description) {
         this.description = description;
         return this;
     }
 
-    public ProblemException uri(String uri) {
+    public OAuthProblemException uri(String uri) {
         this.uri = uri;
         return this;
     }
 
-    public ProblemException state(String state) {
+    public OAuthProblemException state(String state) {
         this.state = state;
         return this;
     }
 
-    public ProblemException scope(String scope) {
+    public OAuthProblemException scope(String scope) {
         this.scope = scope;
         return this;
     }
 
-    public ProblemException responseStatus(int responseStatus) {
+    public OAuthProblemException responseStatus(int responseStatus) {
         this.responseStatus = responseStatus;
         return this;
     }
 
-    public ProblemException setParameter(String name, String value) {
+    public OAuthProblemException setParameter(String name, String value) {
         parameters.put(name, value);
         return this;
     }
@@ -137,7 +138,7 @@ public class ProblemException extends Exception {
 
     @Override
     public String toString() {
-        return "ProblemException{"
+        return "OAuthProblemException{"
                 + "description='" + description + '\''
                 + ", error='" + error + '\''
                 + ", uri='" + uri + '\''

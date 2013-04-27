@@ -53,6 +53,7 @@ public class OAuth {
         public static final String JSON = "application/json";
     }
 
+    // Authorization request params
     public static final String OAUTH_RESPONSE_TYPE = "response_type";
     public static final String OAUTH_CLIENT_ID = "client_id";
     public static final String OAUTH_CLIENT_SECRET = "client_secret";
@@ -64,7 +65,10 @@ public class OAuth {
     public static final String OAUTH_ASSERTION = "assertion";
     public static final String OAUTH_SCOPE = "scope";
     public static final String OAUTH_STATE = "state";
+    public static final String OAUTH_DISPLAY = "display"; // 样式
     public static final String OAUTH_GRANT_TYPE = "grant_type";
+    public static final String OAUTH_RENREN_FORCELOGIN = "x_renew"; // renren强制登录
+    public static final String OAUTH_SINA_FORCELOGIN = "forcelogin"; // sina强制登录
 
     public static final String OAUTH_HEADER_NAME = "Bearer";
 
