@@ -1,12 +1,9 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.Account;
-
 import net.paoding.rose.jade.annotation.DAO;
-import net.paoding.rose.jade.annotation.ReturnGeneratedKeys;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
-
 import org.springframework.dao.DataAccessException;
 
 /**
