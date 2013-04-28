@@ -1,12 +1,14 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.connect.OpenAPIUsersManager;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
+
+    private static Logger log = LoggerFactory.getLogger(OpenAPIUsersManagerImpl.class);
 
     @Autowired
     private ConnectTokenService connectTokenService;
@@ -39,7 +43,8 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
                 return Result.buildSuccess("查询成功", "openid", openid);
             }
         } catch (ServiceException e) {
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION);
+            log.error("get OpenId By PassportId fail, passportId:" + passportId + " clientId:" + clientId + " provider:" + provider, e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
 
     }

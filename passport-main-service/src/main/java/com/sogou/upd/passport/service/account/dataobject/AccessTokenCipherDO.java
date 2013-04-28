@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.service.account.dataobject;
 
-import com.sogou.upd.passport.common.parameter.CommonParameters;
+import com.sogou.upd.passport.common.CommonConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,10 +80,10 @@ public class AccessTokenCipherDO {
 
     public String structureEncryptString() {
         StringBuffer sb = new StringBuffer();
-        sb.append(this.passportId).append(CommonParameters.SEPARATOR_1);
-        sb.append(this.clientId).append(CommonParameters.SEPARATOR_1);
-        sb.append(this.vaildTime).append(CommonParameters.SEPARATOR_1);
-        sb.append(this.random).append(CommonParameters.SEPARATOR_1);
+        sb.append(this.passportId).append(CommonConstant.SEPARATOR_1);
+        sb.append(this.clientId).append(CommonConstant.SEPARATOR_1);
+        sb.append(this.vaildTime).append(CommonConstant.SEPARATOR_1);
+        sb.append(this.random).append(CommonConstant.SEPARATOR_1);
         sb.append(this.instanceId);
         return sb.toString();
     }

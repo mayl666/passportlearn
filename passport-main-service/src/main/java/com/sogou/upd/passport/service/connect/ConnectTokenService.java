@@ -1,9 +1,7 @@
 package com.sogou.upd.passport.service.connect;
 
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-
-import java.util.List;
 
 /**
  * Account_Connect表服务接口

@@ -3,9 +3,8 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.exception.ServiceException;
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.connect.ConnectAuthManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -16,11 +15,11 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOBindToken
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.connect.ConnectRelationService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import com.sogou.upd.passport.service.account.dataobject.PassportIDInfoDO;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import com.sogou.upd.passport.service.connect.ConnectRelationService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +92,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
             return Result.buildSuccess("绑定成功", null, null);
         } catch (ServiceException e) {
             logger.error("SSO bind Account Fail:", e);
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
 
@@ -115,47 +114,47 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
                 if (MapUtils.isEmpty(connectRelations)) { // 此账号未授权过任何应用
                     Account account = accountService.initialConnectAccount(openid, ip, provider);
                     if (account == null) {
-                        return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");
+                        return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
                     }
                     passportId = account.getPassportId();
                 } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
                     passportId = connectRelations.get(0).getPassportId(); // 一个openid只可能对应一个passportId
                     Account account = accountService.verifyAccountVaild(passportId);
                     if (account == null) {
-                        return Result.buildError(OAuthError.Response.INVALID_USER, "user account invalid");
+                        return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                     }
                 }
                 accountToken = accountTokenService.initialAccountToken(passportId, clientId, instanceId);
                 if (accountToken == null) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");
+                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
                 }
                 ConnectToken newConnectToken = buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
                         oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
                 boolean isInitialConnectToken = connectTokenService.initialConnectToken(newConnectToken);
                 if (!isInitialConnectToken) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");
+                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
                 }
                 ConnectRelation newConnectRelation = buildConnectRelation(openid, provider, passportId, appKey);
                 boolean isInitialConnectRelation = connectRelationService.initialConnectRelation(newConnectRelation);
                 if (!isInitialConnectRelation) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");
+                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
                 }
             } else { // 此账号在当前应用第N次登录
                 Account account = accountService.verifyAccountVaild(passportId);
                 if (account == null) {
-                    return Result.buildError(OAuthError.Response.INVALID_USER, "user account invalid");
+                    return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 }
                 // 更新当前应用的Account_token，出于安全考虑refresh_token和access_token重新生成
                 accountToken = accountTokenService.updateAccountToken(passportId, clientId, instanceId);
                 if (accountToken == null) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");
+                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
                 }
                 // 更新当前应用的Connect_token
                 ConnectToken updateConnectToken = buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
                         oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
                 boolean isUpdateAccountConnect = connectTokenService.updateConnectToken(updateConnectToken);
                 if (!isUpdateAccountConnect) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL, "login fail");
+                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
                 }
             }
             Map<String, Object> mapResult = Maps.newHashMap();
@@ -165,7 +164,7 @@ public class ConnectAuthManagerImpl implements ConnectAuthManager {
             return Result.buildSuccess("登录成功！", "mapResult", mapResult);
         } catch (ServiceException e) {
             logger.error("SSO login Fail:", e);
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_EXCEPTION);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
 

@@ -1,9 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -76,7 +74,7 @@ public class AccountTokenServiceTest extends AbstractJUnit4SpringContextTests {
      * 测试异步更新某用户其它状态信息
      */
     @Test
-    public void testAsynUpdateAccountAuthBySql() throws SystemException {
-        accountAuthService.asynUpdateAccountAuthBySql(MOBILE, CLIENT_ID_INT, INSTANCE_ID);
+    public void testAsynUpdateAccountAuthBySql() {
+        accountAuthService.asynbatchUpdateAccountToken(MOBILE, CLIENT_ID_INT);
     }
 }

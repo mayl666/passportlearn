@@ -1,10 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.exception.ServiceException;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
-import net.paoding.rose.jade.annotation.SQL;
-import net.paoding.rose.jade.annotation.SQLParam;
-import org.springframework.dao.DataAccessException;
+import com.sogou.upd.passport.exception.ServiceException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,7 +23,7 @@ public interface MobilePassportMappingService {
     /**
      * 根据username获取passport，手机号则查映射表，邮箱账号直接返回
      * @param username
-     * @return
+     * @return passportId
      * @throws ServiceException
      */
     public String queryPassportIdByUsername(String username) throws ServiceException;

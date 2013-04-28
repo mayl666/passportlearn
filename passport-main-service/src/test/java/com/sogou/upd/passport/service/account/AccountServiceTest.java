@@ -1,20 +1,13 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
-
-import org.apache.commons.collections.MapUtils;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.inject.Inject;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: liuling Date: 13-4-7 Time: 下午4:09 To change this template use
@@ -90,7 +83,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      * 测试重置密码
      */
     @Test
-    public void testResetPassword() throws SystemException {
+    public void testResetPassword() {
         Account flag = accountService.resetPassword(MOBILE, PASSWORD);
         if (flag != null) {
             System.out.println("重置成功...");

@@ -2,10 +2,9 @@ package com.sogou.upd.passport.service.app.impl;
 
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.ConnectConfigDAO;
-import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.slf4j.Logger;

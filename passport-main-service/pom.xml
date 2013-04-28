@@ -49,18 +49,6 @@
             <artifactId>spring-jdbc</artifactId>
             <version>${springframework.version}</version>
         </dependency>
-        <!--<dependency>
-            <groupId>com.54chen</groupId>
-            <artifactId>paoding-rose-jade</artifactId>
-            <version>1.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-
         <dependency>
             <groupId>com.sogou.passport</groupId>
             <artifactId>rose-jade</artifactId>
@@ -99,14 +87,14 @@
 
         <!-- Rabbit Mq-->
         <!--<dependency>-->
-            <!--<groupId>com.rabbitmq</groupId>-->
-            <!--<artifactId>amqp-client</artifactId>-->
-            <!--<version>${rabbitmq.version}</version>-->
+        <!--<groupId>com.rabbitmq</groupId>-->
+        <!--<artifactId>amqp-client</artifactId>-->
+        <!--<version>${rabbitmq.version}</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.springframework.amqp</groupId>-->
-            <!--<artifactId>spring-rabbit</artifactId>-->
-            <!--<version>1.1.2.RELEASE</version>-->
+        <!--<groupId>org.springframework.amqp</groupId>-->
+        <!--<artifactId>spring-rabbit</artifactId>-->
+        <!--<version>1.1.2.RELEASE</version>-->
         <!--</dependency>-->
         <!--http components-->
         <dependency>
@@ -136,5 +124,46 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <delete file="src/main/resources/deploy_config.properties" />
+                                <copy file="${app_config_file}" tofile="src/main/resources/deploy_config.properties" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <app_config_file>
+                    src/main/resources/deploy_config_DEV.properties
+                </app_config_file>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <app_config_file>
+                    src/main/resources/deploy_config_TEST.properties
+                </app_config_file>
+            </properties>
+        </profile>
+    </profiles>
 </project>

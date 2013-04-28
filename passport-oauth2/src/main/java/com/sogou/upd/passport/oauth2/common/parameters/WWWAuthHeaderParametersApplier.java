@@ -21,7 +21,6 @@
 
 package com.sogou.upd.passport.oauth2.common.parameters;
 
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.OAuthMessage;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
@@ -35,8 +34,7 @@ import java.util.Map;
  */
 public class WWWAuthHeaderParametersApplier implements OAuthParametersApplier {
 
-    public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params)
-        throws SystemException {
+    public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
         String header = OAuthUtils.encodeOAuthHeader(params);
         message.addHeader(OAuth.HeaderType.WWW_AUTHENTICATE, header);
         return message;

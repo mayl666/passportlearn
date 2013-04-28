@@ -1,8 +1,5 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.common.exception.SystemException;
-import com.sogou.upd.passport.model.account.AccountToken;
-
 import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import junit.framework.Assert;

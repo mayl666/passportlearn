@@ -1,9 +1,8 @@
 package com.sogou.upd.passport.oauth2.authzserver.request;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.exception.SystemException;
 import com.sogou.upd.passport.oauth2.common.OAuth;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.common.validators.OAuthValidator;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public abstract class OAuthRequest {
     protected Map<String, Class<? extends OAuthValidator<HttpServletRequest>>> validators =
             new HashMap<String, Class<? extends OAuthValidator<HttpServletRequest>>>();
 
-    public OAuthRequest(HttpServletRequest request) throws SystemException, ProblemException {
+    public OAuthRequest(HttpServletRequest request) throws OAuthProblemException {
         this.request = request;
         validate();
     }
@@ -34,13 +33,13 @@ public abstract class OAuthRequest {
     public OAuthRequest() {
     }
 
-    protected void validate() throws SystemException, ProblemException {
+    protected void validate() throws OAuthProblemException {
         try {
             validator = initValidator();
             validator.validateMethod(request);
 //            validator.validateContentType(request);
             validator.validateRequiredParameters(request);
-        } catch (ProblemException e) {
+        } catch (OAuthProblemException e) {
             try {
                 String redirectUri = request.getParameter(OAuth.OAUTH_REDIRECT_URI);
                 if (!Strings.isNullOrEmpty(redirectUri)) {
@@ -57,8 +56,7 @@ public abstract class OAuthRequest {
 
     }
 
-    protected abstract OAuthValidator<HttpServletRequest> initValidator() throws ProblemException,
-            SystemException;
+    protected abstract OAuthValidator<HttpServletRequest> initValidator() throws OAuthProblemException;
 
     public String getParam(String name) {
         return request.getParameter(name);

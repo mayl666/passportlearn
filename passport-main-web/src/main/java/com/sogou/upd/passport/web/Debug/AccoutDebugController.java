@@ -46,7 +46,7 @@ public class AccoutDebugController {
                     return Result.buildError("10000", "删除失败！");
                 }
             } else {
-                return Result.buildError(ErrorUtil.ERR_CODE_COM_NOUSER);
+                return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
         } else {
             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);

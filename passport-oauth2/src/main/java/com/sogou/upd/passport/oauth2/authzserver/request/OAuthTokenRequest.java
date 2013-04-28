@@ -1,8 +1,7 @@
 package com.sogou.upd.passport.oauth2.authzserver.request;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.exception.SystemException;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.authzserver.validator.AuthorizationCodeValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.ClientCredentialValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.PasswordValidator;
@@ -21,12 +20,12 @@ import javax.servlet.http.HttpServletRequest;
 public class OAuthTokenRequest extends OAuthRequest {
 
 
-    public OAuthTokenRequest(HttpServletRequest request) throws SystemException, ProblemException {
+    public OAuthTokenRequest(HttpServletRequest request) throws OAuthProblemException {
         super(request);
     }
 
     @Override
-    protected OAuthValidator<HttpServletRequest> initValidator() throws ProblemException, SystemException {
+    protected OAuthValidator<HttpServletRequest> initValidator() throws OAuthProblemException {
         validators.put(GrantType.PASSWORD.toString(), PasswordValidator.class);
         validators.put(GrantType.CLIENT_CREDENTIALS.toString(), ClientCredentialValidator.class);
         validators.put(GrantType.AUTHORIZATION_CODE.toString(), AuthorizationCodeValidator.class);
@@ -53,7 +52,7 @@ public class OAuthTokenRequest extends OAuthRequest {
     public String getRefreshToken() {
         return getParam(OAuth.OAUTH_REFRESH_TOKEN);
     }
-    
+
     public String getCode() {
         return getParam(OAuth.OAUTH_CODE);
     }

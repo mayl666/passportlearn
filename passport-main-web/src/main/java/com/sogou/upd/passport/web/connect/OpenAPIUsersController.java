@@ -5,8 +5,9 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.connect.OpenAPIUsersManager;
+import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.form.ConnectObtainParams;
+import com.sogou.upd.passport.manager.form.ConnectObtainParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/v2/connect")
-public class OpenAPIUsersController {
+public class OpenAPIUsersController extends BaseConnectController{
 
     @Autowired
     private OpenAPIUsersManager openAPIUsersManager;

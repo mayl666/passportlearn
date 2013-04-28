@@ -7,7 +7,8 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
-import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
+import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
+import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.service.account.AccountTokenService;
@@ -36,18 +37,12 @@ public class AccountRegManagerImpl implements AccountRegManager {
     private MobilePassportMappingService mobilePassportMappingService;
 
     @Override
-    public Result mobileRegister(RegisterParameters regParams) {
+    public Result mobileRegister(MobileRegParams regParams, String ip) {
         String mobile = regParams.getMobile();
         String smsCode = regParams.getSmscode();
         String password = regParams.getPassword();
-        String ip = regParams.getIp();
         int clientId = regParams.getClient_id();
         String instanceId = regParams.getInstance_id();
-        //直接查询Account的mobile字段
-        String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-        if (!Strings.isNullOrEmpty(passportId)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-        }
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
         if (!checkSmsInfo) {
@@ -56,12 +51,12 @@ public class AccountRegManagerImpl implements AccountRegManager {
         Account account = accountService.initialAccount(mobile, password, ip, AccountTypeEnum.PHONE.getValue());
         if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
             boolean isInitialMobilePassportMapping = mobilePassportMappingService.initialMobilePassportMapping(mobile, account.getPassportId());
-            if(!isInitialMobilePassportMapping){
+            if (!isInitialMobilePassportMapping) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
             //生成token并向account_auth表里插一条用户状态记录
             AccountToken accountToken = accountTokenService.initialAccountToken(account.getPassportId(),
-                                                                                clientId, instanceId);
+                    clientId, instanceId);
             if (accountToken != null) {   //如果用户授权信息表插入也成功，则说明注册成功
                 //清除验证码的缓存
                 mobileCodeSenderService.deleteSmsCache(mobile, clientId);

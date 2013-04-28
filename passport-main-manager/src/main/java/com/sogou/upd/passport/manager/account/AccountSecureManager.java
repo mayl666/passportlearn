@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.account.parameters.RegisterParameters;
+import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 
 /**
  * 账户安全相关 User: mayan Date: 13-4-15 Time: 下午4:30 To change this template use File | Settings | File
@@ -33,5 +33,5 @@ public interface AccountSecureManager {
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-  public Result resetPassword(RegisterParameters regParams) throws Exception;
+  public Result resetPassword(MobileModifyPwdParams regParams) throws Exception;
 }

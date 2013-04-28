@@ -23,7 +23,7 @@ package com.sogou.upd.passport.oauth2.common.validators;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.sogou.upd.passport.common.exception.ProblemException;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 
 /**
  *
@@ -32,16 +32,16 @@ import com.sogou.upd.passport.common.exception.ProblemException;
  */
 public interface OAuthValidator<T extends HttpServletRequest> {
 
-    public void validateMethod(T request) throws ProblemException;
+    public void validateMethod(T request) throws OAuthProblemException;
 
-    public void validateContentType(T request) throws ProblemException;
+    public void validateContentType(T request) throws OAuthProblemException;
 
-    public void validateRequiredParameters(T request) throws ProblemException;
+    public void validateRequiredParameters(T request) throws OAuthProblemException;
 
-    public void validateOptionalParameters(T request) throws ProblemException;
+    public void validateOptionalParameters(T request) throws OAuthProblemException;
 
-    public void validateNotAllowedParameters(T request) throws ProblemException;
+    public void validateNotAllowedParameters(T request) throws OAuthProblemException;
 
-    public void performAllValidations(T request) throws ProblemException;
+    public void performAllValidations(T request) throws OAuthProblemException;
 
 }

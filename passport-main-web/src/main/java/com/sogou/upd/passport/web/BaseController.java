@@ -1,18 +1,11 @@
 package com.sogou.upd.passport.web;
 
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.exception.ApplicationException;
-import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.parameter.CommonParameters;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 
 public class BaseController {
 
@@ -74,41 +67,5 @@ public class BaseController {
         }
 		return false;
 	}
-
-    /**
-     * 处理Controller抛出的异常
-     * ApplicationException-参数异常
-     * ProblemException-接口调用问题异常
-     * Exception-服务器异常
-     * @param e
-     * @param uri 接口URI
-     * @param connectName 可以为null
-     * @return
-     */
-    public Map<String, Object> handleException(Throwable e, String connectName, String uri) {
-
-        if (e instanceof ApplicationException) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("[" + uri + "] Provider:" + connectName
-                        + " request params error! ErrorMessage:" + e.getMessage());
-            }
-            return ErrorUtil.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, e.getMessage());
-        } else if (e instanceof ProblemException) {
-            String desc = ((ProblemException) e).getDescription();
-            String error = ((ProblemException) e).getError();
-            if (StringUtils.isEmpty(desc)) {
-                desc = ErrorUtil.ERR_CODE_MSG_MAP.get(error);
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("[" + uri + "] Provider:" + connectName + " Exception; Error:"
-                        + error + ", Message:" + desc);
-            }
-            return ErrorUtil.buildError(error, desc);
-        } else {
-            logger.error("HasError!, uri:[" + uri + "]", e);
-            return ErrorUtil.buildExceptionError(e.getMessage());
-        }
-
-    }
 
 }

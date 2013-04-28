@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.oauth2.openresource.response;
 
-import com.sogou.upd.passport.common.exception.ProblemException;
-import com.sogou.upd.passport.common.exception.SystemException;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.validators.OAuthValidator;
 import com.sogou.upd.passport.oauth2.openresource.OpenOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.OAuthSinaSSOBindTokenValidator;
@@ -16,12 +15,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class OAuthSinaSSOBindTokenRequest extends OAuthSinaSSOTokenRequest {
 
-    public OAuthSinaSSOBindTokenRequest(HttpServletRequest request) throws SystemException, ProblemException {
+    public OAuthSinaSSOBindTokenRequest(HttpServletRequest request) throws OAuthProblemException {
         super(request);
     }
 
     @Override
-    protected OAuthValidator<HttpServletRequest> initValidator() throws ProblemException {
+    protected OAuthValidator<HttpServletRequest> initValidator() throws OAuthProblemException {
         return new OAuthSinaSSOBindTokenValidator();
     }
 

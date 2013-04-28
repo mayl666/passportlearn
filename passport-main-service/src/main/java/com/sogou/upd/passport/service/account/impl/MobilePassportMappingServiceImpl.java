@@ -2,12 +2,10 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
-import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.model.account.MobilePassportMapping;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

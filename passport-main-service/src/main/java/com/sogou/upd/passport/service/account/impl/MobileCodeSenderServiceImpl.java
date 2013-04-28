@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.exception.ServiceException;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;

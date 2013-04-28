@@ -1,11 +1,8 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.sogou.upd.passport.common.parameter.CommonParameters;
+import com.sogou.upd.passport.common.CommonConstant;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class ErrorUtil {
@@ -16,7 +13,7 @@ public class ErrorUtil {
      * ************************通用的错误代码start********************************
      */
     // 系统异常错误
-    public static final String ERR_CODE_COM_EXCEPTION = "10001";
+    public static final String SYSTEM_UNKNOWN_EXCEPTION = "10001";
     // 必填的参数错误
     public static final String ERR_CODE_COM_REQURIE = "10002";
     // 签名错误
@@ -27,8 +24,8 @@ public class ErrorUtil {
     public static final String ERR_OPEN_ID = "10006";
     // 传入字段不存在，请输入正确的字段
     public static final String ERR_QUERY_FIELDS = "10008";
-    // 账号不存在
-    public static final String ERR_CODE_COM_NOUSER = "10009";
+    // 账号不存在或异常或未激活
+    public static final String INVALID_ACCOUNT = "10009";
 
     //***************************通用的错误代码end*********************************
 
@@ -45,8 +42,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
     // 登录不成功，帐号或密码错误
     public static final String ERR_CODE_ACCOUNT_LOGINERROR = "20206";
-    // 体验用户不允许登录
-    public static final String ERR_CODE_ACCOUNT_EXPUSERLOGIN = "20207";
     // 短信验证码错误，输入的错误或者验证码过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 密码格式非法，只能是可打印ascii字符，长度大于=6
@@ -171,23 +166,22 @@ public class ErrorUtil {
     //***************************好友类API错误代码end********************************
 
     static {
-        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_EXCEPTION, "未知错误");
+        ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "参数错误,签名过期或者不合法");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_NOUSER, "账号不存在");
+        ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(ERR_QUERY_FIELDS, "传入字段不存在，请输入正确的字段");
 
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_OPEN_ID, "openid错误");
 
         // account
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "这个帐号已经注册过啦");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信已经到20条上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGINERROR, "帐号或密码不正确");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_EXPUSERLOGIN, "呃，没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码不正确");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PASSWDFORMAT, "请输入6-16位的数字、字母或字符");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_VERIFY_FIELDS, "昵称格式有误，只能包含中文、英文大小写,-,_,字母或空格");
@@ -225,7 +219,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
         ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_NOT_EXIST, "第三方关联帐号不存在，请先关联");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败,没有此用户");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败");
 
         // info
         ERR_CODE_MSG_MAP.put(PIC_URL_NOT_NULL, "图片url不能为空");
@@ -248,22 +242,22 @@ public class ErrorUtil {
 
     public static Map<String, Object> buildExceptionError(String msg) {
         Map<String, Object> retMap = Maps.newHashMap();
-        retMap.put(CommonParameters.RESPONSE_STATUS, ERR_CODE_COM_EXCEPTION);
-        retMap.put(CommonParameters.RESPONSE_STATUS_TEXT, msg);
+        retMap.put(CommonConstant.RESPONSE_STATUS, SYSTEM_UNKNOWN_EXCEPTION);
+        retMap.put(CommonConstant.RESPONSE_STATUS_TEXT, msg);
         return retMap;
     }
 
     public static Map<String, Object> buildError(String code) {
         Map<String, Object> retMap = Maps.newHashMap();
-        retMap.put(CommonParameters.RESPONSE_STATUS, code);
-        retMap.put(CommonParameters.RESPONSE_STATUS_TEXT, ERR_CODE_MSG_MAP.get(code));
+        retMap.put(CommonConstant.RESPONSE_STATUS, code);
+        retMap.put(CommonConstant.RESPONSE_STATUS_TEXT, ERR_CODE_MSG_MAP.get(code));
         return retMap;
     }
 
     public static Map<String, Object> buildError(String code, String msg) {
         Map<String, Object> retMap = Maps.newHashMap();
-        retMap.put(CommonParameters.RESPONSE_STATUS, code);
-        retMap.put(CommonParameters.RESPONSE_STATUS_TEXT, msg);
+        retMap.put(CommonConstant.RESPONSE_STATUS, code);
+        retMap.put(CommonConstant.RESPONSE_STATUS_TEXT, msg);
         return retMap;
     }
 
