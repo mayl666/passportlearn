@@ -35,7 +35,6 @@ import java.util.UUID;
  * | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/connect")
 public class ConnectLoginController extends BaseConnectController {
 
     private static final String DEFAULT_CONNECT_REDIRECT_URL = "http://account.sogou.com";
@@ -45,7 +44,7 @@ public class ConnectLoginController extends BaseConnectController {
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = "/v2/ssologin/{providerStr}", method = RequestMethod.POST)
+    @RequestMapping(value = "/v2/connect/ssologin/{providerStr}", method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
         Result result;
@@ -67,7 +66,7 @@ public class ConnectLoginController extends BaseConnectController {
         return result;
     }
 
-    @RequestMapping(value = "/login")
+    @RequestMapping(value = "/connect/login")
     public ModelAndView authorize(HttpServletRequest req, HttpServletResponse res,
                                   ConnectLoginParams oauthLoginParams) throws IOException, OAuthProblemException {
 
