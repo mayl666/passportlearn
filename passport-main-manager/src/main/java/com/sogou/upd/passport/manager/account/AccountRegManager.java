@@ -27,7 +27,7 @@ public interface AccountRegManager {
    * @param regParams 参数封装的对象
    * @return Result格式的返回值，提示注册成功信息
    */
-  public Result webRegister(WebRegisterParameters regParams) throws Exception;
+  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception;
 
   /**
    * 检查注册用户是否在黑名单中，排除恶意注册

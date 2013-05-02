@@ -12,6 +12,12 @@ import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 public interface AccountService {
 
   /**
+   * 初始化web用户账号
+   */
+  public Account initialWebAccount(String username)
+      throws ServiceException;
+
+  /**
    * 初始化非第三方用户账号
    */
   public Account initialAccount(String username, String password, String ip, int provider)
@@ -63,12 +69,12 @@ public interface AccountService {
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-  public boolean sendActiveEmail(String username,String passpord,int clientId) throws Exception;
+  public boolean sendActiveEmail(String username,String passpord,int clientId,String ip) throws Exception;
 
   /**
    * 激活验证邮件
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-  public boolean activeEmail(ActiveEmailDO activeParams) throws Exception;
+  public boolean activeEmail(String username,String token,int clientId) throws Exception;
 }

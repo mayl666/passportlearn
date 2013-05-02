@@ -8,13 +8,13 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.MD5Encryption;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sohu.sendcloud.Message;
@@ -26,10 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +51,41 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private MailUtils mailUtils;
 
-    @Override
+  @Override
+  public Account initialWebAccount(String username) throws ServiceException {
+    Account account = null;
+    String cacheKey =null;
+    try {
+      cacheKey = buildAccountKey(username);
+      if (redisUtils.checkKeyIsExist(cacheKey)) {
+        Type type = new TypeToken<Account>() {
+        }.getType();
+        account = redisUtils.getObject(cacheKey, type);
+        if(account!=null){
+          account.setStatus(AccountStatusEnum.REGULAR.getValue());
+          long id = accountDAO.insertAccount(username, account);
+          if (id != 0) {
+            //删除临时账户缓存，成为正式账户
+            redisUtils.set(cacheKey, account);
+            //设置cookie
+            CookieUtils.setCookie();
+            return account;
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new ServiceException(e);
+    } finally {
+      //删除激活
+      cacheKey= CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN +username;
+      redisUtils.delete(cacheKey);
+    }
+
+
+    return null;
+  }
+
+  @Override
     public Account initialAccount(String username, String password, String ip, int provider) throws ServiceException {
         Account account = new Account();
         String passportId = PassportIDGenerator.generator(username, provider);
@@ -200,7 +231,7 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public boolean sendActiveEmail(String username,String passpord, int clientId) throws ServiceException {
+  public boolean sendActiveEmail(String username,String passpord, int clientId,String ip) throws ServiceException {
     boolean flag=true;
     try{
       String code = UUID.randomUUID().toString().replaceAll("-", "");
@@ -233,7 +264,7 @@ public class AccountServiceImpl implements AccountService {
       redisUtils.set(cacheKey, token);
       redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
       //临时注册到缓存
-      initialAccountToCache(username,passpord);
+      initialAccountToCache(username,passpord,ip);
     }catch (Exception e){
       flag=false;
       throw new ServiceException(e);
@@ -242,12 +273,8 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public boolean activeEmail(ActiveEmailDO activeParams) throws ServiceException {
+  public boolean activeEmail(String username,String token,int clientId) throws ServiceException {
     try{
-      String username=activeParams.getPassword_id();
-      int clientId=activeParams.getClient_id();
-      String token=activeParams.getToken();
-
       String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
       if(redisUtils.checkKeyIsExist(cacheKey)){
             String tokenCache=redisUtils.get(cacheKey);
@@ -255,7 +282,6 @@ public class AccountServiceImpl implements AccountService {
               return true;
             }
       }
-
     }catch (Exception e){
       throw new ServiceException(e);
     }
@@ -265,7 +291,7 @@ public class AccountServiceImpl implements AccountService {
   /*
    * 外域邮箱注册
    */
-  public void initialAccountToCache(String username,String password)throws ServiceException{
+  public void initialAccountToCache(String username,String password,String ip)throws ServiceException{
     int provider=AccountTypeEnum.EMAIL.getValue();
     Account account = new Account();
     String passportId = PassportIDGenerator.generator(username, provider);
@@ -280,6 +306,7 @@ public class AccountServiceImpl implements AccountService {
       account.setAccountType(provider);
       account.setStatus(AccountStatusEnum.DISABLED.getValue());
       account.setVersion(Account.NEW_ACCOUNT_VERSION);
+      account.setRegIp(ip);
 
       String cacheKey = buildAccountKey(username);
       redisUtils.set(cacheKey, account);

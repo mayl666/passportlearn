@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
@@ -17,7 +18,9 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,25 +90,33 @@ public class AccountRegManagerImpl implements AccountRegManager {
     }
 
   @Override
-  public Result webRegister(WebRegisterParameters regParams) throws Exception {
+  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
+    Result result=null;
+    try{
+      int clientId = regParams.getClient_id();
+      String username = regParams.getUsername();
+      String password = regParams.getPassword();
+      String code = regParams.getCode();
 
-    int clientId = regParams.getClient_id();
-    String username = regParams.getUsername();
-    String password = regParams.getPassword();
-    String code = regParams.getCode();
 
+      //判断注册账号类型，sogou用户还是第三方用户
+      int emailType=checkEmailType(username);
 
-    //判断注册账号类型，sogou用户还是第三方用户
-    int emailType=checkEmailType(username);
-
-    //写缓存，发验证邮件
-    switch (emailType){
-      case 0://sougou用户，直接注册       todo
+      //写缓存，发验证邮件
+      switch (emailType){
+        case 0://sougou用户，直接注册
 //        accountService.initialAccount()
-        break;
-      case 1://外域邮件注册
-        accountService.sendActiveEmail(username,password,clientId);
-        break;
+          break;
+        case 1://外域邮件注册
+          boolean isSendSuccess=accountService.sendActiveEmail(username,password,clientId,ip);
+          if(isSendSuccess){
+            return Result.buildSuccess("感谢注册，请立即激活账户！");
+          }
+          break;
+      }
+    }catch (ServiceException e){
+         logger.error("webRegister error!",e);
+         Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     }
     return null;
   }
@@ -118,8 +129,24 @@ public class AccountRegManagerImpl implements AccountRegManager {
 
   @Override
   public Result activeEmail(ActiveEmailParameters activeParams) throws Exception {
-    boolean flagResult=accountService.activeEmail(activeParams);
-    return null;
+    String username=activeParams.getPassport_id();
+    String token=activeParams.getToken();
+    int clientId=activeParams.getClient_id();
+    //激活邮件
+    boolean isSuccessActive=accountService.activeEmail(username,token,clientId);
+
+    if(isSuccessActive) {
+      //激活成功
+      Account account=accountService.initialWebAccount(username);
+      if(account !=null){
+        return Result.buildSuccess("激活成功！");
+      } else {
+        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+      }
+    }else {
+      //激活失败
+      return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+    }
   }
 
   /*

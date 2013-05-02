@@ -52,7 +52,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
     boolean flag = false;
     try {
-      flag = RedisUtils.checkKeyIsExist(cacheKey);
+      flag = redisUtils.checkKeyIsExist(cacheKey);
     } catch (Exception e) {
       logger.error("[SMS] service method checkCacheKeyIsExist error.{}", e);
       new ServiceException(e);
@@ -94,7 +94,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     try {
       String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
 
-      if (!RedisUtils.checkKeyIsExist(cacheKey)) {
+      if (!redisUtils.checkKeyIsExist(cacheKey)) {
         boolean flag = redisUtils.hPutIfAbsent(cacheKey, "sendNum", "1");
         if (flag) {
           redisUtils.expire(cacheKey, SMSUtil.SMS_ONEDAY);
@@ -133,7 +133,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
       if (!Strings.isNullOrEmpty(smsText)) {
         isSend = SMSUtil.sendSMS(mobile, smsText);
         if (isSend) {
-          result = Result.buildSuccess("获取验证码成功", "smscode", randomCode);
+          result = Result.buildSuccess("获取验证码成功", "", "");
           return result;
         }
       } else {
