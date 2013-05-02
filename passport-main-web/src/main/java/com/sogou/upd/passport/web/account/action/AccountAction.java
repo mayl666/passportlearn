@@ -67,20 +67,15 @@ public class AccountAction extends BaseController {
    *
    * @param activeParams 传入的参数
    */
-  @RequestMapping(value = "/activeEmail", method = RequestMethod.GET)
+  @RequestMapping(value = "/activemail", method = RequestMethod.GET)
   @ResponseBody
   public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
       throws Exception {
 
     //todo 参数验证
-    Result result=null;
-    String username=activeParams.getPassport_id();
     //验证用户是否注册过
-    if (!accountManager.isAccountExists(username)) {
-      result = accountRegManager.activeEmail(activeParams);
-    }else{
-         result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
-    }
+    Result result = accountRegManager.activeEmail(activeParams);
+
 
 
     //验证用户是否注册过

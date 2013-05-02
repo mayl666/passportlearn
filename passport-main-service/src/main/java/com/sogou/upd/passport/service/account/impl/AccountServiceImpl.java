@@ -40,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
     private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN; // passportId与accountToken映射
 
-    private static final String PASSPORT_ACTIVE_EMAIL_URL="http://account.sogou.com/web/activeemail?";
+    private static final String PASSPORT_ACTIVE_EMAIL_URL="http://account.sogou.com/web/activemail?";
 
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);

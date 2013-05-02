@@ -74,7 +74,7 @@ public interface AccountService {
   /**
    * 激活验证邮件
    *
-   * @return Result格式的返回值, 成功或失败，返回提示信息
+   * @return
    */
   public boolean activeEmail(String username,String token,int clientId) throws Exception;
 }
