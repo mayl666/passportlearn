@@ -1,14 +1,14 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
-import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
+import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.service.account.AccountTokenService;
@@ -16,6 +16,9 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +38,14 @@ public class AccountRegManagerImpl implements AccountRegManager {
     private AccountTokenService accountTokenService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private RedisUtils redisUtils;
 
-    @Override
+    private static final Logger logger = LoggerFactory.getLogger(AccountRegManagerImpl.class);
+
+
+
+  @Override
     public Result mobileRegister(MobileRegParams regParams, String ip) {
         String mobile = regParams.getMobile();
         String smsCode = regParams.getSmscode();
@@ -76,5 +85,57 @@ public class AccountRegManagerImpl implements AccountRegManager {
         }
     }
 
+  @Override
+  public Result webRegister(WebRegisterParameters regParams) throws Exception {
 
+    int clientId = regParams.getClient_id();
+    String username = regParams.getUsername();
+    String password = regParams.getPassword();
+    String code = regParams.getCode();
+
+
+    //判断注册账号类型，sogou用户还是第三方用户
+    int emailType=checkEmailType(username);
+
+    //写缓存，发验证邮件
+    switch (emailType){
+      case 0://sougou用户，直接注册
+        break;
+      case 1://外域邮件注册
+        accountService.sendActiveEmail(username,clientId);
+        break;
+    }
+
+
+    //查看用户是否注册过
+//    if (!Strings.isNullOrEmpty(passportId)) {
+//      return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+//    }
+//
+//
+//    //判断用户是否注册过
+//    Account account = accountService.initialAccount(mobile, password, ip,
+//                                                    AccountTypeEnum.EMAIL.getValue(),
+//                                                    AccountStatusEnum.DISABLED.getValue());
+//    boolean isSuccess = accountEmailService.sendActiveEmail(regParams);
+    return null;
+  }
+
+  @Override
+  public boolean isInAccountBlackList(String passportId, String ip)
+      throws Exception {
+    return accountService.isInAccountBlackListByIp(passportId,ip);
+  }
+
+  /*
+   *判断注册账号类型，sogou用户还是第三方用户
+   */
+  private int checkEmailType(String username){
+    //todo 搜狐域的不注册
+    if (username.contains("@sogou.com")){
+      return 0;
+    } else{
+      return 1;
+    }
+  }
 }

@@ -11,4 +11,8 @@
             <value>7miIOEyr</value>
         </constructor-arg>
     </bean>
+
+    <bean id="mailUtils" class="com.sogou.upd.passport.common.utils.MailUtils">
+        <property name="sendCloud" ref="sendCloud" />
+    </bean>
 </beans>

@@ -30,6 +30,12 @@
             <artifactId>spring-data-redis</artifactId>
             <version>1.0.3.RELEASE</version>
         </dependency>
+        <!-- sohu sendcloud-->
+        <dependency>
+            <groupId>com.sohu</groupId>
+            <artifactId>sendcloud</artifactId>
+            <version>1.0.6</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-configuration</groupId>
