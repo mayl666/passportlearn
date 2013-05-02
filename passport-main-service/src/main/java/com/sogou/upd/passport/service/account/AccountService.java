@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
 /**
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File
@@ -62,6 +63,12 @@ public interface AccountService {
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-  public boolean sendActiveEmail(String username,int clientId) throws Exception;
+  public boolean sendActiveEmail(String username,String passpord,int clientId) throws Exception;
 
+  /**
+   * 激活验证邮件
+   *
+   * @return Result格式的返回值, 成功或失败，返回提示信息
+   */
+  public boolean activeEmail(ActiveEmailDO activeParams) throws Exception;
 }

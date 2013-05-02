@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 
@@ -41,6 +42,6 @@ public interface AccountRegManager {
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-//  public Result activeEmail(ActiveEmailParameters activeParams) throws Exception;
+  public Result activeEmail(ActiveEmailParameters activeParams) throws Exception;
 
 }

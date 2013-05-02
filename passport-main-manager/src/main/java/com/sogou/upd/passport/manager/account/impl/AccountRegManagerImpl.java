@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
+import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.model.account.Account;
@@ -99,25 +100,13 @@ public class AccountRegManagerImpl implements AccountRegManager {
 
     //写缓存，发验证邮件
     switch (emailType){
-      case 0://sougou用户，直接注册
+      case 0://sougou用户，直接注册       todo
+//        accountService.initialAccount()
         break;
       case 1://外域邮件注册
-        accountService.sendActiveEmail(username,clientId);
+        accountService.sendActiveEmail(username,password,clientId);
         break;
     }
-
-
-    //查看用户是否注册过
-//    if (!Strings.isNullOrEmpty(passportId)) {
-//      return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-//    }
-//
-//
-//    //判断用户是否注册过
-//    Account account = accountService.initialAccount(mobile, password, ip,
-//                                                    AccountTypeEnum.EMAIL.getValue(),
-//                                                    AccountStatusEnum.DISABLED.getValue());
-//    boolean isSuccess = accountEmailService.sendActiveEmail(regParams);
     return null;
   }
 
@@ -125,6 +114,12 @@ public class AccountRegManagerImpl implements AccountRegManager {
   public boolean isInAccountBlackList(String passportId, String ip)
       throws Exception {
     return accountService.isInAccountBlackListByIp(passportId,ip);
+  }
+
+  @Override
+  public Result activeEmail(ActiveEmailParameters activeParams) throws Exception {
+    boolean flagResult=accountService.activeEmail(activeParams);
+    return null;
   }
 
   /*

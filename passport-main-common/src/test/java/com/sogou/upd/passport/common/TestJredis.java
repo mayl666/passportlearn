@@ -34,10 +34,13 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void test() {
-//        BoundValueOperations boundValueOperation=redisTemplate.boundValueOps("mayan11");
-//        boundValueOperation.setIfAbsent("tes1t");
-//        System.out.println(boundValueOperation.get());
-//        System.out.println(boundValueOperation.setIfAbsent("test"));
+      try {
+        redisUtils.set("aaaaa","bbbb");
+        redisUtils.expire("aaaaa",15);
+      } catch (Exception e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+
 
     }
 }
