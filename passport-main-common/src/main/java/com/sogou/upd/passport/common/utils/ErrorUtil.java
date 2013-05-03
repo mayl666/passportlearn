@@ -103,13 +103,13 @@ public class ErrorUtil {
     public static final String CONNECT_REQUEST_FREQUENCY_LIMIT = "30001";
     // 用户拒绝登录授权
     public static final String CONNECT_USER_DENIED_LOGIN = "30002";
-    // 第三方关联帐号token过期，请重新关联
-    public static final String CONNECT_ASSOCIATE_TOKEN_INVALID = "30003";
+    // 第三方OAuth授权的state错误，遭到CRSF攻击
+    public static final String OAUTH_AUTHZ_STATE_INVALID = "30003";
     // 第三方登录帐号Token过期，请重新登录
     public static final String CONNECT_TOKEN_INVALID = "30004";
     // 刷新第三方accessToken失败
     public static final String CONNECT_REFRESH_TOKEN_FAIL = "30005";
-    // 发送HTTP请求失败
+    // 访问OpenResource的HTTP请求失败
     public static final String HTTP_CLIENT_REQEUST_FAIL = "30006";
     // 不支持指定第三方
     public static final String UNSUPPORT_THIRDPARTY = "30007";
@@ -121,8 +121,6 @@ public class ErrorUtil {
     public static final String REQUEST_NO_AUTHORITY = "30010";
     // 第三方自定义错误
     public static final String CONNECT_USER_DEFINED_ERROR = "30011";
-    // 没有第三方关联帐号，请关联
-    public static final String CONNECT_ASSOCIATE_NOT_EXIST = "30012";
     //第三方openid获取失败,没有此用户
     public static final String ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR = "30013";
 
@@ -210,15 +208,14 @@ public class ErrorUtil {
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
         ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
-        ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_TOKEN_INVALID, "第三方关联帐号token过期，请重新关联");
-        ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方帐号Token过期，请重新登录");
+        ERR_CODE_MSG_MAP.put(OAUTH_AUTHZ_STATE_INVALID, "第三方OAuth授权的state错误，遭到CRSF攻击");
+        ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方帐号AccessToken过期");
         ERR_CODE_MSG_MAP.put(CONNECT_REFRESH_TOKEN_FAIL, "刷新第三方accessToken失败");
-        ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");
+        ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "访问OpenResource的HTTP请求失败");
         ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
         ERR_CODE_MSG_MAP.put(UNSUPPORTED_RESPONSE_TYPE, "不支持的响应结果类型");
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
-        ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_NOT_EXIST, "第三方关联帐号不存在，请先关联");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败");
 
         // info
