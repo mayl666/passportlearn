@@ -3,12 +3,11 @@ package com.sogou.upd.passport.web.connect;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.connect.ConnectAuthManager;
+import com.sogou.upd.passport.manager.connect.OAuthAuthBindManager;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOBindTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
-import com.sogou.upd.passport.web.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ConnectBindController extends BaseConnectController {
 
     @Autowired
-    private ConnectAuthManager connectAuthManager;
+    private OAuthAuthBindManager oAuthAuthBindManager;
     @Autowired
     private ConfigureManager configureManager;
 
@@ -52,7 +51,7 @@ public class ConnectBindController extends BaseConnectController {
             return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
 
-        result = connectAuthManager.connectAuthBind(oauthRequest, provider);
+        result = oAuthAuthBindManager.connectSSOBind(oauthRequest, provider);
         return result;
     }
 

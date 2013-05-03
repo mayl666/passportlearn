@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 
@@ -21,7 +22,9 @@ public class BaseConnectController extends BaseController {
      * 种cookie，uuid=provider_state
      */
     protected void writeOAuthStateCookie(HttpServletResponse res, String uuid, int provider) {
-        String cookieValue = AccountTypeEnum.getProviderStr(provider) + "_state";
+        String cookieValue = CommonHelper.constructStateCookieKey(provider);
         ServletUtil.setCookie(res, uuid, cookieValue, CommonConstant.DEFAULT_COOKIE_EXPIRE);
     }
+
+
 }
