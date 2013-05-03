@@ -16,4 +16,12 @@ public interface AccountManager {
      * @return
      */
     public boolean isAccountExists(String username) throws Exception;
+
+    /**
+     * username包括email和手机号
+     *
+     * @param username
+     * @return passportId
+     */
+    public String getPassportIdByUsername(String username) throws Exception;
 }
