@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.collect.Maps;
 
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -155,8 +156,12 @@ public class AccountRegManagerImpl implements AccountRegManager {
         //激活失败
         Account account = accountService.queryAccountByPassportId(username);
         if (account != null) {
-          //已经激活，无需再次激活
-          return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
+          if(account.getStatus() == AccountStatusEnum.REGULAR.getValue()){
+            //已经激活，无需再次激活
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
+          }else {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED);
+          }
         } else {
           //无此账号
           return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -166,7 +171,6 @@ public class AccountRegManagerImpl implements AccountRegManager {
       logger.error("activeEmail fail, passportId:" + activeParams.getPassport_id() + " clientId:" + activeParams.getClient_id() , e);
       return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
     }
-
   }
 
   /*

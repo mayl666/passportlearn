@@ -62,6 +62,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED = "20218";
     //账号已经激活，无需再次激活
     public static final String ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED = "20219";
+    //激活链接已失效
+    public static final String ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED = "20220";
 
     //***************************account 服务的错误代码end*********************************
 
