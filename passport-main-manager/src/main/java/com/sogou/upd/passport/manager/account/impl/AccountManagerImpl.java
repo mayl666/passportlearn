@@ -49,4 +49,9 @@ public class AccountManagerImpl implements AccountManager {
         }
         return false;
     }
+
+  @Override
+  public String getPassportIdByUsername(String username) throws Exception {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
 }

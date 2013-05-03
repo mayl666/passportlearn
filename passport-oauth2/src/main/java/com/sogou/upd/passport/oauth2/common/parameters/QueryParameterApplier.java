@@ -24,7 +24,7 @@ package com.sogou.upd.passport.oauth2.common.parameters;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
-import com.sogou.upd.passport.oauth2.common.OAuthMessage;
+import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 
 import java.util.LinkedHashMap;
@@ -53,31 +53,31 @@ public class QueryParameterApplier implements OAuthParametersApplier {
                 if (params.containsKey(OAuth.OAUTH_STATE)) {
                     fragmentParams.put(OAuth.OAUTH_STATE, params.remove(OAuth.OAUTH_STATE));
                 }
-                
+
                 if (params.containsKey(OAuth.OAUTH_EXPIRES_TIME)) {
                     fragmentParams.put(OAuth.OAUTH_EXPIRES_TIME, params.remove(OAuth.OAUTH_EXPIRES_TIME));
                 }
-                
+
                 if (params.containsKey(OAuth.OAUTH_TOKEN_TYPE)) {
                     fragmentParams.put(OAuth.OAUTH_TOKEN_TYPE, params.remove(OAuth.OAUTH_TOKEN_TYPE));
                 }
-                
+
                 if (params.containsKey(OAuth.OAUTH_SCOPE)) {
                     fragmentParams.put(OAuth.OAUTH_SCOPE, params.remove(OAuth.OAUTH_SCOPE));
                 }
-                
+
                 if (params.containsKey(OAuthError.OAUTH_ERROR)) {
                     fragmentParams.put(OAuthError.OAUTH_ERROR, params.remove(OAuthError.OAUTH_ERROR));
                 }
-                
+
                 if (params.containsKey(OAuthError.OAUTH_ERROR_DESCRIPTION)) {
                     fragmentParams.put(OAuthError.OAUTH_ERROR_DESCRIPTION, params.remove(OAuthError.OAUTH_ERROR_DESCRIPTION));
                 }
-                
+
                 if (params.containsKey(OAuthError.OAUTH_ERROR_URI)) {
                     fragmentParams.put(OAuthError.OAUTH_ERROR_URI, params.remove(OAuthError.OAUTH_ERROR_URI));
                 }
-                
+
             }
 
             StringBuffer query = new StringBuffer(OAuthUtils.format(params.entrySet(), "UTF-8"));

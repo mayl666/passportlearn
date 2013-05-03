@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.oauth2.openresource.request;
 
-import com.sogou.upd.passport.oauth2.common.OAuthMessage;
+import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.BodyURLEncodedParametersApplier;
 import com.sogou.upd.passport.oauth2.common.parameters.OAuthParametersApplier;

@@ -5,12 +5,12 @@ import com.google.gson.reflect.TypeToken;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.math.MD5Encryption;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
@@ -236,7 +236,7 @@ public class AccountServiceImpl implements AccountService {
     try{
       String code = UUID.randomUUID().toString().replaceAll("-", "");
 
-      String token = MD5Encryption.MD5(username + clientId + code);
+      String token = Coder.encryptMD5(username + clientId + code);
 
       String activeUrl =
           PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
@@ -290,7 +290,7 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public boolean setCookie() throws Exception {
-    CookieUtils.setCookie();
+//    ServletUtil.setCookie();
     return false;
   }
 

@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.oauth2.openresource;
+package com.sogou.upd.passport.oauth2.openresource.parameters;
 
 import com.sogou.upd.passport.oauth2.common.OAuth;
 

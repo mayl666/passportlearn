@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.oauth2.common.parameters;
 
-import com.sogou.upd.passport.oauth2.common.OAuthMessage;
+import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 
 import java.util.Map;
 

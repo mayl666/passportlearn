@@ -6,7 +6,7 @@ import com.sogou.upd.passport.oauth2.common.validators.AbstractValidator;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * GrantType=client_credentials的授权请求验证器
+ * GrantTypeEnum=client_credentials的授权请求验证器
  * OAuth2.0协议中的Client Credentials Grant
  */
 public class ClientCredentialValidator extends AbstractValidator<HttpServletRequest> {

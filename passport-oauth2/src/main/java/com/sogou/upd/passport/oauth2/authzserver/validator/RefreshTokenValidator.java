@@ -7,7 +7,7 @@ import com.sogou.upd.passport.oauth2.common.validators.AbstractValidator;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * GrantType=refresh_token的授权请求验证器
+ * GrantTypeEnum=refresh_token的授权请求验证器
  * 用refresh_token刷新access_token
  */
 public class RefreshTokenValidator extends AbstractValidator<HttpServletRequest> {

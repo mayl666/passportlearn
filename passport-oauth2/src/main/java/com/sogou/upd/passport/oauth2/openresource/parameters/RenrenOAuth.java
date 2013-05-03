@@ -15,6 +15,8 @@ public class RenrenOAuth {
 
 	/* 用户类API请求参数 */
 	public static final String UIDS = "uids"; // 需要查询的用户的ID，多个ID用逗号隔开。当此参数为空时，缺省值为登录用户的ID。
+    public static final String UID = "uid"; // 需要查询的用户的ID。
+
 	/* 用户类API响应参数 */
 	public static final String NAME = "name"; // 用户昵称
 	public static final String MAIN_URL = "mainurl"; // 200*200头像

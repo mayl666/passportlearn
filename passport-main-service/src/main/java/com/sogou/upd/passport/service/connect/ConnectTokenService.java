@@ -37,5 +37,15 @@ public interface ConnectTokenService {
      */
     public String querySpecifyOpenId(String passportId, int provider, String appKey) throws ServiceException;
 
+    /**
+     * 获取ConnectToken对象
+     * @param passportId
+     * @param provider
+     * @param appKey
+     * @return
+     * @throws ServiceException
+     */
+    public ConnectToken queryConnectToken(String passportId, int provider, String appKey) throws ServiceException;
+
 
 }

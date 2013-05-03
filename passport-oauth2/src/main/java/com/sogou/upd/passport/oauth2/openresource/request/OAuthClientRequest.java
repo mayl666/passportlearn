@@ -1,177 +1,104 @@
 package com.sogou.upd.passport.oauth2.openresource.request;
 
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.oauth2.openresource.parameters.GrantTypeEnum;
-import com.sogou.upd.passport.oauth2.openresource.parameters.ResponseTypeEnum;
+import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+import com.sogou.upd.passport.oauth2.common.parameters.BodyURLEncodedParametersApplier;
+import com.sogou.upd.passport.oauth2.common.parameters.ClientQueryParameterApplier;
+import com.sogou.upd.passport.oauth2.common.parameters.OAuthParametersApplier;
+import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
+import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 
-/**
- * 第三方OAuth授权请求，包括：
- * 1.用户验证请求，获取code；
- * 2.用code获取access_token（含用refresh_token刷新access_token）；
- * 3.用access_token获取openid
- * @author shipengzhi
- *
- */
-public class OAuthClientRequest extends OAuthRequest {
+import java.util.HashMap;
+import java.util.Map;
 
-	public OAuthClientRequest(String url) {
-		super(url);
-	}
+public class OAuthClientRequest implements OAuthMessage {
 
-	public static AuthenticationRequestBuilder authorizationLocation(String url) {
-		return new AuthenticationRequestBuilder(url);
-	}
+    protected String url;
+    protected String body;
+    protected Map<String, String> headers;
 
-	public static TokenRequestBuilder tokenLocation(String url) {
-		return new TokenRequestBuilder(url);
-	}
+    protected OAuthClientRequest(String url) {
+        this.url = url;
+    }
 
-	public static OpenidRequestBuilder openIdLocation(String url) {
-		return new OpenidRequestBuilder(url);
-	}
+    public String getLocationUri() {
+        return url;
+    }
 
-	/**
-	 * 用户OAuth授权请求构造器
-	 * @author shipengzhi(shipengzhi@sogou-inc.com)
-	 *
-	 */
-	public static class AuthenticationRequestBuilder extends OAuthRequestBuilder {
+    public void setLocationUri(String uri) {
+        this.url = uri;
+    }
 
-		public AuthenticationRequestBuilder(String url) {
-			super(url);
-		}
+    public String getBody() {
+        return body;
+    }
 
-		// 响应结果类型，code还是token
-		public AuthenticationRequestBuilder setResponseType(ResponseTypeEnum responseType) {
-			this.parameters.put(OAuth.OAUTH_RESPONSE_TYPE, responseType == null ? null : responseType.getValue());
-			return this;
-		}
+    public void setBody(String body) {
+        this.body = body;
+    }
 
-		// 第三方appkey
-		public AuthenticationRequestBuilder setAppKey(String appKey) {
-			this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
-			return this;
-		}
+    public String getHeader(String name) {
+        return headers.get(name);
+    }
 
-		// 重定向url
-		public AuthenticationRequestBuilder setRedirectURI(String uri) {
-			this.parameters.put(OAuth.OAUTH_REDIRECT_URI, uri);
-			return this;
-		}
+    public void addHeader(String name, String header) {
+        headers.put(name, header);
+    }
 
-		// 授权方法名
-		public AuthenticationRequestBuilder setScope(String scope) {
-			this.parameters.put(OAuth.OAUTH_SCOPE, scope);
-			return this;
-		}
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
 
-		// 授权页面样式
-		public AuthenticationRequestBuilder setDisplay(String display) {
-			this.parameters.put(OAuth.OAUTH_DISPLAY, display);
-			return this;
-		}
-		
-		// client端状态值
-		public AuthenticationRequestBuilder setState(String state) {
-			this.parameters.put(OAuth.OAUTH_STATE, state);
-			return this;
-		}
-		
-		// 是否强制用户输入用户名、密码
-		public AuthenticationRequestBuilder setForceLogin(boolean force, int provider) {
-			if(provider == AccountTypeEnum.RENREN.getValue()){
-				this.parameters.put(OAuth.OAUTH_RENREN_FORCELOGIN, force);
-			}else if(provider == AccountTypeEnum.SINA.getValue()){
-				this.parameters.put(OAuth.OAUTH_SINA_FORCELOGIN, force);
-			}
-			return this;
-		}
-	}
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
 
-	/**
-	 * 获取access_token请求构造器
-	 * @author shipengzhi(shipengzhi@sogou-inc.com)
-	 */
-	public static class TokenRequestBuilder extends OAuthRequestBuilder {
+    public static <T extends OAuthClientRequestBuilder> T apiLocation(String url, Class<T> clazz)
+            throws OAuthProblemException {
+        T builder = (T) OAuthUtils.instantiateClassWithParameters(clazz, new Class[]{String.class},
+                new String[]{url});
+        return builder;
+    }
 
-		protected TokenRequestBuilder(String url) {
-			super(url);
-		}
+    public static class OAuthClientRequestBuilder {
+        protected OAuthParametersApplier builder;
+        protected Map<String, Object> parameters = new HashMap<String, Object>();
+        protected String url;
 
-		public TokenRequestBuilder setGrantType(GrantTypeEnum grantType) {
-			this.parameters.put(OAuth.OAUTH_GRANT_TYPE, grantType == null ? null : grantType.getValue());
-			return this;
-		}
+        public Map<String, Object> getParameters() {
+            return parameters;
+        }
 
-		public TokenRequestBuilder setAppKey(String appKey) {
-			this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
-			return this;
-		}
+        public void setParameters(Map<String, Object> parameters) {
+            this.parameters = parameters;
+        }
 
-		public TokenRequestBuilder setAppSecret(String appSecret) {
-			this.parameters.put(OAuth.OAUTH_CLIENT_SECRET, appSecret);
-			return this;
-		}
+        protected OAuthClientRequestBuilder(String url) {
+            this.url = url;
+        }
 
-		/* 用户名和密码进行OAuth2授权 */
-		public TokenRequestBuilder setUsername(String username) {
-			this.parameters.put(OAuth.OAUTH_USERNAME, username);
-			return this;
-		}
-		public TokenRequestBuilder setPassword(String password) {
-			this.parameters.put(OAuth.OAUTH_PASSWORD, password);
-			return this;
-		}
+        // 构建GET请求所需的Query,#access_Token锚点
+        public <T extends OAuthClientRequest> T buildQueryMessage(Class<T> clazz) throws OAuthProblemException {
+            T request = (T) OAuthUtils.instantiateClassWithParameters(clazz, new Class[]{String.class},
+                    new String[]{url});
+            this.builder = new ClientQueryParameterApplier();
+            return (T) builder.applyOAuthParameters(request, parameters);
+        }
 
-		public TokenRequestBuilder setScope(String scope) {
-			this.parameters.put(OAuth.OAUTH_SCOPE, scope);
-			return this;
-		}
+        // 构建POST请求所需的Body
+        public <T extends OAuthClientRequest> T buildBodyMessage(Class<T> clazz) throws OAuthProblemException {
+            T request = (T) OAuthUtils.instantiateClassWithParameters(clazz, new Class[]{String.class},
+                    new String[]{url});
+            this.builder = new BodyURLEncodedParametersApplier();
+            return (T) builder.applyOAuthParameters(request, parameters);
+        }
 
-		public TokenRequestBuilder setCode(String code) {
-			this.parameters.put(OAuth.OAUTH_CODE, code);
-			return this;
-		}
+        public OAuthClientRequestBuilder setAccessToken(String accessToken) {
+            this.parameters.put(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
+            return this;
+        }
 
-		public TokenRequestBuilder setRedirectURI(String uri) {
-			this.parameters.put(OAuth.OAUTH_REDIRECT_URI, uri);
-			return this;
-		}
+    }
 
-		/* 用refresh_token刷新access_token */
-		public TokenRequestBuilder setRefreshToken(String token) {
-			this.parameters.put(OAuth.OAUTH_REFRESH_TOKEN, token);
-			return this;
-		}
-
-		public TokenRequestBuilder setParameter(String paramName, String paramValue) {
-			this.parameters.put(paramName, paramValue);
-			return this;
-		}
-
-		public TokenRequestBuilder setState(String state) {
-			this.parameters.put(OAuth.OAUTH_STATE, state);
-			return this;
-		}
-	}
-
-	/**
-	 * 用access_token获取Openid的请求构造器
-	 * 目前只有QQ需要
-	 * @author shipengzhi(shipengzhi@sogou-inc.com)
-	 *
-	 */
-	public static class OpenidRequestBuilder extends OAuthRequestBuilder {
-
-		protected OpenidRequestBuilder(String url) {
-			super(url);
-		}
-
-		public OpenidRequestBuilder setAccessToken(String accessToken) {
-			this.parameters.put(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
-			return this;
-		}
-	}
-	
 }

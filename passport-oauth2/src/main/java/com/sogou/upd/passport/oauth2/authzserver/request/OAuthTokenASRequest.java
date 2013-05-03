@@ -7,7 +7,7 @@ import com.sogou.upd.passport.oauth2.authzserver.validator.ClientCredentialValid
 import com.sogou.upd.passport.oauth2.authzserver.validator.PasswordValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.RefreshTokenValidator;
 import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.oauth2.common.types.GrantType;
+import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.common.validators.OAuthValidator;
 
@@ -17,19 +17,19 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * OAuth2.0 授权请求，用于获取access_token和refresh_token
  */
-public class OAuthTokenRequest extends OAuthRequest {
+public class OAuthTokenASRequest extends OAuthASRequest {
 
 
-    public OAuthTokenRequest(HttpServletRequest request) throws OAuthProblemException {
+    public OAuthTokenASRequest(HttpServletRequest request) throws OAuthProblemException {
         super(request);
     }
 
     @Override
     protected OAuthValidator<HttpServletRequest> initValidator() throws OAuthProblemException {
-        validators.put(GrantType.PASSWORD.toString(), PasswordValidator.class);
-        validators.put(GrantType.CLIENT_CREDENTIALS.toString(), ClientCredentialValidator.class);
-        validators.put(GrantType.AUTHORIZATION_CODE.toString(), AuthorizationCodeValidator.class);
-        validators.put(GrantType.REFRESH_TOKEN.toString(), RefreshTokenValidator.class);
+        validators.put(GrantTypeEnum.PASSWORD.toString(), PasswordValidator.class);
+        validators.put(GrantTypeEnum.CLIENT_CREDENTIALS.toString(), ClientCredentialValidator.class);
+        validators.put(GrantTypeEnum.AUTHORIZATION_CODE.toString(), AuthorizationCodeValidator.class);
+        validators.put(GrantTypeEnum.REFRESH_TOKEN.toString(), RefreshTokenValidator.class);
         String requestTypeValue = getParam(OAuth.OAUTH_GRANT_TYPE);
         if (Strings.isNullOrEmpty(requestTypeValue)) {
             throw OAuthUtils.handleOAuthProblemException("Missing grant_type parameter value");

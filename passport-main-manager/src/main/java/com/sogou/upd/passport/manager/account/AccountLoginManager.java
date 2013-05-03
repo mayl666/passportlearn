@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
+import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 
 /**
  * 手机号登录，邮箱登录
@@ -12,6 +12,6 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
  */
 public interface AccountLoginManager {
 
-    public Result authorize(OAuthTokenRequest oauthRequest);
+    public Result authorize(OAuthTokenASRequest oauthRequest);
 
 }

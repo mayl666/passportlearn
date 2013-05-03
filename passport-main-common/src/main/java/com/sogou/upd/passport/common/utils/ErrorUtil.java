@@ -105,8 +105,8 @@ public class ErrorUtil {
     public static final String CONNECT_REQUEST_FREQUENCY_LIMIT = "30001";
     // 用户拒绝登录授权
     public static final String CONNECT_USER_DENIED_LOGIN = "30002";
-    // 第三方关联帐号token过期，请重新关联
-    public static final String CONNECT_ASSOCIATE_TOKEN_INVALID = "30003";
+    // 第三方授权的state被篡改
+    public static final String OAUTH_AUTHZ_STATE_INVALID = "30003";
     // 第三方登录帐号Token过期，请重新登录
     public static final String CONNECT_TOKEN_INVALID = "30004";
     // 刷新第三方accessToken失败
@@ -195,7 +195,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
 
-
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
@@ -214,7 +213,7 @@ public class ErrorUtil {
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
         ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
-        ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_TOKEN_INVALID, "第三方关联帐号token过期，请重新关联");
+        ERR_CODE_MSG_MAP.put(OAUTH_AUTHZ_STATE_INVALID, "第三方授权的state被篡改");
         ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方帐号Token过期，请重新登录");
         ERR_CODE_MSG_MAP.put(CONNECT_REFRESH_TOKEN_FAIL, "刷新第三方accessToken失败");
         ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");

@@ -1,21 +1,19 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.connect.ConnectAuthManager;
-import com.sogou.upd.passport.model.OAuthConsumer;
-import com.sogou.upd.passport.model.OAuthConsumerFactory;
+import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
+import com.sogou.upd.passport.manager.form.ConnectLoginParams;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.parameters.ResponseTypeEnum;
-import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.manager.form.ConnectLoginParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +25,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -37,10 +34,9 @@ import java.util.UUID;
 @Controller
 public class ConnectLoginController extends BaseConnectController {
 
-    private static final String DEFAULT_CONNECT_REDIRECT_URL = "http://account.sogou.com";
 
     @Autowired
-    private ConnectAuthManager connectAuthManager;
+    private OAuthAuthLoginManager oAuthAuthLoginManager;
     @Autowired
     private ConfigureManager configureManager;
 
@@ -62,51 +58,37 @@ public class ConnectLoginController extends BaseConnectController {
             return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
 
-        result = connectAuthManager.connectAuthLogin(oauthRequest, provider, ip);
+        result = oAuthAuthLoginManager.connectSSOLogin(oauthRequest, provider, ip);
         return result;
     }
 
     @RequestMapping(value = "/connect/login")
     public ModelAndView authorize(HttpServletRequest req, HttpServletResponse res,
-                                  ConnectLoginParams oauthLoginParams) throws IOException, OAuthProblemException {
+                                  ConnectLoginParams connectLoginParams) {
 
-        int provider = AccountTypeEnum.getProvider(oauthLoginParams.getP());
-        String ru = oauthLoginParams.getRu();
-        boolean force = oauthLoginParams.isForce();
-        int clientId = oauthLoginParams.getClient_id();
-
-        // TODO 判断type
-
-        String validateResult = ControllerHelper.validateParams(oauthLoginParams);
+        int provider = AccountTypeEnum.getProvider(connectLoginParams.getP());
+        int clientId = connectLoginParams.getClient_id();
+        // 校验参数
+        String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            String redirectUrl = DEFAULT_CONNECT_REDIRECT_URL;
-            if (!Strings.isNullOrEmpty(ru)) {
-                redirectUrl = ru;
-            }
-            return new ModelAndView(new RedirectView(redirectUrl));
+            return new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
         }
-
+        // 获取connect配置
         ConnectConfig connectConfig = configureManager.obtainConnectConfig(clientId, provider);
-        String scope = connectConfig.getScope();
-        String appkey = connectConfig.getAppKey();
-
-        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+        if (connectConfig == null) {
+            return new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
+        }
 
         // 避免重复提交的唯一码
         String uuid = UUID.randomUUID().toString();
-        OAuthClientRequest request = OAuthClientRequest
-                .authorizationLocation(oAuthConsumer.getUserAuthzUrl()).setAppKey(appkey)
-                .setRedirectURI(oAuthConsumer.getCallbackUrl())
-                .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                .setDisplay(oauthLoginParams.getDisplay()).setForceLogin(force, provider)
-                .setState(uuid)
-                .buildQueryMessage(OAuthClientRequest.class);
-
-        // 需要写入cookie中的内容，包括回调url，access_token,appid，硬件信息
-        writeOAuthStateCookie(res, uuid, provider);
-
-        return new ModelAndView(new RedirectView(request.getLocationUri()));
-
+        try {
+            OAuthAuthzClientRequest oauthRequest = oAuthAuthLoginManager.buildConnectLoginRequest(connectLoginParams, connectConfig, uuid, provider, getIp(req));
+            writeOAuthStateCookie(res, uuid, provider);
+            return new ModelAndView(new RedirectView(oauthRequest.getLocationUri()));
+        } catch (OAuthProblemException e) {
+            return new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
+        }
     }
+
 
 }
