@@ -144,7 +144,7 @@ public class RedisUtils {
     /*
    * 判断key是否存在
    */
-    public static boolean checkKeyIsExist(String key) {
+    public boolean checkKeyIsExist(String key) {
         try {
             return redisTemplate.hasKey(key);
         } catch (Exception e) {

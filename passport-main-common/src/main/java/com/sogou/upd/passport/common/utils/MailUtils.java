@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
  */
 public class MailUtils {
   private static Logger logger = LoggerFactory.getLogger(MailUtils.class);
+  private static final String fromAddress="postmaster@sogou-upd-passport.sendcloud.org";
+  private static final String fromName="搜狗passport";
 
   private static SendCloud sendCloud;
 
@@ -23,9 +25,18 @@ public class MailUtils {
       sendCloud.setMessage(message);
       sendCloud.send();
     }catch (Exception e){
-      logger.error("[SendEmail] send fail, email:"+message);
+      logger.error("[SendEmail] send fail",e);
     }
+  }
 
+  public Message getMessage(){
+    Message message=null;
+    try{
+         message=new Message(fromAddress,fromName);
+    }catch (Exception e){
+      logger.error("[SendEmail] getMessage fail"+e);
+    }
+    return message;
   }
 
   public void setSendCloud(SendCloud sendCloud) {

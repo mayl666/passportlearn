@@ -60,6 +60,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS = "20217";
     //重置密码失败
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED = "20218";
+    //账号已经激活，无需再次激活
+    public static final String ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED = "20219";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -191,6 +193,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "手机号码和验证码不匹配");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
+
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");

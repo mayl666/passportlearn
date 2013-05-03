@@ -8,12 +8,11 @@ package com.sogou.upd.passport.common;
  * To change this template use File | Settings | File Templates.
  */
 public class CacheConstant {
-    // TODO 名字需要改一下，改成mobile:smscode
     /*================ACCOUNT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_MOBILE_SMSCODE = "SP.MOBILE:SMSCODE_";   //mobile与smscode映射
     public static final String CACHE_PREFIX_MOBILE_SENDNUM = "SP.MOBILE:SENDNUM_";  // mobile与发送条数映射
     public static final String CACHE_PREFIX_PASSPORT_ACCOUNT = "SP.PASSPORTID:ACCOUNT_"; // passportId与account映射
-    public static final String CACHE_PREFIX_MOBILE_PASSPORT = "SP.MOBILE:PASSPORT_";  // mobile与passportId映射
+    public static final String CACHE_PREFIX_MOBILE_PASSPORTID = "SP.MOBILE:PASSPORTID_";  // mobile与passportId映射
     public static final String CACHE_PREFIX_PASSPORT_ACCOUNTTOKEN = "SP.PASSPORTID:ACCOUNTTOKEN_"; // passportId与accountToken映射
     public static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = "SP.PASSPORTID:IPBLACKLIST_"; // passportId与ip blacklist映射
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MobilePassportMappingServiceImpl implements MobilePassportMappingService {
 
-    private static final String CACHE_PREFIX_MOBILE_PASSPORT = CacheConstant.CACHE_PREFIX_MOBILE_PASSPORT;
+    private static final String CACHE_PREFIX_MOBILE_PASSPORT = CacheConstant.CACHE_PREFIX_MOBILE_PASSPORTID;
 
     @Autowired
     private MobilePassportMappingDAO mobilePassportMappingDAO;

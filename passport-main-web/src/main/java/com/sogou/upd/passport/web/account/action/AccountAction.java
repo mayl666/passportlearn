@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
+import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MoblieCodeParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.web.BaseController;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * User: mayan Date: 13-4-28 Time: 下午4:07 To change this template use File | Settings | File
@@ -32,13 +35,13 @@ public class AccountAction extends BaseController {
   private AccountManager accountManager;
 
   /**
-   * 手机账号获取，重发手机验证码接口
+   * web页面注册
    *
    * @param regParams 传入的参数
    */
   @RequestMapping(value = "/reguser", method = RequestMethod.POST)
   @ResponseBody
-  public Object reguser(WebRegisterParameters regParams)
+  public Object reguser(HttpServletRequest request, WebRegisterParameters regParams)
       throws Exception {
     int clientId = regParams.getClient_id();
     String username = regParams.getUsername();
@@ -48,16 +51,31 @@ public class AccountAction extends BaseController {
 
     //todo 验证码校验
 
-    Result result = new Result();
+    Result result = null;
     //验证用户是否注册过
     if (!accountManager.isAccountExists(username)) {
-
-      accountRegManager.webRegister(regParams);
-
-
+      String ip = getIp(request);
+      result=accountRegManager.webRegister(regParams,ip);
     } else {
-      result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+      result=result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
     }
+    return result;
+  }
+
+  /**
+   * 邮件激活
+   *
+   * @param activeParams 传入的参数
+   */
+  @RequestMapping(value = "/activemail", method = RequestMethod.GET)
+  @ResponseBody
+  public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
+      throws Exception {
+
+    //todo 参数验证
+    //验证用户是否注册过
+    Result result = accountRegManager.activeEmail(activeParams);
+
     return result;
   }
 

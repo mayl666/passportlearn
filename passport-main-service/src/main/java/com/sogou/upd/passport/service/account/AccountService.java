@@ -3,12 +3,19 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
 /**
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File
  * Templates.
  */
 public interface AccountService {
+
+  /**
+   * 初始化web用户账号
+   */
+  public Account initialWebAccount(String username)
+      throws ServiceException;
 
   /**
    * 初始化非第三方用户账号
@@ -62,6 +69,18 @@ public interface AccountService {
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-  public boolean sendActiveEmail(String username,int clientId) throws Exception;
+  public boolean sendActiveEmail(String username,String passpord,int clientId,String ip) throws Exception;
 
+  /**
+   * 激活验证邮件
+   *
+   * @return
+   */
+  public boolean activeEmail(String username,String token,int clientId) throws Exception;
+  /**
+   * 种根域和子域下的cookie
+   *
+   * @return
+   */
+  public boolean setCookie() throws Exception;
 }
