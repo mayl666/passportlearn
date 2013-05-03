@@ -1,5 +1,11 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.sohu.sendcloud.Message;
+import com.sohu.sendcloud.SendCloud;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 邮件工具类
  * User: mayan
@@ -8,5 +14,32 @@ package com.sogou.upd.passport.common.utils;
  * To change this template use File | Settings | File Templates.
  */
 public class MailUtils {
+  private static Logger logger = LoggerFactory.getLogger(MailUtils.class);
+  private static final String fromAddress="postmaster@sogou-upd-passport.sendcloud.org";
+  private static final String fromName="搜狗passport";
 
+  private static SendCloud sendCloud;
+
+  public void sendEmail(Message message){
+    try{
+      sendCloud.setMessage(message);
+      sendCloud.send();
+    }catch (Exception e){
+      logger.error("[SendEmail] send fail",e);
+    }
+  }
+
+  public Message getMessage(){
+    Message message=null;
+    try{
+         message=new Message(fromAddress,fromName);
+    }catch (Exception e){
+      logger.error("[SendEmail] getMessage fail"+e);
+    }
+    return message;
+  }
+
+  public void setSendCloud(SendCloud sendCloud) {
+    MailUtils.sendCloud = sendCloud;
+  }
 }

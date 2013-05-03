@@ -2,16 +2,24 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.gson.reflect.TypeToken;
+
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import com.sohu.sendcloud.Message;
+import com.sohu.sendcloud.SmtpApiHeader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +27,8 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -27,13 +37,55 @@ import java.util.Date;
 public class AccountServiceImpl implements AccountService {
 
     private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
+    private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
+    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN; // passportId与accountToken映射
+
+    private static final String PASSPORT_ACTIVE_EMAIL_URL="http://account.sogou.com/web/activemail?";
+
+
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
     private AccountDAO accountDAO;
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private MailUtils mailUtils;
 
-    @Override
+  @Override
+  public Account initialWebAccount(String username) throws ServiceException {
+    Account account = null;
+    String cacheKey =null;
+    try {
+      cacheKey = buildAccountKey(username);
+      if (redisUtils.checkKeyIsExist(cacheKey)) {
+        Type type = new TypeToken<Account>() {
+        }.getType();
+        account = redisUtils.getObject(cacheKey, type);
+        if(account!=null){
+          account.setStatus(AccountStatusEnum.REGULAR.getValue());
+          long id = accountDAO.insertAccount(username, account);
+          if (id != 0) {
+            //删除临时账户缓存，成为正式账户
+            redisUtils.set(cacheKey, account);
+            //设置cookie
+            setCookie();
+            return account;
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new ServiceException(e);
+    } finally {
+      //删除激活
+      cacheKey= CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN +username;
+      redisUtils.delete(cacheKey);
+    }
+
+
+    return null;
+  }
+
+  @Override
     public Account initialAccount(String username, String password, String ip, int provider) throws ServiceException {
         Account account = new Account();
         String passportId = PassportIDGenerator.generator(username, provider);
@@ -153,7 +205,124 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-    private String buildAccountKey(String passportId) {
+  @Override
+  public boolean isInAccountBlackListByIp(String passportId, String ip) throws ServiceException {
+    boolean flag=true;
+    long ipCount = 0;
+    try {
+      String cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
+      String ipValue = redisUtils.get(cacheKey);
+      if (Strings.isNullOrEmpty(ipValue)) {
+        redisUtils.set(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY, TimeUnit.SECONDS);
+      } else {
+        ipCount = Long.parseLong(ipValue);
+        //判断ip注册限制次数（一天20次）
+        if (ipCount < DateAndNumTimesConstant.IP_LIMITED) {
+          redisUtils.increment(cacheKey);
+        } else {
+          return false;
+        }
+      }
+    } catch (Exception e) {
+      flag=false;
+      throw new ServiceException(e);
+    }
+    return flag;
+  }
+
+  @Override
+  public boolean sendActiveEmail(String username,String passpord, int clientId,String ip) throws ServiceException {
+    boolean flag=true;
+    try{
+      String code = UUID.randomUUID().toString().replaceAll("-", "");
+
+      String token = Coder.encryptMD5(username + clientId + code);
+
+      String activeUrl =
+          PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
+          "&client_id=" + clientId +
+          "&token=" + token;
+
+      //发送邮件
+      Message message=mailUtils.getMessage();
+      // 正文， 使用html形式，或者纯文本形式
+      message.setBody(
+          "亲爱的用户：您好，欢迎您使用搜狐通行证服务，为确保用户注册信息的真实性，我们会验证此邮箱是否属于您。请单击以下链接进行激活："+
+      "<a href="+activeUrl+">"+activeUrl+"</a>");
+
+      message.setSubject("激活您的搜狗通行证帐户");
+
+      // X-SMTPAPI
+      SmtpApiHeader smtpApiHeader = new SmtpApiHeader();
+      smtpApiHeader.addCategory("register");
+      smtpApiHeader.addRecipient(username);
+
+      message.setXsmtpapiJsonStr(smtpApiHeader.toString());
+      mailUtils.sendEmail(message);
+      //连接失效时间
+      String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
+      redisUtils.set(cacheKey, token);
+      redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+      //临时注册到缓存
+      initialAccountToCache(username,passpord,ip);
+    }catch (Exception e){
+      flag=false;
+      throw new ServiceException(e);
+    }
+    return flag;
+  }
+
+  @Override
+  public boolean activeEmail(String username,String token,int clientId) throws ServiceException {
+    try{
+      String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
+      if(redisUtils.checkKeyIsExist(cacheKey)){
+            String tokenCache=redisUtils.get(cacheKey);
+            if(tokenCache.equals(token)){
+              return true;
+            }
+      }
+    }catch (Exception e){
+      throw new ServiceException(e);
+    }
+    return false;
+  }
+
+  @Override
+  public boolean setCookie() throws Exception {
+//    ServletUtil.setCookie();
+    return false;
+  }
+
+  /*
+   * 外域邮箱注册
+   */
+  public void initialAccountToCache(String username,String password,String ip)throws ServiceException{
+    int provider=AccountTypeEnum.EMAIL.getValue();
+    Account account = new Account();
+    String passportId = PassportIDGenerator.generator(username, provider);
+    account.setPassportId(passportId);
+    String passwordSign = null;
+    try {
+      if (!Strings.isNullOrEmpty(password)) {
+        passwordSign = PwdGenerator.generatorPwdSign(password);
+      }
+      account.setPasswd(passwordSign);
+      account.setRegTime(new Date());
+      account.setAccountType(provider);
+      account.setStatus(AccountStatusEnum.DISABLED.getValue());
+      account.setVersion(Account.NEW_ACCOUNT_VERSION);
+      account.setRegIp(ip);
+
+      String cacheKey = buildAccountKey(username);
+      redisUtils.set(cacheKey, account);
+      redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+
+    }catch (Exception e){
+         throw new ServiceException(e);
+    }
+  }
+  private String buildAccountKey(String passportId) {
         return CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
     }
 }

@@ -110,7 +110,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                                 boolean isSend = SMSUtil.sendSMS(mobile, smsText);
                                 if (isSend) {
                                     //30分钟之内返回原先验证码
-                                    result = Result.buildSuccess("获取验证码成功", "smscode", smsCode);
+                                    result = Result.buildSuccess("获取验证码成功", "", "");
                                     return result;
                                 }
                             } else {

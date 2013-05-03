@@ -96,6 +96,19 @@ public class Result {
         return result;
     }
 
+  /**
+   * 根据错误码返回result对象
+   *
+   * @param statusText 成功信息描述
+   * @return 含错误码及相应的提示信息
+   */
+  public static Result buildSuccess(String statusText) {
+    Result result = new Result();
+    result.setStatus("0");
+    result.setStatusText(statusText);
+    return result;
+  }
+
     /**
      * 根据错误码返回result对象
      *
