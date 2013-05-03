@@ -7,8 +7,6 @@ import jodd.props.Props;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 /**
@@ -52,25 +50,23 @@ public class OAuthConsumerFactory {
         properties = new Props();
         InputStream input = OAuthConsumer.class.getClassLoader().getResourceAsStream(resourceName);
         properties.load(input);
-        String base = properties.getValue(OPEN_PROVIDER + ".baseURL", providerStr);
-        URL baseURL = (base == null) ? null : new URL(base);
 
         OAuthConsumer oAuthConsumer = new OAuthConsumer();
-        oAuthConsumer.setUserAuthzUrl(getURL(baseURL, OPEN_PROVIDER + ".userAuthzUrl", providerStr));
-        oAuthConsumer.setAccessTokenUrl(getURL(baseURL, OPEN_PROVIDER + ".accessTokenUrl", providerStr));
-        oAuthConsumer.setRefreshAccessTokenUrl(getURL(baseURL, OPEN_PROVIDER + ".refreshAccessTokenUrl", providerStr));
-        oAuthConsumer.setOpenIdUrl(getURL(baseURL, OPEN_PROVIDER + ".openIdUrl", providerStr));
-        oAuthConsumer.setCallbackUrl(getURL(null, "callbackUrl", providerStr));
+        oAuthConsumer.setWebUserAuthzUrl(getURL("web_userAuthzUrl", providerStr));
+        oAuthConsumer.setAppUserAuthzUrl(getURL("app_userAuthzUrl", providerStr));
+        oAuthConsumer.setAccessTokenUrl(getURL("accessTokenUrl", providerStr));
+        oAuthConsumer.setRefreshAccessTokenUrl(getURL("refreshAccessTokenUrl", providerStr));
+        oAuthConsumer.setOpenIdUrl(getURL("openIdUrl", providerStr));
+        oAuthConsumer.setCallbackUrl(getURL("callbackUrl", providerStr));
+        oAuthConsumer.setUserInfo(getURL("userInfo", providerStr));
         return oAuthConsumer;
     }
 
-    private static String getURL(URL baseURL, String name, String provider) throws MalformedURLException {
+    private static String getURL(String name, String provider) {
+        name = OPEN_PROVIDER + "." + name;
         String url = properties.getValue(name, provider);
         if (Strings.isNullOrEmpty(url)) {
             return null;
-        }
-        if (baseURL != null) {
-            url = (new URL(baseURL, url)).toExternalForm();
         }
         return url;
     }

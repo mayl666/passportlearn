@@ -8,9 +8,9 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
+import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
-import com.sogou.upd.passport.oauth2.common.types.GrantType;
+import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
@@ -37,7 +37,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     private MobilePassportMappingService mobilePassportMappingService;
 
     @Override
-    public Result authorize(OAuthTokenRequest oauthRequest) {
+    public Result authorize(OAuthTokenASRequest oauthRequest) {
         int clientId = oauthRequest.getClientId();
         String instanceId = oauthRequest.getInstanceId();
 
@@ -45,7 +45,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
             // 檢查不同的grant types是否正確
             // TODO 消除if-else
             AccountToken renewAccountToken;
-            if (GrantType.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
+            if (GrantTypeEnum.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
                 String passportId = mobilePassportMappingService.queryPassportIdByUsername(oauthRequest.getUsername());
                 if (Strings.isNullOrEmpty(passportId)) {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
@@ -60,7 +60,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                     // 为了安全每次登录生成新的token
                     renewAccountToken = accountTokenService.updateAccountToken(account.getPassportId(), clientId, instanceId);
                 }
-            } else if (GrantType.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
+            } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
                 AccountToken accountToken = accountTokenService.verifyRefreshToken(refreshToken, instanceId);
                 if (accountToken == null) {

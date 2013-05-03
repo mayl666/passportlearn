@@ -24,7 +24,7 @@ package com.sogou.upd.passport.oauth2.common.types;
 /**
  * OAuth2授权支持的4种类型
  */
-public enum GrantType {
+public enum GrantTypeEnum {
     AUTHORIZATION_CODE("authorization_code"),
     PASSWORD("password"),
     REFRESH_TOKEN("refresh_token"),
@@ -32,8 +32,12 @@ public enum GrantType {
 
     private String grantType;
 
-    GrantType(String grantType) {
+    GrantTypeEnum(String grantType) {
         this.grantType = grantType;
+    }
+
+    public String getValue() {
+        return grantType;
     }
 
     @Override

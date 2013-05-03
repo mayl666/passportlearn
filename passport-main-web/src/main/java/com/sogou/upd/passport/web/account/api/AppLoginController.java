@@ -3,7 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenRequest;
+import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -39,9 +39,9 @@ public class AppLoginController extends BaseController{
     @RequestMapping(value = "/token", method = RequestMethod.POST)
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
-        OAuthTokenRequest oauthRequest;
+        OAuthTokenASRequest oauthRequest;
         try {
-            oauthRequest = new OAuthTokenRequest(request);
+            oauthRequest = new OAuthTokenASRequest(request);
         } catch (OAuthProblemException e) {
            return Result.buildError(e.getError(),e.getDescription());
         }

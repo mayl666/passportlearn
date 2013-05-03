@@ -21,14 +21,14 @@
 
 package com.sogou.upd.passport.oauth2.common.types;
 
-public enum ParameterStyle {
+public enum ParameterStyleEnum {
     BODY("body"),
     QUERY("query"),
     HEADER("header");
 
     private String parameterStyle;
 
-    ParameterStyle(String parameterStyle) {
+    ParameterStyleEnum(String parameterStyle) {
         this.parameterStyle = parameterStyle;
     }
 

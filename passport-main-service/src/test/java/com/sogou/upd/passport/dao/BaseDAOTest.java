@@ -22,6 +22,14 @@ public class BaseDAOTest extends BaseTest {
     public static final int STATUS = 1;
     public static final int VERSION = 1;
 
+    // AccountInfo Test Constant ---hjf 2013.5.3
+    public static final String EMAIL = "Binding123@163.com";
+    public static final String NEW_EMAIL = "NewBinding123@163.com";
+    public static final String QUESTION = "Secure question";
+    public static final String NEW_QUESTION = "New secure question";
+    public static final String ANSWER = "Secure answer";
+    public static final String NEW_ANSWER = "New secure answer";
+
     // AccountToken Test Constant
     public static final int CLIENT_ID = 1001;
     public static final String OTHER_INSTANCE_ID = "02020110011111F4E7587A9D4893242DWE97D1C1365DF95";

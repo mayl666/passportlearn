@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.connect;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.model.app.ConnectConfig;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,5 +18,13 @@ public interface OpenAPIUsersManager {
      * @param passportId
      * @return
      */
-    public Result getOpenIdByPassportId(String passportId,int clientId,int accountType);
+    public Result obtainOpenIdByPassportId(String passportId, int clientId, int provider);
+
+    /**
+     * 根据passportId获取第三方用户信息
+     * @param accessToken
+     * @param provider
+     * @return
+     */
+    public Result obtainUserInfo(String accessToken, int provider, ConnectConfig connectConfig);
 }

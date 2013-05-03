@@ -2,9 +2,9 @@ package com.sogou.upd.passport.service.connect.impl;
 
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
@@ -69,7 +69,17 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     }
 
     @Override
-    public String querySpecifyOpenId(String passportId, int provider, String appKey) throws ServiceException{
+    public String querySpecifyOpenId(String passportId, int provider, String appKey) throws ServiceException {
+        ConnectToken connectToken = queryConnectToken(passportId, provider, appKey);
+        String openId = null;
+        if (connectToken != null) {
+            openId = connectToken.getOpenid();
+        }
+        return openId;
+    }
+
+    @Override
+    public ConnectToken queryConnectToken(String passportId, int provider, String appKey) throws ServiceException {
         ConnectToken connectToken;
         String cacheKey = buildConnectTokenCacheKey(passportId, provider, appKey);
         try {
@@ -84,7 +94,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
                 }
                 redisUtils.set(cacheKey, connectToken);
             }
-            return connectToken.getOpenid();
+            return connectToken;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method querySpecifyOpenId error.{}", e);
             throw new ServiceException(e);

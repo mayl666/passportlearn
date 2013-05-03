@@ -22,9 +22,8 @@
 package com.sogou.upd.passport.oauth2.common.parameters;
 
 import com.google.gson.Gson;
-import com.sogou.upd.passport.oauth2.common.OAuthMessage;
+import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

@@ -2,7 +2,7 @@ package com.sogou.upd.passport.manager.form;
 
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.oauth2.common.types.OAuthDisplay;
+import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
@@ -47,7 +47,7 @@ public class ConnectLoginParams {
 
     @AssertTrue(message = "不支持的display")
     private boolean isSupportDisplay() {
-        if (display != null && !OAuthDisplay.isSupportDisplay(display, this.p)) {
+        if (display != null && !ConnectDisplay.isSupportDisplay(display, this.p)) {
             return false;
         }
         return true;

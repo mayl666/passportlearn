@@ -16,21 +16,21 @@ import java.util.Set;
 /**
  * OAuth2.0请求抽象类
  */
-public abstract class OAuthRequest {
+public abstract class OAuthASRequest {
 
-    private Logger log = LoggerFactory.getLogger(OAuthRequest.class);
+    private Logger log = LoggerFactory.getLogger(OAuthASRequest.class);
 
     protected HttpServletRequest request;
     protected OAuthValidator<HttpServletRequest> validator;
     protected Map<String, Class<? extends OAuthValidator<HttpServletRequest>>> validators =
             new HashMap<String, Class<? extends OAuthValidator<HttpServletRequest>>>();
 
-    public OAuthRequest(HttpServletRequest request) throws OAuthProblemException {
+    public OAuthASRequest(HttpServletRequest request) throws OAuthProblemException {
         this.request = request;
         validate();
     }
 
-    public OAuthRequest() {
+    public OAuthASRequest() {
     }
 
     protected void validate() throws OAuthProblemException {

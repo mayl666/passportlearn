@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.oauth2.common;
+package com.sogou.upd.passport.oauth2.authzserver.response;
 
 import java.util.Map;
 

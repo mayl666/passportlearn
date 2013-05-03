@@ -11,25 +11,15 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequ
  * Time: 下午5:21
  * To change this template use File | Settings | File Templates.
  */
-public interface ConnectAuthManager {
+public interface OAuthAuthBindManager {
 
     /**
-     * 第三方账户绑定接口
+     * SSO-SDK第三方账户绑定接口
      *
      * @param oauthRequest Sina微博采用SSO-SDK，OAuth2登录授权成功后的响应结果对象
      * @param provider     第三方平台
      * @return Result格式的返回值
      */
-    public Result connectAuthBind(OAuthSinaSSOBindTokenRequest oauthRequest, int provider);
-
-    /**
-     * 第三方账户登录接口
-     *
-     * @param oauthRequest Sina微博采用SSO-SDK，OAuth2登录授权成功后的响应结果对象
-     * @param provider     第三方平台
-     * @return Result格式的返回值
-     */
-    public Result connectAuthLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip);
-
+    public Result connectSSOBind(OAuthSinaSSOBindTokenRequest oauthRequest, int provider);
 
 }
