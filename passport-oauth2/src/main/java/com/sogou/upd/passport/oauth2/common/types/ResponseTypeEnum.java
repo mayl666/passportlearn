@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.oauth2.openresource.parameters;
+package com.sogou.upd.passport.oauth2.common.types;
 
 public enum ResponseTypeEnum {
 
@@ -15,9 +15,9 @@ public enum ResponseTypeEnum {
 		return code;
 	}
 
-//	@Override
-//	public String toString() {
-//		return code;
-//	}
+	@Override
+	public String toString() {
+		return code;
+	}
 
 }

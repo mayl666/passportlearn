@@ -21,8 +21,8 @@
 
 package com.sogou.upd.passport.oauth2.common;
 
-import com.sogou.upd.passport.oauth2.common.types.ParameterStyle;
-import com.sogou.upd.passport.oauth2.common.types.TokenType;
+import com.sogou.upd.passport.oauth2.common.types.ParameterStyleEnum;
+import com.sogou.upd.passport.oauth2.common.types.TokenTypeEnum;
 
 /**
  *
@@ -53,6 +53,8 @@ public class OAuth {
         public static final String JSON = "application/json";
     }
 
+    public static final String UTF8 = "utf-8";
+
     // Authorization request params
     public static final String OAUTH_RESPONSE_TYPE = "response_type";
     public static final String OAUTH_CLIENT_ID = "client_id";
@@ -61,8 +63,6 @@ public class OAuth {
     public static final String OAUTH_INSTANCE_ID = "instance_id";
     public static final String OAUTH_USERNAME = "username";
     public static final String OAUTH_PASSWORD = "password";
-    public static final String OAUTH_ASSERTION_TYPE = "assertion_type";
-    public static final String OAUTH_ASSERTION = "assertion";
     public static final String OAUTH_SCOPE = "scope";
     public static final String OAUTH_STATE = "state";
     public static final String OAUTH_DISPLAY = "display"; // 样式
@@ -78,16 +78,16 @@ public class OAuth {
     public static final String OAUTH_EXPIRES_TIME = "expires_time";   // sogou-passport返回结果中的过期时间点
     public static final String OAUTH_EXPIRES_IN = "expires_in";
     public static final String OAUTH_REFRESH_TOKEN = "refresh_token";
+    public static final String OAUTH_RTOKEN_EXPIRES_IN = "refreshToken_expires_in";
 
     public static final String OAUTH_TOKEN_TYPE = "token_type";
 
-    public static final String OAUTH_TOKEN = "oauth_token";
+    // openId response params
+    public static final ParameterStyleEnum DEFAULT_PARAMETER_STYLE = ParameterStyleEnum.HEADER;
+    public static final TokenTypeEnum DEFAULT_TOKEN_TYPE = TokenTypeEnum.BEARER;
 
-    public static final String OAUTH_TOKEN_DRAFT_0 = "access_token";
-    public static final String OAUTH_BEARER_TOKEN = "access_token";
-
-    public static final ParameterStyle DEFAULT_PARAMETER_STYLE = ParameterStyle.HEADER;
-    public static final TokenType DEFAULT_TOKEN_TYPE = TokenType.BEARER;
-    
-    public static final String OAUTH_VERSION_DIFFER = "oauth_signature_method";
+    //error response params
+    public static final String OAUTH_ERROR = "error";
+    public static final String OAUTH_ERROR_DESCRIPTION = "error_description";
+    public static final String OAUTH_ERROR_URI = "error_uri";
 }

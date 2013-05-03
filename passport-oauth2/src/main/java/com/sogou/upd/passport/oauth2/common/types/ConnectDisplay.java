@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author shipengzhi
  */
-public class OAuthDisplay {
+public class ConnectDisplay {
 
     private static final List<String> QQ_DISPLAY = Lists.newArrayList();
     private static final List<String> SINA_DISPLAY = Lists.newArrayList();

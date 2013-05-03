@@ -21,8 +21,9 @@
 
 package com.sogou.upd.passport.oauth2.common.parameters;
 
-import com.sogou.upd.passport.common.CommonConstant;
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 
 import java.util.Map;
@@ -32,13 +33,28 @@ import java.util.Map;
  *
  *
  */
-public class BodyURLEncodedParametersApplier implements OAuthParametersApplier {
+public class ClientQueryParameterApplier implements OAuthParametersApplier {
 
     public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
 
-        String body = OAuthUtils.format(params.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET);
-        message.setBody(body);
-        return message;
+        String messageUrl = message.getLocationUri();
+        if (messageUrl != null) {
+            boolean isContainsQuery = messageUrl.contains("?");
+            StringBuffer url = new StringBuffer(messageUrl);
 
+            StringBuffer query = new StringBuffer(OAuthUtils.format(params.entrySet(),
+                    OAuth.UTF8));
+
+            if (!Strings.isNullOrEmpty(query.toString())) {
+                if (isContainsQuery) {
+                    url.append("&").append(query);
+                } else {
+                    url.append("?").append(query);
+                }
+            }
+
+            message.setLocationUri(url.toString());
+        }
+        return message;
     }
 }

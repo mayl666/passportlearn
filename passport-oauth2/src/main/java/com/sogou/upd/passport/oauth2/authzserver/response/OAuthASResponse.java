@@ -1,131 +1,183 @@
-/**
- *       Copyright 2010 Newcastle University
- *
- *          http://research.ncl.ac.uk/smart/
- *
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.sogou.upd.passport.oauth2.authzserver.response;
 
-
 import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.oauth2.common.OAuthResponse;
+import com.sogou.upd.passport.oauth2.common.OAuthError;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+import com.sogou.upd.passport.oauth2.common.parameters.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- *
- *
- *
+ * OAuth2.0响应类
  */
-public class OAuthASResponse extends OAuthResponse {
+public class OAuthASResponse implements OAuthMessage {
+
+    protected int responseStatus;
+    protected String uri;
+    protected String body;
+
+    protected Map<String, String> headers = new HashMap<String, String>();
 
     protected OAuthASResponse(String uri, int responseStatus) {
-        super(uri, responseStatus);
+        this.uri = uri;
+        this.responseStatus = responseStatus;
     }
 
-    public static OAuthAuthorizationResponseBuilder authorizationResponse(HttpServletRequest request, int code) {
-        return new OAuthAuthorizationResponseBuilder(request, code);
+    public static OAuthResponseBuilder status(int code) {
+        return new OAuthResponseBuilder(code);
     }
 
-    public static OAuthTokenResponseBuilder tokenResponse(int code) {
-        return new OAuthTokenResponseBuilder(code);
+    public static OAuthErrorResponseBuilder errorResponse(int code) {
+        return new OAuthErrorResponseBuilder(code);
     }
 
-    public static class OAuthAuthorizationResponseBuilder extends OAuthResponseBuilder {
+    public static OAuthErrorResponseBuilder errorResponse() {
+        return new OAuthErrorResponseBuilder();
+    }
 
-        public OAuthAuthorizationResponseBuilder(HttpServletRequest request, int responseCode) {
-            super(responseCode);
-            //AMBER-45
-            String state = request.getParameter(OAuth.OAUTH_STATE);
-            if (state != null) {
-                this.setState(state);
-            }
+    @Override
+    public String getLocationUri() {
+        return uri;
+    }
+
+    @Override
+    public void setLocationUri(String uri) {
+        this.uri = uri;
+    }
+
+    @Override
+    public String getBody() {
+        return body;
+    }
+
+    @Override
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    @Override
+    public String getHeader(String name) {
+        return headers.get(name);
+    }
+
+    @Override
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    @Override
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public int getResponseStatus() {
+        return responseStatus;
+    }
+
+    @Override
+    public void addHeader(String name, String header) {
+        headers.put(name, header);
+    }
+
+    public static class OAuthResponseBuilder {
+
+        protected OAuthParametersApplier applier;
+        protected Map<String, Object> parameters = new HashMap<String, Object>();
+        protected int responseCode;
+        protected String location;
+
+        public OAuthResponseBuilder() {
         }
 
-        OAuthAuthorizationResponseBuilder setState(String state) {
-            this.parameters.put(OAuth.OAUTH_STATE, state);
-            return this;
+        public OAuthResponseBuilder(int responseCode) {
+            this.responseCode = responseCode;
         }
 
-        public OAuthAuthorizationResponseBuilder setCode(String code) {
-            this.parameters.put(OAuth.OAUTH_CODE, code);
-            return this;
-        }
-
-        public OAuthAuthorizationResponseBuilder setAccessToken(String token) {
-            this.parameters.put(OAuth.OAUTH_ACCESS_TOKEN, token);
-            return this;
-        }
-
-        public OAuthAuthorizationResponseBuilder setExpiresIn(String expiresIn) {
-            this.parameters.put(OAuth.OAUTH_EXPIRES_TIME, expiresIn == null ? null : Long.valueOf(expiresIn));
-            return this;
-        }
-
-        public OAuthAuthorizationResponseBuilder setExpiresIn(Long expiresIn) {
-            this.parameters.put(OAuth.OAUTH_EXPIRES_TIME, expiresIn);
-            return this;
-        }
-
-        public OAuthAuthorizationResponseBuilder location(String location) {
+        public OAuthResponseBuilder location(String location) {
             this.location = location;
             return this;
         }
 
-        public OAuthAuthorizationResponseBuilder setParam(String key, String value) {
+        public OAuthResponseBuilder setScope(String value) {
+            this.parameters.put(OAuth.OAUTH_SCOPE, value);
+            return this;
+        }
+
+        public OAuthResponseBuilder setParam(String key, String value) {
             this.parameters.put(key, value);
             return this;
+        }
+
+        public OAuthASResponse buildQueryMessage() throws OAuthProblemException {
+            OAuthASResponse msg = new OAuthASResponse(location, responseCode);
+            this.applier = new QueryParameterApplier();
+            return (OAuthASResponse) applier.applyOAuthParameters(msg, parameters);
+        }
+
+        public OAuthASResponse buildBodyMessage() throws OAuthProblemException {
+            OAuthASResponse msg = new OAuthASResponse(location, responseCode);
+            this.applier = new BodyURLEncodedParametersApplier();
+            return (OAuthASResponse) applier.applyOAuthParameters(msg, parameters);
+        }
+
+        public OAuthASResponse buildJSONMessage() throws OAuthProblemException {
+            OAuthASResponse msg = new OAuthASResponse(location, responseCode);
+            this.applier = new JSONBodyParametersApplier();
+            return (OAuthASResponse) applier.applyOAuthParameters(msg, parameters);
+        }
+
+        public OAuthASResponse buildHeaderMessage() throws OAuthProblemException {
+            OAuthASResponse msg = new OAuthASResponse(location, responseCode);
+            this.applier = new WWWAuthHeaderParametersApplier();
+            return (OAuthASResponse) applier.applyOAuthParameters(msg, parameters);
         }
     }
 
+    public static class OAuthErrorResponseBuilder extends OAuthResponseBuilder {
 
-    public static class OAuthTokenResponseBuilder extends OAuthResponseBuilder {
+        public OAuthErrorResponseBuilder() {
+            super();
+        }
 
-        public OAuthTokenResponseBuilder(int responseCode) {
+        public OAuthErrorResponseBuilder(int responseCode) {
             super(responseCode);
         }
 
-        public OAuthTokenResponseBuilder setAccessToken(String token) {
-            this.parameters.put(OAuth.OAUTH_ACCESS_TOKEN, token);
+        public OAuthErrorResponseBuilder error(OAuthProblemException ex) {
+            this.parameters.put(OAuthError.OAUTH_ERROR, ex.getError());
+            this.parameters.put(OAuthError.OAUTH_ERROR_DESCRIPTION, ex.getDescription());
+//            this.parameters.put(OAuthError.OAUTH_ERROR_URI, ex.getUri());
+//            this.parameters.put(OAuth.OAUTH_STATE, ex.getState());
             return this;
         }
 
-        public OAuthTokenResponseBuilder setExpiresTime(long expiresTime) {
-            this.parameters.put(OAuth.OAUTH_EXPIRES_TIME, expiresTime);
+        public OAuthErrorResponseBuilder setError(String error) {
+            this.parameters.put(OAuthError.OAUTH_ERROR, error);
             return this;
         }
 
-        public OAuthTokenResponseBuilder setRefreshToken(String refreshToken) {
-            this.parameters.put(OAuth.OAUTH_REFRESH_TOKEN, refreshToken);
+        public OAuthErrorResponseBuilder setErrorDescription(String desc) {
+            this.parameters.put(OAuthError.OAUTH_ERROR_DESCRIPTION, desc);
             return this;
         }
 
-        public OAuthTokenResponseBuilder setTokenType(String tokenType) {
-            this.parameters.put(OAuth.OAUTH_TOKEN_TYPE, tokenType);
+        public OAuthErrorResponseBuilder setErrorUri(String state) {
+            this.parameters.put(OAuthError.OAUTH_ERROR_URI, state);
             return this;
         }
 
-        public OAuthTokenResponseBuilder setParam(String key, String value) {
-            this.parameters.put(key, value);
+        public OAuthErrorResponseBuilder setState(String state) {
+            this.parameters.put(OAuth.OAUTH_STATE, state);
             return this;
         }
 
-        public OAuthTokenResponseBuilder location(String location) {
+        public OAuthErrorResponseBuilder setRealm(String realm) {
+            this.parameters.put(OAuth.WWWAuthHeader.REALM, realm);
+            return this;
+        }
+
+        public OAuthErrorResponseBuilder location(String location) {
             this.location = location;
             return this;
         }
