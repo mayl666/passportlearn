@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-26 Time: 下午2:38 To change this template use
@@ -44,7 +45,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 if (accountInfo != null) {
                     redisUtils.set(cacheKey, accountInfo);
-                    // TODO:设置缓存有效时间，或者不放缓存
                 }
             }
         } catch (Exception e) {
@@ -58,12 +58,21 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             throws ServiceException {
         AccountInfo accountInfo;
         try {
-            accountInfo = queryAccountInfoByPassportId(passportId);
-            if (accountInfo == null) {
-                accountInfo = new AccountInfo(passportId);
-            }
+            accountInfo = new AccountInfo(passportId);
             accountInfo.setEmail(email);
-            accountInfoDAO.modifyEmailOrInsert(passportId, accountInfo);
+            int row = accountInfoDAO.saveEmailOrInsert(passportId, accountInfo);
+            if (row != 0) {
+                // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存 ---hjf 2013.5.3
+                String cacheKey = buildAccountInfoKey(passportId);
+                Type type = new TypeToken<AccountInfo>() {
+                }.getType();
+                if ((accountInfo = (AccountInfo) redisUtils.getObject(cacheKey, type)) != null) {
+                    accountInfo.setEmail(email);
+                } else {
+                    accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
+                }
+                redisUtils.set(cacheKey, accountInfo);
+            }
         } catch (Exception e) {
             throw new ServiceException();
         }
@@ -75,13 +84,23 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             throws ServiceException {
         AccountInfo accountInfo;
         try {
-            accountInfo = queryAccountInfoByPassportId(passportId);
-            if (accountInfo == null) {
-                accountInfo = new AccountInfo(passportId);
-            }
+            accountInfo = new AccountInfo(passportId);
             accountInfo.setQuestion(question);
             accountInfo.setAnswer(answer);
-            accountInfoDAO.modifyQuesOrInsert(passportId, accountInfo);
+            int row = accountInfoDAO.saveQuesOrInsert(passportId, accountInfo);
+            if (row != 0) {
+                // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存 ---hjf 2013.5.3
+                String cacheKey = buildAccountInfoKey(passportId);
+                Type type = new TypeToken<AccountInfo>() {
+                }.getType();
+                if ((accountInfo = (AccountInfo) redisUtils.getObject(cacheKey, type)) != null) {
+                    accountInfo.setQuestion(question);
+                    accountInfo.setAnswer(answer);
+                } else {
+                    accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
+                }
+                redisUtils.set(cacheKey, accountInfo);
+            }
         } catch (Exception e) {
             throw new ServiceException();
         }
