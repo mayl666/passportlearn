@@ -43,5 +43,4 @@ public interface AccountRegManager {
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
   public Result activeEmail(ActiveEmailParameters activeParams) throws Exception;
-
 }

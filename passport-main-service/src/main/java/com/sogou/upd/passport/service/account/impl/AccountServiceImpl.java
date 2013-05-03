@@ -68,7 +68,7 @@ public class AccountServiceImpl implements AccountService {
             //删除临时账户缓存，成为正式账户
             redisUtils.set(cacheKey, account);
             //设置cookie
-            CookieUtils.setCookie();
+            setCookie();
             return account;
           }
         }
@@ -285,6 +285,12 @@ public class AccountServiceImpl implements AccountService {
     }catch (Exception e){
       throw new ServiceException(e);
     }
+    return false;
+  }
+
+  @Override
+  public boolean setCookie() throws Exception {
+    CookieUtils.setCookie();
     return false;
   }
 

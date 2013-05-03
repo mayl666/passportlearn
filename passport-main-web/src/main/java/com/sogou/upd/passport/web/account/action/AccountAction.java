@@ -76,17 +76,6 @@ public class AccountAction extends BaseController {
     //验证用户是否注册过
     Result result = accountRegManager.activeEmail(activeParams);
 
-
-
-    //验证用户是否注册过
-//    if (!accountManager.isAccountExists(username)) {
-//      String ip = getIp(request);
-//      accountRegManager.webRegister(regParams,ip);
-//
-//
-//    } else {
-//      result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-//    }
     return result;
   }
 

@@ -77,4 +77,10 @@ public interface AccountService {
    * @return
    */
   public boolean activeEmail(String username,String token,int clientId) throws Exception;
+  /**
+   * 种根域和子域下的cookie
+   *
+   * @return
+   */
+  public boolean setCookie() throws Exception;
 }
