@@ -20,11 +20,6 @@ public interface AccountInfoService {
     public AccountInfo modifyEmailByPassportId(String passportId, String email) throws ServiceException;
 
     /**
-     * 修改绑定手机状态
-     */
-    public AccountInfo modifyMobileFlagByPassportId(String passportId, int mobileFlag) throws ServiceException;
-
-    /**
      * 修改密保问题和答案
      */
     public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer) throws ServiceException;
