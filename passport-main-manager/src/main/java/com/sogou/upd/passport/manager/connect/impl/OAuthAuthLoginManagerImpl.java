@@ -193,11 +193,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             throw new OAuthProblemException(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
         }
 
-//        if(ConnectTypeEnum.WEB.toString().equals(connectType)){
-//
-//        } else{ String accessToken, long expiresIn, String refreshToken, String scope, String openid
-//            oAuthTokenDO = new oAuthTokenDO(oar.getAccessToken(),oar.getExpiresIn(),oar.getRefreshToken())
-//        }
+        if(ConnectTypeEnum.WEB.toString().equals(connectType)){
+
+        } else{
+            oAuthTokenDO = new OAuthTokenDO(oar.getAccessToken(),oar.getExpiresIn(),oar.getRefreshToken());
+        }
 
 
         return null;
