@@ -34,8 +34,8 @@ public interface AccountInfoDAO {
      * 修改绑定邮箱，若passport_id不存在则插入新记录
      */
     @SQL(
-            "insert into account_info(passport_id, email, question, answer)"
-            + "values(:passport_id,:a.email,:a.question,:a.answer) on duplicate key"
+            "insert into account_info(passport_id, email, question, answer) "
+            + "values(:passport_id,:a.email,:a.question,:a.answer) on duplicate key "
             + "update email = :a.email")
     public int saveEmailOrInsert(@SQLParam("passport_id") String passport_id,
                                    @SQLParam("a") AccountInfo account_info)
@@ -46,8 +46,8 @@ public interface AccountInfoDAO {
      */
     @SQL(
             "insert into account_info(passport_id, email, question, answer)"
-            + "values(:passport_id,:a.email,:a.question,:a.answer) on duplicate key"
-            + "update question = :a.question, answer = a.answer")
+            + "values(:passport_id,:a.email,:a.question,:a.answer) on duplicate key "
+            + "update question = :a.question, answer = :a.answer")
     public int saveQuesOrInsert(@SQLParam("passport_id") String passport_id,
                                   @SQLParam("a") AccountInfo account_info)
             throws DataAccessException;
