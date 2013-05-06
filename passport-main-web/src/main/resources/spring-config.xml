@@ -94,7 +94,7 @@
     <!-- 配置Velocity引擎 -->
     <bean id="velocityConfigurer" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
         <property name="resourceLoaderPath">
-            <value>/WEB-INF/velocity/</value>
+            <value>/WEB-INF/velocity/vm/</value>
         </property>
         <property name="configLocation">
             <value>/WEB-INF/velocity/velocity.properties</value>
