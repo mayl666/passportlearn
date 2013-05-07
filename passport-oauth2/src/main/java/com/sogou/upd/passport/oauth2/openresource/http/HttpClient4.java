@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.oauth2.openresource.http;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -96,7 +97,7 @@ public class HttpClient4 {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 in = entity.getContent();
-                responseBody = EntityUtils.toString(entity, OAuth.UTF8);
+                responseBody = EntityUtils.toString(entity, CommonConstant.DEFAULT_CONTENT_CHARSET);
                 contentTypeHeader = entity.getContentType();
             }
             String contentType = null;

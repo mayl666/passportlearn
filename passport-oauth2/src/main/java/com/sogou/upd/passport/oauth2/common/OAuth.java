@@ -53,8 +53,6 @@ public class OAuth {
         public static final String JSON = "application/json";
     }
 
-    public static final String UTF8 = "utf-8";
-
     // Authorization request params
     public static final String OAUTH_RESPONSE_TYPE = "response_type";
     public static final String OAUTH_CLIENT_ID = "client_id";

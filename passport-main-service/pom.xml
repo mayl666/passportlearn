@@ -174,5 +174,13 @@
                 </app_config_file>
             </properties>
         </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <app_config_file>
+                    src/main/resources/deploy_config_PROD.properties
+                </app_config_file>
+            </properties>
+        </profile>
     </profiles>
 </project>
