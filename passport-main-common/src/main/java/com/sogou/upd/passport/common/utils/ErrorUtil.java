@@ -24,12 +24,36 @@ public class ErrorUtil {
     public static final String ERR_OPEN_ID = "10006";
     // 传入字段不存在，请输入正确的字段
     public static final String ERR_QUERY_FIELDS = "10008";
-    //***************************通用的错误代码end*********************************
-
     // 账号不存在或异常或未激活
     public static final String INVALID_ACCOUNT = "10009";
-    //client_id异常
+    //client_id不存在
     public static final String INVALID_CLIENTID = "10010";
+    //***************************通用的错误代码end*********************************
+
+    //***************************OAuth2授权错误码start******************************
+     // client_id或client_secret不匹配
+    public static final String INVALID_CLIENT = "101";
+     //invalid_grant
+    public static final String INVALID_GRANT = "102";
+     //错误的grant_type
+    public static final String UNSUPPORTED_GRANT_TYPE = "103";
+     //unsupported_response_type
+    public static final String UNSUPPORTED_RESPONSE_TYPE = "104";
+     // invalid_scope
+    public static final String INVALID_SCOPE = "105";
+     // insufficient_scope
+    public static final String INSUFFICIENT_SCOPE = "106";
+     // expired_token
+    public static final String EXPIRED_TOKEN = "107";
+     // access_token不存在或已过期
+    public static final String INVALID_ACCESS_TOKEN = "108";
+     //refresh_token不存在或已过期
+    public static final String INVALID_REFRESH_TOKEN = "109";
+     // login/authorize fail,数据库写入失败
+    public static final String AUTHORIZE_FAIL = "110";
+     // 用户名密码不匹配
+    public static final String USERNAME_PWD_MISMATCH = "111";
+    //***************************OAuth2授权错误码end******************************
 
     //***************************account 服务的错误代码start*********************************
     // 帐号已经注册
@@ -131,8 +155,6 @@ public class ErrorUtil {
     public static final String HTTP_CLIENT_REQEUST_FAIL = "30006";
     // 不支持指定第三方
     public static final String UNSUPPORT_THIRDPARTY = "30007";
-    // 不支持的响应结果类型
-    public static final String UNSUPPORTED_RESPONSE_TYPE = "30008";
     // 无效的登录授权请求
     public static final String INVALID_OPENOAUTH_REQUEST = "30009";
     // 用户未授权
@@ -189,10 +211,16 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "参数错误,签名过期或者不合法");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(ERR_QUERY_FIELDS, "传入字段不存在，请输入正确的字段");
-
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_OPEN_ID, "openid错误");
-        ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id错误");
+        ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
+
+        // oauth2授权
+        ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
+        ERR_CODE_MSG_MAP.put(UNSUPPORTED_GRANT_TYPE, "不支持的grant_type");
+        ERR_CODE_MSG_MAP.put(INVALID_REFRESH_TOKEN, "refresh_token不存在或过期");
+        ERR_CODE_MSG_MAP.put(AUTHORIZE_FAIL, "授权失败");
+        ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "username or password不匹配");
 
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册");
@@ -241,7 +269,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(CONNECT_REFRESH_TOKEN_FAIL, "刷新第三方accessToken失败");
         ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");
         ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
-        ERR_CODE_MSG_MAP.put(UNSUPPORTED_RESPONSE_TYPE, "不支持的响应结果类型");
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
         ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_NOT_EXIST, "第三方关联帐号不存在，请先关联");

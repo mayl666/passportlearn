@@ -1,10 +1,10 @@
 package com.sogou.upd.passport.web.connect;
 
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthBindManager;
-import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOBindTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -48,7 +48,7 @@ public class ConnectBindController extends BaseConnectController {
 
         // 检查client_id和client_secret是否有效
         if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
-            return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
+            return Result.buildError(ErrorUtil.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
 
         result = oAuthAuthBindManager.connectSSOBind(oauthRequest, provider);

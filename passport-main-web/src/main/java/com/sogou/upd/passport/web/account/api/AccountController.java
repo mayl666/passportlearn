@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
  * File Templates.
  */
 @Controller
+@RequestMapping("/v2")
 public class AccountController extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(AccountController.class);

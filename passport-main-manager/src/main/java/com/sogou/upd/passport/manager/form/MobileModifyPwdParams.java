@@ -1,14 +1,15 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
- * 桌面/移动客户端手机账号注册请求参数类
+ * 桌面/移动客户端手机账号重置密码请求参数类
  * User: shipengzhi
  * Date: 13-3-30
  * Time: 下午3:03
@@ -16,17 +17,20 @@ import javax.validation.constraints.NotNull;
  */
 public class MobileModifyPwdParams {
 
-    @NotNull(message = "手机号码不允许为空!")
+    @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
-    @NotNull(message = "密码不允许为空!")
+    @NotBlank(message = "密码不允许为空!")
     private String password;
-    @NotNull(message = "验证码不允许为空!")
+    @NotBlank(message = "验证码不允许为空!")
     private String smscode;
     @Min(value = 1, message = "client_id不允许为空!")
     private int client_id;
 
     @AssertTrue(message = "不支持的手机号格式!")
     private boolean isValidPhone() {
+        if (Strings.isNullOrEmpty(mobile)) {   // NotBlank已经校验过了，无需再校验
+            return true;
+        }
         if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
             return true;
         }

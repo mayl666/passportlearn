@@ -1,13 +1,14 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
- * Created with IntelliJ IDEA.
+ * 手机验证码请求参数类
  * User: shipengzhi
  * Date: 13-4-8
  * Time: 下午5:57
@@ -15,13 +16,16 @@ import javax.validation.constraints.NotNull;
  */
 public class MoblieCodeParams {
 
-    @NotNull(message = "手机号码不允许为空!")
+    @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
     @Min(value = 1, message = "client_id不允许为空!")
-    private int client_id;
+    private int client_id = 0;
 
     @AssertTrue(message = "不支持的手机号格式!")
     private boolean isValidPhone() {
+        if(Strings.isNullOrEmpty(mobile)){   // NotBlank已经校验过了，无需再校验
+            return true;
+        }
         if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
             return true;
         }

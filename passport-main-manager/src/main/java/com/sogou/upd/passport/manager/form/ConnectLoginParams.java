@@ -3,10 +3,10 @@ package com.sogou.upd.passport.manager.form;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -18,11 +18,11 @@ import java.util.List;
  */
 public class ConnectLoginParams {
 
-    @NotNull(message = "provider不能为空")
+    @NotBlank(message = "provider不能为空")
     private String p; // provider
     @Min(value = 1, message = "appid不能为空")
     private int client_id; // 应用id
-    @NotNull(message = "ru不能为空")
+    @NotBlank(message = "ru不能为空")
     private String ru;  // 回调地址
 
     private String display;  // 样式
