@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
 
 import com.sogou.upd.passport.common.CacheConstant;
@@ -14,12 +15,14 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sohu.sendcloud.Message;
 import com.sohu.sendcloud.SmtpApiHeader;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File Templates.
  */
 @Service
-public class AccountServiceImpl implements AccountService {
+public class AccountServiceImpl extends BaseService implements AccountService {
 
     private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
@@ -245,11 +249,13 @@ public class AccountServiceImpl implements AccountService {
 
       //发送邮件
       Message message=mailUtils.getMessage();
-      // 正文， 使用html形式，或者纯文本形式
-      message.setBody(
-          "亲爱的用户：您好，欢迎您使用搜狐通行证服务，为确保用户注册信息的真实性，我们会验证此邮箱是否属于您。请单击以下链接进行激活："+
-      "<a href="+activeUrl+">"+activeUrl+"</a>");
+      //模版中参数替换
+      Map<String,Object> map= Maps.newHashMap();
+      map.put("activeUrl",activeUrl);
 
+      String mailBody=getMailBody("activemail.vm",map);
+      // 正文， 使用html形式，或者纯文本形式
+      message.setBody(mailBody);
       message.setSubject("激活您的搜狗通行证帐户");
 
       // X-SMTPAPI
