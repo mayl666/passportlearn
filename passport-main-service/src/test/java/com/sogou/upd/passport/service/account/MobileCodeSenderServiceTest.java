@@ -87,7 +87,7 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
     @Test
     public void testUpdateSmsInfo() {
         Map<String, Object> mapResult = null;
-        mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "","");
+        mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "","","");
         if (MapUtils.isNotEmpty(mapResult)) {
             System.out.println(mapResult.size());
         } else {

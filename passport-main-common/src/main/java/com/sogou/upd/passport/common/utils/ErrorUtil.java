@@ -24,10 +24,10 @@ public class ErrorUtil {
     public static final String ERR_OPEN_ID = "10006";
     // 传入字段不存在，请输入正确的字段
     public static final String ERR_QUERY_FIELDS = "10008";
+    //***************************通用的错误代码end*********************************
+
     // 账号不存在或异常或未激活
     public static final String INVALID_ACCOUNT = "10009";
-
-    //***************************通用的错误代码end*********************************
 
     //***************************account 服务的错误代码start*********************************
     // 帐号已经注册
@@ -44,6 +44,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_LOGINERROR = "20206";
     // 短信验证码错误，输入的错误或者验证码过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
+    // 当日短信验证错误次数已超过上限
+    public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
     // 密码格式非法，只能是可打印ascii字符，长度大于=6
     public static final String ERR_CODE_ACCOUNT_PASSWDFORMAT = "20211";
     // 昵称验证失败
@@ -62,6 +64,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED = "20218";
     //账号已经激活，无需再次激活
     public static final String ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED = "20219";
+    //激活链接已失效
+    public static final String ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED = "20220";
+    // 密保答案错误
+    public static final String ERR_CODE_ACCOUNT_CHECKANSWER_FAILED = "20221";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -77,6 +83,14 @@ public class ErrorUtil {
     public static final String ACCOUNT_ALREADY_REG_OR_BIND = "20253";
 
     //***************************账号绑定相关的错误代码end*********************************
+
+    //***************************密保方式相关的错误代码start*********************************
+    // 未绑定邮箱
+    public static final String NOTHAS_BINDINGEMAIL = "20280";
+    // 未设置密保问题及答案
+    public static final String NOTHAS_BINDINGQUESTION = "20281";
+
+    //***************************密保方式相关的错误代码end*********************************
 
 
     //***************************profile 服务的错误代码start*********************************
@@ -185,6 +199,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGINERROR, "帐号或密码不正确");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码不正确");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日短信验证错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PASSWDFORMAT, "请输入6-16位的数字、字母或字符");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_VERIFY_FIELDS, "昵称格式有误，只能包含中文、英文大小写,-,_,字母或空格");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
@@ -194,12 +209,17 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKANSWER_FAILED, "密保答案错误");
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
         ERR_CODE_MSG_MAP.put(NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT, "不允许重复绑定同一类型的账号");
         ERR_CODE_MSG_MAP.put(ACCOUNT_ALREADY_REG_OR_BIND, "此账号已经注册或绑定过，无法再次绑定");
+
+        // acount secure info
+        ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
+        ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");

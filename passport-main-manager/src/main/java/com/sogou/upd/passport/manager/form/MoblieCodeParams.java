@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sun.javafx.beans.annotations.Default;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
@@ -18,7 +19,7 @@ public class MoblieCodeParams {
     @NotNull(message = "手机号码不允许为空!")
     private String mobile;
     @Min(value = 1, message = "client_id不允许为空!")
-    private int client_id;
+    private int client_id=0;
 
     @AssertTrue(message = "不支持的手机号格式!")
     private boolean isValidPhone() {

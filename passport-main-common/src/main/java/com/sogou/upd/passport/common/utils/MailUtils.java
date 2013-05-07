@@ -5,6 +5,8 @@ import com.sohu.sendcloud.SendCloud;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Properties;
+
 /**
  * 邮件工具类
  * User: mayan
@@ -17,7 +19,10 @@ public class MailUtils {
     private static final String FROM_ADDRESS = "postmaster@sogou-upd-passport.sendcloud.org";
     private static final String FROM_NAME = "搜狗通行证";
 
+
     private static SendCloud sendCloud;
+
+
 
     public void sendEmail(Message message) {
         try {

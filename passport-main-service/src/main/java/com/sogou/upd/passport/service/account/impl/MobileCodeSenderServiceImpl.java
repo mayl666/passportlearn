@@ -61,11 +61,12 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
   }
 
   @Override
-  public boolean updateSmsCacheInfo(String cacheKeySendNum,String cacheKeySmscode,String curtime)  throws ServiceException{
+  public boolean updateSmsCacheInfo(String cacheKeySendNum,String cacheKeySmscode,String curtime,String smsCode)  throws ServiceException{
     boolean flag = true;
     try {
       redisUtils.hIncrBy(cacheKeySendNum, "sendNum");
       redisUtils.hPut(cacheKeySmscode, "sendTime", curtime);
+      redisUtils.hPut(cacheKeySmscode, "smsCode", smsCode);
     }catch (Exception e){
       flag = false;
       logger.error("[SMS] service method updateSmsCacheInfo error.{}", e);
@@ -79,7 +80,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     boolean flag = true;
     try {
       redisUtils.delete(CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId);
-      redisUtils.delete(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
+      redisUtils.delete(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile +"_" + clientId);
     } catch (Exception e) {
       flag = false;
       logger.error("[SMS] service method deleteSmsCache error.{}", e);
@@ -92,7 +93,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
   public Result handleSendSms(String mobile, int clientId)  throws ServiceException{
     Result result = null;
     try {
-      String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
+      String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile + "_" + clientId;
 
       if (!redisUtils.checkKeyIsExist(cacheKey)) {
         boolean flag = redisUtils.hPutIfAbsent(cacheKey, "sendNum", "1");
@@ -113,7 +114,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         }
       }
       //生成随机数
-      String randomCode = RandomStringUtils.randomNumeric(5);
+      String randomCode = RandomStringUtils.randomNumeric(6);
       //写入缓存
       cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
       //初始化缓存映射
@@ -133,7 +134,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
       if (!Strings.isNullOrEmpty(smsText)) {
         isSend = SMSUtil.sendSMS(mobile, smsText);
         if (isSend) {
-          result = Result.buildSuccess("获取验证码成功", "", "");
+          result = Result.buildSuccess("获取验证码成功");
           return result;
         }
       } else {
@@ -156,7 +157,6 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
       Map<String, String> mapResult = redisUtils.hGetAll(cacheKey);
       if (MapUtils.isNotEmpty(mapResult)) {
         String strValue = mapResult.get("smsCode");
-        // TODO Refactoring if写的读不懂
         if (StringUtils.isNotBlank(strValue)) {
           if (strValue.equals(smsCode)) {
             return true;
@@ -174,6 +174,11 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
       new ServiceException(e);
     }
     return false;
+  }
+
+  @Override
+  public boolean checkSmsFailLimited(String account, int clientId) {
+    return false;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override

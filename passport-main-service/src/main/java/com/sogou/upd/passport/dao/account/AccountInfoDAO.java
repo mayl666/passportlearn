@@ -31,29 +31,13 @@ public interface AccountInfoDAO {
             DataAccessException;
 
     /**
-     * 修改绑定邮箱
-     */
-    @SQL("update account_info set email=:email where passport_id=:passport_id")
-    public int modifyEmail(@SQLParam("email") String email,
-                           @SQLParam("passport_id") String passport_id) throws
-            DataAccessException;
-
-    /**
-     * 修改密保问题和答案
-     */
-    @SQL("update account_info set question=:question,answer=:answer where passport_id=:passport_id")
-    public int modifyQuestionAndAnswer(@SQLParam("question") String question,
-                                       @SQLParam("answer") String answer,
-                                       @SQLParam("passport_id") String passport_id) throws DataAccessException;
-
-    /**
      * 修改绑定邮箱，若passport_id不存在则插入新记录
      */
     @SQL(
-            "insert into account_info(passport_id, email, question, answer)"
-            + "values(:passport_id,:a.email,:a.question,:a.answer on duplicate key"
+            "insert into account_info(passport_id, email, question, answer) "
+            + "values(:passport_id,:a.email,:a.question,:a.answer) on duplicate key "
             + "update email = :a.email")
-    public int modifyEmailOrInsert(@SQLParam("passport_id") String passport_id,
+    public int saveEmailOrInsert(@SQLParam("passport_id") String passport_id,
                                    @SQLParam("a") AccountInfo account_info)
             throws DataAccessException;
 
@@ -62,9 +46,9 @@ public interface AccountInfoDAO {
      */
     @SQL(
             "insert into account_info(passport_id, email, question, answer)"
-            + "values(:passport_id,:a.email,:a.question,:a.answer on duplicate key"
-            + "update question = :a.question, answer = a.answer")
-    public int modifyQuesOrInsert(@SQLParam("passport_id") String passport_id,
+            + "values(:passport_id,:a.email,:a.question,:a.answer) on duplicate key "
+            + "update question = :a.question, answer = :a.answer")
+    public int saveQuesOrInsert(@SQLParam("passport_id") String passport_id,
                                   @SQLParam("a") AccountInfo account_info)
             throws DataAccessException;
 
