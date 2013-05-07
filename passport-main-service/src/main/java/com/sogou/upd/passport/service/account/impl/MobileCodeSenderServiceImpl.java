@@ -188,7 +188,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 // cacheKey存在，则检查failTime
                 Map<String, String> mapCacheFailNumResult = redisUtils.hGetAll(cacheKey);
                 Date date = DateUtil.parse(mapCacheFailNumResult.get("failTime"), DateUtil.DATE_FMT_3);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(), date);
+                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
                 if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
                     // 是当日键值，递增失败次数
                     redisUtils.hIncrBy(cacheKey, "failNum");
@@ -214,7 +214,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 // 键存在，验证是否当日的键值
                 Map<String, String> mapCacheFailNumResult = redisUtils.hGetAll(cacheKey);
                 Date date = DateUtil.parse(mapCacheFailNumResult.get("failTime"), DateUtil.DATE_FMT_2);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(), date);
+                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
                 if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
                     // 是当日键值，验证是否超过次数
                     int checkNum = Integer.parseInt(mapCacheFailNumResult.get("failNum"));
