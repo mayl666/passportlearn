@@ -47,7 +47,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
     public Object sendMobileCode(MoblieCodeParams reqParams)
             throws Exception {
@@ -73,7 +73,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
+    @RequestMapping(value = "/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
@@ -102,7 +102,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/findpwd", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
     @ResponseBody
     public Object findPassword(MoblieCodeParams reqParams)
             throws Exception {
@@ -130,7 +130,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/mobile/resetpwd", method = RequestMethod.POST)
+    @RequestMapping(value = "/mobile/resetpwd", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPassword(MobileModifyPwdParams regParams) throws Exception {
 

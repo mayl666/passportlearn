@@ -93,7 +93,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 String smsCode = mapCacheResult.get("smsCode");
                 String mobile = mapCacheResult.get("mobile");
                 //获取当天发送次数
-                String cacheKeySendNum = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
+                String cacheKeySendNum = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile + "_" +clientId;
 
                 Map<String, String> mapCacheSendNumResult = mobileCodeSenderService.getCacheMapByKey(
                         cacheKeySendNum);

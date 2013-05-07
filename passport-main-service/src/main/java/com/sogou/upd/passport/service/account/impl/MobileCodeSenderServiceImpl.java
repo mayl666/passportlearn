@@ -79,7 +79,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     boolean flag = true;
     try {
       redisUtils.delete(CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId);
-      redisUtils.delete(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile);
+      redisUtils.delete(CACHE_PREFIX_ACCOUNT_SENDNUM + mobile +"_" + clientId);
     } catch (Exception e) {
       flag = false;
       logger.error("[SMS] service method deleteSmsCache error.{}", e);
@@ -92,7 +92,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
   public Result handleSendSms(String mobile, int clientId)  throws ServiceException{
     Result result = null;
     try {
-      String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile;
+      String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile + "_" + clientId;
 
       if (!redisUtils.checkKeyIsExist(cacheKey)) {
         boolean flag = redisUtils.hPutIfAbsent(cacheKey, "sendNum", "1");
