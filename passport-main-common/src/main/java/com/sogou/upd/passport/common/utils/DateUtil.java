@@ -37,11 +37,17 @@ public class DateUtil {
     }
 
     /**
-     * 获取当前日期的起始时间
+     * 获取某一日期的起始时间（0点0分0秒），参数为null时则返回当前日期的起始时间
+     *
+     * @param date
+     * @return Date
      */
-    public static Date getStartTime() {
+    public static Date getStartTime(Date date) {
         Calendar now = Calendar.getInstance();
-        now.set(Calendar.HOUR, 0);
+        if (date != null) {
+            now.setTime(date);
+        }
+        now.set(Calendar.HOUR_OF_DAY, 0);
         now.set(Calendar.MINUTE, 0);
         now.set(Calendar.SECOND, 0);
         now.set(Calendar.MILLISECOND, 0);
@@ -49,11 +55,17 @@ public class DateUtil {
     }
 
     /**
-     * 获取当前日期的结束时间
+     * 获取某一日期的结束时间（23点59分59秒），参数为null时则返回当前日期的结束时间
+     *
+     * @param date
+     * @return Date
      */
-    public static Date getEndTime() {
+    public static Date getEndTime(Date date) {
         Calendar now = Calendar.getInstance();
-        now.set(Calendar.HOUR, 23);
+        if (date != null) {
+            now.setTime(date);
+        }
+        now.set(Calendar.HOUR_OF_DAY, 23);
         now.set(Calendar.MINUTE, 59);
         now.set(Calendar.SECOND, 59);
         now.set(Calendar.MILLISECOND, 999);
