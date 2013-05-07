@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.sogou.upd.passport.common.math.Coder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class SMSUtil {
      */
     public static boolean sendSMS(String tel, String content) {
         try {
-            String contentGBK = StringUtil.encode(content, "gbk");
+            String contentGBK = Coder.encode(content, "gbk");
             StringBuilder url = new StringBuilder(SMS_PROXY);
             url.append("&number=").append(tel).append("&desc=").append(contentGBK);
             Pair<Integer, String> ret = HttpClientUtil.get(url.toString());

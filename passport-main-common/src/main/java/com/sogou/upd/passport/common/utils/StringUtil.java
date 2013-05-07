@@ -76,34 +76,6 @@ public class StringUtil {
         return str;
     }
 
-
-    /**
-     * 将参数URLEncode为UTF-8
-     */
-    public static String urlEncodeUTF8(String params) throws UnsupportedEncodingException {
-        String en = URLEncoder.encode(params, CommonConstant.DEFAULT_CONTENT_CHARSET);
-        en = en.replace("+", "%20");
-        en = en.replace("*", "%2A");
-        return en;
-    }
-
-    /**
-     * 将参数URLEncode，默认为UTF-8
-     */
-    public static String encode(String params, String encoding) {
-        try {
-            String
-                    en =
-                    URLEncoder.encode(params,
-                            encoding != null ? encoding : CommonConstant.DEFAULT_CONTENT_CHARSET);
-            en = en.replace("+", "%20");
-            en = en.replace("*", "%2A");
-            return en;
-        } catch (UnsupportedEncodingException problem) {
-            throw new IllegalArgumentException(problem);
-        }
-    }
-
     /**
      * 输入为map 输出为：appid=xxx&openid=xxx&...
      */
