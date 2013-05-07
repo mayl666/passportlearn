@@ -10,37 +10,46 @@ import java.util.Map;
  */
 public interface MobileCodeSenderService {
 
-  /**
-   * 检查缓存中是否存在指定手机号的验证码
-   */
-  public boolean checkIsExistMobileCode(String cacheKey);
+    /**
+     * 检查缓存中是否存在指定手机号的验证码
+     */
+    public boolean checkIsExistMobileCode(String cacheKey);
 
-  /**
-   * 重发验证码时更新缓存状态
-   * @param cacheKeySendNum 当天发送次数更新key
-   * @param cacheKeySmscode 发送手机验证码key
-   * @param curtime 更新 手机验证码key 中 curtime
-   */
-  public boolean updateSmsCacheInfo(String cacheKeySendNum,String cacheKeySmscode,String curtime);
+    /**
+     * 重发验证码时更新缓存状态
+     *
+     * @param cacheKeySendNum 当天发送次数更新key
+     * @param cacheKeySmscode 发送手机验证码key
+     * @param curtime         更新 手机验证码key 中 curtime
+     */
+    public boolean updateSmsCacheInfo(String cacheKeySendNum, String cacheKeySmscode,
+                                      String curtime);
 
-  /**
-   * 注册成功后清除sms缓存信息
-   */
-  public boolean deleteSmsCache(final String mobile, final int clientId);
+    /**
+     * 注册成功后清除sms缓存信息
+     */
+    public boolean deleteSmsCache(final String mobile, final int clientId);
 
-  /**
-   * 手机验证码的获取与重发
-   */
-  public Result handleSendSms(String account, int clientId);
+    /**
+     * 手机验证码的获取与重发
+     */
+    public Result handleSendSms(String account, int clientId);
 
-  /**
-   * 注册时检查手机号，发送验证码是否正确
-   */
-  public boolean checkSmsInfoFromCache(String account, String smsCode, int clientId);
+    /**
+     * 注册时检查手机号，发送验证码是否正确
+     */
+    public boolean checkSmsInfoFromCache(String account, String smsCode, int clientId);
 
-  /**
-   * 根据key获取对应的cacheMap
-   */
-  public Map<String, String> getCacheMapByKey(String cacheKey);
+    /**
+     * 检查是否不超过验证码验证失败次数
+     *
+     * @return 不超过失败次数，返回true；超过，返回false
+     */
+    public boolean checkSmsFailLimited(String account, int clientId);
+
+    /**
+     * 根据key获取对应的cacheMap
+     */
+    public Map<String, String> getCacheMapByKey(String cacheKey);
 
 }
