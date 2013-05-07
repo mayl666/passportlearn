@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.oauth2.common.utils;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenOAuth;
 
@@ -67,7 +68,7 @@ public class RenrenSignatureUtils {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
             StringBuffer result = new StringBuffer();
             try {
-                for (byte b : md.digest(buffer.toString().getBytes(OAuth.UTF8))) {
+                for (byte b : md.digest(buffer.toString().getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET))) {
                     result.append(Integer.toHexString((b & 0xf0) >>> 4));
                     result.append(Integer.toHexString(b & 0x0f));
                 }

@@ -1,7 +1,12 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import junit.framework.Assert;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Test;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,6 +19,7 @@ public class BaseGeneratorTest extends BaseTest {
 
     public static String PASSPORT_ID_PHONE = "13621009174@sohu.com";
     public static int CLIENT_ID = 1001;
+    public static String CLIENT_SECRET = "40db9c5a312a145e8ee8181f4de8957334c5800a";
     public static String INSTANCE_ID = "02020110011111F4E7587A9D4893420EB97D1C1365DF95";
     public static int EXPIRES_IN = 3600 * 24;
 
@@ -25,5 +31,20 @@ public class BaseGeneratorTest extends BaseTest {
     public static String OPENID = "166654548";
     public static int PROVIDER = 4;
     public static String PASSPORT_ID_OPENID = OPENID + "@" + AccountTypeEnum.getProviderStr(PROVIDER) + ".sohu.com";
+
+    @Test
+    public void testGeneratorSecret() {
+        String random = RandomStringUtils.randomAlphanumeric(8);
+        long time = System.currentTimeMillis();
+        int client_id = 999;
+        try {
+            String secret = Coder.encryptMD5(client_id + time + random);
+            System.out.println("secret:" + secret);
+            Assert.assertTrue(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.assertTrue(false);
+        }
+    }
 
 }
