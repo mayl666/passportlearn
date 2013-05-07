@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sun.javafx.beans.annotations.Default;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
