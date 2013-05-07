@@ -30,8 +30,8 @@ public class CoderTest {
 
     @Test
     public void testEncryptHMAC() throws Exception {
-         byte[] encryByte = Coder.encryptHMAC(str.getBytes(), PwdGenerator.HMAC_SHA_KEY);
-        String str1 = RSA.toHexString(encryByte);
+         byte[] encryByte = Coder.encryptHMAC(str, PwdGenerator.HMAC_SHA_KEY);
+        String str1 = Coder.toHexString(encryByte);
         System.out.println("str1:" + str1);
 
     }

@@ -21,7 +21,7 @@ public class PwdGenerator {
     public static String generatorPwdSign(String pwd) throws Exception {
         byte[] encryByte;
         try {
-            encryByte = Coder.encryptHMAC(pwd.getBytes(), HMAC_SHA_KEY);
+            encryByte = Coder.encryptHMAC(pwd, HMAC_SHA_KEY);
         } catch (Exception e) {
             logger.error("Password encrypt fail, password:{}", pwd);
             throw e;

@@ -233,14 +233,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private String constructRedirectURI(ConnectLoginParams oauthLoginParams, String pCallbackUrl, String ip) {
         try {
             String ru = oauthLoginParams.getRu();
-            ru = URLEncoder.encode(ru, OAuth.UTF8);
+            ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
             callbackParams.put("client_id", oauthLoginParams.getClient_id());
             callbackParams.put("ru", ru);
             callbackParams.put("ip", ip);
-            StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), OAuth.UTF8));
+            StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
             String redirectURI = pCallbackUrl + query;
-            redirectURI = URLEncoder.encode(redirectURI, OAuth.UTF8);
+            redirectURI = URLEncoder.encode(redirectURI, CommonConstant.DEFAULT_CONTENT_CHARSET);
             return redirectURI;
         } catch (UnsupportedEncodingException e) {
             return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
