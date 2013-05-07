@@ -19,8 +19,6 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
@@ -87,7 +85,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 if (MapUtils.isEmpty(connectRelations)) { // 此账号未授权过任何应用
                     Account account = accountService.initialConnectAccount(openid, ip, provider);
                     if (account == null) {
-                        return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
+                        return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
                     }
                     passportId = account.getPassportId();
                 } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
@@ -99,18 +97,18 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 }
                 accountToken = accountTokenService.initialAccountToken(passportId, clientId, instanceId);
                 if (accountToken == null) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
+                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
                 }
                 ConnectToken newConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
                         oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
                 boolean isInitialConnectToken = connectTokenService.initialConnectToken(newConnectToken);
                 if (!isInitialConnectToken) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
+                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
                 }
                 ConnectRelation newConnectRelation = ManagerHelper.buildConnectRelation(openid, provider, passportId, appKey);
                 boolean isInitialConnectRelation = connectRelationService.initialConnectRelation(newConnectRelation);
                 if (!isInitialConnectRelation) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
+                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
                 }
             } else { // 此账号在当前应用第N次登录
                 Account account = accountService.verifyAccountVaild(passportId);
@@ -120,14 +118,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 // 更新当前应用的Account_token，出于安全考虑refresh_token和access_token重新生成
                 accountToken = accountTokenService.updateAccountToken(passportId, clientId, instanceId);
                 if (accountToken == null) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
+                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
                 }
                 // 更新当前应用的Connect_token
                 ConnectToken updateConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
                         oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
                 boolean isUpdateAccountConnect = connectTokenService.updateConnectToken(updateConnectToken);
                 if (!isUpdateAccountConnect) {
-                    return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
+                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
                 }
             }
             Map<String, Object> mapResult = Maps.newHashMap();
@@ -168,7 +166,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     .setDisplay(connectLoginParams.getDisplay()).setForceLogin(connectLoginParams.isForce(), provider)
                     .setState(uuid)
                     .buildQueryMessage(OAuthAuthzClientRequest.class);
-        } else{  // 客户端应用采用Implicit Flow
+        } else {  // 客户端应用采用Implicit Flow
             requestUrl = oAuthConsumer.getAppUserAuthzUrl();
             request = OAuthAuthzClientRequest
                     .authorizationLocation(requestUrl).setAppKey(appkey)
@@ -185,18 +183,18 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Override
     public OAuthTokenDO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
         OAuthTokenDO oAuthTokenDO;
-        OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req,connectType);
+        OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req, connectType);
         // 验证state是否被篡改，防CRSF攻击
         String state = oar.getState();
-        String stateCookie = ServletUtil.getCookie(req,state);
-        if(Strings.isNullOrEmpty(stateCookie) || !stateCookie.equals(CommonHelper.constructStateCookieKey(provider))){
+        String stateCookie = ServletUtil.getCookie(req, state);
+        if (Strings.isNullOrEmpty(stateCookie) || !stateCookie.equals(CommonHelper.constructStateCookieKey(provider))) {
             throw new OAuthProblemException(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
         }
 
-        if(ConnectTypeEnum.WEB.toString().equals(connectType)){
+        if (ConnectTypeEnum.WEB.toString().equals(connectType)) {
 
-        } else{
-            oAuthTokenDO = new OAuthTokenDO(oar.getAccessToken(),oar.getExpiresIn(),oar.getRefreshToken());
+        } else {
+            oAuthTokenDO = new OAuthTokenDO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
         }
 
 
@@ -205,10 +203,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
     private OAuthAuthzClientResponse buildOAuthAuthzClientResponse(HttpServletRequest req, String connectType) throws OAuthProblemException {
         OAuthAuthzClientResponse oar;
-        if(ConnectTypeEnum.WEB.toString().equals(connectType)){ // 获取code，然后用code换取accessToken
-             oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
+        if (ConnectTypeEnum.WEB.toString().equals(connectType)) { // 获取code，然后用code换取accessToken
+            oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
         } else {
-             oar = OAuthAuthzClientResponse.oauthTokenAuthzResponse(req);
+            oar = OAuthAuthzClientResponse.oauthTokenAuthzResponse(req);
         }
         return oar;
     }

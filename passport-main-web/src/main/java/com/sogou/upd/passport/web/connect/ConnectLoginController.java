@@ -4,11 +4,11 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.ConnectLoginParams;
 import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
@@ -55,7 +55,7 @@ public class ConnectLoginController extends BaseConnectController {
 
         // 检查client_id和client_secret是否有效
         if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
-            return Result.buildError(OAuthError.Response.INVALID_CLIENT, "client_id or client_secret mismatch");
+            return Result.buildError(ErrorUtil.INVALID_CLIENT, "client_id or client_secret mismatch");
         }
 
         result = oAuthAuthLoginManager.connectSSOLogin(oauthRequest, provider, ip);

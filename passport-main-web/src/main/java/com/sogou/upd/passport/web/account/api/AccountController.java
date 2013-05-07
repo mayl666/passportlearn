@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
+@RequestMapping("/v2")
 public class AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 

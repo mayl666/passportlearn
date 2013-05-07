@@ -9,6 +9,7 @@ import com.sogou.upd.passport.manager.connect.OpenAPIUsersManager;
 import com.sogou.upd.passport.manager.form.ConnectClientObtainParams;
 import com.sogou.upd.passport.manager.form.ConnectObtainParams;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.service.account.generator.InspectSecureSignForT3;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +37,7 @@ public class OpenAPIUsersController extends BaseConnectController {
 
     @RequestMapping(value = "/v2/connect/users/getopenid", method = RequestMethod.GET)
     @ResponseBody
-    public Object getopenid(ConnectObtainParams reqParams) throws Exception {
+    public Object getopenid(HttpServletRequest request, ConnectObtainParams reqParams) throws Exception {
 
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);

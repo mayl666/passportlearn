@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
  */
 public class MobileRegParams extends MobileModifyPwdParams {
 
-    @NotNull(message = "应用实例id不允许为空!")
+    @NotBlank(message = "应用实例id不允许为空!")
     private String instance_id;
 
     public String getInstance_id() {
