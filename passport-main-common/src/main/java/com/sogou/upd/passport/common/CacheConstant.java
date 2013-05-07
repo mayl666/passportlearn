@@ -17,6 +17,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = "SP.PASSPORTID:IPBLACKLIST_"; // passportId与ip blacklist映射
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_PASSPORT_ACCOUNTINFO = "PASSPORT:PASSPORTID_ACCOUNTINFO_"; // passportId与accountInfo映射
+    public static final String CACHE_PREFIX_MOBILE_CHECKSMSCODE = "SP.MOBILE:CHECKSMSCODE_"; // mobile与smscode错误检测次数映射
 
   /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
