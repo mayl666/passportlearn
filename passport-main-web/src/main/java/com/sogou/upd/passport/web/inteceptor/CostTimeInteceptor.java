@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sogou.upd.passport.web.ControllerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,22 +34,11 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 		long endTime = System.currentTimeMillis();
 		long executeTime = endTime - startTime;
 		if (log.isInfoEnabled()) {
-//			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms");
-//			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms-"+map.toString());
-			
-			String param = getRequests(request);
+			String param = ControllerHelper.getRequests(request);
 			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms, params : "+param);
 			
 		}
 	}
 	
-	private String getRequests(HttpServletRequest request) {
-		StringBuilder sb = new StringBuilder();
-		Enumeration enumer = request.getParameterNames();
-		while (enumer.hasMoreElements()) {
-			Object object = (Object) enumer.nextElement();
-			sb.append(object.toString() + "=" + request.getParameter(object.toString())).append("&");
-		}
-		return sb.toString();
-	}
+
 }

@@ -3,9 +3,12 @@ package com.sogou.upd.passport.web;
 import com.sogou.upd.passport.common.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,5 +36,20 @@ public class ControllerHelper {
 
         return sb.toString();
     }
+
+    public static String getRequests(HttpServletRequest request) {
+        StringBuilder params = new StringBuilder();
+        Map parameterMap = request.getParameterMap();
+        Set<String> keys = parameterMap.keySet();
+        for (String key : keys) {
+            params.append(key).append("=").append(request.getParameter(key));
+        }
+        String queryString = "";
+        if (params.length() > 0) {
+            queryString = params.deleteCharAt(params.length() - 1).toString();
+        }
+        return queryString;
+    }
+
 
 }
