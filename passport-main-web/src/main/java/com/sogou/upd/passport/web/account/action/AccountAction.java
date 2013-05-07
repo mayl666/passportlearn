@@ -44,8 +44,6 @@ public class AccountAction extends BaseController {
   @Autowired
   private AccountManager accountManager;
 
-
-
   /**
    * web页面注册
    *
