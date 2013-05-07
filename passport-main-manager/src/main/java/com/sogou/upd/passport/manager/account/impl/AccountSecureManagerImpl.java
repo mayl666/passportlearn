@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,30 +102,33 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                     int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
                     long curtime = System.currentTimeMillis();
                     boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
-                    if (valid) {
-                        if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                            mobileCodeSenderService.updateSmsCacheInfo(cacheKeySendNum, cacheKeySmscode, String.valueOf(curtime));
-                            //读取短信内容
-                            String smsText = appConfigService.querySmsText(clientId, smsCode);
-                            if (!Strings.isNullOrEmpty(smsText)) {
-                                boolean isSend = SMSUtil.sendSMS(mobile, smsText);
-                                if (isSend) {
-                                    //30分钟之内返回原先验证码
-                                    result = Result.buildSuccess("获取验证码成功", "", "");
-                                    return result;
-                                }
-                            } else {
-                                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                                return result;
-                            }
-                        } else {
-                            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
-                            return result;
+                  if (valid) {
+                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
+                      //生成随机数
+                      String randomCode = RandomStringUtils.randomNumeric(6);
+                      //读取短信内容
+                      String smsText = appConfigService.querySmsText(clientId, randomCode);
+                      if (!Strings.isNullOrEmpty(smsText)) {
+                        boolean isSend = SMSUtil.sendSMS(mobile, smsText);
+                        if (isSend) {
+                          //更新缓存
+                          mobileCodeSenderService.updateSmsCacheInfo(cacheKeySendNum, cacheKeySmscode,
+                                                  String.valueOf(curtime),randomCode);
+                          result = Result.buildSuccess("获取验证码成功");
+                          return result;
                         }
-                    } else {
-                        result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
+                      } else {
+                        result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                         return result;
+                      }
+                    } else {
+                      result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
+                      return result;
                     }
+                  } else {
+                    result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
+                    return result;
+                  }
                 }
             } else {
                 result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
@@ -183,7 +187,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             accountTokenService.asynbatchUpdateAccountToken(passportId, clientId);
             //清除验证码的缓存
             mobileCodeSenderService.deleteSmsCache(mobile, clientId);
-            return Result.buildSuccess("重置密码成功！", null, null);
+            return Result.buildSuccess("重置密码成功！");
         } catch (ServiceException e) {
             logger.error("rest password Fail:", e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
