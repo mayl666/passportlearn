@@ -50,8 +50,25 @@ public class AccountManagerImpl implements AccountManager {
         return false;
     }
 
-  @Override
-  public String getPassportIdByUsername(String username) throws Exception {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+    @Override
+    public String getPassportIdByUsername(String username) throws Exception {
+        try {
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    return passportId;
+                }
+            } else {
+                Account account = accountService.queryAccountByPassportId(username);
+                if (account != null) {
+                    return username;
+                }
+            }
+        } catch (ServiceException e) {
+            log.error("Username doesn't exist Exception, username:" + username, e);
+            throw new Exception(e);
+        }
+        return null;
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.result.Result;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -24,4 +26,5 @@ public interface AccountManager {
      * @return passportId
      */
     public String getPassportIdByUsername(String username) throws Exception;
+
 }
