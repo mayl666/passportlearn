@@ -22,6 +22,7 @@
 package com.sogou.upd.passport.oauth2.common.parameters;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
@@ -80,10 +81,10 @@ public class QueryParameterApplier implements OAuthParametersApplier {
 
             }
 
-            StringBuffer query = new StringBuffer(OAuthUtils.format(params.entrySet(), "UTF-8"));
+            StringBuffer query = new StringBuffer(OAuthUtils.format(params.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
             String fragmentQuery = "";
             if (fragmentParams.containsKey(OAuth.OAUTH_ACCESS_TOKEN)) {
-                fragmentQuery = OAuthUtils.format(fragmentParams.entrySet(), "UTF-8");
+                fragmentQuery = OAuthUtils.format(fragmentParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET);
             }
 
             if (!Strings.isNullOrEmpty(query.toString())) {

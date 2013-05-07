@@ -3,6 +3,7 @@ package com.sogou.upd.passport.oauth2.common.utils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
@@ -12,10 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -31,20 +29,20 @@ public class OAuthUtils {
      * 格式化 into <code>application/x-www-form-urlencoded</code> String
      *
      * @param parameters 需编码的参数
-     * @param encoding   编码格式
+     * @param charset    编码格式
      * @return Translated string
      * @throws java.io.UnsupportedEncodingException
      *
      */
     public static String format(final Collection<? extends Map.Entry<String, Object>> parameters,
-                                final String encoding) {
+                                final String charset) {
         final StringBuilder result = new StringBuilder();
         for (final Map.Entry<String, Object> parameter : parameters) {
             String value = parameter.getValue() == null ? null : String.valueOf(parameter
                     .getValue());
             if (!StringUtils.isEmpty(parameter.getKey()) && !StringUtils.isEmpty(value)) {
-                final String encodedName = StringUtil.encode(parameter.getKey(), encoding);
-                final String encodedValue = value != null ? StringUtil.encode(value, encoding) : "";
+                final String encodedName = Coder.encode(parameter.getKey(), charset);
+                final String encodedValue = value != null ? Coder.encode(value, charset) : "";
                 if (result.length() > 0) {
                     result.append(CommonConstant.PARAMETER_SEPARATOR);
                 }

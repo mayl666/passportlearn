@@ -1,16 +1,16 @@
 package com.sogou.upd.passport.oauth2.common.utils;
 
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.oauth2.common.exception.HTMLTextParseException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class HTMLTextUtils {
 
     public static Map<String, Object> parseHTMLText(String text) throws HTMLTextParseException {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = Maps.newHashMap();
         try {
             if (!StringUtils.isEmpty(text)) {
                 String[] paramsArray = text.split("&");

@@ -19,4 +19,10 @@ public interface ConfigureManager {
     public boolean verifyClientVaild(int clientId, String clientSecret);
 
     public ConnectConfig obtainConnectConfig(int clientId, int provider);
+   /**
+   * 验证是否存在此应用
+   * @param clientId
+   * @return
+   */
+    public boolean checkAppIsExist(int clientId);
 }

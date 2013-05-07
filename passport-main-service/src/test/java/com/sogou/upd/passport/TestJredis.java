@@ -2,9 +2,7 @@ package com.sogou.upd.passport;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.model.app.AppConfig;
 import junit.framework.Assert;
@@ -15,13 +13,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.inject.Inject;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -163,45 +162,33 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
     }
 
     @Test
+    public void testGetAppConfig() {
+        String key = "PASSPORT:CLIENTID_APPCONFIG_" + 1001;
+        Type type = new TypeToken<AppConfig>() {
+        }.getType();
+        AppConfig appConfig = redisUtils.getObject(key, type);
+        Assert.assertTrue(appConfig != null);
+    }
+
+    @Test
     public void deleteCacheByKey() {
-        String cacheKey = "PASSPORT:ACCOUNT_PASSPORTID_" + "13621009174@sohu.com";
+        String cacheKey = "PASSPORT:CLIENTID_APPCONFIG_" + 1001;
         redisTemplate.delete(cacheKey);
     }
 
     @Test
-    public void testAddAppConfigByClientId() {
+    public void testSetAppConfigByClientId() {
         boolean flag = true;
         try {
-            String cacheKey = "PASSPORT:ACCOUNT_CLIENTID_" + 1001;
-
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfAbsent(String.valueOf(cacheKey), new Gson().toJson(buildAppConfig()));
+            String cacheKey = "PASSPORT:CLIENTID_APPCONFIG_" + 1001;
+            AppConfig appConfig = buildAppConfig();
+            redisUtils.set(cacheKey, appConfig);
         } catch (Exception e) {
             flag = false;
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
         }
         Assert.assertTrue(flag);
     }
-
-//    public AppConfig queryAppConfigByClientId(){
-//        Object obj = null;
-//        try {
-//            obj = redisTemplate.execute(new RedisCallback<Object>() {
-//                @Override
-//                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-//                    AppConfig appConfigResult=null;
-//                    byte[] value=connection.get(RedisUtils.stringToByteArry("1003"));
-//                    if(value!=null && value.length>0){
-//                        appConfigResult= JSONUtils.jsonToObject(RedisUtils.byteArryToString(value), AppConfig.class);
-//                    }
-//                    return appConfigResult;
-//                }
-//            });
-//        } catch (Exception e) {
-//            logger.error("[SMS] service method addClientIdMapAppConfig error.{}", e);
-//        }
-//        return obj != null ? (AppConfig) obj : null;
-//    }
 
     public void initRedis(String mobile, String randomCode) {
 
@@ -264,11 +251,11 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
     private AppConfig buildAppConfig() {
         AppConfig appConfig = new AppConfig();
         appConfig.setClientId(1001);
-        appConfig.setSmsText("您的“T3”验证码为：%s，30分钟内有效哦");
+        appConfig.setSmsText("您的bobo验证码为：%s，三十分钟内有效哦");
         appConfig.setAccessTokenExpiresin(604800);
         appConfig.setRefreshTokenExpiresin(15552000);
-        appConfig.setClientSecret("1001136453922995472gMLyjj7u");
-        appConfig.setServerSecret("1001136453922993981IaBLDFL3");
+        appConfig.setClientSecret("40db9c5a312a145e8ee8181f4de8957334c5800a");
+        appConfig.setServerSecret("c3425ddc98da66f51628ee6a59eb08cb784d610c");
         appConfig.setCreateTime(new Date());
         return appConfig;
     }

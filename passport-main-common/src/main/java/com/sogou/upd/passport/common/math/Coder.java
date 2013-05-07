@@ -1,16 +1,19 @@
 package com.sogou.upd.passport.common.math;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 
 /**
  * 各种加密算法
- * 包括：MD5、SHA
+ * 包括：URLEncode、MD5、SHA、HMAC
  */
 public class Coder {
     public static final String KEY_SHA = "SHA";
@@ -28,6 +31,34 @@ public class Coder {
      * </pre>
      */
     public static final String KEY_MAC = "HmacSHA1";
+
+    /**
+     * 将参数URLEncode为UTF-8
+     */
+    public static String encodeUTF8(String params) {
+        try {
+            String en = URLEncoder.encode(params, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            en = en.replace("+", "%20");
+            en = en.replace("*", "%2A");
+            return en;
+        } catch (UnsupportedEncodingException problem) {
+            throw new IllegalArgumentException(problem);
+        }
+    }
+
+    /**
+     * 将参数URLEncode，默认为UTF-8
+     */
+    public static String encode(String params, String charset) {
+        try {
+            String en = URLEncoder.encode(params, charset != null ? charset : CommonConstant.DEFAULT_CONTENT_CHARSET);
+            en = en.replace("+", "%20");
+            en = en.replace("*", "%2A");
+            return en;
+        } catch (UnsupportedEncodingException problem) {
+            throw new IllegalArgumentException(problem);
+        }
+    }
 
     /**
      * BASE64解密
@@ -63,7 +94,7 @@ public class Coder {
         MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
         md5.update(data.getBytes());
 
-        return md5.digest().toString();
+        return toHexString(md5.digest());
 
     }
 
@@ -104,13 +135,13 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static byte[] encryptHMAC(byte[] data, String key) throws Exception {
+    public static byte[] encryptHMAC(String data, String key) throws Exception {
 
-        SecretKey secretKey = new SecretKeySpec(decryptBASE64(key), KEY_MAC);
+        SecretKey secretKey = new SecretKeySpec(key.getBytes(), KEY_MAC);
         Mac mac = Mac.getInstance(secretKey.getAlgorithm());
         mac.init(secretKey);
 
-        return mac.doFinal(data);
+        return mac.doFinal(data.getBytes());
 
     }
 

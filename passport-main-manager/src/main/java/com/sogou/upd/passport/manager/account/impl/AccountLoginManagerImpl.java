@@ -78,7 +78,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 mapResult.put("access_token", renewAccountToken.getAccessToken());
                 mapResult.put("expires_time", renewAccountToken.getAccessValidTime());
                 mapResult.put("refresh_token", renewAccountToken.getRefreshToken());
-                return Result.buildSuccess("登录成功！", "mapResult", mapResult);
+                return Result.buildSuccess("success", "mapResult", mapResult);
             } else { // 登录失败，更新AccountToken表发生异常
                 return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
             }

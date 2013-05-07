@@ -23,7 +23,7 @@ public interface MobileCodeSenderService {
      * @param curtime         更新 手机验证码key 中 curtime
      */
     public boolean updateSmsCacheInfo(String cacheKeySendNum, String cacheKeySmscode,
-                                      String curtime);
+                                      String curtime,String smsCode);
 
     /**
      * 注册成功后清除sms缓存信息

@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.web.BaseController;
@@ -39,6 +40,8 @@ public class AccountController extends BaseController {
     private AccountRegManager accountRegManager;
     @Autowired
     private AccountManager accountManager;
+    @Autowired
+    private ConfigureManager configureManager;
 
     /**
      * 手机账号获取，重发手机验证码接口
@@ -47,20 +50,28 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/sendmobilecode", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendmobilecode", method = RequestMethod.GET)
     @ResponseBody
     public Object sendMobileCode(MoblieCodeParams reqParams)
             throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
+
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+          return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+
+        Result result =null;
+        //检查client_id是否存在
+        if(!configureManager.checkAppIsExist(reqParams.getClient_id())){
+          result=Result.buildError(ErrorUtil.INVALID_CLIENTID);
+          return result;
         }
 
         String mobile = reqParams.getMobile();
         int clientId = reqParams.getClient_id();
 
-        Result result = accountSecureManager.sendMobileCode(mobile, clientId);
+        result = accountSecureManager.sendMobileCode(mobile, clientId);
         return result;
 
     }
@@ -73,7 +84,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/mobile/reg", method = RequestMethod.POST)
+    @RequestMapping(value = "/mobile/reg", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
@@ -102,7 +113,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/findpwd", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
     @ResponseBody
     public Object findPassword(MoblieCodeParams reqParams)
             throws Exception {
@@ -130,7 +141,7 @@ public class AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/v2/mobile/resetpwd", method = RequestMethod.POST)
+    @RequestMapping(value = "/mobile/resetpwd", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPassword(MobileModifyPwdParams regParams) throws Exception {
 
