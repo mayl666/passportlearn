@@ -18,15 +18,6 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>captchaServlet</servlet-name>
-        <servlet-class>com.sogou.upd.passport.web.account.captcha.ImageServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>captchaServlet</servlet-name>
-        <url-pattern>/captcha</url-pattern>
-    </servlet-mapping>
-
     <listener>
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
     </listener>
