@@ -28,6 +28,8 @@ public class ErrorUtil {
 
     // 账号不存在或异常或未激活
     public static final String INVALID_ACCOUNT = "10009";
+    //client_id异常
+    public static final String INVALID_CLIENTID = "10010";
 
     //***************************account 服务的错误代码start*********************************
     // 帐号已经注册
@@ -190,6 +192,7 @@ public class ErrorUtil {
 
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_OPEN_ID, "openid错误");
+        ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id错误");
 
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册");
