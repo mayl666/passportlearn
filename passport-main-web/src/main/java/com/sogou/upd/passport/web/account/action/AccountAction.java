@@ -1,13 +1,17 @@
 package com.sogou.upd.passport.web.account.action;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MoblieCodeParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.ControllerHelper;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -43,6 +47,8 @@ public class AccountAction extends BaseController {
   private AccountRegManager accountRegManager;
   @Autowired
   private AccountManager accountManager;
+  @Autowired
+  private ConfigureManager configureManager;
 
   /**
    * web页面注册
@@ -53,13 +59,25 @@ public class AccountAction extends BaseController {
   @ResponseBody
   public Object reguser(HttpServletRequest request, WebRegisterParameters regParams)
       throws Exception {
-    int clientId = regParams.getClient_id();
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(regParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+    }
+
+
+    int clientId = Integer.parseInt(regParams.getClient_id());
     String username = regParams.getUsername();
     String password = regParams.getPassword();
     String code = regParams.getCode();
-    //todo 参数验证
+
 
     //todo 验证码校验
+
+    //检查client_id格式以及client_id是否存在
+    if (!configureManager.checkAppIsExist(clientId)) {
+      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+    }
 
     Result result = null;
     //验证用户是否注册过
@@ -82,8 +100,12 @@ public class AccountAction extends BaseController {
   public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
       throws Exception {
 
-    //todo 参数验证
-    //验证用户是否注册过
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(activeParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+    }
+    //邮件激活
     Result result = accountRegManager.activeEmail(activeParams);
 
     return result;

@@ -14,14 +14,11 @@ import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +95,8 @@ public class AccountRegManagerImpl implements AccountRegManager {
   @Override
   public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
     try {
-      int clientId = regParams.getClient_id();
+
+      int clientId = Integer.parseInt(regParams.getClient_id());
       String username = regParams.getUsername();
       String password = regParams.getPassword();
       String code = regParams.getCode();
@@ -140,7 +138,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
     try {
       String username = activeParams.getPassport_id();
       String token = activeParams.getToken();
-      int clientId = activeParams.getClient_id();
+      int clientId = Integer.parseInt(activeParams.getClient_id());
       //激活邮件
       boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
 

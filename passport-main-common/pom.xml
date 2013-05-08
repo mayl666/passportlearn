@@ -36,6 +36,17 @@
             <artifactId>sendcloud</artifactId>
             <version>1.0.6</version>
         </dependency>
+        <!-- velocity -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+            <version>2.0</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-configuration</groupId>

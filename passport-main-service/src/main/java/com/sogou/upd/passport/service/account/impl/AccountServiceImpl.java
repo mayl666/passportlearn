@@ -7,22 +7,18 @@ import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import com.sohu.sendcloud.Message;
-import com.sohu.sendcloud.SmtpApiHeader;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File Templates.
  */
 @Service
-public class AccountServiceImpl extends BaseService implements AccountService {
+public class AccountServiceImpl implements AccountService {
 
     private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
@@ -248,23 +244,20 @@ public class AccountServiceImpl extends BaseService implements AccountService {
           "&token=" + token;
 
       //发送邮件
-      Message message=mailUtils.getMessage();
+      ActiveEmail activeEmail=new ActiveEmail();
+      activeEmail.setActiveUrl(activeUrl);
+
       //模版中参数替换
       Map<String,Object> map= Maps.newHashMap();
       map.put("activeUrl",activeUrl);
+      activeEmail.setMap(map);
 
-      String mailBody=getMailBody("activemail.vm",map);
-      // 正文， 使用html形式，或者纯文本形式
-      message.setBody(mailBody);
-      message.setSubject("激活您的搜狗通行证帐户");
+      activeEmail.setTemplateFile("activemail.vm");
+      activeEmail.setSubject("激活您的搜狗通行证帐户");
+      activeEmail.setCategory("register");
+      activeEmail.setToEmail(username);
 
-      // X-SMTPAPI
-      SmtpApiHeader smtpApiHeader = new SmtpApiHeader();
-      smtpApiHeader.addCategory("register");
-      smtpApiHeader.addRecipient(username);
-
-      message.setXsmtpapiJsonStr(smtpApiHeader.toString());
-      mailUtils.sendEmail(message);
+      mailUtils.sendEmail(activeEmail);
       //连接失效时间
       String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
       redisUtils.set(cacheKey, token);
@@ -273,7 +266,6 @@ public class AccountServiceImpl extends BaseService implements AccountService {
       initialAccountToCache(username,passpord,ip);
     }catch (Exception e){
       flag=false;
-      throw new ServiceException(e);
     }
     return flag;
   }

@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service.account.dataobject;
+package com.sogou.upd.passport.common.model;
 
 import java.util.Map;
 
@@ -6,7 +6,7 @@ import java.util.Map;
  * User: mayan Date: 13-4-15 Time: 下午5:15 To change this template use File | Settings | File
  * Templates.
  */
-public class ActiveEmailDO {
+public class ActiveEmail {
 
   private String activeUrl;
   private String templateFile;
