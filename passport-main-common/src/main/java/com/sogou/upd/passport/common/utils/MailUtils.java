@@ -24,12 +24,13 @@ public class MailUtils {
 
 
 
-    public void sendEmail(Message message) {
+    public void sendEmail(Message message) throws Exception{
         try {
             sendCloud.setMessage(message);
             sendCloud.send();
         } catch (Exception e) {
             logger.error("[SendEmail] send fail", e);
+            throw new Exception();
         }
     }
 

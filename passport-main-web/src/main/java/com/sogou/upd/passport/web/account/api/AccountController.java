@@ -61,7 +61,7 @@ public class AccountController extends BaseController {
     }
 
     String mobile = reqParams.getMobile();
-    int clientId = reqParams.getClient_id();
+    int clientId = Integer.parseInt(reqParams.getClient_id());
 
     //检查client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
@@ -110,7 +110,7 @@ public class AccountController extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
-    int clientId = reqParams.getClient_id();
+    int clientId = Integer.parseInt(reqParams.getClient_id());
     //检查client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
       return Result.buildError(ErrorUtil.INVALID_CLIENTID);
@@ -124,7 +124,7 @@ public class AccountController extends BaseController {
     } catch (Exception e) {
       return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
     }
-    Result result = accountSecureManager.findPassword(reqParams.getMobile(), reqParams.getClient_id());
+    Result result = accountSecureManager.findPassword(reqParams.getMobile(), clientId);
     return result;
   }
 
