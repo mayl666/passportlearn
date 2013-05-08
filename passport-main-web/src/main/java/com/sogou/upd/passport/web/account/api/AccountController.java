@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
@@ -55,13 +56,17 @@ public class AccountController extends BaseController {
       throws Exception {
     //参数验证
     String validateResult = ControllerHelper.validateParams(reqParams);
-
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
+    //验证client_id
+    String client_id=reqParams.getClient_id() ;
+    if(!StringUtil.checkIsDigit(client_id)){
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+    }
 
     String mobile = reqParams.getMobile();
-    int clientId = Integer.parseInt(reqParams.getClient_id());
+    int clientId = Integer.parseInt(client_id);
 
     //检查client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
@@ -80,10 +85,17 @@ public class AccountController extends BaseController {
   @ResponseBody
   public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
     // 请求参数校验，必填参数是否正确，手机号码格式是否正确
+    //参数验证
     String validateResult = ControllerHelper.validateParams(regParams);
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
+    //验证client_id
+    String client_id=regParams.getClient_id() ;
+    if(!StringUtil.checkIsDigit(client_id)){
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+    }
+
     String ip = getIp(request);
     String mobile = regParams.getMobile();
     try {
@@ -110,7 +122,13 @@ public class AccountController extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
-    int clientId = Integer.parseInt(reqParams.getClient_id());
+    //验证client_id
+    String client_id=reqParams.getClient_id() ;
+    if(!StringUtil.checkIsDigit(client_id)){
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+    }
+
+    int clientId = Integer.parseInt(client_id);
     //检查client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
       return Result.buildError(ErrorUtil.INVALID_CLIENTID);
@@ -140,6 +158,11 @@ public class AccountController extends BaseController {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
 
+    //验证client_id
+    String client_id=regParams.getClient_id() ;
+    if(!StringUtil.checkIsDigit(client_id)){
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+    }
     Result result = accountSecureManager.resetPassword(regParams);
     return result;
   }
