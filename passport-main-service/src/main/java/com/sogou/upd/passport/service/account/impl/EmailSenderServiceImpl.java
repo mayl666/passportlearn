@@ -14,6 +14,7 @@ import com.sohu.sendcloud.Message;
 import com.sohu.sendcloud.SmtpApiHeader;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import java.util.UUID;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-7 Time: 下午4:18 To change this template use
  * File | Settings | File Templates.
  */
+@Service
 public class EmailSenderServiceImpl extends BaseService implements EmailSenderService {
 
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN;
