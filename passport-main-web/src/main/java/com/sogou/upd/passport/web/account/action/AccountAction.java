@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -64,13 +65,16 @@ public class AccountAction extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
+    //验证client_id
+    String client_id=regParams.getClient_id() ;
+    if(!StringUtil.checkIsDigit(client_id)){
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+    }
 
-
-    int clientId = Integer.parseInt(regParams.getClient_id());
+    int clientId = Integer.parseInt(client_id);
     String username = regParams.getUsername();
     String password = regParams.getPassword();
     String code = regParams.getCode();
-
 
     //todo 验证码校验
 
@@ -105,6 +109,12 @@ public class AccountAction extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
+    //验证client_id
+    String client_id=activeParams.getClient_id() ;
+    if(!StringUtil.checkIsDigit(client_id)){
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+    }
+
     //邮件激活
     Result result = accountRegManager.activeEmail(activeParams);
 

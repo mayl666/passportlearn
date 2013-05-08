@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sohu.sendcloud.Message;
 import com.sohu.sendcloud.SmtpApiHeader;
@@ -24,7 +23,7 @@ import java.util.UUID;
  * File | Settings | File Templates.
  */
 @Service
-public class EmailSenderServiceImpl extends BaseService implements EmailSenderService {
+public class EmailSenderServiceImpl  implements EmailSenderService {
 
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN;
 
@@ -48,9 +47,7 @@ public class EmailSenderServiceImpl extends BaseService implements EmailSenderSe
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
 
-            String mailBody = getMailBody("resetpwdmail.vm", map);
             // 正文， 使用html形式，或者纯文本形式
-            message.setBody(mailBody);
             message.setSubject("搜狗通行证找回密码服务");
 
             // X-SMTPAPI
@@ -59,7 +56,6 @@ public class EmailSenderServiceImpl extends BaseService implements EmailSenderSe
             smtpApiHeader.addRecipient(email);
 
             message.setXsmtpapiJsonStr(smtpApiHeader.toString());
-            mailUtils.sendEmail(message);
             //连接失效时间
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
             redisUtils.set(cacheKey, token);
