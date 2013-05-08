@@ -5,12 +5,11 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.EmailSenderService;
-import com.sohu.sendcloud.Message;
-import com.sohu.sendcloud.SmtpApiHeader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ import java.util.UUID;
  * File | Settings | File Templates.
  */
 @Service
-public class EmailSenderServiceImpl  implements EmailSenderService {
+public class EmailSenderServiceImpl implements EmailSenderService {
 
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN;
 
@@ -35,27 +34,28 @@ public class EmailSenderServiceImpl  implements EmailSenderService {
     private MailUtils mailUtils;
 
     @Override
-    public boolean sendEmailForResetPwd(String email, String uid) throws ServiceException {
+    public boolean sendEmailForResetPwd(String uid, int clientId, String address) throws ServiceException {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
-            String token = Coder.encryptMD5(uid + code);
+            String token = Coder.encryptMD5(uid + clientId + code);
             String activeUrl = PASSPORT_RESETPWD_EMAIL_URL + "uid=" + uid + "&token=" + token;
 
             //发送邮件
-            Message message = mailUtils.getMessage();
+            ActiveEmail activeEmail = new ActiveEmail();
+            activeEmail.setActiveUrl(activeUrl);
+
             //模版中参数替换
-            Map<String, Object> map = Maps.newHashMap();
-            map.put("activeUrl", activeUrl);
+            Map<String,Object> map= Maps.newHashMap();
+            map.put("activeUrl",activeUrl);
+            activeEmail.setMap(map);
 
-            // 正文， 使用html形式，或者纯文本形式
-            message.setSubject("搜狗通行证找回密码服务");
+            activeEmail.setTemplateFile("resetpwdmail.vm");
+            activeEmail.setSubject("搜狗通行证找回密码服务");
+            activeEmail.setCategory("resetpwd");
+            activeEmail.setToEmail(address);
 
-            // X-SMTPAPI
-            SmtpApiHeader smtpApiHeader = new SmtpApiHeader();
-            smtpApiHeader.addCategory("register");
-            smtpApiHeader.addRecipient(email);
+            mailUtils.sendEmail(activeEmail);
 
-            message.setXsmtpapiJsonStr(smtpApiHeader.toString());
             //连接失效时间
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
             redisUtils.set(cacheKey, token);
@@ -67,7 +67,7 @@ public class EmailSenderServiceImpl  implements EmailSenderService {
     }
 
     @Override
-    public boolean checkEmailForResetPwd(String uid, String token) throws ServiceException {
+    public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
             if(redisUtils.checkKeyIsExist(cacheKey)){

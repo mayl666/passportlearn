@@ -10,14 +10,18 @@ public interface EmailSenderService {
     /**
      * 发送密码重置申请邮件
      *
-     * @param email,uid
+     * @param uid
+     * @param clientId
+     * @param address
      */
-    public boolean sendEmailForResetPwd(String email, String uid) throws ServiceException;
+    public boolean sendEmailForResetPwd(String uid, int clientId, String address) throws ServiceException;
 
     /**
      * 验证密码重置申请邮件
      *
-     * @param uid,token
+     * @param uid
+     * @param clientId
+     * @param token
      */
-    public boolean checkEmailForResetPwd(String uid, String token) throws ServiceException;
+    public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException;
 }
