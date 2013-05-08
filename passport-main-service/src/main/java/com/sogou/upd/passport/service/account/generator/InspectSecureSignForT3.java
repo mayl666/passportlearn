@@ -40,14 +40,14 @@ public class InspectSecureSignForT3 {
      */
     public static boolean verifySecureSignature(HttpServletRequest request) throws Exception {
         String serverName = request.getServerName();
-        String method = request.getMethod();         // GET or POST
+//        String method = request.getMethod();         // GET or POST
         String uri = request.getRequestURI();
-        if (method.equals("POST")) {
-            String queryString = getRequests(request);
-            if (!Strings.isNullOrEmpty(queryString)) {
-                uri = uri + "?" + queryString;
-            }
-        }
+//        if (method.equals("POST")) {
+//            String queryString = getRequests(request);
+//            if (!Strings.isNullOrEmpty(queryString)) {
+//                uri = uri + "?" + queryString;
+//            }
+//        }
 
         Map<String, String> headerMap = parseMacHeader(request);
         if (MapUtils.isEmpty(headerMap)) {
@@ -119,7 +119,7 @@ public class InspectSecureSignForT3 {
         Map parameterMap = request.getParameterMap();
         Set<String> keys = parameterMap.keySet();
         for (String key : keys) {
-            params.append(key).append("=").append(request.getParameter(key));
+            params.append(key).append("=").append(request.getParameter(key)).append("&");
         }
         String queryString = "";
         if (params.length() > 0) {

@@ -1,18 +1,19 @@
 package com.sogou.upd.passport.manager.form;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * 获取第三方id参数校验 User: 马研 Date: 13-4-19 Time: 下午3:32 To change this template use File | Settings |
  * File Templates.
  */
 public class ConnectClientObtainParams {
-    @NotNull(message = "access_token不允许为空!")
+    @NotBlank(message = "access_token不允许为空!")
     private String access_token;
     @Min(value = 1, message = "client_id不允许为空!")
     private int client_id;
-    @NotNull(message = "provider不允许为空!")
+    @NotBlank(message = "provider不允许为空!")
     private String provider;
 
     public String getAccess_token() {

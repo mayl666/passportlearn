@@ -59,8 +59,8 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
     public Result obtainOpenIdByPassportId(String passportId, int clientId, int provider) {
         try {
             String appKey = connectConfigService.querySpecifyAppKey(clientId, provider);
-            if (appKey == null) {
-                Result.buildError(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            if (Strings.isNullOrEmpty(appKey)) {
+                return Result.buildError(ErrorUtil.INVALID_CLIENTID);
             }
             String openid = connectTokenService.querySpecifyOpenId(passportId, provider, appKey);
             if (Strings.isNullOrEmpty(openid)) {

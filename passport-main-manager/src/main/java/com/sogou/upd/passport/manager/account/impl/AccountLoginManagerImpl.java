@@ -9,7 +9,6 @@ import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
-import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
@@ -53,7 +52,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 Account account = accountService
                         .verifyUserPwdVaild(passportId, oauthRequest.getPassword());
                 if (account == null) {
-                    return Result.buildError(OAuthError.Response.USERNAME_PWD_MISMATCH);
+                    return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
                 } else if (!account.isNormalAccount()) {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 } else {
@@ -64,13 +63,13 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 String refreshToken = oauthRequest.getRefreshToken();
                 AccountToken accountToken = accountTokenService.verifyRefreshToken(refreshToken, instanceId);
                 if (accountToken == null) {
-                    return Result.buildError(OAuthError.Response.INVALID_REFRESH_TOKEN);
+                    return Result.buildError(ErrorUtil.INVALID_REFRESH_TOKEN);
                 } else {
                     String passportId = accountToken.getPassportId();
                     renewAccountToken = accountTokenService.updateAccountToken(passportId, clientId, instanceId);
                 }
             } else {
-                return Result.buildError(OAuthError.Response.UNSUPPORTED_GRANT_TYPE);
+                return Result.buildError(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
             }
 
             if (renewAccountToken != null) { // 登录成功
@@ -80,7 +79,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 mapResult.put("refresh_token", renewAccountToken.getRefreshToken());
                 return Result.buildSuccess("success", "mapResult", mapResult);
             } else { // 登录失败，更新AccountToken表发生异常
-                return Result.buildError(OAuthError.Response.AUTHORIZE_FAIL);
+                return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
             }
         } catch (ServiceException e) {
             logger.error("OAuth Authorize Fail:", e);

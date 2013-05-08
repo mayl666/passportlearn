@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.web;
 
 import com.sogou.upd.passport.common.CommonConstant;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,8 +31,13 @@ public class ControllerHelper {
         for (ConstraintViolation<T> constraintViolation : constraintViolations) {
             sb.append(constraintViolation.getMessage()).append(CommonConstant.SEPARATOR_1);
         }
-
-        return sb.toString();
+        String validateResult;
+        if (sb.length() > 0) {
+            validateResult = sb.deleteCharAt(sb.length() - 1).toString();
+        } else {
+            validateResult = "";
+        }
+        return validateResult;
     }
 
     public static String getRequests(HttpServletRequest request) {
