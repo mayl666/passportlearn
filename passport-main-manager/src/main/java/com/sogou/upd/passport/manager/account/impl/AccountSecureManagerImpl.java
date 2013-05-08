@@ -214,7 +214,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         String mobile = regParams.getMobile();
         String smsCode = regParams.getSmscode();
         String password = regParams.getPassword();
-        int clientId = regParams.getClient_id();
+        int clientId = Integer.parseInt(regParams.getClient_id());
         try {
             //验证手机号码与验证码是否匹配
             boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
