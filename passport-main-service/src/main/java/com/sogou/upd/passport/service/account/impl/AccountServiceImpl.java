@@ -235,9 +235,7 @@ public class AccountServiceImpl implements AccountService {
     boolean flag=true;
     try{
       String code = UUID.randomUUID().toString().replaceAll("-", "");
-
       String token = Coder.encryptMD5(username + clientId + code);
-
       String activeUrl =
           PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
           "&client_id=" + clientId +
