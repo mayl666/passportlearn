@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.AccountSecureParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 
 /**
@@ -16,7 +15,7 @@ public interface AccountSecureManager {
     public Result sendMobileCode(String mobile, int clientId);
 
     /**
-     * 发送短信验证码（根据passportId） ---hjf 2013.5.3
+     * 发送短信验证码（根据passportId）
      */
     public Result sendMobileCodeByPassportId(String passportId, int clientId);
 
@@ -57,22 +56,34 @@ public interface AccountSecureManager {
      * @param clientId
      * @throws Exception
      */
-    public Result sendEmailByPassportId(String passportId, int clientId) throws Exception;
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId) throws Exception;
+
+    /**
+     * 验证重置密码申请邮件
+     *
+     * @param uid 目前为passportId
+     * @param token
+     */
+    public Result checkEmailResetPwd(String uid, int clientId, String token) throws Exception;
 
     /**
      * 重置用户密码（检查密保答案）
      *
-     * @param reqParams
+     * @param passportId
+     * @param clientId
+     * @param password
+     * @param answer
      */
-    public Result resetPasswordByQues(AccountSecureParams reqParams) throws Exception;
+    public Result resetPasswordByQues(String passportId, int clientId, String password, String answer)
+            throws Exception;
 
     /**
      * 重置用户密码（手机验证码方式）
      */
-    public Result resetPasswordByMobile(AccountSecureParams reqParams) throws Exception;
+    public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode) throws Exception;
 
     /**
-     * 重置用户密码（邮件方式）
+     * 重置用户密码（邮件方式）---目前passportId与邮件申请链接中的uid一样
      */
-    public Result resetPasswordByEmail(AccountSecureParams reqParams) throws Exception;
+    public Result resetPasswordByEmail(String passportId, int clientId, String password, String token) throws Exception;
 }

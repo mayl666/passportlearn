@@ -92,10 +92,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED = "20219";
     //激活链接已失效
     public static final String ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED = "20220";
-    // 密保答案错误
-    public static final String ERR_CODE_ACCOUNT_CHECKANSWER_FAILED = "20221";
-    // 重置密码申请链接失效
-    public static final String ERR_CODE_ACCOUNT_RESETPWD_URL_FAILED = "20222";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -117,6 +113,12 @@ public class ErrorUtil {
     public static final String NOTHAS_BINDINGEMAIL = "20280";
     // 未设置密保问题及答案
     public static final String NOTHAS_BINDINGQUESTION = "20281";
+    // 密保答案错误
+    public static final String ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED = "20282";
+    // 重置密码申请链接失效
+    public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED = "20283";
+    // 重置密码申请邮件失败
+    public static final String ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED = "20284";
 
     //***************************密保方式相关的错误代码end*********************************
 
@@ -242,8 +244,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKANSWER_FAILED, "密保答案错误");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPWD_URL_FAILED, "重置密码申请链接失效");
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
@@ -254,6 +254,9 @@ public class ErrorUtil {
         // acount secure info
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED, "密保答案错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED, "重置密码申请链接失效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED, "重置密码申请邮件发送失败");
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
