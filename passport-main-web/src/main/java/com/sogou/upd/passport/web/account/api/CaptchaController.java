@@ -6,6 +6,7 @@ import com.sogou.upd.passport.manager.account.AccountRegManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +34,9 @@ public class CaptchaController{
 
   @RequestMapping(value = "/captcha", method = RequestMethod.GET)
   @ResponseBody
-  public Object obtainCaptcha(@RequestParam(defaultValue = "") String code, HttpServletResponse response) throws Exception {
+  public Object obtainCaptcha(@RequestParam(defaultValue = "") String code,
+                              Model model ,
+                              HttpServletResponse response) throws Exception {
 
     //生成验证码
     Map<String,Object> map=accountRegManager.getCaptchaCode(code);
@@ -44,9 +47,9 @@ public class CaptchaController{
       response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
       response.setHeader("Cache-Control", "no-cache");
       response.setDateHeader("Expire", 0);
+
+      model.addAttribute("code",map.get("code"));
     }
-
-
     return null;
   }
 }

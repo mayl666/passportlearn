@@ -297,14 +297,14 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public Map<String,Object> getCaptchaCode(String uuid)  throws ServiceException{
+  public Map<String,Object> getCaptchaCode(String code)  throws ServiceException{
     Map<String,Object> map= null;
     try{
 
-      if(Strings.isNullOrEmpty(uuid)){
-        uuid=UUID.randomUUID().toString().replaceAll("-","");
+      if(Strings.isNullOrEmpty(code)){
+        code=UUID.randomUUID().toString().replaceAll("-","");
       }
-      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +uuid;
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +code;
 
       //生成验证码
       map=captchaUtils.getRandcode();
@@ -312,7 +312,7 @@ public class AccountServiceImpl implements AccountService {
       if(map!=null && map.size()>0){
 
         String captchaCode= (String) map.get("captcha");
-        map.put("uuid",uuid);
+        map.put("code",code);
         map.put("captcha",map.get("captcha"));
 
         redisUtils.set(cacheKey,captchaCode);
