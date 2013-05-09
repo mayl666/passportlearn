@@ -7,22 +7,19 @@ import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.CaptchaUtils;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import com.sohu.sendcloud.Message;
-import com.sohu.sendcloud.SmtpApiHeader;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +35,12 @@ import java.util.concurrent.TimeUnit;
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File Templates.
  */
 @Service
-public class AccountServiceImpl extends BaseService implements AccountService {
+public class AccountServiceImpl implements AccountService {
 
     private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
-    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN; // passportId与accountToken映射
+    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
+    private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL="http://account.sogou.com/web/activemail?";
 
@@ -54,6 +52,8 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     private RedisUtils redisUtils;
     @Autowired
     private MailUtils mailUtils;
+    @Autowired
+    private CaptchaUtils captchaUtils;
 
   @Override
   public Account initialWebAccount(String username) throws ServiceException {
@@ -192,21 +192,24 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     }
 
     @Override
-    public Account resetPassword(String passportId, String password) throws ServiceException {
+    public boolean resetPassword(String passportId, String password) throws ServiceException {
         try {
             Account account = verifyAccountVaild(passportId);
+            if (account == null) {
+                return false;
+            }
             String passwdSign = PwdGenerator.generatorPwdSign(password);
             int row = accountDAO.modifyPassword(passwdSign, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPasswd(passwdSign);
                 redisUtils.set(cacheKey, account);
-                return account;
+                return true;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return null;
+        return false;
     }
 
   @Override
@@ -229,7 +232,6 @@ public class AccountServiceImpl extends BaseService implements AccountService {
       }
     } catch (Exception e) {
       flag=false;
-      throw new ServiceException(e);
     }
     return flag;
   }
@@ -239,32 +241,27 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     boolean flag=true;
     try{
       String code = UUID.randomUUID().toString().replaceAll("-", "");
-
       String token = Coder.encryptMD5(username + clientId + code);
-
       String activeUrl =
           PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
           "&client_id=" + clientId +
           "&token=" + token;
 
       //发送邮件
-      Message message=mailUtils.getMessage();
+      ActiveEmail activeEmail=new ActiveEmail();
+      activeEmail.setActiveUrl(activeUrl);
+
       //模版中参数替换
       Map<String,Object> map= Maps.newHashMap();
       map.put("activeUrl",activeUrl);
+      activeEmail.setMap(map);
 
-      String mailBody=getMailBody("activemail.vm",map);
-      // 正文， 使用html形式，或者纯文本形式
-      message.setBody(mailBody);
-      message.setSubject("激活您的搜狗通行证帐户");
+      activeEmail.setTemplateFile("activemail.vm");
+      activeEmail.setSubject("激活您的搜狗通行证帐户");
+      activeEmail.setCategory("register");
+      activeEmail.setToEmail(username);
 
-      // X-SMTPAPI
-      SmtpApiHeader smtpApiHeader = new SmtpApiHeader();
-      smtpApiHeader.addCategory("register");
-      smtpApiHeader.addRecipient(username);
-
-      message.setXsmtpapiJsonStr(smtpApiHeader.toString());
-      mailUtils.sendEmail(message);
+      mailUtils.sendEmail(activeEmail);
       //连接失效时间
       String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
       redisUtils.set(cacheKey, token);
@@ -273,7 +270,6 @@ public class AccountServiceImpl extends BaseService implements AccountService {
       initialAccountToCache(username,passpord,ip);
     }catch (Exception e){
       flag=false;
-      throw new ServiceException(e);
     }
     return flag;
   }
@@ -298,6 +294,36 @@ public class AccountServiceImpl extends BaseService implements AccountService {
   public boolean setCookie() throws Exception {
 //    ServletUtil.setCookie();
     return false;
+  }
+
+  @Override
+  public Map<String,Object> getCaptchaCode(String uuid)  throws ServiceException{
+    Map<String,Object> map= null;
+    try{
+
+      if(Strings.isNullOrEmpty(uuid)){
+        uuid=UUID.randomUUID().toString().replaceAll("-","");
+      }
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +uuid;
+
+      //生成验证码
+      map=captchaUtils.getRandcode();
+
+      if(map!=null && map.size()>0){
+
+        String captchaCode= (String) map.get("captcha");
+        map.put("uuid",uuid);
+        map.put("captcha",map.get("captcha"));
+
+        redisUtils.set(cacheKey,captchaCode);
+      }else {
+        map=Maps.newHashMap();
+      }
+
+    }catch (Exception e){
+      throw new ServiceException(e);
+    }
+    return map;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   /*

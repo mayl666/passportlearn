@@ -25,4 +25,6 @@
         </property>
     </bean>
 
+    <bean id="captchaUtils" class="com.sogou.upd.passport.common.utils.CaptchaUtils"/>
+
 </beans>

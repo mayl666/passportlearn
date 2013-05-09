@@ -7,6 +7,9 @@ import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 
 import org.apache.http.HttpRequest;
 
+import java.awt.image.BufferedImage;
+import java.util.Map;
+
 /**
  * 注册管理 User: mayan Date: 13-4-15 Time: 下午4:43 To change this template use File | Settings | File
  * Templates.
@@ -43,4 +46,10 @@ public interface AccountRegManager {
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
   public Result activeEmail(ActiveEmailParameters activeParams) throws Exception;
+  /**
+   * 获取验证码
+   *
+   * @return 验证码
+   */
+  public Map<String,Object> getCaptchaCode(String code);
 }

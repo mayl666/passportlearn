@@ -3,6 +3,8 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 
+import java.util.Map;
+
 /**
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File
  * Templates.
@@ -54,7 +56,7 @@ public interface AccountService {
   /**
    * 重置密码
    */
-  public Account resetPassword(String passportId, String password) throws ServiceException;
+  public boolean resetPassword(String passportId, String password) throws ServiceException;
 
   /**
    * 根据ip看是否在黑名单中
@@ -81,4 +83,10 @@ public interface AccountService {
    * @return
    */
   public boolean setCookie() throws Exception;
+
+  /*
+   *获取验证码
+   */
+  public Map<String,Object> getCaptchaCode(String code);
+
 }

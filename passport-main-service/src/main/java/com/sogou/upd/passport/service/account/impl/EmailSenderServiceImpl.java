@@ -4,15 +4,16 @@ import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.exception.MailException;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.service.BaseService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
-import com.sohu.sendcloud.Message;
-import com.sohu.sendcloud.SmtpApiHeader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +25,12 @@ import java.util.UUID;
  * File | Settings | File Templates.
  */
 @Service
-public class EmailSenderServiceImpl extends BaseService implements EmailSenderService {
+public class EmailSenderServiceImpl implements EmailSenderService {
+    private static final Logger logger = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN;
-
-    private static final String PASSPORT_RESETPWD_EMAIL_URL="http://account.sogou.com/web/findpwd/checkemail?";
+    // private static final String PASSPORT_RESETPWD_EMAIL_URL="http://account.sogou.com/web/findpwd/checkemail?";
+    private static final String PASSPORT_RESETPWD_EMAIL_URL="http://localhost/web/findpwd/checkemail?";
 
     @Autowired
     private RedisUtils redisUtils;
@@ -36,34 +38,34 @@ public class EmailSenderServiceImpl extends BaseService implements EmailSenderSe
     private MailUtils mailUtils;
 
     @Override
-    public boolean sendEmailForResetPwd(String email, String uid) throws ServiceException {
+    public boolean sendEmailForResetPwd(String uid, int clientId, String address) throws ServiceException {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
-            String token = Coder.encryptMD5(uid + code);
+            String token = Coder.encryptMD5(uid + clientId + code);
             String activeUrl = PASSPORT_RESETPWD_EMAIL_URL + "uid=" + uid + "&token=" + token;
 
             //发送邮件
-            Message message = mailUtils.getMessage();
+            ActiveEmail activeEmail = new ActiveEmail();
+            activeEmail.setActiveUrl(activeUrl);
+
             //模版中参数替换
-            Map<String, Object> map = Maps.newHashMap();
-            map.put("activeUrl", activeUrl);
+            Map<String,Object> map= Maps.newHashMap();
+            map.put("activeUrl",activeUrl);
+            activeEmail.setMap(map);
 
-            String mailBody = getMailBody("resetpwdmail.vm", map);
-            // 正文， 使用html形式，或者纯文本形式
-            message.setBody(mailBody);
-            message.setSubject("搜狗通行证找回密码服务");
+            activeEmail.setTemplateFile("resetpwdmail.vm");
+            activeEmail.setSubject("搜狗通行证找回密码服务");
+            activeEmail.setCategory("resetpwd");
+            activeEmail.setToEmail(address);
 
-            // X-SMTPAPI
-            SmtpApiHeader smtpApiHeader = new SmtpApiHeader();
-            smtpApiHeader.addCategory("register");
-            smtpApiHeader.addRecipient(email);
+            mailUtils.sendEmail(activeEmail);
 
-            message.setXsmtpapiJsonStr(smtpApiHeader.toString());
-            mailUtils.sendEmail(message);
             //连接失效时间
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
             redisUtils.set(cacheKey, token);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+        } catch(MailException me) {
+            return false;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -71,7 +73,7 @@ public class EmailSenderServiceImpl extends BaseService implements EmailSenderSe
     }
 
     @Override
-    public boolean checkEmailForResetPwd(String uid, String token) throws ServiceException {
+    public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
             if(redisUtils.checkKeyIsExist(cacheKey)){
@@ -84,5 +86,16 @@ public class EmailSenderServiceImpl extends BaseService implements EmailSenderSe
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    @Override
+    public boolean deleteEmailCacheResetPwd(String uid, int clientId) throws ServiceException {
+        try {
+            redisUtils.delete(CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid);
+        } catch (Exception e) {
+            logger.error("[SMS] service method deleteEmailCache error.{}", e);
+            throw new ServiceException(e);
+        }
+        return true;
     }
 }

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.collect.Maps;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
@@ -14,10 +15,9 @@ import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**
@@ -53,7 +54,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
     String mobile = regParams.getMobile();
     String smsCode = regParams.getSmscode();
     String password = regParams.getPassword();
-    int clientId = regParams.getClient_id();
+    int clientId = Integer.parseInt(regParams.getClient_id());
     String instanceId = regParams.getInstance_id();
     //验证手机号码与验证码是否匹配
     boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
@@ -96,24 +97,25 @@ public class AccountRegManagerImpl implements AccountRegManager {
   @Override
   public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
     try {
-      int clientId = regParams.getClient_id();
+
+      int clientId = Integer.parseInt(regParams.getClient_id());
       String username = regParams.getUsername();
       String password = regParams.getPassword();
       String code = regParams.getCode();
 
       //判断注册账号类型，sogou用户还是第三方用户
-      int emailType = checkEmailType(username);
+      int emailType = AccountDomainEnum.getAccountDomain(username);
 
       //写缓存，发验证邮件
       switch (emailType) {
-        case 0://sougou用户，直接注册
+        case 1://sogou用户，直接注册
         Account account=accountService.initialAccount(username,password,ip,AccountTypeEnum.EMAIL.getValue()) ;
           if(account!=null){
             return Result.buildSuccess("注册成功！");
           }else {
             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
           }
-        case 1://外域邮件注册
+        case 4://外域邮件注册
           boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip);
           if (isSendSuccess) {
             return Result.buildSuccess("感谢注册，请立即激活账户！");
@@ -138,7 +140,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
     try {
       String username = activeParams.getPassport_id();
       String token = activeParams.getToken();
-      int clientId = activeParams.getClient_id();
+      int clientId = Integer.parseInt(activeParams.getClient_id());
       //激活邮件
       boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
 
@@ -171,15 +173,9 @@ public class AccountRegManagerImpl implements AccountRegManager {
     }
   }
 
-  /*
-   *判断注册账号类型，sogou用户还是第三方用户
-   */
-  private int checkEmailType(String username) {
-    //todo 搜狐域的不注册
-    if (username.contains("@sogou.com")) {
-      return 0;
-    } else {
-      return 1;
-    }
+  @Override
+  public Map<String,Object> getCaptchaCode(String code) {
+    return accountService.getCaptchaCode(code);
   }
+
 }

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.Result;
@@ -10,12 +11,17 @@ import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.manager.form.AccountSecureParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.AccountTokenService;
+import com.sogou.upd.passport.service.account.EmailSenderService;
+import com.sogou.upd.passport.service.account.MobileCodeSenderService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.app.AppConfigService;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -202,7 +208,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         String mobile = regParams.getMobile();
         String smsCode = regParams.getSmscode();
         String password = regParams.getPassword();
-        int clientId = regParams.getClient_id();
+        int clientId = Integer.parseInt(regParams.getClient_id());
         try {
             //验证手机号码与验证码是否匹配
             boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
@@ -214,8 +220,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (Strings.isNullOrEmpty(passportId)) {
                 return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
-            Account account = accountService.resetPassword(passportId, password);
-            if (account == null) {
+
+            if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             // 异步更新accountToken信息
@@ -258,7 +264,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 }
                 if (Strings.isNullOrEmpty((String)mapResult.get("secEmail")) &&
                     AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.getDomain("other")) {
-                    mapResult.put("secEmail", passportId);
+                    mapResult.put("secEmail", passportId.substring(0, 2).concat("*****").
+                            concat(passportId.substring(passportId.indexOf("@")-1)));
                 }
             }
         } catch (ServiceException e) {
@@ -270,22 +277,29 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result sendEmailByPassportId(String passportId, int clientId) throws Exception {
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId) throws Exception {
         try {
+            if (accountService.queryAccountByPassportId(passportId) == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
             boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.getDomain("other"));
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
             if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getEmail())) {
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    emailSenderService.sendEmailForResetPwd(passportId, passportId);
+                    if (!emailSenderService.sendEmailForResetPwd(passportId, clientId, passportId)) {
+                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+                    }
                     return Result.buildSuccess("重置密码申请邮件发送成功");
                 } else {
                     return Result.buildError(ErrorUtil.NOTHAS_BINDINGEMAIL);
                 }
             }
             String email = accountInfo.getEmail();
-            emailSenderService.sendEmailForResetPwd(email, passportId);
-            return Result.buildSuccess("重置密码申请邮件发送成功", "", "");
+            if (!emailSenderService.sendEmailForResetPwd(passportId, clientId, email)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+            }
+            return Result.buildSuccess("重置密码申请邮件发送成功");
         } catch (ServiceException e) {
             logger.error("send email fail:", e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -293,22 +307,36 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result resetPasswordByQues(AccountSecureParams reqParams) throws Exception {
-        String passportId = reqParams.getPassport_id();
-        String password = reqParams.getPassword();
-        String answer = reqParams.getAnswer();
+    public Result checkEmailResetPwd(String uid, int clientId, String token) throws Exception {
+        try {
+            if (!emailSenderService.checkEmailForResetPwd(uid, clientId, token)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
+            }
+            return Result.buildSuccess("重置密码申请链接验证成功");
+        } catch (ServiceException e) {
+            logger.error("check email fail:", e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+    }
+
+    @Override
+    public Result resetPasswordByQues(String passportId, int clientId, String password,
+                                      String answer) throws Exception {
         try {
             if (Strings.isNullOrEmpty(answer)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+            }
+            if (accountService.queryAccountByPassportId(passportId) == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
             if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getAnswer())) {
                 return Result.buildError(ErrorUtil.NOTHAS_BINDINGQUESTION);
             }
             if (!answer.equals(accountInfo.getAnswer())) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CHECKANSWER_FAILED);
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
             }
-            if (accountService.resetPassword(passportId, password) == null) {
+            if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             return Result.buildSuccess("重置密码成功！");
@@ -319,12 +347,12 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result resetPasswordByMobile(AccountSecureParams reqParams) throws Exception {
-        String passportId = reqParams.getPassport_id();
-        String smsCode = reqParams.getSmscode();
-        String password = reqParams.getPassword();
-        int clientId = reqParams.getClient_id();
+    public Result resetPasswordByMobile(String passportId, int clientId, String password,
+                                        String smsCode) throws Exception {
         try {
+            if (Strings.isNullOrEmpty(smsCode)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
+            }
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -345,25 +373,33 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             }
 
-            if (accountService.resetPassword(passportId, password) == null) {
+            if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             //清除验证码的缓存
             mobileCodeSenderService.deleteSmsCache(mobile, clientId);
             return Result.buildSuccess("重置密码成功！");
         } catch (ServiceException e) {
-            logger.error("rest password Fail:", e);
+            logger.error("reset password Fail:", e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
 
     @Override
-    public Result resetPasswordByEmail(AccountSecureParams reqParams) throws Exception {
-        // TODO:如果参数不是passportId，而是其他标识，则不用AccountSecureParams
-        String passportId = reqParams.getPassport_id();
-        String password = reqParams.getPassword();
-        int clientId = reqParams.getClient_id();
-        // TODO
-        return null;
+    public Result resetPasswordByEmail(String passportId, int clientId, String password, String token) throws Exception {
+        try {
+            if (!emailSenderService.checkEmailForResetPwd(passportId, clientId, token)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
+            }
+            if (!accountService.resetPassword(passportId, password)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
+            }
+            // 删除邮件链接token缓存
+            emailSenderService.deleteEmailCacheResetPwd(passportId, clientId);
+            return Result.buildSuccess("重置密码成功！");
+        } catch (ServiceException e) {
+            logger.error("reset password Fail:", e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
     }
 }
