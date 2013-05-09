@@ -149,15 +149,12 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                             String randomCode = RandomStringUtils.randomNumeric(6);
                             //读取短信内容
                             String smsText = appConfigService.querySmsText(clientId, randomCode);
-                            if (!Strings.isNullOrEmpty(smsText)) {
-                                boolean isSend = SMSUtil.sendSMS(mobile, smsText);
-                                if (isSend) {
-                                    //更新缓存
-                                    mobileCodeSenderService.updateSmsCacheInfo(cacheKeySendNum, cacheKeySmscode,
-                                                                               String.valueOf(curtime),randomCode);
-                                    result = Result.buildSuccess("获取验证码成功");
-                                    return result;
-                                }
+                            if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                                //更新缓存
+                                mobileCodeSenderService.updateSmsCacheInfo(cacheKeySendNum, cacheKeySmscode,
+                                        String.valueOf(curtime),randomCode);
+                                result = Result.buildSuccess("获取验证码成功");
+                                return result;
                             } else {
                                 result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                                 return result;
@@ -173,7 +170,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 }
             } else {
                 result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                return result;
             }
         } catch (Exception e) {
             logger.error("[SMS] service method updateSmsCacheInfoByKeyAndClientId error.{}", e);
