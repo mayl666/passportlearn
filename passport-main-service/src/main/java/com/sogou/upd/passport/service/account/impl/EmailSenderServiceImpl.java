@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.exception.MailException;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.utils.MailUtils;
@@ -60,6 +61,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
             redisUtils.set(cacheKey, token);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+        } catch(MailException me) {
+            return false;
         } catch (Exception e) {
             throw new ServiceException(e);
         }

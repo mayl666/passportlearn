@@ -283,15 +283,19 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getEmail())) {
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    emailSenderService.sendEmailForResetPwd(passportId, clientId, passportId);
+                    if (!emailSenderService.sendEmailForResetPwd(passportId, clientId, passportId)) {
+                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+                    }
                     return Result.buildSuccess("重置密码申请邮件发送成功");
                 } else {
                     return Result.buildError(ErrorUtil.NOTHAS_BINDINGEMAIL);
                 }
             }
             String email = accountInfo.getEmail();
-            emailSenderService.sendEmailForResetPwd(passportId, clientId, email);
-            return Result.buildSuccess("重置密码申请邮件发送成功", "", "");
+            if (!emailSenderService.sendEmailForResetPwd(passportId, clientId, email)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+            }
+            return Result.buildSuccess("重置密码申请邮件发送成功");
         } catch (ServiceException e) {
             logger.error("send email fail:", e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -302,7 +306,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result checkEmailResetPwd(String uid, int clientId, String token) throws Exception {
         try {
             if (!emailSenderService.checkEmailForResetPwd(uid, clientId, token)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPWD_URL_FAILED);
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             }
             return Result.buildSuccess("重置密码申请链接验证成功");
         } catch (ServiceException e) {
@@ -323,7 +327,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.NOTHAS_BINDINGQUESTION);
             }
             if (!answer.equals(accountInfo.getAnswer())) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CHECKANSWER_FAILED);
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
             }
             if (accountService.resetPassword(passportId, password) == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
@@ -378,7 +382,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result resetPasswordByEmail(String passportId, int clientId, String password, String token) throws Exception {
         try {
             if (!emailSenderService.checkEmailForResetPwd(passportId, clientId, token)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPWD_URL_FAILED);
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             }
             if (accountService.resetPassword(passportId, password) == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
