@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -9,7 +10,6 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
-import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -43,7 +43,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     private RedisUtils redisUtils;
 
     @Override
-    public AccountToken verifyRefreshToken(String refreshToken, String instanceId) throws ServiceException {
+    public AccountToken verifyRefreshToken(String refreshToken, int clientId, String instanceId) throws ServiceException {
         AccountToken accountToken;
         RefreshTokenCipherDO refreshTokenCipherDO;
         try {
@@ -52,17 +52,11 @@ public class AccountTokenServiceImpl implements AccountTokenService {
             throw new ServiceException(e);
         }
         String passportId = refreshTokenCipherDO.getPassportId();
-        int clientId = refreshTokenCipherDO.getClientId();
-        String tokenInstanceId = refreshTokenCipherDO.getInstanceId();
-        try {
-            accountToken = queryAccountTokenByPassportId(passportId, clientId, tokenInstanceId);
-            if (isValidRefreshToken(accountToken, instanceId)) {
-                return accountToken;
-            } else {
-                return null;
-            }
-        } catch (ServiceException e) {
-            throw e;
+        accountToken = queryAccountTokenByPassportId(passportId, clientId, instanceId);
+        if (isValidRefreshToken(accountToken, refreshToken)) {
+            return accountToken;
+        } else {
+            return null;
         }
     }
 
@@ -75,18 +69,14 @@ public class AccountTokenServiceImpl implements AccountTokenService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        try {
-            String passportId = accessTokenCipherDO.getPassportId();
-            int clientId = accessTokenCipherDO.getClientId();
-            String tokenInstanceId = accessTokenCipherDO.getInstanceId();
-            accountToken = queryAccountTokenByPassportId(passportId, clientId, tokenInstanceId);
-            if (isValidAccessToken(accountToken)) {
-                return accountToken;
-            } else {
-                return null;
-            }
-        } catch (ServiceException e) {
-            throw new ServiceException(e);
+        String passportId = accessTokenCipherDO.getPassportId();
+        int tokenClientId = accessTokenCipherDO.getClientId();
+        String tokenInstanceId = accessTokenCipherDO.getInstanceId();
+        accountToken = queryAccountTokenByPassportId(passportId, tokenClientId, tokenInstanceId);
+        if (isValidAccessToken(accountToken, accessToken)) {
+            return accountToken;
+        } else {
+            return null;
         }
     }
 
@@ -183,16 +173,33 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     /**
      * 验证refreshToken是否在有效期内，instanceId是否正确
      */
-    private boolean isValidRefreshToken(AccountToken accountToken, String instanceId) {
-        return accountToken != null && accountToken.getRefreshValidTime() > System.currentTimeMillis()
-                && instanceId.equals(accountToken.getInstanceId());
+    private boolean isValidRefreshToken(AccountToken accountToken, String refreshToken) {
+        boolean valid = false;
+        if (accountToken != null) {
+            String actualRefreshToken = accountToken.getRefreshToken();
+            long refreshTokenValidTime = accountToken.getRefreshValidTime();
+            long currentTime = System.currentTimeMillis();
+            if (actualRefreshToken.equals(refreshToken) && refreshTokenValidTime > currentTime) {
+                valid = true;
+            }
+        }
+        return valid;
     }
 
     /**
      * 验证accessToken是否在有效期内，instanceId是否正确
      */
-    private boolean isValidAccessToken(AccountToken accountToken) {
-        return accountToken != null && accountToken.getAccessValidTime() > System.currentTimeMillis();
+    private boolean isValidAccessToken(AccountToken accountToken, String accessToken) {
+        boolean valid = false;
+        if (accountToken != null) {
+            String actualAccessToken = accountToken.getAccessToken();
+            long accessTokenValidTime = accountToken.getAccessValidTime();
+            long currentTime = System.currentTimeMillis();
+            if (actualAccessToken.equals(accessToken) && accessTokenValidTime > currentTime) {
+                valid = true;
+            }
+        }
+        return valid;
     }
 
     /**

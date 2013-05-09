@@ -1,9 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
 /**
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File

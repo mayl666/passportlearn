@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.generator;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.sogou.upd.passport.service.account.dataobject.SecureSignDO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.MapUtils;
@@ -14,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 校验http访问令牌传输安全性，提供给应用使用
@@ -40,14 +42,11 @@ public class InspectSecureSignForT3 {
      */
     public static boolean verifySecureSignature(HttpServletRequest request) throws Exception {
         String serverName = request.getServerName();
-//        String method = request.getMethod();         // GET or POST
         String uri = request.getRequestURI();
-//        if (method.equals("POST")) {
-//            String queryString = getRequests(request);
-//            if (!Strings.isNullOrEmpty(queryString)) {
-//                uri = uri + "?" + queryString;
-//            }
-//        }
+        String queryString = getRequests(request);
+        if (!Strings.isNullOrEmpty(queryString)) {
+            uri = uri + "?" + queryString;
+        }
 
         Map<String, String> headerMap = parseMacHeader(request);
         if (MapUtils.isEmpty(headerMap)) {
@@ -106,10 +105,15 @@ public class InspectSecureSignForT3 {
     private static Map<String, String> parseMacHeader(HttpServletRequest request) {
         String macHeader = request.getHeader("MAC");
         Map<String, String> headerMap = Maps.newHashMap();
-        String[] headerArray = macHeader.split(",");
-        for (String header : headerArray) {
-            String[] result = header.split("=");
-            headerMap.put(result[0], result[1]);
+        if (!Strings.isNullOrEmpty(macHeader)) {
+            String[] headerArray = macHeader.split(",");
+            for (String header : headerArray) {
+                String[] result = header.split("=");
+                if (result.length != 2) {
+                    continue;
+                }
+                headerMap.put(result[0], result[1]);
+            }
         }
         return headerMap;
     }
@@ -118,7 +122,8 @@ public class InspectSecureSignForT3 {
         StringBuilder params = new StringBuilder();
         Map parameterMap = request.getParameterMap();
         Set<String> keys = parameterMap.keySet();
-        for (String key : keys) {
+        TreeSet<String> sortKeys = Sets.newTreeSet(keys);
+        for (String key : sortKeys) {
             params.append(key).append("=").append(request.getParameter(key)).append("&");
         }
         String queryString = "";

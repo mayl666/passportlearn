@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account.dataobject;
 
-import com.sogou.upd.passport.common.CommonConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,11 +8,11 @@ import org.slf4j.LoggerFactory;
  * User: shipengzhi
  * Date: 13-4-23
  * Time: 上午1:58
- * To change this template use File | Settings | File Templates.
  */
 public class AccessTokenCipherDO {
 
     private static Logger logger = LoggerFactory.getLogger(AccessTokenCipherDO.class);
+    public static final String SEPARATOR = "|";
 
     public static final int ACCESS_PASSPORT_ID = 0;
     public static final int ACCESS_CLIENT_ID = 1;
@@ -80,10 +79,10 @@ public class AccessTokenCipherDO {
 
     public String structureEncryptString() {
         StringBuffer sb = new StringBuffer();
-        sb.append(this.passportId).append(CommonConstant.SEPARATOR_1);
-        sb.append(this.clientId).append(CommonConstant.SEPARATOR_1);
-        sb.append(this.vaildTime).append(CommonConstant.SEPARATOR_1);
-        sb.append(this.random).append(CommonConstant.SEPARATOR_1);
+        sb.append(this.passportId).append(SEPARATOR);
+        sb.append(this.clientId).append(SEPARATOR);
+        sb.append(this.vaildTime).append(SEPARATOR);
+        sb.append(this.random).append(SEPARATOR);
         sb.append(this.instanceId);
         return sb.toString();
     }

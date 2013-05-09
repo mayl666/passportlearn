@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 密码生成器 User: shipengzhi Date: 13-3-26 Time: 下午6:05 To change this template use File | Settings | File Templates.
+ * 密码生成器 User: shipengzhi Date: 13-3-26 Time: 下午6:05
  */
 public class PwdGenerator {
 

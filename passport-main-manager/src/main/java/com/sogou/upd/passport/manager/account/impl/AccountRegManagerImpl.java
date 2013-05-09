@@ -19,9 +19,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,33 +2,21 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.StringUtil;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.common.utils.StringUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.form.AccountSecureParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.service.account.AccountInfoService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.EmailSenderService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.app.AppConfigService;
-
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
