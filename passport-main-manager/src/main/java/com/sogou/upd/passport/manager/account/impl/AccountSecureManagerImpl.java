@@ -157,6 +157,9 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                                                                                String.valueOf(curtime),randomCode);
                                     result = Result.buildSuccess("获取验证码成功");
                                     return result;
+                                } else{
+                                  result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                                  return result;
                                 }
                             } else {
                                 result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);

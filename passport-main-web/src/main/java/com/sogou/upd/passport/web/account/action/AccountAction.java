@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -58,23 +59,11 @@ public class AccountAction extends BaseController {
   /*
      web注册页跳转
    */
-  @RequestMapping(value = "/register", method = RequestMethod.POST)
-  @ResponseBody
-  public Object register(HttpServletRequest request, HttpServletResponse response)
+  @RequestMapping(value = "/register", method = RequestMethod.GET)
+  public String register(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
-      Map<String,Object> mapResult=accountRegManager.getCaptchaCode(null);
-      if(mapResult!=null && mapResult.size()>0){
-        ImageIO.write((BufferedImage) mapResult.get("image"), "JPEG", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
 
-        response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
-        response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
-        response.setHeader("Cache-Control", "no-cache");
-        response.setDateHeader("Expire", 0);
-      }
-
-      //todo 渲染到页面
-
-     return null;
+     return "reg";
   }
 
   /**
