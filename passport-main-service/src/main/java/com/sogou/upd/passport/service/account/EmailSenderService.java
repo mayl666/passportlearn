@@ -24,4 +24,13 @@ public interface EmailSenderService {
      * @param token
      */
     public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException;
+
+    /**
+     * 删除邮件链接token缓存
+     * @param uid
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean deleteEmailCacheResetPwd(String uid, int clientId) throws ServiceException;
 }
