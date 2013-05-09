@@ -264,7 +264,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 }
                 if (Strings.isNullOrEmpty((String)mapResult.get("secEmail")) &&
                     AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.getDomain("other")) {
-                    mapResult.put("secEmail", passportId);
+                    mapResult.put("secEmail", passportId.substring(0, 2).concat("*****").
+                            concat(passportId.substring(passportId.indexOf("@")-1)));
                 }
             }
         } catch (ServiceException e) {
@@ -278,6 +279,9 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     @Override
     public Result sendEmailResetPwdByPassportId(String passportId, int clientId) throws Exception {
         try {
+            if (accountService.queryAccountByPassportId(passportId) == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
             boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.getDomain("other"));
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
             if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getEmail())) {
@@ -321,6 +325,9 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         try {
             if (Strings.isNullOrEmpty(answer)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+            }
+            if (accountService.queryAccountByPassportId(passportId) == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
             if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getAnswer())) {
