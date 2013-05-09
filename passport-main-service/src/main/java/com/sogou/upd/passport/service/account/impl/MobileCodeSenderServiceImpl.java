@@ -129,16 +129,10 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
             //读取短信内容
             String smsText = appConfigService.querySmsText(clientId, randomCode);
-            boolean isSend = false;
-            if (!Strings.isNullOrEmpty(smsText)) {
-                isSend = SMSUtil.sendSMS(mobile, smsText);
-                if (isSend) {
-                    result = Result.buildSuccess("获取验证码成功");
-                    return result;
-                }
+            if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                result = Result.buildSuccess("获取验证码成功");
             } else {
                 result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                return result;
             }
         } catch (Exception e) {
             result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
