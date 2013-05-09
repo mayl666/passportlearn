@@ -19,7 +19,6 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
