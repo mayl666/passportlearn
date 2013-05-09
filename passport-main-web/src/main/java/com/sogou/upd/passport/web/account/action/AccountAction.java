@@ -26,13 +26,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.awt.image.BufferedImage;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * User: mayan Date: 13-4-28 Time: 下午4:07 To change this template use File | Settings | File
@@ -51,8 +55,27 @@ public class AccountAction extends BaseController {
   @Autowired
   private ConfigureManager configureManager;
 
+  /*
+     web注册页跳转
+   */
+  @RequestMapping(value = "/register", method = RequestMethod.POST)
+  @ResponseBody
+  public Object register(HttpServletRequest request, HttpServletResponse response)
+      throws Exception {
+      Map<String,Object> mapResult=accountRegManager.getCaptchaCode(null);
+      if(mapResult!=null && mapResult.size()>0){
+        ImageIO.write((BufferedImage) mapResult.get("image"), "JPEG", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
 
+        response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
+        response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expire", 0);
+      }
 
+      //todo 渲染到页面
+
+     return null;
+  }
 
   /**
    * web页面注册

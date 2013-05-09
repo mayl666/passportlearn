@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.collect.Maps;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -43,10 +46,8 @@ public class CaptchaUtils {
   /**
    * 生成随机图片
    */
-  public String getRandcode(HttpServletRequest request, HttpServletResponse response) {
-    HttpSession
-        session =
-        request.getSession();        //BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类
+  public Map<String,Object> getRandcode() {
+    //BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类
     BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
     Graphics g = image.getGraphics();//产生Image对象的Graphics对象,改对象可以在图像上进行各种绘制操作
     g.fillRect(0, 0, width, height);
@@ -61,12 +62,11 @@ public class CaptchaUtils {
       randomString = drowString(g, randomString, i);
     }
     g.dispose();
-    try {
-      ImageIO.write(image, "JPEG", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return randomString;
+    Map<String,Object> mapResult= Maps.newHashMap();
+    mapResult.put("image",image);
+    mapResult.put("captcha",randomString);
+
+    return mapResult;
   }    /*     * 绘制字符串     */
 
   private String drowString(Graphics g, String randomString, int i) {

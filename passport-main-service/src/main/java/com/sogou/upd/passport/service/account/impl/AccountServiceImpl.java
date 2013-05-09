@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.CaptchaUtils;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -18,6 +19,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,8 @@ public class AccountServiceImpl implements AccountService {
 
     private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
-    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN; // passportId与accountToken映射
+    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
+    private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL="http://account.sogou.com/web/activemail?";
 
@@ -50,6 +53,8 @@ public class AccountServiceImpl implements AccountService {
     private RedisUtils redisUtils;
     @Autowired
     private MailUtils mailUtils;
+    @Autowired
+    private CaptchaUtils captchaUtils;
 
   @Override
   public Account initialWebAccount(String username) throws ServiceException {
@@ -225,7 +230,6 @@ public class AccountServiceImpl implements AccountService {
       }
     } catch (Exception e) {
       flag=false;
-      throw new ServiceException(e);
     }
     return flag;
   }
@@ -288,6 +292,36 @@ public class AccountServiceImpl implements AccountService {
   public boolean setCookie() throws Exception {
 //    ServletUtil.setCookie();
     return false;
+  }
+
+  @Override
+  public Map<String,Object> getCaptchaCode(String uuid)  throws ServiceException{
+    Map<String,Object> map= null;
+    try{
+
+      if(Strings.isNullOrEmpty(uuid)){
+        uuid=UUID.randomUUID().toString().replaceAll("-","");
+      }
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +uuid;
+
+      //生成验证码
+      map=captchaUtils.getRandcode();
+
+      if(map!=null && map.size()>0){
+
+        String captchaCode= (String) map.get("captcha");
+        map.put("uuid",uuid);
+        map.put("captcha",map.get("captcha"));
+
+        redisUtils.set(cacheKey,captchaCode);
+      }else {
+        map=Maps.newHashMap();
+      }
+
+    }catch (Exception e){
+      throw new ServiceException(e);
+    }
+    return map;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   /*
