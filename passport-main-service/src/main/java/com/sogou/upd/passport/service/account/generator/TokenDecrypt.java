@@ -22,7 +22,7 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class TokenDecrypt {
 
-    private static Logger logger = LoggerFactory.getLogger(TokenGenerator.class);
+    private static Logger logger = LoggerFactory.getLogger(TokenDecrypt.class);
 
     // 公钥
     public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
