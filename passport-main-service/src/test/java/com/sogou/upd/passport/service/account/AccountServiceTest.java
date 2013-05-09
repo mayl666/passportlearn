@@ -84,8 +84,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testResetPassword() {
-        Account flag = accountService.resetPassword(MOBILE, PASSWORD);
-        if (flag != null) {
+        boolean flag = accountService.resetPassword(MOBILE, PASSWORD);
+        if (flag != false) {
             System.out.println("重置成功...");
         } else {
             System.out.println("重置失败!!!");

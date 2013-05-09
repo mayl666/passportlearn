@@ -193,21 +193,24 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account resetPassword(String passportId, String password) throws ServiceException {
+    public boolean resetPassword(String passportId, String password) throws ServiceException {
         try {
             Account account = verifyAccountVaild(passportId);
+            if (account == null) {
+                return false;
+            }
             String passwdSign = PwdGenerator.generatorPwdSign(password);
             int row = accountDAO.modifyPassword(passwdSign, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPasswd(passwdSign);
                 redisUtils.set(cacheKey, account);
-                return account;
+                return true;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return null;
+        return false;
     }
 
   @Override

@@ -12,6 +12,8 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +26,11 @@ import java.util.UUID;
  */
 @Service
 public class EmailSenderServiceImpl implements EmailSenderService {
+    private static final Logger logger = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN;
-
-    private static final String PASSPORT_RESETPWD_EMAIL_URL="http://account.sogou.com/web/findpwd/checkemail?";
+    // private static final String PASSPORT_RESETPWD_EMAIL_URL="http://account.sogou.com/web/findpwd/checkemail?";
+    private static final String PASSPORT_RESETPWD_EMAIL_URL="http://localhost/web/findpwd/checkemail?";
 
     @Autowired
     private RedisUtils redisUtils;
@@ -83,5 +86,16 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    @Override
+    public boolean deleteEmailCacheResetPwd(String uid, int clientId) throws ServiceException {
+        try {
+            redisUtils.delete(CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid);
+        } catch (Exception e) {
+            logger.error("[SMS] service method deleteEmailCache error.{}", e);
+            throw new ServiceException(e);
+        }
+        return true;
     }
 }

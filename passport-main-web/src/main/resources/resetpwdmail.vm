@@ -4,6 +4,6 @@
 </head>
 <body>
 亲爱的用户：<br><br>&nbsp;&nbsp;&nbsp;&nbsp;您好，欢迎您使用搜狗通行证服务!<br><br>
-我们收到您的重置密码申请。请单击以下链接进行重置密码：<a href="$activeUrl">"+$activeUrl+"</a>
+我们收到您的重置密码申请。请单击以下链接进行重置密码：<br /><a href="$activeUrl">$activeUrl</a>
 </body>
 </html>

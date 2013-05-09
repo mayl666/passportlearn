@@ -58,7 +58,7 @@ public interface AccountService {
   /**
    * 重置密码
    */
-  public Account resetPassword(String passportId, String password) throws ServiceException;
+  public boolean resetPassword(String passportId, String password) throws ServiceException;
 
   /**
    * 根据ip看是否在黑名单中
