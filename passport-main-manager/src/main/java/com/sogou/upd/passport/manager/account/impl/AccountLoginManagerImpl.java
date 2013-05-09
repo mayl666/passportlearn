@@ -61,7 +61,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 }
             } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                AccountToken accountToken = accountTokenService.verifyRefreshToken(refreshToken, instanceId);
+                AccountToken accountToken = accountTokenService.verifyRefreshToken(refreshToken, clientId, instanceId);
                 if (accountToken == null) {
                     return Result.buildError(ErrorUtil.INVALID_REFRESH_TOKEN);
                 } else {

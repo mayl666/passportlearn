@@ -25,8 +25,6 @@ import com.sogou.upd.passport.oauth2.openresource.response.user.QQUserAPIRespons
 import com.sogou.upd.passport.oauth2.openresource.response.user.RenrenUserAPIResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.user.SinaUserAPIResponse;
 import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
-import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;

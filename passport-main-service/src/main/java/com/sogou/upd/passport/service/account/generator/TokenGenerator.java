@@ -1,10 +1,9 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
-
-import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTime;
