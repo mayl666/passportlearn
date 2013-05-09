@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.sogou.upd.passport.common.utils.CaptchaUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.manager.account.AccountRegManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,19 +24,22 @@ public class CaptchaController{
   private RedisUtils redisUtils;
   @Autowired
   private CaptchaUtils captchaUtils;
+  @Autowired
+  private AccountRegManager accountRegManager;
 
   @RequestMapping(value = "/captcha", method = RequestMethod.GET)
   @ResponseBody
   public Object obtainCaptcha(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
     //生成验证码
+    String randCode=captchaUtils.getRandcode(request, response);
+    accountRegManager.getCaptchaCode();
 
     response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
     response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
     response.setHeader("Cache-Control", "no-cache");
     response.setDateHeader("Expire", 0);
     try {
-      captchaUtils.getRandcode(request, response);//输出图片方法
     } catch (Exception e) {
       e.printStackTrace();
     }

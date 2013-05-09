@@ -52,7 +52,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
     String mobile = regParams.getMobile();
     String smsCode = regParams.getSmscode();
     String password = regParams.getPassword();
-    int clientId = regParams.getClient_id();
+    int clientId = Integer.parseInt(regParams.getClient_id());
     String instanceId = regParams.getInstance_id();
     //验证手机号码与验证码是否匹配
     boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);

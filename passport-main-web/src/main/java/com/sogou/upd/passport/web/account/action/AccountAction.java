@@ -51,6 +51,9 @@ public class AccountAction extends BaseController {
   @Autowired
   private ConfigureManager configureManager;
 
+
+
+
   /**
    * web页面注册
    *
