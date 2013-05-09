@@ -387,6 +387,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (accountService.resetPassword(passportId, password) == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
+            // 删除邮件链接token缓存
+            emailSenderService.deleteEmailCacheResetPwd(passportId, clientId);
             return Result.buildSuccess("重置密码成功！");
         } catch (ServiceException e) {
             logger.error("reset password Fail:", e);
