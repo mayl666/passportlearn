@@ -191,6 +191,9 @@ public class AccountServiceImpl implements AccountService {
     public Account resetPassword(String passportId, String password) throws ServiceException {
         try {
             Account account = verifyAccountVaild(passportId);
+            if (account == null) {
+                return null;
+            }
             String passwdSign = PwdGenerator.generatorPwdSign(password);
             int row = accountDAO.modifyPassword(passwdSign, passportId);
             if (row != 0) {
