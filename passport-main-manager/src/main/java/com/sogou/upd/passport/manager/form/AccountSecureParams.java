@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午1:59 To change this template use
@@ -9,10 +8,10 @@ import javax.validation.constraints.NotNull;
  */
 public class AccountSecureParams {
 
-    @NotNull(message = "账号不允许为空!")
+    @NotBlank(message = "账号不允许为空!")
     private String passport_id;
-    @Min(value = 1, message = "client_id不允许为空!")
-    private int client_id;
+    @NotBlank(message = "client_id不允许为空!")
+    private String client_id;
     private String password;
     private String smscode;
     private String answer;
@@ -59,11 +58,11 @@ public class AccountSecureParams {
         this.passport_id = passport_id;
     }
 
-    public int getClient_id() {
+    public String getClient_id() {
         return client_id;
     }
 
-    public void setClient_id(int client_id) {
+    public void setClient_id(String client_id) {
         this.client_id = client_id;
     }
 }

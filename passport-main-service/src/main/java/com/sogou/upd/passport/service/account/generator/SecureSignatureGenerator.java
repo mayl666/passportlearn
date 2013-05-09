@@ -64,10 +64,10 @@ public class SecureSignatureGenerator {
 
     public static String sign(SecureSignDO secureSignatureDO, String secret) throws Exception {
         StringBuilder baseBuilderString = new StringBuilder("");
-        baseBuilderString.append(secureSignatureDO.getTs()).append("\n");
-        baseBuilderString.append(secureSignatureDO.getNonce()).append("\n");
-        baseBuilderString.append(secureSignatureDO.getUri()).append("\n");
-        baseBuilderString.append(secureSignatureDO.getServerName()).append("\n");
+        baseBuilderString.append(secureSignatureDO.getTs());
+        baseBuilderString.append(secureSignatureDO.getNonce());
+        baseBuilderString.append(secureSignatureDO.getUri());
+        baseBuilderString.append(secureSignatureDO.getServerName());
         String baseString = baseBuilderString.toString();
         try {
             String signature = Coder.encryptBASE64(Coder.encryptHMAC(baseString, secret));

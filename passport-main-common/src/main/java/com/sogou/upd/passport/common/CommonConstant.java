@@ -1,6 +1,11 @@
 package com.sogou.upd.passport.common;
 
 
+import com.google.common.collect.Lists;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+
+import java.util.List;
+
 /**
  * passport通用常量类
  */
@@ -27,5 +32,13 @@ public class CommonConstant {
 	public static final int PASSPORT_PROFILE_TIMEOUT = 0; // 不过期吧，为了性能
 	public static final int PASSPORT_USERSTATUE_TIMEOUT = 0; // 不过期吧，为了性能
 	public static final int CONNECT_AUTHORIZE_STATE_TIMEOUT = 60 * 30;  // 第三方登录授权的statue缓存有效期
+
+    public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList(); // passport支持的第三方列表
+
+    static {
+        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.QQ.toString());
+        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.SINA.toString());
+        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.RENREN.toString());
+    }
 
 }

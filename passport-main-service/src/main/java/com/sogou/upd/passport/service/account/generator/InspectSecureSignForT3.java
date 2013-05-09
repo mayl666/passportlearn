@@ -78,13 +78,13 @@ public class InspectSecureSignForT3 {
      */
     public static String sign(SecureSignDO secureSignatureDO, String secret) throws Exception {
         StringBuilder baseBuilderString = new StringBuilder("");
-        baseBuilderString.append(secureSignatureDO.getTs()).append("\n");
-        baseBuilderString.append(secureSignatureDO.getNonce()).append("\n");
-        baseBuilderString.append(secureSignatureDO.getUri()).append("\n");
-        baseBuilderString.append(secureSignatureDO.getServerName()).append("\n");
+        baseBuilderString.append(secureSignatureDO.getTs());
+        baseBuilderString.append(secureSignatureDO.getNonce());
+        baseBuilderString.append(secureSignatureDO.getUri());
+        baseBuilderString.append(secureSignatureDO.getServerName());
         String baseString = baseBuilderString.toString();
         try {
-            String signature = Base64.encodeBase64URLSafeString(encryptHMAC(baseString, secret));
+            String signature = Base64.encodeBase64String(encryptHMAC(baseString, secret));
             return signature;
         } catch (Exception e) {
             logger.error("Mac Signature generate fail", e);
@@ -92,7 +92,7 @@ public class InspectSecureSignForT3 {
         }
     }
 
-    private static boolean verify(SecureSignDO secureSignatureDO, String secret, String signature) throws Exception {
+    public static boolean verify(SecureSignDO secureSignatureDO, String secret, String signature) throws Exception {
         try {
             String actual = sign(secureSignatureDO, secret);
             return actual.equals(signature);

@@ -15,17 +15,17 @@ public class SecureSignatureGeneratorTest extends BaseGeneratorTest {
 
     @Test
     public void testSign() {
-        long ts = 1367908585l;
-        String nonce = "tMwHF9bL";
+        long ts = 1368104463568l;
+        String nonce = "2888767791";
         SecureSignDO secureSignatureDO = new SecureSignDO();
         secureSignatureDO.setTs(ts);
         secureSignatureDO.setNonce(nonce);
-        secureSignatureDO.setUri("/v2/connect/users/getopenid?provider=sina&client_id=1001&passport_id=1666643531@sina.sohu.com");
-        secureSignatureDO.setServerName("127.0.0.1");
+        secureSignatureDO.setUri("/user/profile/get.do?friend_id=170000&user_id=170000");
+        secureSignatureDO.setServerName("220.181.125.43");
         try {
-            String signature = SecureSignatureGenerator.sign(secureSignatureDO, CLIENT_SECRET);
+            String signature = InspectSecureSignForT3.sign(secureSignatureDO, CLIENT_SECRET);
             System.out.println("signature:" + signature);
-            boolean verify = SecureSignatureGenerator.verify(secureSignatureDO, CLIENT_SECRET, signature);
+            boolean verify = InspectSecureSignForT3.verify(secureSignatureDO, CLIENT_SECRET, signature);
             Assert.assertTrue(verify);
         } catch (Exception e) {
             e.printStackTrace();

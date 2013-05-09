@@ -11,8 +11,8 @@ import javax.validation.constraints.Min;
 public class ConnectClientObtainParams {
     @NotBlank(message = "access_token不允许为空!")
     private String access_token;
-    @Min(value = 1, message = "client_id不允许为空!")
-    private int client_id;
+    @NotBlank(message = "client_id不允许为空!")
+    private String client_id;
     @NotBlank(message = "provider不允许为空!")
     private String provider;
 
@@ -24,11 +24,11 @@ public class ConnectClientObtainParams {
         this.access_token = access_token;
     }
 
-    public int getClient_id() {
+    public String getClient_id() {
         return client_id;
     }
 
-    public void setClient_id(int client_id) {
+    public void setClient_id(String client_id) {
         this.client_id = client_id;
     }
 

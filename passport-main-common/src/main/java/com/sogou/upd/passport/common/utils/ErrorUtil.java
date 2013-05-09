@@ -28,6 +28,8 @@ public class ErrorUtil {
     public static final String INVALID_ACCOUNT = "10009";
     //client_id不存在
     public static final String INVALID_CLIENTID = "10010";
+    //client_id格式不正确
+    public static final String ERR_FORMAT_CLIENTID = "10011";
     //***************************通用的错误代码end*********************************
 
     //***************************OAuth2授权错误码start******************************
@@ -56,7 +58,7 @@ public class ErrorUtil {
     //***************************OAuth2授权错误码end******************************
 
     //***************************account 服务的错误代码start*********************************
-    // 帐号已经注册
+    // 帐号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
     // 短信发送已达今天的最高上限20条
     public static final String ERR_CODE_ACCOUNT_CANTSENTSMS = "20202";
@@ -68,7 +70,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
     // 登录不成功，帐号或密码错误
     public static final String ERR_CODE_ACCOUNT_LOGINERROR = "20206";
-    // 短信验证码错误，输入的错误或者验证码过期
+    // 验证码不正确，或已过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 当日短信验证错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
@@ -218,6 +220,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_OPEN_ID, "openid错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
+        ERR_CODE_MSG_MAP.put(ERR_FORMAT_CLIENTID, "client_id格式不正确");
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
@@ -227,13 +230,13 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "username or password不匹配");
 
         // account
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信已经到20条上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGINERROR, "帐号或密码不正确");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码不正确");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码不正确，或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日短信验证错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PASSWDFORMAT, "请输入6-16位的数字、字母或字符");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_VERIFY_FIELDS, "昵称格式有误，只能包含中文、英文大小写,-,_,字母或空格");
