@@ -220,8 +220,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (Strings.isNullOrEmpty(passportId)) {
                 return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
-            Account account = accountService.resetPassword(passportId, password);
-            if (account == null) {
+
+            if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             // 异步更新accountToken信息
@@ -329,7 +329,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (!answer.equals(accountInfo.getAnswer())) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
             }
-            if (accountService.resetPassword(passportId, password) == null) {
+            if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             return Result.buildSuccess("重置密码成功！");
@@ -366,7 +366,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             }
 
-            if (accountService.resetPassword(passportId, password) == null) {
+            if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             //清除验证码的缓存
@@ -384,7 +384,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (!emailSenderService.checkEmailForResetPwd(passportId, clientId, token)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             }
-            if (accountService.resetPassword(passportId, password) == null) {
+            if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             // 删除邮件链接token缓存
