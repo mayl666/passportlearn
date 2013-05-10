@@ -44,10 +44,11 @@ public interface AccountSecureManager {
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理
      *
      * @param passportId
+     * @param clientId
      * @return
      * @throws Exception
      */
-    public Result queryAccountSecureInfo(String passportId) throws Exception;
+    public Result queryAccountSecureInfo(String passportId, int clientId) throws Exception;
 
     /**
      * 发送重置密码申请验证邮件
