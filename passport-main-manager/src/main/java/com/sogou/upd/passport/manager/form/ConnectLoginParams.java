@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.manager.form;
 
-import com.google.common.collect.Lists;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Min;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,9 +17,9 @@ import java.util.List;
 public class ConnectLoginParams {
 
     @NotBlank(message = "provider不能为空")
-    private String p; // provider
-    @Min(value = 1, message = "appid不能为空")
-    private int client_id; // 应用id
+    private String provider; // provider
+    @NotBlank(message = "client_id不允许为空!")
+    private String client_id; // 应用id
     @NotBlank(message = "ru不能为空")
     private String ru;  // 回调地址
 
@@ -29,17 +27,12 @@ public class ConnectLoginParams {
     private boolean force = true;   // 是否强制输入用户名、密码登录
     private String type;     // 应用类型
 
-    public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList(); // passport支持的第三方列表
-
-    static {
-        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.QQ.toString());
-        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.SINA.toString());
-        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.RENREN.toString());
-    }
-
     @AssertTrue(message = "不支持的第三方")
     private boolean isSupportProvider() {
-        if (this.p != null && !SUPPORT_PROVIDER_LIST.contains(this.p)) {
+        if (Strings.isNullOrEmpty(this.provider)) {
+            return true;
+        }
+        if (this.provider != null && !CommonConstant.SUPPORT_PROVIDER_LIST.contains(this.provider)) {
             return false;
         }
         return true;
@@ -47,25 +40,25 @@ public class ConnectLoginParams {
 
     @AssertTrue(message = "不支持的display")
     private boolean isSupportDisplay() {
-        if (display != null && !ConnectDisplay.isSupportDisplay(display, this.p)) {
+        if (display != null && !ConnectDisplay.isSupportDisplay(display, this.provider)) {
             return false;
         }
         return true;
     }
 
-    public String getP() {
-        return p;
+    public String getProvider() {
+        return provider;
     }
 
-    public void setP(String p) {
-        this.p = p;
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 
-    public int getClient_id() {
+    public String getClient_id() {
         return client_id;
     }
 
-    public void setClient_id(int client_id) {
+    public void setClient_id(String client_id) {
         this.client_id = client_id;
     }
 

@@ -14,7 +14,7 @@ public interface AccountTokenService {
      *
      * @return refreshToken不存在或过期则返回null
      */
-    public AccountToken verifyRefreshToken(String refreshToken, String instanceId) throws ServiceException;
+    public AccountToken verifyRefreshToken(String refreshToken, int clientId, String instanceId) throws ServiceException;
 
     /**
      * 验证access_token的合法性

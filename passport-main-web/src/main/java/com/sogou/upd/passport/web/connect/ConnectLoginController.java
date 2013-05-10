@@ -66,17 +66,29 @@ public class ConnectLoginController extends BaseConnectController {
     public ModelAndView authorize(HttpServletRequest req, HttpServletResponse res,
                                   ConnectLoginParams connectLoginParams) {
 
-        int provider = AccountTypeEnum.getProvider(connectLoginParams.getP());
-        int clientId = connectLoginParams.getClient_id();
+        ModelAndView defaultMV = new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
+        int provider = AccountTypeEnum.getProvider(connectLoginParams.getProvider());
+        //验证client_id
+        int clientId;
+        try {
+            clientId = Integer.parseInt(connectLoginParams.getClient_id());
+        } catch (NumberFormatException e) {
+            return defaultMV;
+        }
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            return defaultMV;
+        }
+
         // 校验参数
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
+            return defaultMV;
         }
         // 获取connect配置
         ConnectConfig connectConfig = configureManager.obtainConnectConfig(clientId, provider);
         if (connectConfig == null) {
-            return new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
+            return defaultMV;
         }
 
         // 避免重复提交的唯一码
@@ -86,7 +98,7 @@ public class ConnectLoginController extends BaseConnectController {
             writeOAuthStateCookie(res, uuid, provider);
             return new ModelAndView(new RedirectView(oauthRequest.getLocationUri()));
         } catch (OAuthProblemException e) {
-            return new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
+            return defaultMV;
         }
     }
 

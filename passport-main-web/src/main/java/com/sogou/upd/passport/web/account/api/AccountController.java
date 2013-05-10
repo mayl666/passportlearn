@@ -34,137 +34,146 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/v2")
 public class AccountController extends BaseController {
 
-  private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
-  @Autowired
-  private AccountSecureManager accountSecureManager;
-  @Autowired
-  private AccountRegManager accountRegManager;
-  @Autowired
-  private AccountManager accountManager;
-  @Autowired
-  private ConfigureManager configureManager;
+    @Autowired
+    private AccountSecureManager accountSecureManager;
+    @Autowired
+    private AccountRegManager accountRegManager;
+    @Autowired
+    private AccountManager accountManager;
+    @Autowired
+    private ConfigureManager configureManager;
 
-  /**
-   * 手机账号获取，重发手机验证码接口
-   *
-   * @param reqParams 传入的参数
-   */
-  @RequestMapping(value = "/sendmobilecode", method = RequestMethod.GET)
-  @ResponseBody
-  public Object sendMobileCode(MoblieCodeParams reqParams)
-      throws Exception {
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(reqParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-    }
-    //验证client_id
-    String client_id=reqParams.getClient_id() ;
-    if(!StringUtil.checkIsDigit(client_id)){
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
-    }
+    /**
+     * 手机账号获取，重发手机验证码接口
+     *
+     * @param reqParams 传入的参数
+     */
+    @RequestMapping(value = "/sendmobilecode", method = RequestMethod.GET)
+    @ResponseBody
+    public Object sendMobileCode(MoblieCodeParams reqParams)
+            throws Exception {
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+        //验证client_id
+        int clientId;
+        try {
+            clientId = Integer.parseInt(reqParams.getClient_id());
+        } catch (NumberFormatException e) {
+            return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
+        }
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+        }
 
-    String mobile = reqParams.getMobile();
-    int clientId = Integer.parseInt(client_id);
+        String mobile = reqParams.getMobile();
+        Result result = accountSecureManager.sendMobileCode(mobile, clientId);
+        return result;
 
-    //检查client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
-
-    Result result = accountSecureManager.sendMobileCode(mobile, clientId);
-    return result;
-
-  }
-
-  /**
-   * 手机账号正式注册调用
-   */
-  @RequestMapping(value = "/mobile/reg", method = RequestMethod.POST)
-  @ResponseBody
-  public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
-    // 请求参数校验，必填参数是否正确，手机号码格式是否正确
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(regParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-    }
-    //验证client_id
-    String client_id=regParams.getClient_id() ;
-    if(!StringUtil.checkIsDigit(client_id)){
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
     }
 
-    String ip = getIp(request);
-    String mobile = regParams.getMobile();
-    try {
-      if (accountManager.isAccountExists(mobile)) {
-        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-      }
-    } catch (Exception e) {
-      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+    /**
+     * 手机账号正式注册调用
+     */
+    @RequestMapping(value = "/mobile/reg", method = RequestMethod.POST)
+    @ResponseBody
+    public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
+        // 请求参数校验，必填参数是否正确，手机号码格式是否正确
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(regParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+        int clientId;
+        try {
+            clientId = Integer.parseInt(regParams.getClient_id());
+        } catch (NumberFormatException e) {
+            return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
+        }
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+        }
+        String ip = getIp(request);
+        String mobile = regParams.getMobile();
+        try {
+            if (accountManager.isAccountExists(mobile)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            }
+        } catch (Exception e) {
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+
+        Result result = accountRegManager.mobileRegister(regParams, ip);
+        return result;
     }
 
-    Result result = accountRegManager.mobileRegister(regParams, ip);
-    return result;
-  }
+    /**
+     * 找回用户密码
+     */
+    @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
+    @ResponseBody
+    public Object findPassword(MoblieCodeParams reqParams)
+            throws Exception {
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+        int clientId;
+        try {
+            clientId = Integer.parseInt(reqParams.getClient_id());
+        } catch (NumberFormatException e) {
+            return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
+        }
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+        }
 
-  /**
-   * 找回用户密码
-   */
-  @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-  @ResponseBody
-  public Object findPassword(MoblieCodeParams reqParams)
-      throws Exception {
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(reqParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-    }
-    //验证client_id
-    String client_id=reqParams.getClient_id() ;
-    if(!StringUtil.checkIsDigit(client_id)){
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
-    }
-
-    int clientId = Integer.parseInt(client_id);
-    //检查client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
-
-    String mobile = reqParams.getMobile();
-    try {
-      if (!accountManager.isAccountExists(mobile)) {
-        return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
-      }
-    } catch (Exception e) {
-      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-    }
-    Result result = accountSecureManager.findPassword(reqParams.getMobile(), clientId);
-    return result;
-  }
-
-  /**
-   * 重置密码
-   */
-  @RequestMapping(value = "/mobile/resetpwd", method = RequestMethod.POST)
-  @ResponseBody
-  public Object resetPassword(MobileModifyPwdParams regParams) throws Exception {
-
-    String validateResult = ControllerHelper.validateParams(regParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        String mobile = reqParams.getMobile();
+        try {
+            if (!accountManager.isAccountExists(mobile)) {
+                return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+            }
+        } catch (Exception e) {
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        Result result = accountSecureManager.findPassword(reqParams.getMobile(), clientId);
+        return result;
     }
 
-    //验证client_id
-    String client_id=regParams.getClient_id() ;
-    if(!StringUtil.checkIsDigit(client_id)){
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+    /**
+     * 重置密码
+     */
+    @RequestMapping(value = "/mobile/resetpwd", method = RequestMethod.POST)
+    @ResponseBody
+    public Object resetPassword(MobileModifyPwdParams regParams) throws Exception {
+
+        String validateResult = ControllerHelper.validateParams(regParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+
+        //验证client_id
+        int clientId;
+        try {
+            clientId = Integer.parseInt(regParams.getClient_id());
+        } catch (NumberFormatException e) {
+            return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
+        }
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+        }
+
+        Result result = accountSecureManager.resetPassword(regParams);
+        return result;
     }
-    Result result = accountSecureManager.resetPassword(regParams);
-    return result;
-  }
 
 }

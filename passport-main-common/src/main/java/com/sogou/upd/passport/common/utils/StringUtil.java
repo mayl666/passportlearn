@@ -18,15 +18,6 @@ public class StringUtil {
 
     static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
 
-    public static boolean checkIsDigit(String str){
-      if(str.matches("[0-9]*"))
-      {
-        return true;
-      }else{
-        return false;
-      }
-    }
-
     public static boolean isEmpty(String str) {
         return StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
     }

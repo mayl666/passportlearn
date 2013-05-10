@@ -34,7 +34,7 @@ public class AccountTokenServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyRefreshToken() {
-        AccountToken accountAuth = accountAuthService.verifyRefreshToken(REFRESH_TOKEN, INSTANCE_ID);
+        AccountToken accountAuth = accountAuthService.verifyRefreshToken(REFRESH_TOKEN, CLIENT_ID_INT, INSTANCE_ID);
         if (accountAuth != null) {
             System.out.println("合法...");
         } else {
