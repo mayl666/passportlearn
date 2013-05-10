@@ -15,9 +15,33 @@ import org.springframework.dao.DataAccessException;
 public interface AppConfigDAO {
 
     /**
+     * 对应数据库表名称
+     */
+    String TABLE_NAME = " app_config ";
+
+    /**
+     * 所有字段列表
+     */
+    String ALL_FIELD = " id, client_id, sms_text, access_token_expiresin, refresh_token_expiresin, server_secret, client_secret, create_time ";
+
+    /**
+     * 值列表
+     */
+    String VALUE_FIELD = " :appConfig.id, :appConfig.clientId, :appConfig.smsText, :appConfig.accessTokenExpiresin, :appConfig.refreshTokenExpiresin, :appConfig.serverSecret, :appConfig.clientSecret, :appConfig.createTime ";
+
+    /**
+     * 修改字段列表
+     */
+    String UPDATE_FIELD = " client_id = :appConfig.clientId, sms_text = :appConfig.smsText, access_token_expiresin = :appConfig.accessTokenExpiresin, refresh_token_expiresin = :appConfig.refreshTokenExpiresin, server_secret = :appConfig.serverSecret, client_secret = :appConfig.clientSecret, create_time = :appConfig.createTime ";
+
+    /**
      * 根据clientId获取AppConfig对象
      */
-    @SQL("select * from app_config where client_id=:client_id")
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where client_id=:client_id")
     public AppConfig getAppConfigByClientId(@SQLParam("client_id") int client_id) throws DataAccessException;
 
 }

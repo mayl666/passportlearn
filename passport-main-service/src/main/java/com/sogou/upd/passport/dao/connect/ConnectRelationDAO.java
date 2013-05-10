@@ -20,6 +20,26 @@ import java.util.List;
 public interface ConnectRelationDAO {
 
     /**
+     * 对应数据库表名称
+     */
+    String TABLE_NAME = " connect_relation ";
+
+    /**
+     * 所有字段列表
+     */
+    String ALL_FIELD = " id, openid, provider, passport_id, app_key ";
+
+    /**
+     * 值列表
+     */
+    String VALUE_FIELD = " :connectRelation.id, :connectRelation.openid, :connectRelation.provider, :connectRelation.passportId, :connectRelation.appKey ";
+
+    /**
+     * 修改字段列表
+     */
+    String UPDATE_FIELD = " openid = :connectRelation.openid, provider = :connectRelation.provider, passport_id = :connectRelation.passportId, app_key = :connectRelation.appKey ";
+
+    /**
      * 根据openid和provider获取对应的用户
      *
      * @param openid
@@ -27,15 +47,21 @@ public interface ConnectRelationDAO {
      * @return
      * @throws DataAccessException
      */
-    @SQL("select * from connect_relation where openid=:openid and provider=:provider")
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where openid=:openid and provider=:provider")
     public List<ConnectRelation> listConnectRelation(@SQLParam("openid") String openid, @SQLParam("provider") int provider)
             throws DataAccessException;
 
     /**
      * 插入一条新记录
      */
-    @SQL("insert into connect_relation(openid,provider,passport_id,app_key) values(:openid,:a.provider,:a.passportId,:a.appKey)")
-    public int insertConnectRelation(@SQLParam("openid") String openid, @SQLParam("a") ConnectRelation connectRelation)
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(openid,provider,passport_id,app_key) values(:openid,:connectRelation.provider,:connectRelation.passportId,:connectRelation.appKey)")
+    public int insertConnectRelation(@SQLParam("openid") String openid, @SQLParam("connectRelation") ConnectRelation connectRelation)
             throws DataAccessException;
 
     /**
@@ -45,6 +71,8 @@ public interface ConnectRelationDAO {
      * @return
      * @throws DataAccessException
      */
-    @SQL("delete from connect_relation where openid=:openid and provider=:provider")
+    @SQL("delete from " +
+            TABLE_NAME +
+            " where openid=:openid and provider=:provider")
     public int deleteConnectRelation(@SQLParam("openid") String openid, @SQLParam("provider") int provider) throws DataAccessException;
 }
