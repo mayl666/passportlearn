@@ -236,6 +236,24 @@ public class AccountServiceImpl implements AccountService {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPasswd(passwdSign);
                 redisUtils.set(cacheKey, account);
+
+                // 设置密码修改次数限制
+                String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
+                if (redisUtils.checkKeyIsExist(resetCacheKey)) {
+                    // cacheKey存在，则检查resetTime
+                    Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(resetCacheKey);
+                    Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"), DateUtil.DATE_FMT_3);
+                    long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
+                    if (diff < DateAndNumTimesConstant.RESETNUM_LIMITED && diff >= 0) {
+                        // 是当日键值，递增失败次数
+                        redisUtils.hIncrBy(resetCacheKey, "resetNum");
+                        return true;
+                    }
+                }
+                redisUtils.hPut(resetCacheKey, "resetNum", "1");
+                redisUtils.hPut(resetCacheKey, "resetTime", DateUtil.format(new Date(), DateUtil.DATE_FMT_2));
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+
                 return true;
             }
         } catch (Exception e) {
