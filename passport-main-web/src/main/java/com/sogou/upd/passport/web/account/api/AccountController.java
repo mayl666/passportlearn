@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
@@ -59,6 +60,11 @@ public class AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
+        //手机号校验
+      String mobile = reqParams.getMobile();
+        if (!PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+          return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
+        }
         //验证client_id
         int clientId;
         try {
@@ -71,7 +77,6 @@ public class AccountController extends BaseController {
             return Result.buildError(ErrorUtil.INVALID_CLIENTID);
         }
 
-        String mobile = reqParams.getMobile();
         Result result = accountSecureManager.sendMobileCode(mobile, clientId);
         return result;
 

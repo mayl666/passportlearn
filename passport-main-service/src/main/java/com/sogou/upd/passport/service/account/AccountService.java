@@ -34,7 +34,15 @@ public interface AccountService {
    * 根据passportId获取Account
    */
   public Account queryAccountByPassportId(String passportId) throws ServiceException;
-
+  /**
+   * 检测密码修改次数是否超出每天限制
+   *
+   * @param passportId
+   * @param clientId
+   * @return 不超出返回true，超出返回false
+   * @throws ServiceException
+   */
+  public boolean checkResetPwdLimited(String passportId, int clientId) throws ServiceException;
   /**
    * 验证账号的有效性，是否为正常用户
    *
