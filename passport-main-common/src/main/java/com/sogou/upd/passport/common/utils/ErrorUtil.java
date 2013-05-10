@@ -94,6 +94,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED = "20219";
     //激活链接已失效
     public static final String ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED = "20220";
+    //注册验证码失效
+    public static final String ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED = "20221";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -247,6 +249,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "注册验证码验证失效");
+
+
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");

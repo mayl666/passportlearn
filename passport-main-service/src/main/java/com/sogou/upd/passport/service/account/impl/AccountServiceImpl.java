@@ -10,7 +10,9 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CaptchaUtils;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -297,14 +299,14 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public Map<String,Object> getCaptchaCode(String code)  throws ServiceException{
+  public Map<String,Object> getCaptchaCode(String token)  throws ServiceException{
     Map<String,Object> map= null;
     try{
 
-      if(Strings.isNullOrEmpty(code)){
-        code=UUID.randomUUID().toString().replaceAll("-","");
+      if(Strings.isNullOrEmpty(token)){
+        token=UUID.randomUUID().toString().replaceAll("-","");
       }
-      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +code;
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +token;
 
       //生成验证码
       map=captchaUtils.getRandcode();
@@ -312,10 +314,11 @@ public class AccountServiceImpl implements AccountService {
       if(map!=null && map.size()>0){
 
         String captchaCode= (String) map.get("captcha");
-        map.put("code",code);
+        map.put("token",token);
         map.put("captcha",map.get("captcha"));
 
         redisUtils.set(cacheKey,captchaCode);
+        redisUtils.expire(cacheKey,DateAndNumTimesConstant.CAPTCHA_INTERVAL);
       }else {
         map=Maps.newHashMap();
       }
@@ -323,7 +326,26 @@ public class AccountServiceImpl implements AccountService {
     }catch (Exception e){
       throw new ServiceException(e);
     }
-    return map;  //To change body of implemented methods use File | Settings | File Templates.
+    return map;
+  }
+
+  @Override
+  public Result checkCaptchaCodeIsVaild(String token,String captchaCode) throws ServiceException{
+    Result result=null;
+    try {
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +token;
+      if(redisUtils.checkKeyIsExist(cacheKey)){
+        String captchaCodeCache=redisUtils.get(cacheKey);
+        if(!captchaCodeCache.equalsIgnoreCase(captchaCode)){
+          result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+        }
+      }else {
+        result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+      }
+    }catch (Exception e){
+      throw new ServiceException(e);
+    }
+    return result;
   }
 
   /*

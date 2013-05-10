@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 
@@ -88,5 +89,11 @@ public interface AccountService {
    *获取验证码
    */
   public Map<String,Object> getCaptchaCode(String code);
+  /**
+   * 校验验证码是否匹配
+   *
+   * @return 匹配结果
+   */
+  public Result checkCaptchaCodeIsVaild(String token,String captchaCode);
 
 }

@@ -146,7 +146,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                     if (valid) {
                         if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
                             //生成随机数
-                            String randomCode = RandomStringUtils.randomNumeric(6);
+                            String randomCode = RandomStringUtils.randomNumeric(5);
                             //读取短信内容
                             String smsText = appConfigService.querySmsText(clientId, randomCode);
                             if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
