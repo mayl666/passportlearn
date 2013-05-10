@@ -217,6 +217,10 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
 
+            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+            }
+
             if (!accountService.resetPassword(passportId, password)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
@@ -232,7 +236,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result queryAccountSecureInfo(String passportId) throws Exception {
+    public Result queryAccountSecureInfo(String passportId, int clientId) throws Exception {
         Map<String, Object> mapResult = Maps.newHashMap();
 
         mapResult.put("secMobile", "");
@@ -241,7 +245,12 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
         try {
             Account account = accountService.queryAccountByPassportId(passportId);
-            if (account != null) {
+            if (account == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            } else {
+                if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+                }
                 AccountInfo accountInfo;
                 if (!Strings.isNullOrEmpty(account.getMobile())) {
                     mapResult.put("secMobile", account.getMobile().substring(0, 3).concat("*****").
@@ -319,6 +328,9 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result resetPasswordByQues(String passportId, int clientId, String password,
                                       String answer) throws Exception {
         try {
+            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+            }
             if (Strings.isNullOrEmpty(answer)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
             }
@@ -346,6 +358,9 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result resetPasswordByMobile(String passportId, int clientId, String password,
                                         String smsCode) throws Exception {
         try {
+            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+            }
             if (Strings.isNullOrEmpty(smsCode)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
             }
@@ -384,6 +399,9 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     @Override
     public Result resetPasswordByEmail(String passportId, int clientId, String password, String token) throws Exception {
         try {
+            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+            }
             if (!emailSenderService.checkEmailForResetPwd(passportId, clientId, token)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             }

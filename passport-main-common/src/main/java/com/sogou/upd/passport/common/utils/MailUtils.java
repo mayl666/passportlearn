@@ -27,6 +27,9 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class MailUtils {
+
+    public static final long MAX_EMAIL_COUNT_ONEDAY = 10; // 每天发送邮件次数
+
     private static Logger logger = LoggerFactory.getLogger(MailUtils.class);
     private static final String FROM_ADDRESS = "postmaster@sogou-upd-passport.sendcloud.org";
     private static final String FROM_NAME = "搜狗通行证";

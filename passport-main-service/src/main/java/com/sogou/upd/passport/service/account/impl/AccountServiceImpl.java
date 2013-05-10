@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CaptchaUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -43,8 +44,9 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
     private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
     private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
+    private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
 
-    private static final String PASSPORT_ACTIVE_EMAIL_URL="http://account.sogou.com/web/activemail?";
+    private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
 
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
@@ -191,6 +193,34 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    @Override
+    public boolean checkResetPwdLimited(String passportId, int clientId) throws ServiceException {
+        try {
+            Account account = verifyAccountVaild(passportId);
+            if (account == null) {
+                return false;
+            }
+            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" + clientId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(cacheKey);
+                Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"),
+                                           DateUtil.DATE_FMT_2);
+                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
+                if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
+                    // 是当日键值，验证是否超过次数
+                    int checkNum = Integer.parseInt(mapCacheResetNumResult.get("resetNum"));
+                    if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
+                        // 当日密码修改次数不超过上限
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
