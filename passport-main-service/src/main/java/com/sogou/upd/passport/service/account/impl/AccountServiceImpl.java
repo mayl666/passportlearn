@@ -196,13 +196,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean checkResetPwdLimited(String passportId, int clientId) throws ServiceException {
+    public boolean checkResetPwdLimited(String passportId) throws ServiceException {
         try {
             Account account = verifyAccountVaild(passportId);
             if (account == null) {
                 return false;
             }
-            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" + clientId;
+            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(cacheKey);
                 Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"),

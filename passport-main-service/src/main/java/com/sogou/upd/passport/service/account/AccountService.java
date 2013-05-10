@@ -61,7 +61,7 @@ public interface AccountService {
      * @return 不超出返回true，超出返回false
      * @throws ServiceException
      */
-    public boolean checkResetPwdLimited(String passportId, int clientId) throws ServiceException;
+    public boolean checkResetPwdLimited(String passportId) throws ServiceException;
 
     /**
      * 重置密码
