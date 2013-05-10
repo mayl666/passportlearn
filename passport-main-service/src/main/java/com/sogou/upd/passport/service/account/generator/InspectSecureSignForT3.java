@@ -13,9 +13,13 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 校验http访问令牌传输安全性，提供给应用使用
@@ -27,8 +31,12 @@ import java.util.TreeSet;
 public class InspectSecureSignForT3 {
 
     private static final String CLIENT_SECRET = "40db9c5a312a145e8ee8181f4de8957334c5800a"; //客户端密钥
-
-    public static final String KEY_MAC = "HmacSHA1";
+    private static final String KEY_MAC = "HmacSHA1";
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String AUTH_SCHEME = "MAC";
+    private static final Pattern OAUTH_HEADER = Pattern.compile("\\s*(\\w*)\\s+(.*)");
+    private static final Pattern NVP = Pattern.compile("(\\S*)\\s*\\=\\s*\"([^\"]*)\"");
+    private static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
 
     private static Logger logger = LoggerFactory.getLogger(InspectSecureSignForT3.class);
 
@@ -102,22 +110,6 @@ public class InspectSecureSignForT3 {
         }
     }
 
-    private static Map<String, String> parseMacHeader(HttpServletRequest request) {
-        String macHeader = request.getHeader("MAC");
-        Map<String, String> headerMap = Maps.newHashMap();
-        if (!Strings.isNullOrEmpty(macHeader)) {
-            String[] headerArray = macHeader.split(",");
-            for (String header : headerArray) {
-                String[] result = header.split("=");
-                if (result.length != 2) {
-                    continue;
-                }
-                headerMap.put(result[0], result[1]);
-            }
-        }
-        return headerMap;
-    }
-
     private static String getRequests(HttpServletRequest request) {
         StringBuilder params = new StringBuilder();
         Map parameterMap = request.getParameterMap();
@@ -143,12 +135,31 @@ public class InspectSecureSignForT3 {
      */
     private static byte[] encryptHMAC(String data, String key) throws Exception {
 
-        SecretKey secretKey = new SecretKeySpec(key.getBytes(), KEY_MAC);
+        SecretKey secretKey = new SecretKeySpec(key.getBytes(DEFAULT_CONTENT_CHARSET), KEY_MAC);
         Mac mac = Mac.getInstance(secretKey.getAlgorithm());
         mac.init(secretKey);
 
-        return mac.doFinal(data.getBytes());
+        return mac.doFinal(data.getBytes(DEFAULT_CONTENT_CHARSET));
 
+    }
+
+    public static Map<String, String> parseMacHeader(HttpServletRequest request) throws UnsupportedEncodingException {
+        String header = request.getHeader(AUTHORIZATION);
+        Map<String, String> headerValues = Maps.newHashMap();
+        if (!Strings.isNullOrEmpty(header)) {
+            Matcher m = OAUTH_HEADER.matcher(header);
+            if (m.matches()) {
+                if (AUTH_SCHEME.equalsIgnoreCase(m.group(1))) {
+                    for (String nvp : m.group(2).split("\\s*,\\s*")) {
+                        int index = nvp.indexOf("=");
+                        String name = nvp.substring(0, index);
+                        String value = nvp.substring(index + 1);
+                        headerValues.put(name, value);
+                    }
+                }
+            }
+        }
+        return headerValues;
     }
 
 }

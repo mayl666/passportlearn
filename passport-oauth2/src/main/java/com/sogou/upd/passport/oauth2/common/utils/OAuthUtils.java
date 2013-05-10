@@ -1,11 +1,10 @@
 package com.sogou.upd.passport.oauth2.common.utils;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import org.apache.commons.collections.CollectionUtils;
@@ -13,17 +12,36 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OAuthUtils {
 
     private static Logger log = LoggerFactory.getLogger(OAuthUtils.class);
+
+    private static final String PARAMETER_SEPARATOR = "&";
+    private static final String NAME_VALUE_SEPARATOR = "=";
+
+    public static final String AUTH_SCHEME = OAuth.OAUTH_HEADER_NAME;
+
+    private static final Pattern OAUTH_HEADER = Pattern.compile("\\s*(\\w*)\\s+(.*)");
+    private static final Pattern NVP = Pattern.compile("(\\S*)\\s*\\=\\s*\"([^\"]*)\"");
+
+    public static final String MULTIPART = "multipart/";
+
+    private static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
 
     /**
      * 格式化 into <code>application/x-www-form-urlencoded</code> String
@@ -44,30 +62,14 @@ public class OAuthUtils {
                 final String encodedName = Coder.encode(parameter.getKey(), charset);
                 final String encodedValue = value != null ? Coder.encode(value, charset) : "";
                 if (result.length() > 0) {
-                    result.append(CommonConstant.PARAMETER_SEPARATOR);
+                    result.append(PARAMETER_SEPARATOR);
                 }
                 result.append(encodedName);
-                result.append(CommonConstant.NAME_VALUE_SEPARATOR);
+                result.append(NAME_VALUE_SEPARATOR);
                 result.append(encodedValue);
             }
         }
         return result.toString();
-    }
-
-    public static String encodeOAuthHeader(Map<String, Object> entries) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(OAuth.OAUTH_HEADER_NAME).append(" ");
-        for (Map.Entry<String, Object> entry : entries.entrySet()) {
-            String value = entry.getValue() == null ? null : String.valueOf(entry.getValue());
-            if (!StringUtils.isEmpty(entry.getKey()) && !StringUtils.isEmpty(value)) {
-                sb.append(entry.getKey());
-                sb.append("=\"");
-                sb.append(value);
-                sb.append("\",");
-            }
-        }
-
-        return sb.substring(0, sb.length() - 1);
     }
 
     public static String toString(final InputStream is, final String defaultCharset)
@@ -78,7 +80,7 @@ public class OAuthUtils {
 
         String charset = defaultCharset;
         if (charset == null) {
-            charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
+            charset = DEFAULT_CONTENT_CHARSET;
         }
         Reader reader = new InputStreamReader(is, charset);
         StringBuilder sb = new StringBuilder();
@@ -127,6 +129,21 @@ public class OAuthUtils {
             }
         }
 
+        return false;
+    }
+
+    public static boolean isMultipart(HttpServletRequest request) {
+
+        if (!"post".equals(request.getMethod().toLowerCase())) {
+            return false;
+        }
+        String contentType = request.getContentType();
+        if (contentType == null) {
+            return false;
+        }
+        if (contentType.toLowerCase().startsWith(MULTIPART)) {
+            return true;
+        }
         return false;
     }
 
@@ -226,6 +243,84 @@ public class OAuthUtils {
         } catch (InvocationTargetException e) {
             log.error("Instantiate Class With Parameters InvocationTargetException! Class:" + clazz.getName(), e);
             throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+    }
+
+
+    /*====================  Authorize Header Handler  ========================*/
+    public static String getAuthHeaderField(String authHeader) {
+
+        if (authHeader != null) {
+            Matcher m = OAUTH_HEADER.matcher(authHeader);
+            if (m.matches()) {
+                if (AUTH_SCHEME.equalsIgnoreCase(m.group(1))) {
+                    return m.group(2);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Map<String, String> decodeOAuthHeader(String header) {
+        Map<String, String> headerValues = Maps.newHashMap();
+        if (header != null) {
+            Matcher m = OAUTH_HEADER.matcher(header);
+            if (m.matches()) {
+                if (AUTH_SCHEME.equalsIgnoreCase(m.group(1))) {
+                    for (String nvp : m.group(2).split("\\s*,\\s*")) {
+                        m = NVP.matcher(nvp);
+                        if (m.matches()) {
+                            String name = decodePercent(m.group(1));
+                            String value = decodePercent(m.group(2));
+                            headerValues.put(name, value);
+                        }
+                    }
+                }
+            }
+        }
+        return headerValues;
+    }
+
+    /**
+     * Construct a WWW-Authenticate header
+     */
+    public static String encodeOAuthHeader(Map<String, Object> entries) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(OAuth.OAUTH_HEADER_NAME).append(" ");
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            String value = entry.getValue() == null ? null : String.valueOf(entry.getValue());
+            if (!Strings.isNullOrEmpty(entry.getKey()) && !Strings.isNullOrEmpty(value)) {
+                sb.append(entry.getKey());
+                sb.append("=\"");
+                sb.append(value);
+                sb.append("\",");
+            }
+        }
+
+        return sb.substring(0, sb.length() - 1);
+    }
+
+    /**
+     * Construct an Authorization Bearer header
+     */
+    public static String encodeAuthorizationBearerHeader(Map<String, Object> entries) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(OAuth.OAUTH_HEADER_NAME).append(" ");
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            String value = entry.getValue() == null ? null : String.valueOf(entry.getValue());
+            if (!Strings.isNullOrEmpty(entry.getKey()) && !Strings.isNullOrEmpty(value)) {
+                sb.append(value);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    public static String decodePercent(String s) {
+        try {
+            return URLDecoder.decode(s, DEFAULT_CONTENT_CHARSET);
+        } catch (java.io.UnsupportedEncodingException wow) {
+            throw new RuntimeException(wow.getMessage(), wow);
         }
     }
 

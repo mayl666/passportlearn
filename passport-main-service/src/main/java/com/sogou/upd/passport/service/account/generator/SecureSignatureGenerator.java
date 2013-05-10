@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account.generator;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.service.account.dataobject.SecureSignDO;
 import org.apache.commons.collections.MapUtils;
@@ -70,7 +71,7 @@ public class SecureSignatureGenerator {
         baseBuilderString.append(secureSignatureDO.getServerName());
         String baseString = baseBuilderString.toString();
         try {
-            String signature = Coder.encryptBASE64(Coder.encryptHMAC(baseString, secret));
+            String signature = Coder.encryptBASE64(Coder.encryptHMAC(baseString, secret.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
             return signature;
         } catch (Exception e) {
             logger.error("Mac Signature generate fail", e);
