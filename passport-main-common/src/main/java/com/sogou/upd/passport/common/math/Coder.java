@@ -135,13 +135,13 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static byte[] encryptHMAC(String data, String key) throws Exception {
+    public static byte[] encryptHMAC(String data, byte[] key) throws Exception {
 
-        SecretKey secretKey = new SecretKeySpec(key.getBytes(), KEY_MAC);
+        SecretKey secretKey = new SecretKeySpec(key, KEY_MAC);
         Mac mac = Mac.getInstance(secretKey.getAlgorithm());
         mac.init(secretKey);
 
-        return mac.doFinal(data.getBytes());
+        return mac.doFinal(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
 
     }
 
