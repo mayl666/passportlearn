@@ -34,12 +34,12 @@ public class CaptchaController{
 
   @RequestMapping(value = "/captcha", method = RequestMethod.GET)
   @ResponseBody
-  public Object obtainCaptcha(@RequestParam(defaultValue = "") String code,
+  public Object obtainCaptcha(@RequestParam(defaultValue = "") String token,
                               Model model ,
                               HttpServletResponse response) throws Exception {
 
     //生成验证码
-    Map<String,Object> map=accountRegManager.getCaptchaCode(code);
+    Map<String,Object> map=accountRegManager.getCaptchaCode(token);
     if (map!=null && map.size()>0) {
       ImageIO.write((BufferedImage)map.get("image"), "JPEG", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
 
@@ -48,7 +48,6 @@ public class CaptchaController{
       response.setHeader("Cache-Control", "no-cache");
       response.setDateHeader("Expire", 0);
 
-      model.addAttribute("code",map.get("code"));
     }
     return null;
   }

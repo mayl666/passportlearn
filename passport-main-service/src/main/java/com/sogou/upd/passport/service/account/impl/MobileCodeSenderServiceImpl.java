@@ -113,7 +113,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 }
             }
             //生成随机数
-            String randomCode = RandomStringUtils.randomNumeric(6);
+            String randomCode = RandomStringUtils.randomNumeric(5);
             //写入缓存
             cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
             //初始化缓存映射

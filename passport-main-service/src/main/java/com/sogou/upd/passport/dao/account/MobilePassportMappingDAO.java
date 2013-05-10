@@ -16,13 +16,35 @@ import org.springframework.dao.DataAccessException;
 public interface MobilePassportMappingDAO {
 
     /**
+     * 对应数据库表名称
+     */
+    String TABLE_NAME = " mobile_passportid_mapping ";
+
+    /**
+     * 所有字段列表
+     */
+    String ALL_FIELD = " id, mobile, passport_id, update_time ";
+
+    /**
+     * 值列表
+     */
+    String VALUE_FIELD = " :mobilePassportidMapping.id, :mobilePassportidMapping.mobile, :mobilePassportidMapping.passportId, :mobilePassportidMapping.updateTime ";
+
+    /**
+     * 修改字段列表
+     */
+    String UPDATE_FIELD = " mobile = :mobilePassportidMapping.mobile, passport_id = :mobilePassportidMapping.passportId, update_time = :mobilePassportidMapping.updateTime ";
+
+    /**
      * 根据手机号码获取passportId
      *
      * @param mobile
      * @return 获取不到则抛出异常
      * @throws DataAccessException
      */
-    @SQL("select passport_id from mobile_passportid_mapping where mobile=:mobile")
+    @SQL("select passport_id from " +
+            TABLE_NAME +
+            " where mobile=:mobile")
     public String getPassportIdByMobile(@SQLParam("mobile") String mobile) throws DataAccessException;
 
     /**
@@ -33,7 +55,9 @@ public interface MobilePassportMappingDAO {
      * @return
      * @throws DataAccessException
      */
-    @SQL("insert into mobile_passportid_mapping(mobile, passport_id) values (:mobile, :passport_id)")
+    @SQL("insert into " +
+            "mobile_passportid" +
+            "_mapping(mobile, passport_id) values (:mobile, :passport_id)")
     public int insertMobilePassportMapping(@SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
@@ -45,7 +69,9 @@ public interface MobilePassportMappingDAO {
      * @return
      * @throws DataAccessException
      */
-    @SQL("update mobile_passportid_mapping set passport_id=:passport_id where mobile=:mobile")
+    @SQL("update " +
+            TABLE_NAME +
+            " set passport_id=:passport_id where mobile=:mobile")
     public int updateMobilePassportMapping(@SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
@@ -56,6 +82,8 @@ public interface MobilePassportMappingDAO {
      * @return
      * @throws DataAccessException
      */
-    @SQL("delete from mobile_passportid_mapping where mobile=:mobile")
+    @SQL("delete from " +
+            TABLE_NAME +
+            " where mobile=:mobile")
     public int deleteMobilePassportMapping(@SQLParam("mobile") String mobile) throws DataAccessException;
 }

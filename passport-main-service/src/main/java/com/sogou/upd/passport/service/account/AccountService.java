@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 
@@ -33,7 +34,14 @@ public interface AccountService {
    * 根据passportId获取Account
    */
   public Account queryAccountByPassportId(String passportId) throws ServiceException;
-
+  /**
+   * 检测密码修改次数是否超出每天限制
+   *
+   * @param passportId
+   * @return 不超出返回true，超出返回false
+   * @throws ServiceException
+   */
+  public boolean checkResetPwdLimited(String passportId) throws ServiceException;
   /**
    * 验证账号的有效性，是否为正常用户
    *
@@ -88,5 +96,11 @@ public interface AccountService {
    *获取验证码
    */
   public Map<String,Object> getCaptchaCode(String code);
+  /**
+   * 校验验证码是否匹配
+   *
+   * @return 匹配结果
+   */
+  public Result checkCaptchaCodeIsVaild(String token,String captchaCode);
 
 }

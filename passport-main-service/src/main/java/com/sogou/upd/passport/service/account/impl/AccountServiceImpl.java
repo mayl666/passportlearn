@@ -10,7 +10,10 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CaptchaUtils;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -41,8 +44,9 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
     private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
     private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
+    private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
 
-    private static final String PASSPORT_ACTIVE_EMAIL_URL="http://account.sogou.com/web/activemail?";
+    private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
 
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
@@ -192,6 +196,34 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean checkResetPwdLimited(String passportId) throws ServiceException {
+        try {
+            Account account = verifyAccountVaild(passportId);
+            if (account == null) {
+                return false;
+            }
+            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(cacheKey);
+                Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"),
+                                           DateUtil.DATE_FMT_2);
+                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
+                if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
+                    // 是当日键值，验证是否超过次数
+                    int checkNum = Integer.parseInt(mapCacheResetNumResult.get("resetNum"));
+                    if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
+                        // 当日密码修改次数不超过上限
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public boolean resetPassword(String passportId, String password) throws ServiceException {
         try {
             Account account = verifyAccountVaild(passportId);
@@ -204,6 +236,24 @@ public class AccountServiceImpl implements AccountService {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPasswd(passwdSign);
                 redisUtils.set(cacheKey, account);
+
+                // 设置密码修改次数限制
+                String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
+                if (redisUtils.checkKeyIsExist(resetCacheKey)) {
+                    // cacheKey存在，则检查resetTime
+                    Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(resetCacheKey);
+                    Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"), DateUtil.DATE_FMT_3);
+                    long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
+                    if (diff < DateAndNumTimesConstant.RESETNUM_LIMITED && diff >= 0) {
+                        // 是当日键值，递增失败次数
+                        redisUtils.hIncrBy(resetCacheKey, "resetNum");
+                        return true;
+                    }
+                }
+                redisUtils.hPut(resetCacheKey, "resetNum", "1");
+                redisUtils.hPut(resetCacheKey, "resetTime", DateUtil.format(new Date(), DateUtil.DATE_FMT_2));
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+
                 return true;
             }
         } catch (Exception e) {
@@ -297,14 +347,14 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public Map<String,Object> getCaptchaCode(String code)  throws ServiceException{
+  public Map<String,Object> getCaptchaCode(String token)  throws ServiceException{
     Map<String,Object> map= null;
     try{
 
-      if(Strings.isNullOrEmpty(code)){
-        code=UUID.randomUUID().toString().replaceAll("-","");
+      if(Strings.isNullOrEmpty(token)){
+        token=UUID.randomUUID().toString().replaceAll("-","");
       }
-      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +code;
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +token;
 
       //生成验证码
       map=captchaUtils.getRandcode();
@@ -312,10 +362,11 @@ public class AccountServiceImpl implements AccountService {
       if(map!=null && map.size()>0){
 
         String captchaCode= (String) map.get("captcha");
-        map.put("code",code);
+        map.put("token",token);
         map.put("captcha",map.get("captcha"));
 
         redisUtils.set(cacheKey,captchaCode);
+        redisUtils.expire(cacheKey,DateAndNumTimesConstant.CAPTCHA_INTERVAL);
       }else {
         map=Maps.newHashMap();
       }
@@ -323,7 +374,26 @@ public class AccountServiceImpl implements AccountService {
     }catch (Exception e){
       throw new ServiceException(e);
     }
-    return map;  //To change body of implemented methods use File | Settings | File Templates.
+    return map;
+  }
+
+  @Override
+  public Result checkCaptchaCodeIsVaild(String token,String captchaCode) throws ServiceException{
+    Result result=null;
+    try {
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +token;
+      if(redisUtils.checkKeyIsExist(cacheKey)){
+        String captchaCodeCache=redisUtils.get(cacheKey);
+        if(!captchaCodeCache.equalsIgnoreCase(captchaCode)){
+          result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+        }
+      }else {
+        result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+      }
+    }catch (Exception e){
+      throw new ServiceException(e);
+    }
+    return result;
   }
 
   /*

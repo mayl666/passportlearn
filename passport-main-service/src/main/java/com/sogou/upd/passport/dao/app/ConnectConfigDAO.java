@@ -15,8 +15,32 @@ import org.springframework.dao.DataAccessException;
  */
 @DAO
 public interface ConnectConfigDAO {
+    /**
+     * 对应数据库表名称
+     */
+    String TABLE_NAME = " connect_config ";
 
-    @SQL("select * from connect_config where client_id=:client_id and provider=:provider")
+    /**
+     * 所有字段列表
+     */
+    String ALL_FIELD = " id, client_id, provider, app_key, app_secret, scope, create_time ";
+
+    /**
+     * 值列表
+     */
+    String VALUE_FIELD = " :connectConfig.id, :connectConfig.clientId, :connectConfig.provider, :connectConfig.appKey, :connectConfig.appSecret, :connectConfig.scope, :connectConfig.createTime ";
+
+    /**
+     * 修改字段列表
+     */
+    String UPDATE_FIELD = " client_id = :connectConfig.clientId, provider = :connectConfig.provider, app_key = :connectConfig.appKey, app_secret = :connectConfig.appSecret, scope = :connectConfig.scope, create_time = :connectConfig.createTime ";
+
+
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where client_id=:client_id and provider=:provider")
     public ConnectConfig getConnectConfigByClientIdAndProvider(@SQLParam("client_id") int client_id, @SQLParam("provider") int provider) throws
             DataAccessException;
 }
