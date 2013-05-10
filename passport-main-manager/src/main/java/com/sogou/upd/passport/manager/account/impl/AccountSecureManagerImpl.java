@@ -217,7 +217,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
 
-            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+            if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
 
@@ -248,7 +248,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             } else {
-                if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+                if (!accountService.checkResetPwdLimited(passportId)) {
                     return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 }
                 AccountInfo accountInfo;
@@ -334,7 +334,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result resetPasswordByQues(String passportId, int clientId, String password,
                                       String answer) throws Exception {
         try {
-            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+            if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             if (Strings.isNullOrEmpty(answer)) {
@@ -363,7 +363,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     @Override
     public Result resetPasswordByEmail(String passportId, int clientId, String password, String token) throws Exception {
         try {
-            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+            if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             if (!emailSenderService.checkEmailForResetPwd(passportId, clientId, token)) {
@@ -385,7 +385,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result resetPasswordByMobile(String passportId, int clientId, String password,
                                         String smsCode) throws Exception {
         try {
-            if (!accountService.checkResetPwdLimited(passportId, clientId)) {
+            if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             if (Strings.isNullOrEmpty(smsCode)) {
