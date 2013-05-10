@@ -94,6 +94,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED = "20219";
     //激活链接已失效
     public static final String ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED = "20220";
+    // 当日密码修改次数已达上限
+    public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20221";
+    // 当日邮件发送次数已达上限
+    public static final String ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED = "20222";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -247,6 +251,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED, "当日邮件发送次数已达上限");
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
