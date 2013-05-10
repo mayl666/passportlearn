@@ -16,7 +16,9 @@ public class WebRegisterParameters {
   @NotBlank(message = "密码不允许为空!")
   private String password;
   @NotBlank(message = "验证码不允许为空!")
-  private String code;//验证码
+  private String vcode;//验证码
+  @NotBlank(message = "标识码不允许为空!")
+  private String token;//标识码
 
   public String getClient_id() {
     return client_id;
@@ -42,11 +44,19 @@ public class WebRegisterParameters {
     this.password = password;
   }
 
-  public String getCode() {
-    return code;
+  public String getToken() {
+    return token;
   }
 
-  public void setCode(String code) {
-    this.code = code;
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public String getVcode() {
+    return vcode;
+  }
+
+  public void setVcode(String vcode) {
+    this.vcode = vcode;
   }
 }
