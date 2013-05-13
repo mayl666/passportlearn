@@ -2,10 +2,13 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
+import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
@@ -87,4 +90,70 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
         }
     }
 
+    @Override
+    public Result accountLogin(WebLoginParameters parameters) {
+        Result result=Result.buildSuccess("");
+
+        //处理手机登陆的情况
+        String passportId;
+        if (AccountDomainEnum.PHONE.equals(parameters.getAccountDomainEnum())) {
+            passportId = mobilePassportMappingService.queryPassportIdByUsername(parameters.getAccount());
+        } else {
+            passportId = parameters.getAccount();
+        }
+
+        //校验验证码
+        if(!this.checkCaptcha(passportId,parameters.getCaptcha())){
+            return  Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
+        }
+
+        //TODO 校验是否在账户黑名单或者IP黑名单之中
+
+
+        //校验密码及用户状态
+        Account account = accountService
+                .verifyUserPwdVaild(passportId, parameters.getPassword());
+        if (account == null) {
+            result= Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
+        } else if (!account.isNormalAccount()) {
+            result= Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+        }
+        if(!result.isSuccess()){
+            accountService.incLoginFailedNum(passportId);
+            return  result;
+        }
+
+        //增加用户登陆成功的信息
+
+
+        //返回结果
+        Map<String, Object> mapResult = Maps.newHashMap();
+        mapResult.put("passport_id", passportId);
+        return Result.buildSuccess("success", "mapResult", mapResult);
+    }
+
+    private boolean checkCaptcha(String passportId,String captcha){
+        if(!this.loginNeedCaptcha(passportId)){
+            return true;
+        }
+        if(StringUtil.isBlank(captcha)){
+            return false;
+        }
+        //TODO 校验验证码
+
+        return true;
+    }
+
+    /**
+     * 用户在登陆的时候是否需要输入验证码
+     * 目前的策略
+     *  1.连续3次输入密码错误
+     * @param passportId
+     * @return
+     */
+    @Override
+    public boolean loginNeedCaptcha(String passportId) {
+        boolean loginFailed=accountService.loginFailedNumNeedCaptcha(passportId);
+        return loginFailed;
+    }
 }

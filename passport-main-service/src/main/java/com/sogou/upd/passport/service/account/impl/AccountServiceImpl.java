@@ -6,16 +6,13 @@ import com.google.gson.reflect.TypeToken;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.CaptchaUtils;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.DateUtil;
-import com.sogou.upd.passport.common.utils.MailUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
@@ -426,5 +423,58 @@ public class AccountServiceImpl implements AccountService {
   }
   private String buildAccountKey(String passportId) {
         return CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
+  }
+
+
+
+    /**
+     * 根据登陆错误次数，判断是否需要在登陆时输入验证码
+     *
+     * @param passportId
+     * @return
+     */
+    @Override
+    public boolean loginFailedNumNeedCaptcha(String passportId) {
+        int num = 0;
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
+            String numStr = redisUtils.get(cacheKey);
+            if (!StringUtil.isBlank(numStr)) {
+                num = Integer.valueOf(numStr);
+            }
+            if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("getAccountLoginFailedCount:" + passportId, e);
+        }
+        return false;
+    }
+
+    @Override
+    public long incLoginFailedNum(String passportId) {
+        try{
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
+            if(redisUtils.checkKeyIsExist(cacheKey)){
+                return redisUtils.increment(cacheKey);
+            }else{
+                redisUtils.set(cacheKey,1);
+            }
+        } catch (Exception e) {
+            logger.error("incLoginFailedNum:" + passportId, e);
+        }
+        return 1;
+    }
+
+    @Override
+    public boolean clearLoginFailedNum(String passportId) {
+        try{
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
+            redisUtils.delete(cacheKey);
+            return true;
+        }catch (Exception e) {
+            logger.error("clearLoginFailedNum:" + passportId, e);
+        }
+        return false;
     }
 }

@@ -103,4 +103,24 @@ public interface AccountService {
    */
   public Result checkCaptchaCodeIsVaild(String token,String captchaCode);
 
+  /**
+    * 根据用户连续登陆失败次数确定用户登陆时是否需要输入验证码
+    * @param passportId
+    * @return
+    */
+  public boolean loginFailedNumNeedCaptcha(String passportId);
+
+    /**
+     * 用户登陆失败一次，增加一次技术
+     * @param passportId
+     * @return
+     */
+  public long incLoginFailedNum(String passportId);
+
+    /**
+     *用户登陆成功，将失败次数清零
+     * @param passportId
+     * @return
+     */
+  public boolean clearLoginFailedNum(String passportId);
 }
