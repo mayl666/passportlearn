@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -80,18 +81,12 @@ public class AccountAction extends BaseController {
     } catch (NumberFormatException e) {
       return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
     }
-    //检查client_id是否存在
+    //检查client_id格式以及client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
       return Result.buildError(ErrorUtil.INVALID_CLIENTID);
     }
 
     String username = regParams.getUsername();
-    String password = regParams.getPassword();
-
-    //检查client_id格式以及client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
 
     //验证用户是否注册过
     if (!accountManager.isAccountExists(username)) {
