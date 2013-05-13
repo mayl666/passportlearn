@@ -60,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
     private CaptchaUtils captchaUtils;
 
   @Override
-  public Account initialWebAccount(String username) throws ServiceException {
+  public Account initialWebAccount(String username,String ip) throws ServiceException {
     Account account = null;
     String cacheKey =null;
     try {
@@ -75,6 +75,9 @@ public class AccountServiceImpl implements AccountService {
           if (id != 0) {
             //删除临时账户缓存，成为正式账户
             redisUtils.set(cacheKey, account);
+            //更新黑名单缓存
+            cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
+            redisUtils.increment(cacheKey);
             //设置cookie
             setCookie();
             return account;
@@ -275,7 +278,7 @@ public class AccountServiceImpl implements AccountService {
         ipCount = Long.parseLong(ipValue);
         //判断ip注册限制次数（一天20次）
         if (ipCount < DateAndNumTimesConstant.IP_LIMITED) {
-          redisUtils.increment(cacheKey);
+          return true;
         } else {
           return false;
         }

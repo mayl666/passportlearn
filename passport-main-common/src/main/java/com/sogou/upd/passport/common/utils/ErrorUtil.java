@@ -17,11 +17,13 @@ public class ErrorUtil {
     // 必填的参数错误
     public static final String ERR_CODE_COM_REQURIE = "10002";
     // 签名错误
-//    public static final String ERR_CODE_COM_SING = "10003";
+    public static final String ERR_CODE_COM_SING = "10003";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
     // 签名或accessToken验证失败
-//    public static final String ERR_OPEN_ID = "10006";
+    public static final String ERR_OPEN_ID = "10006";
+    // 传入字段不存在，请输入正确的字段
+    public static final String ERR_QUERY_FIELDS = "10008";
     // 账号不存在或异常或未激活
     public static final String INVALID_ACCOUNT = "10009";
     //client_id不存在
@@ -34,19 +36,19 @@ public class ErrorUtil {
      // client_id或client_secret不匹配
     public static final String INVALID_CLIENT = "101";
      //invalid_grant
-//    public static final String INVALID_GRANT = "102";
+    public static final String INVALID_GRANT = "102";
      //错误的grant_type
     public static final String UNSUPPORTED_GRANT_TYPE = "103";
      //unsupported_response_type
     public static final String UNSUPPORTED_RESPONSE_TYPE = "104";
      // invalid_scope
-//    public static final String INVALID_SCOPE = "105";
+    public static final String INVALID_SCOPE = "105";
      // insufficient_scope
-//    public static final String INSUFFICIENT_SCOPE = "106";
+    public static final String INSUFFICIENT_SCOPE = "106";
      // expired_token
-//    public static final String EXPIRED_TOKEN = "107";
+    public static final String EXPIRED_TOKEN = "107";
      // access_token不存在或已过期
-//    public static final String INVALID_ACCESS_TOKEN = "108";
+    public static final String INVALID_ACCESS_TOKEN = "108";
      //refresh_token不存在或已过期
     public static final String INVALID_REFRESH_TOKEN = "109";
      // login/authorize fail,数据库写入失败
@@ -66,16 +68,22 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
     // 没有这个用户
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
+    // 登录不成功，帐号或密码错误
+    public static final String ERR_CODE_ACCOUNT_LOGINERROR = "20206";
     // 验证码不正确，或已过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 当日短信验证错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
+    // 密码格式非法，只能是可打印ascii字符，长度大于=6
+    public static final String ERR_CODE_ACCOUNT_PASSWDFORMAT = "20211";
     // 昵称验证失败
-//    public static final String ERR_CODE_ACCOUNT_VERIFY_FIELDS = "20212";
+    public static final String ERR_CODE_ACCOUNT_VERIFY_FIELDS = "20212";
     // 手机验证码发送失败
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
     //用户允许注册，但注册失败
     public static final String ERR_CODE_ACCOUNT_REGISTER_FAILED = "20214";
+    //验证access_token和appkey失败
+    public static final String ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED = "20215";
     //手机号码和验证码不匹配
     public static final String ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE = "20216";
     //手机号获取失败,没有此用户
@@ -92,6 +100,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20221";
     // 当日邮件发送次数已达上限
     public static final String ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED = "20222";
+    // 当日注册次数已达上限
+    public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20223";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -154,7 +164,7 @@ public class ErrorUtil {
     // 第三方登录帐号Token过期，请重新登录
     public static final String CONNECT_TOKEN_INVALID = "30004";
     // 刷新第三方accessToken失败
-//    public static final String CONNECT_REFRESH_TOKEN_FAIL = "30005";
+    public static final String CONNECT_REFRESH_TOKEN_FAIL = "30005";
     // 发送HTTP请求失败
     public static final String HTTP_CLIENT_REQEUST_FAIL = "30006";
     // 不支持指定第三方
@@ -165,6 +175,8 @@ public class ErrorUtil {
     public static final String REQUEST_NO_AUTHORITY = "30010";
     // 第三方自定义错误
     public static final String CONNECT_USER_DEFINED_ERROR = "30011";
+    // 没有第三方关联帐号，请关联
+    public static final String CONNECT_ASSOCIATE_NOT_EXIST = "30012";
     //第三方openid获取失败,没有此用户
     public static final String ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR = "30013";
 
@@ -208,11 +220,13 @@ public class ErrorUtil {
     //***************************好友类API错误代码end********************************
 
     static {
-        // 通用错误
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "参数错误,签名过期或者不合法");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
+        ERR_CODE_MSG_MAP.put(ERR_QUERY_FIELDS, "传入字段不存在，请输入正确的字段");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
+        ERR_CODE_MSG_MAP.put(ERR_OPEN_ID, "openid错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(ERR_FORMAT_CLIENTID, "client_id格式不正确");
 
@@ -229,17 +243,21 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGINERROR, "帐号或密码不正确");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码不正确，或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日短信验证错误次数已超过上限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PASSWDFORMAT, "请输入6-16位的数字、字母或字符");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_VERIFY_FIELDS, "昵称格式有误，只能包含中文、英文大小写,-,_,字母或空格");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "用户注册失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACCESSTOKEN_FAILED, "验证access_token和appkey失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "手机号码和验证码不匹配");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "注册验证码验证失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
 
 
 
@@ -274,10 +292,12 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
         ERR_CODE_MSG_MAP.put(OAUTH_AUTHZ_STATE_INVALID, "第三方授权的state被篡改");
         ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方帐号Token过期，请重新登录");
+        ERR_CODE_MSG_MAP.put(CONNECT_REFRESH_TOKEN_FAIL, "刷新第三方accessToken失败");
         ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");
         ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
+        ERR_CODE_MSG_MAP.put(CONNECT_ASSOCIATE_NOT_EXIST, "第三方关联帐号不存在，请先关联");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败");
 
         // info
@@ -297,6 +317,13 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过帐号");
         ERR_CODE_MSG_MAP.put(ALREADY_FOLLOWED, "已经关注此用户");
 
+    }
+
+    public static Map<String, Object> buildExceptionError(String msg) {
+        Map<String, Object> retMap = Maps.newHashMap();
+        retMap.put(CommonConstant.RESPONSE_STATUS, SYSTEM_UNKNOWN_EXCEPTION);
+        retMap.put(CommonConstant.RESPONSE_STATUS_TEXT, msg);
+        return retMap;
     }
 
     public static Map<String, Object> buildError(String code) {

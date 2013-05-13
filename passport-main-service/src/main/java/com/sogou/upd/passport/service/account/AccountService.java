@@ -15,7 +15,7 @@ public interface AccountService {
   /**
    * 初始化web用户账号
    */
-  public Account initialWebAccount(String username)
+  public Account initialWebAccount(String username,String ip)
       throws ServiceException;
 
   /**

@@ -136,7 +136,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
   }
 
   @Override
-  public Result activeEmail(ActiveEmailParameters activeParams) throws Exception {
+  public Result activeEmail(ActiveEmailParameters activeParams,String ip) throws Exception {
     try {
       String username = activeParams.getPassport_id();
       String token = activeParams.getToken();
@@ -146,8 +146,9 @@ public class AccountRegManagerImpl implements AccountRegManager {
 
       if (isSuccessActive) {
         //激活成功
-        Account account = accountService.initialWebAccount(username);
+        Account account = accountService.initialWebAccount(username,ip);
         if (account != null) {
+          //更新缓存
           return Result.buildSuccess("激活成功！");
         } else {
           return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
