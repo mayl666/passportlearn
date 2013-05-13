@@ -133,7 +133,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             if (!Strings.isNullOrEmpty(smsText)) {
                 isSend = SMSUtil.sendSMS(mobile, smsText);
                 if (isSend) {
-                    result = Result.buildSuccess("获取验证码成功");
+                    result = Result.buildSuccess("验证码已发送至" + mobile);
                     return result;
                 } else{
                   result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);

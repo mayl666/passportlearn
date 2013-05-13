@@ -61,4 +61,9 @@ public class OAuthTokenASRequest extends OAuthASRequest {
         return getParam(OAuth.OAUTH_GRANT_TYPE);
     }
 
+    public int getPwdType() {
+        String value = getParam(OAuth.OAUTH_PASSWORD_TYPE);
+        return value == null ? 0 : Integer.valueOf(value);
+    }
+
 }

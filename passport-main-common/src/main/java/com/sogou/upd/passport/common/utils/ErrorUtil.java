@@ -66,7 +66,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
     // 没有这个用户
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
-    // 验证码不正确，或已过期
+    // 验证码错误或已过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 当日短信验证错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
@@ -76,7 +76,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
     //用户允许注册，但注册失败
     public static final String ERR_CODE_ACCOUNT_REGISTER_FAILED = "20214";
-    //手机号码和验证码不匹配
+    //验证码错误或已过期
     public static final String ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE = "20216";
     //手机号获取失败,没有此用户
     public static final String ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS = "20217";
@@ -221,7 +221,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(UNSUPPORTED_GRANT_TYPE, "不支持的grant_type");
         ERR_CODE_MSG_MAP.put(INVALID_REFRESH_TOKEN, "refresh_token不存在或过期");
         ERR_CODE_MSG_MAP.put(AUTHORIZE_FAIL, "授权失败");
-        ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "username or password不匹配");
+        ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "账号或密码错误");
 
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
@@ -229,20 +229,16 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码不正确，或已过期");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日短信验证错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "用户注册失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "手机号码和验证码不匹配");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "注册验证码验证失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
-
-
-
-
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED, "当日邮件发送次数已达上限");

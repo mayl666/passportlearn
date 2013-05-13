@@ -61,6 +61,7 @@ public class OAuth {
     public static final String OAUTH_INSTANCE_ID = "instance_id";
     public static final String OAUTH_USERNAME = "username";
     public static final String OAUTH_PASSWORD = "password";
+    public static final String OAUTH_PASSWORD_TYPE = "pwd_type";
     public static final String OAUTH_SCOPE = "scope";
     public static final String OAUTH_STATE = "state";
     public static final String OAUTH_DISPLAY = "display"; // 样式

@@ -31,7 +31,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testInitialAccount() throws Exception {
-        Account account = accountService.initialAccount(MOBILE, PASSWORD, IP, PROVIDER);
+        Account account = accountService.initialAccount(MOBILE, PASSWORD, true, IP, PROVIDER);
         if (account != null) {
             System.out.println("插入account表成功...");
         } else {
@@ -70,7 +70,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyUserPwdVaild() {
-        Account account = accountService.verifyUserPwdVaild(MOBILE, PASSWORD);
+        Account account = accountService.verifyUserPwdVaild(MOBILE, PASSWORD, true);
         if (account != null) {
             System.out.println("正确...");
         } else {
@@ -84,7 +84,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testResetPassword() {
-        boolean flag = accountService.resetPassword(MOBILE, PASSWORD);
+        boolean flag = accountService.resetPassword(MOBILE, PASSWORD, true);
         if (flag != false) {
             System.out.println("重置成功...");
         } else {
