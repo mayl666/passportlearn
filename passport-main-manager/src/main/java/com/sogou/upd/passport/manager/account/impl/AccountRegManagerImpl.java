@@ -36,18 +36,18 @@ import java.util.Map;
 @Component
 public class AccountRegManagerImpl implements AccountRegManager {
 
-  @Autowired
-  private AccountService accountService;
-  @Autowired
-  private MobileCodeSenderService mobileCodeSenderService;
-  @Autowired
-  private AccountTokenService accountTokenService;
-  @Autowired
-  private MobilePassportMappingService mobilePassportMappingService;
-  @Autowired
-  private RedisUtils redisUtils;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private MobileCodeSenderService mobileCodeSenderService;
+    @Autowired
+    private AccountTokenService accountTokenService;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private RedisUtils redisUtils;
 
-  private static final Logger logger = LoggerFactory.getLogger(AccountRegManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountRegManagerImpl.class);
 
 
     @Override
@@ -133,58 +133,59 @@ public class AccountRegManagerImpl implements AccountRegManager {
         return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     }
 
-  @Override
-  public boolean isInAccountBlackList(String passportId, String ip)
-      throws Exception {
-    return accountService.isInAccountBlackListByIp(passportId, ip);
-  }
-
-  @Override
-  public Result activeEmail(ActiveEmailParameters activeParams) throws Exception {
-    try {
-      String username = activeParams.getPassport_id();
-      String token = activeParams.getToken();
-      int clientId = Integer.parseInt(activeParams.getClient_id());
-      //激活邮件
-      boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
-
-      if (isSuccessActive) {
-        //激活成功
-        Account account = accountService.initialWebAccount(username);
-        if (account != null) {
-          return Result.buildSuccess("激活成功！");
-        } else {
-          return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-        }
-      } else {
-        //激活失败
-        Account account = accountService.queryAccountByPassportId(username);
-        if (account != null) {
-          if(account.getStatus() == AccountStatusEnum.REGULAR.getValue()){
-            //已经激活，无需再次激活
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
-          }else {
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED);
-          }
-        } else {
-          //无此账号
-          return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-        }
-      }
-    }catch (ServiceException e){
-      logger.error("activeEmail fail, passportId:" + activeParams.getPassport_id() + " clientId:" + activeParams.getClient_id() , e);
-      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+    @Override
+    public boolean isInAccountBlackList(String passportId, String ip)
+            throws Exception {
+        return accountService.isInAccountBlackListByIp(passportId, ip);
     }
-  }
 
-  @Override
-  public Map<String,Object> getCaptchaCode(String code) {
-    return accountService.getCaptchaCode(code);
-  }
+    @Override
+    public Result activeEmail(ActiveEmailParameters activeParams, String ip) throws Exception {
+        try {
+            String username = activeParams.getPassport_id();
+            String token = activeParams.getToken();
+            int clientId = Integer.parseInt(activeParams.getClient_id());
+            //激活邮件
+            boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
 
-  @Override
-  public Result checkCaptchaCodeIsVaild(String token,String captchaCode) {
-    return accountService.checkCaptchaCodeIsVaild(token,captchaCode);
-  }
+            if (isSuccessActive) {
+                //激活成功
+                Account account = accountService.initialWebAccount(username, ip);
+                if (account != null) {
+                    //更新缓存
+                    return Result.buildSuccess("激活成功！");
+                } else {
+                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                }
+            } else {
+                //激活失败
+                Account account = accountService.queryAccountByPassportId(username);
+                if (account != null) {
+                    if (account.getStatus() == AccountStatusEnum.REGULAR.getValue()) {
+                        //已经激活，无需再次激活
+                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
+                    } else {
+                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED);
+                    }
+                } else {
+                    //无此账号
+                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                }
+            }
+        } catch (ServiceException e) {
+            logger.error("activeEmail fail, passportId:" + activeParams.getPassport_id() + " clientId:" + activeParams.getClient_id(), e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+    }
+
+    @Override
+    public Map<String, Object> getCaptchaCode(String code) {
+        return accountService.getCaptchaCode(code);
+    }
+
+    @Override
+    public Result checkCaptchaCodeIsVaild(String token, String captchaCode) {
+        return accountService.checkCaptchaCodeIsVaild(token, captchaCode);
+    }
 
 }
