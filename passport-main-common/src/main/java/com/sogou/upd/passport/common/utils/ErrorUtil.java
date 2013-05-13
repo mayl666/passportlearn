@@ -66,7 +66,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
     // 没有这个用户
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
-    // 验证码错误或已过期
+    // 验证码不正确，或已过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 当日短信验证错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
@@ -92,6 +92,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20221";
     // 当日邮件发送次数已达上限
     public static final String ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED = "20222";
+    // 当日注册次数已达上限
+    public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20223";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -154,7 +156,7 @@ public class ErrorUtil {
     // 第三方登录帐号Token过期，请重新登录
     public static final String CONNECT_TOKEN_INVALID = "30004";
     // 刷新第三方accessToken失败
-//    public static final String CONNECT_REFRESH_TOKEN_FAIL = "30005";
+    public static final String CONNECT_REFRESH_TOKEN_FAIL = "30005";
     // 发送HTTP请求失败
     public static final String HTTP_CLIENT_REQEUST_FAIL = "30006";
     // 不支持指定第三方
@@ -239,6 +241,11 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "注册验证码验证失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
+
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
+
+
+
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED, "当日邮件发送次数已达上限");

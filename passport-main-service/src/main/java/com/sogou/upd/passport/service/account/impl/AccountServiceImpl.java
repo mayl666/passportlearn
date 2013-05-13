@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -10,13 +11,18 @@ import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.utils.CaptchaUtils;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.MailUtils;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,39 +59,37 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private CaptchaUtils captchaUtils;
 
-    @Override
-    public Account initialWebAccount(String username) throws ServiceException {
-        Account account = null;
-        String cacheKey = null;
-        try {
-            cacheKey = buildAccountKey(username);
-            if (redisUtils.checkKeyIsExist(cacheKey)) {
-                Type type = new TypeToken<Account>() {
-                }.getType();
-                account = redisUtils.getObject(cacheKey, type);
-                if (account != null) {
-                    account.setStatus(AccountStatusEnum.REGULAR.getValue());
-                    long id = accountDAO.insertAccount(username, account);
-                    if (id != 0) {
-                        //删除临时账户缓存，成为正式账户
-                        redisUtils.set(cacheKey, account);
-                        //设置cookie
-                        setCookie();
-                        return account;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        } finally {
-            //删除激活
-            cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
-            redisUtils.delete(cacheKey);
+  @Override
+  public Account initialWebAccount(String username) throws ServiceException {
+    Account account = null;
+    String cacheKey =null;
+    try {
+      cacheKey = buildAccountKey(username);
+      if (redisUtils.checkKeyIsExist(cacheKey)) {
+        Type type = new TypeToken<Account>() {
+        }.getType();
+        account = redisUtils.getObject(cacheKey, type);
+        if(account!=null){
+          account.setStatus(AccountStatusEnum.REGULAR.getValue());
+          long id = accountDAO.insertAccount(username, account);
+          if (id != 0) {
+            //删除临时账户缓存，成为正式账户
+            redisUtils.set(cacheKey, account);
+            //设置cookie
+            setCookie();
+            return account;
+          }
         }
-
-
-        return null;
+      }
+    } catch (Exception e) {
+      throw new ServiceException(e);
+    } finally {
+      //删除激活
+      cacheKey= CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN +username;
+      redisUtils.delete(cacheKey);
     }
+    return null;
+  }
 
     @Override
     public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider) throws ServiceException {
@@ -204,7 +208,7 @@ public class AccountServiceImpl implements AccountService {
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(cacheKey);
                 Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"),
-                        DateUtil.DATE_FMT_2);
+                                           DateUtil.DATE_FMT_2);
                 long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
                 if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
                     // 是当日键值，验证是否超过次数
@@ -260,170 +264,169 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
-    @Override
-    public boolean isInAccountBlackListByIp(String passportId, String ip) throws ServiceException {
-        boolean flag = true;
-        long ipCount = 0;
-        try {
-            String cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
-            String ipValue = redisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(ipValue)) {
-                redisUtils.set(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY, TimeUnit.SECONDS);
-            } else {
-                ipCount = Long.parseLong(ipValue);
-                //判断ip注册限制次数（一天20次）
-                if (ipCount < DateAndNumTimesConstant.IP_LIMITED) {
-                    redisUtils.increment(cacheKey);
-                } else {
-                    return false;
-                }
+  @Override
+  public boolean isInAccountBlackListByIp(String passportId, String ip) throws ServiceException {
+    boolean flag=true;
+    long ipCount = 0;
+    try {
+      String cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
+      String ipValue = redisUtils.get(cacheKey);
+      if (Strings.isNullOrEmpty(ipValue)) {
+        redisUtils.set(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY, TimeUnit.SECONDS);
+      } else {
+        ipCount = Long.parseLong(ipValue);
+        //判断ip注册限制次数（一天20次）
+        if (ipCount < DateAndNumTimesConstant.IP_LIMITED) {
+          redisUtils.increment(cacheKey);
+        } else {
+          return false;
+        }
+      }
+    } catch (Exception e) {
+      flag=false;
+    }
+    return flag;
+  }
+
+  @Override
+  public boolean sendActiveEmail(String username,String passpord, int clientId,String ip) throws ServiceException {
+    boolean flag=true;
+    try{
+      String code = UUID.randomUUID().toString().replaceAll("-", "");
+      String token = Coder.encryptMD5(username + clientId + code);
+      String activeUrl =
+          PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
+          "&client_id=" + clientId +
+          "&token=" + token;
+
+      //发送邮件
+      ActiveEmail activeEmail=new ActiveEmail();
+      activeEmail.setActiveUrl(activeUrl);
+
+      //模版中参数替换
+      Map<String,Object> map= Maps.newHashMap();
+      map.put("activeUrl",activeUrl);
+      activeEmail.setMap(map);
+
+      activeEmail.setTemplateFile("activemail.vm");
+      activeEmail.setSubject("激活您的搜狗通行证帐户");
+      activeEmail.setCategory("register");
+      activeEmail.setToEmail(username);
+
+      mailUtils.sendEmail(activeEmail);
+      //连接失效时间
+      String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
+      redisUtils.set(cacheKey, token);
+      redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+      //临时注册到缓存
+      initialAccountToCache(username,passpord,ip);
+    }catch (Exception e){
+      flag=false;
+    }
+    return flag;
+  }
+
+  @Override
+  public boolean activeEmail(String username,String token,int clientId) throws ServiceException {
+    try{
+      String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
+      if(redisUtils.checkKeyIsExist(cacheKey)){
+            String tokenCache=redisUtils.get(cacheKey);
+            if(tokenCache.equals(token)){
+              return true;
             }
-        } catch (Exception e) {
-            flag = false;
-        }
-        return flag;
+      }
+    }catch (Exception e){
+      throw new ServiceException(e);
     }
+    return false;
+  }
 
-    @Override
-    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip) throws ServiceException {
-        boolean flag = true;
-        try {
-            String code = UUID.randomUUID().toString().replaceAll("-", "");
-            String token = Coder.encryptMD5(username + clientId + code);
-            String activeUrl =
-                    PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
-                            "&client_id=" + clientId +
-                            "&token=" + token;
-
-            //发送邮件
-            ActiveEmail activeEmail = new ActiveEmail();
-            activeEmail.setActiveUrl(activeUrl);
-
-            //模版中参数替换
-            Map<String, Object> map = Maps.newHashMap();
-            map.put("activeUrl", activeUrl);
-            activeEmail.setMap(map);
-
-            activeEmail.setTemplateFile("activemail.vm");
-            activeEmail.setSubject("激活您的搜狗通行证帐户");
-            activeEmail.setCategory("register");
-            activeEmail.setToEmail(username);
-
-            mailUtils.sendEmail(activeEmail);
-            //连接失效时间
-            String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
-            redisUtils.set(cacheKey, token);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
-            //临时注册到缓存
-            initialAccountToCache(username, passpord, ip);
-        } catch (Exception e) {
-            flag = false;
-        }
-        return flag;
-    }
-
-    @Override
-    public boolean activeEmail(String username, String token, int clientId) throws ServiceException {
-        try {
-            String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
-            if (redisUtils.checkKeyIsExist(cacheKey)) {
-                String tokenCache = redisUtils.get(cacheKey);
-                if (tokenCache.equals(token)) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean setCookie() throws Exception {
+  @Override
+  public boolean setCookie() throws Exception {
 //    ServletUtil.setCookie();
-        return false;
+    return false;
+  }
+
+  @Override
+  public Map<String,Object> getCaptchaCode(String token)  throws ServiceException{
+    Map<String,Object> map= null;
+    try{
+
+      if(Strings.isNullOrEmpty(token)){
+        token=UUID.randomUUID().toString().replaceAll("-","");
+      }
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +token;
+
+      //生成验证码
+      map=captchaUtils.getRandcode();
+
+      if(map!=null && map.size()>0){
+
+        String captchaCode= (String) map.get("captcha");
+        map.put("token",token);
+        map.put("captcha",map.get("captcha"));
+
+        redisUtils.set(cacheKey,captchaCode);
+        redisUtils.expire(cacheKey,DateAndNumTimesConstant.CAPTCHA_INTERVAL);
+      }else {
+        map=Maps.newHashMap();
+      }
+
+    }catch (Exception e){
+      throw new ServiceException(e);
     }
+    return map;
+  }
 
-    @Override
-    public Map<String, Object> getCaptchaCode(String token) throws ServiceException {
-        Map<String, Object> map = null;
-        try {
-
-            if (Strings.isNullOrEmpty(token)) {
-                token = UUID.randomUUID().toString().replaceAll("-", "");
-            }
-            String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
-
-            //生成验证码
-            map = captchaUtils.getRandcode();
-
-            if (map != null && map.size() > 0) {
-
-                String captchaCode = (String) map.get("captcha");
-                map.put("token", token);
-                map.put("captcha", map.get("captcha"));
-
-                redisUtils.set(cacheKey, captchaCode);
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.CAPTCHA_INTERVAL);
-            } else {
-                map = Maps.newHashMap();
-            }
-
-        } catch (Exception e) {
-            throw new ServiceException(e);
+  @Override
+  public Result checkCaptchaCodeIsVaild(String token,String captchaCode) throws ServiceException{
+    Result result=null;
+    try {
+      String cacheKey=CACHE_PREFIX_UUID_CAPTCHA +token;
+      if(redisUtils.checkKeyIsExist(cacheKey)){
+        String captchaCodeCache=redisUtils.get(cacheKey);
+        if(!captchaCodeCache.equalsIgnoreCase(captchaCode)){
+          result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
         }
-        return map;
+      }else {
+        result=Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+      }
+    }catch (Exception e){
+      throw new ServiceException(e);
     }
+    return result;
+  }
 
-    @Override
-    public Result checkCaptchaCodeIsVaild(String token, String captchaCode) throws ServiceException {
-        Result result = null;
-        try {
-            String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
-            if (redisUtils.checkKeyIsExist(cacheKey)) {
-                String captchaCodeCache = redisUtils.get(cacheKey);
-                if (!captchaCodeCache.equalsIgnoreCase(captchaCode)) {
-                    result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                }
-            } else {
-                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return result;
+  /*
+   * 外域邮箱注册
+   */
+  public void initialAccountToCache(String username,String password,String ip)throws ServiceException{
+    int provider=AccountTypeEnum.EMAIL.getValue();
+    Account account = new Account();
+    String passportId = PassportIDGenerator.generator(username, provider);
+    account.setPassportId(passportId);
+    String passwordSign = null;
+    try {
+      if (!Strings.isNullOrEmpty(password)) {
+        passwordSign = PwdGenerator.generatorPwdSign(password);
+      }
+      account.setPasswd(passwordSign);
+      account.setRegTime(new Date());
+      account.setAccountType(provider);
+      account.setStatus(AccountStatusEnum.DISABLED.getValue());
+      account.setVersion(Account.NEW_ACCOUNT_VERSION);
+      account.setRegIp(ip);
+
+      String cacheKey = buildAccountKey(username);
+      redisUtils.set(cacheKey, account);
+      redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+
+    }catch (Exception e){
+         throw new ServiceException(e);
     }
-
-    /*
-     * 外域邮箱注册
-     */
-    public void initialAccountToCache(String username, String password, String ip) throws ServiceException {
-        int provider = AccountTypeEnum.EMAIL.getValue();
-        Account account = new Account();
-        String passportId = PassportIDGenerator.generator(username, provider);
-        account.setPassportId(passportId);
-        String passwordSign = null;
-        try {
-            if (!Strings.isNullOrEmpty(password)) {
-                passwordSign = PwdGenerator.generatorPwdSign(password);
-            }
-            account.setPasswd(passwordSign);
-            account.setRegTime(new Date());
-            account.setAccountType(provider);
-            account.setStatus(AccountStatusEnum.DISABLED.getValue());
-            account.setVersion(Account.NEW_ACCOUNT_VERSION);
-            account.setRegIp(ip);
-
-            String cacheKey = buildAccountKey(username);
-            redisUtils.set(cacheKey, account);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
-
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private String buildAccountKey(String passportId) {
+  }
+  private String buildAccountKey(String passportId) {
         return CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
     }
 }
