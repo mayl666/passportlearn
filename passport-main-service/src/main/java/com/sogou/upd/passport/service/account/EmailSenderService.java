@@ -33,4 +33,13 @@ public interface EmailSenderService {
      * @throws ServiceException
      */
     public boolean deleteEmailCacheResetPwd(String uid, int clientId) throws ServiceException;
+
+    /**
+     * 检查邮件发送次数限制
+     * @param email
+     * @param clientId
+     * @return 不超过限制，返回true；超过，返回false
+     * @throws ServiceException
+     */
+    public boolean checkSendEmailForPwdLimited(String email, int clientId) throws ServiceException;
 }

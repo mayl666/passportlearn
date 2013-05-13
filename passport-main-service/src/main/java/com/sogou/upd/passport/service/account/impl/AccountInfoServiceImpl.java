@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AccountInfoServiceImpl implements AccountInfoService {
 
-    private static final String CACHE_PREFIX_PASSPORT_ACCOUNT_INFO =
-            CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNTINFO;
+    private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO =
+            CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNTINFO;
     private static final Logger logger = LoggerFactory.getLogger(AccountInfoServiceImpl.class);
 
     @Autowired
@@ -48,7 +48,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 }
             }
         } catch (Exception e) {
-            throw new ServiceException();
+            throw new ServiceException(e);
         }
         return accountInfo;
     }
@@ -74,7 +74,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 redisUtils.set(cacheKey, accountInfo);
             }
         } catch (Exception e) {
-            throw new ServiceException();
+            throw new ServiceException(e);
         }
         return accountInfo;
     }
@@ -102,12 +102,12 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 redisUtils.set(cacheKey, accountInfo);
             }
         } catch (Exception e) {
-            throw new ServiceException();
+            throw new ServiceException(e);
         }
         return accountInfo;
     }
 
     private String buildAccountInfoKey(String passportId) {
-        return CACHE_PREFIX_PASSPORT_ACCOUNT_INFO + passportId;
+        return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
     }
 }

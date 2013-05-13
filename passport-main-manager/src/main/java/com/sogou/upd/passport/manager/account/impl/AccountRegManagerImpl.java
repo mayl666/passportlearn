@@ -101,7 +101,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
       int clientId = Integer.parseInt(regParams.getClient_id());
       String username = regParams.getUsername();
       String password = regParams.getPassword();
-      String code = regParams.getCode();
+      String token = regParams.getToken();
 
       //判断注册账号类型，sogou用户还是第三方用户
       int emailType = AccountDomainEnum.getAccountDomain(username);
@@ -176,6 +176,11 @@ public class AccountRegManagerImpl implements AccountRegManager {
   @Override
   public Map<String,Object> getCaptchaCode(String code) {
     return accountService.getCaptchaCode(code);
+  }
+
+  @Override
+  public Result checkCaptchaCodeIsVaild(String token,String captchaCode) {
+    return accountService.checkCaptchaCodeIsVaild(token,captchaCode);
   }
 
 }

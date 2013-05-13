@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv=Content-Type content="text/html;charset=gbk">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <title>找回密码</title>
+    <style type="text/css">
+        form {
+            font: 14px "黑体", "Microsoft YaHei", Verdana, Arial, Helvetica, sans-serif;
+        }
+        input {
+            font: bold 11px "Microsoft YaHei", Verdana, Arial, Helvetica, sans-serif;
+        }
+        th {
+            font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+            color: #4f6b72;
+            border-right: 1px solid #C1DAD7;
+            border-bottom: 1px solid #C1DAD7;
+            border-top: 1px solid #C1DAD7;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 6px 6px 6px 12px;
+            background: #CAE8EA no-repeat;
+        }
+
+        th.nobg {
+            border-top: 0;
+            border-left: 0;
+            border-right: 1px solid #C1DAD7;
+            background: none;
+        }
+
+        td {
+            border-right: 1px solid #C1DAD7;
+            border-bottom: 1px solid #C1DAD7;
+            background: #fff;
+            font: 12px "微软雅黑", "Microsoft YaHei", "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+            padding: 6px 6px 6px 12px;
+            color: #4f6b72;
+        }
+
+
+        td.alt {
+            background: #F5FAFA;
+            color: #797268;
+        }
+
+        th.spec {
+            border-left: 1px solid #C1DAD7;
+            border-top: 0;
+            background: #fff no-repeat;
+            font: bold 10px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        }
+
+        th.specalt {
+            border-left: 1px solid #C1DAD7;
+            border-top: 0;
+            background: #f5fafa no-repeat;
+            font: bold 10px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+            color: #797268;
+        }
+    </style>
+    <script type="text/javascript">
+        function dosend(url) {
+            document.getElementById('check').action = '/web/findpwd/'+url;
+            // document.getElementById('check').submit();
+        }
+    </script>
+</head>
+<body>
+<div id="step1" class="class1">
+    <form action="/web/findpwd/query" method="post">
+        <h2>第一步：</h2>
+        <p>请输入用户名，如(example@sogou.com)或手机号：</p>
+        <table>
+            <tbody>
+            <tr>
+                <input type="text" name="username"/>
+                <input type="hidden" name="client_id" value="$!clientId"/>
+                <input type="submit" onclick="javascript:dosend('')"/>
+                #if ($exist==false)
+                    <div id="hasuser">账号不存在</div>
+                #end
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div id="step2" class="class2">
+    <form id="check" action="" method="post">
+        #if($passportId)
+        <h2>第二步：</h2>
+        <table>
+            <tbody>
+                #if($secInfo)
+                    #if (!($secInfo.get("secMobile")) || ($secInfo.get("secMobile")==""))
+                    <tr><td>您没有绑定手机号</td></tr>
+                    #else
+                    <tr><td>您的手机号是：</td><td>$!secInfo.get("secMobile")</td></tr>
+                    #end
+                    #if (!($secInfo.get("secEmail")) || ($secInfo.get("secEmail")==""))
+                    <tr><td>您没有绑定邮箱</td></tr>
+                    #else
+                    <tr><td>您的邮箱是：</td><td>$!secInfo.get("secEmail")</td></tr>
+                    #end
+                    #if (!($secInfo.get("secQues")) || ($secInfo.get("secQues")==""))
+                    <tr><td>您没有密保问题</td></tr>
+                    #else
+                    <tr><td>您的密保问题是：</td><td>$!secInfo.get("secQues")</td></tr>
+                    <tr><td>您的答案是：</td><td><input type="text" name="answer"/></td></tr>
+                    <tr><td><input type="submit" value="验证密保" onclick="javascript:dosend('ques')"/></td></tr>
+                    #end
+                #end
+            <input type="hidden" name="client_id" value="$!clientId"/>
+            <input type="hidden" name="username" value="$!passportId"/>
+            <tr><td><input type="submit" value="发送验证码" onclick="javascript:dosend('sendsms')"/></td></tr>
+            <tr>
+                <td>验证码：</td><td><input type="text" name="smscode" value=""/></td>
+            </tr>
+            <tr>
+                <td>新密码：</td><td><input type="password" name="password" value=""/></td>
+            </tr>
+            <tr><td>再输一次：</td><td><input type="password" value=""/></td></tr>
+            <tr><td><input type="submit" value="验证码修改密码" onclick="javascript:dosend('mobile')"/></td></tr>
+            <tr><td><input type="submit" value="发送验证邮件" onclick="javascript:dosend('sendemail')"/></td></tr>
+            </tbody>
+        </table>
+        #end
+    </form>
+</div>
+<div id="step3" class="class3">
+    <form action="">
+    <table>
+    #if($error)
+        <h2>状态信息</h2>
+        <p><strong>错误信息：</strong>$!error.statusText</p>
+    #end
+    </table>
+    </form>
+</div>
+</body>
