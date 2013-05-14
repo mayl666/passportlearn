@@ -97,11 +97,11 @@ public class ErrorUtil {
     //注册验证码失效
     public static final String ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED = "20221";
     // 当日密码修改次数已达上限
-    public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20221";
+    public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20222";
     // 当日邮件发送次数已达上限
-    public static final String ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED = "20222";
+    public static final String ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED = "20223";
     // 当日注册次数已达上限
-    public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20223";
+    public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
 
     //***************************account 服务的错误代码end*********************************
 
