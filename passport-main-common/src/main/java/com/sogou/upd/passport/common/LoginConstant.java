@@ -8,6 +8,8 @@ package com.sogou.upd.passport.common;
  */
 public class LoginConstant {
 
+    public static final String PASSPORTID_COOKIE_ID = "passport_id";
+
     /**
      * 连续登陆失败多少次需要用户在登陆时输入验证码 >=
      */
