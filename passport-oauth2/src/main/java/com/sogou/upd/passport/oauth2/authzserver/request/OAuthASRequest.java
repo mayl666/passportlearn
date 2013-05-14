@@ -64,7 +64,7 @@ public abstract class OAuthASRequest {
 
     public int getClientId() {
         String value = getParam(OAuth.OAUTH_CLIENT_ID);
-        return value == null ? null : Integer.valueOf(value);
+        return value == null ? 0 : Integer.valueOf(value);
     }
 
     public String getRedirectURI() {

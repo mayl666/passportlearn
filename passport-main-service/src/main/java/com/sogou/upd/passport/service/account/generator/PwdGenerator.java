@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.math.Coder;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -48,6 +49,9 @@ public class PwdGenerator {
     public static String generatorStoredPwd(String pwd, boolean needMD5) throws Exception {
         try {
             String salt = RandomStringUtils.randomAlphanumeric(8);
+            if (Strings.isNullOrEmpty(pwd)) {
+                return "";
+            }
             String pwdMD5 = needMD5 ? DigestUtils.md5Hex(pwd.getBytes()) : pwd;
             String cryptPwd = Crypt.crypt(pwdMD5, MD5_SIGN + salt);
             if (cryptPwd.startsWith(MD5_SIGN)) {

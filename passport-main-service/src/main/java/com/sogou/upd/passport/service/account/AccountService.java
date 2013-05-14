@@ -21,7 +21,7 @@ public interface AccountService {
   /**
    * 初始化非第三方用户账号
    */
-  public Account initialAccount(String username, String password, String ip, int provider)
+  public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider)
       throws ServiceException;
 
   /**
@@ -54,7 +54,7 @@ public interface AccountService {
    *
    * @return 用户名或密码不匹配，则返回null
    */
-  public Account verifyUserPwdVaild(String passportId, String password) throws ServiceException;
+  public Account verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
 
   /**
    * 根据passportId删除Account，内部debug接口使用
@@ -64,7 +64,7 @@ public interface AccountService {
   /**
    * 重置密码
    */
-  public boolean resetPassword(String passportId, String password) throws ServiceException;
+  public boolean resetPassword(String passportId, String password, boolean needMD5) throws ServiceException;
 
   /**
    * 根据ip看是否在黑名单中
