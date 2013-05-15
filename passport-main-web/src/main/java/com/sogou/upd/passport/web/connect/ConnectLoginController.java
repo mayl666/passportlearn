@@ -40,7 +40,7 @@ public class ConnectLoginController extends BaseConnectController {
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = "/v2/connect/ssologin/{providerStr}", method = RequestMethod.POST)
+    @RequestMapping(value = {"/v2/connect/ssologin/{providerStr}", "/connect/ssologin/sina"}, method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
         Result result;
