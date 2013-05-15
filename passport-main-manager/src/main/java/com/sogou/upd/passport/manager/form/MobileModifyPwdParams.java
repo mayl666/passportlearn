@@ -25,7 +25,7 @@ public class MobileModifyPwdParams {
     private String smscode;
     @NotBlank(message = "client_id不允许为空!")
     private String client_id;
-    private int pwd_type; // 可选项，缺省为MD5，1-明文
+    private int pwd_type = 0; // 可选项，缺省为MD5，1-明文
 
     @AssertTrue(message = "请输入正确的手机号!")
     private boolean isValidPhone() {

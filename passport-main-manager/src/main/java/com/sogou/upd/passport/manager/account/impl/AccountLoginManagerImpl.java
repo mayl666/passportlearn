@@ -41,7 +41,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
         int clientId = oauthRequest.getClientId();
         String instanceId = oauthRequest.getInstanceId();
         int pwdType = oauthRequest.getPwdType();
-        boolean needMD5 = pwdType == PasswordTypeEnum.MD5.getValue() ? true : false;
+        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
 
         try {
             // 檢查不同的grant types是否正確
