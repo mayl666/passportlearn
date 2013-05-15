@@ -123,4 +123,14 @@ public interface AccountService {
      * @return
      */
   public boolean clearLoginFailedNum(String passportId);
+
+    /**
+     * 修改绑定手机
+     *
+     * @param passportId
+     * @param newMobile
+     * @return
+     * @throws ServiceException
+     */
+  public boolean modifyMobile(String passportId, String newMobile);
 }
