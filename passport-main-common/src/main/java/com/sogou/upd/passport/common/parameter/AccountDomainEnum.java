@@ -71,6 +71,21 @@ public enum AccountDomainEnum {
         return getDomain("unknown");
     }
 
+    /**
+     * 通过账户来获取类型
+     * @param username
+     * @return
+     */
+    public static AccountDomainEnum getAccountDomainEnum(String username){
+        int domain=AccountDomainEnum.getAccountDomain(username);
+        for(AccountDomainEnum accountDomainEnum:values()){
+            if(accountDomainEnum.getValue()==domain){
+                return accountDomainEnum;
+            }
+        }
+        return AccountDomainEnum.UNKNOWN;
+    }
+
     @Override
     public String toString() {
         return getDomainStr(getValue());
