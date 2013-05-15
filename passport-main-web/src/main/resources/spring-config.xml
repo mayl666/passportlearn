@@ -50,9 +50,19 @@
             <mvc:mapping path="/**"/>
             <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
         </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.sogou.upd.passport.web.inteceptor.LoggingInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
+        </mvc:interceptor>
     </mvc:interceptors>
 
     <mvc:default-servlet-handler/>
+
+
 
     <!-- 特定对象mapper，用于注入对特定字符进行转义的类 -->
     <!-- <bean id="CustomObjectMapper" class="com.sogou.upd.passport.common.web.CustomObjectMapper"/> -->
@@ -66,6 +76,9 @@
             </list>
         </property>
     </bean>
+
+
+
     <bean id="stringHttpMessageConverter"
           class="org.springframework.http.converter.StringHttpMessageConverter">
         <property name="supportedMediaTypes">

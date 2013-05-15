@@ -115,7 +115,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
 
         //校验密码及用户状态
         Account account = accountService
-                .verifyUserPwdVaild(passportId, parameters.getPassword());
+                .verifyUserPwdVaild(passportId, parameters.getPassword(),true);
         if (account == null) {
             result= Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
         } else if (!account.isNormalAccount()) {

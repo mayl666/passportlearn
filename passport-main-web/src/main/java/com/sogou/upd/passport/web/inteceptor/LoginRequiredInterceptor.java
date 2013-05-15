@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.method.HandlerMethod;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
+import org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler;
 
 /**
  * 用于拦截带有@LoginRequired注解的方法
@@ -19,7 +20,12 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
     private HostHolder hostHolder;
 
     public boolean preHandle(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, java.lang.Object handler) throws java.lang.Exception {
+        if(!(handler instanceof HandlerMethod)){
+            return true;
+        }
+
         HandlerMethod handlerMethod = (HandlerMethod) handler;
+
         LoginRequired loginRequired= handlerMethod.getMethodAnnotation(LoginRequired.class);
 
         if(loginRequired==null||!loginRequired.value()){
@@ -36,7 +42,8 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
             case xml:
             case forward:
             case redirect:
-            default: response.getWriter().write(loginRequired.message());
+            default:
+                response.getWriter().write(loginRequired.message());
         }
         return false;
     }

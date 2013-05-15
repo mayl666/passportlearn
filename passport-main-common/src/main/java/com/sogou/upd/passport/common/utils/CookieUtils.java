@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.utils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -27,5 +28,17 @@ public class CookieUtils {
             }
         }
         return null;
+    }
+
+    public static void setCookie(HttpServletResponse response, String key, String value, int maxAge) {
+        Cookie cookie = new Cookie(key, value);
+
+        cookie.setPath("/");
+
+//        cookie.setDomain(".sogou.com");
+        if (maxAge > 0) {
+            cookie.setMaxAge(maxAge);
+        }
+        response.addCookie(cookie);
     }
 }

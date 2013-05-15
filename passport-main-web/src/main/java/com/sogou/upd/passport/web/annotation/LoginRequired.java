@@ -22,7 +22,7 @@ public @interface LoginRequired {
 
     boolean value() default true;
 
-    String message() default "请先登录，再进行操作！";
+    String message() default "LOGIN FIRST!";
 
     LoginRequiredResultType resultType() default LoginRequiredResultType.json;
 }
