@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
@@ -205,9 +206,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         String smsCode = regParams.getSmscode();
         String password = regParams.getPassword();
         int clientId = Integer.parseInt(regParams.getClient_id());
-//        int pwdType = regParams.getPwd_type();
-//        boolean needMD5 = pwdType == PasswordTypeEnum.MD5.getValue() ? true : false;
-        // TODO needMD5改成false
+        int pwdType = regParams.getPwd_type();
+        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
 
         try {
             //验证手机号码与验证码是否匹配
@@ -225,7 +225,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
 
-            if (!accountService.resetPassword(passportId, password, true)) {
+            if (!accountService.resetPassword(passportId, password, needMD5)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             // 异步更新accountToken信息
