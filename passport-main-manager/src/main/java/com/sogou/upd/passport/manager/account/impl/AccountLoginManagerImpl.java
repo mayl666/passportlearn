@@ -43,8 +43,6 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     public Result authorize(OAuthTokenASRequest oauthRequest) {
         int clientId = oauthRequest.getClientId();
         String instanceId = oauthRequest.getInstanceId();
-        int pwdType = oauthRequest.getPwdType();
-        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
 
         try {
             // 檢查不同的grant types是否正確
@@ -55,6 +53,8 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 if (Strings.isNullOrEmpty(passportId)) {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 }
+                int pwdType = oauthRequest.getPwdType();
+                boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
                 Account account = accountService
                         .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
                 if (account == null) {
