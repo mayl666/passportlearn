@@ -72,6 +72,15 @@ public interface AccountDAO {
                                                                          DataAccessException;
 
   /**
+   * 修改绑定手机
+   */
+  @SQL("update " +
+          TABLE_NAME +
+          " set mobile=:mobile where passport_id=:passport_id")
+  public int modifyMobile(@SQLParam("mobile") String mobile,
+                          @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
+  /**
    * 验证合法，用户注册
    */
   @SQL(
