@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.StringUtil;
@@ -42,6 +43,8 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     public Result authorize(OAuthTokenASRequest oauthRequest) {
         int clientId = oauthRequest.getClientId();
         String instanceId = oauthRequest.getInstanceId();
+        int pwdType = oauthRequest.getPwdType();
+        boolean needMD5 = pwdType == PasswordTypeEnum.MD5.getValue() ? true : false;
 
         try {
             // 檢查不同的grant types是否正確
@@ -53,7 +56,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 }
                 Account account = accountService
-                        .verifyUserPwdVaild(passportId, oauthRequest.getPassword());
+                        .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
                 if (account == null) {
                     return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
                 } else if (!account.isNormalAccount()) {
