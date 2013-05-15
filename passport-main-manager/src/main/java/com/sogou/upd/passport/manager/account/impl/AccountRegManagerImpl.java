@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**
@@ -57,9 +55,9 @@ public class AccountRegManagerImpl implements AccountRegManager {
         String password = regParams.getPassword();
         int clientId = Integer.parseInt(regParams.getClient_id());
         String instanceId = regParams.getInstance_id();
-//        int pwdType = regParams.getPwd_type();
-//        boolean needMD5 = pwdType == PasswordTypeEnum.MD5.getValue() ? true : false;
-        // TODO needMD5改成false
+        int pwdType = regParams.getPwd_type();
+        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
+
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
         if (!checkSmsInfo) {
@@ -67,7 +65,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
         }
         Account
                 account =
-                accountService.initialAccount(mobile, password, true, ip, AccountTypeEnum.PHONE.getValue());
+                accountService.initialAccount(mobile, password, needMD5, ip, AccountTypeEnum.PHONE.getValue());
         if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
             boolean
                     isInitialMobilePassportMapping =
@@ -113,7 +111,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
             //写缓存，发验证邮件
             switch (emailType) {
                 case 1://sogou用户，直接注册
-                    Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum.EMAIL.getValue());
+                    Account account = accountService.initialAccount(username, password, false, ip, AccountTypeEnum.EMAIL.getValue());
                     if (account != null) {
                         return Result.buildSuccess("注册成功！");
                     } else {
@@ -183,9 +181,23 @@ public class AccountRegManagerImpl implements AccountRegManager {
         return accountService.getCaptchaCode(code);
     }
 
-    @Override
-    public Result checkCaptchaCodeIsVaild(String token, String captchaCode) {
-        return accountService.checkCaptchaCodeIsVaild(token, captchaCode);
+  @Override
+  public Result isAllowRegister(String username, String ip, String token, String captchaCode)  throws Exception{
+    Result result=null;
+    try {
+      //校验是否在黑名单中
+      if(!accountService.isInAccountBlackListByIp(username,ip)){
+        result= Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
+        return result;
+      }
+
+      //校验验证码
+      result=accountService.checkCaptchaCodeIsVaild(token,captchaCode);
+    }catch (ServiceException e){
+      logger.error("isAllowRegister fail,username:" + username, e);
+      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
     }
+    return result;
+  }
 
 }

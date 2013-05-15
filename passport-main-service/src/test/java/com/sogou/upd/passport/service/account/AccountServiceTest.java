@@ -20,7 +20,9 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     private AccountService accountService;
 
     private static final String MOBILE = "13545210241";
+    private static final String NEW_MOBILE = "13800000000";
     private static final String PASSWORD = "liuling8";
+    private static final String PASSPORT_ID1 = "13552848876@sohu.com";
     private static final
     String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
@@ -90,5 +92,20 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
         } else {
             System.out.println("重置失败!!!");
         }
+    }
+
+    /**
+     * 测试修改绑定手机
+     */
+    @Test
+    public void testModifyMobile() {
+        Account account = accountService.queryAccountByPassportId(PASSPORT_ID1);
+        boolean flag = accountService.modifyMobile(PASSPORT_ID1, NEW_MOBILE);
+        if (flag == true) {
+            System.out.println("修改成功：" + accountService.queryAccountByPassportId(PASSPORT_ID1).getMobile());
+        } else {
+            System.out.println("修改失败");
+        }
+        accountService.modifyMobile(PASSPORT_ID1, account.getMobile());
     }
 }
