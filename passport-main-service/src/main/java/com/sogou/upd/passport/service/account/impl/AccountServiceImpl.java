@@ -156,16 +156,12 @@ public class AccountServiceImpl implements AccountService {
         } catch (ServiceException e) {
             throw e;
         }
-        String storedPasswd = userAccount.getPasswd();
         try {
-            String pwdSign_old = PwdGenerator.generatorPwdSign(password);  // TODO 日后要删除
-            // TODO 暂时做两个判断，日后要将第一个判断删除
-            if (userAccount != null && pwdSign_old.equals(storedPasswd)) {
+            if (userAccount != null && PwdGenerator.verify(password, needMD5, userAccount.getPasswd())) {
                 return userAccount;
-            } else if (PwdGenerator.verify(password, needMD5, storedPasswd)) {
-                return userAccount;
+            } else {
+                return null;
             }
-            return null;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
