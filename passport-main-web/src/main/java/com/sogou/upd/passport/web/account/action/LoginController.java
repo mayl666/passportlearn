@@ -31,49 +31,49 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/web")
 public class LoginController extends BaseController {
-
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-
-    @Autowired
-    private AccountLoginManager accountLoginManager;
-
-
-    @RequestMapping(value = "/testLoginRequired", method = RequestMethod.GET)
-    @LoginRequired
-    @ResponseBody
-    public String testLoginRequired(){
-        return "ok";
-    }
-
-
-
-    /**
-     * web端的登陆接口
-     *
-     * @param request
-     * @param loginParams 登陆需要的参数
-     * @return
-     * @url /web/login
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    @ResponseBody
-    public Object login(HttpServletRequest request,HttpServletResponse response, WebLoginParameters loginParams) {
-//        //参数验证
-//        String validateResult = ControllerHelper.validateParams(loginParams);
-//        if (!Strings.isNullOrEmpty(validateResult)) {
-//            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+//
+//    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+//
+//    @Autowired
+//    private AccountLoginManager accountLoginManager;
+//
+//
+//    @RequestMapping(value = "/testLoginRequired", method = RequestMethod.GET)
+//    @LoginRequired
+//    @ResponseBody
+//    public String testLoginRequired(){
+//        return "ok";
+//    }
+//
+//
+//
+//    /**
+//     * web端的登陆接口
+//     *
+//     * @param request
+//     * @param loginParams 登陆需要的参数
+//     * @return
+//     * @url /web/login
+//     */
+//    @RequestMapping(value = "/login", method = RequestMethod.GET)
+//    @ResponseBody
+//    public Object login(HttpServletRequest request,HttpServletResponse response, WebLoginParameters loginParams) {
+////        //参数验证
+////        String validateResult = ControllerHelper.validateParams(loginParams);
+////        if (!Strings.isNullOrEmpty(validateResult)) {
+////            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+////        }
+////
+////        Result result = accountLoginManager.accountLogin(loginParams);
+////
+////        if (result.isSuccess()) {
+////
+////        }
+////
+////        return null;
+//        if(!StringUtil.isBlank(loginParams.getAccount())){
+//            CookieUtils.setCookie(response, LoginConstant.PASSPORTID_COOKIE_ID,loginParams.getAccount(),0);
 //        }
-//
-//        Result result = accountLoginManager.accountLogin(loginParams);
-//
-//        if (result.isSuccess()) {
-//
-//        }
-//
-//        return null;
-        if(!StringUtil.isBlank(loginParams.getAccount())){
-            CookieUtils.setCookie(response, LoginConstant.PASSPORTID_COOKIE_ID,loginParams.getAccount(),0);
-        }
-        return "ok";
-    }
+//        return "ok";
+//    }
 }
