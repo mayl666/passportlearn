@@ -5,7 +5,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
@@ -18,7 +17,6 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.manager.form.MoblieCodeParams;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +33,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/v2")
-public class AccountController extends BaseController {
+public class MobileAccountController extends BaseController {
 
-  private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+  private static final Logger logger = LoggerFactory.getLogger(MobileAccountController.class);
 
   @Autowired
   private AccountSecureManager accountSecureManager;
@@ -47,96 +45,6 @@ public class AccountController extends BaseController {
   private AccountManager accountManager;
   @Autowired
   private ConfigureManager configureManager;
-
-
-  /**
-   * web页面注册
-   *
-   * @param regParams 传入的参数
-   */
-  @RequestMapping(value = "/reguser", method = RequestMethod.POST)
-  @ResponseBody
-  public Object reguser(HttpServletRequest request, WebRegisterParameters regParams)
-      throws Exception {
-
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(regParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-    }
-
-    Result result = null;
-    String username=regParams.getUsername();
-    String ip = getIp(request);
-    //校验是否在黑名单中
-    if(!accountRegManager.isInAccountBlackList(username,ip)){
-        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
-    }
-
-    //验证码校验
-    String captchaCode = regParams.getVcode();
-    String token = regParams.getToken();
-
-    result = accountRegManager.checkCaptchaCodeIsVaild(token, captchaCode);
-    if (result != null) {
-      return result;
-    }
-
-    //密码格式校验 todo
-
-    //验证client_id
-    int clientId;
-    try {
-      clientId = Integer.parseInt(regParams.getClient_id());
-    } catch (NumberFormatException e) {
-      return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
-    }
-    //检查client_id格式以及client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
-
-    //验证用户是否注册过
-    if (!accountManager.isAccountExists(username)) {
-      result = accountRegManager.webRegister(regParams, ip);
-    } else {
-      result = result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-    }
-    return result;
-  }
-
-  /**
-   * 邮件激活
-   *
-   * @param activeParams 传入的参数
-   */
-  @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-  @ResponseBody
-  public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
-      throws Exception {
-
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(activeParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-    }
-    //验证client_id
-    int clientId;
-    try {
-      clientId = Integer.parseInt(activeParams.getClient_id());
-    } catch (NumberFormatException e) {
-      return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
-    }
-    //检查client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
-    String ip = getIp(request);
-    //邮件激活
-    Result result = accountRegManager.activeEmail(activeParams,ip);
-
-    return result;
-  }
 
   /**
    * 手机账号获取，重发手机验证码接口
