@@ -52,11 +52,9 @@ public interface AccountRegManager {
    * @return 验证码
    */
   public Map<String,Object> getCaptchaCode(String code);
-  /**
-   * 校验验证码是否匹配
-   *
-   * @return 匹配结果
+  /*
+   *检测是否允许注册
    */
-  public Result checkCaptchaCodeIsVaild(String token,String captchaCode);
+  public Result isAllowRegister(String username,String ip,String token, String captchaCode) throws Exception;
 
 }

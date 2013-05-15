@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.sogou.upd.passport.common.CommonHelper;
+
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Digits;
 
 /**
@@ -34,6 +37,11 @@ public class WebRegisterParameters {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  @AssertTrue(message = "密码必须为字母或数字且长度大于6位!")
+  private boolean isValidPassword() {
+    return CommonHelper.checkPasswd(this.password);
   }
 
   public String getPassword() {

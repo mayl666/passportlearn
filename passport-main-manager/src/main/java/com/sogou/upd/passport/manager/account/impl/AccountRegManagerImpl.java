@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**
@@ -183,9 +181,23 @@ public class AccountRegManagerImpl implements AccountRegManager {
         return accountService.getCaptchaCode(code);
     }
 
-    @Override
-    public Result checkCaptchaCodeIsVaild(String token, String captchaCode) {
-        return accountService.checkCaptchaCodeIsVaild(token, captchaCode);
+  @Override
+  public Result isAllowRegister(String username, String ip, String token, String captchaCode)  throws Exception{
+    Result result=null;
+    try {
+      //校验是否在黑名单中
+      if(!accountService.isInAccountBlackListByIp(username,ip)){
+        result= Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
+        return result;
+      }
+
+      //校验验证码
+      result=accountService.checkCaptchaCodeIsVaild(token,captchaCode);
+    }catch (ServiceException e){
+      logger.error("isAllowRegister fail,username:" + username, e);
+      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
     }
+    return result;
+  }
 
 }

@@ -24,6 +24,8 @@ public class Result {
 
     public static final String DEFAULT_MODEL_KEY = "value";
 
+    private static final String SUCCESS_STATUS="0";
+
     public Result() {
     }
 
@@ -75,6 +77,18 @@ public class Result {
     }
 
     /**
+     * 是否成功
+     *
+     * @return
+     */
+    public boolean isSuccess() {
+        if (this.getStatus() == null) {
+            return false;
+        }
+        return SUCCESS_STATUS.equals(this.getStatus());
+    }
+
+    /**
      * 根据错误码返回result对象
      *
      * @param statusText 成功信息描述
@@ -91,7 +105,7 @@ public class Result {
                 result.addDefaultModel(key, object);
             }
         }
-        result.setStatus("0");
+        result.setStatus(SUCCESS_STATUS);
         result.setStatusText(statusText);
         return result;
     }
@@ -104,7 +118,7 @@ public class Result {
    */
   public static Result buildSuccess(String statusText) {
     Result result = new Result();
-    result.setStatus("0");
+    result.setStatus(SUCCESS_STATUS);
     result.setStatusText(statusText);
     return result;
   }
@@ -136,4 +150,5 @@ public class Result {
         result.setStatusText(statusText);
         return result;
     }
+
 }

@@ -31,6 +31,10 @@ public class StringUtil {
     return StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
   }
 
+  public static boolean isBlank(String str) {
+    return StringUtils.isBlank(str) || str.equalsIgnoreCase("null");
+  }
+
   /**
    * 如果字符串是<code>null</code>或空字符串<code>""</code>，则返回指定默认字符串，否则返回字符串本身。
    * <pre>
