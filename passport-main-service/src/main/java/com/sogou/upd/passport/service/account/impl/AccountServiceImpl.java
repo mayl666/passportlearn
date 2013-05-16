@@ -392,6 +392,26 @@ public class AccountServiceImpl implements AccountService {
         return result;
     }
 
+    @Override
+    public boolean modifyMobile(String passportId, String newMobile) throws ServiceException {
+        try {
+            Account account = verifyAccountVaild(passportId);
+            if (account == null) {
+                return false;
+            }
+            int row = accountDAO.modifyMobile(newMobile, passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setMobile(newMobile);
+                redisUtils.set(cacheKey, account);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
     /*
      * 外域邮箱注册
      */
