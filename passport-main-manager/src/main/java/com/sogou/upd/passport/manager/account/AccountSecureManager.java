@@ -87,4 +87,73 @@ public interface AccountSecureManager {
      * 重置用户密码（邮件方式）---目前passportId与邮件申请链接中的uid一样
      */
     public Result resetPasswordByEmail(String passportId, int clientId, String password, String token) throws Exception;
+
+    /* --------------------------------------------修改密保内容-------------------------------------------- */
+
+    /**
+     * 验证手机短信随机码——用于新手机验证
+     *
+     * @param mobile
+     * @param clientId
+     * @param smsCode
+     * @return
+     * @throws Exception
+     */
+    public Result checkMobileCode(String mobile, int clientId, String smsCode) throws Exception;
+
+    /**
+     * 验证手机短信随机码——用于原绑定手机验证
+     *
+     * @param passportId
+     * @param clientId
+     * @param smsCode
+     * @return
+     * @throws Exception
+     */
+    public Result checkMobileCodeByPassportId(String passportId, int clientId, String smsCode) throws Exception;
+
+    /**
+     * 修改绑定手机
+     *
+     * @param passportId
+     * @param clientId
+     * @param newMobile
+     * @return
+     * @throws Exception
+     */
+    public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile) throws Exception;
+
+    /**
+     * 验证原绑定邮箱及发送邮件至待绑定邮箱
+     *
+     * @param passportId
+     * @param clientId
+     * @param newEmail
+     * @param oldEmail
+     * @return
+     * @throws Exception
+     */
+    public Result sendEmailForBinding(String passportId, int clientId, String newEmail, String oldEmail)
+            throws Exception;
+
+    /**
+     * 根据验证链接修改绑定邮箱
+     *
+     * @param passportId
+     * @param clientId
+     * @param token
+     * @return
+     * @throws Exception
+     */
+    public Result modifyEmailByPassportId(String passportId, int clientId, String token) throws Exception;
+
+    /**
+     * 发送手机验证码，不检测是否已注册或绑定
+     *
+     * @param mobile
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
 }

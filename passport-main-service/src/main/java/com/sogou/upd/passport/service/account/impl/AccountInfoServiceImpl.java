@@ -62,7 +62,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             accountInfo.setEmail(email);
             int row = accountInfoDAO.saveEmailOrInsert(passportId, accountInfo);
             if (row != 0) {
-                // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存 ---hjf 2013.5.3
+                // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
                 Type type = new TypeToken<AccountInfo>() {
                 }.getType();
@@ -72,11 +72,12 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
                 redisUtils.set(cacheKey, accountInfo);
+                return accountInfo;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return accountInfo;
+        return null;
     }
 
     @Override
@@ -89,7 +90,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             accountInfo.setAnswer(answer);
             int row = accountInfoDAO.saveQuesOrInsert(passportId, accountInfo);
             if (row != 0) {
-                // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存 ---hjf 2013.5.3
+                // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
                 Type type = new TypeToken<AccountInfo>() {
                 }.getType();
@@ -100,11 +101,12 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
                 redisUtils.set(cacheKey, accountInfo);
+                return accountInfo;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return accountInfo;
+        return null;
     }
 
     private String buildAccountInfoKey(String passportId) {
