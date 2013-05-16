@@ -42,4 +42,48 @@ public interface EmailSenderService {
      * @throws ServiceException
      */
     public boolean checkSendEmailForPwdLimited(String email, int clientId) throws ServiceException;
+
+    /**
+     * 发送绑定邮箱验证邮件
+     *
+     * @param uid 目前为passportId
+     * @param clientId
+     * @param address 待绑定邮箱
+     * @return
+     * @throws ServiceException
+     */
+    public boolean sendEmailForBinding(String uid, int clientId, String address) throws ServiceException;
+
+    /**
+     * 检查邮件发送次数限制
+     *
+     * @param email
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkSendEmailNumForBinding(String email, int clientId) throws ServiceException;
+
+    /**
+     * 验证邮件token，返回待绑定邮箱
+     *
+     * @param uid
+     * @param clientId
+     * @param token
+     * @return new email for binding
+     * @throws ServiceException
+     */
+    String checkEmailForBinding(String uid, int clientId, String token) throws ServiceException;
+
+
+
+    /**
+     * 删除验证token缓存
+     *
+     * @param uid
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    boolean deleteEmailCacheForBinding(String uid, int clientId) throws ServiceException;
 }
