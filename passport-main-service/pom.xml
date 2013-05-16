@@ -63,6 +63,10 @@
                     <groupId>org.springframework</groupId>
                     <artifactId>spring</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.54chen</groupId>
+                    <artifactId>paoding-rose-jade</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
