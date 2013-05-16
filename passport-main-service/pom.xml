@@ -49,11 +49,25 @@
             <artifactId>spring-jdbc</artifactId>
             <version>${springframework.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.sogou.passport</groupId>
             <artifactId>rose-jade</artifactId>
             <version>1.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.54chen</groupId>
+            <artifactId>paoding-rose-scanning</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jvnet.hudson</groupId>
+            <artifactId>commons-jexl</artifactId>
+            <version>1.1-hudson-20090508</version>
+        </dependency>
+
         <dependency>
             <groupId>com.54chen</groupId>
             <artifactId>bmwutils</artifactId>
