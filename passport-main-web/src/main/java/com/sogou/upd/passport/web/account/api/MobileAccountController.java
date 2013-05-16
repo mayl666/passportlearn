@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
  * File Templates.
  */
 @Controller
-@RequestMapping("/v2")
 public class MobileAccountController extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(MobileAccountController.class);
@@ -51,7 +50,7 @@ public class MobileAccountController extends BaseController {
    *
    * @param reqParams 传入的参数
    */
-  @RequestMapping(value = "/sendmobilecode", method = RequestMethod.GET)
+  @RequestMapping(value = {"/v2/sendmobilecode", "/mobile/sendsms"}, method = RequestMethod.GET)
   @ResponseBody
   public Object sendMobileCode(MoblieCodeParams reqParams)
       throws Exception {
@@ -85,7 +84,7 @@ public class MobileAccountController extends BaseController {
   /**
    * 手机账号正式注册调用
    */
-  @RequestMapping(value = "/mobile/reg", method = RequestMethod.POST)
+  @RequestMapping(value = {"/v2/mobile/reg", "/mobile/regmobileuser"}, method = RequestMethod.POST)
   @ResponseBody
   public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
     // 请求参数校验，必填参数是否正确，手机号码格式是否正确
@@ -121,7 +120,7 @@ public class MobileAccountController extends BaseController {
   /**
    * 找回用户密码
    */
-  @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
+  @RequestMapping(value = {"/v2/findpwd", "/mobile/sendfpwdsms"}, method = RequestMethod.GET)
   @ResponseBody
   public Object findPassword(MoblieCodeParams reqParams)
       throws Exception {
@@ -156,7 +155,7 @@ public class MobileAccountController extends BaseController {
   /**
    * 重置密码
    */
-  @RequestMapping(value = "/mobile/resetpwd", method = RequestMethod.POST)
+  @RequestMapping(value = {"/v2/mobile/resetpwd","/mobile/resetmobilepwd"}, method = RequestMethod.POST)
   @ResponseBody
   public Object resetPassword(MobileModifyPwdParams regParams) throws Exception {
 
