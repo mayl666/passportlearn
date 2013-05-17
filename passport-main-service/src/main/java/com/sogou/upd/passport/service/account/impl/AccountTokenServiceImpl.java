@@ -160,10 +160,12 @@ public class AccountTokenServiceImpl implements AccountTokenService {
             @Override
             public void run() {
                 //根据该用户的id去auth表里查询用户状态记录，返回list
+                // TODO 查缓存
                 List<AccountToken> allAccountTokens = accountTokenDAO.listAccountTokenByPassportIdAndClientId(passportId);
                 buildUpdateAccountTokens(allAccountTokens, clientId);
                 if (CollectionUtils.isNotEmpty(allAccountTokens)) {
                     accountTokenDAO.batchUpdateAccountToken(allAccountTokens);
+                    // TODO 批量更新AccountToken缓存
                 }
             }
         });

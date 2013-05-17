@@ -53,7 +53,7 @@ public class PwdGenerator {
                 return "";
             }
             String pwdMD5 = needMD5 ? DigestUtils.md5Hex(pwd.getBytes()) : pwd;
-            String cryptPwd = Crypt.crypt(pwdMD5, MD5_SIGN + salt);
+            String cryptPwd = Crypt.crypt(pwdMD5.toLowerCase(), MD5_SIGN + salt);
             if (cryptPwd.startsWith(MD5_SIGN)) {
                 cryptPwd = cryptPwd.substring(3);
             }

@@ -423,7 +423,7 @@ public class AccountServiceImpl implements AccountService {
         String passwordSign = null;
         try {
             if (!Strings.isNullOrEmpty(password)) {
-                passwordSign = PwdGenerator.generatorPwdSign(password);
+                passwordSign = PwdGenerator.generatorStoredPwd(password,false);
             }
             account.setPasswd(passwordSign);
             account.setRegTime(new Date());
