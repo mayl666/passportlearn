@@ -50,7 +50,6 @@
             <mvc:mapping path="/**"/>
             <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
         </mvc:interceptor>
-        <!--
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <bean class="com.sogou.upd.passport.web.inteceptor.LoggingInterceptor"/>
@@ -59,7 +58,6 @@
             <mvc:mapping path="/**"/>
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
         </mvc:interceptor>
-        -->
     </mvc:interceptors>
 
     <mvc:default-servlet-handler/>
