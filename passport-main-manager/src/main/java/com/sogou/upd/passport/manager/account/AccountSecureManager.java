@@ -55,9 +55,10 @@ public interface AccountSecureManager {
      *
      * @param passportId
      * @param clientId
+     * @param mode 邮件选择方式，1为注册邮箱，其他为绑定邮箱
      * @throws Exception
      */
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId) throws Exception;
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, int mode) throws Exception;
 
     /**
      * 验证重置密码申请邮件

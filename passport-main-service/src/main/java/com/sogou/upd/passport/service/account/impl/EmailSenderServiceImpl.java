@@ -76,21 +76,14 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
 
             // 设置邮件发送次数限制
-            String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM + address;
+            String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM + address + "_"
+                                   + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                // cacheKey存在，则检查resetTime
-                Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(resetCacheKey);
-                Date date = DateUtil.parse(mapCacheResetNumResult.get("sendTime"), DateUtil.DATE_FMT_3);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                if (diff < MailUtils.MAX_EMAIL_COUNT_ONEDAY && diff >= 0) {
-                    // 是当日键值，递增失败次数
-                    redisUtils.hIncrBy(resetCacheKey, "sendNum");
-                    return true;
-                }
+                redisUtils.increment(resetCacheKey);
+            } else {
+                redisUtils.set(resetCacheKey, "1");
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             }
-            redisUtils.hPut(resetCacheKey, "sendNum", "1");
-            redisUtils.hPut(resetCacheKey, "sendTime", DateUtil.format(new Date(), DateUtil.DATE_FMT_2));
-            redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
 
         } catch(MailException me) {
             return false;
@@ -130,19 +123,13 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     @Override
     public boolean checkSendEmailForPwdLimited(String email, int clientId) throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM + email;
+            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM + email + "_"
+                              + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
-                Map<String, String> mapCacheSendEmailNumResult = redisUtils.hGetAll(cacheKey);
-                Date date = DateUtil.parse(mapCacheSendEmailNumResult.get("sendTime"),
-                                           DateUtil.DATE_FMT_2);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
-                    // 是当日键值，验证是否超过次数
-                    int checkNum = Integer.parseInt(mapCacheSendEmailNumResult.get("sendNum"));
-                    if (checkNum > MailUtils.MAX_EMAIL_COUNT_ONEDAY) {
-                        // 当日密码修改次数不超过上限
-                        return false;
-                    }
+                int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
+                if (checkNum > MailUtils.MAX_EMAIL_COUNT_ONEDAY) {
+                    // 当日密码修改次数不超过上限
+                    return false;
                 }
             }
             return true;
@@ -181,8 +168,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
 
             // 设置邮件发送次数限制
-            String resetCacheKey = CACHE_PREFIX_PASSPORTID_BINDEMAILSENDNUM + address +
-                    DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            String resetCacheKey = CACHE_PREFIX_PASSPORTID_BINDEMAILSENDNUM + address + "_"
+                    + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
             } else {
@@ -220,8 +207,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     @Override
     public boolean checkSendEmailNumForBinding(String email, int clientId) throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_PASSPORTID_BINDEMAILSENDNUM + email +
-                    DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            String cacheKey = CACHE_PREFIX_PASSPORTID_BINDEMAILSENDNUM + email + "_"
+                    + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
                 if (checkNum > MailUtils.MAX_EMAIL_COUNT_ONEDAY) {
