@@ -198,19 +198,13 @@ public class AccountServiceImpl implements AccountService {
             if (account == null) {
                 return false;
             }
-            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
+            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
+                              DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
-                Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(cacheKey);
-                Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"),
-                        DateUtil.DATE_FMT_2);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
-                    // 是当日键值，验证是否超过次数
-                    int checkNum = Integer.parseInt(mapCacheResetNumResult.get("resetNum"));
-                    if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
-                        // 当日密码修改次数不超过上限
-                        return false;
-                    }
+                int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
+                if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
+                    // 当日验证码输入错误次数不超过上限
+                    return false;
                 }
             }
             return true;
@@ -234,22 +228,14 @@ public class AccountServiceImpl implements AccountService {
                 redisUtils.set(cacheKey, account);
 
                 // 设置密码修改次数限制
-                String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
+                String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
+                                       DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
                 if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                    // cacheKey存在，则检查resetTime
-                    Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(resetCacheKey);
-                    Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"), DateUtil.DATE_FMT_3);
-                    long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                    if (diff < DateAndNumTimesConstant.RESETNUM_LIMITED && diff >= 0) {
-                        // 是当日键值，递增失败次数
-                        redisUtils.hIncrBy(resetCacheKey, "resetNum");
-                        return true;
-                    }
+                    redisUtils.increment(resetCacheKey);
+                } else {
+                    redisUtils.set(resetCacheKey, "1");
+                    redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
                 }
-                redisUtils.hPut(resetCacheKey, "resetNum", "1");
-                redisUtils.hPut(resetCacheKey, "resetTime", DateUtil.format(new Date(), DateUtil.DATE_FMT_2));
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-
                 return true;
             }
         } catch (Exception e) {
