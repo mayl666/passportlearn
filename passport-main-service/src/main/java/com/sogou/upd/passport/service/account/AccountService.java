@@ -64,7 +64,7 @@ public interface AccountService {
   /**
    * 重置密码
    */
-  public boolean resetPassword(String passportId, String password, boolean needMD5) throws ServiceException;
+  public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
 
   /**
    * 根据ip看是否在黑名单中
@@ -127,10 +127,10 @@ public interface AccountService {
     /**
      * 修改绑定手机
      *
-     * @param passportId
+     * @param account
      * @param newMobile
      * @return
      * @throws ServiceException
      */
-  public boolean modifyMobile(String passportId, String newMobile);
+  public boolean modifyMobile(Account account, String newMobile);
 }

@@ -210,12 +210,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean resetPassword(String passportId, String password, boolean needMD5) throws ServiceException {
+    public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException {
         try {
-            Account account = queryNormalAccount(passportId);
-            if (account == null) {
-                return false;
-            }
+            String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.modifyPassword(passwdSign, passportId);
             if (row != 0) {
@@ -375,12 +372,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean modifyMobile(String passportId, String newMobile) throws ServiceException {
+    public boolean modifyMobile(Account account, String newMobile) throws ServiceException {
         try {
-            Account account = queryNormalAccount(passportId);
-            if (account == null) {
-                return false;
-            }
+            String passportId = account.getPassportId();
             int row = accountDAO.modifyMobile(newMobile, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);

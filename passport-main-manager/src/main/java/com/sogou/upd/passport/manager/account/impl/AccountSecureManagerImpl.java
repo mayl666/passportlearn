@@ -218,11 +218,16 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
 
+            Account account = accountService.queryNormalAccount(passportId);
+            if (account == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
+
             if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
 
-            if (!accountService.resetPassword(passportId, password, needMD5)) {
+            if (!accountService.resetPassword(account, password, needMD5)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             // 异步更新accountToken信息
@@ -341,6 +346,10 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result resetPasswordByQues(String passportId, int clientId, String password,
                                       String answer) throws Exception {
         try {
+            Account account = accountService.queryNormalAccount(passportId);
+            if (account == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
             if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
@@ -352,7 +361,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (!answer.equals(answerBind)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
             }
-            if (!accountService.resetPassword(passportId, password, true)) {
+            if (!accountService.resetPassword(account, password, true)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             return Result.buildSuccess("重置密码成功！");
@@ -365,13 +374,17 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     @Override
     public Result resetPasswordByEmail(String passportId, int clientId, String password, String token) throws Exception {
         try {
+            Account account = accountService.queryNormalAccount(passportId);
+            if (account == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
             if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             if (!emailSenderService.checkEmailForResetPwd(passportId, clientId, token)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             }
-            if (!accountService.resetPassword(passportId, password, true)) {
+            if (!accountService.resetPassword(account, password, true)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             // 删除邮件链接token缓存
@@ -410,7 +423,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             }
 
-            if (!accountService.resetPassword(passportId, password, true)) {
+            if (!accountService.resetPassword(account, password, true)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             //清除验证码的缓存
@@ -492,7 +505,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
 
-            if (!accountService.modifyMobile(passportId, newMobile)) {
+            if (!accountService.modifyMobile(account, newMobile)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
             }
             mobilePassportMappingService.deleteMobilePassportMapping(account.getMobile());

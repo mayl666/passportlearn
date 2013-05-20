@@ -59,7 +59,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyAccountVaild() {
-        Account account = accountService.queryAccountValid(PASSPORT_ID);
+        Account account = accountService.queryNormalAccount(PASSPORT_ID);
         if (account != null) {
             System.out.println("用户存在...");
         } else {
@@ -86,7 +86,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testResetPassword() {
-        boolean flag = accountService.resetPassword(MOBILE, PASSWORD, true);
+        Account account = accountService.queryNormalAccount(PASSPORT_ID);
+        boolean flag = accountService.resetPassword(account, PASSWORD, true);
         if (flag != false) {
             System.out.println("重置成功...");
         } else {
@@ -100,12 +101,12 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testModifyMobile() {
         Account account = accountService.queryAccountByPassportId(PASSPORT_ID1);
-        boolean flag = accountService.modifyMobile(PASSPORT_ID1, NEW_MOBILE);
+        boolean flag = accountService.modifyMobile(account, NEW_MOBILE);
         if (flag == true) {
             System.out.println("修改成功：" + accountService.queryAccountByPassportId(PASSPORT_ID1).getMobile());
         } else {
             System.out.println("修改失败");
         }
-        accountService.modifyMobile(PASSPORT_ID1, account.getMobile());
+        accountService.modifyMobile(account, account.getMobile());
     }
 }
