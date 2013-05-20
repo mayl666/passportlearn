@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 
 /**
@@ -43,12 +44,11 @@ public interface AccountSecureManager {
     /**
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理
      *
-     * @param passportId
-     * @param clientId
+     * @param params
      * @return
      * @throws Exception
      */
-    public Result queryAccountSecureInfo(String passportId, int clientId) throws Exception;
+    public Result queryAccountSecureInfo(AccountSecureInfoParams params) throws Exception;
 
     /**
      * 发送重置密码申请验证邮件
@@ -100,7 +100,7 @@ public interface AccountSecureManager {
      * @return
      * @throws Exception
      */
-    public Result checkMobileCode(String mobile, int clientId, String smsCode) throws Exception;
+    public Result checkMobileCodeByNewMobile(String mobile, int clientId, String smsCode) throws Exception;
 
     /**
      * 验证手机短信随机码——用于原绑定手机验证
