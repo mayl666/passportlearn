@@ -59,7 +59,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyAccountVaild() {
-        Account account = accountService.verifyAccountVaild(PASSPORT_ID);
+        Account account = accountService.queryAccountValid(PASSPORT_ID);
         if (account != null) {
             System.out.println("用户存在...");
         } else {
