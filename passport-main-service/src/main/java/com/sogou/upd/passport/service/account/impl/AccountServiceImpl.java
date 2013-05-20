@@ -168,7 +168,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account verifyAccountVaild(String passportId) throws ServiceException {
+    public Account queryAccountValid(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
         if (account.isNormalAccount()) {
             return account;
@@ -194,7 +194,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean checkResetPwdLimited(String passportId) throws ServiceException {
         try {
-            Account account = verifyAccountVaild(passportId);
+            Account account = queryAccountValid(passportId);
             if (account == null) {
                 return false;
             }
@@ -216,7 +216,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean resetPassword(String passportId, String password, boolean needMD5) throws ServiceException {
         try {
-            Account account = verifyAccountVaild(passportId);
+            Account account = queryAccountValid(passportId);
             if (account == null) {
                 return false;
             }
@@ -381,7 +381,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean modifyMobile(String passportId, String newMobile) throws ServiceException {
         try {
-            Account account = verifyAccountVaild(passportId);
+            Account account = queryAccountValid(passportId);
             if (account == null) {
                 return false;
             }
