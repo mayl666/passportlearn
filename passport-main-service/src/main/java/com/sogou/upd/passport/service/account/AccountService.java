@@ -47,7 +47,7 @@ public interface AccountService {
    *
    * @return 验证不通过，则返回null
    */
-  public Account queryAccountValid(String passportId) throws ServiceException;
+  public Account queryNormalAccount(String passportId) throws ServiceException;
 
   /**
    * 验证用户名密码是否正确

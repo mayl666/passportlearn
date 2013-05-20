@@ -168,7 +168,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account queryAccountValid(String passportId) throws ServiceException {
+    public Account queryNormalAccount(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
         if (account.isNormalAccount()) {
             return account;
@@ -194,10 +194,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean checkResetPwdLimited(String passportId) throws ServiceException {
         try {
-            Account account = queryAccountValid(passportId);
-            if (account == null) {
-                return false;
-            }
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
                               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
@@ -216,7 +212,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean resetPassword(String passportId, String password, boolean needMD5) throws ServiceException {
         try {
-            Account account = queryAccountValid(passportId);
+            Account account = queryNormalAccount(passportId);
             if (account == null) {
                 return false;
             }
@@ -381,7 +377,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean modifyMobile(String passportId, String newMobile) throws ServiceException {
         try {
-            Account account = queryAccountValid(passportId);
+            Account account = queryNormalAccount(passportId);
             if (account == null) {
                 return false;
             }
