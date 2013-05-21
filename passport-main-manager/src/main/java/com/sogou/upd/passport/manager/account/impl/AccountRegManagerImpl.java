@@ -182,23 +182,23 @@ public class AccountRegManagerImpl implements AccountRegManager {
         return accountService.getCaptchaCode(code);
     }
 
-  @Override
-  public Result isAllowRegister(String username, String ip, String token, String captchaCode)  throws Exception{
-    Result result=null;
-    try {
-      //校验是否在黑名单中
-      if(!accountService.isInAccountBlackListByIp(username,ip)){
-        result= Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
-        return result;
-      }
+    @Override
+    public Result isAllowRegister(String username, String ip, String token, String captchaCode)  throws Exception{
+        try {
+            //校验是否在黑名单中
+            if(!accountService.isInAccountBlackListByIp(username,ip)){
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
+            }
 
-      //校验验证码
-      result=accountService.checkCaptchaCodeIsVaild(token,captchaCode);
-    }catch (ServiceException e){
-      logger.error("isAllowRegister fail,username:" + username, e);
-      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            //校验验证码
+            if (!accountService.checkCaptchaCodeIsVaild(token,captchaCode)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+            }
+            return Result.buildSuccess("允许注册");
+        }catch (ServiceException e){
+            logger.error("isAllowRegister fail,username:" + username, e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
     }
-    return result;
-  }
 
 }
