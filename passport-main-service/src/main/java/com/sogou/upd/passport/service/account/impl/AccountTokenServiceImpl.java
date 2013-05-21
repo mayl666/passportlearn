@@ -88,9 +88,8 @@ public class AccountTokenServiceImpl implements AccountTokenService {
         try {
             String cacheKey = buildAccountTokenKey(passportId);
             String key = buildAccountTokenSubKey(clientId, instanceId);
-            Type type = new TypeToken<AccountToken>() {
-            }.getType();
-            accountToken = redisUtils.hGetObject(cacheKey, key, type);
+
+            accountToken = redisUtils.hGetObject(cacheKey, key, AccountToken.class);
             if (accountToken == null) {
                 accountToken = accountTokenDAO.getAccountTokenByPassportId(passportId, clientId, instanceId);
                 if (accountToken != null) {
@@ -173,12 +172,11 @@ public class AccountTokenServiceImpl implements AccountTokenService {
                 // TODO:是否有线程同步问题？
                 List<AccountToken> allAccountTokens;
                 String cacheKey = buildAccountTokenKey(passportId);
-                Type type = new TypeToken<AccountToken>() {
-                }.getType();
+
                 if (redisUtils.checkKeyIsExist(cacheKey)) {
                     allAccountTokens = new LinkedList();
                     for (String subKey : redisUtils.hGetAll(cacheKey).keySet()) {
-                        allAccountTokens.add((AccountToken) redisUtils.hGetObject(cacheKey, subKey, type));
+                        allAccountTokens.add((AccountToken) redisUtils.hGetObject(cacheKey, subKey, AccountToken.class));
                     }
                 } else {
                     allAccountTokens = accountTokenDAO.listAccountTokenByPassportIdAndClientId(passportId);
@@ -188,7 +186,11 @@ public class AccountTokenServiceImpl implements AccountTokenService {
                     accountTokenDAO.batchUpdateAccountToken(allAccountTokens);
                     for (AccountToken accountToken : allAccountTokens) {
                         String key = buildAccountTokenSubKey(accountToken.getClientId(), accountToken.getInstanceId());
+                      try {
                         redisUtils.hPut(cacheKey, key, accountToken);
+                      } catch (Exception e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                      }
                     }
                 }
             }

@@ -1,19 +1,19 @@
 package com.sogou.upd.passport.service.connect.impl;
 
 import com.google.common.collect.Maps;
-import com.google.gson.reflect.TypeToken;
+
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectRelationDAO;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -50,10 +50,9 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
         Map<String, ConnectRelation> connectRelations = Maps.newHashMap();
         try {
             Map<String, String> appKeyMappingConnectRelation = redisUtils.hGetAll(cacheKey);
-            Type type = new TypeToken<ConnectRelation>() {
-            }.getType();
+
             if (!MapUtils.isEmpty(appKeyMappingConnectRelation)) {
-                connectRelations = RedisUtils.strMapToObjectMap(appKeyMappingConnectRelation, type);
+                connectRelations = RedisUtils.strMapToObjectMap(appKeyMappingConnectRelation, ConnectRelation.class);
             }
             if (MapUtils.isEmpty(connectRelations)) {
                 List<ConnectRelation> connectRelationList = connectRelationDAO.listConnectRelation(openid, provider);

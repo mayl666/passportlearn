@@ -15,6 +15,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
+import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
@@ -455,7 +456,30 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         }
     }
 
-    /* --------------------------------------------修改密保内容-------------------------------------------- */
+  @Override
+  public Result resetWebPassword(ResetPwdParameters resetPwdParameters)
+      throws Exception {
+    String username=null;
+    try {
+      username=resetPwdParameters.getPassport_id();
+      String password=resetPwdParameters.getPassword();
+      String newpwd=resetPwdParameters.getNewpwd();
+
+      Account account=new Account();
+      account.setPassportId(username);
+      account.setPasswd(password);
+
+//      accountService.resetPassword()
+
+
+    } catch (ServiceException e){
+      logger.error("resetWebPassword Fail username:"+username,e);
+      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+    }
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  /* --------------------------------------------修改密保内容-------------------------------------------- */
     /*
      * 验证手机短信随机码——用于新手机验证
      */

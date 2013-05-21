@@ -33,7 +33,7 @@
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath:deploy_config.properties</value>
+                <value>classpath:deploy_config_DEV.properties</value>
             </list>
         </property>
     </bean>

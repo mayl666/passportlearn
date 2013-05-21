@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
+import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 
 /**
  * 账户安全相关 User: mayan Date: 13-4-15 Time: 下午4:30 To change this template use File | Settings | File
@@ -82,7 +83,10 @@ public interface AccountSecureManager {
     /**
      * 重置用户密码（手机验证码方式）
      */
-    public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode) throws Exception;
+    public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode) throws Exception; /**
+     * 重置用户密码（web验证码方式）
+     */
+    public Result resetWebPassword(ResetPwdParameters resetPwdParameters) throws Exception;
 
     /**
      * 重置用户密码（邮件方式）---目前passportId与邮件申请链接中的uid一样

@@ -41,7 +41,7 @@
 
     <root>
         <priority value="${passport.log.level}"/>
-        <appender-ref ref="CONSOLE-ERROR"/>
+        <appender-ref ref="CONSOLE-DEBUG"/>
     </root>
 
 

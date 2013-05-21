@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.google.gson.reflect.TypeToken;
-
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
@@ -13,9 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Type;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-26 Time: 下午2:38 To change this template use
@@ -38,9 +33,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         AccountInfo accountInfo;
         try {
             String cacheKey = buildAccountInfoKey(passportId);
-            Type type = new TypeToken<AccountInfo>() {
-            }.getType();
-            accountInfo = redisUtils.getObject(cacheKey, type);
+            accountInfo = redisUtils.getObject(cacheKey, AccountInfo.class);
             if (accountInfo == null) {
                 accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 if (accountInfo != null) {
@@ -64,9 +57,8 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
-                Type type = new TypeToken<AccountInfo>() {
-                }.getType();
-                if ((accountInfo = (AccountInfo) redisUtils.getObject(cacheKey, type)) != null) {
+
+                if ((accountInfo = (AccountInfo) redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfo.setEmail(email);
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
@@ -92,9 +84,8 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
-                Type type = new TypeToken<AccountInfo>() {
-                }.getType();
-                if ((accountInfo = (AccountInfo) redisUtils.getObject(cacheKey, type)) != null) {
+         ;
+                if ((accountInfo = (AccountInfo) redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfo.setQuestion(question);
                     accountInfo.setAnswer(answer);
                 } else {
