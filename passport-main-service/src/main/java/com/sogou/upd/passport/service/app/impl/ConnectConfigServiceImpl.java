@@ -1,19 +1,18 @@
 package com.sogou.upd.passport.service.app.impl;
 
-import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.ConnectConfigDAO;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.lang.reflect.Type;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,9 +38,8 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
         try {
             String cacheKey = buildConnectConfigCacheKey(clientId, provider);
             //缓存根据clientId读取ConnectConfig
-            Type type = new TypeToken<ConnectConfig>() {
-            }.getType();
-            connectConfig = redisUtils.getObject(cacheKey, type);
+
+            connectConfig = redisUtils.getObject(cacheKey, ConnectConfig.class);
             if (connectConfig == null) {
                 //读取数据库
                 connectConfig = connectConfigDAO.getConnectConfigByClientIdAndProvider(clientId, provider);

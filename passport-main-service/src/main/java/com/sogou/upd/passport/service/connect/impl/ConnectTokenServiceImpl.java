@@ -1,18 +1,16 @@
 package com.sogou.upd.passport.service.connect.impl;
 
-import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Type;
 
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-3-24 Time: 下午8:08 To change this template
@@ -83,9 +81,8 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         ConnectToken connectToken;
         String cacheKey = buildConnectTokenCacheKey(passportId, provider, appKey);
         try {
-            Type type = new TypeToken<ConnectToken>() {
-            }.getType();
-            connectToken = redisUtils.getObject(cacheKey, type);
+
+            connectToken = redisUtils.getObject(cacheKey, ConnectToken.class);
             if (connectToken == null) {
                 //读取数据库
                 connectToken = connectTokenDAO.getSpecifyConnectToken(passportId, provider, appKey);

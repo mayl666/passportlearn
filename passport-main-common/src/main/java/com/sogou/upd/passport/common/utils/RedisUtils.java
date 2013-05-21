@@ -2,7 +2,8 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
+
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -12,7 +13,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +54,7 @@ public class RedisUtils {
     public void set(String key, Object obj) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.set(key, new Gson().toJson(obj));
+            valueOperations.set(key, new ObjectMapper().writeValueAsString(obj));
         } catch (Exception e) {
             log.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
             try {
@@ -124,14 +124,14 @@ public class RedisUtils {
      * 根据key取对象
      *
      * @param cacheKey
-     * @param returnType
+     * @param returnClass
      * @return
      */
-    public <T> T getObject(String cacheKey, Type returnType) {
+    public <T> T getObject(String cacheKey, Class returnClass) {
         try {
             String cacheStr = get(cacheKey);
             if (!Strings.isNullOrEmpty(cacheStr)) {
-                T object = new Gson().fromJson(cacheStr, returnType);
+              T object = (T) new ObjectMapper().readValue(cacheStr, returnClass);
                 return object;
             }
         } catch (Exception e) {
@@ -194,7 +194,7 @@ public class RedisUtils {
             for (String key : keySet) {
                 T obj = mapData.get(key);
                 if (obj != null) {
-                    objectMap.put(key, new Gson().toJson(obj));
+                    objectMap.put(key, new ObjectMapper().writeValueAsString(obj));
                 }
             }
             BoundHashOperations<String, String, Object> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -232,9 +232,9 @@ public class RedisUtils {
         }
     }
 
-    public void hPut(String cacheKey, String key, Object obj) {
+    public void hPut(String cacheKey, String key, Object obj) throws Exception {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-        boundHashOperations.put(key, new Gson().toJson(obj));
+        boundHashOperations.put(key, new ObjectMapper().writeValueAsString(obj));
     }
 
     /**
@@ -246,7 +246,8 @@ public class RedisUtils {
      */
     public String hGet(String cacheKey, String key)  {
         try {
-            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(
+                cacheKey);
             return boundHashOperations.get(key);
         } catch (Exception e) {
             log.error("[Cache] hGet cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
@@ -254,12 +255,12 @@ public class RedisUtils {
         return null;
     }
 
-    public <T> T hGetObject(String cacheKey, String key, Type returnType) {
+    public  <T> T hGetObject(String cacheKey, String key, Class returnClass) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             String cacheStr = boundHashOperations.get(key);
             if (!Strings.isNullOrEmpty(cacheStr)) {
-                T object = new Gson().fromJson(cacheStr, returnType);
+              T object = (T) new ObjectMapper().readValue(cacheStr, returnClass);
                 return object;
             }
         } catch (Exception e) {
@@ -326,17 +327,17 @@ public class RedisUtils {
      * Map<String,String>转换成Map<String,Object>
      *
      * @param mapData
-     * @param returnType
-     * @param <T>
+     * @param returnClass
      * @return
      */
-    public static <T> Map<String, T> strMapToObjectMap(Map<String, String> mapData, Type returnType) {
+    public static <T> Map<String, T> strMapToObjectMap(Map<String, String> mapData, Class returnClass)
+        throws Exception {
         Map<String, T> results = Maps.newHashMap();
         Set<String> keySet = mapData.keySet();
         for (String key : keySet) {
             String value = mapData.get(key);
             if (!Strings.isNullOrEmpty(value)) {
-                T object = new Gson().fromJson(value, returnType);
+              T object = (T) new ObjectMapper().readValue(value,returnClass);
                 results.put(key, object);
             }
         }

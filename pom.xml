@@ -119,12 +119,25 @@
             <version>2.0.1</version>
         </dependency>
 
-        <!-- format -->
+        <!-- json -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>1.7.1</version>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-lgpl</artifactId>
+            <version>1.8.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-lgpl</artifactId>
+            <version>1.8.1</version>
+        </dependency>
+
+        <!-- format -->
+        <!--<dependency>-->
+            <!--<groupId>com.google.code.gson</groupId>-->
+            <!--<artifactId>gson</artifactId>-->
+            <!--<version>1.7.1</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.google.guava</groupId>

@@ -69,14 +69,14 @@ public class AccountSecureAction extends BaseController {
             // model.addAttribute("exist", false);
             return "forward:";
         }
-        // model.addAttribute("exist", true);
-        Result result = accountSecureManager.queryAccountSecureInfo(
-                passportId, clientId);
-        if (result.getStatus().equals("0")) {
-            model.addAttribute("secInfo",result.getData());
-        } else {
-            model.addAttribute("error", result);
-        }
+//        // model.addAttribute("exist", true);
+//        Result result = accountSecureManager.queryAccountSecureInfo(
+//                passportId, clientId);
+//        if (result.getStatus().equals("0")) {
+//            model.addAttribute("secInfo",result.getData());
+//        } else {
+//            model.addAttribute("error", result);
+//        }
         model.addAttribute("passportId", passportId);
         model.addAttribute("clientId", clientId);
         return "forward:";

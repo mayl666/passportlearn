@@ -25,9 +25,6 @@ public class TestJredis extends AbstractJUnit4SpringContextTests {
     @Inject
     private RedisUtils redisUtils;
 
-    @Inject
-    private RedisTemplate redisTemplate;
-
     @Before
     public void init() {
     }

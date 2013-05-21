@@ -2,7 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.gson.reflect.TypeToken;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
@@ -11,19 +11,23 @@ import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.utils.CaptchaUtils;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.MailUtils;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -61,9 +65,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             cacheKey = buildAccountKey(username);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
-                Type type = new TypeToken<Account>() {
-                }.getType();
-                account = redisUtils.getObject(cacheKey, type);
+                account = redisUtils.getObject(cacheKey, Account.class);
                 if (account != null) {
                     account.setStatus(AccountStatusEnum.REGULAR.getValue());
                     long id = accountDAO.insertAccount(username, account);
@@ -132,9 +134,8 @@ public class AccountServiceImpl implements AccountService {
         Account account;
         try {
             String cacheKey = buildAccountKey(passportId);
-            Type type = new TypeToken<Account>() {
-            }.getType();
-            account = redisUtils.getObject(cacheKey, type);
+
+            account = redisUtils.getObject(cacheKey, Account.class);
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
                 if (account != null) {
