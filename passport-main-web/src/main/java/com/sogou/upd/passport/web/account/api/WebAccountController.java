@@ -66,7 +66,7 @@ public class WebAccountController extends BaseController {
     //校验用户是否可注册
     Result result =accountRegManager.isAllowRegister(username,ip,token, captchaCode);
 
-    if (result != null) {
+    if (!"0".equals(result.getStatus())) {
       return result;
     }
     //密码格式校验 todo
