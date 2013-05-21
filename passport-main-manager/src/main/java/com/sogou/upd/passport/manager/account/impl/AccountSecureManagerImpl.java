@@ -396,6 +396,26 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         }
     }
 
+    public Result resetPasswordByCheckCode(String passportId, int clientId, String password,
+                                        String checkCode) throws Exception {
+        try {
+            if (!accountService.checkResetPwdLimited(passportId)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+            }
+            Account account = accountService.queryAccountByPassportId(passportId);
+            if (account == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
+            return null;
+            // TODO:检验checkCode，是否区分密保还是手机验证码
+            // TODO:在修改绑定手机时，能否重用checkCode代码
+            // TODO:能否将邮件产生token的代码提取出来统一产生checkCode?
+        }  catch (ServiceException e) {
+            logger.error("reset password Fail:", e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+    }
+
     @Override
     public Result resetPasswordByMobile(String passportId, int clientId, String password,
                                         String smsCode) throws Exception {
@@ -494,6 +514,31 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
         }
     }
 
+    public Result checkAnswerByPassportId(String passportId, int clientId, String answer) throws Exception {
+        try {
+            // 不需要检测Account是否存在，在修改密码时检测，避免二次查询缓存/数据库
+            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
+            String answerBind = accountInfo.getAnswer();
+            if (accountInfo == null || Strings.isNullOrEmpty(answerBind)) {
+                return Result.buildError(ErrorUtil.NOTHAS_BINDINGQUESTION);
+            }
+            if (!answer.equals(answerBind)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
+            }
+            return Result.buildSuccess("验证密保答案成功！");
+            // TODO:失败次数限制
+        } catch (ServiceException e) {
+            logger.error("check secure answer Fail:", e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+    }
+
+
+    // @Override
+    public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile, String smsCode,
+                                           String password) throws Exception {
+        return null; // TODO
+    }
     /*
      * 修改绑定手机
      */
