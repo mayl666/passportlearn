@@ -3,7 +3,6 @@ package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;

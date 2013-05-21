@@ -24,6 +24,10 @@ package com.sogou.upd.passport.oauth2.common.parameters;
 import com.google.gson.Gson;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.IOException;
 import java.util.Map;
 
 /**

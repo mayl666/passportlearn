@@ -2,6 +2,9 @@ package com.sogou.upd.passport.oauth2.common.parameters;
 
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 
+import org.codehaus.jackson.JsonGenerationException;
+
+import java.io.IOException;
 import java.util.Map;
 
 /**

@@ -54,194 +54,194 @@ import java.util.Map;
 @Component
 public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
-    private static Logger logger = LoggerFactory.getLogger(OAuthAuthLoginManagerImpl.class);
+  private static Logger logger = LoggerFactory.getLogger(OAuthAuthLoginManagerImpl.class);
 
-    @Autowired
-    private ConnectConfigService connectConfigService;
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private AccountTokenService accountTokenService;
-    @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectRelationService connectRelationService;
+  @Autowired
+  private ConnectConfigService connectConfigService;
+  @Autowired
+  private AccountService accountService;
+  @Autowired
+  private AccountTokenService accountTokenService;
+  @Autowired
+  private ConnectTokenService connectTokenService;
+  @Autowired
+  private ConnectRelationService connectRelationService;
 
-    @Override
-    public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
+  @Override
+  public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
 
-        int clientId = oauthRequest.getClientId();
-        String openid = oauthRequest.getOpenid();
-        String instanceId = oauthRequest.getInstanceId();
+    int clientId = oauthRequest.getClientId();
+    String openid = oauthRequest.getOpenid();
+    String instanceId = oauthRequest.getInstanceId();
 
-        AccountToken accountToken;
-        try {
-            // 获取第三方用户信息
-            Map<String, ConnectRelation> connectRelations = connectRelationService.queryAppKeyMapping(openid, provider);
-            String appKey = connectConfigService.querySpecifyAppKey(clientId, provider);
-            String passportId = getPassportIdByAppointAppKey(connectRelations, appKey);
+    AccountToken accountToken;
+    try {
+      // 获取第三方用户信息
+      Map<String, ConnectRelation> connectRelations = connectRelationService.queryAppKeyMapping(openid, provider);
+      String appKey = connectConfigService.querySpecifyAppKey(clientId, provider);
+      String passportId = getPassportIdByAppointAppKey(connectRelations, appKey);
 
-            if (passportId == null) { // 此账号未在当前应用登录过
-                if (MapUtils.isEmpty(connectRelations)) { // 此账号未授权过任何应用
-                    Account account = accountService.initialConnectAccount(openid, ip, provider);
-                    if (account == null) {
-                        return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
-                    }
-                    passportId = account.getPassportId();
-                } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
-                    passportId = connectRelations.get(0).getPassportId(); // 一个openid只可能对应一个passportId
-                    Account account = accountService.queryNormalAccount(passportId);
-                    if (account == null) {
-                        return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
-                    }
-                }
-                accountToken = accountTokenService.initialAccountToken(passportId, clientId, instanceId);
-                if (accountToken == null) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
-                }
-                ConnectToken newConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
-                        oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
-                boolean isInitialConnectToken = connectTokenService.initialConnectToken(newConnectToken);
-                if (!isInitialConnectToken) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
-                }
-                ConnectRelation newConnectRelation = ManagerHelper.buildConnectRelation(openid, provider, passportId, appKey);
-                boolean isInitialConnectRelation = connectRelationService.initialConnectRelation(newConnectRelation);
-                if (!isInitialConnectRelation) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
-                }
-            } else { // 此账号在当前应用第N次登录
-                Account account = accountService.queryNormalAccount(passportId);
-                if (account == null) {
-                    return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
-                }
-                // 更新当前应用的Account_token，出于安全考虑refresh_token和access_token重新生成
-                accountToken = accountTokenService.updateAccountToken(passportId, clientId, instanceId);
-                if (accountToken == null) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
-                }
-                // 更新当前应用的Connect_token
-                ConnectToken updateConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
-                        oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
-                boolean isUpdateAccountConnect = connectTokenService.updateConnectToken(updateConnectToken);
-                if (!isUpdateAccountConnect) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
-                }
-            }
-            Map<String, Object> mapResult = Maps.newHashMap();
-            mapResult.put("access_token", accountToken.getAccessToken());
-            mapResult.put("expires_time", accountToken.getAccessValidTime());
-            mapResult.put("refresh_token", accountToken.getRefreshToken());
-            return Result.buildSuccess("登录成功！", "mapResult", mapResult);
-        } catch (ServiceException e) {
-            logger.error("SSO login Fail:", e);
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+      if (passportId == null) { // 此账号未在当前应用登录过
+        if (MapUtils.isEmpty(connectRelations)) { // 此账号未授权过任何应用
+          Account account = accountService.initialConnectAccount(openid, ip, provider);
+          if (account == null) {
+            return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+          }
+          passportId = account.getPassportId();
+        } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
+          passportId = connectRelations.get(0).getPassportId(); // 一个openid只可能对应一个passportId
+          Account account = accountService.queryNormalAccount(passportId);
+          if (account == null) {
+            return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+          }
         }
+        accountToken = accountTokenService.initialAccountToken(passportId, clientId, instanceId);
+        if (accountToken == null) {
+          return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+        }
+        ConnectToken newConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
+                                                                       oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
+        boolean isInitialConnectToken = connectTokenService.initialConnectToken(newConnectToken);
+        if (!isInitialConnectToken) {
+          return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+        }
+        ConnectRelation newConnectRelation = ManagerHelper.buildConnectRelation(openid, provider, passportId, appKey);
+        boolean isInitialConnectRelation = connectRelationService.initialConnectRelation(newConnectRelation);
+        if (!isInitialConnectRelation) {
+          return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+        }
+      } else { // 此账号在当前应用第N次登录
+        Account account = accountService.queryNormalAccount(passportId);
+        if (account == null) {
+          return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+        }
+        // 更新当前应用的Account_token，出于安全考虑refresh_token和access_token重新生成
+        accountToken = accountTokenService.updateAccountToken(passportId, clientId, instanceId);
+        if (accountToken == null) {
+          return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+        }
+        // 更新当前应用的Connect_token
+        ConnectToken updateConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
+                                                                          oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
+        boolean isUpdateAccountConnect = connectTokenService.updateConnectToken(updateConnectToken);
+        if (!isUpdateAccountConnect) {
+          return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+        }
+      }
+      Map<String, Object> mapResult = Maps.newHashMap();
+      mapResult.put("access_token", accountToken.getAccessToken());
+      mapResult.put("expires_time", accountToken.getAccessValidTime());
+      mapResult.put("refresh_token", accountToken.getRefreshToken());
+      return Result.buildSuccess("登录成功！", "mapResult", mapResult);
+    } catch (ServiceException e) {
+      logger.error("SSO login Fail:", e);
+      return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+    }
+  }
+
+  @Override
+  public OAuthAuthzClientRequest buildConnectLoginRequest(ConnectLoginParams connectLoginParams, ConnectConfig connectConfig,
+                                                          String uuid, int provider, String ip) throws OAuthProblemException {
+    OAuthConsumer oAuthConsumer;
+    OAuthAuthzClientRequest request;
+    try {
+      oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+    } catch (IOException e) {
+      logger.error("read oauth consumer IOException!", e);
+      throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
     }
 
-    @Override
-    public OAuthAuthzClientRequest buildConnectLoginRequest(ConnectLoginParams connectLoginParams, ConnectConfig connectConfig,
-                                                            String uuid, int provider, String ip) throws OAuthProblemException {
-        OAuthConsumer oAuthConsumer;
-        OAuthAuthzClientRequest request;
-        try {
-            oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        } catch (IOException e) {
-            logger.error("read oauth consumer IOException!", e);
-            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-
-        String redirectURI = constructRedirectURI(connectLoginParams, oAuthConsumer.getCallbackUrl(), ip);
-        String scope = connectConfig.getScope();
-        String appkey = connectConfig.getAppKey();
-        String connectType = connectLoginParams.getType();
-        String requestUrl;
-        // web应用采用Authorization Code Flow流程，sina的web应用和客户端均采用此流程
-        if (ConnectTypeEnum.WEB.toString().equals(connectType) || AccountTypeEnum.SINA.getValue() == provider) {
-            requestUrl = oAuthConsumer.getWebUserAuthzUrl();
-            request = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appkey)
-                    .setRedirectURI(redirectURI)
-                    .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay()).setForceLogin(connectLoginParams.isForce(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
-        } else {  // 客户端应用采用Implicit Flow
-            requestUrl = oAuthConsumer.getAppUserAuthzUrl();
-            request = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appkey)
-                    .setRedirectURI(redirectURI)
-                    .setResponseType(ResponseTypeEnum.TOKEN).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay()).setForceLogin(connectLoginParams.isForce(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
-        }
-
-        return request;
+    String redirectURI = constructRedirectURI(connectLoginParams, oAuthConsumer.getCallbackUrl(), ip);
+    String scope = connectConfig.getScope();
+    String appkey = connectConfig.getAppKey();
+    String connectType = connectLoginParams.getType();
+    String requestUrl;
+    // web应用采用Authorization Code Flow流程，sina的web应用和客户端均采用此流程
+    if (ConnectTypeEnum.WEB.toString().equals(connectType) || AccountTypeEnum.SINA.getValue() == provider) {
+      requestUrl = oAuthConsumer.getWebUserAuthzUrl();
+      request = OAuthAuthzClientRequest
+          .authorizationLocation(requestUrl).setAppKey(appkey)
+          .setRedirectURI(redirectURI)
+          .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
+          .setDisplay(connectLoginParams.getDisplay()).setForceLogin(connectLoginParams.isForce(), provider)
+          .setState(uuid)
+          .buildQueryMessage(OAuthAuthzClientRequest.class);
+    } else {  // 客户端应用采用Implicit Flow
+      requestUrl = oAuthConsumer.getAppUserAuthzUrl();
+      request = OAuthAuthzClientRequest
+          .authorizationLocation(requestUrl).setAppKey(appkey)
+          .setRedirectURI(redirectURI)
+          .setResponseType(ResponseTypeEnum.TOKEN).setScope(scope)
+          .setDisplay(connectLoginParams.getDisplay()).setForceLogin(connectLoginParams.isForce(), provider)
+          .setState(uuid)
+          .buildQueryMessage(OAuthAuthzClientRequest.class);
     }
 
-    @Override
-    public OAuthTokenDO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
-        OAuthTokenDO oAuthTokenDO;
-        OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req, connectType);
-        // 验证state是否被篡改，防CRSF攻击
-        String state = oar.getState();
-        String stateCookie = ServletUtil.getCookie(req, state);
-        if (Strings.isNullOrEmpty(stateCookie) || !stateCookie.equals(CommonHelper.constructStateCookieKey(provider))) {
-            throw new OAuthProblemException(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
-        }
+    return request;
+  }
 
-        if (ConnectTypeEnum.WEB.toString().equals(connectType)) {
-
-        } else {
-            oAuthTokenDO = new OAuthTokenDO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
-        }
-
-
-        return null;
+  @Override
+  public OAuthTokenDO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
+    OAuthTokenDO oAuthTokenDO;
+    OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req, connectType);
+    // 验证state是否被篡改，防CRSF攻击
+    String state = oar.getState();
+    String stateCookie = ServletUtil.getCookie(req, state);
+    if (Strings.isNullOrEmpty(stateCookie) || !stateCookie.equals(CommonHelper.constructStateCookieKey(provider))) {
+      throw new OAuthProblemException(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
     }
 
-    private OAuthAuthzClientResponse buildOAuthAuthzClientResponse(HttpServletRequest req, String connectType) throws OAuthProblemException {
-        OAuthAuthzClientResponse oar;
-        if (ConnectTypeEnum.WEB.toString().equals(connectType)) { // 获取code，然后用code换取accessToken
-            oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
-        } else {
-            oar = OAuthAuthzClientResponse.oauthTokenAuthzResponse(req);
-        }
-        return oar;
+    if (ConnectTypeEnum.WEB.toString().equals(connectType)) {
+
+    } else {
+      oAuthTokenDO = new OAuthTokenDO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
     }
 
-    /**
-     * 该账号是否在当前应用登录过
-     * 返回passportId，如果没有登录过返回null
-     *
-     * @return
-     */
-    private String getPassportIdByAppointAppKey(Map<String, ConnectRelation> connectRelations, String appKey) {
-        String passportId = null;
-        if (!MapUtils.isEmpty(connectRelations)) {
-            ConnectRelation connectRelation = connectRelations.get(appKey);
-            if (connectRelation != null) {
-                passportId = connectRelation.getPassportId();
-            }
-        }
-        return passportId;
-    }
 
-    private String constructRedirectURI(ConnectLoginParams oauthLoginParams, String pCallbackUrl, String ip) {
-        try {
-            String ru = oauthLoginParams.getRu();
-            ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            Map<String, Object> callbackParams = Maps.newHashMap();
-            callbackParams.put("client_id", oauthLoginParams.getClient_id());
-            callbackParams.put("ru", ru);
-            callbackParams.put("ip", ip);
-            StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
-            String redirectURI = pCallbackUrl + query;
-            redirectURI = URLEncoder.encode(redirectURI, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            return redirectURI;
-        } catch (UnsupportedEncodingException e) {
-            return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
+    return null;
+  }
+
+  private OAuthAuthzClientResponse buildOAuthAuthzClientResponse(HttpServletRequest req, String connectType) throws OAuthProblemException {
+    OAuthAuthzClientResponse oar;
+    if (ConnectTypeEnum.WEB.toString().equals(connectType)) { // 获取code，然后用code换取accessToken
+      oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
+    } else {
+      oar = OAuthAuthzClientResponse.oauthTokenAuthzResponse(req);
     }
+    return oar;
+  }
+
+  /**
+   * 该账号是否在当前应用登录过
+   * 返回passportId，如果没有登录过返回null
+   *
+   * @return
+   */
+  private String getPassportIdByAppointAppKey(Map<String, ConnectRelation> connectRelations, String appKey) {
+    String passportId = null;
+    if (!MapUtils.isEmpty(connectRelations)) {
+      ConnectRelation connectRelation = connectRelations.get(appKey);
+      if (connectRelation != null) {
+        passportId = connectRelation.getPassportId();
+      }
+    }
+    return passportId;
+  }
+
+  private String constructRedirectURI(ConnectLoginParams oauthLoginParams, String pCallbackUrl, String ip) {
+    try {
+      String ru = oauthLoginParams.getRu();
+      ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+      Map<String, Object> callbackParams = Maps.newHashMap();
+      callbackParams.put("client_id", oauthLoginParams.getClient_id());
+      callbackParams.put("ru", ru);
+      callbackParams.put("ip", ip);
+      StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+      String redirectURI = pCallbackUrl + query;
+      redirectURI = URLEncoder.encode(redirectURI, CommonConstant.DEFAULT_CONTENT_CHARSET);
+      return redirectURI;
+    } catch (UnsupportedEncodingException e) {
+      return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+    }
+  }
 }
