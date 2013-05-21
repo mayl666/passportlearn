@@ -439,7 +439,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
             String numStr = redisUtils.get(cacheKey);
-            if (!StringUtil.isBlank(numStr)) {
+            if (!Strings.isNullOrEmpty(numStr)) {
                 num = Integer.valueOf(numStr);
             }
             if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT) {
