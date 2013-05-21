@@ -47,7 +47,7 @@ public interface AccountService {
    *
    * @return 验证不通过，则返回null
    */
-  public Account verifyAccountVaild(String passportId) throws ServiceException;
+  public Account queryNormalAccount(String passportId) throws ServiceException;
 
   /**
    * 验证用户名密码是否正确
@@ -64,7 +64,7 @@ public interface AccountService {
   /**
    * 重置密码
    */
-  public boolean resetPassword(String passportId, String password, boolean needMD5) throws ServiceException;
+  public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
 
   /**
    * 根据ip看是否在黑名单中
@@ -123,4 +123,14 @@ public interface AccountService {
      * @return
      */
   public boolean clearLoginFailedNum(String passportId);
+
+    /**
+     * 修改绑定手机
+     *
+     * @param account
+     * @param newMobile
+     * @return
+     * @throws ServiceException
+     */
+  public boolean modifyMobile(Account account, String newMobile);
 }

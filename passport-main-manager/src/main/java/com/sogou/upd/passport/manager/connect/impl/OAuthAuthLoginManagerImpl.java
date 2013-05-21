@@ -90,7 +90,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     passportId = account.getPassportId();
                 } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
                     passportId = connectRelations.get(0).getPassportId(); // 一个openid只可能对应一个passportId
-                    Account account = accountService.verifyAccountVaild(passportId);
+                    Account account = accountService.queryNormalAccount(passportId);
                     if (account == null) {
                         return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                     }
@@ -111,7 +111,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
                 }
             } else { // 此账号在当前应用第N次登录
-                Account account = accountService.verifyAccountVaild(passportId);
+                Account account = accountService.queryNormalAccount(passportId);
                 if (account == null) {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 }

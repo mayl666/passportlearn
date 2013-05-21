@@ -27,7 +27,7 @@ public class PwdGeneratorTest extends BaseGeneratorTest {
     @Test
     public void testGeneratorStoredPwd() {
         try {
-            String pwdSign = PwdGenerator.generatorStoredPwd(PASSWORD, true);
+            String pwdSign = PwdGenerator.generatorStoredPwd("111111", true);
             System.out.println("pwdSign:" + pwdSign);
             Assert.assertTrue(true);
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class PwdGeneratorTest extends BaseGeneratorTest {
     @Test
     public void testVerify() {
         try {
-            boolean verify = PwdGenerator.verify(PASSWORD, true, "Tl2LRUGn$JLRCMOKDuNdiAJC7zC/GS1");
+            boolean verify = PwdGenerator.verify("96E79218965eb72c9", false, "CxnfgqKg$eU7p8GOjOevmWRq53zhcX/");
             Assert.assertTrue(verify);
         } catch (Exception e) {
             e.printStackTrace();

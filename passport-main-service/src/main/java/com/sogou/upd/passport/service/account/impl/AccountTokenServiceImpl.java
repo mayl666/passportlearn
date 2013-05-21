@@ -21,7 +21,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-3-29 Time: 上午1:20 To change this template use File | Settings |
@@ -84,14 +86,16 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     public AccountToken queryAccountTokenByPassportId(String passportId, int clientId, String instanceId) throws ServiceException {
         AccountToken accountToken;
         try {
-            String cacheKey = buildAccountTokenKey(passportId, clientId, instanceId);
+            String cacheKey = buildAccountTokenKey(passportId);
+            String key = buildAccountTokenSubKey(clientId, instanceId);
             Type type = new TypeToken<AccountToken>() {
             }.getType();
-            accountToken = redisUtils.getObject(cacheKey, type);
+            accountToken = redisUtils.hGetObject(cacheKey, key, type);
             if (accountToken == null) {
                 accountToken = accountTokenDAO.getAccountTokenByPassportId(passportId, clientId, instanceId);
                 if (accountToken != null) {
-                    redisUtils.set(cacheKey, accountToken);
+                    redisUtils.hPut(cacheKey, key, accountToken);
+                    // redisUtils.set(cacheKey, accountToken);
                 }
             }
         } catch (Exception e) {
@@ -107,8 +111,10 @@ public class AccountTokenServiceImpl implements AccountTokenService {
             AccountToken accountToken = newAccountToken(passportId, clientId, instanceId);
             long id = accountTokenDAO.insertAccountToken(passportId, accountToken);
             if (id != 0) {
-                String cacheKey = buildAccountTokenKey(passportId, clientId, instanceId);
-                redisUtils.set(cacheKey, accountToken);
+                String cacheKey = buildAccountTokenKey(passportId);
+                String key = buildAccountTokenSubKey(clientId, instanceId);
+                redisUtils.hPut(cacheKey, key, accountToken);
+                // redisUtils.set(cacheKey, accountToken);
                 return accountToken;
             }
         } catch (Exception e) {
@@ -123,8 +129,10 @@ public class AccountTokenServiceImpl implements AccountTokenService {
             AccountToken accountToken = newAccountToken(passportId, clientId, instanceId);
             int accountRow = accountTokenDAO.saveAccountToken(passportId, accountToken);
             if (accountRow != 0) {
-                String cacheKey = buildAccountTokenKey(passportId, clientId, instanceId);
-                redisUtils.set(cacheKey, accountToken);
+                String cacheKey = buildAccountTokenKey(passportId);
+                String key = buildAccountTokenSubKey(clientId, instanceId);
+                redisUtils.hPut(cacheKey, key, accountToken);
+                // redisUtils.set(cacheKey, accountToken);
                 return accountToken;
             }
         } catch (Exception e) {
@@ -136,13 +144,15 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     @Override
     public boolean deleteAccountTokenByPassportId(String passportId) throws ServiceException {
         try {
-            List<AccountToken> accountTokens = accountTokenDAO.listAccountTokenByPassportId(passportId);
+            // List<AccountToken> accountTokens = accountTokenDAO.listAccountTokenByPassportId(passportId);
             int row = accountTokenDAO.deleteAccountTokenByPassportId(passportId);
             if (row != 0) {
-                for (AccountToken accountToken : accountTokens) {
+                String cacheKey = buildAccountTokenKey(passportId);
+                redisUtils.delete(cacheKey);
+                /*for (AccountToken accountToken : accountTokens) {
                     String cacheKey = buildAccountTokenKey(passportId, accountToken.getClientId(), accountToken.getInstanceId());
                     redisUtils.delete(cacheKey);
-                }
+                }*/
                 return true;
             }
         } catch (Exception e) {
@@ -160,10 +170,26 @@ public class AccountTokenServiceImpl implements AccountTokenService {
             @Override
             public void run() {
                 //根据该用户的id去auth表里查询用户状态记录，返回list
-                List<AccountToken> allAccountTokens = accountTokenDAO.listAccountTokenByPassportIdAndClientId(passportId);
+                // TODO:是否有线程同步问题？
+                List<AccountToken> allAccountTokens;
+                String cacheKey = buildAccountTokenKey(passportId);
+                Type type = new TypeToken<AccountToken>() {
+                }.getType();
+                if (redisUtils.checkKeyIsExist(cacheKey)) {
+                    allAccountTokens = new LinkedList();
+                    for (String subKey : redisUtils.hGetAll(cacheKey).keySet()) {
+                        allAccountTokens.add((AccountToken) redisUtils.hGetObject(cacheKey, subKey, type));
+                    }
+                } else {
+                    allAccountTokens = accountTokenDAO.listAccountTokenByPassportIdAndClientId(passportId);
+                }
                 buildUpdateAccountTokens(allAccountTokens, clientId);
                 if (CollectionUtils.isNotEmpty(allAccountTokens)) {
                     accountTokenDAO.batchUpdateAccountToken(allAccountTokens);
+                    for (AccountToken accountToken : allAccountTokens) {
+                        String key = buildAccountTokenSubKey(accountToken.getClientId(), accountToken.getInstanceId());
+                        redisUtils.hPut(cacheKey, key, accountToken);
+                    }
                 }
             }
         });
@@ -260,8 +286,12 @@ public class AccountTokenServiceImpl implements AccountTokenService {
         }
     }
 
-    private String buildAccountTokenKey(String passportId, int clientId, String instanceId) {
-        return CACHE_PREFIX_PASSPORT_ACCOUNTTOKEN + passportId + clientId + instanceId;
+    private String buildAccountTokenKey(String passportId) {
+        return CACHE_PREFIX_PASSPORT_ACCOUNTTOKEN + passportId;
+    }
+
+    private String buildAccountTokenSubKey(int clientId, String instanceId) {
+        return clientId + "_" + instanceId;
     }
 
 }

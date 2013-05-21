@@ -91,9 +91,11 @@ public class ErrorUtil {
     // 当日密码修改次数已达上限
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20222";
     // 当日邮件发送次数已达上限
-    public static final String ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED = "20223";
+    public static final String ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED = "20223";
     // 当日注册次数已达上限
     public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
+    // 手机号已注册或绑定
+    public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -119,8 +121,18 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED = "20282";
     // 重置密码申请链接失效
     public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED = "20283";
-    // 重置密码申请邮件失败
+    // 申请邮件发送失败
     public static final String ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED = "20284";
+    // 旧绑定邮箱错误
+    public static final String ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED = "20285";
+    // 绑定邮箱失败
+    public static final String ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED = "20286";
+    // 绑定邮箱申请链接失效
+    public static final String ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED = "20287";
+    // 重置密码申请邮箱不可用
+    public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED = "20288";
+    // 绑定手机失败
+    public static final String ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED = "20289";
 
     //***************************密保方式相关的错误代码end*********************************
 
@@ -241,6 +253,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "注册验证码验证失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或绑定");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
 
@@ -248,7 +261,7 @@ public class ErrorUtil {
 
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPWDEMAIL_LIMITED, "当日邮件发送次数已达上限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "当日邮件发送次数已达上限");
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
@@ -261,7 +274,12 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED, "密保答案错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED, "重置密码申请链接失效");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED, "重置密码申请邮件发送失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED, "申请邮件发送失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED, "旧绑定邮箱错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED, "绑定邮箱失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED, "绑定邮箱申请链接失效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED, "重置密码申请邮箱不可用");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED, "绑定手机失败");
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");

@@ -168,7 +168,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account verifyAccountVaild(String passportId) throws ServiceException {
+    public Account queryNormalAccount(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
         if (account.isNormalAccount()) {
             return account;
@@ -194,23 +194,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean checkResetPwdLimited(String passportId) throws ServiceException {
         try {
-            Account account = verifyAccountVaild(passportId);
-            if (account == null) {
-                return false;
-            }
-            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
+            String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
+                              DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
-                Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(cacheKey);
-                Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"),
-                        DateUtil.DATE_FMT_2);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
-                    // 是当日键值，验证是否超过次数
-                    int checkNum = Integer.parseInt(mapCacheResetNumResult.get("resetNum"));
-                    if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
-                        // 当日密码修改次数不超过上限
-                        return false;
-                    }
+                int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
+                if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
+                    // 当日验证码输入错误次数不超过上限
+                    return false;
                 }
             }
             return true;
@@ -220,12 +210,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean resetPassword(String passportId, String password, boolean needMD5) throws ServiceException {
+    public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException {
         try {
-            Account account = verifyAccountVaild(passportId);
-            if (account == null) {
-                return false;
-            }
+            String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.modifyPassword(passwdSign, passportId);
             if (row != 0) {
@@ -234,22 +221,14 @@ public class AccountServiceImpl implements AccountService {
                 redisUtils.set(cacheKey, account);
 
                 // 设置密码修改次数限制
-                String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId;
+                String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
+                                       DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
                 if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                    // cacheKey存在，则检查resetTime
-                    Map<String, String> mapCacheResetNumResult = redisUtils.hGetAll(resetCacheKey);
-                    Date date = DateUtil.parse(mapCacheResetNumResult.get("resetTime"), DateUtil.DATE_FMT_3);
-                    long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                    if (diff < DateAndNumTimesConstant.RESETNUM_LIMITED && diff >= 0) {
-                        // 是当日键值，递增失败次数
-                        redisUtils.hIncrBy(resetCacheKey, "resetNum");
-                        return true;
-                    }
+                    redisUtils.increment(resetCacheKey);
+                } else {
+                    redisUtils.set(resetCacheKey, "1");
+                    redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
                 }
-                redisUtils.hPut(resetCacheKey, "resetNum", "1");
-                redisUtils.hPut(resetCacheKey, "resetTime", DateUtil.format(new Date(), DateUtil.DATE_FMT_2));
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-
                 return true;
             }
         } catch (Exception e) {
@@ -392,6 +371,23 @@ public class AccountServiceImpl implements AccountService {
         return result;
     }
 
+    @Override
+    public boolean modifyMobile(Account account, String newMobile) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            int row = accountDAO.modifyMobile(newMobile, passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setMobile(newMobile);
+                redisUtils.set(cacheKey, account);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
     /*
      * 外域邮箱注册
      */
@@ -403,7 +399,7 @@ public class AccountServiceImpl implements AccountService {
         String passwordSign = null;
         try {
             if (!Strings.isNullOrEmpty(password)) {
-                passwordSign = PwdGenerator.generatorPwdSign(password);
+                passwordSign = PwdGenerator.generatorStoredPwd(password,false);
             }
             account.setPasswd(passwordSign);
             account.setRegTime(new Date());

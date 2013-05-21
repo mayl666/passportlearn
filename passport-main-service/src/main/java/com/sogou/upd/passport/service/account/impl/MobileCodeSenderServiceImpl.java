@@ -129,20 +129,12 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
             //读取短信内容
             String smsText = appConfigService.querySmsText(clientId, randomCode);
-            boolean isSend = false;
-            if (!Strings.isNullOrEmpty(smsText)) {
-                isSend = SMSUtil.sendSMS(mobile, smsText);
-                if (isSend) {
-                    result = Result.buildSuccess("验证码已发送至" + mobile);
-                    return result;
-                } else{
-                  result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                  return result;
-                }
-            } else {
-                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+            if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                result = Result.buildSuccess("验证码已发送至" + mobile);
                 return result;
             }
+            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+            return result;
         } catch (Exception e) {
             result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
             logger.error("[SMS] service method handleSendSms error.{}", e);
@@ -178,21 +170,14 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
      */
     private boolean setSmsFailLimited(String account, int clientId) throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId;
+            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
+                    + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
-                // cacheKey存在，则检查failTime
-                Map<String, String> mapCacheFailNumResult = redisUtils.hGetAll(cacheKey);
-                Date date = DateUtil.parse(mapCacheFailNumResult.get("failTime"), DateUtil.DATE_FMT_3);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
-                    // 是当日键值，递增失败次数
-                    redisUtils.hIncrBy(cacheKey, "failNum");
-                    return true;
-                }
+                redisUtils.increment(cacheKey);
+            } else {
+                redisUtils.set(cacheKey, "1");
+                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             }
-            redisUtils.hPut(cacheKey, "failNum", "1");
-            redisUtils.hPut(cacheKey, "failTime", DateUtil.format(new Date(), DateUtil.DATE_FMT_2));
-            redisUtils.expire(cacheKey, SMSUtil.SMS_ONEDAY);
             return true;
         } catch (Exception e) {
             logger.error("[SMS] service method setSmsFailLimited error.{}", e);
@@ -205,19 +190,13 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     public boolean checkSmsFailLimited(String account, int clientId)
             throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId;
+            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
+                    + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
-                // 键存在，验证是否当日的键值
-                Map<String, String> mapCacheFailNumResult = redisUtils.hGetAll(cacheKey);
-                Date date = DateUtil.parse(mapCacheFailNumResult.get("failTime"), DateUtil.DATE_FMT_2);
-                long diff = DateUtil.getTimeIntervalMins(DateUtil.getStartTime(null), date);
-                if (diff < DateAndNumTimesConstant.TIME_ONEDAY && diff >= 0) {
-                    // 是当日键值，验证是否超过次数
-                    int checkNum = Integer.parseInt(mapCacheFailNumResult.get("failNum"));
-                    if (checkNum > SMSUtil.MAX_CHECKSMS_COUNT_ONEDAY) {
-                        // 当日验证码输入错误次数不超过上限
-                        return false;
-                    }
+                int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
+                if (checkNum > SMSUtil.MAX_CHECKSMS_COUNT_ONEDAY) {
+                    // 当日验证码输入错误次数不超过上限
+                    return false;
                 }
             }
             return true;

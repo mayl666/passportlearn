@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.result;
 
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 
 import java.util.HashMap;
@@ -17,14 +18,12 @@ public class Result {
     /**
      * service返回的对象
      */
-    private Map<String, Object> data = new HashMap<String, Object>();
+    private Map<String, Object> data = Maps.newHashMap();
 
     private String status;
     private String statusText;
 
     public static final String DEFAULT_MODEL_KEY = "value";
-
-    private static final String SUCCESS_STATUS="0";
 
     public Result() {
     }
@@ -77,18 +76,6 @@ public class Result {
     }
 
     /**
-     * 是否成功
-     *
-     * @return
-     */
-    public boolean isSuccess() {
-        if (this.getStatus() == null) {
-            return false;
-        }
-        return SUCCESS_STATUS.equals(this.getStatus());
-    }
-
-    /**
      * 根据错误码返回result对象
      *
      * @param statusText 成功信息描述
@@ -105,23 +92,23 @@ public class Result {
                 result.addDefaultModel(key, object);
             }
         }
-        result.setStatus(SUCCESS_STATUS);
+        result.setStatus("0");
         result.setStatusText(statusText);
         return result;
     }
 
-  /**
-   * 根据错误码返回result对象
-   *
-   * @param statusText 成功信息描述
-   * @return 含错误码及相应的提示信息
-   */
-  public static Result buildSuccess(String statusText) {
-    Result result = new Result();
-    result.setStatus(SUCCESS_STATUS);
-    result.setStatusText(statusText);
-    return result;
-  }
+    /**
+     * 根据错误码返回result对象
+     *
+     * @param statusText 成功信息描述
+     * @return 含错误码及相应的提示信息
+     */
+    public static Result buildSuccess(String statusText) {
+        Result result = new Result();
+        result.setStatus("0");
+        result.setStatusText(statusText);
+        return result;
+    }
 
     /**
      * 根据错误码返回result对象

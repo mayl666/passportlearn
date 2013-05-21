@@ -36,7 +36,7 @@ public class OpenAPIUsersController extends BaseConnectController {
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = "/v2/connect/users/getopenid", method = RequestMethod.GET)
+    @RequestMapping(value = {"/internal/connect/users/getopenid", "/connect/users/getopenid"}, method = RequestMethod.GET)
     @ResponseBody
     public Object getopenid(HttpServletRequest request, ConnectObtainParams reqParams) throws Exception {
         //参数验证

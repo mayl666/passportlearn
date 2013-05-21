@@ -26,9 +26,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/oauth2")
-public class AppLoginController extends BaseController {
+public class OAuthAuthorizeController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppLoginController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OAuthAuthorizeController.class);
 
     @Autowired
     private AccountLoginManager accountLoginManager;

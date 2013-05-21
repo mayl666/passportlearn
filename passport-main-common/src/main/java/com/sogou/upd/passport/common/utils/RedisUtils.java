@@ -238,6 +238,52 @@ public class RedisUtils {
     }
 
     /**
+     * 获取hash值
+     *
+     * @param cacheKey
+     * @param key
+     * @return
+     */
+    public String hGet(String cacheKey, String key)  {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            return boundHashOperations.get(key);
+        } catch (Exception e) {
+            log.error("[Cache] hGet cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
+        }
+        return null;
+    }
+
+    public <T> T hGetObject(String cacheKey, String key, Type returnType) {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            String cacheStr = boundHashOperations.get(key);
+            if (!Strings.isNullOrEmpty(cacheStr)) {
+                T object = new Gson().fromJson(cacheStr, returnType);
+                return object;
+            }
+        } catch (Exception e) {
+            log.error("[Cache] hGet object cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
+        }
+        return null;
+    }
+
+    /**
+     * 删除Hash键值
+     *
+     * @param cacheKey
+     * @param key
+     */
+    public void hDelete(String cacheKey, String key) {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.delete(key);
+        } catch (Exception e) {
+            log.error("[Cache] hDelete cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
+        }
+    }
+
+    /**
      * 记录存在则不覆盖返回false，不存在则插入返回true
      *
      * @param cacheKey

@@ -43,8 +43,6 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     public Result authorize(OAuthTokenASRequest oauthRequest) {
         int clientId = oauthRequest.getClientId();
         String instanceId = oauthRequest.getInstanceId();
-        int pwdType = oauthRequest.getPwdType();
-        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
 
         try {
             // 檢查不同的grant types是否正確
@@ -55,6 +53,8 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 if (Strings.isNullOrEmpty(passportId)) {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 }
+                int pwdType = oauthRequest.getPwdType();
+                boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
                 Account account = accountService
                         .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
                 if (account == null) {
@@ -95,7 +95,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
 
     @Override
     public Result accountLogin(WebLoginParameters parameters) {
-        Result result=Result.buildSuccess("");
+        Result result = Result.buildSuccess("");
 
         //处理手机登陆的情况
         String passportId;
@@ -106,8 +106,8 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
         }
 
         //校验验证码
-        if(!this.checkCaptcha(passportId,parameters.getCaptcha())){
-            return  Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
+        if (!this.checkCaptcha(passportId, parameters.getCaptcha())) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
         }
 
         //TODO 校验是否在账户黑名单或者IP黑名单之中
@@ -115,15 +115,15 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
 
         //校验密码及用户状态
         Account account = accountService
-                .verifyUserPwdVaild(passportId, parameters.getPassword(),true);
+                .verifyUserPwdVaild(passportId, parameters.getPassword(), true);
         if (account == null) {
-            result= Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
+            result = Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
         } else if (!account.isNormalAccount()) {
-            result= Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+            result = Result.buildError(ErrorUtil.INVALID_ACCOUNT);
         }
-        if(!result.isSuccess()){
+        if (!"0".equals(result.getStatus())) {
             accountService.incLoginFailedNum(passportId);
-            return  result;
+            return result;
         }
 
         //增加用户登陆成功的信息
@@ -135,11 +135,11 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
         return Result.buildSuccess("success", "mapResult", mapResult);
     }
 
-    private boolean checkCaptcha(String passportId,String captcha){
-        if(!this.loginNeedCaptcha(passportId)){
+    private boolean checkCaptcha(String passportId, String captcha) {
+        if (!this.loginNeedCaptcha(passportId)) {
             return true;
         }
-        if(StringUtil.isBlank(captcha)){
+        if (StringUtil.isBlank(captcha)) {
             return false;
         }
         //TODO 校验验证码
@@ -150,13 +150,14 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     /**
      * 用户在登陆的时候是否需要输入验证码
      * 目前的策略
-     *  1.连续3次输入密码错误
+     * 1.连续3次输入密码错误
+     *
      * @param passportId
      * @return
      */
     @Override
     public boolean loginNeedCaptcha(String passportId) {
-        boolean loginFailed=accountService.loginFailedNumNeedCaptcha(passportId);
+        boolean loginFailed = accountService.loginFailedNumNeedCaptcha(passportId);
         return loginFailed;
     }
 }
