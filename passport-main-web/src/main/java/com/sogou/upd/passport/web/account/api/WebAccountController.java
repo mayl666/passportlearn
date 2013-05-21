@@ -135,24 +135,16 @@ public class WebAccountController extends BaseController {
   @ResponseBody
   public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
       throws Exception {
+
+    //todo 注解需要判断登录
+
     String validateResult = ControllerHelper.validateParams(resetParams);
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
 
-    //验证client_id
-    int clientId;
-    try {
-      clientId = Integer.parseInt(resetParams.getClient_id());
-    } catch (NumberFormatException e) {
-      return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
-    }
-    //检查client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
 
-//    Result result = accountSecureManager.resetWebPassword(resetParams);
+    Result result = accountSecureManager.resetWebPassword(resetParams);
 //    return result;
     return null;
   }
