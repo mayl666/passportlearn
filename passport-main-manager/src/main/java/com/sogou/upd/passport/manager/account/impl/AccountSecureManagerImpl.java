@@ -25,6 +25,7 @@ import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.apache.commons.collections.MapUtils;
@@ -392,19 +393,32 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             String password = resetPwdParameters.getPassword();
             String newpwd = resetPwdParameters.getNewpwd();
 
-            Account account = new Account();
-            account.setPassportId(username);
-            account.setPasswd(password);
-
-//      accountService.resetPassword()
-
+            //校验用户名和密码是否匹配
+            Account account = accountService.queryAccountByPassportId(username);
+            if (account != null) {
+                String oldPwd = account.getPasswd();
+                if (PwdGenerator.verify(password, false, oldPwd)) {
+                    account = new Account();
+                    account.setPassportId(username);
+                    account.setPasswd(password);
+                    //不需要加密
+                    if(accountService.resetPassword(account,newpwd,false)){
+                        return Result.buildSuccess("重置密码成功！");
+                    } else {
+                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
+                    }
+                } else {
+                    //原密码不匹配
+                    return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
+                }
+            } else {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
         } catch (ServiceException e) {
             logger.error("resetWebPassword Fail username:" + username, e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-
     /* ------------------------------------重置密码Begin------------------------------------ */
 
     /*
