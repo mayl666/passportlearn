@@ -333,7 +333,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (!answer.equals(answerBind)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
             }
-            if (!accountService.resetPassword(account, password, true)) {
+            if (!accountService.resetPassword(account, password, false)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             return Result.buildSuccess("重置密码成功！");
@@ -372,7 +372,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             }
 
-            if (!accountService.resetPassword(account, password, true)) {
+            if (!accountService.resetPassword(account, password, false)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             //清除验证码的缓存
@@ -490,7 +490,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (!emailSenderService.checkEmailForResetPwd(passportId, clientId, token)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             }
-            if (!accountService.resetPassword(account, password, true)) {
+            if (!accountService.resetPassword(account, password, false)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             // 删除邮件链接token缓存
@@ -565,7 +565,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
-            if (!accountService.resetPassword(account, password, true)) {
+            if (!accountService.resetPassword(account, password, false)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             }
             return Result.buildSuccess("重置密码成功！");
