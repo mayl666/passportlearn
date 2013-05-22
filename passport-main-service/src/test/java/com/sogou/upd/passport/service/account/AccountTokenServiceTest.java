@@ -62,7 +62,7 @@ public class AccountTokenServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testUpdateAccountAuth() throws Exception {
         AccountToken
-                accountAuth = accountAuthService.updateAccountToken(PASSPORT_ID, CLIENT_ID_INT, INSTANCE_ID);
+                accountAuth = accountAuthService.updateOrInsertAccountToken(PASSPORT_ID, CLIENT_ID_INT, INSTANCE_ID);
         if (accountAuth != null) {
             System.out.println("插入auth表成功...");
         } else {

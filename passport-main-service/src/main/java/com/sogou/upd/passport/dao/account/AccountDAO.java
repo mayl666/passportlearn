@@ -67,7 +67,7 @@ public interface AccountDAO {
   @SQL("update " +
           TABLE_NAME +
           " set passwd=:passwd where passport_id=:passport_id")
-  public int modifyPassword(@SQLParam("passwd") String passwd,
+  public int updatePassword(@SQLParam("passwd") String passwd,
                             @SQLParam("passport_id") String passport_id) throws
                                                                          DataAccessException;
 
@@ -77,7 +77,7 @@ public interface AccountDAO {
   @SQL("update " +
           TABLE_NAME +
           " set mobile=:mobile where passport_id=:passport_id")
-  public int modifyMobile(@SQLParam("mobile") String mobile,
+  public int updateMobile(@SQLParam("mobile") String mobile,
                           @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
   /**

@@ -63,7 +63,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 } else {
                     // 为了安全每次登录生成新的token
-                    renewAccountToken = accountTokenService.updateAccountToken(account.getPassportId(), clientId, instanceId);
+                    renewAccountToken = accountTokenService.updateOrInsertAccountToken(account.getPassportId(), clientId, instanceId);
                 }
             } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
@@ -72,7 +72,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                     return Result.buildError(ErrorUtil.INVALID_REFRESH_TOKEN);
                 } else {
                     String passportId = accountToken.getPassportId();
-                    renewAccountToken = accountTokenService.updateAccountToken(passportId, clientId, instanceId);
+                    renewAccountToken = accountTokenService.updateOrInsertAccountToken(passportId, clientId, instanceId);
                 }
             } else {
                 return Result.buildError(ErrorUtil.UNSUPPORTED_GRANT_TYPE);

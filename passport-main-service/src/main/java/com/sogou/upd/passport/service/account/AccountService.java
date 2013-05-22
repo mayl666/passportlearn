@@ -133,4 +133,5 @@ public interface AccountService {
      * @throws ServiceException
      */
   public boolean modifyMobile(Account account, String newMobile);
+
 }

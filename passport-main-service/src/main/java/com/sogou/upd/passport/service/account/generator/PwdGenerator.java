@@ -42,8 +42,8 @@ public class PwdGenerator {
     /**
      * 生成密码
      *
-     * @param pwd
-     * @param needMD5 明文密码为ture，MD5密码为false
+     * @param pwd   密码
+     * @param needMD5  明文密码为ture，MD5密码为false
      * @return 返回存储在数据库里的密码
      */
     public static String generatorStoredPwd(String pwd, boolean needMD5) throws Exception {
@@ -64,6 +64,14 @@ public class PwdGenerator {
         }
     }
 
+    /**
+     * 校验密码正确性
+     * @param pwd   密码
+     * @param needMD5   密码是否需要MD5，明文密码为ture，MD5密码为false
+     * @param storedPwd   数据库里存储的密码
+     * @return  如果前端传递的密码与数据库里密码匹配，返回true
+     * @throws Exception
+     */
     public static boolean verify(String pwd, boolean needMD5, String storedPwd) throws Exception {
         try {
             String actualPwd = MD5_SIGN + storedPwd;
@@ -76,18 +84,19 @@ public class PwdGenerator {
     }
 
     public static void main(String[] args) throws Exception {
-        String passwd = "123456";
-        String salt = RandomStringUtils.randomAlphanumeric(8);
-        String pwd_md5 = DigestUtils.md5Hex(passwd.getBytes());
-        String result = Crypt.crypt(pwd_md5, "$1$" + salt);
-        if (result.startsWith("$1$")) {
-            String storedPwd = result.substring(3);
-            System.out.println("[Crypt-result]:" + storedPwd);
-        }
-
-        String crypt_result = Crypt.crypt(pwd_md5, result);
-        boolean isRight = result.equals(crypt_result);
-        System.out.println("[Vertify-result]:" + isRight);
+//        String passwd = "123456";
+//        String salt = RandomStringUtils.randomAlphanumeric(8);
+//        String pwd_md5 = DigestUtils.md5Hex(passwd.getBytes());
+//        String result = Crypt.crypt(pwd_md5, "$1$" + salt);
+//        if (result.startsWith("$1$")) {
+//            String storedPwd = result.substring(3);
+//            System.out.println("[Crypt-result]:" + storedPwd);
+//        }
+//
+//        String crypt_result = Crypt.crypt(pwd_md5, result);
+//        boolean isRight = result.equals(crypt_result);
+//        System.out.println("[Vertify-result]:" + isRight);
+      System.out.println(PwdGenerator.generatorStoredPwd("111111",true));
     }
 
 }

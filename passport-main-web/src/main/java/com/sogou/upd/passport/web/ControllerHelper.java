@@ -45,7 +45,7 @@ public class ControllerHelper {
         Map parameterMap = request.getParameterMap();
         Set<String> keys = parameterMap.keySet();
         for (String key : keys) {
-            params.append(key).append("=").append(request.getParameter(key));
+            params.append(key).append("=").append(request.getParameter(key)).append("&");
         }
         String queryString = "";
         if (params.length() > 0) {

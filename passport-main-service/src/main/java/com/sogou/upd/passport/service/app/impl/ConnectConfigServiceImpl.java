@@ -63,6 +63,21 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
         return null;
     }
 
+    @Override
+    public boolean modifyConnectConfig(ConnectConfig connectConfig) throws ServiceException {
+        try {
+            int row = connectConfigDAO.updateConnectConfig(connectConfig);
+            if (row > 0) {
+                String cacheKey = buildConnectConfigCacheKey(connectConfig.getClientId(), connectConfig.getProvider());
+                redisUtils.set(cacheKey, connectConfig);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
     private boolean addClientIdMapConnectConfigToCache(String cacheKey, ConnectConfig connectConfig) {
         boolean flag = true;
         try {
