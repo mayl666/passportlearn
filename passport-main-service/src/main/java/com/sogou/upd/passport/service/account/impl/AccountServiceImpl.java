@@ -354,22 +354,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result checkCaptchaCodeIsVaild(String token, String captchaCode) throws ServiceException {
-        Result result = null;
+    public boolean checkCaptchaCodeIsVaild(String token, String captchaCode) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 String captchaCodeCache = redisUtils.get(cacheKey);
-                if (!captchaCodeCache.equalsIgnoreCase(captchaCode)) {
-                    result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                if (captchaCodeCache.equalsIgnoreCase(captchaCode)) {
+                    return true;
                 }
-            } else {
-                result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             }
+            return false;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return result;
     }
 
     @Override

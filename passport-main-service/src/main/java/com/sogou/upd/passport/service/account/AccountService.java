@@ -101,7 +101,7 @@ public interface AccountService {
    *
    * @return 匹配结果
    */
-  public Result checkCaptchaCodeIsVaild(String token,String captchaCode);
+  public boolean checkCaptchaCodeIsVaild(String token, String captchaCode);
 
   /**
     * 根据用户连续登陆失败次数确定用户登陆时是否需要输入验证码
