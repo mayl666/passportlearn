@@ -389,9 +389,21 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
-    /*
-     * 外域邮箱注册
-     */
+  @Override
+  public Account queryAccountByPassportIdAndPwd(String passportId, String pwd) throws ServiceException{
+    Account account=null;
+    try {
+      account=accountDAO.queryAccountByPassportIdAndPwd(passportId,pwd);
+    } catch (Exception e){
+      throw new ServiceException(e);
+    }
+
+    return account;
+  }
+
+  /*
+   * 外域邮箱注册
+   */
     public void initialAccountToCache(String username, String password, String ip) throws ServiceException {
         int provider = AccountTypeEnum.EMAIL.getValue();
         Account account = new Account();

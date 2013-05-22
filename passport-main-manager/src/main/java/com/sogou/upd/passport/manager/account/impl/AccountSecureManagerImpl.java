@@ -465,7 +465,14 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
       String password=resetPwdParameters.getPassword();
       String newpwd=resetPwdParameters.getNewpwd();
 
-      Account account=new Account();
+      //校验用户名和密码是否匹配
+
+      Account account=accountService.queryAccountByPassportIdAndPwd(username,password);
+      if(account!=null){
+
+      }
+
+      account=new Account();
       account.setPassportId(username);
       account.setPasswd(password);
 

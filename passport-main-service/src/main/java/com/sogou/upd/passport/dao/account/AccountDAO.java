@@ -50,6 +50,16 @@ public interface AccountDAO {
           TABLE_NAME +
           " where passport_id=:passport_id")
   public Account getAccountByPassportId(@SQLParam("passport_id") String passport_id) throws
+                                                                                     DataAccessException;/**
+   * 根据passportId,pwd获取Account
+   */
+  @SQL("select" +
+          ALL_FIELD +
+          "from" +
+          TABLE_NAME +
+          " where passport_id=:passport_id and passwd=:passwd")
+  public Account queryAccountByPassportIdAndPwd(@SQLParam("passport_id") String passport_id ,
+                                                @SQLParam("passwd") String passwd) throws
                                                                                      DataAccessException;
 
   /**
