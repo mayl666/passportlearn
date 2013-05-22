@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.dao.app;
 
+import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
@@ -33,7 +34,7 @@ public interface ConnectConfigDAO {
     /**
      * 修改字段列表
      */
-    String UPDATE_FIELD = " client_id = :connectConfig.clientId, provider = :connectConfig.provider, app_key = :connectConfig.appKey, app_secret = :connectConfig.appSecret, scope = :connectConfig.scope, create_time = :connectConfig.createTime ";
+    String UPDATE_FIELD = " client_id = :connectConfig.clientId, provider = :connectConfig.provider, app_key = :connectConfig.appKey, app_secret = :connectConfig.appSecret, scope = :connectConfig.scope ";
 
 
     @SQL("select " +
@@ -43,4 +44,14 @@ public interface ConnectConfigDAO {
             " where client_id=:client_id and provider=:provider")
     public ConnectConfig getConnectConfigByClientIdAndProvider(@SQLParam("client_id") int client_id, @SQLParam("provider") int provider) throws
             DataAccessException;
+
+    /**
+     * 更新用户状态表
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set " +
+            UPDATE_FIELD
+            + "where client_id=:connectConfig.clientId and provider=:connectConfig.provider")
+    public int updateConnectConfig(@SQLParam("connectConfig") ConnectConfig connectConfig) throws DataAccessException;
 }
