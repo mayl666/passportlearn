@@ -134,10 +134,4 @@ public interface AccountService {
      */
   public boolean modifyMobile(Account account, String newMobile);
 
-  /**
-   * 验证用户名密码是否匹配
-   * @param passportId
-   * @return
-   */
-  public Account queryAccountByPassportIdAndPwd(String passportId,String pwd);
 }
