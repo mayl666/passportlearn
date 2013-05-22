@@ -142,10 +142,7 @@ public class WebAccountController extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
-
-
     Result result = accountSecureManager.resetWebPassword(resetParams);
-//    return result;
-    return null;
+    return result;
   }
 }

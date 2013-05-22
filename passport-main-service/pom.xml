@@ -63,9 +63,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jvnet.hudson</groupId>
+            <groupId>commons-jexl</groupId>
             <artifactId>commons-jexl</artifactId>
-            <version>1.1-hudson-20090508</version>
+            <version>1.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

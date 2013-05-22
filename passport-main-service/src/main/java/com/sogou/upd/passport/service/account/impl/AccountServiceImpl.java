@@ -384,9 +384,9 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
-    /*
-     * 外域邮箱注册
-     */
+  /*
+   * 外域邮箱注册
+   */
     public void initialAccountToCache(String username, String password, String ip) throws ServiceException {
         int provider = AccountTypeEnum.EMAIL.getValue();
         Account account = new Account();

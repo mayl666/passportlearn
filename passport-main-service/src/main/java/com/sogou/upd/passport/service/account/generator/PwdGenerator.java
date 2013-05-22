@@ -84,18 +84,19 @@ public class PwdGenerator {
     }
 
     public static void main(String[] args) throws Exception {
-        String passwd = "123456";
-        String salt = RandomStringUtils.randomAlphanumeric(8);
-        String pwd_md5 = DigestUtils.md5Hex(passwd.getBytes());
-        String result = Crypt.crypt(pwd_md5, "$1$" + salt);
-        if (result.startsWith("$1$")) {
-            String storedPwd = result.substring(3);
-            System.out.println("[Crypt-result]:" + storedPwd);
-        }
-
-        String crypt_result = Crypt.crypt(pwd_md5, result);
-        boolean isRight = result.equals(crypt_result);
-        System.out.println("[Vertify-result]:" + isRight);
+//        String passwd = "123456";
+//        String salt = RandomStringUtils.randomAlphanumeric(8);
+//        String pwd_md5 = DigestUtils.md5Hex(passwd.getBytes());
+//        String result = Crypt.crypt(pwd_md5, "$1$" + salt);
+//        if (result.startsWith("$1$")) {
+//            String storedPwd = result.substring(3);
+//            System.out.println("[Crypt-result]:" + storedPwd);
+//        }
+//
+//        String crypt_result = Crypt.crypt(pwd_md5, result);
+//        boolean isRight = result.equals(crypt_result);
+//        System.out.println("[Vertify-result]:" + isRight);
+      System.out.println(PwdGenerator.generatorStoredPwd("111111",true));
     }
 
 }
