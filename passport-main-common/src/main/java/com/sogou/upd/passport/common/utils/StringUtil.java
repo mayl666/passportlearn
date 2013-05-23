@@ -151,6 +151,10 @@ public class StringUtil {
         return sb.toString();
     }
 
+    /**
+     * 检测多个字符串参数中是否含有null或空值串，有则返回false，无则返回true。
+     * 不传入参数，则返回false
+     */
     public static boolean checkExistNullOrEmpty(String... args) {
         for (String str : args) {
             if (str == null || str.length() == 0) {
