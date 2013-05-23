@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 
 /**
  * 桌面/移动客户端手机账号重置密码请求参数类
@@ -24,6 +25,7 @@ public class MobileModifyPwdParams {
     @NotBlank(message = "验证码不允许为空!")
     private String smscode;
     @NotBlank(message = "client_id不允许为空!")
+    @Min(0)
     private String client_id;
     private int pwd_type = 0; // 可选项，缺省为MD5，1-明文
 

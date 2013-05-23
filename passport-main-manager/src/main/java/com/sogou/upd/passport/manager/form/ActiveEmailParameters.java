@@ -2,12 +2,15 @@ package com.sogou.upd.passport.manager.form;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Min;
+
 /**
  * User: mayan Date: 13-4-15 Time: 下午5:15 To change this template use File | Settings | File
  * Templates.
  */
 public class ActiveEmailParameters {
   @NotBlank(message = "参数错误!")
+  @Min(0)
   private String client_id;
   @NotBlank(message = "参数错误!")
   private String passport_id;

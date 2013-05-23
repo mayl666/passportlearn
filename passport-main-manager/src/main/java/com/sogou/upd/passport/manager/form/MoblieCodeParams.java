@@ -19,6 +19,7 @@ public class MoblieCodeParams {
     @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
     @NotBlank(message = "client_id不允许为空!")
+    @Min(0)
     private String client_id;
 
     public String getMobile() {
