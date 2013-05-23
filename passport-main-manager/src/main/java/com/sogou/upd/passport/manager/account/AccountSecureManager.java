@@ -12,14 +12,24 @@ import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 public interface AccountSecureManager {
 
     /**
-     * 发送短信验证码
+     * 发送短信验证码（至未注册未绑定手机）
      */
-    public Result sendMobileCode(String mobile, int clientId);
+    public Result sendMobileCode(String mobile, int clientId) throws Exception;
 
     /**
      * 发送短信验证码（根据passportId）
      */
-    public Result sendMobileCodeByPassportId(String passportId, int clientId);
+    public Result sendMobileCodeByPassportId(String passportId, int clientId) throws Exception;
+
+    /**
+     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法调用
+     *
+     * @param mobile
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
 
     /**
      * 重发验证码时更新缓存状态
@@ -85,7 +95,8 @@ public interface AccountSecureManager {
 
 
     /**
-     * 重置密码（手机方式）——1.检查手机短信码，成功则返回secureCode记录成功标志
+     * 重置密码（手机方式）——2.检查手机短信码，成功则返回secureCode记录成功标志
+     *                      （1.发送见sendMobileCodeByPassportId）
      *
      * @param passportId
      * @param clientId
@@ -110,7 +121,7 @@ public interface AccountSecureManager {
             String captcha) throws Exception;
 
     /**
-     * 重置密码（手机和密保方式）——2.根据secureCode修改密码（secureCode由上一步验证手机或密保问题成功获取）
+     * 重置密码（手机和密保方式）——根据secureCode修改密码（secureCode由上一步验证手机或密保问题成功获取）
      *
      * @param passportId
      * @param clientId
@@ -230,15 +241,5 @@ public interface AccountSecureManager {
      * @throws Exception
      */
     public Result checkMobileCodeByPassportId(String passportId, int clientId, String smsCode) throws Exception;
-
-    /**
-     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法调用
-     *
-     * @param mobile
-     * @param clientId
-     * @return
-     * @throws Exception
-     */
-    public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
 
 }

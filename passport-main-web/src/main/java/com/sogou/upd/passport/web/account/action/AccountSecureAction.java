@@ -7,12 +7,9 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.manager.form.AccountSecureParams;
-import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
+import com.sogou.upd.passport.manager.form.AccountPwdScodeParams;
 import com.sogou.upd.passport.web.BaseController;
-import com.sogou.upd.passport.web.ControllerHelper;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +18,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午1:51 To change this template use
  * File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/web/findpwd")
+@RequestMapping("/web")
 public class AccountSecureAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureAction.class);
 
@@ -52,23 +44,18 @@ public class AccountSecureAction extends BaseController {
     /**
      * 查询账号所拥有的密码找回方式
      *
-     * @param username 传入的参数
+     * @param params 传入的参数
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public String queryPassportId(@RequestParam("username") String username, @RequestParam("client_id") String client_id,
-            Model model) throws Exception {
-        if(!StringUtil.checkIsDigit(client_id)){
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE));
-            return "forward:";
+    public String queryPassportId(AccountPwdScodeParams params, Model model) throws Exception {
+        int clientId = Integer.parseInt(params.getClient_id());
+        String passportId = accountManager.getPassportIdByUsername(params.getPassport_id());
+        if (passportId == null) {
+
         }
-        int clientId = Integer.parseInt(client_id);
-        String passportId = accountManager.getPassportIdByUsername(username);
-        if (Strings.isNullOrEmpty(passportId)) {
-            // model.addAttribute("exist", false);
-            return "forward:";
-        }
+        params.setPassport_id(passportId);
 //        // model.addAttribute("exist", true);
 //        Result result = accountSecureManager.queryAccountSecureInfo(
 //                passportId, clientId);
@@ -146,13 +133,12 @@ public class AccountSecureAction extends BaseController {
         return "forward:";
     }
 
-    @RequestMapping(value = "/checkemail", method = RequestMethod.GET)
-    public String checkEmail(@RequestParam("uid") String uid, @RequestParam("cid") String client_id, @RequestParam("token") String token,
+    @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
+    public String checkEmailForResetPwd(@RequestParam("uid") String uid, @RequestParam("cid") String client_id, @RequestParam("token") String token,
             Model model) throws Exception {
         Result result;
-        if(!StringUtil.checkIsDigit(client_id)){
-            result = Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
-            model.addAttribute("error", result);
+        if (StringUtil.checkExistNullOrEmpty(uid, client_id) || !StringUtil.checkIsDigit(client_id)) {
+            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE));
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
@@ -164,7 +150,7 @@ public class AccountSecureAction extends BaseController {
             model.addAttribute("token", token);
             return "resetpwd";
         }
-        return "findpwd";
+        return "forward:";
     }
 
     @RequestMapping(value = "/email", method = RequestMethod.POST)

@@ -66,10 +66,11 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE;
     private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = CacheConstant.CACHE_PREFIX_MOBILE_SENDNUM;
 
+    /*
+     * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
+     */
     @Override
-    public Result sendMobileCode(String mobile, int clientId) {
-        //判断账号是否被缓存
-        String cacheKey = mobile + "_" + clientId;
+    public Result sendMobileCode(String mobile, int clientId) throws Exception {
         try {
             String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
             if (Strings.isNullOrEmpty(passportId)) {
@@ -84,7 +85,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result sendSmsCodeToMobile(String mobile, int clientId) {
+    public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception {
         try {
             if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
@@ -110,7 +111,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result sendMobileCodeByPassportId(String passportId, int clientId) {
+    public Result sendMobileCodeByPassportId(String passportId, int clientId) throws Exception {
         try {
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
@@ -254,7 +255,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
     @Override
     public Result queryAccountSecureInfo(AccountSecureInfoParams params) throws Exception {
-        String passportId = params.getPassport_id();
+        String passportId = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String token = params.getToken();
         String captcha = params.getCaptcha();
@@ -286,7 +287,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 params.setSec_ques(StringUtil.defaultIfEmpty(accountInfo.getQuestion(), ""));
             }
             if (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum
-                    .getDomain("other")) {
+                    .OTHER) {
                 params.setReg_email(passportId.substring(0, 2).concat("*****").
                         concat(passportId.substring(passportId.indexOf("@") - 1)));
             }
@@ -434,7 +435,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (mode == 1) {
                 // 使用注册邮箱
                 boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) ==
-                                         AccountDomainEnum.getDomain("other"));
+                                         AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
                     return sendEmailResetPwd(passportId, clientId, passportId);
@@ -503,7 +504,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     /*
-     * 重置密码（手机方式）——1.检查手机短信码，成功则返回secureCode记录成功标志
+     * 重置密码（手机方式）——2.检查手机短信码，成功则返回secureCode记录成功标志
+     *                      （1.发送见sendMobileCode***）
      */
     @Override
     public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode)

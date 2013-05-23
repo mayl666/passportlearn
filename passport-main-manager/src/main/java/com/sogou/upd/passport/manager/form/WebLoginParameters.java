@@ -56,8 +56,8 @@ public class WebLoginParameters {
      */
     @AssertTrue(message = "用户名或密码错误，请重新输入!")
     private boolean isValidAccountDomainEnum() {
-        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomainEnum(this.getAccount());
-        if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(this.getAccount());
+        if (accountDomainEnum == AccountDomainEnum.UNKNOWN) {
             return false;
         }
         this.setAccountDomainEnum(accountDomainEnum);

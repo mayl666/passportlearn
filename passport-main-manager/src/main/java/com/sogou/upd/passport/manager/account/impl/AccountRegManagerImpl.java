@@ -107,18 +107,18 @@ public class AccountRegManagerImpl implements AccountRegManager {
             String token = regParams.getToken();
 
             //判断注册账号类型，sogou用户还是第三方用户
-            int emailType = AccountDomainEnum.getAccountDomain(username);
+            AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
 
             //写缓存，发验证邮件
             switch (emailType) {
-                case 1://sogou用户，直接注册
+                case SOGOU://sogou用户，直接注册
                     Account account = accountService.initialAccount(username, password, false, ip, AccountTypeEnum.EMAIL.getValue());
                     if (account != null) {
                         return Result.buildSuccess("注册成功！");
                     } else {
                         return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     }
-                case 4://外域邮件注册
+                case OTHER://外域邮件注册
                     boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip);
                     if (isSendSuccess) {
                         return Result.buildSuccess("感谢注册，请立即激活账户！");
