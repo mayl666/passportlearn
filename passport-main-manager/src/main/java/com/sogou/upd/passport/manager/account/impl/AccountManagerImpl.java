@@ -59,10 +59,9 @@ public class AccountManagerImpl implements AccountManager {
                     return passportId;
                 }
             } else {
-                Account account = accountService.queryAccountByPassportId(username);
-                if (account != null) {
-                    return username;
-                }
+                // Account account = accountService.queryAccountByPassportId(username);
+                // 不查询account表
+                return username;
             }
         } catch (ServiceException e) {
             log.error("Username doesn't exist Exception, username:" + username, e);

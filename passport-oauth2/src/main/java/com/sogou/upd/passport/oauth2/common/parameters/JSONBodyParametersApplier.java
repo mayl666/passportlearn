@@ -21,11 +21,11 @@
 
 package com.sogou.upd.passport.oauth2.common.parameters;
 
-import com.google.gson.Gson;
+import com.sogou.upd.passport.common.utils.BuilderUtil;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
-
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -35,9 +35,15 @@ import java.util.Map;
  */
 public class JSONBodyParametersApplier implements OAuthParametersApplier {
 
+    private Logger logger = LoggerFactory.getLogger(JSONBodyParametersApplier.class);
+
     public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
-        Gson gson = new Gson();
-        String json = gson.toJson(params);
+        String json = "";
+        try {
+            json = new ObjectMapper().writeValueAsString(params);
+        } catch (IOException e) {
+            logger.error("Params Write AS JsonString fail! Params:" + BuilderUtil.mapAsString(params));
+        }
         message.setBody(json);
         return message;
     }

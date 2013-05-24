@@ -10,10 +10,8 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CaptchaUtils;
 import com.sogou.upd.passport.common.utils.DateUtil;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -215,7 +213,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
-            int row = accountDAO.modifyPassword(passwdSign, passportId);
+            int row = accountDAO.updatePassword(passwdSign, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPasswd(passwdSign);
@@ -370,7 +368,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean modifyMobile(Account account, String newMobile) throws ServiceException {
         try {
             String passportId = account.getPassportId();
-            int row = accountDAO.modifyMobile(newMobile, passportId);
+            int row = accountDAO.updateMobile(newMobile, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setMobile(newMobile);

@@ -12,6 +12,7 @@ public class ConnectClientObtainParams {
     @NotBlank(message = "access_token不允许为空!")
     private String access_token;
     @NotBlank(message = "client_id不允许为空!")
+    @Min(0)
     private String client_id;
     @NotBlank(message = "provider不允许为空!")
     private String provider;

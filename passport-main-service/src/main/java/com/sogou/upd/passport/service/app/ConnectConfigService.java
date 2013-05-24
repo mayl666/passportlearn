@@ -33,4 +33,12 @@ public interface ConnectConfigService {
      * @throws ServiceException
      */
     public String querySpecifyAppKey(int clientId, int provider) throws ServiceException;
+
+    /**
+     * 更新ConnectConfig
+     * @param connectConfig
+     * @return
+     * @throws ServiceException
+     */
+    public boolean modifyConnectConfig(ConnectConfig connectConfig) throws ServiceException;
 }

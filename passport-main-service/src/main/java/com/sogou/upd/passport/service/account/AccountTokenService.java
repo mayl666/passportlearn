@@ -42,8 +42,8 @@ public interface AccountTokenService {
      * @return
      * @throws Exception
      */
-    public AccountToken updateAccountToken(String passportId, int clientId,
-                                           String instanceId) throws ServiceException;
+    public AccountToken updateOrInsertAccountToken(String passportId, int clientId,
+                                                   String instanceId) throws ServiceException;
 
     /**
      * 删除AccountAuth（内部debug接口使用）

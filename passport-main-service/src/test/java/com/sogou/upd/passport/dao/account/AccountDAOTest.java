@@ -59,7 +59,7 @@ public class AccountDAOTest extends BaseDAOTest {
      */
     @Test
     public void testModifyPassword() {
-        int row = accountDAO.modifyPassword(NEW_PASSWORD, PASSPORT_ID);
+        int row = accountDAO.updatePassword(NEW_PASSWORD, PASSPORT_ID);
         Assert.assertTrue(row == 1);
     }
 

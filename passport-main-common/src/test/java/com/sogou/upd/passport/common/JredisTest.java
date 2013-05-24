@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * To change this template use File | Settings | File Templates.
  */
 @ContextConfiguration(locations = {"classpath:spring-config-jredis.xml"})
-public class TestJredis extends AbstractJUnit4SpringContextTests {
+public class JredisTest extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private RedisUtils redisUtils;

@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 
 /**
  * 获取第三方id参数校验
@@ -16,6 +17,7 @@ public class ConnectObtainParams {
     @NotBlank(message = "passport_id不允许为空!")
     private String passport_id;
     @NotBlank(message = "client_id不允许为空!")
+    @Min(0)
     private String client_id;
     @NotBlank(message = "provider不允许为空!")
     private String provider;

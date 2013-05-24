@@ -1,12 +1,12 @@
 package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.dataobject.SinaOAuthTokenDO;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.IOException;
 
 /**
  * 错误响应码为400
@@ -21,10 +21,8 @@ public class SinaJSONAccessTokenResponse extends AbstractAccessTokenResponse {
     public void setBody(String body) throws OAuthProblemException {
         this.body = body;
         try {
-            Gson gson = new Gson();
-            this.oAuthTokenDO = gson.fromJson(this.body, new TypeToken<SinaOAuthTokenDO>() {
-            }.getType());
-        } catch (JsonSyntaxException e) {
+            this.oAuthTokenDO = new ObjectMapper().readValue(this.body, SinaOAuthTokenDO.class);
+        } catch (IOException e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
                     "Invalid response! Response body is not " + OAuth.ContentType.JSON + " encoded");
         }

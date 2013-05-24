@@ -5,6 +5,8 @@ import com.google.common.collect.HashBiMap;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
+import java.util.LinkedList;
+
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午5:59 To change this template use
  * File | Settings | File Templates.
@@ -18,15 +20,21 @@ public enum AccountDomainEnum {
     THIRD(5); // 第三方
 
     // 域数字与字符串映射字典表
-    private static BiMap<String, Integer> DOMAIN_MAPPING_DICT = HashBiMap.create();
+    private static LinkedList<String> SOHU_DOMAIN = new LinkedList<>();
 
     static {
-        DOMAIN_MAPPING_DICT.put("sogou", SOGOU.getValue());
-        DOMAIN_MAPPING_DICT.put("sohu", SOHU.getValue());
-        DOMAIN_MAPPING_DICT.put("phone", PHONE.getValue());
-        DOMAIN_MAPPING_DICT.put("other", OTHER.getValue());
-        DOMAIN_MAPPING_DICT.put("third", THIRD.getValue());
-        DOMAIN_MAPPING_DICT.put("unknown", UNKNOWN.getValue());
+        SOHU_DOMAIN.add("@sohu.com");
+        SOHU_DOMAIN.add("@vip.sohu.com");
+        SOHU_DOMAIN.add("@chinaren.com");
+        SOHU_DOMAIN.add("@focus.cn");
+        SOHU_DOMAIN.add("@game.sohu.com");
+        SOHU_DOMAIN.add("@bo.sohu.com");
+        SOHU_DOMAIN.add("@changyou.com");
+        SOHU_DOMAIN.add("@sms.sohu.com");
+        SOHU_DOMAIN.add("@sol.sohu.com");
+        SOHU_DOMAIN.add("@wap.sohu.com");
+        SOHU_DOMAIN.add("@17173.com");
+        SOHU_DOMAIN.add("@37wanwan.com");
     }
 
     private int value;
@@ -39,55 +47,41 @@ public enum AccountDomainEnum {
         return value;
     }
 
-    public static int getDomain(String domainStr) {
-        return DOMAIN_MAPPING_DICT.get(domainStr);
-    }
-
-    public static String getDomainStr(int domain) {
-        return DOMAIN_MAPPING_DICT.inverse().get(domain);
-    }
-
     /**
      * 检测用户名的所属域，username不包括"手机号@sogou.com"这种格式
      *
      * @param username
      * @return
      */
-    public static int getAccountDomain(String username) {
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            return getDomain("phone");
-        }
-        if (username.endsWith("@sogou.com")) {
-            // TODO: 判定字符串是否可以设置在配置类或文件中
-            return getDomain("sogou");
-        } else if (username.endsWith("@sohu.com") || username.endsWith("@chinaren.com") ||
-                username.endsWith("@focus.cn") || username.endsWith("@vip.sohu.com")) {
-            return getDomain("sohu");
-        } else if (username.matches(".+@[a-zA-Z0-9]+\\.sohu\\.com$")) {
-            return getDomain("third");
-        } else if (username.contains("@")) {
-            return getDomain("other");
-        }
-        return getDomain("unknown");
-    }
+    public static AccountDomainEnum getAccountDomain(String username) {
 
-    /**
-     * 通过账户来获取类型
-     * @param username
-     * @return
-     */
-    public static AccountDomainEnum getAccountDomainEnum(String username){
-        int domain=AccountDomainEnum.getAccountDomain(username);
-        for(AccountDomainEnum accountDomainEnum:values()){
-            if(accountDomainEnum.getValue()==domain){
-                return accountDomainEnum;
+        // 验证纯手机号
+        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+            return AccountDomainEnum.PHONE;
+        }
+
+        // 验证手机账号（如137****@sogou.com）和sogou域账号
+        if (username.endsWith("@sogou.com")) {
+            if (PhoneUtil.verifyPhoneNumberFormat(username.substring(0, username.lastIndexOf(
+                    "@sogou.com")))) {
+                return AccountDomainEnum.PHONE;
             }
+            return AccountDomainEnum.SOGOU;
+        }
+
+        // 验证SOHU域账号，在SOHU_DOMAIN中限定
+        for (String sohuSuffix : SOHU_DOMAIN) {
+            if (username.endsWith(sohuSuffix)) {
+                return AccountDomainEnum.SOHU;
+            }
+        }
+
+        if (username.matches(".+@[a-zA-Z0-9]+\\.sohu\\.com$")) {
+            return AccountDomainEnum.THIRD;
+        } else if (username.contains("@")) {
+            return AccountDomainEnum.OTHER;
         }
         return AccountDomainEnum.UNKNOWN;
     }
 
-    @Override
-    public String toString() {
-        return getDomainStr(getValue());
-    }
 }

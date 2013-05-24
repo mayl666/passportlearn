@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.google.gson.reflect.TypeToken;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -10,6 +8,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -20,10 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-3-29 Time: 上午1:20 To change this template use File | Settings |
@@ -123,7 +120,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     }
 
     @Override
-    public AccountToken updateAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
+    public AccountToken updateOrInsertAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             AccountToken accountToken = newAccountToken(passportId, clientId, instanceId);
             int accountRow = accountTokenDAO.saveAccountToken(passportId, accountToken);

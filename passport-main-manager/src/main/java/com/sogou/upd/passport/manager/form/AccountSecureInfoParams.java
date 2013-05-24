@@ -15,6 +15,10 @@ public class AccountSecureInfoParams {
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private String client_id;
+    @NotBlank
+    private String token;
+    @NotBlank(message = "验证码不允许为空!")
+    private String captcha;
 
     private String sec_mobile;
     private String sec_email;
@@ -67,5 +71,21 @@ public class AccountSecureInfoParams {
 
     public void setSec_ques(String sec_ques) {
         this.sec_ques = sec_ques;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
     }
 }

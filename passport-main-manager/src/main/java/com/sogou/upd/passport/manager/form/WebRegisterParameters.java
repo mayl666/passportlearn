@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 
 /**
  * User: mayan Date: 13-4-15 Time: 下午5:15 To change this template use File | Settings | File
@@ -13,6 +14,7 @@ import javax.validation.constraints.Digits;
  */
 public class WebRegisterParameters {
   @NotBlank(message = "client_id不允许为空!")
+  @Min(0)
   private String client_id;
   @NotBlank(message = "邮箱不允许为空!")
   private String username;

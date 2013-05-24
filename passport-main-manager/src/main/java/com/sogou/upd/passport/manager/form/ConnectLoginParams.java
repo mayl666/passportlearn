@@ -6,6 +6,7 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,6 +20,7 @@ public class ConnectLoginParams {
     @NotBlank(message = "provider不能为空")
     private String provider; // provider
     @NotBlank(message = "client_id不允许为空!")
+    @Min(0)
     private String client_id; // 应用id
     @NotBlank(message = "ru不能为空")
     private String ru;  // 回调地址
