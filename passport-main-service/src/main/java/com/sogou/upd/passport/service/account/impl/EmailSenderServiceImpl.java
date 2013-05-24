@@ -52,7 +52,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(uid + clientId + code);
-            String activeUrl = PASSPORT_RESETPWD_EMAIL_URL + "uid=" + uid + "&cid=" + clientId + "&token=" + token;
+            String activeUrl = PASSPORT_RESETPWD_EMAIL_URL + "passport_id=" + uid + "&client_id=" + clientId + "&scode=" + token;
 
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
@@ -143,7 +143,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(uid + clientId + code);
-            String activeUrl = PASSPORT_BINDING_EMAIL_URL + "uid=" + uid + "&cid=" + clientId + "&token=" + token;
+            String activeUrl = PASSPORT_BINDING_EMAIL_URL + "passport_id=" + uid + "&client_id=" + clientId + "&token=" + token;
 
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
