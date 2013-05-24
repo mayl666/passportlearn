@@ -9,31 +9,10 @@ import javax.validation.constraints.Min;
  * File | Settings | File Templates.
  * 用于获取前端的常用参数
  */
-public class AccountSecureParams {
+public class AccountPwdScodeParams extends BaseAccountParams {
 
-    @NotBlank(message = "账号不允许为空!")
-    private String passport_id;
-    @NotBlank(message = "client_id不允许为空!")
-    @Min(0)
-    private String client_id;
     private String password;
     private String scode;
-
-    public String getPassport_id() {
-        return passport_id;
-    }
-
-    public void setPassport_id(String passport_id) {
-        this.passport_id = passport_id;
-    }
-
-    public String getClient_id() {
-        return client_id;
-    }
-
-    public void setClient_id(String client_id) {
-        this.client_id = client_id;
-    }
 
     public String getPassword() {
         return password;
