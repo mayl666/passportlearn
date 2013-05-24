@@ -324,12 +324,10 @@ public class AccountServiceImpl implements AccountService {
     public Map<String, Object> getCaptchaCode(String token) throws ServiceException {
         Map<String, Object> map = null;
         try {
-
             if (Strings.isNullOrEmpty(token)) {
                 token = UUID.randomUUID().toString().replaceAll("-", "");
             }
             String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
-
             //生成验证码
             map = captchaUtils.getRandcode();
 
@@ -337,7 +335,6 @@ public class AccountServiceImpl implements AccountService {
 
                 String captchaCode = (String) map.get("captcha");
                 map.put("token", token);
-                map.put("captcha", map.get("captcha"));
 
                 redisUtils.set(cacheKey, captchaCode);
                 redisUtils.expire(cacheKey, DateAndNumTimesConstant.CAPTCHA_INTERVAL);
