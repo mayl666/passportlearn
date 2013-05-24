@@ -255,7 +255,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
     @Override
     public Result queryAccountSecureInfo(AccountSecureInfoParams params) throws Exception {
-        String passportId = params.getUsername();
+        String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String token = params.getToken();
         String captcha = params.getCaptcha();
