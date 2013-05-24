@@ -2,7 +2,7 @@ package com.sogou.upd.passport.web.inteceptor;
 
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.utils.CookieUtils;
-import com.sogou.upd.passport.common.utils.StringUtil;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;

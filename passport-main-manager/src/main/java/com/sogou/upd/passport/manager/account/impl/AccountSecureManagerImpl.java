@@ -10,7 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
-import com.sogou.upd.passport.common.utils.StringUtil;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
@@ -255,7 +255,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
     @Override
     public Result queryAccountSecureInfo(AccountSecureInfoParams params) throws Exception {
-        String passportId = params.getUsername();
+        String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String token = params.getToken();
         String captcha = params.getCaptcha();

@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.utils;
+package com.sogou.upd.passport.common.lang;
 
 import com.sogou.upd.passport.common.CommonConstant;
 
@@ -18,6 +18,14 @@ public class StringUtil {
 
     static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
 
+    /** 空字符串。 */
+    public static final String EMPTY_STRING = "";
+
+    /**
+     * 检查字符串是否为数字
+     * @param str
+     * @return
+     */
     public static boolean checkIsDigit(String str) {
         if (str.matches("[0-9]*")) {
             return true;
@@ -26,10 +34,40 @@ public class StringUtil {
         }
     }
 
+    /**
+     * <p>Checks if a CharSequence is empty ("") or null.</p>
+     *
+     * <pre>
+     * StringUtil.isEmpty(null)      = true
+     * StringUtil.isEmpty("null")    = true
+     * StringUtil.isEmpty("")        = true
+     * StringUtil.isEmpty(" ")       = false
+     * StringUtil.isEmpty("bob")     = false
+     * StringUtil.isEmpty("  bob  ") = false
+     * </pre>
+     *
+     * @param str  the CharSequence to check, may be null
+     * @return {@code true} if the CharSequence is empty or null
+     */
     public static boolean isEmpty(String str) {
         return StringUtils.isEmpty(str) || str.equalsIgnoreCase("null");
     }
 
+    /**
+     * <p>Checks if a CharSequence is whitespace, empty ("") or null.</p>
+     *
+     * <pre>
+     * StringUtil.isBlank(null)      = true
+     * StringUtil.isBlank("null")     = true
+     * StringUtil.isBlank("")        = true
+     * StringUtil.isBlank(" ")       = true
+     * StringUtil.isBlank("bob")     = false
+     * StringUtil.isBlank("  bob  ") = false
+     * </pre>
+     *
+     * @param str  the CharSequence to check, may be null
+     * @return {@code true} if the CharSequence is null, empty or whitespace
+     */
     public static boolean isBlank(String str) {
         return StringUtils.isBlank(str) || str.equalsIgnoreCase("null");
     }
