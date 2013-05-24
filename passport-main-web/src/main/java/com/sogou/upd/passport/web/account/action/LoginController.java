@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.web.BaseController;

@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.common.utils;
+package com.sogou.upd.passport.common.lang;
 
 import com.sogou.upd.passport.common.CommonConstant;
 
@@ -17,6 +17,9 @@ import java.util.regex.Pattern;
 public class StringUtil {
 
     static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
+
+    /** 空字符串。 */
+    public static final String EMPTY_STRING = "";
 
     /**
      * 检查字符串是否为数字

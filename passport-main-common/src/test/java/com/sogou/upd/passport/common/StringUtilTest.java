@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.common;
 
-import com.sogou.upd.passport.common.utils.StringUtil;
+import com.sogou.upd.passport.common.lang.StringUtil;
 
 import junit.framework.TestCase;
 

@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.common;
 
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.utils.BuilderUtil;
+import com.sogou.upd.passport.common.lang.BuilderUtil;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 

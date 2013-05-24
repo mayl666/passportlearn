@@ -10,7 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
-import com.sogou.upd.passport.common.utils.StringUtil;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;

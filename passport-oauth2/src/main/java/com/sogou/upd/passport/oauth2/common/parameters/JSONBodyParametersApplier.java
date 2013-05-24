@@ -21,7 +21,7 @@
 
 package com.sogou.upd.passport.oauth2.common.parameters;
 
-import com.sogou.upd.passport.common.utils.BuilderUtil;
+import com.sogou.upd.passport.common.lang.BuilderUtil;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
