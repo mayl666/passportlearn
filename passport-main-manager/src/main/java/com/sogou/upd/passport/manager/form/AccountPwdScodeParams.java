@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.manager.form;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.Min;
+
 /**
- * Created with IntelliJ IDEA.
- * User: shipengzhi
- * Date: 13-5-25
- * Time: 下午10:07
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午1:59 To change this template use
+ * File | Settings | File Templates.
+ * 用于获取前端的常用参数
  */
 public class AccountPwdScodeParams extends BaseAccountParams {
 

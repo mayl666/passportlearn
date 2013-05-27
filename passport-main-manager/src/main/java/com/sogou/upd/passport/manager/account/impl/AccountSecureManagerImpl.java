@@ -510,6 +510,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     @Override
     public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode)
             throws Exception {
+        // TODO:与checkMobileCodeOldForBinding整合
         try {
             Result result = checkMobileCodeByPassportId(passportId, clientId, smsCode);
             if ("0".equals(result.getStatus())) {
@@ -670,7 +671,14 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return result;
             }
             if (firstBind) {
-                // 新绑定手机，checkCode为secureCode
+                // 新绑定手机，checkCode为password
+                String password = checkCode;
+                account = accountService.verifyUserPwdVaild(passportId, password, true);
+                if (account == null || !account.isNormalAccount()) {
+                    return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
+                }
+            } else {
+                // 修改绑定手机，checkCode为secureCode
                 String secureCode = checkCode;
                 if (!accountSecureService.checkSecureCodeModSecureInfo(passportId, clientId, secureCode)) {
                     return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
@@ -678,13 +686,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 account = accountService.queryNormalAccount(passportId);
                 if (account == null) {
                     return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                }
-            } else {
-                // 修改绑定手机，checkCode为password
-                String password = checkCode;
-                account = accountService.verifyUserPwdVaild(passportId, password, true);
-                if (account == null || !account.isNormalAccount()) {
-                    return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
                 }
             }
 
