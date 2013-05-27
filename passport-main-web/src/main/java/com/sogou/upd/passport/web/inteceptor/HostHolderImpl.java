@@ -3,6 +3,8 @@ package com.sogou.upd.passport.web.inteceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,8 +18,8 @@ public class HostHolderImpl implements HostHolder {
 
     private static final String USERNAME="host_holder_user_name";
 
-    @Autowired
-    private HttpServletRequest request;
+//    @Autowired
+//    private HttpServletRequest request;
 
     @Override
     public boolean isLogin() {
@@ -26,11 +28,15 @@ public class HostHolderImpl implements HostHolder {
 
     @Override
     public void setPassportId(String userName) {
+        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest();
         request.setAttribute(USERNAME, userName);
     }
 
     @Override
     public String getPassportId() {
+        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest();
         Object userName=request.getAttribute(USERNAME);
         if(userName!=null){
             return userName.toString();
