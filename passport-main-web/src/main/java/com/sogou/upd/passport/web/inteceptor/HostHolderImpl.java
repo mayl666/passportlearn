@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,16 +21,16 @@ public class HostHolderImpl implements HostHolder {
 
     @Override
     public boolean isLogin() {
-        return this.getUserName()!=null;
+        return this.getPassportId()!=null;
     }
 
     @Override
-    public void setUserName(String userName) {
+    public void setPassportId(String userName) {
         request.setAttribute(USERNAME, userName);
     }
 
     @Override
-    public String getUserName() {
+    public String getPassportId() {
         Object userName=request.getAttribute(USERNAME);
         if(userName!=null){
             return userName.toString();
