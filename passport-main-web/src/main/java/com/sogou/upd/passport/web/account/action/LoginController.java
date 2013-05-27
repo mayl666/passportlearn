@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.annotation.LoginRequiredResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,49 +32,55 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/web")
 public class LoginController extends BaseController {
-//
-//    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-//
-//    @Autowired
-//    private AccountLoginManager accountLoginManager;
-//
-//
-//    @RequestMapping(value = "/testLoginRequired", method = RequestMethod.GET)
-//    @LoginRequired
-//    @ResponseBody
-//    public String testLoginRequired(){
-//        return "ok";
-//    }
-//
-//
-//
-//    /**
-//     * web端的登陆接口
-//     *
-//     * @param request
-//     * @param loginParams 登陆需要的参数
-//     * @return
-//     * @url /web/login
-//     */
-//    @RequestMapping(value = "/login", method = RequestMethod.GET)
-//    @ResponseBody
-//    public Object login(HttpServletRequest request,HttpServletResponse response, WebLoginParameters loginParams) {
-////        //参数验证
-////        String validateResult = ControllerHelper.validateParams(loginParams);
-////        if (!Strings.isNullOrEmpty(validateResult)) {
-////            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-////        }
-////
-////        Result result = accountLoginManager.accountLogin(loginParams);
-////
-////        if (result.isSuccess()) {
-////
-////        }
-////
-////        return null;
-//        if(!StringUtil.isBlank(loginParams.getAccount())){
-//            CookieUtils.setCookie(response, LoginConstant.PASSPORTID_COOKIE_ID,loginParams.getAccount(),0);
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+    @Autowired
+    private AccountLoginManager accountLoginManager;
+
+
+    @RequestMapping(value = "/testLoginRequired", method = RequestMethod.GET)
+    @LoginRequired(resultType= LoginRequiredResultType.redirect)
+    @ResponseBody
+    public String testLoginRequired(){
+        return "目前处于登录状态";
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @ResponseBody
+    public String logout(HttpServletRequest request,HttpServletResponse response){
+        CookieUtils.deleteCookie(response,LoginConstant.PASSPORTID_COOKIE_ID);
+        return "退出登录成功";
+    }
+
+    /**
+     * web端的登陆接口
+     *
+     * @param request
+     * @param loginParams 登陆需要的参数
+     * @return
+     * @url /web/login
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @ResponseBody
+    public Object login(HttpServletRequest request,HttpServletResponse response, WebLoginParameters loginParams) {
+//        //参数验证
+//        String validateResult = ControllerHelper.validateParams(loginParams);
+//        if (!Strings.isNullOrEmpty(validateResult)) {
+//            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
 //        }
-//        return "ok";
-//    }
+//
+//        Result result = accountLoginManager.accountLogin(loginParams);
+//
+//        if (result.isSuccess()) {
+//
+//        }
+//
+//        return null;
+        if(!StringUtil.isBlank(loginParams.getAccount())){
+            CookieUtils.setCookie(response, LoginConstant.PASSPORTID_COOKIE_ID,loginParams.getAccount(),0);
+            return "登录成功："+loginParams.getAccount();
+        }
+        return "请求 /web/login?account=18600000000@sohu.com  来登录";
+    }
 }
