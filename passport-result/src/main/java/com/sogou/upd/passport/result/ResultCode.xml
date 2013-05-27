@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="GB2312"?>
+<resource-bundle>
+    <map id="SUCCESS">
+        <message id="0">
+            <data>成功执行命令</data>
+        </message>
+    </map>
+    <!--<message id="SUCCESS">
+    <data>成功执行命令</data>
+    </message>-->
+    <!-- <list id="SUCCESS">
+         <message id="01">
+             <data>成功执行命令1</data>
+         </message>
+         <message id="02">
+             <data>成功执行命令2</data>
+         </message>
+     </list>-->
+</resource-bundle>
