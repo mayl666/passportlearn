@@ -19,21 +19,18 @@ import java.util.Set;
 public class ResultTest extends TestCase {
 
     public void testGetMessage() {
-        Result result = new APIResultSupport(false);
-        result.setResultCode(ResultCode.SUCCESS);
+        Result result = new APIResultSupport(false);  // 设置false
+        result.setResultCode(ResultCode.SYSTEM_UNKNOWN_EXCEPTION);
         String messageID = result.getResultCode().getMap().getMessageID();
         String messageData = result.getResultCode().getMap().getMessageData();
         System.out.println("message id:" + messageID);
         System.out.println("message data:" + messageData);
         System.out.println("Fail Result Json:" + result);
 
-        Result successResult = new APIResultSupport(true);
-        successResult.setDefaultModel(newUser());
-        successResult.setDefaultModel("addkey", "dfa4t632242");
-        successResult.setDefaultModel("","25252111");
-        successResult.setDefaultModel(null, "4327622");
+        Result successResult = new APIResultSupport(true);  // passportAPI的Result实现类
+        successResult.setDefaultModel(newUser());   // 放入对象
+        successResult.setDefaultModel("addkey", "dfa4t632242");   // 放入特殊变量
         System.out.println("Success Result Json:" + successResult);
-
 
 //        ClassLoader classLoader = ResultCode.class.getClassLoader();
 //        ClassLoader classLoader1 = Thread.currentThread().getContextClassLoader();

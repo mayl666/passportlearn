@@ -2,12 +2,12 @@ package com.sogou.upd.passport.result.resourcebundle;
 
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.lang.i18n.LocaleUtil;
+import com.sogou.upd.passport.result.collections.SoftHashMap;
 import com.sogou.upd.passport.result.excepiton.ResourceBundleCreateException;
 import com.sogou.upd.passport.result.excepiton.ResourceBundleException;
 import com.sogou.upd.passport.result.resourcebundle.xml.XMLResourceBundleFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.SoftCache;
 
 import java.lang.ref.SoftReference;
 import java.text.MessageFormat;
@@ -487,7 +487,7 @@ public abstract class ResourceBundleFactory {
     /**
      * 将(factory, bundleName, defaultLocale)映射到bundle对象的cache类.
      */
-    private static final class Cache extends SoftCache {
+    private static final class Cache extends SoftHashMap {
         /**
          * 静态的key, 用来在cache中查找bundle. 使用静态量可以减少GC的负担. 使用cacheKey必须对整个cache进行同步.
          */

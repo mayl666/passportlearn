@@ -6,9 +6,9 @@ import com.sogou.upd.passport.result.collections.ListMap;
 import com.sogou.upd.passport.result.resourcebundle.ResourceBundle;
 import com.sogou.upd.passport.result.resourcebundle.ResourceBundleConstant;
 import com.sogou.upd.passport.result.excepiton.ResourceBundleCreateException;
+import com.sogou.upd.passport.result.resourcebundle.ResourceBundleEnumeration;
 import org.dom4j.Document;
 import org.dom4j.Node;
-import sun.util.ResourceBundleEnumeration;
 
 import java.util.Collections;
 import java.util.Enumeration;
