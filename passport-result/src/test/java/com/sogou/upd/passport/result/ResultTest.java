@@ -30,6 +30,8 @@ public class ResultTest extends TestCase {
         Result successResult = new APIResultSupport(true);
         successResult.setDefaultModel(newUser());
         successResult.setDefaultModel("addkey", "dfa4t632242");
+        successResult.setDefaultModel("","25252111");
+        successResult.setDefaultModel(null, "4327622");
         System.out.println("Success Result Json:" + successResult);
 
 

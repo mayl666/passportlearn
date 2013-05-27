@@ -81,7 +81,7 @@ public class ResultSupport implements Result {
     @Override
     public void setDefaultModel(String key, Object model) {
         defaultModelKey = StringUtils.defaultIfEmpty(key, DEFAULT_MODEL_KEY);
-        models.put(key, model);
+        models.put(defaultModelKey, model);
     }
 
     @Override
