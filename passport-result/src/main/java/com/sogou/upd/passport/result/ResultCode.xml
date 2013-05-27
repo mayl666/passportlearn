@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="GB2312"?>
+<resource-bundle>
+    <map id="SYSTEM_UNKNOWN_EXCEPTION">
+        <message id="10001">
+            <data>系统异常错误</data>
+        </message>
+    </map>
+    <map id="SUCCESS">
+        <message id="0">
+            <data>成功执行命令</data>
+        </message>
+    </map>
+    <!--<message id="SUCCESS">
+    <data>成功执行命令</data>
+    </message>-->
+    <!-- <list id="SUCCESS">
+         <message id="01">
+             <data>成功执行命令1</data>
+         </message>
+         <message id="02">
+             <data>成功执行命令2</data>
+         </message>
+     </list>-->
+</resource-bundle>

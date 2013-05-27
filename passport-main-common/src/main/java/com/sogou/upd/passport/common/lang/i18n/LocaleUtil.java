@@ -8,7 +8,6 @@ package com.sogou.upd.passport.common.lang.i18n;
  * To change this template use File | Settings | File Templates.
  */
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -93,59 +92,6 @@ public class LocaleUtil {
     }
 
     /**
-     * 解析并创建locale信息。
-     *
-     * @param localeName locale信息的字符串，包含locale和charset信息，以“:”分隔
-     * @return locale信息
-     */
-    public static LocaleInfo parseLocaleInfo(String localeName) {
-        Locale locale = null;
-        String charset = null;
-
-        if (!Strings.isNullOrEmpty(localeName)) {
-            int index = localeName.indexOf(":");
-            String localePart = localeName;
-            String charsetPart = null;
-
-            if (index >= 0) {
-                localePart = localeName.substring(0, index);
-                charsetPart = localeName.substring(index + 1);
-            }
-
-            // 解析locale。
-            locale = parseLocale(localePart);
-
-            // 解析charset。
-            charset = StringUtils.trimToNull(charsetPart);
-        }
-
-        return new LocaleInfo(locale, charset);
-    }
-
-    /* ============================================================================ */
-    /*  有关locale和charset的辅助方法。                                             */
-    /* ============================================================================ */
-
-    /**
-     * 判断locale是否被支持。
-     *
-     * @param locale 要检查的locale
-     */
-    public static boolean isLocaleSupported(Locale locale) {
-        return (locale != null) && AVAILABLE_LANGUAGES.contains(locale.getLanguage())
-                && AVAILABLE_COUNTRIES.contains(locale.getCountry());
-    }
-
-    /**
-     * 判断指定的charset是否被支持。
-     *
-     * @param charset 要检查的charset
-     */
-    public static boolean isCharsetSupported(String charset) {
-        return Charset.isSupported(charset);
-    }
-
-    /**
      * 取得正规的字符集名称, 如果指定字符集不存在, 则抛出<code>UnsupportedEncodingException</code>.
      *
      * @param charset 字符集名称
@@ -180,25 +126,11 @@ public class LocaleUtil {
 
     /**
      * 取得备选的resource bundle风格的名称列表。
-     * <p/>
-     * <p>
      * 例如：<code>calculateBundleNames("hello.jsp", new Locale("zh", "CN", "variant"))</code>将返回下面列表：
-     * <p/>
-     * <ol>
-     * <li>
      * hello.jsp
-     * </li>
-     * <li>
      * hello_zh.jsp
-     * </li>
-     * <li>
      * hello_zh_CN.jsp
-     * </li>
-     * <li>
      * hello_zh_CN_variant.jsp
-     * </li>
-     * </ol>
-     * </p>
      *
      * @param baseName bundle的基本名
      * @param locale   区域设置
@@ -210,46 +142,18 @@ public class LocaleUtil {
 
     /**
      * 取得备选的resource bundle风格的名称列表。
-     * <p/>
-     * <p>
      * 例如：<code>calculateBundleNames("hello.jsp", new Locale("zh", "CN", "variant"),
      * false)</code>将返回下面列表：
-     * <p/>
-     * <ol>
-     * <li>
      * hello.jsp
-     * </li>
-     * <li>
      * hello_zh.jsp
-     * </li>
-     * <li>
      * hello_zh_CN.jsp
-     * </li>
-     * <li>
      * hello_zh_CN_variant.jsp
-     * </li>
-     * </ol>
-     * </p>
-     * <p/>
-     * <p>
      * 当<code>noext</code>为<code>true</code>时，不计算后缀名，例如<code>calculateBundleNames("hello.world",
      * new Locale("zh", "CN", "variant"), true)</code>将返回下面列表：
-     * <p/>
-     * <ol>
-     * <li>
      * hello.world
-     * </li>
-     * <li>
      * hello.world_zh
-     * </li>
-     * <li>
      * hello.world_zh_CN
-     * </li>
-     * <li>
      * hello.world_zh_CN_variant
-     * </li>
-     * </ol>
-     * </p>
      *
      * @param baseName bundle的基本名
      * @param locale   区域设置
@@ -369,60 +273,6 @@ public class LocaleUtil {
     }
 
     /**
-     * 设置默认的区域。
-     *
-     * @param locale 区域
-     * @return 原来的默认区域
-     */
-    public static LocaleInfo setDefault(Locale locale) {
-        LocaleInfo old = getDefault();
-
-        defaultLocalInfo = new LocaleInfo(locale, null, systemLocaleInfo);
-
-        return old;
-    }
-
-    /**
-     * 设置默认的区域。
-     *
-     * @param locale  区域
-     * @param charset 编码字符集
-     * @return 原来的默认区域
-     */
-    public static LocaleInfo setDefault(Locale locale, String charset) {
-        LocaleInfo old = getDefault();
-
-        defaultLocalInfo = new LocaleInfo(locale, charset, systemLocaleInfo);
-
-        return old;
-    }
-
-    /**
-     * 设置默认的区域。
-     *
-     * @param localeInfo 区域和编码字符集信息
-     * @return 原来的默认区域
-     */
-    public static LocaleInfo setDefault(LocaleInfo localeInfo) {
-        if (localeInfo == null) {
-            return setDefault(null, null);
-        } else {
-            LocaleInfo old = getDefault();
-
-            defaultLocalInfo = localeInfo;
-
-            return old;
-        }
-    }
-
-    /**
-     * 复位默认的区域设置。
-     */
-    public static void resetDefault() {
-        defaultLocalInfo = systemLocaleInfo;
-    }
-
-    /**
      * 取得当前thread默认的区域。
      *
      * @return 当前thread默认的区域
@@ -434,58 +284,5 @@ public class LocaleUtil {
                 : contextLocaleInfo;
     }
 
-    /**
-     * 设置当前thread默认的区域。
-     *
-     * @param locale 区域
-     * @return 原来的thread默认的区域
-     */
-    public static LocaleInfo setContext(Locale locale) {
-        LocaleInfo old = getContext();
-
-        contextLocaleInfoHolder.set(new LocaleInfo(locale, null, defaultLocalInfo));
-
-        return old;
-    }
-
-    /**
-     * 设置当前thread默认的区域。
-     *
-     * @param locale  区域
-     * @param charset 编码字符集
-     * @return 原来的thread默认的区域
-     */
-    public static LocaleInfo setContext(Locale locale, String charset) {
-        LocaleInfo old = getContext();
-
-        contextLocaleInfoHolder.set(new LocaleInfo(locale, charset, defaultLocalInfo));
-
-        return old;
-    }
-
-    /**
-     * 设置当前thread默认的区域。
-     *
-     * @param localeInfo 区域和编码字符集信息
-     * @return 原来的thread默认的区域
-     */
-    public static LocaleInfo setContext(LocaleInfo localeInfo) {
-        if (localeInfo == null) {
-            return setContext(null, null);
-        } else {
-            LocaleInfo old = getContext();
-
-            contextLocaleInfoHolder.set(localeInfo);
-
-            return old;
-        }
-    }
-
-    /**
-     * 复位当前thread的区域设置。
-     */
-    public static void resetContext() {
-        contextLocaleInfoHolder.set(null);
-    }
 }
 

@@ -42,6 +42,7 @@ public class BeanUtil {
         Map<String, Object> map = Maps.newHashMap();
         try {
             map = BeanUtils.describe(object);
+            map.remove("class");
         } catch (IllegalAccessException e) {
             logger.error("Get BeanDesc IllegalAccessException! BeanName:" + object, e);
         } catch (InvocationTargetException e) {
