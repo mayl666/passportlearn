@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
@@ -72,6 +73,9 @@ public class BaseActionTest extends AbstractJUnit4SpringContextTests {
             Result result = new ObjectMapper().readValue(resultStr, Result.class);
 
             return result;
+        } catch (HttpHostConnectException e) {
+            System.out.println("HOST连接错误，请检查是否启动服务器！！");
+            return null;
         } catch (JsonProcessingException e) {
             System.out.println("返回结果不是Result类型！！");
             return null;
@@ -111,6 +115,9 @@ public class BaseActionTest extends AbstractJUnit4SpringContextTests {
             Result result = new ObjectMapper().readValue(resultStr, Result.class);
 
             return result;
+        } catch (HttpHostConnectException e) {
+            System.out.println("HOST连接错误，请检查是否启动服务器！！");
+            return null;
         } catch (JsonProcessingException e) {
             System.out.println("返回结果不是Result类型！！");
             return null;
