@@ -11,6 +11,7 @@
         <module>passport-oauth2</module>
         <module>passport-main-manager</module>
         <module>passport-main-common</module>
+        <module>passport-result</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -274,7 +275,7 @@
                     <stopPort>19993</stopPort>
                     <connectors>
                         <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>80</port>
+                            <port>8080</port>
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>

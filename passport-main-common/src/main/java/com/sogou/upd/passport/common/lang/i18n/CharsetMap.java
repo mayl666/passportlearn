@@ -229,22 +229,6 @@ public class CharsetMap {
     }
 
     /**
-     * Sets a locale-charset mapping.
-     *
-     * @param key     the key for the charset.
-     * @param charset the corresponding charset.
-     */
-    public synchronized void setCharSet(String key, String charset) {
-        HashMap mapper = (HashMap) mappers[MAP_PROG];
-
-        mapper = (mapper != null) ? (HashMap) mapper.clone()
-                : new HashMap();
-        mapper.put(key, charset);
-        mappers[MAP_PROG] = mapper;
-        mappers[MAP_CACHE].clear();
-    }
-
-    /**
      * Gets the charset for a locale. First a locale specific charset is searched for, then a
      * country specific one and lastly a language specific one. If none is found, the default
      * charset is returned.
@@ -283,88 +267,6 @@ public class CharsetMap {
         }
 
         return charset;
-    }
-
-    /**
-     * Gets the charset for a locale with a variant. The search is performed in the following
-     * order: "lang"_"country"_"variant"="charset", _"counry"_"variant"="charset",
-     * "lang"__"variant"="charset", __"variant"="charset", "lang"_"country"="charset",
-     * _"country"="charset", "lang"="charset". If nothing of the above is found, the default
-     * charset is returned.
-     *
-     * @param locale  the locale.
-     * @param variant a variant field.
-     * @return the charset.
-     */
-    public String getCharSet(Locale locale, String variant) {
-        // Check the cache first.
-        if ((variant != null) && (variant.length() > 0)) {
-            String key = locale.toString();
-
-            if (key.length() == 0) {
-                key = "__" + locale.getVariant();
-
-                if (key.length() > 2) {
-                    key += ('_' + variant);
-                } else {
-                    key += variant;
-                }
-            } else if (locale.getCountry().length() == 0) {
-                key += ("__" + variant);
-            } else {
-                key += ('_' + variant);
-            }
-
-            String charset = searchCharSet(key);
-
-            if (charset.length() == 0) {
-                // Not found, perform a full search and update the cache.
-                String[] items = new String[4];
-
-                items[3] = variant;
-                items[2] = locale.getVariant();
-                items[1] = locale.getCountry();
-                items[0] = locale.getLanguage();
-                charset = searchCharSet(items);
-
-                if (charset.length() == 0) {
-                    charset = DEFAULT_CHARSET;
-                }
-
-                mappers[MAP_CACHE].put(key, charset);
-            }
-
-            return charset;
-        } else {
-            return getCharSet(locale);
-        }
-    }
-
-    /**
-     * Gets the charset for a specified key.
-     *
-     * @param key the key for the charset.
-     * @return the found charset or the default one.
-     */
-    public String getCharSet(String key) {
-        String charset = searchCharSet(key);
-
-        return (charset.length() > 0) ? charset
-                : DEFAULT_CHARSET;
-    }
-
-    /**
-     * Gets the charset for a specified key.
-     *
-     * @param key the key for the charset.
-     * @param def the default charset if none is found.
-     * @return the found charset or the given default.
-     */
-    public String getCharSet(String key, String def) {
-        String charset = searchCharSet(key);
-
-        return (charset.length() > 0) ? charset
-                : def;
     }
 
     /**
@@ -463,18 +365,5 @@ public class CharsetMap {
         return "";
     }
 
-    /**
-     * Sets a common locale-charset mapping.
-     *
-     * @param key     the key for the charset.
-     * @param charset the corresponding charset.
-     */
-    protected synchronized void setCommonCharSet(String key, String charset) {
-        HashMap mapper = (HashMap) ((HashMap) mappers[MAP_COM]).clone();
-
-        mapper.put(key, charset);
-        mappers[MAP_COM] = mapper;
-        mappers[MAP_CACHE].clear();
-    }
 }
 

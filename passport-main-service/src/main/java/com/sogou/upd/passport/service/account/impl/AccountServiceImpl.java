@@ -169,7 +169,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account queryNormalAccount(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
-        if (account.isNormalAccount()) {
+        if (account != null && account.isNormalAccount()) {
             return account;
         }
         return null;

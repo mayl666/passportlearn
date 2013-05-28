@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 /**
+ *
  * User: ligang201716@sogou-inc.com
  * Date: 13-5-14
  * Time: 下午9:37
@@ -14,11 +15,15 @@ public interface HostHolder {
     boolean isLogin();
 
     /**
-     * 获取登陆用户的
-     * @param userName
+     * 设置登陆用户的passport_id
+     * @param passportId
      */
-    void setUserName(String userName);
+    void setPassportId(String passportId);
 
-    String getUserName();
+    /**
+     * 获取登陆用户的passport_id
+     * @return
+     */
+    String getPassportId();
 
 }

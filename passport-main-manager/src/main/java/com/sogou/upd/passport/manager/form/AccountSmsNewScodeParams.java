@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-24 Time: 下午3:10 To change this template use
  * File | Settings | File Templates.
  */
-public class AccountSmsNewParams extends AccountSmsParams {
+public class AccountSmsNewScodeParams extends AccountSmsScodeParams {
     @NotBlank(message = "新手机号不能为空")
     protected String new_mobile;
 
