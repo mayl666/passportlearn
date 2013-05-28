@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.form.AccountAnswerCaptParams;
@@ -13,8 +14,8 @@ import com.sogou.upd.passport.manager.form.AccountBindEmailParams;
 import com.sogou.upd.passport.manager.form.AccountPwdParams;
 import com.sogou.upd.passport.manager.form.AccountPwdScodeParams;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
-import com.sogou.upd.passport.manager.form.AccountSmsNewParams;
-import com.sogou.upd.passport.manager.form.AccountSmsParams;
+import com.sogou.upd.passport.manager.form.AccountSmsNewScodeParams;
+import com.sogou.upd.passport.manager.form.AccountSmsScodeParams;
 import com.sogou.upd.passport.manager.form.BaseAccountParams;
 import com.sogou.upd.passport.manager.form.UserModuleTypeParams;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -42,6 +43,8 @@ public class AccountSecureController {
     private AccountManager accountManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
+    @Autowired
+    private AccountLoginManager accountLoginManager;
 
     // TODO:method是POST或GET
 
@@ -52,7 +55,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/query", method = RequestMethod.POST)
+    @RequestMapping(value = "/query", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public Object querySecureInfo(AccountSecureInfoParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -137,7 +140,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/sendsms", method = RequestMethod.POST)
+    @RequestMapping(value = "/sendsms", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public Object sendSms(UserModuleTypeParams params) throws Exception {
         // TODO:module按业务模块划分
@@ -187,9 +190,9 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
+    @RequestMapping(value = "/findpwd/checksms", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
-    public Object checkSmsResetPwd(AccountSmsParams params) throws Exception {
+    public Object checkSmsResetPwd(AccountSmsScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -299,7 +302,7 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/bind/checksms", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
-    public Object checkSmsBindMobile(AccountSmsParams params) throws Exception {
+    public Object checkSmsBindMobile(AccountSmsScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -320,7 +323,7 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/bind/modifymobile", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
-    public Object modifyBindMobile(AccountSmsNewParams params, @RequestParam("scode") String scode) throws Exception {
+    public Object modifyBindMobile(AccountSmsNewScodeParams params, @RequestParam("scode") String scode) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(scode)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -342,7 +345,7 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/bind/bindmobile", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
-    public Object bindNewMobile(AccountSmsNewParams params, @RequestParam("password") String password) throws Exception {
+    public Object bindNewMobile(AccountSmsNewScodeParams params, @RequestParam("password") String password) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(password)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -359,9 +362,9 @@ public class AccountSecureController {
     public Object bindQues(AccountPwdParams params, @RequestParam("new_ques") String newQues,
             @RequestParam("new_answer") String newAnswer) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult) || StringUtil.checkExistNullOrEmpty(newQues,
-                                                                                       newAnswer)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        if (!Strings.isNullOrEmpty(validateResult) || StringUtil.checkExistNullOrEmpty(newQues, newAnswer)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE,
+                StringUtil.defaultIfEmpty(validateResult, "必选参数未填"));
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
