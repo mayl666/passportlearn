@@ -2,6 +2,8 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
@@ -69,7 +71,7 @@ public class WebAccountController extends BaseController {
     Result result = accountLoginManager.accountLogin(loginParams);
 
 
-    return null;
+    return result;
   }
 
 
@@ -89,6 +91,12 @@ public class WebAccountController extends BaseController {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
 
+    String password=regParams.getPassword();
+
+    if(! CommonHelper.checkPasswd(password) && StringUtil.checkPwdFormat(password)) {
+      return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
+    }
+
     String username=regParams.getUsername();
     String ip = getIp(request);
 
@@ -100,7 +108,7 @@ public class WebAccountController extends BaseController {
     if (!"0".equals(result.getStatus())) {
       return result;
     }
-    //密码格式校验 todo
+
 
     //验证client_id
     int clientId=Integer.parseInt(regParams.getClient_id());

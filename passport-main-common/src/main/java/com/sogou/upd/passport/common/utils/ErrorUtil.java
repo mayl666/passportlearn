@@ -98,6 +98,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
   //登录失败
   public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
+  //密码必须为字母和数字且长度大于6位!
+  public static final String ERR_CODE_ACCOUNT_PWDERROR = "20227";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -254,7 +256,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "用户注册失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PWDERROR, "密码必须为字母和数字且长度大于6位!");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
