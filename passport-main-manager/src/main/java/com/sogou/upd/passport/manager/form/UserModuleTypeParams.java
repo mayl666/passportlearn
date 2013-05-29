@@ -14,6 +14,8 @@ public class UserModuleTypeParams extends BaseUserParams {
     @NotBlank
     protected String mode;
 
+    protected String passport_id;
+
     public String getModule() {
         return module;
     }
@@ -28,5 +30,13 @@ public class UserModuleTypeParams extends BaseUserParams {
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public String getPassport_id() {
+        return passport_id;
+    }
+
+    public void setPassport_id(String passport_id) {
+        this.passport_id = passport_id;
     }
 }
