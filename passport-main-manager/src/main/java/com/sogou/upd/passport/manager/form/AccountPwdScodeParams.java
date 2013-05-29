@@ -11,7 +11,9 @@ import javax.validation.constraints.Min;
  */
 public class AccountPwdScodeParams extends BaseAccountParams {
 
+    @NotBlank(message = "密码不能为空！")
     private String password;
+    @NotBlank(message = "scode不能为空！")
     private String scode;
 
     public String getPassword() {

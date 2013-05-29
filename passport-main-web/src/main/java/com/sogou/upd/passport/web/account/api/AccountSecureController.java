@@ -20,6 +20,8 @@ import com.sogou.upd.passport.manager.form.BaseAccountParams;
 import com.sogou.upd.passport.manager.form.UserModuleTypeParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.action.AccountSecureAction;
+import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,8 @@ public class AccountSecureController {
     private AccountSecureManager accountSecureManager;
     @Autowired
     private AccountLoginManager accountLoginManager;
+    @Autowired
+    private HostHolder hostHolder;
 
     // TODO:method是POST或GET
 
@@ -55,7 +59,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/query", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/secure/query", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public Object querySecureInfo(AccountSecureInfoParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -276,12 +280,16 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/bind/sendemail", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
+    @LoginRequired
     public Object sendEmailForBind(AccountBindEmailParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         String passportId = params.getPassport_id();
+        if (!passportId.equals(hostHolder.getPassportId())) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
+        }
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String newEmail = params.getNew_email();
@@ -302,12 +310,16 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/bind/checksms", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
+    @LoginRequired
     public Object checkSmsBindMobile(AccountSmsScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         String passportId = params.getPassport_id();
+        if (!passportId.equals(hostHolder.getPassportId())) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
+        }
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
         return accountSecureManager.checkMobileCodeOldForBinding(passportId, clientId, smsCode);
@@ -323,12 +335,16 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/bind/modifymobile", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
+    @LoginRequired
     public Object modifyBindMobile(AccountSmsNewScodeParams params, @RequestParam("scode") String scode) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(scode)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         String passportId = params.getPassport_id();
+        if (!passportId.equals(hostHolder.getPassportId())) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
+        }
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
@@ -345,12 +361,16 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/bind/bindmobile", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
+    @LoginRequired
     public Object bindNewMobile(AccountSmsNewScodeParams params, @RequestParam("password") String password) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(password)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         String passportId = params.getPassport_id();
+        if (!passportId.equals(hostHolder.getPassportId())) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
+        }
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
@@ -359,6 +379,7 @@ public class AccountSecureController {
 
     @RequestMapping(value = "/bind/ques", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
+    @LoginRequired
     public Object bindQues(AccountPwdParams params, @RequestParam("new_ques") String newQues,
             @RequestParam("new_answer") String newAnswer) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -367,6 +388,9 @@ public class AccountSecureController {
                 StringUtil.defaultIfEmpty(validateResult, "必选参数未填"));
         }
         String passportId = params.getPassport_id();
+        if (!passportId.equals(hostHolder.getPassportId())) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
+        }
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         return accountSecureManager.modifyQuesByPassportId(passportId, clientId, password, newQues, newAnswer);
