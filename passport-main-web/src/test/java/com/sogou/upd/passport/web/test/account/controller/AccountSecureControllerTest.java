@@ -17,7 +17,7 @@ import java.util.Map;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-24 Time: 下午2:15 To change this template use
  * File | Settings | File Templates.
  */
-@ContextConfiguration(locations = "classpath:spring-config-test.xml")
+//@ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountSecureControllerTest extends BaseActionTest {
 
     @Test

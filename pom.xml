@@ -12,6 +12,7 @@
         <module>passport-main-manager</module>
         <module>passport-main-common</module>
         <module>passport-result</module>
+        <module>passport-proxy</module>
     </modules>
     <packaging>pom</packaging>
 
