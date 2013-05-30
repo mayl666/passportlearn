@@ -327,10 +327,10 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-            String answerBind = accountInfo.getAnswer();
-            if (accountInfo == null || Strings.isNullOrEmpty(answerBind)) {
+            if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getAnswer())) {
                 return Result.buildError(ErrorUtil.NOTHAS_BINDINGQUESTION);
             }
+            String answerBind = accountInfo.getAnswer();
             if (!answer.equals(answerBind)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
             }
@@ -445,10 +445,10 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             } else {
                 // 使用绑定邮箱
                 AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-                String emailBind = accountInfo.getEmail();
-                if (accountInfo == null || Strings.isNullOrEmpty(emailBind)) {
+                if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getEmail())) {
                     return Result.buildError(ErrorUtil.NOTHAS_BINDINGEMAIL);
                 } else {
+                    String emailBind = accountInfo.getEmail();
                     return sendEmailResetPwd(passportId, clientId, emailBind);
                 }
             }
@@ -535,10 +535,10 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             }
             // 不需要检测Account是否存在，在修改密码时检测，避免二次查询缓存/数据库
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-            String answerBind = accountInfo.getAnswer();
-            if (accountInfo == null || Strings.isNullOrEmpty(answerBind)) {
+            if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getAnswer())) {
                 return Result.buildError(ErrorUtil.NOTHAS_BINDINGQUESTION);
             }
+            String answerBind = accountInfo.getAnswer();
             if (!answer.equals(answerBind)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
             }
