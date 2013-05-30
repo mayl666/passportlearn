@@ -1,8 +1,5 @@
 package com.sogou.upd.passport.common.parameter;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import java.util.LinkedList;
