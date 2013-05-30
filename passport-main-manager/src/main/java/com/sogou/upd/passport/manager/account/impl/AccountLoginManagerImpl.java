@@ -140,11 +140,6 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
 
          }
-
-
-         //增加用户登陆成功的信息
-
-
        }catch (Exception e) {
          accountService.incLoginFailedNum(username);
          logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
