@@ -28,11 +28,7 @@ public class StringUtil {
    * 检查字符串是否为数字
    */
   public static boolean checkIsDigit(String str) {
-    if (str.matches("[0-9]*")) {
-      return true;
-    } else {
-      return false;
-    }
+    return str.matches("[0-9]*");
   }
 
   /*
