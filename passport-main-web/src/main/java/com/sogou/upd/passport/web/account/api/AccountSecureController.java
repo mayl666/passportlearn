@@ -39,14 +39,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/api")
 public class AccountSecureController {
-    private static final Logger logger = LoggerFactory.getLogger(AccountSecureAction.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountSecureController.class);
 
     @Autowired
     private AccountManager accountManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
-    @Autowired
-    private AccountLoginManager accountLoginManager;
     @Autowired
     private HostHolder hostHolder;
 
@@ -390,6 +388,15 @@ public class AccountSecureController {
         return accountSecureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, password, true);
     }
 
+    /**
+     * 修改密保问题
+     *
+     * @param params
+     * @param newQues
+     * @param newAnswer
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/bind/ques", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     @LoginRequired
