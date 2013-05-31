@@ -17,6 +17,8 @@ import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,45 +96,60 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     }
 
     @Override
-    public Result accountLogin(WebLoginParameters parameters) {
-        Result result = Result.buildSuccess("");
+    public Result accountLogin(WebLoginParameters loginParameters) {
+      Result result = null;
+      String username=null;
+       try {
+         username= loginParameters.getUsername();
+         String password=loginParameters.getPassword();
+         //TODO 校验是否在账户黑名单或者IP黑名单之中
+         //校验验证码
+         if (accountService.loginFailedNumNeedCaptcha(username)) {
+           if (!this.checkCaptcha(username, loginParameters.getCaptcha())) {
+             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+           }
+         }
 
-        //处理手机登陆的情况
-        String passportId;
-        if (AccountDomainEnum.PHONE.equals(parameters.getAccountDomainEnum())) {
-            passportId = mobilePassportMappingService.queryPassportIdByUsername(parameters.getAccount());
-        } else {
-            passportId = parameters.getAccount();
-        }
+         AccountDomainEnum domainEnum=AccountDomainEnum.getAccountDomain(username);
 
-        //校验验证码
-        if (!this.checkCaptcha(passportId, parameters.getCaptcha())) {
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
-        }
+         Account account =null;
+         switch (domainEnum){
+           case PHONE:
+             String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
+             //校验用户名和密码是否匹配
+             account = accountService.queryAccountByPassportId(passportId);
+             break;
+           case SOHU:
+             account=accountService.queryAccountByPassportId(username);
+             break;
+         }
 
-        //TODO 校验是否在账户黑名单或者IP黑名单之中
+         if (account != null) {
+           String storedPwd=account.getPasswd();
+           if (PwdGenerator.verify(password, false, storedPwd)){
+             //todo 登录成功种cookie
+             //写缓存
+
+             return Result.buildSuccess("登录成功");
+
+           }else {
+             accountService.incLoginFailedNum(username);
+             return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
+           }
+         }else {
+           return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+
+         }
 
 
-        //校验密码及用户状态
-        Account account = accountService
-                .verifyUserPwdVaild(passportId, parameters.getPassword(), true);
-        if (account == null) {
-            result = Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
-        } else if (!account.isNormalAccount()) {
-            result = Result.buildError(ErrorUtil.INVALID_ACCOUNT);
-        }
-        if (!"0".equals(result.getStatus())) {
-            accountService.incLoginFailedNum(passportId);
-            return result;
-        }
-
-        //增加用户登陆成功的信息
+         //增加用户登陆成功的信息
 
 
-        //返回结果
-        Map<String, Object> mapResult = Maps.newHashMap();
-        mapResult.put("passport_id", passportId);
-        return Result.buildSuccess("success", "mapResult", mapResult);
+       }catch (Exception e) {
+         accountService.incLoginFailedNum(username);
+         logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
+         return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+       }
     }
 
     private boolean checkCaptcha(String passportId, String captcha) {

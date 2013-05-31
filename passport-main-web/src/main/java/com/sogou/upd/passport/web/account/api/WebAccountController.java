@@ -2,14 +2,18 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountRegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
+import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -41,6 +45,35 @@ public class WebAccountController extends BaseController {
   private AccountManager accountManager;
   @Autowired
   private ConfigureManager configureManager;
+  @Autowired
+  private AccountLoginManager accountLoginManager;
+
+  /**
+   * web页面登录
+   *
+   * @param loginParams 传入的参数
+   */
+  @RequestMapping(value = "/login", method = RequestMethod.POST)
+  @ResponseBody
+  public Object login(HttpServletRequest request, WebLoginParameters loginParams)
+      throws Exception {
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(loginParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+    }
+
+    //判断用户是否存在
+    String username=loginParams.getUsername();
+    if(!accountManager.isAccountExists(username)){
+        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+    }
+    Result result = accountLoginManager.accountLogin(loginParams);
+
+
+    return result;
+  }
+
 
   /**
    * web页面注册
@@ -58,10 +91,16 @@ public class WebAccountController extends BaseController {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
 
+    String password=regParams.getPassword();
+
+    if(! CommonHelper.checkPasswd(password) && StringUtil.checkPwdFormat(password)) {
+      return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
+    }
+
     String username=regParams.getUsername();
     String ip = getIp(request);
 
-    String captchaCode = regParams.getVcode();
+    String captchaCode = regParams.getCaptcha();
     String token = regParams.getToken();
     //校验用户是否可注册
     Result result =accountRegManager.isAllowRegister(username,ip,token, captchaCode);
@@ -69,15 +108,11 @@ public class WebAccountController extends BaseController {
     if (!"0".equals(result.getStatus())) {
       return result;
     }
-    //密码格式校验 todo
+
 
     //验证client_id
-    int clientId;
-    try {
-      clientId = Integer.parseInt(regParams.getClient_id());
-    } catch (NumberFormatException e) {
-      return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
-    }
+    int clientId=Integer.parseInt(regParams.getClient_id());
+
     //检查client_id格式以及client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
       return Result.buildError(ErrorUtil.INVALID_CLIENTID);

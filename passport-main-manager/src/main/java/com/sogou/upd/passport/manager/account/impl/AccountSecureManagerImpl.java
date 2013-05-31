@@ -76,7 +76,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (Strings.isNullOrEmpty(passportId)) {
                 return sendSmsCodeToMobile(mobile, clientId);
             } else {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
             }
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
@@ -592,7 +592,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                                       String newEmail,
                                       String oldEmail) throws Exception {
         try {
-            Account account = accountService.verifyUserPwdVaild(passportId, password, true);
+            Account account = accountService.verifyUserPwdVaild(passportId, password, false);
             if (account == null) {
                 return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
             }
@@ -666,6 +666,10 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             String smsCode, String checkCode, boolean firstBind) throws Exception {
         try {
             Account account = null;
+            String passportIdOther = mobilePassportMappingService.queryPassportIdByMobile(newMobile);
+            if (passportIdOther != null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+            }
             Result result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
             if (!"0".equals(result.getStatus())) {
                 return result;
@@ -673,7 +677,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (firstBind) {
                 // 新绑定手机，checkCode为password
                 String password = checkCode;
-                account = accountService.verifyUserPwdVaild(passportId, password, true);
+                account = accountService.verifyUserPwdVaild(passportId, password, false);
                 if (account == null || !account.isNormalAccount()) {
                     return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
                 }
@@ -709,7 +713,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result modifyQuesByPassportId(String passportId, int clientId, String password,
             String newQues, String newAnswer) throws Exception {
         try {
-            Account account = accountService.verifyUserPwdVaild(passportId, passportId, true);
+            Account account = accountService.verifyUserPwdVaild(passportId, password, false);
             if (account == null) {
                 return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
             }
