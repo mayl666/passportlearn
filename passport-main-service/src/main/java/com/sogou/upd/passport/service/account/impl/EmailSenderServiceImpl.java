@@ -72,8 +72,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
             //连接失效时间
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
-            redisUtils.set(cacheKey, token);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+            redisUtils.setWithinSeconds(cacheKey, token, DateAndNumTimesConstant.TIME_TWODAY);
+            /*redisUtils.set(cacheKey, token);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);*/
 
             // 设置邮件发送次数限制
             String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM + address + "_"
@@ -81,8 +82,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
             } else {
-                redisUtils.set(resetCacheKey, "1");
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(resetCacheKey, "1");
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
 
         } catch(MailException me) {
@@ -173,8 +175,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
             } else {
-                redisUtils.set(resetCacheKey, "1");
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(resetCacheKey, "1");
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
             return true;
         } catch(MailException me) {

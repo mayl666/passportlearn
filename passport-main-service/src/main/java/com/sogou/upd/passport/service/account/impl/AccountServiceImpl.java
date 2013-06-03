@@ -225,8 +225,9 @@ public class AccountServiceImpl implements AccountService {
                 if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                     redisUtils.increment(resetCacheKey);
                 } else {
-                    redisUtils.set(resetCacheKey, "1");
-                    redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                    redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                    /*redisUtils.set(resetCacheKey, "1");
+                    redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
                 }
                 return true;
             }
@@ -288,8 +289,9 @@ public class AccountServiceImpl implements AccountService {
             mailUtils.sendEmail(activeEmail);
             //连接失效时间
             String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
-            redisUtils.set(cacheKey, token);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+            redisUtils.setWithinSeconds(cacheKey, token, DateAndNumTimesConstant.TIME_TWODAY);
+            /*redisUtils.set(cacheKey, token);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);*/
             //临时注册到缓存
             initialAccountToCache(username, passpord, ip);
         } catch (Exception e) {
@@ -336,8 +338,9 @@ public class AccountServiceImpl implements AccountService {
                 String captchaCode = (String) map.get("captcha");
                 map.put("token", token);
 
-                redisUtils.set(cacheKey, captchaCode);
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.CAPTCHA_INTERVAL);
+                redisUtils.setWithinSeconds(cacheKey, captchaCode, DateAndNumTimesConstant.CAPTCHA_INTERVAL);
+                /*redisUtils.set(cacheKey, captchaCode);
+                redisUtils.expire(cacheKey, DateAndNumTimesConstant.CAPTCHA_INTERVAL);*/
             } else {
                 map = Maps.newHashMap();
             }
@@ -352,8 +355,8 @@ public class AccountServiceImpl implements AccountService {
     public boolean checkCaptchaCodeIsVaild(String token, String captchaCode) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
-            if (redisUtils.checkKeyIsExist(cacheKey)) {
-                String captchaCodeCache = redisUtils.get(cacheKey);
+            String captchaCodeCache = redisUtils.get(cacheKey);
+            if (!Strings.isNullOrEmpty(captchaCodeCache)) {
                 if (captchaCodeCache.equalsIgnoreCase(captchaCode)) {
                     return true;
                 }
@@ -418,8 +421,9 @@ public class AccountServiceImpl implements AccountService {
             account.setRegIp(ip);
 
             String cacheKey = buildAccountKey(username);
-            redisUtils.set(cacheKey, account);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+            redisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
+            /*redisUtils.set(cacheKey, account);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);*/
 
         } catch (Exception e) {
             throw new ServiceException(e);

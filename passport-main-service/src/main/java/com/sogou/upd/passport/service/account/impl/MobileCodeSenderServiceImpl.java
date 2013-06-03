@@ -172,11 +172,13 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         try {
             String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
                     + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            // 由于既需要自增，同时又需要设置有效时间，无法在自增同时设置有效时间，不可避免建立两次连接
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 redisUtils.increment(cacheKey);
             } else {
-                redisUtils.set(cacheKey, "1");
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(cacheKey, "1");
+                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
             return true;
         } catch (Exception e) {
