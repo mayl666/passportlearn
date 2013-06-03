@@ -51,11 +51,11 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         boolean flag = false;
         try {
             flag = redisUtils.checkKeyIsExist(cacheKey);
+            return flag;
         } catch (Exception e) {
-            logger.error("[SMS] service method checkCacheKeyIsExist error.{}", e);
-            new ServiceException(e);
+            // new ServiceException(e);
+            return flag;
         }
-        return flag;
     }
 
     @Override
@@ -157,11 +157,11 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 // TODO:目前所有手机随机码验证服务统一限制验证失败次数
                 setSmsFailLimited(account, clientId);
             }
+            return false;
         } catch (Exception e) {
-            logger.error("[SMS] service method checkSmsInfoFromCache error.{}", e);
-            new ServiceException(e);
+            // new ServiceException(e);
+            return false;
         }
-        return false;
     }
 
     /*
@@ -172,11 +172,13 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         try {
             String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
                     + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            // 由于既需要自增，同时又需要设置有效时间，无法在自增同时设置有效时间，不可避免建立两次连接
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 redisUtils.increment(cacheKey);
             } else {
-                redisUtils.set(cacheKey, "1");
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(cacheKey, "1");
+                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
             return true;
         } catch (Exception e) {
@@ -201,10 +203,9 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             }
             return true;
         } catch (Exception e) {
-            logger.error("[SMS] service method checkSmsFailLimited error.{}", e);
-            new ServiceException(e);
+            // new ServiceException(e);
+            return false; // 防止redis宕机时，频繁短信验证
         }
-        return false;
     }
 
     @Override

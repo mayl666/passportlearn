@@ -55,11 +55,13 @@ public interface AccountSecureManager {
     /**
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理
      *
-     * @param params
-     * @return
+     * @param passportId
+     * @param clientId
+     * @param doProcess 是否模糊处理，如abcde@sogou.com转换为ab*****e@sogou.com
+     * @return result.getData().get("data") // 账户安全信息
      * @throws Exception
      */
-    public Result queryAccountSecureInfo(AccountSecureInfoParams params) throws Exception;
+    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess) throws Exception;
 
     /**
      * 重置用户密码（web验证码方式）

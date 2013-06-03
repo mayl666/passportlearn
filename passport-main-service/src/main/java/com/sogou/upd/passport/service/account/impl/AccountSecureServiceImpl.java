@@ -55,8 +55,9 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         String cacheKey = prefix + passportId + "_" + clientId;
         try {
             String secureCode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            redisUtils.set(cacheKey, secureCode);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.SECURECODE_VALID);
+            redisUtils.setWithinSeconds(cacheKey, secureCode, DateAndNumTimesConstant.SECURECODE_VALID);
+            /* redisUtils.set(cacheKey, secureCode);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.SECURECODE_VALID);*/
             return secureCode;
         } catch (Exception e) {
             redisUtils.delete(cacheKey);
