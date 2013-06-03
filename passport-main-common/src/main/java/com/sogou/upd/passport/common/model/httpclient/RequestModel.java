@@ -1,17 +1,19 @@
-package com.sogou.upd.passport.common.model;
+package com.sogou.upd.passport.common.model.httpclient;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.BeanUtil;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 
 /**
@@ -22,11 +24,13 @@ import java.util.Map;
  */
 public class RequestModel {
 
-    private static final String HEADER_CONTENT_TYPE="Content-Type";
+    protected static final String DEFAULT_ENCODE = "UTF-8";
 
-    private static final String HEADER_CONTENT_TYPE_VALUE="application/x-www-form-urlencoded;charset=utf-8";
+    private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestModel.class);
+    private static final String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded;charset=utf-8";
+
+    protected static final Logger logger = LoggerFactory.getLogger(RequestModel.class);
 
     //要请求的地址
     private String url;
@@ -35,7 +39,7 @@ public class RequestModel {
     private HttpMethodEnum httpMethodEnum;
 
     //提交的参数
-    private HttpParams httpParams;
+    protected Map<String, Object> params;
 
     //提交的头信息
     private Map<String, String> headers;
@@ -47,11 +51,11 @@ public class RequestModel {
         if (StringUtil.isBlank(url)) {
             throw new IllegalArgumentException("url不能为空！");
         }
-        this.url = url;
+        this.url = url.trim();
         this.httpMethodEnum = HttpMethodEnum.GET;
-        this.httpParams = new BasicHttpParams();
-        this.headers=new HashMap<String,String>(1);
-        this.headers.put(HEADER_CONTENT_TYPE,HEADER_CONTENT_TYPE_VALUE);
+        this.params = new HashMap<String, Object>();
+        this.headers = new HashMap<String, String>(1);
+        this.headers.put(HEADER_CONTENT_TYPE, HEADER_CONTENT_TYPE_VALUE);
     }
 
     public HttpMethodEnum getHttpMethodEnum() {
@@ -71,11 +75,11 @@ public class RequestModel {
     }
 
     public void setHeaders(Map<String, String> headers) {
-        this.headers=headers;
+        this.headers = headers;
     }
 
-    public void addHeader(String name,String value){
-       this.headers.put(name,value);
+    public void addHeader(String name, String value) {
+        this.headers.put(name, value);
     }
 
     /**
@@ -88,7 +92,7 @@ public class RequestModel {
         if (StringUtil.isBlank(key)) {
             throw new IllegalArgumentException("key 不能为空");
         }
-        return this.httpParams.getParameter(key) != null;
+        return this.params.containsKey(key);
     }
 
     /**
@@ -104,7 +108,7 @@ public class RequestModel {
         if (value == null || StringUtil.isBlank(value.toString())) {
             throw new IllegalArgumentException("value 不能为空");
         }
-        this.httpParams.setParameter(key, value);
+        this.params.put(key, value);
     }
 
     /**
@@ -116,7 +120,7 @@ public class RequestModel {
         if (StringUtil.isBlank(key)) {
             throw new IllegalArgumentException("key 不能为空");
         }
-        httpParams.removeParameter(key);
+        params.remove(key);
     }
 
     /**
@@ -129,29 +133,33 @@ public class RequestModel {
         if (param == null || param.isEmpty()) {
             return;
         }
-        for (Map.Entry<String, Object> entry : param.entrySet()) {
-            try {
-                this.addParam(entry.getKey(), entry.getValue());
-            } catch (IllegalArgumentException e) {
-                logger.error("Object  to HttpParams exception", e);
-            }
-        }
+        this.params.putAll(param);
     }
 
-    public HttpParams getHttpParams(){
-        return httpParams;
-    }
-
-    public Header[] getHeaders(){
-        if(headers.isEmpty()){
-           return new Header[0];
+    public Header[] getHeaders() {
+        if (headers.isEmpty()) {
+            return new Header[0];
         }
-        Header[] header=new Header[this.headers.size()];
-        int i=0;
-        for(Map.Entry<String,String> entry:this.headers.entrySet()){
-            header[i]=new BasicHeader(entry.getKey(),entry.getValue());
+        Header[] header = new Header[this.headers.size()];
+        int i = 0;
+        for (Map.Entry<String, String> entry : this.headers.entrySet()) {
+            header[i] = new BasicHeader(entry.getKey(), entry.getValue());
             i++;
         }
         return header;
+    }
+
+    public HttpEntity getRequestEntity() {
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(this.params.size());
+        for (Map.Entry<String, Object> entry : this.params.entrySet()) {
+            NameValuePair param = new BasicNameValuePair(entry.getKey(), entry.getValue().toString());
+            nameValuePairs.add(param);
+        }
+        try {
+            return new UrlEncodedFormEntity(nameValuePairs, DEFAULT_ENCODE);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("http param url encode error ", e);
+            throw new RuntimeException("http param url encode error", e);
+        }
     }
 }

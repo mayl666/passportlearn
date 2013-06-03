@@ -2,7 +2,7 @@ package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.model.RequestModel;
+import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,18 +19,18 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.apache.log4j.Logger;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.Map;
-
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-5-29
@@ -44,21 +44,33 @@ public class SGHttpClient {
     /**
      * 最大连接数
      */
-    public final static int MAX_TOTAL_CONNECTIONS = 500;
+    private final static int MAX_TOTAL_CONNECTIONS = 500;
     /**
      * 获取连接的最大等待时间
      */
-    public final static int WAIT_TIMEOUT = 10000;
+    private final static int WAIT_TIMEOUT = 10000;
     /**
      * 每个路由最大连接数
      */
-    public final static int MAX_ROUTE_CONNECTIONS = 200;
+    private final static int MAX_ROUTE_CONNECTIONS = 200;
     /**
      * 读取超时时间
      */
-    public final static int READ_TIMEOUT = 10000;
+    private final static int READ_TIMEOUT = 10000;
 
+    /**
+     * http返回成功的code
+     */
     private final static int RESPONSE_SUCCESS_CODE = 200;
+
+    /**
+     * 超过500ms的请求定义为慢请求
+     */
+    private final static int SLOW_TIME=500;
+
+    private static Logger perfLogger = Logger.getLogger("httpClientTimingLogger");
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SGHttpClient.class);
 
     static {
         HttpParams params = new BasicHttpParams();
@@ -69,7 +81,7 @@ public class SGHttpClient {
 
 
     /**
-     * 获取
+     * 执行请求操作，返回服务器返回内容
      *
      * @param requestModel
      * @return
@@ -91,12 +103,34 @@ public class SGHttpClient {
     }
 
     /**
+     * 对外提供的执行请求的方法，主要添加了性能log
+     * @param requestModel
+     * @return
+     */
+    public static HttpEntity execute(RequestModel requestModel){
+        //性能分析
+        StopWatch stopWatch = new Log4JStopWatch(perfLogger);
+        try {
+            HttpEntity httpEntity= executePrivate(requestModel);
+            stopWatch(stopWatch,requestModel.getUrl(),"success");
+            return httpEntity;
+        }catch(Exception e){
+            if(requestModel!=null){
+                stopWatch(stopWatch,requestModel.getUrl(),"failed");
+            }else{
+                stopWatch(stopWatch,"requestModel is null","failed");
+            }
+            throw new RuntimeException("http request error ", e);
+        }
+    }
+
+    /**
      * 执行请求并返回请求结果
      *
      * @param requestModel
      * @return
      */
-    public static HttpEntity execute(RequestModel requestModel) {
+    private static HttpEntity executePrivate(RequestModel requestModel) {
         if (requestModel == null) {
             throw new NullPointerException("requestModel 不能为空");
         }
@@ -104,10 +138,12 @@ public class SGHttpClient {
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
             int responseCode = httpResponse.getStatusLine().getStatusCode();
+            //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return httpResponse.getEntity();
             }
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl());
+            String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CONTENT_CHARSET);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() +" params:"+params);
         } catch (IOException e) {
             throw new RuntimeException("http request error ", e);
         }
@@ -127,18 +163,37 @@ public class SGHttpClient {
                 httpRequest = new HttpGet(requestModel.getUrl());
                 break;
             case POST:
-                httpRequest = new HttpPost(requestModel.getUrl());
+                HttpPost httpPost = new HttpPost(requestModel.getUrl());
+                httpPost.setEntity(requestModel.getRequestEntity());
+                httpRequest = httpPost;
                 break;
             case PUT:
-                httpRequest = new HttpPut(requestModel.getUrl());
+                HttpPut httpPut = new HttpPut(requestModel.getUrl());
+                httpPut.setEntity(requestModel.getRequestEntity());
+                httpRequest = httpPut;
                 break;
             case DELETE:
                 httpRequest = new HttpDelete(requestModel.getUrl());
                 break;
         }
-        httpRequest.setParams(requestModel.getHttpParams());
         httpRequest.setHeaders(requestModel.getHeaders());
         return httpRequest;
+    }
+
+    /**
+     * 记录性能log的规则
+     * @param stopWatch
+     * @param tag
+     * @param message
+     */
+    private static void stopWatch(StopWatch stopWatch,String tag, String message){
+        if(logger.isInfoEnabled()){
+            stopWatch.stop(tag,message);
+        }else{
+            if("failed".equals(message+"")||stopWatch.getElapsedTime()>=SLOW_TIME){
+                stopWatch.stop(tag,message);
+            }
+        }
     }
 
     /*
@@ -168,6 +223,7 @@ public class SGHttpClient {
                 registry.register(new Scheme("https", 443, ssf));
                 ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
 
+
                 HttpParams params = base.getParams();
                 mgr.setMaxTotal(MAX_TOTAL_CONNECTIONS);
                 mgr.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
@@ -181,4 +237,7 @@ public class SGHttpClient {
             }
         }
     }
+
+
+
 }
