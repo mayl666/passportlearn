@@ -38,7 +38,7 @@
     <appender name="fileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-mm-dd"/>
         <param name="Append" value="true"/>
-        <param name="File" value="/Users/lg/workspace/logs/perfStats.log" />
+        <param name="File" value="${passport.log.path}/httpclient/perfStats.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
         </layout>
