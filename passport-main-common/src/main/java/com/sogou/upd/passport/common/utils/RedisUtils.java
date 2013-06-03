@@ -78,6 +78,14 @@ public class RedisUtils {
     }
   }
 
+    /*
+     * 设置缓存内容及有效期，单位为秒
+     * TODO:是否抛出异常及如何处理
+     */
+    public void setWithinSeconds(String key, String value, long timeout) throws Exception {
+        set(key, value, timeout, TimeUnit.SECONDS);
+    }
+
   /*
     * 设置缓存内容
     */
