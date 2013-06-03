@@ -17,6 +17,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
@@ -167,7 +168,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account queryNormalAccount(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
-        if (account != null && account.isNormalAccount()) {
+        if (account != null && AccountHelper.isNormalAccount(account)) {
             return account;
         }
         return null;
@@ -388,7 +389,7 @@ public class AccountServiceImpl implements AccountService {
        try {
            String passportId = account.getPassportId();
            int row = accountDAO.updateState(newState, passportId);
-           if (row != 0) {
+           if (row > 0) {
                String cacheKey = buildAccountKey(passportId);
                account.setStatus(newState);
                redisUtils.set(cacheKey, account);

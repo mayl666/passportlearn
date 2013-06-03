@@ -55,10 +55,6 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public boolean isNormalAccount() {
-        return this.status == AccountStatusEnum.REGULAR.getValue();
-    }
-
     public long getId() {
         return id;
     }

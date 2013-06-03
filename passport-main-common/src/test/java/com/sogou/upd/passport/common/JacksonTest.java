@@ -71,6 +71,33 @@ public class JacksonTest extends TestCase {
         }
     }
 
+
+  /*
+ * 测试JSON转换List<Object>
+ */
+  @Test
+  public void testJacksonGetNullObject() {
+    try {
+      ActiveEmail jsonObject = new ActiveEmail();
+      jsonObject.setActiveUrl("http://www.sogou.com");
+      jsonObject.setCategory("aaa");
+//      jsonObject.setSubject("");
+
+      ActiveEmail activeEmail = jsonObject;
+      String jsonString = new ObjectMapper().writeValueAsString(activeEmail);
+
+
+      ActiveEmail newActiveEmail =  (ActiveEmail)new ObjectMapper().readValue(jsonString, ActiveEmail.class);
+      System.out.println("activeEmail.getActiveUrl(): " + activeEmail.getActiveUrl());
+      System.out.println("activeEmail.getCategory(): " + activeEmail.getCategory());
+
+      Assert.assertTrue(true);
+    } catch (IOException e) {
+      e.printStackTrace();
+      Assert.assertTrue(true);
+    }
+  }
+
     private ActiveEmail buildJsonObject() {
         ActiveEmail jsonObject = new ActiveEmail();
         jsonObject.setActiveUrl("http://www.sogou.com");
