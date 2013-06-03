@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-3-29 Time: 上午1:20 To change this template use File | Settings |
@@ -170,9 +171,10 @@ public class AccountTokenServiceImpl implements AccountTokenService {
                 List<AccountToken> allAccountTokens;
                 String cacheKey = buildAccountTokenKey(passportId);
 
-                if (redisUtils.checkKeyIsExist(cacheKey)) {
+                Map<String, String> mapResult = redisUtils.hGetAll(cacheKey);
+                if (!mapResult.isEmpty()) {
                     allAccountTokens = new LinkedList();
-                    for (String subKey : redisUtils.hGetAll(cacheKey).keySet()) {
+                    for (String subKey : mapResult.keySet()) {
                         allAccountTokens.add((AccountToken) redisUtils.hGetObject(cacheKey, subKey, AccountToken.class));
                     }
                 } else {

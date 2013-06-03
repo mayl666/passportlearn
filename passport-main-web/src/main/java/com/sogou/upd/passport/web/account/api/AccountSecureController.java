@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/web")
 public class AccountSecureController {
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureController.class);
 
@@ -48,7 +48,7 @@ public class AccountSecureController {
     @Autowired
     private HostHolder hostHolder;
 
-    // TODO:method是POST或GET
+    // TODO:method是POST或GET，或者POST的话，GET怎么处理
 
     /**
      * 查询密保方式，用于重置密码/修改密保内容
@@ -57,7 +57,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/secure/query", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/secure/query", method = RequestMethod.POST)
     @ResponseBody
     public Object querySecureInfo(AccountSecureInfoParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -70,9 +70,8 @@ public class AccountSecureController {
         if (passportId == null) {
             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
         }
-        params.setUsername(passportId);
 
-        return accountSecureManager.queryAccountSecureInfo(params);
+        return accountSecureManager.queryAccountSecureInfo(passportId, clientId, true);
     }
 
     /**
@@ -81,7 +80,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendremail", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
     @ResponseBody
     public Object sendEmailRegForResetPwd(BaseAccountParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -99,7 +98,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendbemail", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/findpwd/sendbemail", method = RequestMethod.POST)
     @ResponseBody
     public Object sendEmailBindForResetPwd(BaseAccountParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -121,7 +120,7 @@ public class AccountSecureController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "/findpwd/email", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/findpwd/email", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPasswordByEmail(AccountPwdScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -142,7 +141,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/sendsms", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/sendsms", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired(value = false)
     public Object sendSms(UserModuleTypeParams params) throws Exception {
@@ -205,7 +204,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checksms", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
     @ResponseBody
     public Object checkSmsResetPwd(AccountSmsScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -225,7 +224,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-/*    @RequestMapping(value = "/findpwd/mobile", method = { RequestMethod.POST, RequestMethod.GET })
+/*    @RequestMapping(value = "/findpwd/mobile", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPasswordByMobile(AccountPwdScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -246,7 +245,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checkanswer", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/findpwd/checkanswer", method = RequestMethod.POST)
     @ResponseBody
     public Object checkAnswerResetPwd(AccountAnswerCaptParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -268,7 +267,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = {"/findpwd/mobile", "/findpwd/ques"}, method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = {"/findpwd/mobile", "/findpwd/ques"}, method = RequestMethod.POST)
     @ResponseBody
     public Object resetPasswordByQues(AccountPwdScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -289,7 +288,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/bind/sendemail", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/bind/sendemail", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object sendEmailForBind(AccountBindEmailParams params) throws Exception {
@@ -319,7 +318,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/bind/checksms", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/bind/checksms", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object checkSmsBindMobile(AccountSmsScodeParams params) throws Exception {
@@ -343,7 +342,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/bind/modifymobile", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/bind/modifymobile", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object modifyBindMobile(AccountSmsNewScodeParams params) throws Exception {
@@ -370,7 +369,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/bind/bindmobile", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/bind/bindmobile", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object bindNewMobile(AccountSmsNewScodeParams params, @RequestParam("password") String password) throws Exception {
@@ -397,7 +396,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/bind/ques", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/bind/ques", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object bindQues(AccountPwdParams params, @RequestParam("new_ques") String newQues,

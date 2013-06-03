@@ -65,33 +65,58 @@ public class RedisUtils {
             }
         }
     }
-  /*
+    /*
     * 设置缓存内容
     */
-  public void set(String key, String value,long timeout,TimeUnit timeUnit) throws Exception {
-    try {
-      ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-      valueOperations.set(key, value,timeout,timeUnit);
-    } catch (Exception e) {
-      log.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
+    public void set(String key, String value,long timeout,TimeUnit timeUnit) throws Exception {
+        try {
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.set(key, value,timeout,timeUnit);
+        } catch (Exception e) {
+            log.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
 
+        }
     }
-  }
 
-  /*
+    /*
     * 设置缓存内容
     */
-  public long increment(String key) throws Exception {
-    long countNum=0;
-    try {
-      ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-      countNum=valueOperations.increment(key,1);
-    } catch (Exception e) {
-      log.error("[Cache] increment fail, key:" + key, e);
-      throw e;
+    public void set(String key, Object obj,long timeout,TimeUnit timeUnit) throws Exception {
+        try {
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.set(key, new ObjectMapper().writeValueAsString(obj),timeout,timeUnit);
+        } catch (Exception e) {
+            log.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
+
+        }
     }
-    return countNum;
-  }
+
+    /*
+     * 设置缓存内容及有效期，单位为秒
+     * TODO:是否抛出异常及如何处理
+     */
+    public void setWithinSeconds(String key, String value, long timeout) throws Exception {
+        set(key, value, timeout, TimeUnit.SECONDS);
+    }
+
+    public void setWithinSeconds(String key, Object obj, long timeout) throws Exception {
+        set(key, obj, timeout, TimeUnit.SECONDS);
+    }
+
+    /*
+      * 设置缓存内容
+      */
+    public long increment(String key) throws Exception {
+        long countNum=0;
+        try {
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            countNum=valueOperations.increment(key,1);
+        } catch (Exception e) {
+            log.error("[Cache] increment fail, key:" + key, e);
+            throw e;
+        }
+        return countNum;
+    }
 
     /*
     * 设置缓存内容

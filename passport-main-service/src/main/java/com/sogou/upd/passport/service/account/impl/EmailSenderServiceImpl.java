@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
@@ -72,8 +73,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
             //连接失效时间
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
-            redisUtils.set(cacheKey, token);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+            redisUtils.setWithinSeconds(cacheKey, token, DateAndNumTimesConstant.TIME_TWODAY);
+            /*redisUtils.set(cacheKey, token);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);*/
 
             // 设置邮件发送次数限制
             String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM + address + "_"
@@ -81,8 +83,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
             } else {
-                redisUtils.set(resetCacheKey, "1");
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(resetCacheKey, "1");
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
 
         } catch(MailException me) {
@@ -97,16 +100,15 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
-            if(redisUtils.checkKeyIsExist(cacheKey)){
-                String tokenCache = redisUtils.get(cacheKey);
-                if(tokenCache.equals(token)){
-                    return true;
-                }
+            String tokenCache = redisUtils.get(cacheKey);
+            if(!Strings.isNullOrEmpty(tokenCache) && tokenCache.equals(token)){
+                return true;
             }
+            return false;
         } catch (Exception e){
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -134,7 +136,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return true;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return true;
         }
     }
 
@@ -173,8 +176,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
             } else {
-                redisUtils.set(resetCacheKey, "1");
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(resetCacheKey, "1");
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
             return true;
         } catch(MailException me) {
@@ -191,16 +195,17 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public String checkEmailForBinding(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_BINDINGEMAILTOKEN + uid;
-            if (redisUtils.checkKeyIsExist(cacheKey)){
-                Map<String, String> mapToken = redisUtils.hGetAll(cacheKey);
+            Map<String, String> mapToken = redisUtils.hGetAll(cacheKey);
+            if (!mapToken.isEmpty()){
                 String tokenCache = mapToken.get("token");
-                if (tokenCache.equals(token)){
+                if (!Strings.isNullOrEmpty(tokenCache) && tokenCache.equals(token)){
                     return mapToken.get("email");
                 }
             }
             return null;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return null;
         }
     }
 
@@ -218,7 +223,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return true;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return true;
         }
     }
 
