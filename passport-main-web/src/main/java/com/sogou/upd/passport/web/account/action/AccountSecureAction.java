@@ -71,30 +71,6 @@ public class AccountSecureAction extends BaseController {
         return "forward:";
     }
 
-    /**
-     * 发送手机验证码
-     *
-     * @param passportId 传入的参数;
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/sendsms", method = RequestMethod.POST)
-    public String sendSms(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-            Model model) throws Exception {
-        if(Strings.isNullOrEmpty(client_id) || !StringUtil.checkIsDigit(client_id)){
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE));
-            return "forward:";
-        }
-        int clientId = Integer.parseInt(client_id);
-        Result result = accountSecureManager.sendMobileCodeByPassportId(passportId, clientId);
-        if (!result.getStatus().equals("0")) {
-            model.addAttribute("error", result);
-            return "forward:";
-        }
-        model.addAttribute("send", true);
-        return "forward:";
-    }
-
     @RequestMapping(value = "/mobile", method = RequestMethod.POST)
     public String resetPasswordByMobile(@RequestParam("username") String passportId, @RequestParam("client_id") int clientId,
                 @RequestParam("password") String password, @RequestParam("smscode") String smsCode, Model model) throws Exception {
