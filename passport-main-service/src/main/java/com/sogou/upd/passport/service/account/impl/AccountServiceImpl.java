@@ -386,7 +386,7 @@ public class AccountServiceImpl implements AccountService {
        try {
            String passportId = account.getPassportId();
            int row = accountDAO.updateState(newState, passportId);
-           if (row != 0) {
+           if (row > 0) {
                String cacheKey = buildAccountKey(passportId);
                account.setStatus(newState);
                redisUtils.set(cacheKey, account);
