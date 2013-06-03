@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.model.account.Account;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,6 +33,29 @@ public interface AccountManager {
      */
     public String getPassportIdByUsername(String username) throws Exception;
 
+  /**
+   *
+   * @param passportId
+   * @return
+   * @throws Exception
+   */
+    public Account queryAccountByPassportId(String passportId) throws Exception;
 
+  /**
+   *
+   * @param account
+   * @return
+   * @throws Exception
+   */
+    public boolean updateState(Account account, int newState)  throws Exception;
+  /**
+   *
+   * @param account
+   * @param password
+   * @param needMD5
+   * @return
+   * @throws Exception
+   */
+    public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception;
 
 }

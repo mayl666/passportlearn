@@ -134,4 +134,14 @@ public interface AccountService {
      */
   public boolean modifyMobile(Account account, String newMobile);
 
+  /**
+   * 解禁或封禁用户
+   *
+   * @param account
+   * @param newState
+   * @return
+   * @throws ServiceException
+   */
+
+  public boolean updateState(Account account, int newState) throws ServiceException;
 }

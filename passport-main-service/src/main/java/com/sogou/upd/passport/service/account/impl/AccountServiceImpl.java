@@ -381,6 +381,22 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
+    @Override
+    public boolean updateState(Account account, int newState) throws ServiceException {
+       try {
+           String passportId = account.getPassportId();
+           int row = accountDAO.updateState(newState, passportId);
+           if (row != 0) {
+               String cacheKey = buildAccountKey(passportId);
+               account.setStatus(newState);
+               redisUtils.set(cacheKey, account);
+               return true;
+           }
+       } catch (Exception e) {
+           throw new ServiceException(e);
+       }
+       return false;
+    }
   /*
    * 外域邮箱注册
    */
