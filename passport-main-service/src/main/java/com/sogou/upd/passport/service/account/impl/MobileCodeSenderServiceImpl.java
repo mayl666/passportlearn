@@ -51,11 +51,11 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         boolean flag = false;
         try {
             flag = redisUtils.checkKeyIsExist(cacheKey);
+            return flag;
         } catch (Exception e) {
-            logger.error("[SMS] service method checkCacheKeyIsExist error.{}", e);
-            new ServiceException(e);
+            // new ServiceException(e);
+            return flag;
         }
-        return flag;
     }
 
     @Override
@@ -157,11 +157,11 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 // TODO:目前所有手机随机码验证服务统一限制验证失败次数
                 setSmsFailLimited(account, clientId);
             }
+            return false;
         } catch (Exception e) {
-            logger.error("[SMS] service method checkSmsInfoFromCache error.{}", e);
-            new ServiceException(e);
+            // new ServiceException(e);
+            return false;
         }
-        return false;
     }
 
     /*
@@ -203,10 +203,9 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             }
             return true;
         } catch (Exception e) {
-            logger.error("[SMS] service method checkSmsFailLimited error.{}", e);
-            new ServiceException(e);
+            // new ServiceException(e);
+            return false; // 防止redis宕机时，频繁短信验证
         }
-        return false;
     }
 
     @Override

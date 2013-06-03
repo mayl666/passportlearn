@@ -203,7 +203,8 @@ public class AccountServiceImpl implements AccountService {
             }
             return true;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return true;
         }
     }
 
@@ -355,14 +356,13 @@ public class AccountServiceImpl implements AccountService {
         try {
             String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
             String captchaCodeCache = redisUtils.get(cacheKey);
-            if (!Strings.isNullOrEmpty(captchaCodeCache)) {
-                if (captchaCodeCache.equalsIgnoreCase(captchaCode)) {
-                    return true;
-                }
+            if (!Strings.isNullOrEmpty(captchaCodeCache) && captchaCodeCache.equalsIgnoreCase(captchaCode)) {
+                return true;
             }
             return false;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return false;
         }
     }
 

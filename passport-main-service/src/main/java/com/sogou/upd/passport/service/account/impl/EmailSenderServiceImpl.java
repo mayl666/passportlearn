@@ -104,10 +104,11 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if(!Strings.isNullOrEmpty(tokenCache) && tokenCache.equals(token)){
                 return true;
             }
+            return false;
         } catch (Exception e){
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -135,7 +136,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return true;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return true;
         }
     }
 
@@ -202,7 +204,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return null;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return null;
         }
     }
 
@@ -220,7 +223,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return true;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return true;
         }
     }
 

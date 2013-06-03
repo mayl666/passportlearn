@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
@@ -45,6 +48,11 @@ public class AccountCheckManagerImpl implements AccountCheckManager {
 
     @Override
     public boolean checkCaptcha(String captcha, String token) throws Exception {
-        return accountService.checkCaptchaCodeIsVaild(token, captcha);
+        try {
+            return accountService.checkCaptchaCodeIsVaild(token, captcha);
+        } catch (ServiceException e) {
+            logger.error("check captcha Fail:", e);
+            return false;
+        }
     }
 }
