@@ -44,10 +44,7 @@ public class AccountCheckManagerImpl implements AccountCheckManager {
     private AccountSecureService accountSecureService;
 
     @Override
-    public boolean checkCaptcha(AccountSecureInfoParams params) throws Exception {
-        String token = params.getToken();
-        String captcha = params.getCaptcha();
-
+    public boolean checkCaptcha(String captcha, String token) throws Exception {
         return accountService.checkCaptchaCodeIsVaild(token, captcha);
     }
 }
