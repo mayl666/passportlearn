@@ -59,9 +59,9 @@ public class AccountInfoDAOTest extends BaseDAOTest {
         int row = accountInfoDAO.saveEmailOrInsert(PASSPORT_ID, accountInfo);
 
         /*
-         * 如果insert，则返回1；update，则返回2
+         * 不能根据返回值是1、2来区分更新或插入，返回值依实现而不同，特别是更新时，也可能返回3
          */
-        Assert.assertTrue(row == 1 || row == 2);
+        Assert.assertTrue(row != 0);
     }
 
     /**
