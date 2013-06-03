@@ -62,21 +62,19 @@ public class AccountServiceImpl implements AccountService {
         String cacheKey = null;
         try {
             cacheKey = buildAccountKey(username);
-            if (redisUtils.checkKeyIsExist(cacheKey)) {
-                account = redisUtils.getObject(cacheKey, Account.class);
-                if (account != null) {
-                    account.setStatus(AccountStatusEnum.REGULAR.getValue());
-                    long id = accountDAO.insertAccount(username, account);
-                    if (id != 0) {
-                        //删除临时账户缓存，成为正式账户
-                        redisUtils.set(cacheKey, account);
-                        //更新黑名单缓存
-                        cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
-                        redisUtils.increment(cacheKey);
-                        //设置cookie
-                        setCookie();
-                        return account;
-                    }
+            account = redisUtils.getObject(cacheKey, Account.class);
+            if (account != null) {
+                account.setStatus(AccountStatusEnum.REGULAR.getValue());
+                long id = accountDAO.insertAccount(username, account);
+                if (id != 0) {
+                    //删除临时账户缓存，成为正式账户
+                    redisUtils.set(cacheKey, account);
+                    //更新黑名单缓存
+                    cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
+                    redisUtils.increment(cacheKey);
+                    //设置cookie
+                    setCookie();
+                    return account;
                 }
             }
         } catch (Exception e) {
@@ -195,8 +193,9 @@ public class AccountServiceImpl implements AccountService {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
                               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
-            if (redisUtils.checkKeyIsExist(cacheKey)) {
-                int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
+            String checkNumStr = redisUtils.get(cacheKey);
+            if (!Strings.isNullOrEmpty(checkNumStr)) {
+                int checkNum = Integer.parseInt(checkNumStr);
                 if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
                     // 当日验证码输入错误次数不超过上限
                     return false;
@@ -464,11 +463,12 @@ public class AccountServiceImpl implements AccountService {
     public long incLoginFailedNum(String passportId) {
         try{
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
-            if(redisUtils.checkKeyIsExist(cacheKey)){
+            redisUtils.increment(cacheKey);
+            /*if(redisUtils.checkKeyIsExist(cacheKey)){
                 return redisUtils.increment(cacheKey);
             }else{
                 redisUtils.set(cacheKey,1);
-            }
+            }*/
         } catch (Exception e) {
             logger.error("incLoginFailedNum:" + passportId, e);
         }

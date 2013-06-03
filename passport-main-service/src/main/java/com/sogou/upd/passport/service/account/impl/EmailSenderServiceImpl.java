@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
@@ -99,11 +100,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
-            if(redisUtils.checkKeyIsExist(cacheKey)){
-                String tokenCache = redisUtils.get(cacheKey);
-                if(tokenCache.equals(token)){
-                    return true;
-                }
+            String tokenCache = redisUtils.get(cacheKey);
+            if(!Strings.isNullOrEmpty(tokenCache) && tokenCache.equals(token)){
+                return true;
             }
         } catch (Exception e){
             throw new ServiceException(e);
@@ -194,10 +193,10 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public String checkEmailForBinding(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_BINDINGEMAILTOKEN + uid;
-            if (redisUtils.checkKeyIsExist(cacheKey)){
-                Map<String, String> mapToken = redisUtils.hGetAll(cacheKey);
+            Map<String, String> mapToken = redisUtils.hGetAll(cacheKey);
+            if (!mapToken.isEmpty()){
                 String tokenCache = mapToken.get("token");
-                if (tokenCache.equals(token)){
+                if (!Strings.isNullOrEmpty(tokenCache) && tokenCache.equals(token)){
                     return mapToken.get("email");
                 }
             }
