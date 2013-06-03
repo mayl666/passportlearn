@@ -19,6 +19,7 @@ import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -603,7 +604,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (account == null) {
                 return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
             }
-            if (!account.isNormalAccount()) {
+            if (!AccountHelper.isNormalAccount(account)) {
                 return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
@@ -685,7 +686,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 // 新绑定手机，checkCode为password
                 String password = checkCode;
                 account = accountService.verifyUserPwdVaild(passportId, password, false);
-                if (account == null || !account.isNormalAccount()) {
+                if (account == null || !AccountHelper.isNormalAccount(account)) {
                     return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
                 }
             } else {
@@ -724,7 +725,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (account == null) {
                 return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
             }
-            if (!account.isNormalAccount()) {
+            if (!AccountHelper.isNormalAccount(account)) {
                 return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
             AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(passportId, newQues, newAnswer);

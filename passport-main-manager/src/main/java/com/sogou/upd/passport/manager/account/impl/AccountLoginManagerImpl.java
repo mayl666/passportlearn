@@ -14,6 +14,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
+import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
@@ -61,7 +62,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                         .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
                 if (account == null) {
                     return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
-                } else if (!account.isNormalAccount()) {
+                } else if (!AccountHelper.isNormalAccount(account)) {
                     return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
                 } else {
                     // 为了安全每次登录生成新的token
