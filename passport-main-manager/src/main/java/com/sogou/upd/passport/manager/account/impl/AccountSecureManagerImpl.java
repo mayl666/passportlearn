@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
@@ -44,7 +45,7 @@ import java.util.Map;
 @Component
 public class AccountSecureManagerImpl implements AccountSecureManager {
 
-    private static Logger logger = LoggerFactory.getLogger(AccountSecureManager.class);
+    private static Logger logger = LoggerFactory.getLogger(AccountSecureManagerImpl.class);
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
@@ -254,15 +255,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result queryAccountSecureInfo(AccountSecureInfoParams params) throws Exception {
-        String passportId = params.getUsername();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String token = params.getToken();
-        String captcha = params.getCaptcha();
+    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess) throws Exception {
         try {
-            if (!accountService.checkCaptchaCodeIsVaild(token, captcha)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-            }
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -270,33 +264,46 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             if (!accountService.checkResetPwdLimited(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
-            AccountInfo accountInfo;
-            if (!Strings.isNullOrEmpty(account.getMobile())) {
-                params.setSec_mobile(account.getMobile().substring(0, 3).concat("*****").
-                        concat(account.getMobile().substring(account.getMobile().length() - 3)));
-            }
-            accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-            if (accountInfo != null) {
-                String processEmail = null;
-                String emailBind = accountInfo.getEmail();
-                if (!Strings.isNullOrEmpty(emailBind)) {
-                    processEmail = emailBind.substring(0, 2).concat("*****").
-                            concat(emailBind.substring(emailBind.indexOf("@") - 1));
+            AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
+            String mobile = account.getMobile();
+            if (!Strings.isNullOrEmpty(mobile)) {
+                if (doProcess) {
+                    String mobileProcessed = StringUtil.processMobile(mobile);
+                    accountSecureInfoVO.setSec_mobile(mobileProcessed);
+                } else {
+                    accountSecureInfoVO.setSec_mobile(mobile);
                 }
-                params.setSec_email(processEmail);
-                params.setSec_ques(StringUtil.defaultIfEmpty(accountInfo.getQuestion(), ""));
+            }
+            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
+            if (accountInfo != null) {
+                String emailBind = accountInfo.getEmail();
+                String question = accountInfo.getQuestion();
+                if (!Strings.isNullOrEmpty(emailBind)) {
+                    if (doProcess) {
+                        String emailBindProcessed = StringUtil.processEmail(emailBind);
+                        accountSecureInfoVO.setSec_email(emailBindProcessed);
+                    } else {
+                        accountSecureInfoVO.setSec_email(emailBind);
+                    }
+                }
+                if (!Strings.isNullOrEmpty(question)) {
+                    accountSecureInfoVO.setSec_ques(question);
+                }
             }
             if (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum
                     .OTHER) {
-                params.setReg_email(passportId.substring(0, 2).concat("*****").
-                        concat(passportId.substring(passportId.indexOf("@") - 1)));
+                if (doProcess) {
+                    String emailRegProcessed = StringUtil.processEmail(passportId);
+                    accountSecureInfoVO.setReg_email(emailRegProcessed);
+                } else {
+                    accountSecureInfoVO.setReg_email(passportId);
+                }
             }
+            return Result.buildSuccess("查询成功", "data", accountSecureInfoVO);
         } catch (ServiceException e) {
             logger.error("query account_secure_info Fail:", e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-
-        return Result.buildSuccess("查询成功", "sec_info", params);
     }
 
     private Result sendEmailResetPwd(String passportId, int clientId, String email)
