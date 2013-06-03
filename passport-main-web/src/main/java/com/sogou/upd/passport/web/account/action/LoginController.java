@@ -77,9 +77,9 @@ public class LoginController extends BaseController {
 //        }
 //
 //        return null;
-        if(!StringUtil.isBlank(loginParams.getAccount())){
-            CookieUtils.setCookie(response, LoginConstant.PASSPORTID_COOKIE_ID,loginParams.getAccount(),0);
-            return "登录成功："+loginParams.getAccount();
+        if(!StringUtil.isBlank(loginParams.getUsername())){
+            CookieUtils.setCookie(response, LoginConstant.PASSPORTID_COOKIE_ID,loginParams.getUsername(),0);
+            return "登录成功："+loginParams.getUsername();
         }
         return "请求 /web/login?account=18600000000@sohu.com  来登录";
     }

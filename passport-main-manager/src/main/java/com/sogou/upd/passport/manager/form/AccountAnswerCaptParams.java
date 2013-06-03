@@ -13,6 +13,8 @@ public class AccountAnswerCaptParams extends BaseAccountParams {
     private String captcha;
     @NotBlank
     private String token;
+    // @NotBlank
+    private String scode;
 
     public String getAnswer() {
         return answer;
@@ -36,5 +38,13 @@ public class AccountAnswerCaptParams extends BaseAccountParams {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getScode() {
+        return scode;
+    }
+
+    public void setScode(String scode) {
+        this.scode = scode;
     }
 }

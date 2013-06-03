@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.lang.StringUtil;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -21,7 +22,7 @@ public class WebRegisterParameters {
   @NotBlank(message = "请输入密码!")
   private String password;
   @NotBlank(message = "验证码不允许为空!")
-  private String vcode;//验证码
+  private String captcha;//验证码
   @NotBlank(message = "标识码不允许为空!")
   private String token;//标识码
 
@@ -41,11 +42,6 @@ public class WebRegisterParameters {
     this.username = username;
   }
 
-  @AssertTrue(message = "密码必须为字母或数字且长度大于6位!")
-  private boolean isValidPassword() {
-    return CommonHelper.checkPasswd(this.password);
-  }
-
   public String getPassword() {
     return password;
   }
@@ -62,11 +58,11 @@ public class WebRegisterParameters {
     this.token = token;
   }
 
-  public String getVcode() {
-    return vcode;
+  public String getCaptcha() {
+    return captcha;
   }
 
-  public void setVcode(String vcode) {
-    this.vcode = vcode;
+  public void setCaptcha(String captcha) {
+    this.captcha = captcha;
   }
 }

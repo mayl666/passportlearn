@@ -96,6 +96,14 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
     // 手机号已注册或绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
+    //登录失败
+    public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
+    //密码必须为字母和数字且长度大于6位!
+    public static final String ERR_CODE_ACCOUNT_PWDERROR = "20227";
+    // 当前登录账号与所操作账号不一致
+    public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
+    // 账号未登录，请先登录
+    public static final String ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED = "20229";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -251,11 +259,16 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日短信验证错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "用户注册失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PWDERROR, "密码必须为字母和数字且长度大于6位!");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH, "当前登录账号与操作账号不一致");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
+
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "注册验证码验证失效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "验证码验证失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或绑定");
 
