@@ -5,7 +5,11 @@ import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -80,7 +84,7 @@ public class SGHttpClientTest {
     }
 
     @Test
-    public void testAuthUser() throws Exception {
+    public void testAuthTestModelUser() throws Exception {
         RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/authuser","info");
         String userid="upd_test@sogou.com";
         long ct=System.currentTimeMillis();
@@ -92,8 +96,66 @@ public class SGHttpClientTest {
         requestModel.addParam("ct", ct);
         requestModel.addParam("code", code);
         requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        String result = SGHttpClient.executeStr(requestModel);
+        Result result = SGHttpClient.executeBean(requestModel, HttpTransformat.xml,Result.class);
         System.out.println(result);
+    }
+
+    @Test
+    public void testXmlTresultoBean(){
+        String xml=
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                "<result>" +
+                "<uid>26f15b58d0c54d5s</uid>" +
+                "<status>0</status>" +
+                "<userid>upd_test@sogou.com</userid>" +
+                "<uuid>26f15b58d0c54d5s</uuid>" +
+                "<uniqname></uniqname>" +
+                "</result>";
+        Result result= XMLUtil.xmlToBean(xml,Result.class);
+        System.out.println(result.getStatus());
+        xml=
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                        "<result>" +
+                        "<uid>26f15b58d0c54d5s</uid>" +
+                        "<status>1</status>" +
+                        "<userid>upd_test@sogou.com</userid>" +
+                        "<uuid>26f15b58d0c54d5s</uuid>" +
+                        "<uniqname></uniqname>" +
+                        "</result>";
+        result= XMLUtil.xmlToBean(xml,Result.class);
+        System.out.println(result.getStatus());
+        xml=
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                        "<result>" +
+                        "<uid>26f15b58d0c54d5s</uid>" +
+                        "<status>2</status>" +
+                        "<userid>upd_test@sogou.com</userid>" +
+                        "<uuid>26f15b58d0c54d5s</uuid>" +
+                        "<uniqname></uniqname>" +
+                        "</result>";
+        HashMap<String,String> map=XMLUtil.xmlToBean(xml,HashMap.class);
+        System.out.println(map.get("status"));
+    }
+
+
+
+    @Test
+    public void testXmlToBeanPref(){
+        String xml=
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                        "<result>" +
+                        "<uid>26f15b58d0c54d5s</uid>" +
+                        "<status>0</status>" +
+                        "<userid>upd_test@sogou.com</userid>" +
+                        "<uuid>26f15b58d0c54d5s</uuid>" +
+                        "<uniqname></uniqname>" +
+                        "</result>";
+        long startTime=System.currentTimeMillis();
+        for(int i=0;i<10000;i++){
+            Result result= XMLUtil.xmlToBean(xml,Result.class);
+        }
+        long time=System.currentTimeMillis()-startTime;
+        System.out.println(time);
     }
 
 }

@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
@@ -14,6 +16,15 @@ import java.util.Map;
  * Time: 下午9:08
  */
 public class XMLUtil {
+
+
+    //初始化xstream
+    private static final XStream xstream;
+    static{
+        xstream = new XStream();
+        //注册将pojo转为map的coverter
+        xstream.registerConverter(new PojoMapConverter());
+    }
 
     /**
      * 将map转换为xml
@@ -55,4 +66,28 @@ public class XMLUtil {
 
 
 
+    /**
+     * 将xml转为对象
+     * 目前只支持将整个xml转换为简单的POJO或者转换为简单的map
+     * 暂不支持复杂map，list的转换
+     *
+     * @param xml  xml的内容
+     * @param type 要的到的Bena.class
+     * @param <T>  泛型支持
+     * @return 转换后的bean
+     */
+    public static <T> T xmlToBean(final String xml,final Class<T> type) {
+        try {
+            //由于使用重命名功能xterm.alias(rootNodeName, type);一旦设置重命名就无法在修改
+            //所以这里选择将xml的root节点修改为要转换的type的name，经测试这样做基本没有性能问题
+            //但如果使用xstream.alias(rootNodeName, type);就需要每次初始化一个XStream()，性能下降3倍以上
+            Document document = DocumentHelper.parseText(xml);
+            document.getRootElement().setName(type.getName());
+            String newXml=document.asXML();
+            //转换
+            return  (T) xstream.fromXML(newXml);
+        } catch (DocumentException e) {
+            throw new RuntimeException("xml to bean error", e);
+        }
+    }
 }
