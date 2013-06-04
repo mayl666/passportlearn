@@ -81,6 +81,15 @@ public interface AccountDAO {
                           @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
   /**
+   * 封禁或解禁用户
+   */
+  @SQL("update " +
+       TABLE_NAME +
+       " set status=:status where passport_id=:passport_id")
+  public int updateState(@SQLParam("status") int status,
+                          @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
+  /**
    * 验证合法，用户注册
    */
   @SQL(

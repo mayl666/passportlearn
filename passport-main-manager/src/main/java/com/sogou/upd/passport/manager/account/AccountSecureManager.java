@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
@@ -37,6 +38,19 @@ public interface AccountSecureManager {
     public Result updateSmsCacheInfo(String cacheKey, int clientId);
 
     /**
+     * 检查发送邮件限制
+     *
+     * @param passportId
+     * @param clientId
+     * @param module
+     * @param email
+     * @return
+     * @throws Exception
+     */
+    public Result checkLimitForSendEmail(String passportId, int clientId, AccountModuleEnum module,
+                                         String email) throws Exception;
+
+    /**
      * 手机用户找回密码
      *
      * @param mobile   手机号码
@@ -55,11 +69,13 @@ public interface AccountSecureManager {
     /**
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理
      *
-     * @param params
-     * @return
+     * @param passportId
+     * @param clientId
+     * @param doProcess 是否模糊处理，如abcde@sogou.com转换为ab*****e@sogou.com
+     * @return result.getData().get("data") // 账户安全信息
      * @throws Exception
      */
-    public Result queryAccountSecureInfo(AccountSecureInfoParams params) throws Exception;
+    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess) throws Exception;
 
     /**
      * 重置用户密码（web验证码方式）
@@ -73,10 +89,10 @@ public interface AccountSecureManager {
      *
      * @param passportId
      * @param clientId
-     * @param mode 邮件选择方式，1为注册邮箱，其他为绑定邮箱
+     * @param useRegEmail 邮件选择方式，true为注册邮箱，false为绑定邮箱
      * @throws Exception
      */
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, int mode) throws Exception;
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail) throws Exception;
 
 
     /**
@@ -130,7 +146,7 @@ public interface AccountSecureManager {
      * @return
      * @throws Exception
      */
-    public Result resetPasswordBySecureCode(String passportId, int clientId, String password,
+    public Result resetPasswordByScode(String passportId, int clientId, String password,
                                             String secureCode) throws Exception;
 
     /**

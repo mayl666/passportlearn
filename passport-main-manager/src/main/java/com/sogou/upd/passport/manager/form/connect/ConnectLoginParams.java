@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.manager.form;
+package com.sogou.upd.passport.manager.form.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
@@ -19,9 +19,11 @@ public class ConnectLoginParams {
 
     @NotBlank(message = "provider不能为空")
     private String provider; // provider
-    @NotBlank(message = "client_id不允许为空!")
+
     @Min(0)
+    @NotBlank(message = "client_id不允许为空!")
     private String client_id; // 应用id
+
     @NotBlank(message = "ru不能为空")
     private String ru;  // 回调地址
 

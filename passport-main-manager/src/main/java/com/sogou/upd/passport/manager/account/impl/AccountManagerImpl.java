@@ -70,4 +70,18 @@ public class AccountManagerImpl implements AccountManager {
         return null;
     }
 
+    @Override
+    public Account queryAccountByPassportId(String passportId) throws Exception {
+        return  accountService.queryAccountByPassportId(passportId);
+    }
+
+    @Override
+    public boolean updateState(Account account, int newState)  throws Exception{
+      return  accountService.updateState(account,newState);
+    }
+
+    @Override
+    public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception {
+      return  accountService.resetPassword(account,password,needMD5);
+    }
 }

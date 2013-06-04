@@ -7,7 +7,7 @@ package com.sogou.upd.passport.web.annotation;
  * Time: 下午10:46
  */
 public enum LoginRequiredResultType {
-    json("{code:-1,msg=\"%s\"}"),    //返回json格式信息
+    json(""),    //返回json格式信息
     xml("<?xml version=\"1.0\" ?> " + //返回xml格式的信息
             "<code>-1</code>" +
             "<msg>%s</msg>"),

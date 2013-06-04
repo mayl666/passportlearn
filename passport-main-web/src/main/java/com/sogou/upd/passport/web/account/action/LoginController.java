@@ -3,9 +3,11 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.web.BaseController;
@@ -18,10 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 
 /**
  * web端登陆相关的接口
@@ -82,5 +86,15 @@ public class LoginController extends BaseController {
             return "登录成功："+loginParams.getUsername();
         }
         return "请求 /web/login?account=18600000000@sohu.com  来登录";
+    }
+
+
+    @RequestMapping(value = "/testhttpclient", method = RequestMethod.GET)
+    @ResponseBody
+    public String testHttpClient(@RequestParam("url") String url) {
+        url= URLDecoder.decode(url);
+        RequestModel requestModel=new RequestModel(url);
+        String html= SGHttpClient.executeStr(requestModel);
+        return html;
     }
 }

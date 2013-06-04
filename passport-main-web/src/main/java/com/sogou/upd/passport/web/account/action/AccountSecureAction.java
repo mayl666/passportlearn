@@ -8,7 +8,9 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.form.AccountPwdScodeParams;
+import com.sogou.upd.passport.manager.form.AccountScodeParams;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.ControllerHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,7 @@ public class AccountSecureAction extends BaseController {
     /**
      * 显示找回密码界面
      */
-    @RequestMapping
+    @RequestMapping(value = "/security/findpwd")
     public String findPwd(Model model) throws Exception {
         model.addAttribute("clientId", "999");
         return "findpwd";
@@ -66,30 +68,6 @@ public class AccountSecureAction extends BaseController {
 //        }
         model.addAttribute("passportId", passportId);
         model.addAttribute("clientId", clientId);
-        return "forward:";
-    }
-
-    /**
-     * 发送手机验证码
-     *
-     * @param passportId 传入的参数;
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/sendsms", method = RequestMethod.POST)
-    public String sendSms(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-            Model model) throws Exception {
-        if(Strings.isNullOrEmpty(client_id) || !StringUtil.checkIsDigit(client_id)){
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE));
-            return "forward:";
-        }
-        int clientId = Integer.parseInt(client_id);
-        Result result = accountSecureManager.sendMobileCodeByPassportId(passportId, clientId);
-        if (!result.getStatus().equals("0")) {
-            model.addAttribute("error", result);
-            return "forward:";
-        }
-        model.addAttribute("send", true);
         return "forward:";
     }
 
@@ -125,7 +103,7 @@ public class AccountSecureAction extends BaseController {
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
-        result  = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, 2);
+        result  = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("error", result);
         if (result.getStatus().equals("0")) {
             return "forward:";
@@ -134,20 +112,21 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
-    public String checkEmailForResetPwd(@RequestParam("uid") String uid, @RequestParam("cid") String client_id, @RequestParam("token") String token,
-            Model model) throws Exception {
+    public String checkEmailForResetPwd(AccountScodeParams params, Model model) throws Exception {
         Result result;
-        if (StringUtil.checkExistNullOrEmpty(uid, client_id) || !StringUtil.checkIsDigit(client_id)) {
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE));
-            return "forward:";
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult));
         }
-        int clientId = Integer.parseInt(client_id);
-        result = accountSecureManager.checkEmailResetPwd(uid, clientId,token);
+        String passportId = params.getPassport_id();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String scode = params.getScode();
+        result = accountSecureManager.checkEmailResetPwd(passportId, clientId,scode);
         model.addAttribute("error", result);
         if (result.getStatus().equals("0")) {
-            model.addAttribute("username", uid);
-            model.addAttribute("clientId", clientId);
-            model.addAttribute("token", token);
+            model.addAttribute("passport_id", passportId);
+            model.addAttribute("client_id", clientId);
+            model.addAttribute("scode", scode);
             return "resetpwd";
         }
         return "forward:";

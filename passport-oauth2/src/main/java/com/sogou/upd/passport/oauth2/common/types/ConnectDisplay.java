@@ -15,6 +15,7 @@ public class ConnectDisplay {
     private static final List<String> QQ_DISPLAY = Lists.newArrayList();
     private static final List<String> SINA_DISPLAY = Lists.newArrayList();
     private static final List<String> RENREN_DISPLAY = Lists.newArrayList();
+    private static final List<String> TAOBAO_DISPLAY = Lists.newArrayList();
 
     static {
         QQ_DISPLAY.add("mobile");
@@ -33,6 +34,12 @@ public class ConnectDisplay {
         RENREN_DISPLAY.add("touch"); //适用于智能手机，拥有全功能的浏览器的手机使用。
     }
 
+    static {
+        TAOBAO_DISPLAY.add("web");  //普通的PC端（淘宝logo）浏览器页面样式。
+        TAOBAO_DISPLAY.add("tmall");  //对应天猫的浏览器页面样式。
+        TAOBAO_DISPLAY.add("wap");   //无线端的浏览器页面样式。
+    }
+
     public static boolean isSupportDisplay(String display, String provider) {
         if (provider.equals(AccountTypeEnum.QQ.toString())) {
             if (QQ_DISPLAY.contains(display)) return true;
@@ -42,6 +49,9 @@ public class ConnectDisplay {
         }
         if (provider.equals(AccountTypeEnum.RENREN.toString())) {
             if (RENREN_DISPLAY.contains(display)) return true;
+        }
+        if (provider.equals(AccountTypeEnum.TAOBAO.toString())) {
+            if (TAOBAO_DISPLAY.contains(display)) return true;
         }
 
         return false;

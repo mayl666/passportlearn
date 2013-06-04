@@ -53,4 +53,13 @@ public class SinaJSONAccessTokenResponse extends AbstractAccessTokenResponse {
     public String getOpenid() {
         return oAuthTokenDO.getOpenid();
     }
+
+    /**
+     * Sina Authoz Code不返回nickName
+     * @return ""
+     */
+    @Override
+    public String getNickName() {
+        return "";
+    }
 }
