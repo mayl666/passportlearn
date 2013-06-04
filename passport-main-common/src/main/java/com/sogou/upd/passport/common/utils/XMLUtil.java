@@ -17,6 +17,15 @@ import java.util.Map;
  */
 public class XMLUtil {
 
+
+    //初始化xstream
+    private static final XStream xstream;
+    static{
+        xstream = new XStream();
+        //注册将pojo转为map的coverter
+        xstream.registerConverter(new PojoMapConverter());
+    }
+
     /**
      * 将map转换为xml
      *
@@ -55,13 +64,7 @@ public class XMLUtil {
         return document.asXML();
     }
 
-    private static   XStream xstream=null;
 
-    static{
-        xstream = new XStream();
-        //注册将pojo转为map的coverter
-        xstream.registerConverter(new PojoMapConverter());
-    }
 
     /**
      * 将xml转为对象
@@ -75,15 +78,14 @@ public class XMLUtil {
      */
     public static <T> T xmlToBean(final String xml,final Class<T> type) {
         try {
-            //由于使用重命名功能xstream.alias(rootNodeName, type);一旦设置重命名就无法在修改
+            //由于使用重命名功能xterm.alias(rootNodeName, type);一旦设置重命名就无法在修改
             //所以这里选择将xml的root节点修改为要转换的type的name，经测试这样做基本没有性能问题
             //但如果使用xstream.alias(rootNodeName, type);就需要每次初始化一个XStream()，性能下降3倍以上
             Document document = DocumentHelper.parseText(xml);
             document.getRootElement().setName(type.getName());
             String newXml=document.asXML();
-
-            T t = (T) xstream.fromXML(newXml);
-            return t;
+            //转换
+            return  (T) xstream.fromXML(newXml);
         } catch (DocumentException e) {
             throw new RuntimeException("xml to bean error", e);
         }
