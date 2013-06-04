@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.model.ActiveEmail;
+import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -43,6 +44,19 @@ public class JacksonTest extends TestCase {
             System.out.println("Read Object:" + activeEmail);
             Assert.assertTrue(true);
         } catch (IOException e) {
+            e.printStackTrace();
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testReadValueJsonUtil() {
+        try {
+            String jsonString = "{\"map\":{\"nickname\":\"spz\"},\"toEmail\":\"shipengzhi@sogou-inc.com\",\"subject\":\"Send Active Email\",\"category\":\"aaa\",\"activeUrl\":\"http://www.sogou.com\",\"templateFile\":null}";
+            ActiveEmail activeEmail = JsonUtil.jsonToBean(jsonString,ActiveEmail.class);
+            System.out.println("Read Object:" + activeEmail);
+            Assert.assertTrue(true);
+        } catch (RuntimeException e) {
             e.printStackTrace();
             Assert.assertTrue(true);
         }

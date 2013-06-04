@@ -5,6 +5,8 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.XMLUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 
@@ -15,6 +17,8 @@ import java.io.UnsupportedEncodingException;
  * Time: 下午8:31
  */
 public class RequestModelXml extends RequestModel {
+
+    private static final Logger logger = LoggerFactory.getLogger(RequestModelXml.class);
 
     //root节点的名称
     private String rootNodeName;
@@ -49,11 +53,10 @@ public class RequestModelXml extends RequestModel {
      */
     @Override
     public HttpEntity getRequestEntity() {
-        String xmlStr = XMLUtil.mapToXmlString(this.rootNodeName, this.params);
+        String xmlStr = XMLUtil.mapToXmlString(this.getRootNodeName(), this.params);
         try {
-            HttpEntity httpEntity = new StringEntity(xmlStr, "text/xml",
+            return new StringEntity(xmlStr, "text/xml",
                     DEFAULT_ENCODE);
-            return httpEntity;
         } catch (UnsupportedEncodingException e) {
             logger.error("http param url encode error ", e);
             throw new RuntimeException("http param url encode error", e);
