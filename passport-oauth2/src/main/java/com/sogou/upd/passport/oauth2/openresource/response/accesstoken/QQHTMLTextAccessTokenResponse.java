@@ -51,10 +51,23 @@ public class QQHTMLTextAccessTokenResponse extends AbstractAccessTokenResponse {
         return getParam(OAuth.OAUTH_SCOPE);
     }
 
+    /**
+     * QQ Authoz Code不返回openid，需额外接口调用
+     * @return
+     */
     @Override
     public String getOpenid() {
         // QQ不返回openid，需调用获取openid的接口
-        return null;
+        return "";
+    }
+
+    /**
+     * QQ Authoz Code不返回nickName
+     * @return ""
+     */
+    @Override
+    public String getNickName() {
+        return "";
     }
 
 }

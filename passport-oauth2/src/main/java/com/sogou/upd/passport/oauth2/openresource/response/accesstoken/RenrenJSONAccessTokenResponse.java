@@ -50,4 +50,9 @@ public class RenrenJSONAccessTokenResponse extends AbstractAccessTokenResponse {
         return oAuthTokenDO.getUser().getId();
     }
 
+    @Override
+    public String getNickName() {
+        return oAuthTokenDO.getUser().getName();
+    }
+
 }

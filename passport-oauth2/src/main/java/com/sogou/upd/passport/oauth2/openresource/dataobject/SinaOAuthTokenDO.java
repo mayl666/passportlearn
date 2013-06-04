@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.oauth2.openresource.dataobject;
 
 /**
- * Created with IntelliJ IDEA.
+ * 新浪OAuth授权返回的token对象
  * User: shipengzhi
  * Date: 13-4-28
  * Time: 下午9:08

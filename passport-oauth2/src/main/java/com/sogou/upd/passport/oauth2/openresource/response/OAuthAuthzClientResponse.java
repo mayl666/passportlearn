@@ -78,6 +78,10 @@ public class OAuthAuthzClientResponse extends OAuthClientResponse {
         return getParam(OAuth.OAUTH_STATE);
     }
 
+    public String getTokenType(){
+        return getParam(OAuth.OAUTH_TOKEN_TYPE);
+    }
+
     public HttpServletRequest getRequest() {
         return request;
     }

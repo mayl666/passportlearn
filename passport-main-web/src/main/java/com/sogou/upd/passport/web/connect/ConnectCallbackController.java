@@ -1,8 +1,14 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,16 +29,42 @@ import javax.servlet.http.HttpServletResponse;
 public class ConnectCallbackController {
 
     @RequestMapping("/callback/{providerStr}")
-    public ModelAndView handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
-                                               @PathVariable("providerStr") String providerStr) throws Exception {
+    public Object handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
+                                         @PathVariable("providerStr") String providerStr) throws Exception {
         int provider = AccountTypeEnum.getProvider(providerStr);
-        String connectType = ConnectTypeEnum.WEB.toString();
-        if(!Strings.isNullOrEmpty(req.getParameter("code"))){
-            connectType = ConnectTypeEnum.TOKEN.toString();  // 桌面/移动客户端处理流程一样
+        int clientId = Integer.valueOf(req.getParameter("client_id"));
+        String ru = req.getParameter("ru");
+        String ip = req.getParameter("ip");
+        String authzType = getAuthzType(req);
+
+        String state = req.getParameter("state");
+        String cookieState = ServletUtil.getCookie(req, CommonHelper.constructStateCookieKey(provider));
+        if (!state.equals(cookieState)) {
+            // todo return;
         }
 
 
+        //1.获取授权成功后返回的code值
+        OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
+        String code = oar.getCode();
+        if (!Strings.isNullOrEmpty(code)) {  // web端
+            //2.根据code值获取access_token
+//            OAuthAccessTokenResponse oauthResponse = authService.obtainAccessTokenByCode(
+//                    connectName, code, config, consumer);
+//
+//            OAuthToken oauthToken = oauthResponse.getOAuthToken();
+
+        } else {
+            oar = OAuthAuthzClientResponse.oauthTokenAuthzResponse(req);
+
+        }
+
 
         return new ModelAndView("");
+    }
+
+    private String getAuthzType(HttpServletRequest req) {
+        return Strings.isNullOrEmpty(req.getParameter(OAuth.OAUTH_CODE)) ?
+                ConnectTypeEnum.TOKEN.toString() : ConnectTypeEnum.WEB.toString();
     }
 }
