@@ -103,7 +103,7 @@ public class AccountSecureAction extends BaseController {
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
-        result  = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, 2);
+        result  = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("error", result);
         if (result.getStatus().equals("0")) {
             return "forward:";
