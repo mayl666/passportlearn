@@ -109,7 +109,6 @@ public class WebAccountController extends BaseController {
       return result;
     }
 
-
     //验证client_id
     int clientId=Integer.parseInt(regParams.getClient_id());
 
@@ -143,12 +142,8 @@ public class WebAccountController extends BaseController {
       return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
     }
     //验证client_id
-    int clientId;
-    try {
-      clientId = Integer.parseInt(activeParams.getClient_id());
-    } catch (NumberFormatException e) {
-      return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
-    }
+    int clientId=Integer.parseInt(activeParams.getClient_id());
+
     //检查client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
       return Result.buildError(ErrorUtil.INVALID_CLIENTID);

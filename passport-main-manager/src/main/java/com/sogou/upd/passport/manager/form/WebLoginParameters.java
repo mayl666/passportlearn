@@ -39,7 +39,10 @@ public class WebLoginParameters {
   /**
    * 验证码 用户连续3次登陆失败需要输入验证码
    */
-  private String captcha;
+  @NotBlank(message = "验证码不允许为空!")
+  private String captcha;//验证码
+  @NotBlank(message = "标识码不允许为空!")
+  private String token;//标识码
 
   public String getUsername() {
     return username;
@@ -78,5 +81,13 @@ public class WebLoginParameters {
 
   public void setCaptcha(String captcha) {
     this.captcha = captcha;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

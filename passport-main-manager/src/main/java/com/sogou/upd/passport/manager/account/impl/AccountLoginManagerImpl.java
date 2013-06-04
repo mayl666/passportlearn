@@ -105,11 +105,13 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
          //TODO 校验是否在账户黑名单或者IP黑名单之中
          //校验验证码
          if (accountService.loginFailedNumNeedCaptcha(username)) {
-           if (!this.checkCaptcha(username, loginParameters.getCaptcha())) {
+           String captchaCode = loginParameters.getCaptcha();
+           String token = loginParameters.getToken();
+           if (!this.checkCaptcha(username, captchaCode,token)) {
              return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
            }
          }
-
+         //判断登录用户类型
          AccountDomainEnum domainEnum=AccountDomainEnum.getAccountDomain(username);
 
          Account account =null;
@@ -138,7 +140,6 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
            }
          }else {
            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-
          }
        }catch (Exception e) {
          accountService.incLoginFailedNum(username);
@@ -147,15 +148,11 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
        }
     }
 
-    private boolean checkCaptcha(String passportId, String captcha) {
-        if (!this.loginNeedCaptcha(passportId)) {
-            return true;
-        }
-        if (StringUtil.isBlank(captcha)) {
-            return false;
-        }
-        //TODO 校验验证码
-
+    private boolean checkCaptcha(String passportId, String captcha,String token) {
+      //校验验证码
+      if (!accountService.checkCaptchaCodeIsVaild(token,captcha)) {
+        return false;
+      }
         return true;
     }
 
