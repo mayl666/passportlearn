@@ -65,6 +65,7 @@ public class OAuth {
     public static final String OAUTH_SCOPE = "scope";
     public static final String OAUTH_STATE = "state";
     public static final String OAUTH_DISPLAY = "display"; // 样式
+    public static final String OAUTH_TAOBAO_DISPLAY = "view"; // 样式
     public static final String OAUTH_GRANT_TYPE = "grant_type";
     public static final String OAUTH_RENREN_FORCELOGIN = "x_renew"; // renren强制登录
     public static final String OAUTH_SINA_FORCELOGIN = "forcelogin"; // sina强制登录
@@ -78,7 +79,6 @@ public class OAuth {
     public static final String OAUTH_EXPIRES_IN = "expires_in";
     public static final String OAUTH_REFRESH_TOKEN = "refresh_token";
     public static final String OAUTH_RTOKEN_EXPIRES_IN = "refreshToken_expires_in";
-
     public static final String OAUTH_TOKEN_TYPE = "token_type";
 
     // openId response params
