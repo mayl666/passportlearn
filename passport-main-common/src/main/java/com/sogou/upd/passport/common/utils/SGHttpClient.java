@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -31,6 +32,7 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-5-29
@@ -39,7 +41,7 @@ import java.security.cert.X509Certificate;
 public class SGHttpClient {
 
 
-    private static HttpClient httpClient;
+    private static final HttpClient httpClient;
 
     /**
      * 最大连接数
@@ -66,9 +68,9 @@ public class SGHttpClient {
     /**
      * 超过500ms的请求定义为慢请求
      */
-    private final static int SLOW_TIME=500;
+    private final static int SLOW_TIME = 500;
 
-    private static Logger perfLogger = Logger.getLogger("httpClientTimingLogger");
+    private static final Logger prefLogger = Logger.getLogger("httpClientTimingLogger");
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SGHttpClient.class);
 
@@ -77,6 +79,28 @@ public class SGHttpClient {
         HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
         HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
         httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
+    }
+
+    /**
+     * 执行http请求，并将返回结果从HttpTransformat转换为java bean
+     * @param requestModel 请求参数
+     * @param transformat 返回值的类型
+     * @param type 要得到的对象的类
+     * @param <T>  泛型最终得到的bean类型
+     * @return
+     */
+    public static <T> T executeBean(RequestModel requestModel,HttpTransformat transformat, java.lang.Class<T> type) {
+        String value=executeStr(requestModel);
+        T t=null;
+        switch (transformat){
+            case json:
+                t = JsonUtil.jsonToBean(value,type);
+                break;
+            case xml:
+
+                break;
+        }
+        return t;
     }
 
 
@@ -93,32 +117,30 @@ public class SGHttpClient {
             if (StringUtil.isBlank(charset)) {
                 charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
             }
-            String result = EntityUtils.toString(httpEntity, charset);
-            return result;
-        } catch (IOException e) {
-            throw new RuntimeException("http request error ", e);
-        } catch (ParseException e) {
+            return EntityUtils.toString(httpEntity, charset);
+        } catch (IOException | ParseException e) {
             throw new RuntimeException("http request error ", e);
         }
     }
 
     /**
      * 对外提供的执行请求的方法，主要添加了性能log
+     *
      * @param requestModel
      * @return
      */
-    public static HttpEntity execute(RequestModel requestModel){
+    public static HttpEntity execute(RequestModel requestModel) {
         //性能分析
-        StopWatch stopWatch = new Log4JStopWatch(perfLogger);
+        StopWatch stopWatch = new Log4JStopWatch(prefLogger);
         try {
-            HttpEntity httpEntity= executePrivate(requestModel);
-            stopWatch(stopWatch,requestModel.getUrl(),"success");
+            HttpEntity httpEntity = executePrivate(requestModel);
+            stopWatch(stopWatch, requestModel.getUrl(), "success");
             return httpEntity;
-        }catch(Exception e){
-            if(requestModel!=null){
-                stopWatch(stopWatch,requestModel.getUrl(),"failed");
-            }else{
-                stopWatch(stopWatch,"requestModel is null","failed");
+        } catch (Exception e) {
+            if (requestModel != null) {
+                stopWatch(stopWatch, requestModel.getUrl(), "failed");
+            } else {
+                stopWatch(stopWatch, "requestModel is null", "failed");
             }
             throw new RuntimeException("http request error ", e);
         }
@@ -143,7 +165,7 @@ public class SGHttpClient {
                 return httpResponse.getEntity();
             }
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CONTENT_CHARSET);
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() +" params:"+params);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params);
         } catch (IOException e) {
             throw new RuntimeException("http request error ", e);
         }
@@ -182,16 +204,17 @@ public class SGHttpClient {
 
     /**
      * 记录性能log的规则
+     *
      * @param stopWatch
      * @param tag
      * @param message
      */
-    private static void stopWatch(StopWatch stopWatch,String tag, String message){
-        if(logger.isInfoEnabled()){
-            stopWatch.stop(tag,message);
-        }else{
-            if("failed".equals(message+"")||stopWatch.getElapsedTime()>=SLOW_TIME){
-                stopWatch.stop(tag,message);
+    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+        if (logger.isInfoEnabled()) {
+            stopWatch.stop(tag, message);
+        } else {
+            if ("failed".equals(message + "") || stopWatch.getElapsedTime() >= SLOW_TIME) {
+                stopWatch.stop(tag, message);
             }
         }
     }
@@ -237,7 +260,6 @@ public class SGHttpClient {
             }
         }
     }
-
 
 
 }

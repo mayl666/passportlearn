@@ -10,7 +10,10 @@ public class ResponseModel {
     //返回码
     private int statusCode;
 
-    //
+    //当{statusCode}为302或者301时，用于表示要跳转的地址
+    private String location;
+
+    //返回的内容
     private String body;
 
 

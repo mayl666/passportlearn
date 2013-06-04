@@ -5,6 +5,8 @@ import org.apache.http.entity.StringEntity;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,6 +17,8 @@ import java.io.UnsupportedEncodingException;
  * Time: 下午10:24
  */
 public class RequestModelJSON extends RequestModel {
+
+    private static final Logger logger = LoggerFactory.getLogger(RequestModelJSON.class);
 
     public RequestModelJSON(String url) {
         super(url);
@@ -29,9 +33,8 @@ public class RequestModelJSON extends RequestModel {
     public HttpEntity getRequestEntity() {
         try {
             String json = new ObjectMapper().writeValueAsString(params);
-            HttpEntity httpEntity = new StringEntity(json, "text/xml",
+            return new StringEntity(json, "text/xml",
                     DEFAULT_ENCODE);
-            return httpEntity;
         } catch (UnsupportedEncodingException e) {
             logger.error("http param url encode error ", e);
             throw new RuntimeException("http param url encode error", e);

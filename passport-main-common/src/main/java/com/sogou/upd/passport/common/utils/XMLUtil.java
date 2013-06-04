@@ -4,8 +4,6 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.bean.BeanElement;
-import org.dom4j.tree.BaseElement;
 
 import java.util.Map;
 
@@ -54,4 +52,7 @@ public class XMLUtil {
         Document document = mapToXml(rootNode, map);
         return document.asXML();
     }
+
+
+
 }
