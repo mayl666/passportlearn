@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
@@ -7,12 +8,15 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.exception.MailException;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.EmailSenderService;
+import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,14 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     // private static final String PASSPORT_RESETPWD_EMAIL_URL="http://account.sogou.com/web/findpwd/checkemail?";
     // TODO:以下PASSPORT_RESETPWD_EMAIL_URL值仅供本机测试用
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
+    private static final String PASSPORT_HOST = "http://localhost";
+    private static final String PASSPORT_EMAIL_URL_PREFIX = PASSPORT_HOST + "/web/";
+    private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
+    private static final Map<AccountModuleEnum, String> subjects = buildSubjects();
+
+    private static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = CacheConstant.CACHE_PREFIX_PASSPORTID_EMAILSCODE;
+    private static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_SENDEMAILNUM;
+
     private static final String PASSPORT_RESETPWD_EMAIL_URL="http://localhost/web/findpwd/checkemail?";
     private static final String PASSPORT_BINDING_EMAIL_URL = "http://localhost/web/secure/checkbindemail?";
 
@@ -46,6 +58,60 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private RedisUtils redisUtils;
     @Autowired
     private MailUtils mailUtils;
+
+    private static Map<AccountModuleEnum, String> buildSubjects() {
+        Map<AccountModuleEnum, String> subjects = new HashedMap();
+        subjects.put(AccountModuleEnum.RESETPWD, "搜狗通行证找回密码服务");
+        subjects.put(AccountModuleEnum.SECURE, "搜狗通行证绑定邮箱服务");
+        subjects.put(AccountModuleEnum.REGISTER, "搜狗通行证新用户注册服务");
+        subjects.put(AccountModuleEnum.LOGIN, "搜狗通行证用户登录服务");
+        subjects.put(AccountModuleEnum.UNKNOWN, "搜狗通行证其他服务");
+
+        return subjects;
+    }
+
+    public boolean sendEmail(String passportId, int clientId, String address, AccountModuleEnum module)
+            throws ServiceException {
+        try {
+            String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
+            String activeUrl = PASSPORT_EMAIL_URL_PREFIX + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
+            activeUrl += "passport_id=" + passportId + "&client_id=" + clientId + "&scode=" + scode;
+
+            //发送邮件
+            ActiveEmail activeEmail = new ActiveEmail();
+            activeEmail.setActiveUrl(activeUrl);
+
+            //模版中参数替换
+            Map<String,Object> map= Maps.newHashMap();
+            map.put("activeUrl",activeUrl);
+            activeEmail.setMap(map);
+
+            activeEmail.setTemplateFile(module.getDirect() + ".vm");
+            activeEmail.setSubject(subjects.get(module));
+            activeEmail.setCategory(module.getDirect());
+            activeEmail.setToEmail(address);
+
+            mailUtils.sendEmail(activeEmail);
+
+            //连接失效时间
+            String cacheKey = CACHE_PREFIX_PASSPORTID_EMAILSCODE + module + "_" + passportId;
+            redisUtils.setWithinSeconds(cacheKey, scode, DateAndNumTimesConstant.TIME_TWODAY);
+
+            // 设置邮件发送次数限制
+            String resetCacheKey = CACHE_PREFIX_PASSPORTID_SENDEMAILNUM + module + "_"
+                                   + address + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            if (redisUtils.checkKeyIsExist(resetCacheKey)) {
+                redisUtils.increment(resetCacheKey);
+            } else {
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+            }
+            return true;
+        } catch(MailException me) {
+            return false;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
 
     @Override
     public boolean sendEmailForResetPwd(String uid, int clientId, String address) throws ServiceException {
@@ -72,8 +138,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
             //连接失效时间
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
-            redisUtils.set(cacheKey, token);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
+            redisUtils.setWithinSeconds(cacheKey, token, DateAndNumTimesConstant.TIME_TWODAY);
+            /*redisUtils.set(cacheKey, token);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);*/
 
             // 设置邮件发送次数限制
             String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM + address + "_"
@@ -81,8 +148,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
             } else {
-                redisUtils.set(resetCacheKey, "1");
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(resetCacheKey, "1");
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
 
         } catch(MailException me) {
@@ -97,16 +165,15 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN + uid;
-            if(redisUtils.checkKeyIsExist(cacheKey)){
-                String tokenCache = redisUtils.get(cacheKey);
-                if(tokenCache.equals(token)){
-                    return true;
-                }
+            String tokenCache = redisUtils.get(cacheKey);
+            if(!Strings.isNullOrEmpty(tokenCache) && tokenCache.equals(token)){
+                return true;
             }
+            return false;
         } catch (Exception e){
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -134,7 +201,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return true;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return true;
         }
     }
 
@@ -173,8 +241,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
             } else {
-                redisUtils.set(resetCacheKey, "1");
-                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(resetCacheKey, "1");
+                redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
             }
             return true;
         } catch(MailException me) {
@@ -191,16 +260,17 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public String checkEmailForBinding(String uid, int clientId, String token) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_BINDINGEMAILTOKEN + uid;
-            if (redisUtils.checkKeyIsExist(cacheKey)){
-                Map<String, String> mapToken = redisUtils.hGetAll(cacheKey);
+            Map<String, String> mapToken = redisUtils.hGetAll(cacheKey);
+            if (!mapToken.isEmpty()){
                 String tokenCache = mapToken.get("token");
-                if (tokenCache.equals(token)){
+                if (!Strings.isNullOrEmpty(tokenCache) && tokenCache.equals(token)){
                     return mapToken.get("email");
                 }
             }
             return null;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return null;
         }
     }
 
@@ -218,7 +288,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return true;
         } catch (Exception e) {
-            throw new ServiceException(e);
+            // throw new ServiceException(e);
+            return true;
         }
     }
 

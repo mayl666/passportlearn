@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common.lang;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -28,11 +30,7 @@ public class StringUtil {
    * 检查字符串是否为数字
    */
   public static boolean checkIsDigit(String str) {
-    if (str.matches("[0-9]*")) {
-      return true;
-    } else {
-      return false;
-    }
+    return str.matches("[0-9]*");
   }
 
   /*
@@ -214,4 +212,81 @@ public class StringUtil {
     }
     return false;
   }
+
+    /**
+     * 模糊处理字符串，除头部保留字符和尾部保留字符之外的字符变为"*****"
+     *
+     * @param str 待处理字符串
+     * @param head 头部保留字符数
+     * @param tail 尾部保留字符数
+     * @param separate 分隔字符串：只处理分隔字符串首次出现位置之前或之后的字符串
+     * @param mode 分隔符处理方式：1代表处理分隔串前字符串，2代表处理分隔串后字符串，其他功能暂未设计
+     *             目前只考虑首次查找分隔串位置。默认为方式1。
+     * @return 处理之后的字符串，若str为null或空串，返回null
+     * <p>processStr("abcde@sogou.com", 2, 1, "@", 1) 返回 ab*****e@sogou.com<br/>
+     * processStr("13812345678", 3, 2, null, 1) 返回 138*****78</p>
+     */
+    public static String processStr(String str, int head, int tail, String separate, int mode) {
+        String replacer = "*****";
+        if (str == null || str.length() == 0) {
+            return null;
+        }
+        if (separate == null || separate.length() == 0) {
+            // 没有分隔符
+            if (str.length() <  head + tail) {
+                // 字符串长度小于需要保留的字符个数
+                return replacer;
+            }
+            return str.substring(0, head) + replacer + str.substring(str.length()-tail);
+        } else {
+            int begin = 0, end = str.length();
+            switch (mode) {
+                case 1:
+                    end = str.indexOf(separate);
+                    if (end == -1) {
+                        end = str.length();
+                    }
+                    break;
+                case 2:
+                    begin = str.indexOf(separate) + separate.length();
+                    if (begin < separate.length()) {
+                        begin = 0;
+                    }
+                    break;
+                default:
+                    end = str.indexOf(separate);
+                    if (end == -1) {
+                        end = str.length();
+                    }
+                    break;
+            }
+            if (end - begin < head + tail) {
+                return str.substring(0, begin) + replacer + str.substring(end, str.length());
+            }
+            return str.substring(0, begin + head) + replacer + str.substring(end - tail, str.length());
+        }
+    }
+
+    /**
+     * 模糊处理邮件地址，只保留首次@出现位置前字符串的前两个和最后一个，如果不足则全为*****
+     * <p>processEmail("abcde@sogou.com") 返回 ab*****e@sogou.com</br>
+     * processEmail("abc@sogou.com")返回*****@sogou.com</p>
+     *
+     * @param email
+     * @return
+     */
+    public static String processEmail(String email) {
+        return processStr(email, 2, 1, "@", 1);
+    }
+
+    /**
+     * 模糊处理手机号码，只保留前三位和最后三位
+     * <p>processMobile("13800001234")返回 138*****234</p>
+     *
+     * @param mobile
+     * @return
+     */
+    public static String processMobile(String mobile) {
+        return processStr(mobile, 3, 3, null, 1);
+    }
 }

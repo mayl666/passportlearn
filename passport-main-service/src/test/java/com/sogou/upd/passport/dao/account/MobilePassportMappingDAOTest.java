@@ -43,5 +43,10 @@ public class MobilePassportMappingDAOTest extends BaseDAOTest {
         Assert.assertEquals(row, 1);
     }
 
-
+    @Test
+    public void testDeleteNull() {
+        // 测试删除时传入null的情况
+        int row = mobilePassportMappingDAO.deleteMobilePassportMapping(null);
+        Assert.assertEquals(row, 0);
+    }
 }

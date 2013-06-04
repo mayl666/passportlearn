@@ -16,7 +16,6 @@
     <url>http://maven.apache.org</url>
 
     <dependencies>
-
         <dependency>
             <artifactId>passport-main-service</artifactId>
             <groupId>sogou-passport</groupId>

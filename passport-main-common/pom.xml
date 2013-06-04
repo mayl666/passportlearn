@@ -54,12 +54,12 @@
             <version>1.8</version>
         </dependency>
 
-        <!--http components-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.1.2</version>
         </dependency>
+
     </dependencies>
 
     <build>
