@@ -89,7 +89,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, 1);
+        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
     }
 
     /**
@@ -107,7 +107,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, 2);
+        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
     }
 
     /*
@@ -278,7 +278,7 @@ public class AccountSecureController {
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();
-        return accountSecureManager.resetPasswordBySecureCode(passportId, clientId, password, scode);
+        return accountSecureManager.resetPasswordByScode(passportId, clientId, password, scode);
     }
 
     /**

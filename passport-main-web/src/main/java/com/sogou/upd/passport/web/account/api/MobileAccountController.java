@@ -65,12 +65,8 @@ public class MobileAccountController extends BaseController {
       return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
     }
     //验证client_id
-    int clientId;
-    try {
-      clientId = Integer.parseInt(reqParams.getClient_id());
-    } catch (NumberFormatException e) {
-      return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
-    }
+    int clientId=Integer.parseInt(reqParams.getClient_id());
+
     //检查client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
       return Result.buildError(ErrorUtil.INVALID_CLIENTID);
