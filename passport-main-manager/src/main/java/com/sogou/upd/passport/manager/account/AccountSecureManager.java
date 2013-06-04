@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
@@ -35,6 +36,19 @@ public interface AccountSecureManager {
      * 重发验证码时更新缓存状态
      */
     public Result updateSmsCacheInfo(String cacheKey, int clientId);
+
+    /**
+     * 检查发送邮件限制
+     *
+     * @param passportId
+     * @param clientId
+     * @param module
+     * @param email
+     * @return
+     * @throws Exception
+     */
+    public Result checkLimitForSendEmail(String passportId, int clientId, AccountModuleEnum module,
+                                         String email) throws Exception;
 
     /**
      * 手机用户找回密码
@@ -75,10 +89,10 @@ public interface AccountSecureManager {
      *
      * @param passportId
      * @param clientId
-     * @param mode 邮件选择方式，1为注册邮箱，其他为绑定邮箱
+     * @param useRegEmail 邮件选择方式，true为注册邮箱，false为绑定邮箱
      * @throws Exception
      */
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, int mode) throws Exception;
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail) throws Exception;
 
 
     /**
@@ -132,7 +146,7 @@ public interface AccountSecureManager {
      * @return
      * @throws Exception
      */
-    public Result resetPasswordBySecureCode(String passportId, int clientId, String password,
+    public Result resetPasswordByScode(String passportId, int clientId, String password,
                                             String secureCode) throws Exception;
 
     /**

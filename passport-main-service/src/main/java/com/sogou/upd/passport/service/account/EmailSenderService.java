@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 
 /**
@@ -7,83 +8,60 @@ import com.sogou.upd.passport.exception.ServiceException;
  * File | Settings | File Templates.
  */
 public interface EmailSenderService {
+
     /**
-     * 发送密码重置申请邮件
+     * 发送邮件链接至email
      *
-     * @param uid
+     * @param passportId
      * @param clientId
-     * @param address
-     */
-    public boolean sendEmailForResetPwd(String uid, int clientId, String address) throws ServiceException;
-
-    /**
-     * 验证密码重置申请邮件
-     *
-     * @param uid
-     * @param clientId
-     * @param token
-     */
-    public boolean checkEmailForResetPwd(String uid, int clientId, String token) throws ServiceException;
-
-    /**
-     * 删除邮件链接token缓存
-     * @param uid
-     * @param clientId
-     * @return
-     * @throws ServiceException
-     */
-    public boolean deleteEmailCacheResetPwd(String uid, int clientId) throws ServiceException;
-
-    /**
-     * 检查邮件发送次数限制
+     * @param module
      * @param email
-     * @param clientId
-     * @return 不超过限制，返回true；超过，返回false
-     * @throws ServiceException
-     */
-    public boolean checkSendEmailForPwdLimited(String email, int clientId) throws ServiceException;
-
-    /**
-     * 发送绑定邮箱验证邮件
-     *
-     * @param uid 目前为passportId
-     * @param clientId
-     * @param address 待绑定邮箱
+     * @param saveEmail 是否在缓存中存储email，如绑定新邮箱需要存储新邮箱地址
      * @return
      * @throws ServiceException
      */
-    public boolean sendEmailForBinding(String uid, int clientId, String address) throws ServiceException;
+    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String email, boolean saveEmail)
+            throws ServiceException;
 
     /**
-     * 检查邮件发送次数限制
+     * 检查邮件链接中的scode
      *
+     * @param passportId
+     * @param clientId
+     * @param module
+     * @param scode
+     * @param saveEmail
+     * @return <p>若saveEmail为true，成功则返回存储的email；若saveEmail为false，成功则返回passportId。
+     *          <br/>失败返回null</p>
+     * @throws ServiceException
+     */
+    public String checkScodeForEmail(String passportId, int clientId, AccountModuleEnum module, String scode, boolean saveEmail)
+            throws ServiceException;
+
+
+    /**
+     * 检查邮件发送限制次数
+     *
+     * @param passportId
+     * @param clientId
+     * @param module
      * @param email
-     * @param clientId
      * @return
      * @throws ServiceException
      */
-    public boolean checkSendEmailNumForBinding(String email, int clientId) throws ServiceException;
+    public boolean checkLimitForSendEmail(String passportId, int clientId, AccountModuleEnum module, String email)
+            throws ServiceException;
 
     /**
-     * 验证邮件token，返回待绑定邮箱
+     * 删除邮件链接scode缓存
      *
-     * @param uid
+     * @param passportId
      * @param clientId
-     * @param token
-     * @return new email for binding
-     * @throws ServiceException
-     */
-    String checkEmailForBinding(String uid, int clientId, String token) throws ServiceException;
-
-
-
-    /**
-     * 删除验证token缓存
-     *
-     * @param uid
-     * @param clientId
+     * @param module
      * @return
      * @throws ServiceException
      */
-    boolean deleteEmailCacheForBinding(String uid, int clientId) throws ServiceException;
+    public boolean deleteScodeCacheForEmail(String passportId, int clientId, AccountModuleEnum module)
+            throws ServiceException;
+
 }
