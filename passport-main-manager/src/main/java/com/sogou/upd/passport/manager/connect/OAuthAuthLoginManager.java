@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.manager.connect;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.ConnectLoginParams;
+import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.dataobject.OAuthTokenDO;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOBindTokenRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 
 import javax.servlet.http.HttpServletRequest;

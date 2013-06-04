@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.manager.form;
+package com.sogou.upd.passport.manager.form.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;

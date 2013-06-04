@@ -9,7 +9,8 @@ import java.util.Date;
  * User: mayan Date: 13-3-22 Time: 下午2:01 To change this template use File | Settings | File
  * Templates.
  */
-public class Account {
+public class
+        Account {
 
     public static final int NEW_ACCOUNT_VERSION = 1; // sogou-passport新生成的账号
     public static final int OLD_ACCOUNT_VERSION = 2; // sohu-passport迁移过来的账号

@@ -1,5 +1,9 @@
 package com.sogou.upd.passport.oauth2.openresource.dataobject;
 
+/**
+ * 人人OAuth授权返回的token对象
+ * @author shipengzhi
+ */
 public class RenrenOAuthTokenDO {
 
 	private String access_token;
@@ -42,7 +46,7 @@ public class RenrenOAuthTokenDO {
 		this.user = user;
 	}
 
-	// �ڲ���,Jsonת����.
+	// 用户简要信息JSON
 	public class User {
 
 		private String id; // openid

@@ -19,6 +19,8 @@ public abstract class OAuthAccessTokenResponse extends OAuthClientResponse {
 
     public abstract String getOpenid();
 
+    public abstract String getNickName();
+
     public abstract OAuthTokenDO getOAuthToken();
 
     public String getBody() {

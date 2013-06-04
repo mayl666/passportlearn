@@ -11,7 +11,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
-import com.sogou.upd.passport.manager.form.ConnectLoginParams;
+import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.Account;
@@ -164,7 +164,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     .authorizationLocation(requestUrl).setAppKey(appkey)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay()).setForceLogin(connectLoginParams.isForce(), provider)
+                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForce(), provider)
                     .setState(uuid)
                     .buildQueryMessage(OAuthAuthzClientRequest.class);
         } else {  // 客户端应用采用Implicit Flow
@@ -173,7 +173,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     .authorizationLocation(requestUrl).setAppKey(appkey)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.TOKEN).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay()).setForceLogin(connectLoginParams.isForce(), provider)
+                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForce(), provider)
                     .setState(uuid)
                     .buildQueryMessage(OAuthAuthzClientRequest.class);
         }

@@ -7,7 +7,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
-import com.sogou.upd.passport.manager.form.ConnectLoginParams;
+import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
@@ -69,12 +69,8 @@ public class ConnectLoginController extends BaseConnectController {
         ModelAndView defaultMV = new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
         int provider = AccountTypeEnum.getProvider(connectLoginParams.getProvider());
         //验证client_id
-        int clientId;
-        try {
-            clientId = Integer.parseInt(connectLoginParams.getClient_id());
-        } catch (NumberFormatException e) {
-            return defaultMV;
-        }
+        int clientId = Integer.parseInt(connectLoginParams.getClient_id());
+
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             return defaultMV;

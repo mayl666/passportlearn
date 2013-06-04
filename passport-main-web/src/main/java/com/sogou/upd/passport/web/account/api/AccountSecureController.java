@@ -342,7 +342,7 @@ public class AccountSecureController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/bind/modifymobile", method = RequestMethod.POST)
+    @RequestMapping(value = "/bind/", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     @LoginRequired
     public Object modifyBindMobile(AccountSmsNewScodeParams params) throws Exception {
