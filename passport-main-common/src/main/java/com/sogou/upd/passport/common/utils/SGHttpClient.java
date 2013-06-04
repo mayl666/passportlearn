@@ -83,21 +83,22 @@ public class SGHttpClient {
 
     /**
      * 执行http请求，并将返回结果从HttpTransformat转换为java bean
+     *
      * @param requestModel 请求参数
-     * @param transformat 返回值的类型
-     * @param type 要得到的对象的类
-     * @param <T>  泛型最终得到的bean类型
+     * @param transformat  返回值的类型
+     * @param type         要得到的对象的类
+     * @param <T>          泛型最终得到的bean类型
      * @return
      */
-    public static <T> T executeBean(RequestModel requestModel,HttpTransformat transformat, java.lang.Class<T> type) {
-        String value=executeStr(requestModel);
-        T t=null;
-        switch (transformat){
+    public static <T> T executeBean(RequestModel requestModel, HttpTransformat transformat, java.lang.Class<T> type) {
+        String value = executeStr(requestModel).trim();
+        T t = null;
+        switch (transformat) {
             case json:
-                t = JsonUtil.jsonToBean(value,type);
+                t = JsonUtil.jsonToBean(value, type);
                 break;
             case xml:
-
+                t = XMLUtil.xmlToBean(value, type);
                 break;
         }
         return t;
@@ -117,7 +118,11 @@ public class SGHttpClient {
             if (StringUtil.isBlank(charset)) {
                 charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
             }
-            return EntityUtils.toString(httpEntity, charset);
+            String value = EntityUtils.toString(httpEntity, charset);
+            if (!StringUtil.isBlank(value)) {
+                value = value.trim();
+            }
+            return value;
         } catch (IOException | ParseException e) {
             throw new RuntimeException("http request error ", e);
         }
@@ -168,6 +173,8 @@ public class SGHttpClient {
             throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params);
         } catch (IOException e) {
             throw new RuntimeException("http request error ", e);
+        }finally {
+//            httpRequest.
         }
     }
 
