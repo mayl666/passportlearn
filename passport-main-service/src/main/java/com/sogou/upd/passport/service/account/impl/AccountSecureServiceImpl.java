@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
@@ -56,8 +58,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         try {
             String secureCode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
             redisUtils.setWithinSeconds(cacheKey, secureCode, DateAndNumTimesConstant.SECURECODE_VALID);
-            /* redisUtils.set(cacheKey, secureCode);
-            redisUtils.expire(cacheKey, DateAndNumTimesConstant.SECURECODE_VALID);*/
             return secureCode;
         } catch (Exception e) {
             redisUtils.delete(cacheKey);
@@ -70,10 +70,13 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         try {
             String cacheKey = prefix + passportId + "_" + clientId;
             boolean flag = false;
-            if (redisUtils.checkKeyIsExist(cacheKey) && redisUtils.get(cacheKey).equals(secureCode)) {
-                flag = true;
+            String scode = redisUtils.get(cacheKey);
+            if (!Strings.isNullOrEmpty(scode)) {
+                if (scode.equals(secureCode)) {
+                    flag = true;
+                }
+                redisUtils.delete(scode);
             }
-            redisUtils.delete(cacheKey);
             return flag;
         } catch (Exception e) {
             throw new ServiceException(e);
