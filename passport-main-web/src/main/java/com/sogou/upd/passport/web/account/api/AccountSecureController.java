@@ -6,20 +6,19 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.account.AccountLoginManager;
+import com.sogou.upd.passport.manager.account.AccountCheckManager;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.manager.form.AccountAnswerCaptParams;
-import com.sogou.upd.passport.manager.form.AccountBindEmailParams;
-import com.sogou.upd.passport.manager.form.AccountPwdParams;
-import com.sogou.upd.passport.manager.form.AccountPwdScodeParams;
-import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
-import com.sogou.upd.passport.manager.form.AccountSmsNewScodeParams;
-import com.sogou.upd.passport.manager.form.AccountSmsScodeParams;
-import com.sogou.upd.passport.manager.form.BaseAccountParams;
-import com.sogou.upd.passport.manager.form.UserModuleTypeParams;
+import com.sogou.upd.passport.web.form.AccountAnswerCaptParams;
+import com.sogou.upd.passport.web.form.AccountBindEmailParams;
+import com.sogou.upd.passport.web.form.AccountPwdParams;
+import com.sogou.upd.passport.web.form.AccountPwdScodeParams;
+import com.sogou.upd.passport.web.form.AccountSecureInfoParams;
+import com.sogou.upd.passport.web.form.AccountSmsNewScodeParams;
+import com.sogou.upd.passport.web.form.AccountSmsScodeParams;
+import com.sogou.upd.passport.web.form.BaseAccountParams;
+import com.sogou.upd.passport.web.form.UserModuleTypeParams;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.action.AccountSecureAction;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 
@@ -45,6 +44,8 @@ public class AccountSecureController {
     private AccountManager accountManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
+    @Autowired
+    private AccountCheckManager accountCheckManager;
     @Autowired
     private HostHolder hostHolder;
 
@@ -269,7 +270,7 @@ public class AccountSecureController {
      */
     @RequestMapping(value = {"/findpwd/mobile", "/findpwd/ques"}, method = RequestMethod.POST)
     @ResponseBody
-    public Object resetPasswordByQues(AccountPwdScodeParams params) throws Exception {
+    public Object resetPasswordByScode(AccountPwdScodeParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -278,7 +279,14 @@ public class AccountSecureController {
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();
-        return accountSecureManager.resetPasswordByScode(passportId, clientId, password, scode);
+
+        // 第一步，检测scode
+        if (!accountCheckManager.checkScodeForResetPwd(passportId, clientId, scode)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
+        }
+
+        // 第二步，修改密码
+        return accountSecureManager.resetPassword(passportId, clientId, password);
     }
 
     /**

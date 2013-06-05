@@ -7,8 +7,8 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.manager.form.AccountPwdScodeParams;
-import com.sogou.upd.passport.manager.form.AccountScodeParams;
+import com.sogou.upd.passport.web.form.AccountPwdScodeParams;
+import com.sogou.upd.passport.web.form.AccountScodeParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 
