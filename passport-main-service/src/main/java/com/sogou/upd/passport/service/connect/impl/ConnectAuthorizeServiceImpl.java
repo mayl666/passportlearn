@@ -63,6 +63,7 @@ public class ConnectAuthorizeServiceImpl implements ConnectAuthorizeService {
             request = builder.buildQueryMessage(OAuthClientRequest.class);
             oauthResponse = OAuthHttpClient.execute(request, OAuth.HttpMethod.GET, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.TAOBAO.getValue()) {
+            //taobao获取access_token接口，只允许POST方式
             request = builder.buildBodyMessage(OAuthClientRequest.class);
             oauthResponse = OAuthHttpClient.execute(request, OAuth.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
         } else {

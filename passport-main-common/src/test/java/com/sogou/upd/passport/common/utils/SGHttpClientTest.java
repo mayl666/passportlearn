@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import com.thoughtworks.xstream.XStream;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -156,6 +157,26 @@ public class SGHttpClientTest {
         }
         long time=System.currentTimeMillis()-startTime;
         System.out.println(time);
+    }
+
+    @Test
+    public void testXmlToBean(){
+        String xml=
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                        "<com.sogou.upd.passport.common.utils.Result>" +
+                        "<uid>26f15b58d0c54d5s</uid>" +
+                        "<status>1</status>" +
+                        "<userid>upd_test@sogou.com</userid>" +
+                        "<uuid>26f15b58d0c54d5s</uuid>" +
+                        "<uniqname></uniqname>" +
+                        "</com.sogou.upd.passport.common.utils.Result>";
+
+        XStream xstream = new XStream();
+        //注册将pojo转为map的coverter
+        xstream.registerConverter(new PojoMapConverter());
+        Result result=new Result();
+        xstream.fromXML(xml,result);
+        System.out.println(result.getStatus());
     }
 
 }

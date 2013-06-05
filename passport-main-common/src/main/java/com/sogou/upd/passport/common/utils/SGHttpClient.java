@@ -173,8 +173,6 @@ public class SGHttpClient {
             throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params);
         } catch (IOException e) {
             throw new RuntimeException("http request error ", e);
-        }finally {
-//            httpRequest.
         }
     }
 
