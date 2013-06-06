@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.oauth2.openresource.dataobject;
+package com.sogou.upd.passport.oauth2.openresource.vo;
 
 /**
  * 淘宝OAuth授权返回的token对象
@@ -6,13 +6,13 @@ package com.sogou.upd.passport.oauth2.openresource.dataobject;
  * Date: 13-5-28
  * Time: 上午11:42
  */
-public class TaobaoOAuthTokenDO {
+public class TaobaoOAuthTokenVO {
 
     private String access_token;
     private String token_type;   //Access token的类型目前只支持bearer
-    private long expires_in;   //Access token过期时间
+    private String expires_in;   //Access token过期时间
     private String refresh_token;  //可选
-    private long re_expires_in;   //可选，Refresh token过期时间
+    private String re_expires_in;   //可选，Refresh token过期时间
     private String taobao_user_nick;   //淘宝账号昵称
     private String taobao_user_id;  //淘宝帐号对应id
 
@@ -87,11 +87,11 @@ public class TaobaoOAuthTokenDO {
         this.taobao_user_nick = taobao_user_nick;
     }
 
-    public long getRe_expires_in() {
+    public String getRe_expires_in() {
         return re_expires_in;
     }
 
-    public void setRe_expires_in(long re_expires_in) {
+    public void setRe_expires_in(String re_expires_in) {
         this.re_expires_in = re_expires_in;
     }
 
@@ -103,11 +103,11 @@ public class TaobaoOAuthTokenDO {
         this.refresh_token = refresh_token;
     }
 
-    public long getExpires_in() {
+    public String getExpires_in() {
         return expires_in;
     }
 
-    public void setExpires_in(long expires_in) {
+    public void setExpires_in(String expires_in) {
         this.expires_in = expires_in;
     }
 

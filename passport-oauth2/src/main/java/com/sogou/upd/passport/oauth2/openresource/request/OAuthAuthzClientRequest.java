@@ -6,7 +6,7 @@ import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 
 /**
- * 第三方OAuth授权请求，包括：
+ * Passport访问开放平台进行OAuth授权请求类，包括：
  * 1.用户验证请求，获取code；
  * 2.用code获取access_token（含用refresh_token刷新access_token）；
  * 3.用access_token获取openid
@@ -172,11 +172,6 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
 
         protected OpenidRequestBuilder(String url) {
             super(url);
-        }
-
-        public OpenidRequestBuilder setAccessToken(String accessToken) {
-            this.parameters.put(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
-            return this;
         }
     }
 

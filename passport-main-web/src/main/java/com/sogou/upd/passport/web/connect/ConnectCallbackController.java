@@ -52,7 +52,7 @@ public class ConnectCallbackController {
 //            OAuthAccessTokenResponse oauthResponse = authService.obtainAccessTokenByCode(
 //                    connectName, code, config, consumer);
 //
-//            OAuthToken oauthToken = oauthResponse.getOAuthToken();
+//            OAuthTokenVO oauthToken = oauthResponse.getOAuthTokenVO();
 
         } else {
             oar = OAuthAuthzClientResponse.oauthTokenAuthzResponse(req);

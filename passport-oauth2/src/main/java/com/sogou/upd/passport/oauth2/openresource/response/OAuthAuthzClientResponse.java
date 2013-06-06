@@ -22,7 +22,7 @@ public class OAuthAuthzClientResponse extends OAuthClientResponse {
 
     protected OAuthAuthzClientResponse(HttpServletRequest request, AbstractClientValidator validator) {
         this.request = request;
-        @SuppressWarnings("unchecked") Map<String, String[]> params = request.getParameterMap();
+        Map<String, String[]> params = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : params.entrySet()) {
             String key = entry.getKey();
             String[] values = entry.getValue();
@@ -55,7 +55,7 @@ public class OAuthAuthzClientResponse extends OAuthClientResponse {
 
     public Long getExpiresIn() {
         String value = getParam(OAuth.OAUTH_EXPIRES_IN);
-        return value == null? null: Long.valueOf(value);
+        return value == null ? null : Long.valueOf(value);
     }
 
     public String getRefreshToken() {
@@ -78,7 +78,7 @@ public class OAuthAuthzClientResponse extends OAuthClientResponse {
         return getParam(OAuth.OAUTH_STATE);
     }
 
-    public String getTokenType(){
+    public String getTokenType() {
         return getParam(OAuth.OAUTH_TOKEN_TYPE);
     }
 
