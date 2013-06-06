@@ -97,56 +97,91 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     }
 
     @Override
-    public Result accountLogin(WebLoginParameters loginParameters) {
-      Result result = null;
-      String username=null;
-       try {
-         username= loginParameters.getUsername();
-         String password=loginParameters.getPassword();
-         //TODO 校验是否在账户黑名单或者IP黑名单之中
-         //校验验证码
-         if (accountService.loginFailedNumNeedCaptcha(username)) {
-           String captchaCode = loginParameters.getCaptcha();
-           String token = loginParameters.getToken();
-           if (!this.checkCaptcha(username, captchaCode,token)) {
-             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-           }
-         }
-         //判断登录用户类型
-         AccountDomainEnum domainEnum=AccountDomainEnum.getAccountDomain(username);
+    public Result accountLogin(WebLoginParameters loginParameters,String ip) {
+        String username = null;
+        try {
+            username = loginParameters.getUsername();
+            Account account = null;
+            //判断登录用户类型
+            AccountDomainEnum domainEnum = AccountDomainEnum.getAccountDomain(username);
+            switch (domainEnum) {
+                case PHONE:
+                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
+                    if (Strings.isNullOrEmpty(passportId)) {
+                        return doUserNotExist(username,ip);
+                    }
+                    account = accountService.queryAccountByPassportId(passportId);
+                    break;
+                case SOHU:
+                    account = accountService.queryAccountByPassportId(username);
+                    break;
+            }
+            if (account == null) {
+                return doUserNotExist(username,ip);
+            }
 
-         Account account =null;
-         switch (domainEnum){
-           case PHONE:
-             String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
-             //校验用户名和密码是否匹配
-             account = accountService.queryAccountByPassportId(passportId);
-             break;
-           case SOHU:
-             account=accountService.queryAccountByPassportId(username);
-             break;
-         }
+            //校验验证码
+            if (accountService.loginFailedNumNeedCaptcha(username,ip)) {
+                String captchaCode = loginParameters.getCaptcha();
+                String token = loginParameters.getToken();
+                if (!this.checkCaptcha(username, captchaCode, token)) {
+                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                }
+            }
 
-         if (account != null) {
-           String storedPwd=account.getPasswd();
-           if (PwdGenerator.verify(password, false, storedPwd)){
-             //todo 登录成功种cookie
-             //写缓存
+            //检查该账号是否为正常账号
+            if (!AccountHelper.isNormalAccount(account)) {
+                if (AccountHelper.isDisabledAccount(account)) {
+                    //登陆账号未激活
+                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
+                } else {
+                    //登陆账号被封杀
+                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                }
+            }
 
-             return Result.buildSuccess("登录成功");
+            //校验是否在账户黑名单或者IP黑名单之中
+            if (accountService.checkUserInBlackList(username, ip)){
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            }
 
-           }else {
-             accountService.incLoginFailedNum(username);
-             return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
-           }
-         }else {
-           return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-         }
-       }catch (Exception e) {
-         accountService.incLoginFailedNum(username);
-         logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
-         return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-       }
+            String storedPwd = account.getPasswd();
+            String password = loginParameters.getPassword();
+            if (PwdGenerator.verify(password, false, storedPwd)) {
+                //todo 登录成功种cookie
+
+
+                //写缓存
+                accountService.incLoginSuccessNum(username,ip);
+                return Result.buildSuccess("登录成功");
+
+            } else {
+                accountService.incLoginFailedNum(username,ip);
+                return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
+            }
+
+        } catch (Exception e) {
+            accountService.incLoginFailedNum(username,ip);
+            logger.error("accountLogin fail,username:" + loginParameters.getUsername(), e);
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+        }
+    }
+
+    private Result doUserNotExist(String username, String ip) {
+        //记录登陆失败操作
+        accountService.incLoginFailedNum(username, ip);
+
+        Result result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        /*
+        * 用户在登陆的时候是否需要输入验证码
+        * 目前的策略
+        * 1.连续3次输入密码错误
+        * 2.ip超过100次
+         */
+        if (accountService.loginFailedNumNeedCaptcha(username, ip)) {
+            result.addDefaultModel("needCaptcha", 1);
+        }
+        return result;
     }
 
     private boolean checkCaptcha(String passportId, String captcha,String token) {
@@ -163,11 +198,12 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
      * 1.连续3次输入密码错误
      *
      * @param passportId
+     * @param ip
      * @return
      */
     @Override
-    public boolean loginNeedCaptcha(String passportId) {
-        boolean loginFailed = accountService.loginFailedNumNeedCaptcha(passportId);
+    public boolean loginNeedCaptcha(String passportId,String ip) {
+        boolean loginFailed = accountService.loginFailedNumNeedCaptcha(passportId,ip);
         return loginFailed;
     }
 }
