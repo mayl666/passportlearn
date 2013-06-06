@@ -64,11 +64,12 @@ public class WebAccountController extends BaseController {
     }
 
     //判断用户是否存在
-    String username=loginParams.getUsername();
-    if(!accountManager.isAccountExists(username)){
-        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-    }
-    Result result = accountLoginManager.accountLogin(loginParams);
+//    String username=loginParams.getUsername();
+//    if(!accountManager.isAccountExists(username)){
+//        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+//    }
+    String ip = getIp(request);
+    Result result = accountLoginManager.accountLogin(loginParams,ip);
 
 
     return result;
