@@ -57,6 +57,9 @@ public class LoginController extends BaseController {
         return "退出登录成功";
     }
 
+
+
+
     /**
      * web端的登陆接口
      *
@@ -97,4 +100,5 @@ public class LoginController extends BaseController {
         String html= SGHttpClient.executeStr(requestModel);
         return html;
     }
+
 }

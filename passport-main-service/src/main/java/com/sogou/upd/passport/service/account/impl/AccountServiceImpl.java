@@ -190,7 +190,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean checkResetPwdLimited(String passportId) throws ServiceException {
+    public boolean checkLimitResetPwd(String passportId) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
                               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);

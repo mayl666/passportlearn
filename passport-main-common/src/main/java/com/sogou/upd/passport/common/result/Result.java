@@ -25,7 +25,8 @@ public class Result {
 
     public static final String DEFAULT_MODEL_KEY = "value";
 
-    public Result() {
+    public Result(){
+        super();
     }
 
     /**
@@ -113,6 +114,19 @@ public class Result {
     /**
      * 根据错误码返回result对象
      *
+     * @param statusText 成功信息描述
+     * @return 含错误码及相应的提示信息
+     */
+    public static Result buildSuccess(String statusText,Map<String, Object> data) {
+        Result result = new Result();
+        result.setStatus("0");
+        result.data=data;
+        return result;
+    }
+
+    /**
+     * 根据错误码返回result对象
+     *
      * @param status 或错误码
      * @return 含错误码及相应的提示信息
      */
@@ -138,4 +152,8 @@ public class Result {
         return result;
     }
 
+    public class buildSuccess extends Result {
+        public buildSuccess(String s, Map<String, Object> data) {
+        }
+    }
 }

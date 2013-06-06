@@ -50,7 +50,9 @@ public class OAuth {
 
     public static final class ContentType {
         public static final String URL_ENCODED = "application/x-www-form-urlencoded";
+        public static final String UPLOAD_FILE = "multipart/form-data";
         public static final String JSON = "application/json";
+        public static final String HTML_TEXT = "text/html";
     }
 
     // Authorization request params

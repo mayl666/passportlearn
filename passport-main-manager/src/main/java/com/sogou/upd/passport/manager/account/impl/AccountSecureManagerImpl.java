@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
@@ -11,11 +11,9 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
-import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
@@ -190,8 +188,8 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     @Override
-    public Result checkLimitForSendEmail(String passportId, int clientId, AccountModuleEnum module,
-            String email) throws Exception {
+    public Result checkLimitSendEmail(String passportId, int clientId, AccountModuleEnum module,
+                                      String email) throws Exception {
         try {
             if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
@@ -202,43 +200,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
-
-/*    public Result sendEmail(String passportId, int clientId, AccountModuleEnum module, String email)
-            throws Exception {
-        try {
-            if (accountService.queryNormalAccount(passportId) == null) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            } // TODO:检测相关是否单独拉出？
-            boolean saveEmail = false;
-            String emailSend = email;
-            switch (module) {
-                // 是否需要保存发送邮箱
-                case REGISTER: // 注册邮箱，发新邮箱
-                case SECURE: // 绑定密保邮箱，发新邮箱
-                    saveEmail = true;
-                    break;
-                case RESETPWD:
-                    AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-                    if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getEmail())) {
-                        return Result.buildError(ErrorUtil.NOTHAS_BINDINGEMAIL);
-                    } else {
-                        String emailBind = accountInfo.getEmail();
-                        return sendEmailResetPwd(passportId, clientId, module, emailBind, false);
-                    }
-
-                default:
-                    break;
-            }
-
-            if (!emailSenderService.sendEmail(passportId, clientId, module, email, saveEmail)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
-            }
-            return Result.buildSuccess(module.getDirect() + "邮件发送成功");
-        } catch (ServiceException e) {
-            logger.error("send email fail:", e);
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-    }*/
 
     @Override
     public Result findPassword(String mobile, int clientId) {
@@ -271,8 +232,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
 
         try {
             //验证手机号码与验证码是否匹配
-            boolean
-                    checkSmsInfo =
+            boolean checkSmsInfo =
                     mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
             if (!checkSmsInfo) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
@@ -288,7 +248,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
 
-            if (!accountService.checkResetPwdLimited(passportId)) {
+            if (!accountService.checkLimitResetPwd(passportId)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
 
@@ -312,9 +272,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            }
-            if (!accountService.checkResetPwdLimited(passportId)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
             String mobile = account.getMobile();
@@ -342,8 +299,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                     accountSecureInfoVO.setSec_ques(question);
                 }
             }
-            if (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum
-                    .OTHER) {
+            if (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.OTHER) {
                 if (doProcess) {
                     String emailRegProcessed = StringUtil.processEmail(passportId);
                     accountSecureInfoVO.setReg_email(emailRegProcessed);
@@ -351,7 +307,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                     accountSecureInfoVO.setReg_email(passportId);
                 }
             }
-            return Result.buildSuccess("查询成功", "data", accountSecureInfoVO);
+            return Result.buildSuccess("查询成功", "sec_info", accountSecureInfoVO);
         } catch (ServiceException e) {
             logger.error("query account_secure_info Fail:", e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -359,12 +315,12 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     }
 
     private Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
-            String email, boolean saveEmail) throws Exception {
+            String email) throws Exception {
         try {
             if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
             }
-            if (!emailSenderService.sendEmail(passportId, clientId, module, email, saveEmail)) {
+            if (!emailSenderService.sendEmail(passportId, clientId, module, email, false)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             }
             return Result.buildSuccess("重置密码申请邮件发送成功");
@@ -381,9 +337,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            }
-            if (!accountService.checkResetPwdLimited(passportId)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
             if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getAnswer())) {
@@ -407,9 +360,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result resetPasswordByMobile(String passportId, int clientId, String password,
                                         String smsCode) throws Exception {
         try {
-            if (!accountService.checkResetPwdLimited(passportId)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
-            }
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -488,9 +438,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
     public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail)
             throws Exception {
         try {
-            if (accountService.queryNormalAccount(passportId) == null) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            }
             AccountModuleEnum module = AccountModuleEnum.RESETPWD;
             if (useRegEmail) {
                 // 使用注册邮箱
@@ -498,7 +445,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                                          AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    return sendEmailResetPwd(passportId, clientId, module, passportId, false);
+                    return sendEmailResetPwd(passportId, clientId, module, passportId);
                 } else {
                     return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED);
                 }
@@ -509,7 +456,7 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                     return Result.buildError(ErrorUtil.NOTHAS_BINDINGEMAIL);
                 } else {
                     String emailBind = accountInfo.getEmail();
-                    return sendEmailResetPwd(passportId, clientId, module, emailBind, false);
+                    return sendEmailResetPwd(passportId, clientId, module, emailBind);
                 }
             }
         } catch (ServiceException e) {
@@ -549,9 +496,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            }
-            if (!accountService.checkResetPwdLimited(passportId)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             }
             String resultStr = emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, saveEmail);
             if (Strings.isNullOrEmpty(resultStr)) {
@@ -624,9 +568,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                                             String scode) throws Exception {
         // TODO:启用后，删除ByMobile和ByQues
         try {
-            if (!accountService.checkResetPwdLimited(passportId)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
-            }
             if (!accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode)) {
                 return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             }
@@ -641,6 +582,26 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             // TODO:检验checkCode，是否区分密保还是手机验证码——未区分
             // TODO:在修改绑定手机时，能否重用checkCode代码——未重用
             // TODO:能否将邮件产生token的代码提取出来统一产生checkCode?——暂时未用，可考虑
+        } catch (ServiceException e) {
+            logger.error("reset password Fail:", e);
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+    }
+
+    /*
+     * 只修改密码加检测限制
+     */
+    @Override
+    public Result resetPassword(String passportId, int clientId, String password) throws Exception {
+        try {
+            Account account = accountService.queryNormalAccount(passportId);
+            if (account == null) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
+            if (!accountService.resetPassword(account, password, false)) {
+                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
+            }
+            return Result.buildSuccess("重置密码成功！");
         } catch (ServiceException e) {
             logger.error("reset password Fail:", e);
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -664,9 +625,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
             Account account = accountService.verifyUserPwdVaild(passportId, password, false);
             if (account == null) {
                 return Result.buildError(ErrorUtil.USERNAME_PWD_MISMATCH);
-            }
-            if (!AccountHelper.isNormalAccount(account)) {
-                return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
             }
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
             // 有绑定邮箱，检测是否与oldEmail相同；无原邮箱，则不检测
@@ -757,10 +715,6 @@ public class AccountSecureManagerImpl implements AccountSecureManager {
                 String secureCode = checkCode;
                 if (!accountSecureService.checkSecureCodeModSecureInfo(passportId, clientId, secureCode)) {
                     return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
-                }
-                account = accountService.queryNormalAccount(passportId);
-                if (account == null) {
-                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 }
             }
 

@@ -112,6 +112,15 @@ public class RequestModel {
     }
 
     /**
+     *
+     * @param key
+     * @return
+     */
+    public Object getParam(String key){
+        return this.params.get(key);
+    }
+
+    /**
      * 删除参数
      *
      * @param key

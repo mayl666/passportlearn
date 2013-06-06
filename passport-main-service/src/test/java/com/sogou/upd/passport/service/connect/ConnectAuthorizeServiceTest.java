@@ -20,6 +20,7 @@ import java.util.UUID;
 public class ConnectAuthorizeServiceTest extends BaseTest {
 
     private static final int clientId = 999;
+    private static final int provider =  AccountTypeEnum.QQ.getValue();
 
     @Autowired
     private ConnectAuthorizeService connectAuthorizeService;
@@ -29,7 +30,7 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
         String state = UUID.randomUUID().toString();
         String code = "3256211234615615151";
         try {
-            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(clientId, AccountTypeEnum.SINA.getValue(), code, state);
+            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(clientId, provider, code, state);
             String body = response.getBody();
             System.out.println("body:" + body);
         } catch (IOException e) {

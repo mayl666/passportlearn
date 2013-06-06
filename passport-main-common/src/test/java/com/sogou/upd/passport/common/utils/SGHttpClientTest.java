@@ -20,9 +20,49 @@ import java.util.Map;
 public class SGHttpClientTest {
 
 
-    private static final String appId="1100";
+    private static final String appId = "1100";
 
-    private static final String key="yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+    private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+
+    private static final String userId = "upd_test@sogou.com";
+
+    @Test
+    public void testSetCookie() throws Exception {
+        String ru = "http%3a%2f%2fie.sogou.com";
+        String userId = "upd_test@sogou.com";
+        String domain = "sogou.com";
+        long ct = System.currentTimeMillis();
+        String code = userId + appId + key + ct;
+        code = Coder.encryptMD5(code);
+        String url = "http://passport.sohu.com/act/setcookie?";
+        url += "userid=" + userId;
+        url += "&appid=" + appId;
+        url += "&ru=" + ru;
+        url += "&domain=" + domain;
+        url += "&ct=" + ct;
+        url += "&code=" + code;
+        System.out.println(url);
+    }
+
+    @Test
+    public void testUpdatePwd() throws Exception {
+        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/updatepwd", "info");
+        long ct = System.currentTimeMillis();
+        String code = userId + appId + key + ct;
+        code = Coder.encryptMD5(code);
+        requestModel.addParam("userid", userId);
+        requestModel.addParam("password", "testtest1");
+        requestModel.addParam("appid", appId);
+        requestModel.addParam("ct", ct);
+        requestModel.addParam("code", code);
+        requestModel.addParam("modifyip", "10.1.164.160");
+        requestModel.addParam("newquestion", "testtest");
+        requestModel.addParam("newanswer", "111111");
+        requestModel.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0");
+        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+        String result = SGHttpClient.executeStr(requestModel);
+        System.out.println(result);
+    }
 
     @Test
     public void testGet() {
@@ -30,6 +70,27 @@ public class SGHttpClientTest {
         String result = SGHttpClient.executeStr(requestModel);
         System.out.println(result);
     }
+
+    static String bindEmail="34310327@qq.com";
+
+    @Test
+    public void testBindEmail() throws Exception {
+        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/bindemail", "info");
+        long ct = System.currentTimeMillis();
+        String code = userId + appId + key + ct;
+        code = Coder.encryptMD5(code);
+        requestModel.addParam("userid", userId);
+        requestModel.addParam("password",  Coder.encryptMD5("testtest1"));
+        requestModel.addParam("appid", appId);
+        requestModel.addParam("ct", ct);
+        requestModel.addParam("code", code);
+        requestModel.addParam("newbindemail", bindEmail);
+        requestModel.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0");
+        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+        String result = SGHttpClient.executeStr(requestModel);
+        System.out.println(result);
+    }
+
 
     @Test
     public void testPost() {
@@ -70,11 +131,11 @@ public class SGHttpClientTest {
     @Test
     public void testGetCookieValue() throws Exception {
         RequestModel requestModel = new RequestModel("http://internal.passport.sohu.com/act/getcookievalue");
-        String userid="upd_test@sogou.com";
-        long ct=System.currentTimeMillis();
-        String code= userid+ key+ ct;
-        code= Coder.encryptMD5(code);
-        requestModel.addParam("userid",userid);
+        String userid = "upd_test@sogou.com";
+        long ct = System.currentTimeMillis();
+        String code = userid + key + ct;
+        code = Coder.encryptMD5(code);
+        requestModel.addParam("userid", userid);
         requestModel.addParam("ct", ct);
         requestModel.addParam("code", code);
         requestModel.addParam("ip", "10.1.164.160");
@@ -86,63 +147,24 @@ public class SGHttpClientTest {
 
     @Test
     public void testAuthTestModelUser() throws Exception {
-        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/authuser","info");
-        String userid="upd_test@sogou.com";
-        long ct=System.currentTimeMillis();
-        String code= userid+appId+ key+ ct;
-        code= Coder.encryptMD5(code);
-        requestModel.addParam("userid",userid);
+        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/authuser", "info");
+        String userid = "upd_test@sogou.com";
+        long ct = System.currentTimeMillis();
+        String code = userid + appId + key + ct;
+        code = Coder.encryptMD5(code);
+        requestModel.addParam("userid", userid);
         requestModel.addParam("appid", appId);
         requestModel.addParam("password", "testtest");
         requestModel.addParam("ct", ct);
         requestModel.addParam("code", code);
         requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        Result result = SGHttpClient.executeBean(requestModel, HttpTransformat.xml,Result.class);
+        Result result = SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Result.class);
         System.out.println(result);
     }
 
     @Test
-    public void testXmlTresultoBean(){
-        String xml=
-                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
-                "<result>" +
-                "<uid>26f15b58d0c54d5s</uid>" +
-                "<status>0</status>" +
-                "<userid>upd_test@sogou.com</userid>" +
-                "<uuid>26f15b58d0c54d5s</uuid>" +
-                "<uniqname></uniqname>" +
-                "</result>";
-        Result result= XMLUtil.xmlToBean(xml,Result.class);
-        System.out.println(result.getStatus());
-        xml=
-                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
-                        "<result>" +
-                        "<uid>26f15b58d0c54d5s</uid>" +
-                        "<status>1</status>" +
-                        "<userid>upd_test@sogou.com</userid>" +
-                        "<uuid>26f15b58d0c54d5s</uuid>" +
-                        "<uniqname></uniqname>" +
-                        "</result>";
-        result= XMLUtil.xmlToBean(xml,Result.class);
-        System.out.println(result.getStatus());
-        xml=
-                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
-                        "<result>" +
-                        "<uid>26f15b58d0c54d5s</uid>" +
-                        "<status>2</status>" +
-                        "<userid>upd_test@sogou.com</userid>" +
-                        "<uuid>26f15b58d0c54d5s</uuid>" +
-                        "<uniqname></uniqname>" +
-                        "</result>";
-        HashMap<String,String> map=XMLUtil.xmlToBean(xml,HashMap.class);
-        System.out.println(map.get("status"));
-    }
-
-
-
-    @Test
-    public void testXmlToBeanPref(){
-        String xml=
+    public void testXmlTresultoBean() {
+        String xml =
                 "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
                         "<result>" +
                         "<uid>26f15b58d0c54d5s</uid>" +
@@ -151,17 +173,55 @@ public class SGHttpClientTest {
                         "<uuid>26f15b58d0c54d5s</uuid>" +
                         "<uniqname></uniqname>" +
                         "</result>";
-        long startTime=System.currentTimeMillis();
-        for(int i=0;i<10000;i++){
-            Result result= XMLUtil.xmlToBean(xml,Result.class);
+        Result result = XMLUtil.xmlToBean(xml, Result.class);
+        System.out.println(result.getStatus());
+        xml =
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                        "<result>" +
+                        "<uid>26f15b58d0c54d5s</uid>" +
+                        "<status>1</status>" +
+                        "<userid>upd_test@sogou.com</userid>" +
+                        "<uuid>26f15b58d0c54d5s</uuid>" +
+                        "<uniqname></uniqname>" +
+                        "</result>";
+        result = XMLUtil.xmlToBean(xml, Result.class);
+        System.out.println(result.getStatus());
+        xml =
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                        "<result>" +
+                        "<uid>26f15b58d0c54d5s</uid>" +
+                        "<status>2</status>" +
+                        "<userid>upd_test@sogou.com</userid>" +
+                        "<uuid>26f15b58d0c54d5s</uuid>" +
+                        "<uniqname></uniqname>" +
+                        "</result>";
+        HashMap<String, String> map = XMLUtil.xmlToBean(xml, HashMap.class);
+        System.out.println(map.get("status"));
+    }
+
+
+    @Test
+    public void testXmlToBeanPref() {
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
+                        "<result>" +
+                        "<uid>26f15b58d0c54d5s</uid>" +
+                        "<status>0</status>" +
+                        "<userid>upd_test@sogou.com</userid>" +
+                        "<uuid>26f15b58d0c54d5s</uuid>" +
+                        "<uniqname></uniqname>" +
+                        "</result>";
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            Result result = XMLUtil.xmlToBean(xml, Result.class);
         }
-        long time=System.currentTimeMillis()-startTime;
+        long time = System.currentTimeMillis() - startTime;
         System.out.println(time);
     }
 
     @Test
-    public void testXmlToBean(){
-        String xml=
+    public void testXmlToBean() {
+        String xml =
                 "<?xml version=\"1.0\" encoding=\"GBK\"?>" +
                         "<com.sogou.upd.passport.common.utils.Result>" +
                         "<uid>26f15b58d0c54d5s</uid>" +
@@ -174,8 +234,8 @@ public class SGHttpClientTest {
         XStream xstream = new XStream();
         //注册将pojo转为map的coverter
         xstream.registerConverter(new PojoMapConverter());
-        Result result=new Result();
-        xstream.fromXML(xml,result);
+        Result result = new Result();
+        xstream.fromXML(xml, result);
         System.out.println(result.getStatus());
     }
 
