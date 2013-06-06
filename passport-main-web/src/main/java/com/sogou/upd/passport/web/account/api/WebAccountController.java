@@ -71,7 +71,7 @@ public class WebAccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         }
-        result = accountLoginManager.accountLogin(loginParams);
+        result = accountLoginManager.accountLogin(loginParams, getIp(request));
         return result;
     }
 

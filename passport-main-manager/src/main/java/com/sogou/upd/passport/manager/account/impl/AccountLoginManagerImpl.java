@@ -106,7 +106,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     }
 
     @Override
-    public Result accountLogin(WebLoginParameters loginParameters) {
+    public Result accountLogin(WebLoginParameters loginParameters, String ip) {
         Result result = null;
         String username = null;
         try {
@@ -114,7 +114,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
             String password = loginParameters.getPassword();
             //TODO 校验是否在账户黑名单或者IP黑名单之中
             //校验验证码
-            if (accountService.loginFailedNumNeedCaptcha(username)) {
+            if (accountService.loginFailedNumNeedCaptcha(username, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
                 if (!this.checkCaptcha(username, captchaCode, token)) {
@@ -147,7 +147,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                     return result;
 
                 } else {
-                    accountService.incLoginFailedNum(username);
+                    accountService.incLoginFailedNum(username, ip);
                     result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
                     return result;
                 }
@@ -156,7 +156,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                 return result;
             }
         } catch (Exception e) {
-            accountService.incLoginFailedNum(username);
+            accountService.incLoginFailedNum(username, ip);
             logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
@@ -180,8 +180,8 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
      * @return
      */
     @Override
-    public boolean loginNeedCaptcha(String passportId) {
-        boolean loginFailed = accountService.loginFailedNumNeedCaptcha(passportId);
+    public boolean loginNeedCaptcha(String passportId, String ip) {
+        boolean loginFailed = accountService.loginFailedNumNeedCaptcha(passportId, ip);
         return loginFailed;
     }
 }

@@ -29,11 +29,11 @@ public class ProblemDAOTest extends BaseDAOTest {
     public void init() {
       Problem problem = new Problem();
       problem.setPassportId("18612532596@sohu.com");
-      problem.setStatus(PRO_STATUS);
+      problem.setStatus(0);
       problem.setClientId(CLIENT_ID);
       problem.setSubTime(new Date());
-      problem.setTypeId(PRO_TYPE_ID);
-      problem.setContent(CONTENT);
+      problem.setTypeId(1);
+      problem.setContent("我的幼儿园");
       int row = problemDAO.insertProblem(problem);
       Assert.assertTrue(row != 0);
     }

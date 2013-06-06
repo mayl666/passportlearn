@@ -434,8 +434,6 @@ public class AccountServiceImpl implements AccountService {
         return CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
   }
 
-
-
     /**
      * 根据登陆错误次数，判断是否需要在登陆时输入验证码
      *

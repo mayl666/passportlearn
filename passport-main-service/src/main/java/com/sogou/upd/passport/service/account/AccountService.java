@@ -105,10 +105,9 @@ public interface AccountService {
   /**
     * 根据用户连续登陆失败次数确定用户登陆时是否需要输入验证码
     * @param username
-    * @param ip
     * @return
     */
-  public boolean loginFailedNumNeedCaptcha(String username,String ip);
+  public boolean loginFailedNumNeedCaptcha(String username, String ip);
 
     /**
      * 用户登陆失败一次，增加一次
