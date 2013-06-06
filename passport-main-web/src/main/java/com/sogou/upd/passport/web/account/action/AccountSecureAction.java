@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.manager.account.AccountCheckManager;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.web.form.AccountPwdScodeParams;
@@ -34,6 +35,8 @@ public class AccountSecureAction extends BaseController {
     private AccountManager accountManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
+    @Autowired
+    private AccountCheckManager accountCheckManager;
 
     /**
      * 显示找回密码界面
@@ -149,6 +152,10 @@ public class AccountSecureAction extends BaseController {
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
+
+        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED));
+        }
         Result result = accountSecureManager.resetPasswordByQues(passportId, clientId, password, answer);
         model.addAttribute("error", result);
         if (result.getStatus().equals("0")) {

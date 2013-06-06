@@ -56,9 +56,9 @@ public class AccountCheckManagerImpl implements AccountCheckManager {
     }
 
     @Override
-    public boolean checkLimitForResetPwd(String passportId, int clientId) throws Exception {
+    public boolean checkLimitResetPwd(String passportId, int clientId) throws Exception {
         try {
-            return accountService.checkResetPwdLimited(passportId);
+            return accountService.checkLimitResetPwd(passportId);
         } catch (ServiceException e) {
             logger.error("check limit for reset pwd Fail:", e);
             return false;
@@ -89,7 +89,7 @@ public class AccountCheckManagerImpl implements AccountCheckManager {
     }
 
     @Override
-    public boolean checkScodeForResetPwd(String passportId, int clientId, String scode) throws Exception {
+    public boolean checkScodeResetPwd(String passportId, int clientId, String scode) throws Exception {
         try {
             return accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode);
         } catch (ServiceException e) {
@@ -97,4 +97,5 @@ public class AccountCheckManagerImpl implements AccountCheckManager {
             return false;
         }
     }
+
 }

@@ -11,9 +11,9 @@ import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.web.form.AccountAnswerCaptParams;
 import com.sogou.upd.passport.web.form.AccountBindEmailParams;
+import com.sogou.upd.passport.web.form.UserCaptchaParams;
 import com.sogou.upd.passport.web.form.AccountPwdParams;
 import com.sogou.upd.passport.web.form.AccountPwdScodeParams;
-import com.sogou.upd.passport.web.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.web.form.AccountSmsNewScodeParams;
 import com.sogou.upd.passport.web.form.AccountSmsScodeParams;
 import com.sogou.upd.passport.web.form.BaseAccountParams;
@@ -60,13 +60,18 @@ public class AccountSecureController {
      */
     @RequestMapping(value = "/secure/query", method = RequestMethod.POST)
     @ResponseBody
-    public Object querySecureInfo(AccountSecureInfoParams params) throws Exception {
+    public Object querySecureInfo(UserCaptchaParams params) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
         String username = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
+        String captcha = params.getCaptcha();
+        String token = params.getToken();
+        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+        }
         String passportId = accountManager.getPassportIdByUsername(username);
         if (passportId == null) {
             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -132,6 +137,11 @@ public class AccountSecureController {
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();
+
+        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+        }
+
         return accountSecureManager.resetPasswordByEmail(passportId, clientId, password, scode);
     }
 
@@ -198,6 +208,18 @@ public class AccountSecureController {
         }
     }
 
+    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.POST)
+    @ResponseBody
+    public Object sendSmsResetPwd(BaseAccountParams params) throws Exception {
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        }
+        String passportId = params.getPassport_id();
+        int clientId = Integer.parseInt(params.getClient_id());
+        return accountSecureManager.sendMobileCodeByPassportId(passportId, clientId);
+    }
+
     /**
      * 重置密码（手机方式）——2.检查手机短信码 TODO:可否与其他验证的合并在一起？
      *
@@ -258,6 +280,9 @@ public class AccountSecureController {
         String answer = params.getAnswer();
         String captcha = params.getCaptcha();
         String token = params.getToken();
+        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+        }
         return accountSecureManager.checkAnswerByPassportId(passportId, clientId, answer, token, captcha);
     }
 
@@ -281,8 +306,12 @@ public class AccountSecureController {
         String scode = params.getScode();
 
         // 第一步，检测scode
-        if (!accountCheckManager.checkScodeForResetPwd(passportId, clientId, scode)) {
+        if (!accountCheckManager.checkScodeResetPwd(passportId, clientId, scode)) {
             return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
+        }
+
+        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
         }
 
         // 第二步，修改密码

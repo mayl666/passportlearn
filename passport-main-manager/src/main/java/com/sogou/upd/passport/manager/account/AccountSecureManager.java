@@ -46,8 +46,8 @@ public interface AccountSecureManager {
      * @return
      * @throws Exception
      */
-    public Result checkLimitForSendEmail(String passportId, int clientId, AccountModuleEnum module,
-                                         String email) throws Exception;
+    public Result checkLimitSendEmail(String passportId, int clientId, AccountModuleEnum module,
+                                      String email) throws Exception;
 
     /**
      * 手机用户找回密码
