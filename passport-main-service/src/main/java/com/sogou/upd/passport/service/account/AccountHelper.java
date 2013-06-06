@@ -8,7 +8,16 @@ import com.sogou.upd.passport.model.account.Account;
  * use File | Settings | File Templates.
  */
 public class AccountHelper {
-  public static boolean isNormalAccount(Account account) {
-    return account.getStatus() == AccountStatusEnum.REGULAR.getValue();
-  }
+    public static boolean isNormalAccount(Account account) {
+        return account.getStatus() == AccountStatusEnum.REGULAR.getValue();
+    }
+
+    public static boolean isDisabledAccount(Account account) {
+        return account.getStatus() == AccountStatusEnum.DISABLED.getValue();
+    }
+
+    public static boolean isKilledAccount(Account account) {
+        return account.getStatus() == AccountStatusEnum.KILLED.getValue();
+    }
+
 }

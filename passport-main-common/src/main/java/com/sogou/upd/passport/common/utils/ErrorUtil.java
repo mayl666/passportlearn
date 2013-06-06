@@ -104,7 +104,12 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
     // 账号未登录，请先登录
     public static final String ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED = "20229";
-
+    // 登陆用户或者ip在黑名单中
+    public static final String ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST = "20230";
+    // 登陆账号未激活
+    public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
+    // 登陆账号被封杀
+    public static final String ERR_CODE_ACCOUNT_KILLED = "20232";
     //***************************account 服务的错误代码end*********************************
 
 
@@ -273,9 +278,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或绑定");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
-
-
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP存在异常");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "登陆账号未激活");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "登陆账号被封杀");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "当日邮件发送次数已达上限");
