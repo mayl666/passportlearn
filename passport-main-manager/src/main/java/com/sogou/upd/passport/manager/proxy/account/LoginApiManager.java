@@ -10,7 +10,7 @@ import java.util.Map;
  * Date: 13-6-6
  * Time: 上午10:19
  */
-public interface LoginManager {
+public interface LoginApiManager {
 
     /**
      * 校验用户名密码是否正确

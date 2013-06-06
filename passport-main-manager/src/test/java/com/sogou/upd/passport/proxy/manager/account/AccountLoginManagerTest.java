@@ -2,7 +2,7 @@ package com.sogou.upd.passport.proxy.manager.account;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.utils.XMLUtil;
-import com.sogou.upd.passport.manager.proxy.account.LoginManager;
+import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class AccountLoginManagerTest extends BaseTest {
     private static final String passportId = "upd_test@sogou.com";
 
     @Inject
-    private LoginManager accountLoginProxyManager;
+    private LoginApiManager accountLoginProxyManager;
 
     @Test
     public void testAuthUser() {

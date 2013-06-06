@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.proxy.account;
+package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/internal")
-public class LoginController {
+public class LoginApiController {
 
     @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
     @ResponseBody

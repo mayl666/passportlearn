@@ -3,7 +3,7 @@ package com.sogou.upd.passport.manager.proxy.account.impl;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
 import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.proxy.account.LoginManager;
+import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ import java.util.Map;
  * Time: 上午10:36
  */
 @Component
-public class ProxyLoginManagerImpl extends BaseProxyManager implements LoginManager {
+public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     @Override
     public  Map<String,Object> authUser(AuthUserApiParams authUserParameters) {
