@@ -6,7 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-3 Time: 上午10:51 To change this template use
  * File | Settings | File Templates.
  *
- * 限制检测验证相关
+ * 安全限制、检查验证相关
  */
 public interface AccountCheckManager {
 
