@@ -22,8 +22,8 @@ public class AccountLoginManagerTest  extends BaseTest {
 
     private static final String passportId = "upd_test@sogou.com";
 
-    @Autowired
-    private AccountLoginManager accountLoginManager;
+    @Inject
+    private AccountLoginProxyManager accountLoginProxyManager;
 
     @Test
     public void testAuthUser(){
@@ -31,8 +31,8 @@ public class AccountLoginManagerTest  extends BaseTest {
         authUserParameters.setPassport_id(passportId);
         authUserParameters.setClientId(clientId);
         authUserParameters.setPassword("testtest1");
-        Map<String, Object> map= (Map<String, Object>) accountLoginManager.authUser(authUserParameters);
-        String result= XMLUtil.mapToXml("result",map).asXML();
+        Map<String, Object> map= (Map<String, Object>) accountLoginProxyManager.authUser(authUserParameters);
+        String result= XMLUtil.mapToXml("result", map).asXML();
         System.out.println(result);
     }
 

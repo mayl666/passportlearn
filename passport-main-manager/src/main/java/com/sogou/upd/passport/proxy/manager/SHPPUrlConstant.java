@@ -13,7 +13,7 @@ public class SHPPUrlConstant {
     private static final String BASE_URL="http://internal.passport.sohu.com/interface/";
 
     //检查用户名密码是否正确
-    public  static final String AUTH_USER=BASE_URL+"reguser";
+    public  static final String AUTH_USER=BASE_URL+"authuser";
 
 
 }

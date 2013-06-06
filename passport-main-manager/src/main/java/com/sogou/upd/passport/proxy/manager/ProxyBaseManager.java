@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.proxy.manager;
 
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
@@ -8,6 +9,8 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Map;
 
 /**
@@ -15,6 +18,7 @@ import java.util.Map;
  * Date: 13-6-6
  * Time: 下午1:36
  */
+@Component
 public class ProxyBaseManager {
 
     @Autowired
@@ -42,9 +46,10 @@ public class ProxyBaseManager {
      */
     private void calculateDefaultCode(final RequestModel requestModel){
         //计算默认的codeserverSecret
-        if (!requestModel.containsKey("code")) {
+        Object codeObject=requestModel.getParam("code");
+        if (codeObject==null|| StringUtil.isBlank(codeObject.toString())) {
             //获取app的
-            String client_id = requestModel.getParam("client_id").toString();
+            String client_id = requestModel.getParam("appid").toString();
 
             Integer clientId=Integer.valueOf(client_id);
 
@@ -54,7 +59,7 @@ public class ProxyBaseManager {
 
             //系统当前时间
             long ct = System.currentTimeMillis();
-            String passport_id = requestModel.getParam("passport_id").toString();
+            String passport_id = requestModel.getParam("userid").toString();
             //计算默认的code
             String code = passport_id + client_id + serverSecret + ct;
             try {
@@ -72,7 +77,7 @@ public class ProxyBaseManager {
      * @param requestModel
      */
     private void  paramNameAdapter(final RequestModel requestModel){
-        this.paramNameAdapter(requestModel,"client_id","appid");
+        this.paramNameAdapter(requestModel,"clientId","appid");
         this.paramNameAdapter(requestModel,"passport_id","userid");
     }
 
