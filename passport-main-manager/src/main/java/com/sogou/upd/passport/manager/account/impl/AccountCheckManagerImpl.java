@@ -1,11 +1,10 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.google.common.base.Strings;
+
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -55,4 +54,48 @@ public class AccountCheckManagerImpl implements AccountCheckManager {
             return false;
         }
     }
+
+    @Override
+    public boolean checkLimitResetPwd(String passportId, int clientId) throws Exception {
+        try {
+            return accountService.checkLimitResetPwd(passportId);
+        } catch (ServiceException e) {
+            logger.error("check limit for reset pwd Fail:", e);
+            return false;
+        }
+    }
+
+    @Override
+    public String checkEmailScodeReturnStr(String passportId, int clientId, AccountModuleEnum module,
+            String scode) throws Exception {
+        try {
+            return emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, true);
+        } catch (ServiceException e) {
+            logger.error("check scode for email Fail:", e);
+            return null;
+        }
+    }
+
+    @Override
+    public boolean checkEmailScode(String passportId, int clientId, AccountModuleEnum module,
+                                           String scode) throws Exception {
+        try {
+            String returnStr = emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, false);
+            return !Strings.isNullOrEmpty(returnStr);
+        } catch (ServiceException e) {
+            logger.error("check scode for email Fail:", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkScodeResetPwd(String passportId, int clientId, String scode) throws Exception {
+        try {
+            return accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode);
+        } catch (ServiceException e) {
+            logger.error("check scode for reset pwd Fail:", e);
+            return false;
+        }
+    }
+
 }

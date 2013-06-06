@@ -1,6 +1,6 @@
-package com.sogou.upd.passport.oauth2.openresource.dataobject;
+package com.sogou.upd.passport.oauth2.openresource.vo;
 
-public class RenrenUserInfoDO {
+public class RenrenUserInfoVO {
 
 	public int uid;
 	public String name;
