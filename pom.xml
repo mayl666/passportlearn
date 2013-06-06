@@ -12,7 +12,6 @@
         <module>passport-main-manager</module>
         <module>passport-main-common</module>
         <module>passport-result</module>
-        <module>passport-main-web-internal</module>
     </modules>
     <packaging>pom</packaging>
 
