@@ -1,18 +1,15 @@
-package com.sogou.upd.passport.oauth2.openresource.dataobject;
+package com.sogou.upd.passport.oauth2.openresource.vo;
 
 /**
  * 人人OAuth授权返回的token对象
  * @author shipengzhi
  */
-public class RenrenOAuthTokenDO {
+public class RenrenOAuthTokenVO {
 
 	private String access_token;
-
 	private String refresh_token;
-
 	private String expires_in;
-
-	private User user;
+    private User user;
 
 	public String getAccess_token() {
 		return access_token;

@@ -3,10 +3,11 @@ package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.dataobject.TaobaoOAuthTokenDO;
+import com.sogou.upd.passport.oauth2.openresource.vo.RenrenOAuthTokenVO;
+import com.sogou.upd.passport.oauth2.openresource.vo.TaobaoOAuthTokenVO;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,54 +16,45 @@ import java.io.IOException;
  * Time: 上午11:37
  * To change this template use File | Settings | File Templates.
  */
-public class TaobaoJSONAccessTokenResponse extends AbstractAccessTokenResponse {
+public class TaobaoJSONAccessTokenResponse extends OAuthAccessTokenResponse {
 
-    private TaobaoOAuthTokenDO oAuthTokenDO;
+    private TaobaoOAuthTokenVO oAuthTokenDO;
 
     @Override
     public void setBody(String body) throws OAuthProblemException {
         this.body = body;
         try {
-            oAuthTokenDO = new ObjectMapper().readValue(this.body, TaobaoOAuthTokenDO.class);
-        } catch (IOException e) {
+            this.parameters = new ObjectMapper().readValue(this.body, Map.class);
+        } catch (Exception e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
                     "Invalid response! Response body is not " + OAuth.ContentType.JSON + " encoded");
         }
     }
 
-    @Override
-    public String getAccessToken() {
-        return oAuthTokenDO.getAccess_token();
-    }
-
-    @Override
-    public Long getExpiresIn() {
-        return oAuthTokenDO.getExpires_in();
-    }
-
-    @Override
-    public String getRefreshToken() {
-        return null;
-    }
-
-    @Override
-    public Long getRefreshTokenExpiresIn() {
-        return oAuthTokenDO.getRe_expires_in();
-    }
-
-    @Override
-    public String getScope() {
-        return null;
+    private TaobaoOAuthTokenVO getTaobaoOAuthTokenVO() throws Exception {
+        return new ObjectMapper().readValue(this.body, TaobaoOAuthTokenVO.class);
     }
 
     @Override
     public String getOpenid() {
-        return oAuthTokenDO.getTaobao_user_id();
+        try {
+            TaobaoOAuthTokenVO taobaoOAuthTokenVO = getTaobaoOAuthTokenVO();
+            return taobaoOAuthTokenVO.getTaobao_user_id();
+        } catch (Exception e) {
+            log.error("Connect OAuthToken Response parse error, connect:taobao, body:" + body, e);
+            return "";
+        }
     }
 
     @Override
     public String getNickName() {
-        return oAuthTokenDO.getTaobao_user_nick();
+        try {
+            TaobaoOAuthTokenVO taobaoOAuthTokenVO = getTaobaoOAuthTokenVO();
+            return taobaoOAuthTokenVO.getTaobao_user_nick();
+        } catch (Exception e) {
+            log.error("Connect OAuthToken Response parse error, connect:taobao, body:" + body, e);
+            return "";
+        }
     }
 
 

@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.common.utils;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
 
@@ -30,4 +28,6 @@ public class JsonUtil {
             throw new RuntimeException("json to bean error",e);
         }
     }
+
+
 }

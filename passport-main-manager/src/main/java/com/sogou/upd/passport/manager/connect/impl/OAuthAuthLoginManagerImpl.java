@@ -23,7 +23,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
-import com.sogou.upd.passport.oauth2.openresource.dataobject.OAuthTokenDO;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
@@ -182,8 +182,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public OAuthTokenDO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
-        OAuthTokenDO oAuthTokenDO;
+    public OAuthTokenVO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
+        OAuthTokenVO oAuthTokenDO;
         OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req, connectType);
         // 验证state是否被篡改，防CRSF攻击
         String state = oar.getState();
@@ -195,7 +195,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (ConnectTypeEnum.WEB.toString().equals(connectType)) {
 
         } else {
-            oAuthTokenDO = new OAuthTokenDO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
+            oAuthTokenDO = new OAuthTokenVO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
         }
 
         return null;

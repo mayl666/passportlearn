@@ -30,8 +30,8 @@ public class RenrenUserAPIResponse extends OAuthClientResponse {
 
     public String toUserInfo() {
 //        Gson gson = new Gson();
-//        Type type = new TypeToken<List<RenrenUserInfoDO>>() {}.getType();
-//        List<RenrenUserInfoDO> jsonList = gson.fromJson(this.body, type);
+//        Type type = new TypeToken<List<RenrenUserInfoVO>>() {}.getType();
+//        List<RenrenUserInfoVO> jsonList = gson.fromJson(this.body, type);
         return body;
     }
 
