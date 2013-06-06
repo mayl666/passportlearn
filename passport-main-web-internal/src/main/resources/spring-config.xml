@@ -46,15 +46,7 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>
-            <bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>
-            <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
+            <bean class="com.sogou.upd.passport.web.internal.inteceptor.LoginInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 
