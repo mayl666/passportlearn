@@ -5,14 +5,9 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
-import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,17 +24,7 @@ public class AccountCheckManagerImpl implements AccountCheckManager {
     private static Logger logger = LoggerFactory.getLogger(AccountCheckManagerImpl.class);
 
     @Autowired
-    private MobileCodeSenderService mobileCodeSenderService;
-    @Autowired
     private AccountService accountService;
-    @Autowired
-    private AccountInfoService accountInfoService;
-    @Autowired
-    private AccountTokenService accountTokenService;
-    @Autowired
-    private AppConfigService appConfigService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
