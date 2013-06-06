@@ -1,17 +1,15 @@
 package com.sogou.upd.passport.web.account.internal;
 
 import com.google.common.base.Strings;
-
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.web.form.AccountPwdParams;
-import com.sogou.upd.passport.web.form.BaseUserParams;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.form.BaseUserParams;
 import com.sogou.upd.passport.web.form.internal.BaseAccountPwdInternalParams;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +37,19 @@ public class AccountSecureInternalController {
     @RequestMapping(value = "/security/getsecinfo", method = RequestMethod.POST)
     @ResponseBody
     public Object querySecureInfo(BaseUserParams params) throws Exception {
+        Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
         }
         String username = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String passportId = accountManager.getPassportIdByUsername(username);
         if (passportId == null) {
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
         }
 
         return accountSecureManager.queryAccountSecureInfo(passportId, clientId, false);
@@ -56,9 +58,12 @@ public class AccountSecureInternalController {
     @RequestMapping(value = "/security/resetpwd", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPassword(BaseAccountPwdInternalParams params) throws Exception {
+        Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());

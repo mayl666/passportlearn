@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 

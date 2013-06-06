@@ -1,159 +1,113 @@
 package com.sogou.upd.passport.common.result;
 
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Service返回值对象
- * User: mayan
- * Date: 13-4-11
- * Time: 下午5:19
- * To change this template use File | Settings | File Templates.
+ * 代表一个command处理的结果。
+ *
+ * @author shipengzhi
+ * @version 13-5-14 下午12:02
  */
-public class Result {
-
+public interface Result extends Serializable {
     /**
-     * service返回的对象
+     * 在models表中代表默认的model的key。
      */
-    private Map<String, Object> data = Maps.newHashMap();
-
-    private String status;
-    private String statusText;
-
-    public static final String DEFAULT_MODEL_KEY = "value";
-
-    public Result(){
-        super();
-    }
+    String DEFAULT_MODEL_KEY = "_defaultModel";
 
     /**
-     * 新增一个带key的返回结果
+     * 请求是否成功。
      *
-     * @param key
-     * @param obj
-     * @return
+     * @return 如果成功，则返回<code>true</code>
      */
-    public Object addDefaultModel(String key, Object obj) {
-        return data.put(key, obj);
-    }
+    boolean isSuccess();
 
     /**
-     * 新增一个返回结果
+     * 设置请求成功标志。
      *
-     * @param obj
-     * @return
+     * @param success 成功标志
      */
-    public Object addDefaultModel(Object obj) {
-        return data = (Map) obj;
-    }
-
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getStatusText() {
-        return statusText;
-    }
-
-    public void setStatusText(String statusText) {
-        this.statusText = statusText;
-    }
+    void setSuccess(boolean success);
 
     /**
-     * 取出整个map对象
+     * 获取代码
      *
      * @return
      */
-    public Map<String, Object> getData() {
-        return data;
-    }
+    String getCode();
 
     /**
-     * 根据错误码返回result对象
+     * 设置代码
      *
-     * @param statusText 成功信息描述
-     * @param key        成功信息key
-     * @param object     封装的数据
-     * @return 含错误码及相应的提示信息
+     * @param code
      */
-    public static Result buildSuccess(String statusText, String key, Object object) {
-        Result result = new Result();
-        if (object != null) {
-            if (object instanceof Map) {
-                result.addDefaultModel(object);
-            } else {
-                result.addDefaultModel(key, object);
-            }
-        }
-        result.setStatus("0");
-        result.setStatusText(statusText);
-        return result;
-    }
+    void setCode(String code);
 
     /**
-     * 根据错误码返回result对象
+     * 获取信息内容
      *
-     * @param statusText 成功信息描述
-     * @return 含错误码及相应的提示信息
+     * @return
      */
-    public static Result buildSuccess(String statusText) {
-        Result result = new Result();
-        result.setStatus("0");
-        result.setStatusText(statusText);
-        return result;
-    }
+    String getMessage();
 
     /**
-     * 根据错误码返回result对象
-     *
-     * @param statusText 成功信息描述
-     * @return 含错误码及相应的提示信息
+     * 设置信息内容
      */
-    public static Result buildSuccess(String statusText,Map<String, Object> data) {
-        Result result = new Result();
-        result.setStatus("0");
-        result.data=data;
-        return result;
-    }
+    void setMessage(String message);
 
     /**
-     * 根据错误码返回result对象
+     * 取得默认model对象的key。
      *
-     * @param status 或错误码
-     * @return 含错误码及相应的提示信息
+     * @return 默认model对象的key
      */
-    public static Result buildError(String status) {
-        Result result = new Result();
-
-        result.setStatus(status);
-        result.setStatusText(ErrorUtil.getERR_CODE_MSG(status));
-        return result;
-    }
+    String getDefaultModelKey();
 
     /**
-     * 根据错误码返回result对象
+     * 取得model对象。
+     * <p/>
+     * <p>
+     * 此调用相当于<code>getModels().get(getDefaultModelKey())</code>。
+     * </p>
      *
-     * @param status 或错误码
-     * @return 含错误码及相应的提示信息
+     * @return model对象
      */
-    public static Result buildError(String status, String statusText) {
-        Result result = new Result();
+    Object getDefaultModel();
 
-        result.setStatus(status);
-        result.setStatusText(statusText);
-        return result;
-    }
+    /**
+     * 设置model对象。
+     * <p/>
+     * <p>
+     * 此调用相当于<code>getModels().put(DEFAULT_MODEL_KEY, model)</code>。
+     * </p>
+     *
+     * @param model model对象
+     */
+    void setDefaultModel(Object model);
 
-    public class buildSuccess extends Result {
-        public buildSuccess(String s, Map<String, Object> data) {
-        }
-    }
+    /**
+     * 设置model对象。
+     * <p/>
+     * <p>
+     * 此调用相当于<code>getModels().put(key, model)</code>。
+     * </p>
+     *
+     * @param key   字符串key
+     * @param model model对象
+     */
+    void setDefaultModel(String key, Object model);
+
+    /**
+     * 取得所有model对象。
+     *
+     * @return model对象表
+     */
+    Map getModels();
+
+    /**
+     * 设置所有model对象。
+     *
+     * @return model对象表
+     */
+    void setModels(Map models);
 }
+

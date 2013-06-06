@@ -10,10 +10,11 @@ public class SHPPUrlConstant {
 
     public static final String DEFAULT_REQUEST_ROOTNODE="info";
 
-    private static final String BASE_URL="http://internal.passport.sohu.com/interface/";
+    // 内部接口基本url
+    private static final String BASE_INTERNAL_URL ="http://internal.passport.sohu.com/interface/";
 
     //检查用户名密码是否正确
-    public  static final String AUTH_USER=BASE_URL+"authuser";
+    public  static final String AUTH_USER= BASE_INTERNAL_URL +"authuser";
 
 
 }

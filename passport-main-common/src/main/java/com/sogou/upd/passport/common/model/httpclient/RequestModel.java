@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.model.httpclient;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.BeanUtil;
@@ -48,7 +49,7 @@ public class RequestModel {
      * @param url
      */
     public RequestModel(String url) {
-        if (StringUtil.isBlank(url)) {
+        if (Strings.isNullOrEmpty(url)) {
             throw new IllegalArgumentException("url不能为空！");
         }
         this.url = url.trim();

@@ -1,11 +1,11 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
@@ -20,7 +20,6 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,13 +58,14 @@ public class AccountRegManagerImpl implements AccountRegManager {
         int pwdType = regParams.getPwd_type();
         boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
 
+        Result result = new APIResultSupport(false);
         //验证手机号码与验证码是否匹配
         boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
         if (!checkSmsInfo) {
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+            return result;
         }
-        Account
-                account =
+        Account account =
                 accountService.initialAccount(mobile, password, needMD5, ip, AccountTypeEnum.PHONE.getValue());
         if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
             boolean
@@ -73,7 +73,8 @@ public class AccountRegManagerImpl implements AccountRegManager {
                     mobilePassportMappingService
                             .initialMobilePassportMapping(mobile, account.getPassportId());
             if (!isInitialMobilePassportMapping) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                return result;
             }
             //生成token并向account_auth表里插一条用户状态记录
             AccountToken accountToken = accountTokenService.initialAccountToken(account.getPassportId(),
@@ -88,19 +89,26 @@ public class AccountRegManagerImpl implements AccountRegManager {
                 mapResult.put("access_token", accessToken);
                 mapResult.put("expires_time", accessValidTime);
                 mapResult.put("refresh_token", refreshToken);
-                return Result.buildSuccess("注册成功！", "mapResult", mapResult);
+
+                result.setSuccess(true);
+                result.setMessage("注册成功！");
+                result.setModels(mapResult);
+                return result;
             } else {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                return result;
             }
         } else {
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+            return result;
         }
     }
 
     @Override
     public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
-        try {
 
+        Result result = new APIResultSupport(false);
+        try {
             int clientId = Integer.parseInt(regParams.getClient_id());
             String username = regParams.getUsername();
             String password = regParams.getPassword();
@@ -114,22 +122,29 @@ public class AccountRegManagerImpl implements AccountRegManager {
                 case SOGOU://sogou用户，直接注册
                     Account account = accountService.initialAccount(username, password, false, ip, AccountTypeEnum.EMAIL.getValue());
                     if (account != null) {
-                        return Result.buildSuccess("注册成功！");
+                        result.setSuccess(true);
+                        result.setMessage("注册成功！");
+                        return result;
                     } else {
-                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                        return result;
                     }
                 case OTHER://外域邮件注册
                     boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip);
                     if (isSendSuccess) {
-                        return Result.buildSuccess("感谢注册，请立即激活账户！");
+                        result.setSuccess(true);
+                        result.setMessage("感谢注册，请立即激活账户！");
+                        return result;
                     }
                     break;
             }
         } catch (ServiceException e) {
             logger.error("webRegister fail,passportId:" + regParams.getUsername(), e);
-            Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+            return result;
         }
-        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        return result;
     }
 
     @Override
@@ -140,6 +155,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
 
     @Override
     public Result activeEmail(ActiveEmailParameters activeParams, String ip) throws Exception {
+        Result result = new APIResultSupport(false);
         try {
             String username = activeParams.getPassport_id();
             String token = activeParams.getToken();
@@ -152,9 +168,12 @@ public class AccountRegManagerImpl implements AccountRegManager {
                 Account account = accountService.initialWebAccount(username, ip);
                 if (account != null) {
                     //更新缓存
-                    return Result.buildSuccess("激活成功！");
+                    result.setSuccess(true);
+                    result.setMessage("激活成功！");
+                    return result;
                 } else {
-                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    return result;
                 }
             } else {
                 //激活失败
@@ -162,18 +181,22 @@ public class AccountRegManagerImpl implements AccountRegManager {
                 if (account != null) {
                     if (account.getStatus() == AccountStatusEnum.REGULAR.getValue()) {
                         //已经激活，无需再次激活
-                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
+                        return result;
                     } else {
-                        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED);
+                        return result;
                     }
                 } else {
                     //无此账号
-                    return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    return result;
                 }
             }
         } catch (ServiceException e) {
             logger.error("activeEmail fail, passportId:" + activeParams.getPassport_id() + " clientId:" + activeParams.getClient_id(), e);
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
     }
 
@@ -183,21 +206,27 @@ public class AccountRegManagerImpl implements AccountRegManager {
     }
 
     @Override
-    public Result isAllowRegister(String username, String ip, String token, String captchaCode)  throws Exception{
+    public Result isAllowRegister(String username, String ip, String token, String captchaCode) throws Exception {
+        Result result = new APIResultSupport(false);
         try {
             //校验是否在黑名单中
-            if(!accountService.isInAccountBlackListByIp(username,ip)){
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
+            if (!accountService.isInAccountBlackListByIp(username, ip)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
+                return result;
             }
 
             //校验验证码
-            if (!accountService.checkCaptchaCodeIsVaild(token,captchaCode)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                return result;
             }
-            return Result.buildSuccess("允许注册");
-        }catch (ServiceException e){
+            result.setSuccess(true);
+            result.setMessage("允许注册");
+            return result;
+        } catch (ServiceException e) {
             logger.error("isAllowRegister fail,username:" + username, e);
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
     }
 
