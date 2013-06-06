@@ -1,10 +1,10 @@
-package com.sogou.upd.passport.proxy.manager.account.impl;
+package com.sogou.upd.passport.manager.proxy.account.impl;
 
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.manager.form.proxy.account.AuthUserParameters;
-import com.sogou.upd.passport.proxy.manager.ProxyBaseManager;
-import com.sogou.upd.passport.proxy.manager.SHPPUrlConstant;
-import com.sogou.upd.passport.proxy.manager.account.AccountLoginProxyManager;
+import com.sogou.upd.passport.manager.proxy.ProxyBaseManager;
+import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.proxy.account.AccountLoginProxyManager;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

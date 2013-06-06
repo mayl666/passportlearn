@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.proxy.manager.account;
+package com.sogou.upd.passport.manager.proxy.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.proxy.account.AuthUserParameters;

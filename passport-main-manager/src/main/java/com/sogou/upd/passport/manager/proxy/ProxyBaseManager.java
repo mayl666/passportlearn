@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.proxy.manager;
+package com.sogou.upd.passport.manager.proxy;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;

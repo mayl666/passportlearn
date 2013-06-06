@@ -3,12 +3,11 @@ package com.sogou.upd.passport.proxy.manager.account;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.utils.XMLUtil;
 import com.sogou.upd.passport.manager.form.proxy.account.AuthUserParameters;
+import com.sogou.upd.passport.manager.proxy.account.AccountLoginProxyManager;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import java.util.Map;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com

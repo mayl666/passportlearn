@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.proxy.manager;
+package com.sogou.upd.passport.manager.proxy;
 
 /**
  * 搜狐passport内部接口的相关常量
