@@ -1,19 +1,19 @@
-package com.sogou.upd.passport.manager.form;
+package com.sogou.upd.passport.web.form;
 
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.Min;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-24 Time: 下午12:03 To change this template
  * use File | Settings | File Templates.
  */
 public class UserModuleTypeParams extends BaseUserParams {
+    // TODO 参数类如何定义？
     @NotBlank
     protected String module;
+
+    // mode:1表示注册发送验证码；2表示绑定手机验证新手机号；3表示
     @NotBlank
     protected String mode;
-
     protected String passport_id;
 
     public String getModule() {

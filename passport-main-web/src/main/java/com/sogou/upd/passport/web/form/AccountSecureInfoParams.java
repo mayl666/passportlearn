@@ -1,9 +1,6 @@
-package com.sogou.upd.passport.manager.form;
+package com.sogou.upd.passport.web.form;
 
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-20 Time: 上午11:18 To change this template

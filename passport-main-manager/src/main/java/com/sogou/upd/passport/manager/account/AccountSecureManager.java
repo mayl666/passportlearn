@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.AccountSecureInfoParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 
@@ -81,6 +80,17 @@ public interface AccountSecureManager {
      * 重置用户密码（web验证码方式）
      */
     public Result resetWebPassword(ResetPwdParameters resetPwdParameters) throws Exception;
+
+    /**
+     * 修改密码，包括检查修改次数
+     *
+     * @param passportId
+     * @param clientId
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    public Result resetPassword(String passportId, int clientId, String password) throws Exception;
 
     /* ------------------------------------重置密码Begin------------------------------------ */
 
