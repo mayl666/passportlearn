@@ -66,11 +66,11 @@ public class WebAccountController extends BaseController {
         }
 
         //判断用户是否存在
-        String username = loginParams.getUsername();
-        if (!accountManager.isAccountExists(username)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            return result;
-        }
+//        String username = loginParams.getUsername();
+//        if (!accountManager.isAccountExists(username)) {
+//            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+//            return result;
+//        }
         result = accountLoginManager.accountLogin(loginParams, getIp(request));
         return result;
     }
