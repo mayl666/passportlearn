@@ -24,7 +24,7 @@ public class WebRegisterParameters {
   @NotBlank(message = "验证码不允许为空!")
   private String captcha;//验证码
   @NotBlank(message = "标识码不允许为空!")
-  private String token;//标识码
+  private String token;//标识码nn
 
   public String getClient_id() {
     return client_id;
