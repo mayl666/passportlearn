@@ -42,17 +42,18 @@ public class AccountSecureInternalController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         String username = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String passportId = accountManager.getPassportIdByUsername(username);
         if (passportId == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            return result;
+            return result.toString();
         }
 
-        return accountSecureManager.queryAccountSecureInfo(passportId, clientId, false);
+        result = accountSecureManager.queryAccountSecureInfo(passportId, clientId, false);
+        return result.toString();
     }
 
     @RequestMapping(value = "/security/resetpwd", method = RequestMethod.POST)
@@ -63,14 +64,15 @@ public class AccountSecureInternalController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
 
         // 第一步，直接修改密码
-        return accountSecureManager.resetPassword(passportId, clientId, password);
+        result = accountSecureManager.resetPassword(passportId, clientId, password);
+        return result.toString();
     }
 
 }

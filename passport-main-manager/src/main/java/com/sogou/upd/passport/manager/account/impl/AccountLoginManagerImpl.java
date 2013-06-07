@@ -107,12 +107,30 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
 
     @Override
     public Result accountLogin(WebLoginParameters loginParameters, String ip) {
-        Result result = null;
+        Result result = new APIResultSupport(false);
         String username = null;
         try {
             username = loginParameters.getUsername();
             String password = loginParameters.getPassword();
-            //TODO 校验是否在账户黑名单或者IP黑名单之中
+            Account account = null;
+            //判断登录用户类型
+            AccountDomainEnum domainEnum = AccountDomainEnum.getAccountDomain(username);
+            switch (domainEnum) {
+                case PHONE:
+                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
+                    if (Strings.isNullOrEmpty(passportId)) {
+                        return doUserNotExist(username,ip);
+                    }
+                    account = accountService.queryAccountByPassportId(passportId);
+                    break;
+                case SOHU:
+                    account = accountService.queryAccountByPassportId(username);
+                    break;
+            }
+            if (account == null) {
+                return doUserNotExist(username,ip);
+            }
+
             //校验验证码
             if (accountService.loginFailedNumNeedCaptcha(username, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
@@ -122,37 +140,39 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
                     return result;
                 }
             }
-            //判断登录用户类型
-            AccountDomainEnum domainEnum = AccountDomainEnum.getAccountDomain(username);
 
-            Account account = null;
-            switch (domainEnum) {
-                case PHONE:
-                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
-                    //校验用户名和密码是否匹配
-                    account = accountService.queryAccountByPassportId(passportId);
-                    break;
-                case SOHU:
-                    account = accountService.queryAccountByPassportId(username);
-                    break;
-            }
-
-            if (account != null) {
-                String storedPwd = account.getPasswd();
-                if (PwdGenerator.verify(password, false, storedPwd)) {
-                    //todo 登录成功种cookie
-                    //写缓存
-                    result.setSuccess(true);
-                    result.setMessage("登录成功");
+            //检查该账号是否为正常账号
+            if (!AccountHelper.isNormalAccount(account)) {
+                if (AccountHelper.isDisabledAccount(account)) {
+                    //登陆账号未激活
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
                     return result;
-
                 } else {
-                    accountService.incLoginFailedNum(username, ip);
-                    result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
+                    //登陆账号被封杀
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                     return result;
                 }
+            }
+
+            //校验是否在账户黑名单或者IP黑名单之中
+            if (accountService.checkUserInBlackList(username, ip)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
+            }
+
+            String storedPwd = account.getPasswd();
+            if (PwdGenerator.verify(password, false, storedPwd)) {
+                //todo 登录成功种cookie
+
+                //写缓存
+                accountService.incLoginSuccessNum(username,ip);
+                result.setSuccess(true);
+                result.setMessage("登录成功");
+                return result;
+
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                accountService.incLoginFailedNum(username, ip);
+                result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
                 return result;
             }
         } catch (Exception e) {
@@ -161,6 +181,25 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
         }
+    }
+
+    private Result doUserNotExist(String username, String ip) {
+        Result result = new APIResultSupport(false);
+        //记录登陆失败操作
+        accountService.incLoginFailedNum(username, ip);
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        /*
+        * 用户在登陆的时候是否需要输入验证码
+        * 目前的策略
+        * 1.连续3次输入密码错误
+        * 2.ip超过100次
+         */
+        if (accountService.loginFailedNumNeedCaptcha(username, ip)) {
+            Map<String, Object> mapResult = Maps.newHashMap();
+            mapResult.put("needCaptcha",1);
+            result.setModels(mapResult);
+        }
+        return result;
     }
 
     private boolean checkCaptcha(String passportId, String captcha, String token) {

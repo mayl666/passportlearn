@@ -62,17 +62,17 @@ public class WebAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
 
         //判断用户是否存在
         String username = loginParams.getUsername();
         if (!accountManager.isAccountExists(username)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            return result;
+            return result.toString();
         }
         result = accountLoginManager.accountLogin(loginParams, getIp(request));
-        return result;
+        return result.toString();
     }
 
 
