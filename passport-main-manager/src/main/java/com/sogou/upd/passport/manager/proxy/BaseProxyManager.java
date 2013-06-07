@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.manager.proxy;
 
-import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -26,10 +24,10 @@ public class BaseProxyManager {
 
     protected Result executeResult(final RequestModel requestModel) {
         Result result = new APIResultSupport(false);
-        Map<String, Object> map= this.execute(requestModel);
-        if(map.containsKey(SHPPUrlConstant.RESULT_STATUS)){
-            String status=map.get(SHPPUrlConstant.RESULT_STATUS).toString();
-            if("0".equals(status)){
+        Map<String, Object> map = this.execute(requestModel);
+        if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
+            String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString();
+            if ("0".equals(status)) {
                 result.setSuccess(true);
             }
             result.setCode(status);
@@ -59,31 +57,12 @@ public class BaseProxyManager {
      * @param requestModel
      */
     private void calculateDefaultCode(final RequestModel requestModel) {
-        //计算默认的codeserverSecret
-        Object codeObject = requestModel.getParam("code");
-        if (codeObject == null || StringUtil.isBlank(codeObject.toString())) {
-//            //获取app的
-//            String client_id = requestModel.getParam("appid").toString();
-//
-//            Integer clientId = Integer.valueOf(client_id);
-//
-//            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-//
-//            String serverSecret = appConfig.getServerSecret();
-
-            //系统当前时间
-            long ct = System.currentTimeMillis();
-            String passport_id = requestModel.getParam("userid").toString();
-            //计算默认的code
-            String code = passport_id + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
-            try {
-                code = Coder.encryptMD5(code);
-            } catch (Exception e) {
-                throw new ServiceException("calculate default code error", e);
-            }
-            requestModel.addParam("code", code);
-            requestModel.addParam("ct", ct);
-        }
+        //系统当前时间
+        long ct = System.currentTimeMillis();
+        String passportId = requestModel.getParam("userid").toString();
+        String code = ManagerHelper.generatorCode(passportId, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
+        requestModel.addParam("code", code);
+        requestModel.addParam("ct", ct);
     }
 
     /**
@@ -103,7 +82,7 @@ public class BaseProxyManager {
      * @param oldName
      * @param newName
      */
-    private void paramNameAdapter(final RequestModel requestModel, String oldName, String newName) {
+    protected void paramNameAdapter(final RequestModel requestModel, String oldName, String newName) {
         if (requestModel.containsKey(oldName)) {
             Object param = requestModel.getParam(oldName);
             requestModel.deleteParams(oldName);

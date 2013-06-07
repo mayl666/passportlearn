@@ -25,7 +25,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         Result result = new APIResultSupport(false);
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, "info");
         requestModelXml.addParams(authUserParameters);
-
         Map resultMap = execute(requestModelXml);
         result.setSuccess(true);
         result.setModels(resultMap);
