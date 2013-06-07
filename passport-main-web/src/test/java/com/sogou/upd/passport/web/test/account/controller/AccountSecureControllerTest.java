@@ -18,13 +18,14 @@ public class AccountSecureControllerTest extends BaseActionTest {
 
     @Test
     public void testQuery() throws IOException {
-        String localUrl = "/api/query";
+        String localUrl = "/web/secure/query";
         Map<String, String> params = new HashMap<>();
         params.put("username", "hujunfei1986@163.com");
         params.put("client_id", "999");
-        params.put("token", "1750fa01d201433fb4d64b36f1efc6a5");
-        params.put("captcha", "KPH8R");
-        Result result  = sendPostLocal(localUrl, params);
+        params.put("token", "4126d1b357ff49c7a5714c13d767d66a");
+        params.put("captcha", "GVD2X");
+        String result  = sendPost("http://account.sogou.com/api/secure/query", params);
+        System.out.println(result);
 //        System.out.println(result.getStatusText());
 //         System.out.println(result.getData());
     }
@@ -35,8 +36,9 @@ public class AccountSecureControllerTest extends BaseActionTest {
         Map<String, String> params = new HashMap<>();
         params.put("passport_id", "hujunfei1986@163.com");
         params.put("client_id", "999");
-        Result result  = sendPostLocal(localUrl, params);
-        System.out.println(result.getMessage());
+        String result = sendPost("http://account.sogou.com/api/findpwd/sendremail", params);
+        /*Result result  = sendPostLocal(localUrl, params);
+        System.out.println(result.getMessage());*/
         System.out.println(result);
     }
 
@@ -49,8 +51,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         String passwdSign = DigestUtils.md5Hex("222222".getBytes());
         params.put("password", passwdSign);
         params.put("scode", "c7a7c37beef63f542975b137e4b8314c");
-        Result result  = sendPostLocal(localUrl, params);
-        System.out.println(result.getMessage());
+        String result  = sendPostLocal(localUrl, params);
         System.out.println(result);
     }
 
@@ -62,8 +63,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("client_id", "999");
         params.put("mode", "2");
         params.put("module", "3");
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage());
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
     }
 
     @Test
@@ -73,8 +74,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("passport_id", "hujunfei1986@163.com");
         params.put("client_id", "999");
         params.put("smscode", "99875");
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage() + result);
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
     }
 
     @Test
@@ -85,8 +86,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("client_id", "999");
         params.put("scode", "6647bec044bb446fd20cd186358fe173");
         params.put("password", DigestUtils.md5Hex("111111".getBytes()));
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage() + result);
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
 
     }
 
@@ -99,8 +100,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("answer", "day");
         params.put("token", "3c81bb228cf848dcac7a664edc141040");
         params.put("captcha", "G2XCH");
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage() + result);
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
     }
 
     @Test
@@ -111,8 +112,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("client_id", "999");
         params.put("password", DigestUtils.md5Hex("222222".getBytes()));
         params.put("scode", "e54cc4bc09739ade3e746ad892305227");
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage() + result);
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
     }
 
     @Test
@@ -123,8 +124,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("client_id", "999");
         params.put("password", "222222");
         params.put("new_email", "hujunfei@sogou-inc.com");
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage() + result);
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
     }
 
 
@@ -136,8 +137,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("client_id", "999");
         params.put("mode", "3");
         params.put("module", "3");
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage());
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
     }
 
 
@@ -150,8 +151,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("password", DigestUtils.md5Hex("111111".getBytes()));
         params.put("new_ques", "day");
         params.put("new_answer", "birthday");
-        Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getMessage());
+        String result = sendPostLocal(url, params);
+        System.out.println(result);
     }
 
     // @Test

@@ -1,5 +1,9 @@
 package com.sogou.upd.passport.manager.app.impl;
 
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -11,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 /**
  * User: mayan
  * Date: 13-4-16
@@ -23,6 +25,8 @@ import javax.inject.Inject;
 public class ConfigureManagerImpl implements ConfigureManager {
 
     private static Logger log = LoggerFactory.getLogger(ConfigureManagerImpl.class);
+
+    private static final long API_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
 
     @Autowired
     private AppConfigService appConfigService;
@@ -51,12 +55,33 @@ public class ConfigureManagerImpl implements ConfigureManager {
         return connectConfig;
     }
 
-  @Override
-  public boolean checkAppIsExist(int clientId) {
-    AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-    if (appConfig != null) {
-      return true;
+    @Override
+    public boolean checkAppIsExist(int clientId) {
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+        if (appConfig != null) {
+            return true;
+        }
+        return false;
     }
-    return false;
-  }
+
+    @Override
+    public Result verifyInternalRequest(int clientId, String passportId, long ct, String originalCode) {
+        Result result = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            String secret = appConfig.getServerSecret();
+            String code = passportId + clientId + secret + ct;
+            code = Coder.encryptMD5(code);
+            long currentTime = System.currentTimeMillis() / 1000;
+            if (code.equals(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
+                result.setSuccess(true);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+            }
+        } catch (Exception e) {
+            log.error("Verify Code And Ct Error!", e);
+            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+        }
+        return result;
+    }
 }

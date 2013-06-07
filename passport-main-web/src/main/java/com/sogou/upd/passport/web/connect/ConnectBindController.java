@@ -46,18 +46,18 @@ public class ConnectBindController extends BaseConnectController {
         } catch (OAuthProblemException e) {
             result.setCode(e.getError());
             result.setMessage(e.getDescription());
-            return result;
+            return result.toString();
         }
 
         // 检查client_id和client_secret是否有效
         if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             result.setMessage("client_id or client_secret mismatch");
-            return result;
+            return result.toString();
         }
 
         result = oAuthAuthBindManager.connectSSOBind(oauthRequest, provider);
-        return result;
+        return result.toString();
     }
 
 
