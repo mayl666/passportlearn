@@ -10,7 +10,7 @@ import java.util.Map;
  * Date: 13-6-6
  * Time: 下午3:41
  */
-public interface SecureProxyManager {
+public interface SecureApiManager {
 
     /**
      * 修改密码接口

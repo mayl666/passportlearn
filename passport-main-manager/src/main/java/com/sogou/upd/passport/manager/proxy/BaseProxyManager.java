@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.manager.proxy;
 
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,47 +24,71 @@ public class BaseProxyManager {
 
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
-    protected Result executeResult(final RequestModel requestModel) {
-        Result result = new APIResultSupport(false);
-        Map<String, Object> map = this.execute(requestModel);
-        if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
-            String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString();
-            if ("0".equals(status)) {
-                result.setSuccess(true);
-            }
-            result.setCode(status);
-        }
-        result.setModels(map);
-        return result;
-    }
-
-    protected Map<String, Object> execute(final RequestModel requestModel) {
-        if (requestModel == null) {
-            throw new IllegalArgumentException("requestModel may not be null");
-        }
-
-        //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
-        this.paramNameAdapter(requestModel);
-
-        //计算参数的签名
-        this.calculateDefaultCode(requestModel);
-
-        return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
-    }
-
     /**
-     * 用于判断和计算默认的code
-     * 如果requestModel中已经存在code则不再生成
+     * 执行request操作，并将返回结果构造程{@link Result}
      *
      * @param requestModel
+     * @return
      */
-    private void calculateDefaultCode(final RequestModel requestModel) {
-        //系统当前时间
-        long ct = System.currentTimeMillis();
-        String passportId = requestModel.getParam("userid").toString();
-        String code = ManagerHelper.generatorCode(passportId, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("ct", ct);
+    protected Result executeResult(final RequestModel requestModel) {
+            Result result = new APIResultSupport(false);
+            try {
+            Map<String, Object> map = this.execute(requestModel);
+            if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
+                String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString();
+                if ("0".equals(status)) {
+                    result.setSuccess(true);
+                }
+                result.setCode(status);
+                map.remove(SHPPUrlConstant.RESULT_STATUS);
+            }
+            }catch(Exception e){
+                log.error(requestModel.getUrl() + " execute error ", e);
+                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            }
+            return result;
+        }
+
+        protected Map<String, Object> execute (final RequestModel requestModel){
+            if (requestModel == null) {
+                throw new IllegalArgumentException("requestModel may not be null");
+            }
+
+            //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
+            this.paramNameAdapter(requestModel);
+
+            //设置默认参数同时计算参数的签名
+            this.setDefaultParam(requestModel);
+
+            return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
+        }
+
+        /**
+         * 用于判断和计算默认的code
+         * 如果requestModel中已经存在code则不再生成
+         *
+         * @param requestModel
+         */
+
+    private void setDefaultParam(final RequestModel requestModel) {
+        //计算默认的codeserverSecret
+        Object codeObject = requestModel.getParam("code");
+        if (codeObject == null || StringUtil.isBlank(codeObject.toString())) {
+
+            //系统当前时间
+            long ct = System.currentTimeMillis();
+            String passport_id = requestModel.getParam("userid").toString();
+            //计算默认的code
+            String code = passport_id + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
+            try {
+                code = Coder.encryptMD5(code);
+            } catch (Exception e) {
+                throw new RuntimeException("calculate default code error", e);
+            }
+            requestModel.addParam("code", code);
+            requestModel.addParam("ct", ct);
+            requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+        }
     }
 
     /**

@@ -20,4 +20,6 @@ public class BaseTest    extends AbstractJUnit4SpringContextTests {
     protected static final String password = "testtest1";
 
     protected static final int clientId = 1100;
+
+    protected static final String modifyIp = "10.1.164.160";
 }

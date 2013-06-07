@@ -9,6 +9,9 @@ public class ErrorUtil {
 
     public static Map<String, String> ERR_CODE_MSG_MAP = Maps.newHashMap();
 
+    // 成功过
+    public static final String SUCCESS = "0";
+
     /**
      * ************************通用的错误代码start********************************
      */
@@ -110,8 +113,22 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 登陆账号被封杀
     public static final String ERR_CODE_ACCOUNT_KILLED = "20232";
+    // 登陆时手机号未被绑定
+    public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
+    // 账号被冻结
+    public static final String ERR_CODE_ACCOUNT_FREEZE = "20234";
+    // 该手机已经绑定了其他用户
+    public static final String ERR_CODE_PHONE_BIND_OTHER_ACCOUNT="20235";
+    // 手机绑定次数超限
+    public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT="20236";
+
     //***************************account 服务的错误代码end*********************************
 
+
+    //***************************account secure 服务的错误代码start*********************************
+
+
+    //***************************account secure 服务的错误代码end*********************************
 
     //***************************账号绑定相关的错误代码start*********************************
     // 绑定第三方账号失败
@@ -122,6 +139,8 @@ public class ErrorUtil {
     public static final String NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT = "20252";
     // 此账号已经注册或绑定过
     public static final String ACCOUNT_ALREADY_REG_OR_BIND = "20253";
+
+
 
     //***************************账号绑定相关的错误代码end*********************************
 
@@ -284,12 +303,15 @@ public class ErrorUtil {
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "当日邮件发送次数已达上限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_FREEZE, "账号被冻结");
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
         ERR_CODE_MSG_MAP.put(NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT, "不允许重复绑定同一类型的账号");
         ERR_CODE_MSG_MAP.put(ACCOUNT_ALREADY_REG_OR_BIND, "此账号已经注册或绑定过，无法再次绑定");
+
+
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
@@ -304,6 +326,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED, "绑定手机失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BIND_FAILED, "修改密保链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED, "绑定密保问题失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOBIND, "手机号未绑定账号");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_OTHER_ACCOUNT, "该手机已经绑定了用户");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT,"手机绑定次数超限");
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");

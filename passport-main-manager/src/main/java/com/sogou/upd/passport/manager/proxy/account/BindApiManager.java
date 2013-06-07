@@ -12,7 +12,7 @@ import java.util.Map;
  * Date: 13-6-7
  * Time: 下午1:57
  */
-public interface BindProxyManager  {
+public interface BindApiManager {
 
     /**
      * 绑定手机接口代理

@@ -7,7 +7,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
 import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.proxy.account.BindProxyManager;
+import com.sogou.upd.passport.manager.proxy.account.BindApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
@@ -15,30 +15,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
  * Time: 下午1:57
  */
 @Component
-public class BindProxyManagerImpl extends BaseProxyManager implements BindProxyManager {
+public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApiManager {
 
-    private static Logger logger = LoggerFactory.getLogger(BindProxyManagerImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(ProxyBindApiManagerImpl.class);
 
     @Override
     public Result bindMobile(BindMobileProxyParams bindMobileProxyParams) {
         Result result = new APIResultSupport(false);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(bindMobileProxyParams);
-            return this.executeResult(requestModelXml);
-        } catch (Exception e) {
-            logger.error("bindMobile Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(bindMobileProxyParams);
+        return this.executeResult(requestModelXml);
     }
 
     @Override
@@ -80,7 +72,6 @@ public class BindProxyManagerImpl extends BaseProxyManager implements BindProxyM
                 }
             }
             requestModelXml.addParams(bindEmailApiParams);
-
             return this.executeResult(requestModelXml);
         } catch (Exception e) {
             logger.error("bindEmail Fail:", e);
