@@ -91,14 +91,14 @@ public class WebAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return result;
         }
 
         String password = regParams.getPassword();
 
         if (!CommonHelper.checkPasswd(password) && StringUtil.checkPwdFormat(password)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
-            return result.toString();
+            return result;
         }
 
         String username = regParams.getUsername();
@@ -110,7 +110,7 @@ public class WebAccountController extends BaseController {
         result = accountRegManager.isAllowRegister(username, ip, token, captchaCode);
 
         if (!result.isSuccess()) {
-            return result.toString();
+            return result;
         }
 
         //验证client_id
@@ -119,7 +119,7 @@ public class WebAccountController extends BaseController {
         //检查client_id格式以及client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result.toString();
+            return result;
         }
 
         //验证用户是否注册过
@@ -128,7 +128,7 @@ public class WebAccountController extends BaseController {
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         }
-        return result.toString();
+        return result;
     }
 
     /**
@@ -146,7 +146,7 @@ public class WebAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return result;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
@@ -154,12 +154,12 @@ public class WebAccountController extends BaseController {
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result.toString();
+            return result;
         }
         String ip = getIp(request);
         //邮件激活
         result = accountRegManager.activeEmail(activeParams, ip);
-        return result.toString();
+        return result;
     }
 
 
@@ -178,9 +178,9 @@ public class WebAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return result;
         }
         result = accountSecureManager.resetWebPassword(resetParams);
-        return result.toString();
+        return result;
     }
 }
