@@ -11,14 +11,14 @@ import javax.validation.constraints.Min;
  * Date: 13-6-6
  * Time: 上午10:21
  */
-public class AuthUserApiParams extends BaseApiParameters{
+public class AuthUserApiParams extends BaseApiParameters {
 
     @NotBlank(message = "passport_id不允许为空")
     private String passport_id;
     @NotBlank(message = "密码不允许为空")
     private String password;
     @Min(0)
-    private int pwdtype; //密码类型，1为md5后的口令，缺省为明文密码
+    private int pwdtype = 0; //密码类型，1为md5后的口令，缺省为明文密码
 
     public String getPassport_id() {
         return passport_id;
