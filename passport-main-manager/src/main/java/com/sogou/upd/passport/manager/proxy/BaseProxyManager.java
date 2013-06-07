@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
+ * 封装代理接口的通用方法
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-6
  * Time: 下午1:36
@@ -35,12 +37,16 @@ public class BaseProxyManager {
             try {
             Map<String, Object> map = this.execute(requestModel);
             if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
-                String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString();
+                String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
                 if ("0".equals(status)) {
                     result.setSuccess(true);
+                    map.remove(SHPPUrlConstant.RESULT_STATUS);
+                    result.setModels(map);
+                }else{
+                    Map.Entry<String,String> entry= ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(),status);
+                    result.setCode(entry.getKey());
+                    result.setMessage(entry.getValue());
                 }
-                result.setCode(status);
-                map.remove(SHPPUrlConstant.RESULT_STATUS);
             }
             }catch(Exception e){
                 log.error(requestModel.getUrl() + " execute error ", e);

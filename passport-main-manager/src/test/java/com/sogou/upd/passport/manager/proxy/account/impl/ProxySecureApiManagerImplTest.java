@@ -26,22 +26,22 @@ public class ProxySecureApiManagerImplTest extends BaseTest {
         //修改密码
         UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
         updatePwdApiParams.setPassport_id(passportId);
-        updatePwdApiParams.setPassword(password);
+        updatePwdApiParams.setPassword(password+"aaa");
         updatePwdApiParams.setModifyip(modifyIp);
         updatePwdApiParams.setNewpassword("testtest2");
         Result result= secureApiManager.updatePwd(updatePwdApiParams);
 //        Assert.assertTrue(result.isSuccess());
         System.out.println(result.toString());
 
-        //再将密码改回来
-        updatePwdApiParams=new UpdatePwdApiParams();
-        updatePwdApiParams.setPassport_id(passportId);
-        updatePwdApiParams.setPassword("testtest2");
-        updatePwdApiParams.setModifyip(modifyIp);
-        updatePwdApiParams.setNewpassword(password);
-        result= secureApiManager.updatePwd(updatePwdApiParams);
-//        Assert.assertTrue(result.isSuccess());
-        System.out.println(result.toString());
+//        //再将密码改回来
+//        updatePwdApiParams=new UpdatePwdApiParams();
+//        updatePwdApiParams.setPassport_id(passportId);
+//        updatePwdApiParams.setPassword("testtest2");
+//        updatePwdApiParams.setModifyip(modifyIp);
+//        updatePwdApiParams.setNewpassword(password);
+//        result= secureApiManager.updatePwd(updatePwdApiParams);
+////        Assert.assertTrue(result.isSuccess());
+//        System.out.println(result.toString());
     }
 
     @Test
