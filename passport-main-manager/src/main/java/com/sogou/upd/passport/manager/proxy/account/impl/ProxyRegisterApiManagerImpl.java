@@ -1,9 +1,16 @@
 package com.sogou.upd.passport.manager.proxy.account.impl;
 
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
+import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.proxy.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.MobileRegApiParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,14 +21,35 @@ import org.springframework.stereotype.Component;
  * To change this template use File | Settings | File Templates.
  */
 @Component("proxyRegisterApiManager")
-public class ProxyRegisterApiManagerImpl implements RegisterApiManager {
+public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
+
+    private static Logger log = LoggerFactory.getLogger(ProxyRegisterApiManagerImpl.class);
+
     @Override
-    public Result mobileRegister(MobileRegApiParams mobileRegApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Result regMobileUser(MobileRegApiParams mobileRegApiParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            requestModelXml.addParams(mobileRegApiParams);
+            result = executeResult(requestModelXml);
+        } catch (Exception e) {
+            log.error("mobile register phone account Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
     @Override
     public Result sendMobileRegCaptcha(BaseMoblieApiParams baseMoblieApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Result result = new APIResultSupport(false);
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            requestModelXml.addParams(baseMoblieApiParams);
+            result = executeResult(requestModelXml);
+        } catch (Exception e) {
+            log.error("mobile register phone account Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 }

@@ -62,15 +62,16 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         Result result = new APIResultSupport(false);
         try {
             RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BIND_EMAIL, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            int pwdType = bindEmailApiParams.getPwdtype();
-            if (pwdType == 0) {
-                try {
-                    String password = Coder.encryptMD5(bindEmailApiParams.getPassword());
-                    bindEmailApiParams.setPassword(password);
-                } catch (Exception e) {
-                    throw new RuntimeException("SecureProxyManagerImpl.bindEmail md5 password error", e);
-                }
-            }
+            bindEmailApiParams.setPwdtype(1);
+//            int pwdType = bindEmailApiParams.getPwdtype();
+//            if (pwdType == 0) {
+//                try {
+//                    String password = Coder.encryptMD5(bindEmailApiParams.getPassword());
+//                    bindEmailApiParams.setPassword(password);
+//                } catch (Exception e) {
+//                    throw new RuntimeException("SecureProxyManagerImpl.bindEmail md5 password error", e);
+//                }
+//            }
             requestModelXml.addParams(bindEmailApiParams);
             return this.executeResult(requestModelXml);
         } catch (Exception e) {

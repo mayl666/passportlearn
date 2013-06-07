@@ -30,7 +30,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         Result result = new APIResultSupport(false);
         try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, "info");
+            // TODO 暂时未发现有应用传这个参数，所有不要求应用传，如果有应用传，在manager里赋值
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            authUserParameters.setPwdtype(1);
             requestModelXml.addParams(authUserParameters);
             result = executeResult(requestModelXml);
         } catch (Exception e) {
@@ -44,7 +46,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result mobileAuthToken(MobileAuthTokenApiParams mobileAuthTokenApiParams) {
         Result result = new APIResultSupport(false);
         try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, "info");
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
             requestModelXml.addParams(mobileAuthTokenApiParams);
             result = executeResult(requestModelXml);
         } catch (Exception e) {

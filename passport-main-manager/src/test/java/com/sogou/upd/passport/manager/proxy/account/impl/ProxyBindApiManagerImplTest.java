@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileApiParams;
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.inject.Inject;
 
@@ -18,8 +19,8 @@ import javax.inject.Inject;
  */
 public class ProxyBindApiManagerImplTest extends BaseTest {
 
-    @Inject
-    private BindApiManager bindApiManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     @Test
     public void testBindMobile(){
@@ -27,7 +28,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
         bindMobileApiParams.setPassport_id(passportId);
         bindMobileApiParams.setMobile("18210193340");
         bindMobileApiParams.setClient_id(clientId);
-        Result result = bindApiManager.bindMobile(bindMobileApiParams);
+        Result result = proxyBindApiManager.bindMobile(bindMobileApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
 
@@ -39,7 +40,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
         BaseMoblieApiParams unBindMobileApiParams =new BaseMoblieApiParams();
         unBindMobileApiParams.setMobile("18210193340");
         unBindMobileApiParams.setClient_id(clientId);
-        Result result = bindApiManager.unbindMobile(unBindMobileApiParams);
+        Result result = proxyBindApiManager.unbindMobile(unBindMobileApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
     }
@@ -52,7 +53,8 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
         bindEmailApiParams.setPassword(password);
         bindEmailApiParams.setClient_id(clientId);
         bindEmailApiParams.setPassport_id(passportId);
-        Result result = bindApiManager.bindEmail(bindEmailApiParams);
+        bindEmailApiParams.setPwdtype(1);
+        Result result = proxyBindApiManager.bindEmail(bindEmailApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
     }

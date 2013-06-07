@@ -18,6 +18,8 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
+        // TODO 当Manager里方法只调用一个service时，需要把service的返回值改为Result
+        // TODO 例如这里调用AccountService的verifyUserPwdVaild（）方法，就需要把返回值改为Result
         return null;
     }
 
