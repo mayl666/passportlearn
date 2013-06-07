@@ -3,9 +3,9 @@ package com.sogou.upd.passport.manager.proxy.account.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.proxy.account.BindApiManager;
+import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
-import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
+import com.sogou.upd.passport.manager.proxy.account.form.BindMobileApiParams;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -23,11 +23,11 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
     @Test
     public void testBindMobile(){
-        BindMobileProxyParams bindMobileProxyParams = new BindMobileProxyParams();
-        bindMobileProxyParams.setPassport_id(passportId);
-        bindMobileProxyParams.setMobile("18210193340");
-        bindMobileProxyParams.setClient_id(clientId);
-        Result result = bindApiManager.bindMobile(bindMobileProxyParams);
+        BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
+        bindMobileApiParams.setPassport_id(passportId);
+        bindMobileApiParams.setMobile("18210193340");
+        bindMobileApiParams.setClient_id(clientId);
+        Result result = bindApiManager.bindMobile(bindMobileApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
 
@@ -36,10 +36,10 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
 
     public void testUnbindMobile(){
-        UnBindMobileProxyParams unBindMobileProxyParams=new UnBindMobileProxyParams();
-        unBindMobileProxyParams.setMobile("18210193340");
-        unBindMobileProxyParams.setClient_id(clientId);
-        Result result = bindApiManager.unbindMobile(unBindMobileProxyParams);
+        BaseMoblieApiParams unBindMobileApiParams =new BaseMoblieApiParams();
+        unBindMobileApiParams.setMobile("18210193340");
+        unBindMobileApiParams.setClient_id(clientId);
+        Result result = bindApiManager.unbindMobile(unBindMobileApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
     }

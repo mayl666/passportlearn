@@ -8,9 +8,9 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
 import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.proxy.account.BindApiManager;
+import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
-import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
+import com.sogou.upd.passport.manager.proxy.account.form.BindMobileApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,34 +20,34 @@ import org.springframework.stereotype.Component;
  * Date: 13-6-7
  * Time: 下午1:57
  */
-@Component
+@Component("proxyBindApiManager")
 public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApiManager {
 
     private static Logger logger = LoggerFactory.getLogger(ProxyBindApiManagerImpl.class);
 
     @Override
-    public Result bindMobile(BindMobileProxyParams bindMobileProxyParams) {
+    public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
         Result result = new APIResultSupport(false);
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(bindMobileProxyParams);
+        requestModelXml.addParams(bindMobileApiParams);
         return this.executeResult(requestModelXml);
     }
 
     @Override
-    public Result unbindMobile(UnBindMobileProxyParams unBindMobileProxyParams) {
+    public Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams) {
         Result result = new APIResultSupport(false);
         try {
             RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
             long ct = System.currentTimeMillis();
-            String code = unBindMobileProxyParams.getMobile() + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
+            String code = baseMoblieApiParams.getMobile() + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
             try {
                 code = Coder.encryptMD5(code);
             } catch (Exception e) {
-                throw new RuntimeException("calculate code error phone:" + unBindMobileProxyParams.getMobile(), e);
+                throw new RuntimeException("calculate code error phone:" + baseMoblieApiParams.getMobile(), e);
             }
-            unBindMobileProxyParams.setCode(code);
-            unBindMobileProxyParams.setCt(ct);
-            requestModelXml.addParams(unBindMobileProxyParams);
+            baseMoblieApiParams.setCode(code);
+            baseMoblieApiParams.setCt(ct);
+            requestModelXml.addParams(baseMoblieApiParams);
 
             return this.executeResult(requestModelXml);
         } catch (Exception e) {
@@ -75,6 +75,20 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
             return this.executeResult(requestModelXml);
         } catch (Exception e) {
             logger.error("bindEmail Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public Result queryPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.QUERY_MOBILE_BING_ACCOUNT, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            requestModelXml.addParams(baseMoblieApiParams);
+            return executeResult(requestModelXml);
+        } catch (Exception e) {
+            logger.error("query PassportId by Mobile Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;

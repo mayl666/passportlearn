@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.MobileAuthTokenApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,6 +39,12 @@ public class LoginApiController {
         this.proxyLoginApiManager = proxyLoginApiManager;
     }
 
+    /**
+     * web端校验用户名和密码是否正确
+     * @param request
+     * @param params
+     * @return
+     */
     @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
     @ResponseBody
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
@@ -50,13 +57,42 @@ public class LoginApiController {
             return result.toString();
         }
         // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getClient_id(), params.getPassport_id(), params.getCt(), params.getCode());
-        if(!result.isSuccess()){
+        result = configureManager.verifyInternalRequest(params.getPassport_id(), params.getClient_id(), params.getCt(), params.getCode());
+        if (!result.isSuccess()) {
             result.setCode(ErrorUtil.ERR_CODE_COM_SING);
             return result.toString();
         }
-            // 调用内部接口
+        // 调用内部接口
         result = proxyLoginApiManager.webAuthUser(params);
+        return result.toString();
+    }
+
+    /**
+     * 手机应用使用第三方登录完成之后，会通过302重定向的方式将token带给产品的服务器端，
+     * 产品的服务器端通过传入userid和token验证用户的合法性，且token具有较长的有效期。
+     * TODO 注意，目前接入应用全部是验证token，没有传入passport_id
+     *
+     * @return
+     */
+    @RequestMapping(value = "/account/authtoken", method = RequestMethod.POST)
+    @ResponseBody
+    public Object mobileAuthToken(HttpServletRequest request, MobileAuthTokenApiParams params) {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        // 签名和时间戳校验
+        result = configureManager.verifyInternalRequest(params.getToken(), params.getClient_id(), params.getCt(), params.getCode());
+        if (!result.isSuccess()) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+            return result.toString();
+        }
+        // 调用内部接口
+        result = proxyLoginApiManager.mobileAuthToken(params);
         return result.toString();
     }
 

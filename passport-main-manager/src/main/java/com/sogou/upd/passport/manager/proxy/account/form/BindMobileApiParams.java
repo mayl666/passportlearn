@@ -4,15 +4,25 @@ import com.sogou.upd.passport.manager.proxy.BaseApiParameters;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 解绑手机
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
- * Time: 上午11:06
+ * Time: 上午10:25
  */
-public class UnBindMobileProxyParams extends BaseApiParameters {
+public class BindMobileApiParams extends BaseApiParameters {
 
-    @NotBlank(message="要解绑的手机不能为空！")
+    @NotBlank(message = "passport_id不允许为空")
+    private String passport_id;
+
+    @NotBlank(message = "新手机号不允许为空")
     private String mobile;
+
+    public String getPassport_id() {
+        return passport_id;
+    }
+
+    public void setPassport_id(String passport_id) {
+        this.passport_id = passport_id;
+    }
 
     public String getMobile() {
         return mobile;
