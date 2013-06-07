@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.proxy.manager.account;
 
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.proxy.account.AuthUserParameters;
+import com.sogou.upd.passport.proxy.manager.from.login.AuthUserParameters;
 
 import java.util.Map;
 

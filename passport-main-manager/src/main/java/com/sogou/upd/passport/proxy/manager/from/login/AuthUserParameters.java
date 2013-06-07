@@ -1,6 +1,6 @@
-package com.sogou.upd.passport.manager.form.proxy.account;
+package com.sogou.upd.passport.proxy.manager.from.login;
 
-import com.sogou.upd.passport.manager.form.proxy.BaseApiParameters;
+import com.sogou.upd.passport.proxy.manager.from.BaseApiParameters;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-6
  * Time: 上午10:21
  */
-public class AuthUserParameters extends BaseApiParameters{
+public class AuthUserParameters extends BaseApiParameters {
 
     @NotBlank(message = "1")
     private String passport_id;

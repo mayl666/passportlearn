@@ -15,5 +15,7 @@ public class SHPPUrlConstant {
     //检查用户名密码是否正确
     public  static final String AUTH_USER=BASE_URL+"authuser";
 
+    //绑定手机号
+    public  static final String BING_MOBILE=BASE_URL+"wapbindmobile";
 
 }

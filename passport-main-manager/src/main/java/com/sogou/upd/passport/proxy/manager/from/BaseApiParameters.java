@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.manager.form.proxy;
+package com.sogou.upd.passport.proxy.manager.from;
 
 import org.hibernate.validator.constraints.NotBlank;
 
