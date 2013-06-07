@@ -52,7 +52,8 @@ public class AccountSecureInternalController {
             return result.toString();
         }
 
-        return accountSecureManager.queryAccountSecureInfo(passportId, clientId, false);
+        result = accountSecureManager.queryAccountSecureInfo(passportId, clientId, false);
+        return result.toString();
     }
 
     @RequestMapping(value = "/security/resetpwd", method = RequestMethod.POST)
@@ -70,7 +71,8 @@ public class AccountSecureInternalController {
         String password = params.getPassword();
 
         // 第一步，直接修改密码
-        return accountSecureManager.resetPassword(passportId, clientId, password);
+        result = accountSecureManager.resetPassword(passportId, clientId, password);
+        return result.toString();
     }
 
 }
