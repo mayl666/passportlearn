@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.proxy.account;
 
 import com.sogou.upd.passport.manager.proxy.account.form.*;
-
+import com.sogou.upd.passport.common.result.Result;
 import java.util.Map;
 
 /**
@@ -17,12 +17,12 @@ public interface SecureProxyManager {
      * @param updatePwdApiParams
      * @return
      */
-    Map<String, Object> updatePwd(UpdatePwdApiParams updatePwdApiParams);
+    Result updatePwd(UpdatePwdApiParams updatePwdApiParams);
 
     /**
      * 修改密保问题和答案
      * @param updateQuesApiParams
      * @return
      */
-    Map<String, Object> updateQues(UpdateQuesApiParams updateQuesApiParams);
+    Result updateQues(UpdateQuesApiParams updateQuesApiParams);
 }

@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.manager.proxy.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.XMLUtil;
 import com.sogou.upd.passport.manager.proxy.account.BindProxyManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -27,17 +29,21 @@ public class BindProxyManagerImplTest  extends BaseTest {
         bindMobileProxyParams.setPassport_id(passportId);
         bindMobileProxyParams.setMobile("18210193340");
         bindMobileProxyParams.setClient_id(clientId);
-        Map<String,Object> map= bindProxyManager.bindMobile(bindMobileProxyParams);
-        System.out.println(XMLUtil.mapToXml("result", map).asXML());
+        Result result = bindProxyManager.bindMobile(bindMobileProxyParams);
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
+
+        this.testUnbindMobile();
     }
 
-    @Test
+
     public void testUnbindMobile(){
         UnBindMobileProxyParams unBindMobileProxyParams=new UnBindMobileProxyParams();
         unBindMobileProxyParams.setMobile("18210193340");
         unBindMobileProxyParams.setClient_id(clientId);
-        Map<String,Object> map= bindProxyManager.unbindMobile(unBindMobileProxyParams);
-        System.out.println(XMLUtil.mapToXml("result", map).asXML());
+        Result result = bindProxyManager.unbindMobile(unBindMobileProxyParams);
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
     }
 
     @Test
@@ -48,7 +54,8 @@ public class BindProxyManagerImplTest  extends BaseTest {
         bindEmailApiParams.setPassword(password);
         bindEmailApiParams.setClient_id(clientId);
         bindEmailApiParams.setPassport_id(passportId);
-        Map<String,Object> map= bindProxyManager.bindEmail(bindEmailApiParams);
-        System.out.println(XMLUtil.mapToXml("result", map).asXML());
+        Result result = bindProxyManager.bindEmail(bindEmailApiParams);
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
     }
 }

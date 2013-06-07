@@ -25,7 +25,7 @@ public class AccountLoginManagerTest extends BaseTest {
         authUserParameters.setPassport_id(passportId);
         authUserParameters.setClient_id(clientId);
         authUserParameters.setPassword("testtest1");
-        Map<String, Object> map = (Map<String, Object>) accountLoginProxyManager.authUser(authUserParameters);
+        Map<String, Object> map = accountLoginProxyManager.authUser(authUserParameters);
         String result = XMLUtil.mapToXml("result", map).asXML();
         System.out.println(result);
     }

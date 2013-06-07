@@ -4,13 +4,12 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -25,8 +24,19 @@ public class BaseProxyManager {
 
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
-    @Autowired
-    private AppConfigService appConfigService;
+    protected Result executeResult(final RequestModel requestModel) {
+        Result result = new APIResultSupport(false);
+        Map<String, Object> map= this.execute(requestModel);
+        if(map.containsKey(SHPPUrlConstant.RESULT_STATUS)){
+            String status=map.get(SHPPUrlConstant.RESULT_STATUS).toString();
+            if("0".equals(status)){
+                result.setSuccess(true);
+            }
+            result.setCode(status);
+        }
+        result.setModels(map);
+        return result;
+    }
 
     protected Map<String, Object> execute(final RequestModel requestModel) {
         if (requestModel == null) {

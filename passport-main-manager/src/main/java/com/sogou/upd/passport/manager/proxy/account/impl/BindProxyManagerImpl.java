@@ -2,12 +2,17 @@ package com.sogou.upd.passport.manager.proxy.account.impl;
 
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
 import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.proxy.account.BindProxyManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -20,44 +25,68 @@ import java.util.Map;
 @Component
 public class BindProxyManagerImpl extends BaseProxyManager implements BindProxyManager {
 
-    @Override
-    public Map<String, Object> bindMobile(BindMobileProxyParams bindMobileProxyParams) {
-        RequestModelXml requestModelXml=new RequestModelXml(SHPPUrlConstant.BING_MOBILE,SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(bindMobileProxyParams);
-        return this.execute(requestModelXml);
-    }
+    private static Logger logger = LoggerFactory.getLogger(BindProxyManagerImpl.class);
 
     @Override
-    public Map<String, Object> unbindMobile(UnBindMobileProxyParams unBindMobileProxyParams){
-        RequestModelXml requestModelXml=new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE,SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        long ct=System.currentTimeMillis();
-        String code= unBindMobileProxyParams.getMobile()+SHPPUrlConstant.APP_ID+SHPPUrlConstant.APP_KEY+ct;
+    public Result bindMobile(BindMobileProxyParams bindMobileProxyParams) {
+        Result result = new APIResultSupport(false);
         try {
-            code= Coder.encryptMD5(code);
-
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            requestModelXml.addParams(bindMobileProxyParams);
+            return this.executeResult(requestModelXml);
         } catch (Exception e) {
-            throw new RuntimeException("calculate code error phone:"+ unBindMobileProxyParams.getMobile(),e);
+            logger.error("bindMobile Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-        unBindMobileProxyParams.setCode(code);
-        unBindMobileProxyParams.setCt(ct);
-        requestModelXml.addParams(unBindMobileProxyParams);
-        return this.execute(requestModelXml);
+        return result;
     }
 
     @Override
-    public Map<String, Object> bindEmail(BindEmailApiParams bindEmailApiParams){
-        RequestModelXml requestModelXml=new RequestModelXml(SHPPUrlConstant.BIND_EMAIL,SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        int pwdType=bindEmailApiParams.getPwdtype();
-        if(pwdType==0){
+    public Result unbindMobile(UnBindMobileProxyParams unBindMobileProxyParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            long ct = System.currentTimeMillis();
+            String code = unBindMobileProxyParams.getMobile() + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
             try {
-                String password=Coder.encryptMD5(bindEmailApiParams.getPassword());
-                bindEmailApiParams.setPassword(password);
+                code = Coder.encryptMD5(code);
             } catch (Exception e) {
-                throw new RuntimeException("SecureProxyManagerImpl.bindEmail md5 password error",e);
+                throw new RuntimeException("calculate code error phone:" + unBindMobileProxyParams.getMobile(), e);
             }
+            unBindMobileProxyParams.setCode(code);
+            unBindMobileProxyParams.setCt(ct);
+            requestModelXml.addParams(unBindMobileProxyParams);
+
+            return this.executeResult(requestModelXml);
+        } catch (Exception e) {
+            logger.error("unbindMobile Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-        requestModelXml.addParams(bindEmailApiParams);
-        return this.execute(requestModelXml);
+        return result;
+    }
+
+    @Override
+    public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BIND_EMAIL, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            int pwdType = bindEmailApiParams.getPwdtype();
+            if (pwdType == 0) {
+                try {
+                    String password = Coder.encryptMD5(bindEmailApiParams.getPassword());
+                    bindEmailApiParams.setPassword(password);
+                } catch (Exception e) {
+                    throw new RuntimeException("SecureProxyManagerImpl.bindEmail md5 password error", e);
+                }
+            }
+            requestModelXml.addParams(bindEmailApiParams);
+
+            return this.executeResult(requestModelXml);
+        } catch (Exception e) {
+            logger.error("bindEmail Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
 }
