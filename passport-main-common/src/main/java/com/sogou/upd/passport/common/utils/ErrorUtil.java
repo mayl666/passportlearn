@@ -116,14 +116,15 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 登陆账号被封杀
     public static final String ERR_CODE_ACCOUNT_KILLED = "20232";
-    // 登陆时手机号未被绑定
+    //TODO 手机号未被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
-    // 账号被冻结
-    public static final String ERR_CODE_ACCOUNT_FREEZE = "20234";
-    // 该手机已经绑定了其他用户
-    public static final String ERR_CODE_PHONE_BIND_OTHER_ACCOUNT="20235";
-    // 手机绑定次数超限
+    //TODO 手机绑定次数超限
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT="20236";
+    //TODO 手机解除绑定失败
+    public static final String ERR_CODE_PHONE_UNBIND_FAILED="20237";
+    //TODO 密码输入次数过多
+    public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
+
 
     //***************************account 服务的错误代码end*********************************
 
@@ -307,14 +308,13 @@ public class ErrorUtil {
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "当日邮件发送次数已达上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_FREEZE, "账号被冻结");
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
         ERR_CODE_MSG_MAP.put(NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT, "不允许重复绑定同一类型的账号");
         ERR_CODE_MSG_MAP.put(ACCOUNT_ALREADY_REG_OR_BIND, "此账号已经注册或绑定过，无法再次绑定");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED,"手机解除绑定失败");
 
 
         // acount secure info
@@ -331,7 +331,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BIND_FAILED, "修改密保链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED, "绑定密保问题失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOBIND, "手机号未绑定账号");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_OTHER_ACCOUNT, "该手机已经绑定了用户");
+//        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_OTHER_ACCOUNT, "该手机已经绑定了用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT,"手机绑定次数超限");
 
         // profile
