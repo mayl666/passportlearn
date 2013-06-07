@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.api;
 
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
@@ -39,19 +40,23 @@ public class OAuthAuthorizeController extends BaseController {
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenASRequest oauthRequest;
+        Result result = new APIResultSupport(false);
         try {
             oauthRequest = new OAuthTokenASRequest(request);
         } catch (OAuthProblemException e) {
-            return Result.buildError(e.getError(), e.getDescription());
+            result.setCode(e.getError());
+            result.setMessage(e.getDescription());
+            return result;
         }
 
         int clientId = oauthRequest.getClientId();
 
         // 检查client_id和client_secret是否有效
         if (!configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
-            return Result.buildError(ErrorUtil.INVALID_CLIENT);
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            return result;
         }
-        Result result = accountLoginManager.authorize(oauthRequest);
+        result = accountLoginManager.authorize(oauthRequest);
         return result;
     }
 

@@ -54,7 +54,6 @@ public abstract class OAuthClientResponse {
         this.setContentType(contentType);
         this.setResponseCode(responseCode);
         this.validate();
-
     }
 
     protected void validate() throws OAuthProblemException {

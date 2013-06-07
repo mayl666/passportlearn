@@ -22,7 +22,10 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_UUID_CAPTCHA = "SP.UUID:CAPTCHA_"; // 注册UUID与验证码映射
     public static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = "SP.PASSPORTID:RESETPWDNUM_"; // passportId与当日修改密码次数映射
     // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM = "SP.PASSPORTID:RESETPWDSENDEMAILNUM_"; // passportId与当日重置密码邮件次数
-    public static final String CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM = "SP.PASSPORTID:LOGINFAILEDNUM_"; //passportId连续登陆失败的次数
+    public static final String CACHE_PREFIX_USERNAME_LOGINFAILEDNUM = "SP.USERNAME:LOGINFAILEDNUM_"; //username连续登陆失败的次数
+    public static final String CACHE_PREFIX_IP_LOGINFAILEDNUM = "SP.IP:LOGINFAILEDNUM_"; //IP连续登陆失败的次数
+    public static final String CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM = "SP.USERNAME:LOGINNUM_"; //username登陆成功的次数
+    public static final String CACHE_PREFIX_IP_LOGINSUCCESSNUM = "SP.IP:LOGINNUM_"; //IP登陆成功的次数
     // public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILTOKEN = "SP.PASSPORTID:BINDEMAILTOKEN_MAP_"; // passportId与绑定邮件token映射
     // public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILSENDNUM = "SP.PASSPORTID:BINDEMAILSENDNUM_"; // passportId与绑定邮件发送次数映射
     public static final String CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE = "SP.PASSPORTID:RESETPWDSECURECODE_"; // passportId与重置密码secureCode映射

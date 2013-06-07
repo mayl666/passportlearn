@@ -9,6 +9,7 @@ import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,6 +146,39 @@ public class OAuthUtils {
             return true;
         }
         return false;
+    }
+
+    /**
+     * QQ OAuth授权根据code换取access_token时，
+     * 返回的格式为(callback：{json})
+     * 特殊的解析json方法
+     * @param body
+     * @return Map
+     * @throws OAuthProblemException
+     */
+    public static Map<String, Object> parseQQIrregularJSONObject(String body) throws OAuthProblemException {
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        int fromIndex1 = body.indexOf("{") - 1;
+        int fromIndex2 = body.lastIndexOf("}") + 1;
+        if (isJsonBodyBlank(fromIndex1, fromIndex2)) {
+            String json = body.substring(fromIndex1 + 1, fromIndex2);
+            try {
+                parameters = new ObjectMapper().readValue(json, Map.class);
+            } catch (Exception e) {
+                throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
+                        "Invalid response! Response body is not " + OAuth.ContentType.JSON + " encoded");
+            }
+        } else {
+            throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE, "Invalid response! Response body is not "
+                    + OAuth.ContentType.HTML_TEXT + " encoded");
+        }
+
+        return parameters;
+    }
+
+    private static boolean isJsonBodyBlank(int index, int lastIndex){
+        return index != -2 && lastIndex != 0;
     }
 
 	/*====================  Exception Handle Method========================*/
@@ -323,5 +357,7 @@ public class OAuthUtils {
             throw new RuntimeException(wow.getMessage(), wow);
         }
     }
+
+
 
 }

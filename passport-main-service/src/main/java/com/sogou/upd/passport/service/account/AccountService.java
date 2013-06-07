@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 
@@ -41,7 +40,7 @@ public interface AccountService {
    * @return 不超出返回true，超出返回false
    * @throws ServiceException
    */
-  public boolean checkResetPwdLimited(String passportId) throws ServiceException;
+  public boolean checkLimitResetPwd(String passportId) throws ServiceException;
   /**
    * 验证账号的有效性，是否为正常用户
    *
@@ -105,17 +104,18 @@ public interface AccountService {
 
   /**
     * 根据用户连续登陆失败次数确定用户登陆时是否需要输入验证码
-    * @param passportId
+    * @param username
     * @return
     */
-  public boolean loginFailedNumNeedCaptcha(String passportId);
+  public boolean loginFailedNumNeedCaptcha(String username, String ip);
 
     /**
-     * 用户登陆失败一次，增加一次技术
-     * @param passportId
+     * 用户登陆失败一次，增加一次
+     * @param username
+     * @param ip
      * @return
      */
-  public long incLoginFailedNum(String passportId);
+  public long incLoginFailedNum(String username,String ip);
 
     /**
      *用户登陆成功，将失败次数清零
@@ -144,4 +144,20 @@ public interface AccountService {
    */
 
   public boolean updateState(Account account, int newState) throws ServiceException;
+
+  /**
+   *
+   * @param username
+   * @param ip
+   * @return
+   */
+  public long incLoginSuccessNum(String username,String ip);
+
+    /**判断用户是否在黑名单中,只要username或者ip有一个在黑名单中，即返回true
+     *
+     * @param username
+     * @param ip
+     * @return
+     */
+  public boolean checkUserInBlackList(String username,String ip);
 }

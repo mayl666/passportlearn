@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.connect;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOBindTokenRequest;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 
 /**
  * Created with IntelliJ IDEA.

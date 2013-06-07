@@ -1,58 +1,52 @@
 package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.dataobject.RenrenOAuthTokenDO;
+import com.sogou.upd.passport.oauth2.openresource.vo.RenrenOAuthTokenVO;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.IOException;
+import java.util.Map;
 
-public class RenrenJSONAccessTokenResponse extends AbstractAccessTokenResponse {
+public class RenrenJSONAccessTokenResponse extends OAuthAccessTokenResponse {
 
-    private RenrenOAuthTokenDO oAuthTokenDO;
+    private RenrenOAuthTokenVO oAuthTokenDO;
 
     @Override
     public void setBody(String body) throws OAuthProblemException {
         this.body = body;
         try {
-            this.oAuthTokenDO = new ObjectMapper().readValue(this.body, RenrenOAuthTokenDO.class);
-        } catch (IOException e) {
+            this.parameters = new ObjectMapper().readValue(this.body, Map.class);
+        } catch (Exception e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
                     "Invalid response! Response body is not " + OAuth.ContentType.JSON + " encoded");
         }
     }
 
-    @Override
-    public String getAccessToken() {
-        return oAuthTokenDO.getAccess_token();
-    }
-
-    @Override
-    public Long getExpiresIn() {
-        String value = oAuthTokenDO.getExpires_in();
-        return Strings.isNullOrEmpty(value) ? null : Long.valueOf(value);
-    }
-
-    @Override
-    public String getRefreshToken() {
-        return oAuthTokenDO.getRefresh_token();
-    }
-
-    @Override
-    public String getScope() {
-        return null;
+    private RenrenOAuthTokenVO getRenrenOAuthTokenVO() throws Exception {
+        return new ObjectMapper().readValue(this.body, RenrenOAuthTokenVO.class);
     }
 
     @Override
     public String getOpenid() {
-        return oAuthTokenDO.getUser().getId();
+        try {
+            RenrenOAuthTokenVO renrenOAuthTokenVO = getRenrenOAuthTokenVO();
+            return renrenOAuthTokenVO.getUser().getId();
+        } catch (Exception e) {
+            log.error("Connect OAuthToken Response parse error, connect:renren, body:"+body, e);
+            return "";
+        }
     }
 
     @Override
     public String getNickName() {
-        return oAuthTokenDO.getUser().getName();
+        try {
+            RenrenOAuthTokenVO renrenOAuthTokenVO = getRenrenOAuthTokenVO();
+            return renrenOAuthTokenVO.getUser().getName();
+        } catch (Exception e) {
+            log.error("Connect OAuthToken Response parse error, connect:renren, body:"+body, e);
+            return "";
+        }
     }
 
 }

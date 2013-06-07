@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -37,40 +38,46 @@ public class OpenAPIUsersController extends BaseConnectController {
     @RequestMapping(value = {"/internal/connect/users/getopenid", "/connect/users/getopenid"}, method = RequestMethod.GET)
     @ResponseBody
     public Object getopenid(HttpServletRequest request, ConnectObtainParams reqParams) throws Exception {
+        Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
         }
         //验证client_id
         int clientId;
         try {
             clientId = Integer.parseInt(reqParams.getClient_id());
         } catch (NumberFormatException e) {
-            return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
+            result.setCode(ErrorUtil.ERR_FORMAT_CLIENTID);
+            return result;
         }
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result;
         }
 
         String passportId = reqParams.getPassport_id();
         String providerStr = reqParams.getProvider();
         int provider = AccountTypeEnum.getProvider(providerStr);
 
-        Result result = openAPIUsersManager.obtainOpenIdByPassportId(passportId, clientId, provider);
-
+        result = openAPIUsersManager.obtainOpenIdByPassportId(passportId, clientId, provider);
         return result;
     }
 
     @RequestMapping(value = "/connect/users/info", method = RequestMethod.GET)
     @ResponseBody
     public Object obtainConnectInfo(ConnectClientObtainParams reqParams) throws Exception {
-
+        Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
         }
 
         //验证client_id
@@ -78,22 +85,23 @@ public class OpenAPIUsersController extends BaseConnectController {
         try {
             clientId = Integer.parseInt(reqParams.getClient_id());
         } catch (NumberFormatException e) {
-            return Result.buildError(ErrorUtil.ERR_FORMAT_CLIENTID);
+            result.setCode(ErrorUtil.ERR_FORMAT_CLIENTID);
+            return result;
         }
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result;
         }
         String accessToken = reqParams.getAccess_token();
         String providerStr = reqParams.getProvider();
         int provider = AccountTypeEnum.getProvider(providerStr);
 
-        Result result;
         ConnectConfig connectConfig = configureManager.obtainConnectConfig(clientId, provider);
         if (connectConfig != null) {
             result = openAPIUsersManager.obtainUserInfo(accessToken, provider, connectConfig);
         } else {
-            result = Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
     }

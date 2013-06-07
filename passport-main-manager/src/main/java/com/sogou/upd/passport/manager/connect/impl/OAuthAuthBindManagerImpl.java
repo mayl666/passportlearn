@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -44,6 +45,7 @@ public class OAuthAuthBindManagerImpl implements OAuthAuthBindManager {
 
     @Override
     public Result connectSSOBind(OAuthSinaSSOBindTokenRequest oauthRequest, int provider) {
+        Result result = new APIResultSupport(false);
         int clientId = oauthRequest.getClientId();
         String bindAccessToken = oauthRequest.getBindToken();
         String openid = oauthRequest.getOpenid();
@@ -53,17 +55,18 @@ public class OAuthAuthBindManagerImpl implements OAuthAuthBindManager {
             // 检查主账号access_token是否有效
             AccountToken bindAccountToken = accountTokenService.verifyAccessToken(bindAccessToken);
             if (bindAccessToken == null) {
-                return Result.buildError(ErrorUtil.ERR_ACCESS_TOKEN);
+                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return result;
             }
 
             String bindPassportId = bindAccountToken.getPassportId();
             Result inspectsPassportIdRule = isAbleBindDependBindPassportId(bindPassportId, provider, appKey);
-            if (!"0".equals(inspectsPassportIdRule.getStatus())) {
+            if (!inspectsPassportIdRule.isSuccess()) {
                 return inspectsPassportIdRule;
             }
 
             Result inspectsOpenidRule = isAbleBindDependOpenid(openid, provider, appKey);
-            if (!"0".equals(inspectsPassportIdRule.getStatus())) {
+            if (!inspectsOpenidRule.isSuccess()) {
                 return inspectsOpenidRule;
             }
 
@@ -72,17 +75,22 @@ public class OAuthAuthBindManagerImpl implements OAuthAuthBindManager {
                     oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
             boolean isInitialConnectToken = connectTokenService.initialConnectToken(newConnectToken);
             if (!isInitialConnectToken) {
-                return Result.buildError(ErrorUtil.BIND_CONNECT_ACCOUNT_FAIL);
+                result.setCode(ErrorUtil.BIND_CONNECT_ACCOUNT_FAIL);
+                return result;
             }
             ConnectRelation newConnectRelation = ManagerHelper.buildConnectRelation(openid, provider, bindPassportId, appKey);
             boolean isInitialConnectRelation = connectRelationService.initialConnectRelation(newConnectRelation);
             if (!isInitialConnectRelation) {
-                return Result.buildError(ErrorUtil.BIND_CONNECT_ACCOUNT_FAIL);
+                result.setCode(ErrorUtil.BIND_CONNECT_ACCOUNT_FAIL);
+                return result;
             }
-            return Result.buildSuccess("绑定成功", null, null);
+            result.setSuccess(true);
+            result.setMessage("绑定成功");
+            return result;
         } catch (ServiceException e) {
             logger.error("SSO bind Account Fail:", e);
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
     }
 
@@ -96,19 +104,24 @@ public class OAuthAuthBindManagerImpl implements OAuthAuthBindManager {
      * @throws ServiceException
      */
     private Result isAbleBindDependBindPassportId(String bindPassportId, int provider, String appKey) throws ServiceException {
+        Result result = new APIResultSupport(false);
 
         PassportIDInfoDO passportIDInfoDO = PassportIDGenerator.parsePassportId(bindPassportId);
         String bindAccountTypeStr = passportIDInfoDO.getAccountTypeStr();
         int bindProvider = AccountTypeEnum.getProvider(bindAccountTypeStr);
         if (bindProvider == provider) {   // 不能绑定与主账号同一类型的账号
-            return Result.buildError(ErrorUtil.CONNOT_BIND_SAME_TYPE_ACCOUNT);
+            result.setCode(ErrorUtil.CONNOT_BIND_SAME_TYPE_ACCOUNT);
+            return result;
         }
 
         String openid = connectTokenService.querySpecifyOpenId(bindPassportId, provider, appKey);
         if (openid == null) {
-            return Result.buildError(ErrorUtil.NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT);
+            result.setCode(ErrorUtil.NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT);
+            return result;
         }
-        return Result.buildSuccess("0", null, null);
+        result.setSuccess(true);
+        result.setMessage("");
+        return result;
     }
 
     /**
@@ -119,10 +132,14 @@ public class OAuthAuthBindManagerImpl implements OAuthAuthBindManager {
      * @return
      */
     private Result isAbleBindDependOpenid(String openid, int provider, String appKey) throws ServiceException {
+        Result result = new APIResultSupport(false);
         ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(openid, provider, appKey);
         if (connectRelation != null) {
-            return Result.buildError(ErrorUtil.ACCOUNT_ALREADY_REG_OR_BIND);
+            result.setCode(ErrorUtil.ACCOUNT_ALREADY_REG_OR_BIND);
+            return result;
         }
-        return Result.buildSuccess("0", null, null);
+        result.setSuccess(true);
+        result.setMessage("");
+        return result;
     }
 }

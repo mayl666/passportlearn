@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -37,18 +38,22 @@ public class ConnectBindController extends BaseConnectController {
     @RequestMapping(value = "/ssobind/{providerStr}", method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOBind(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
-        Result result;
+        Result result = new APIResultSupport(false);
         int provider = AccountTypeEnum.getProvider(providerStr);
         OAuthSinaSSOBindTokenRequest oauthRequest;
         try {
             oauthRequest = new OAuthSinaSSOBindTokenRequest(req);
         } catch (OAuthProblemException e) {
-            return Result.buildError(e.getError(), e.getDescription());
+            result.setCode(e.getError());
+            result.setMessage(e.getDescription());
+            return result;
         }
 
         // 检查client_id和client_secret是否有效
         if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
-            return Result.buildError(ErrorUtil.INVALID_CLIENT, "client_id or client_secret mismatch");
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            result.setMessage("client_id or client_secret mismatch");
+            return result;
         }
 
         result = oAuthAuthBindManager.connectSSOBind(oauthRequest, provider);

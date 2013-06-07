@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.connect;
 
+import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -11,8 +12,7 @@ import javax.inject.Inject;
  * Created with IntelliJ IDEA. User: mayan Date: 13-4-7 Time: 下午4:09 To change this template use
  * File | Settings | File Templates.
  */
-@ContextConfiguration(locations = "classpath:spring-config-test.xml")
-public class ConnectTokenServiceTest extends AbstractJUnit4SpringContextTests {
+public class ConnectTokenServiceTest extends BaseTest {
 
     private static final String passportId = "13621009174@sohu.com";
     private static final int provider = 4;

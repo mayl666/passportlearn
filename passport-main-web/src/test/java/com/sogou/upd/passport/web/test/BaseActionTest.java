@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.test;
 
 import com.sogou.upd.passport.common.result.Result;
-
 import junit.framework.TestCase;
 
 import org.apache.http.HttpEntity;

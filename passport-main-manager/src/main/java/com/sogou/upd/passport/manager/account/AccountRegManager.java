@@ -5,9 +5,6 @@ import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 
-import org.apache.http.HttpRequest;
-
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**

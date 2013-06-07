@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
@@ -17,7 +17,6 @@ import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,144 +34,153 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class WebAccountController extends BaseController {
 
-  private static final Logger logger = LoggerFactory.getLogger(WebAccountController.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebAccountController.class);
 
-  @Autowired
-  private AccountSecureManager accountSecureManager;
-  @Autowired
-  private AccountRegManager accountRegManager;
-  @Autowired
-  private AccountManager accountManager;
-  @Autowired
-  private ConfigureManager configureManager;
-  @Autowired
-  private AccountLoginManager accountLoginManager;
+    @Autowired
+    private AccountSecureManager accountSecureManager;
+    @Autowired
+    private AccountRegManager accountRegManager;
+    @Autowired
+    private AccountManager accountManager;
+    @Autowired
+    private ConfigureManager configureManager;
+    @Autowired
+    private AccountLoginManager accountLoginManager;
 
-  /**
-   * web页面登录
-   *
-   * @param loginParams 传入的参数
-   */
-  @RequestMapping(value = "/login", method = RequestMethod.POST)
-  @ResponseBody
-  public Object login(HttpServletRequest request, WebLoginParameters loginParams)
-      throws Exception {
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(loginParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+    /**
+     * web页面登录
+     *
+     * @param loginParams 传入的参数
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @ResponseBody
+    public Object login(HttpServletRequest request, WebLoginParameters loginParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(loginParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
+        }
+
+        //判断用户是否存在
+        String username = loginParams.getUsername();
+        if (!accountManager.isAccountExists(username)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
+        }
+        result = accountLoginManager.accountLogin(loginParams, getIp(request));
+        return result;
     }
 
-    //判断用户是否存在
-    String username=loginParams.getUsername();
-    if(!accountManager.isAccountExists(username)){
-        return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+
+    /**
+     * web页面注册
+     *
+     * @param regParams 传入的参数
+     */
+    @RequestMapping(value = "/reguser", method = RequestMethod.POST)
+    @ResponseBody
+    public Object reguser(HttpServletRequest request, WebRegisterParameters regParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(regParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
+        }
+
+        String password = regParams.getPassword();
+
+        if (!CommonHelper.checkPasswd(password) && StringUtil.checkPwdFormat(password)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
+            return result;
+        }
+
+        String username = regParams.getUsername();
+        String ip = getIp(request);
+
+        String captchaCode = regParams.getCaptcha();
+        String token = regParams.getToken();
+        //校验用户是否可注册
+        result = accountRegManager.isAllowRegister(username, ip, token, captchaCode);
+
+        if (!result.isSuccess()) {
+            return result;
+        }
+
+        //验证client_id
+        int clientId = Integer.parseInt(regParams.getClient_id());
+
+        //检查client_id格式以及client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result;
+        }
+
+        //验证用户是否注册过
+        if (!accountManager.isAccountExists(username)) {
+            result = accountRegManager.webRegister(regParams, ip);
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+        }
+        return result;
     }
-    Result result = accountLoginManager.accountLogin(loginParams);
 
+    /**
+     * 邮件激活
+     *
+     * @param activeParams 传入的参数
+     */
+    @RequestMapping(value = "/activemail", method = RequestMethod.GET)
+    @ResponseBody
+    public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(activeParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
+        }
+        //验证client_id
+        int clientId = Integer.parseInt(activeParams.getClient_id());
 
-    return result;
-  }
-
-
-  /**
-   * web页面注册
-   *
-   * @param regParams 传入的参数
-   */
-  @RequestMapping(value = "/reguser", method = RequestMethod.POST)
-  @ResponseBody
-  public Object reguser(HttpServletRequest request, WebRegisterParameters regParams)
-      throws Exception {
-
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(regParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result;
+        }
+        String ip = getIp(request);
+        //邮件激活
+        result = accountRegManager.activeEmail(activeParams, ip);
+        return result;
     }
 
-    String password=regParams.getPassword();
 
-    if(! CommonHelper.checkPasswd(password) && StringUtil.checkPwdFormat(password)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
+    /**
+     * 修改密码
+     *
+     * @param resetParams 传入的参数
+     */
+    @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
+    @ResponseBody
+    public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //todo 注解需要判断登录
+        String validateResult = ControllerHelper.validateParams(resetParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
+        }
+        result = accountSecureManager.resetWebPassword(resetParams);
+        return result;
     }
-
-    String username=regParams.getUsername();
-    String ip = getIp(request);
-
-    String captchaCode = regParams.getCaptcha();
-    String token = regParams.getToken();
-    //校验用户是否可注册
-    Result result =accountRegManager.isAllowRegister(username,ip,token, captchaCode);
-
-    if (!"0".equals(result.getStatus())) {
-      return result;
-    }
-
-    //验证client_id
-    int clientId=Integer.parseInt(regParams.getClient_id());
-
-    //检查client_id格式以及client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
-
-    //验证用户是否注册过
-    if (!accountManager.isAccountExists(username)) {
-      result = accountRegManager.webRegister(regParams, ip);
-    } else {
-      result = result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-    }
-    return result;
-  }
-
-  /**
-   * 邮件激活
-   *
-   * @param activeParams 传入的参数
-   */
-  @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-  @ResponseBody
-  public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
-      throws Exception {
-
-    //参数验证
-    String validateResult = ControllerHelper.validateParams(activeParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-    }
-    //验证client_id
-    int clientId=Integer.parseInt(activeParams.getClient_id());
-
-    //检查client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      return Result.buildError(ErrorUtil.INVALID_CLIENTID);
-    }
-    String ip = getIp(request);
-    //邮件激活
-    Result result = accountRegManager.activeEmail(activeParams,ip);
-
-    return result;
-  }
-
-
-  /**
-   * 修改密码
-   *
-   * @param resetParams 传入的参数
-   */
-  @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
-  @ResponseBody
-  public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
-      throws Exception {
-
-    //todo 注解需要判断登录
-
-    String validateResult = ControllerHelper.validateParams(resetParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-    }
-    Result result = accountSecureManager.resetWebPassword(resetParams);
-    return result;
-  }
 }

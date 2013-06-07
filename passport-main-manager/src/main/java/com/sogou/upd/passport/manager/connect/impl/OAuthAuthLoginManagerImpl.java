@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -23,10 +24,10 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
-import com.sogou.upd.passport.oauth2.openresource.dataobject.OAuthTokenDO;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -69,7 +70,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
     @Override
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
-
+        Result result = new APIResultSupport(false);
         int clientId = oauthRequest.getClientId();
         String openid = oauthRequest.getOpenid();
         String instanceId = oauthRequest.getInstanceId();
@@ -85,58 +86,71 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 if (MapUtils.isEmpty(connectRelations)) { // 此账号未授权过任何应用
                     Account account = accountService.initialConnectAccount(openid, ip, provider);
                     if (account == null) {
-                        return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+                        result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+                        return result;
                     }
                     passportId = account.getPassportId();
                 } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
                     passportId = obtainPassportId(connectRelations); // 一个openid只可能对应一个passportId
                     Account account = accountService.queryNormalAccount(passportId);
                     if (account == null) {
-                        return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+                        result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                        return result;
                     }
                 }
                 // 在切换appkey的时，应该是update，正常情况是Insert
                 accountToken = accountTokenService.updateOrInsertAccountToken(passportId, clientId, instanceId);
                 if (accountToken == null) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+                    return result;
                 }
                 ConnectToken newConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
                         oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
                 boolean isInitialConnectToken = connectTokenService.initialConnectToken(newConnectToken);
                 if (!isInitialConnectToken) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+                    return result;
                 }
                 ConnectRelation newConnectRelation = ManagerHelper.buildConnectRelation(openid, provider, passportId, appKey);
                 boolean isInitialConnectRelation = connectRelationService.initialConnectRelation(newConnectRelation);
                 if (!isInitialConnectRelation) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+                    return result;
                 }
             } else { // 此账号在当前应用第N次登录
                 Account account = accountService.queryNormalAccount(passportId);
                 if (account == null) {
-                    return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                    return result;
                 }
                 // 更新当前应用的Account_token，出于安全考虑refresh_token和access_token重新生成
                 accountToken = accountTokenService.updateOrInsertAccountToken(passportId, clientId, instanceId);
                 if (accountToken == null) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+                    return result;
                 }
                 // 更新当前应用的Connect_token
                 ConnectToken updateConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
                         oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
                 boolean isUpdateAccountConnect = connectTokenService.updateConnectToken(updateConnectToken);
                 if (!isUpdateAccountConnect) {
-                    return Result.buildError(ErrorUtil.AUTHORIZE_FAIL);
+                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+                    return result;
                 }
             }
             Map<String, Object> mapResult = Maps.newHashMap();
             mapResult.put("access_token", accountToken.getAccessToken());
             mapResult.put("expires_time", accountToken.getAccessValidTime());
             mapResult.put("refresh_token", accountToken.getRefreshToken());
-            return Result.buildSuccess("登录成功！", "mapResult", mapResult);
+
+            result.setSuccess(true);
+            result.setMessage("登录成功！");
+            result.setModels(mapResult);
+            return result;
         } catch (ServiceException e) {
             logger.error("SSO login Fail:", e);
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
     }
 
@@ -182,8 +196,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public OAuthTokenDO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
-        OAuthTokenDO oAuthTokenDO;
+    public OAuthTokenVO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
+        OAuthTokenVO oAuthTokenDO;
         OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req, connectType);
         // 验证state是否被篡改，防CRSF攻击
         String state = oar.getState();
@@ -195,7 +209,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (ConnectTypeEnum.WEB.toString().equals(connectType)) {
 
         } else {
-            oAuthTokenDO = new OAuthTokenDO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
+            oAuthTokenDO = new OAuthTokenVO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
         }
 
         return null;

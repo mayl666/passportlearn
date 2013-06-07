@@ -1,17 +1,17 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
-
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.manager.account.AccountCheckManager;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
-import com.sogou.upd.passport.manager.form.AccountPwdScodeParams;
-import com.sogou.upd.passport.manager.form.AccountScodeParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-
+import com.sogou.upd.passport.web.form.AccountPwdScodeParams;
+import com.sogou.upd.passport.web.form.AccountScodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,8 @@ public class AccountSecureAction extends BaseController {
     private AccountManager accountManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
+    @Autowired
+    private AccountCheckManager accountCheckManager;
 
     /**
      * 显示找回密码界面
@@ -43,6 +45,7 @@ public class AccountSecureAction extends BaseController {
         model.addAttribute("clientId", "999");
         return "findpwd";
     }
+
     /**
      * 查询账号所拥有的密码找回方式
      *
@@ -73,18 +76,21 @@ public class AccountSecureAction extends BaseController {
 
     @RequestMapping(value = "/mobile", method = RequestMethod.POST)
     public String resetPasswordByMobile(@RequestParam("username") String passportId, @RequestParam("client_id") int clientId,
-                @RequestParam("password") String password, @RequestParam("smscode") String smsCode, Model model) throws Exception {
+                                        @RequestParam("password") String password, @RequestParam("smscode") String smsCode, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
         if (Strings.isNullOrEmpty(passportId)) {
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT));
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            model.addAttribute("error", result.toString());
             return "forward:";
         }
         if (Strings.isNullOrEmpty(password) || Strings.isNullOrEmpty(smsCode)) {
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE));
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            model.addAttribute("error", result);
             return "forward:";
         }
-        Result result = accountSecureManager.resetPasswordByMobile(passportId, clientId, password, smsCode);
+        result = accountSecureManager.resetPasswordByMobile(passportId, clientId, password, smsCode);
         model.addAttribute("error", result);
-        if (result.getStatus().equals("0")) {
+        if (result.isSuccess()) {
             // 重置密码成功
             // TODO
             return "success";
@@ -95,17 +101,17 @@ public class AccountSecureAction extends BaseController {
 
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
     public String sendEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-            Model model) throws Exception {
-        Result result;
-        if(!StringUtil.checkIsDigit(client_id)){
-            result = Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE);
+                            Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        if (!StringUtil.checkIsDigit(client_id)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             model.addAttribute("error", result);
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
-        result  = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("error", result);
-        if (result.getStatus().equals("0")) {
+        if (result.isSuccess()) {
             return "forward:";
         }
         return "forward:";
@@ -113,17 +119,19 @@ public class AccountSecureAction extends BaseController {
 
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
     public String checkEmailForResetPwd(AccountScodeParams params, Model model) throws Exception {
-        Result result;
+        Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult));
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("error", result);
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
-        result = accountSecureManager.checkEmailResetPwd(passportId, clientId,scode);
+        result = accountSecureManager.checkEmailResetPwd(passportId, clientId, scode);
         model.addAttribute("error", result);
-        if (result.getStatus().equals("0")) {
+        if (result.isSuccess()) {
             model.addAttribute("passport_id", passportId);
             model.addAttribute("client_id", clientId);
             model.addAttribute("scode", scode);
@@ -134,7 +142,7 @@ public class AccountSecureAction extends BaseController {
 
     @RequestMapping(value = "/email", method = RequestMethod.POST)
     public String resetPasswordByEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-            @RequestParam("password") String password, @RequestParam("token") String token, Model model) throws Exception {
+                                       @RequestParam("password") String password, @RequestParam("token") String token, Model model) throws Exception {
         int clientId = Integer.parseInt(client_id);
         Result result = accountSecureManager.resetPasswordByEmail(passportId, clientId, password, token);
         model.addAttribute("error", result);
@@ -143,15 +151,22 @@ public class AccountSecureAction extends BaseController {
 
     @RequestMapping(value = "/ques", method = RequestMethod.POST)
     public String resetPasswordByQues(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-            @RequestParam("password") String password, String answer, Model model) throws Exception {
+                                      @RequestParam("password") String password, String answer, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
         if (Strings.isNullOrEmpty(passportId) || Strings.isNullOrEmpty(password) || Strings.isNullOrEmpty(answer)) {
-            model.addAttribute("error", Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE));
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            model.addAttribute("error", result);
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
-        Result result = accountSecureManager.resetPasswordByQues(passportId, clientId, password, answer);
+
+        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+            model.addAttribute("error", result);
+        }
+        result = accountSecureManager.resetPasswordByQues(passportId, clientId, password, answer);
         model.addAttribute("error", result);
-        if (result.getStatus().equals("0")) {
+        if (result.isSuccess()) {
             return "success";
         } else {
             return "forward:";

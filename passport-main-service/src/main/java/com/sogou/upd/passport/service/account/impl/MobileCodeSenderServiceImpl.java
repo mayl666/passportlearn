@@ -2,18 +2,17 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.utils.DateUtil;
-import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.app.AppConfigService;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +59,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
     @Override
     public boolean updateSmsCacheInfo(String cacheKeySendNum, String cacheKeySmscode,
-                                      String curtime,String smsCode) throws ServiceException {
+                                      String curtime, String smsCode) throws ServiceException {
         boolean flag = true;
         try {
             redisUtils.hIncrBy(cacheKeySendNum, "sendNum");
@@ -90,7 +89,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
     @Override
     public Result handleSendSms(String mobile, int clientId) throws ServiceException {
-        Result result = null;
+        Result result = new APIResultSupport(false);
         try {
             String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile + "_" + clientId;
 
@@ -107,7 +106,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                     if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
                         redisUtils.hIncrBy(cacheKey, "sendNum");
                     } else {
-                        result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
                         return result;
                     }
                 }
@@ -130,13 +129,14 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             //读取短信内容
             String smsText = appConfigService.querySmsText(clientId, randomCode);
             if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
-                result = Result.buildSuccess("验证码已发送至" + mobile);
+                result.setSuccess(true);
+                result.setMessage("验证码已发送至" + mobile);
                 return result;
             }
-            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
             return result;
         } catch (Exception e) {
-            result = Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
             logger.error("[SMS] service method handleSendSms error.{}", e);
             new ServiceException(e);
         }

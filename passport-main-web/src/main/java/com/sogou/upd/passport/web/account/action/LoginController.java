@@ -1,17 +1,13 @@
 package com.sogou.upd.passport.web.account.action;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.account.AccountLoginManager;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.web.BaseController;
-import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.LoginRequiredResultType;
 import org.slf4j.Logger;
@@ -57,6 +53,9 @@ public class LoginController extends BaseController {
         return "退出登录成功";
     }
 
+
+
+
     /**
      * web端的登陆接口
      *
@@ -97,4 +96,5 @@ public class LoginController extends BaseController {
         String html= SGHttpClient.executeStr(requestModel);
         return html;
     }
+
 }
