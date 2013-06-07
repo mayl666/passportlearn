@@ -145,49 +145,40 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected Result sendPostLocal(String sendUrl, Map<String, String> params)
+    protected String sendPostLocal(String sendUrl, Map<String, String> params)
             throws IOException {
-/*        try {
-            Result result = new APIResultSupport(true);
+        Result result;
+        try {
             String sendUrlFull = "http://localhost/";
             sendUrlFull += sendUrl;
             String resultStr = sendPost(sendUrlFull, params);
-            if (Strings.isNullOrEmpty(resultStr)) {
-                return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            }
-            Result result = new ObjectMapper().readValue(resultStr, Result.class);
 
-            return result;
+            return resultStr;
         } catch (JsonProcessingException e) {
             System.out.println("返回结果不是Result类型！！");
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return null;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }*/
-        return null;
+            return null;
+        }
     }
 
-    protected Result sendGetLocal(String sendUrl, Map<String, String> params)
+    protected String sendGetLocal(String sendUrl, Map<String, String> params)
             throws IOException {
-/*        try {
+        Result result;
+        try {
             String sendUrlFull = "http://localhost/";
             sendUrlFull += sendUrl;
             String resultStr = sendGet(sendUrlFull, params);
-            if (Strings.isNullOrEmpty(resultStr)) {
-                return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            }
-            Result result = new ObjectMapper().readValue(resultStr, Result.class);
 
-            return result;
+            return resultStr;
         } catch (JsonProcessingException e) {
             System.out.println("返回结果不是Result类型！！");
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return null;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }*/
-        return null;
+            return null;
+        }
     }
 
     private static final String appId="1100";

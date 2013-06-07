@@ -31,4 +31,5 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         result.setModels(resultMap);
         return result;
     }
+
 }
