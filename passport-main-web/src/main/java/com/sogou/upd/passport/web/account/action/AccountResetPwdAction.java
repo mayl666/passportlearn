@@ -128,7 +128,7 @@ public class AccountResetPwdAction {
 
         accountCheckManager.checkLimitResetPwd(passportId, clientId);
 
-
+        return "";
     }
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
@@ -150,6 +150,7 @@ public class AccountResetPwdAction {
             return result.toString();
         }
 
-        return accountSecureManager.resetPasswordByEmail(passportId, clientId, password, scode);
+        result = accountSecureManager.resetPasswordByEmail(passportId, clientId, password, scode);
+        return "";
     }
 }
