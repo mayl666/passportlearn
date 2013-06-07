@@ -434,19 +434,18 @@ public class AccountServiceImpl implements AccountService {
         return CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
   }
 
-
-
     /**
      * 根据登陆错误次数，判断是否需要在登陆时输入验证码
      *
-     * @param passportId
+     * @param username
+     * @param ip
      * @return
      */
     @Override
-    public boolean loginFailedNumNeedCaptcha(String passportId) {
+    public boolean loginFailedNumNeedCaptcha(String username,String ip) {
         int num = 0;
         try {
-            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
+            String cacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
             String numStr = redisUtils.get(cacheKey);
             if (!Strings.isNullOrEmpty(numStr)) {
                 num = Integer.valueOf(numStr);
@@ -454,24 +453,39 @@ public class AccountServiceImpl implements AccountService {
             if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT) {
                 return true;
             }
+
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+            String ipNumStr = redisUtils.get(ipCacheKey);
+            if (!Strings.isNullOrEmpty(ipNumStr)) {
+                num = Integer.valueOf(numStr);
+            }
+            if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT) {
+                return true;
+            }
         } catch (Exception e) {
-            logger.error("getAccountLoginFailedCount:" + passportId, e);
+            logger.error("getAccountLoginFailedCount:username" + username+",ip:"+ip, e);
         }
         return false;
     }
 
     @Override
-    public long incLoginFailedNum(String passportId) {
+    public long incLoginFailedNum(String username,String ip) {
         try{
-            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
-            redisUtils.increment(cacheKey);
-            /*if(redisUtils.checkKeyIsExist(cacheKey)){
-                return redisUtils.increment(cacheKey);
+            String cacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
+            if(redisUtils.checkKeyIsExist(cacheKey)){
+                redisUtils.increment(cacheKey);
             }else{
-                redisUtils.set(cacheKey,1);
-            }*/
+                redisUtils.set(cacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR, TimeUnit.SECONDS);
+            }
+
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+            if(redisUtils.checkKeyIsExist(ipCacheKey)){
+                redisUtils.increment(ipCacheKey);
+            }else{
+                redisUtils.set(ipCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR, TimeUnit.SECONDS);
+            }
         } catch (Exception e) {
-            logger.error("incLoginFailedNum:" + passportId, e);
+            logger.error("incLoginFailedNum:username" + username +",ip:"+ip, e);
         }
         return 1;
     }
@@ -479,11 +493,87 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean clearLoginFailedNum(String passportId) {
         try{
-            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_LOGINFAILEDNUM + passportId;
+            String cacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + passportId;
             redisUtils.delete(cacheKey);
             return true;
         }catch (Exception e) {
             logger.error("clearLoginFailedNum:" + passportId, e);
+        }
+        return false;
+    }
+
+    /**
+     * 记录登每天陆成功次数
+     *
+     * @param username
+     * @param ip
+     * @return
+     */
+    @Override
+    public long incLoginSuccessNum(String username,String ip) {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                redisUtils.increment(cacheKey);
+            } else {
+                redisUtils.set(cacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR, TimeUnit.SECONDS);
+            }
+
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+            if (redisUtils.checkKeyIsExist(ipCacheKey)) {
+                redisUtils.increment(ipCacheKey);
+            } else {
+                redisUtils.set(ipCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR, TimeUnit.SECONDS);
+            }
+        } catch (Exception e) {
+            logger.error("incLoginSuccessNum:username" + username +",ip:"+ip, e);
+        }
+        return 1;
+    }
+
+    @Override
+    public boolean checkUserInBlackList(String username,String ip) {
+        int num =0;
+        try {
+            //失败次数
+            String loginFailedUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
+            String loginFailedUserNameValue = redisUtils.get(loginFailedUserNameKey);
+            if (!Strings.isNullOrEmpty(loginFailedUserNameValue)) {
+                num = Integer.valueOf(loginFailedUserNameValue);
+            }
+            if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                return true;
+            }
+
+            String loginFailedIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+            String loginFailedIPValue = redisUtils.get(loginFailedIPKey);
+            if (!Strings.isNullOrEmpty(loginFailedIPValue)) {
+                num = Integer.valueOf(loginFailedIPValue);
+            }
+            if (num >= LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                return true;
+            }
+
+            //成功次数
+            String loginSuccessUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
+            String loginSuccessUserNameValue = redisUtils.get(loginSuccessUserNameKey);
+            if (!Strings.isNullOrEmpty(loginSuccessUserNameValue)) {
+                num = Integer.valueOf(loginSuccessUserNameValue);
+            }
+            if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
+                return true;
+            }
+
+            String loginSuccessIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+            String loginSuccessIPValue = redisUtils.get(loginSuccessIPKey);
+            if (!Strings.isNullOrEmpty(loginSuccessIPValue)) {
+                num = Integer.valueOf(loginSuccessIPValue);
+            }
+            if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("userInBlackList:username" + username +",ip:"+ip , e);
         }
         return false;
     }

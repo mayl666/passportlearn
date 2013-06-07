@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.connect;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -43,19 +44,23 @@ public class ConnectLoginController extends BaseConnectController {
     @RequestMapping(value = {"/v2/connect/ssologin/{providerStr}", "/connect/ssologin/{providerStr}"}, method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
-        Result result;
+        Result result = new APIResultSupport(false);
         String ip = getIp(req);
         int provider = AccountTypeEnum.getProvider(providerStr);
         OAuthSinaSSOTokenRequest oauthRequest;
         try {
             oauthRequest = new OAuthSinaSSOTokenRequest(req);
         } catch (OAuthProblemException e) {
-            return Result.buildError(e.getError(), e.getDescription());
+            result.setCode(e.getError());
+            result.setMessage(e.getDescription());
+            return result;
         }
 
         // 检查client_id和client_secret是否有效
         if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
-            return Result.buildError(ErrorUtil.INVALID_CLIENT, "client_id or client_secret mismatch");
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            result.setMessage("client_id or client_secret mismatch");
+            return result;
         }
 
         result = oAuthAuthLoginManager.connectSSOLogin(oauthRequest, provider, ip);

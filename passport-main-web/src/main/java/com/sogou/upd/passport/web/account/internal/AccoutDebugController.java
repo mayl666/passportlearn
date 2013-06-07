@@ -1,6 +1,7 @@
-package com.sogou.upd.passport.web.debug;
+package com.sogou.upd.passport.web.account.internal;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -34,6 +35,7 @@ public class AccoutDebugController {
     @RequestMapping(value = "/internal/debug/deleteAccount", method = RequestMethod.GET)
     @ResponseBody
     public Result deleteAccount(@RequestParam(defaultValue = "") String mobile) throws Exception {
+        Result result = new APIResultSupport(false);
         if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
             String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
             if (!Strings.isNullOrEmpty(passportId)) {
@@ -41,15 +43,21 @@ public class AccoutDebugController {
                 boolean isDeleteAccountToken = accountAuthService.deleteAccountTokenByPassportId(passportId);
                 boolean isDeleteMobilePassportMapping = mobilePassportMappingService.deleteMobilePassportMapping(mobile);
                 if (isDeleteAccount && isDeleteAccountToken && isDeleteMobilePassportMapping) {
-                    return Result.buildSuccess("删除成功！", null, null);
+                    result.setSuccess(true);
+                    result.setMessage("删除成功！");
+                    return result;
                 } else {
-                    return Result.buildError("10000", "删除失败！");
+                    result.setCode("10000");
+                    result.setMessage("删除失败！");
+                    return result;
                 }
             } else {
-                return Result.buildError(ErrorUtil.INVALID_ACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
             }
         } else {
-            return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
+            return result;
         }
     }
 }

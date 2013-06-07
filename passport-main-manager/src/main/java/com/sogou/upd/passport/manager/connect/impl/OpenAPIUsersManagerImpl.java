@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -55,32 +56,40 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
 
     @Override
     public Result obtainOpenIdByPassportId(String passportId, int clientId, int provider) {
+        Result result = new APIResultSupport(false);
         try {
             String appKey = connectConfigService.querySpecifyAppKey(clientId, provider);
             if (Strings.isNullOrEmpty(appKey)) {
-                return Result.buildError(ErrorUtil.INVALID_CLIENTID);
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
             }
             String openid = connectTokenService.querySpecifyOpenId(passportId, provider, appKey);
             if (Strings.isNullOrEmpty(openid)) {
-                return Result.buildError(ErrorUtil.ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR);
+                return result;
             } else {
-                return Result.buildSuccess("查询成功", "openid", openid);
+                result.setSuccess(true);
+                result.setMessage("查询成功");
+                result.setDefaultModel("openid", openid);
+                return result;
             }
         } catch (ServiceException e) {
             log.error("get OpenId By PassportId fail, passportId:" + passportId + " clientId:" + clientId + " provider:" + provider, e);
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
 
     }
 
     @Override
     public Result obtainUserInfo(String accessToken, int provider, ConnectConfig connectConfig) {
+        Result result = new APIResultSupport(false);
         try {
-
             // 检查主账号access_token是否有效
             AccountToken accountToken = accountTokenService.verifyAccessToken(accessToken);
             if (accountToken == null) {
-                return Result.buildError(ErrorUtil.ERR_ACCESS_TOKEN);
+                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return result;
             }
             String passportId = accountToken.getPassportId();
 
@@ -119,13 +128,18 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
 
                 response = OAuthHttpClient.execute(request, OAuth.HttpMethod.POST, RenrenUserAPIResponse.class);
             } else {
-                return Result.buildError(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                return result;
             }
             log.info("[ConnectUserInfo] Provider:" + provider + " Openid:" + openid + " Response:"
                     + response.getBody());
-            return Result.buildSuccess("获取第三方个人资料成功", "userinfo", response.getBody());
+            result.setSuccess(true);
+            result.setMessage("获取第三方个人资料成功");
+            result.setDefaultModel("userinfo", response.getBody());
+            return result;
         } catch (Exception e) {
-            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
     }
 
