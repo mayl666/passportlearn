@@ -23,12 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 移动用户注册登录 User: mayan Date: 13-3-22 Time: 下午3:29 To change this template use File | Settings |
+ * web用户注册登录 User: mayan Date: 13-3-22 Time: 下午3:29 To change this template use File | Settings |
  * File Templates.
  */
 @Controller
@@ -183,4 +184,6 @@ public class WebAccountController extends BaseController {
         result = accountSecureManager.resetWebPassword(resetParams);
         return result;
     }
+
+
 }
