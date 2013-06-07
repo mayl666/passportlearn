@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.test;
 import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 
@@ -146,7 +147,8 @@ public class BaseActionTest extends TestCase {
 
     protected Result sendPostLocal(String sendUrl, Map<String, String> params)
             throws IOException {
-        try {
+/*        try {
+            Result result = new APIResultSupport(true);
             String sendUrlFull = "http://localhost/";
             sendUrlFull += sendUrl;
             String resultStr = sendPost(sendUrlFull, params);
@@ -162,12 +164,13 @@ public class BaseActionTest extends TestCase {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
+        }*/
+        return null;
     }
 
     protected Result sendGetLocal(String sendUrl, Map<String, String> params)
             throws IOException {
-        try {
+/*        try {
             String sendUrlFull = "http://localhost/";
             sendUrlFull += sendUrl;
             String resultStr = sendGet(sendUrlFull, params);
@@ -183,7 +186,8 @@ public class BaseActionTest extends TestCase {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
+        }*/
+        return null;
     }
 
     private static final String appId="1100";
