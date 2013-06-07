@@ -1,6 +1,10 @@
 package com.sogou.upd.passport.web.test;
 
+import com.google.common.base.Strings;
+
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 
 import junit.framework.TestCase;
 
@@ -17,7 +21,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -147,12 +150,18 @@ public class BaseActionTest extends TestCase {
             String sendUrlFull = "http://localhost/";
             sendUrlFull += sendUrl;
             String resultStr = sendPost(sendUrlFull, params);
+            if (Strings.isNullOrEmpty(resultStr)) {
+                return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            }
             Result result = new ObjectMapper().readValue(resultStr, Result.class);
 
             return result;
         } catch (JsonProcessingException e) {
             System.out.println("返回结果不是Result类型！！");
-            return null;
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
 
@@ -162,32 +171,50 @@ public class BaseActionTest extends TestCase {
             String sendUrlFull = "http://localhost/";
             sendUrlFull += sendUrl;
             String resultStr = sendGet(sendUrlFull, params);
+            if (Strings.isNullOrEmpty(resultStr)) {
+                return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            }
             Result result = new ObjectMapper().readValue(resultStr, Result.class);
 
             return result;
         } catch (JsonProcessingException e) {
             System.out.println("返回结果不是Result类型！！");
-            return null;
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return Result.buildError(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
     }
 
-    @Test
+    private static final String appId="1100";
+
+    private static final String key="yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+
     public void testPostXml() throws Exception {
+
+        long ct=System.currentTimeMillis();
+        String code= "shipengzhi1986@sogou.com" +appId+ key+ ct;
+        code= Coder.encryptMD5(code);
+
+
+
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\" encoding=\"GBK\"?>");
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-                  + "    <userid>houlinyan@sohu.com</userid>\n"
-                  + "    <appid>200</appid>\n"
-                  + "    <ct>1359706010</ct>\n"
-                  + "    <code>5601afa05875e23e7e0bc5c5323f8c43</code>\n"
+                  + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                  + "    <appid>1100</appid>\n"
+                  + "    <ct>"+ct+"</ct>\n"
+                  + "    <code>"+code+"</code>\n"
                   + "    <password></password>\n"
                   + "    <passwordtype></passwordtype>\n"
                   + "    <question></question>\n"
                   + "    <answer></answer>\n"
+                  + "    <email></email>\n"
+                  + "    <mobile></mobile>\n"
                   + "    <createip></createip>\n"
                   + "    <uniqname></uniqname>\n"
-                  + "    <avatarurl></avatarurl>\n"
+                  /*+ "    <avatarurl></avatarurl>\n"*/
                   + "    <regappid></regappid>\n"
                   + "</register>");
         String result = sendPostXml(url, sb.toString());
