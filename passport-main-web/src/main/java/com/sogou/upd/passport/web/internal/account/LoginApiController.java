@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,14 @@ public class LoginApiController {
     @Autowired
     private ConfigureManager configureManager;
 
+    private LoginApiManager proxyLoginApiManager;
+
+    @Autowired
+    public void setAbstractFlightSearchAO(
+            @Qualifier("proxyLoginApiManager") LoginApiManager proxyLoginApiManager) {
+        this.proxyLoginApiManager = proxyLoginApiManager;
+    }
+
     @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
     @ResponseBody
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
@@ -42,10 +51,13 @@ public class LoginApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getClient_id(), params.getPassport_id(), params.getCt(), params.getCode());
-
-        // 调用内部接口
-
-
+        if(!result.isSuccess()){
+            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+            return result.toString();
+        }
+            // 调用内部接口
+        result = proxyLoginApiManager.webAuthUser(params);
         return result.toString();
     }
+
 }
