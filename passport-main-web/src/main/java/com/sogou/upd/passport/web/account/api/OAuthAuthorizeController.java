@@ -11,6 +11,7 @@ import com.sogou.upd.passport.web.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +34,7 @@ public class OAuthAuthorizeController extends BaseController {
 
     @Autowired
     private AccountLoginManager accountLoginManager;
+
     @Autowired
     private ConfigureManager configureManager;
 
@@ -46,7 +48,7 @@ public class OAuthAuthorizeController extends BaseController {
         } catch (OAuthProblemException e) {
             result.setCode(e.getError());
             result.setMessage(e.getDescription());
-            return result;
+            return result.toString();
         }
 
         int clientId = oauthRequest.getClientId();
@@ -54,10 +56,11 @@ public class OAuthAuthorizeController extends BaseController {
         // 检查client_id和client_secret是否有效
         if (!configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
             result.setCode(ErrorUtil.INVALID_CLIENT);
-            return result;
+            return result.toString();
         }
         result = accountLoginManager.authorize(oauthRequest);
-        return result;
+
+        return result.toString();
     }
 
 }

@@ -25,8 +25,6 @@ public class BaseProxyManager {
 
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
-    private static final long API_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
-
     @Autowired
     private AppConfigService appConfigService;
 
@@ -42,28 +40,6 @@ public class BaseProxyManager {
         this.calculateDefaultCode(requestModel);
 
         return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
-    }
-
-    /**
-     * 校验接口传入的code是否正确
-     * @param clientId
-     * @param passportId
-     * @param ct
-     * @param originalCode
-     * @return
-     */
-    public boolean verifyCodeSign(int clientId, String passportId, long ct, String originalCode) {
-        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-        String secret = appConfig.getServerSecret();
-        String code = passportId + clientId + secret + ct;
-        try {
-            code = Coder.encryptMD5(code);
-        } catch (Exception e) {
-            log.error("Encrypt MD5 Error! string:" + code, e);
-            return false;
-        }
-        long currentTime = System.currentTimeMillis()/ 1000;
-        return code.equals(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM;
     }
 
     /**

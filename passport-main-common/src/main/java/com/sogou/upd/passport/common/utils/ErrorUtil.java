@@ -16,8 +16,8 @@ public class ErrorUtil {
     public static final String SYSTEM_UNKNOWN_EXCEPTION = "10001";
     // 必填的参数错误
     public static final String ERR_CODE_COM_REQURIE = "10002";
-    // 签名错误
-//    public static final String ERR_CODE_COM_SING = "10003";
+    // 内部接口code签名错误
+    public static final String ERR_CODE_COM_SING = "10003";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
     // 签名或accessToken验证失败

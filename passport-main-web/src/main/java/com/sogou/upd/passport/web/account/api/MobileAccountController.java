@@ -17,6 +17,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,13 +58,13 @@ public class MobileAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         //手机号校验
         String mobile = reqParams.getMobile();
         if (!PhoneUtil.verifyPhoneNumberFormat(mobile)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
-            return result;
+            return result.toString();
         }
         //验证client_id
         int clientId = Integer.parseInt(reqParams.getClient_id());
@@ -71,11 +72,11 @@ public class MobileAccountController extends BaseController {
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            return result.toString();
         }
 
         result = accountSecureManager.sendMobileCode(mobile, clientId);
-        return result;
+        return result.toString();
 
     }
 
@@ -92,34 +93,34 @@ public class MobileAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         int clientId;
         try {
             clientId = Integer.parseInt(regParams.getClient_id());
         } catch (NumberFormatException e) {
             result.setCode(ErrorUtil.ERR_FORMAT_CLIENTID);
-            return result;
+            return result.toString();
         }
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            return result.toString();
         }
         String ip = getIp(request);
         String mobile = regParams.getMobile();
         try {
             if (accountManager.isAccountExists(mobile)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                return result;
+                return result.toString();
             }
         } catch (Exception e) {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
+            return result.toString();
         }
 
         result = accountRegManager.mobileRegister(regParams, ip);
-        return result;
+        return result.toString();
     }
 
     /**
@@ -135,33 +136,33 @@ public class MobileAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         int clientId;
         try {
             clientId = Integer.parseInt(reqParams.getClient_id());
         } catch (NumberFormatException e) {
             result.setCode(ErrorUtil.ERR_FORMAT_CLIENTID);
-            return result;
+            return result.toString();
         }
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            return result.toString();
         }
 
         String mobile = reqParams.getMobile();
         try {
             if (!accountManager.isAccountExists(mobile)) {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                return result;
+                return result.toString();
             }
         } catch (Exception e) {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
+            return result.toString();
         }
         result = accountSecureManager.findPassword(reqParams.getMobile(), clientId);
-        return result;
+        return result.toString();
     }
 
     /**
@@ -175,18 +176,18 @@ public class MobileAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         //验证client_id
         int clientId = Integer.parseInt(regParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            return result.toString();
         }
 
         result = accountSecureManager.resetPassword(regParams);
-        return result;
+        return result.toString();
     }
 
 
