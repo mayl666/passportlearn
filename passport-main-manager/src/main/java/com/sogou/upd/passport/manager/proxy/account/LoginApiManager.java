@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.proxy.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public interface LoginApiManager {
      * @param authUserApiParams
      * @return
      */
-    Map<String,Object> authUser(AuthUserApiParams authUserApiParams);
+    Result authUser(AuthUserApiParams authUserApiParams);
 
 
 }

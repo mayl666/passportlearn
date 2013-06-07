@@ -16,8 +16,8 @@ public class SHPPUrlConstant {
     //请求SHPP时xml默认的rootNodeName
     public static final String DEFAULT_REQUEST_ROOTNODE="info";
 
+    //SHPP返回xml中状态码key
     public static final String RESULT_STATUS="status";
-
 
     // 内部接口基本url
     private static final String BASE_INTERNAL_URL ="http://internal.passport.sohu.com/interface/";

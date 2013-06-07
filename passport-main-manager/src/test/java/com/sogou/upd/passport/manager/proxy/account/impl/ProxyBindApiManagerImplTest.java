@@ -2,8 +2,7 @@ package com.sogou.upd.passport.manager.proxy.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.XMLUtil;
-import com.sogou.upd.passport.manager.proxy.account.BindProxyManager;
+import com.sogou.upd.passport.manager.proxy.account.BindApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
@@ -11,17 +10,16 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
  * Time: 下午2:02
  */
-public class BindProxyManagerImplTest  extends BaseTest {
+public class ProxyBindApiManagerImplTest extends BaseTest {
 
     @Inject
-    private BindProxyManager bindProxyManager;
+    private BindApiManager bindApiManager;
 
     @Test
     public void testBindMobile(){
@@ -29,7 +27,7 @@ public class BindProxyManagerImplTest  extends BaseTest {
         bindMobileProxyParams.setPassport_id(passportId);
         bindMobileProxyParams.setMobile("18210193340");
         bindMobileProxyParams.setClient_id(clientId);
-        Result result = bindProxyManager.bindMobile(bindMobileProxyParams);
+        Result result = bindApiManager.bindMobile(bindMobileProxyParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
 
@@ -41,7 +39,7 @@ public class BindProxyManagerImplTest  extends BaseTest {
         UnBindMobileProxyParams unBindMobileProxyParams=new UnBindMobileProxyParams();
         unBindMobileProxyParams.setMobile("18210193340");
         unBindMobileProxyParams.setClient_id(clientId);
-        Result result = bindProxyManager.unbindMobile(unBindMobileProxyParams);
+        Result result = bindApiManager.unbindMobile(unBindMobileProxyParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
     }
@@ -54,7 +52,7 @@ public class BindProxyManagerImplTest  extends BaseTest {
         bindEmailApiParams.setPassword(password);
         bindEmailApiParams.setClient_id(clientId);
         bindEmailApiParams.setPassport_id(passportId);
-        Result result = bindProxyManager.bindEmail(bindEmailApiParams);
+        Result result = bindApiManager.bindEmail(bindEmailApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
     }

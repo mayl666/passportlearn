@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.proxy.account.impl;
 
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
 import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
@@ -19,10 +20,10 @@ import java.util.Map;
 public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     @Override
-    public  Map<String,Object> authUser(AuthUserApiParams authUserParameters) {
+    public Result authUser(AuthUserApiParams authUserParameters) {
         RequestModelXml requestModelXml=new RequestModelXml(SHPPUrlConstant.AUTH_USER,"info");
         requestModelXml.addParams(authUserParameters);
-        return this.execute(requestModelXml);
+        return this.executeResult(requestModelXml);
     }
 
 }
