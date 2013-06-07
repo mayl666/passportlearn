@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.test.account.controller;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.web.test.BaseActionTest;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
@@ -37,8 +36,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("passport_id", "hujunfei1986@163.com");
         params.put("client_id", "999");
         Result result  = sendPostLocal(localUrl, params);
-        System.out.println(result.getStatusText());
-        System.out.println(result.getData());
+        System.out.println(result.getMessage());
+        System.out.println(result);
     }
 
     @Test
@@ -51,8 +50,8 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("password", passwdSign);
         params.put("scode", "c7a7c37beef63f542975b137e4b8314c");
         Result result  = sendPostLocal(localUrl, params);
-        System.out.println(result.getStatusText());
-        System.out.println(result.getData());
+        System.out.println(result.getMessage());
+        System.out.println(result);
     }
 
     @Test
@@ -64,7 +63,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("mode", "2");
         params.put("module", "3");
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText());
+        System.out.println(result == null ? "result为空":result.getMessage());
     }
 
     @Test
@@ -75,7 +74,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("client_id", "999");
         params.put("smscode", "99875");
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText() + result.getData());
+        System.out.println(result == null ? "result为空":result.getMessage() + result);
     }
 
     @Test
@@ -87,7 +86,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("scode", "6647bec044bb446fd20cd186358fe173");
         params.put("password", DigestUtils.md5Hex("111111".getBytes()));
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText() + result.getData());
+        System.out.println(result == null ? "result为空":result.getMessage() + result);
 
     }
 
@@ -101,7 +100,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("token", "3c81bb228cf848dcac7a664edc141040");
         params.put("captcha", "G2XCH");
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText() + result.getData());
+        System.out.println(result == null ? "result为空":result.getMessage() + result);
     }
 
     @Test
@@ -113,7 +112,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("password", DigestUtils.md5Hex("222222".getBytes()));
         params.put("scode", "e54cc4bc09739ade3e746ad892305227");
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText() + result.getData());
+        System.out.println(result == null ? "result为空":result.getMessage() + result);
     }
 
     @Test
@@ -125,7 +124,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("password", "222222");
         params.put("new_email", "hujunfei@sogou-inc.com");
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText() + result.getData());
+        System.out.println(result == null ? "result为空":result.getMessage() + result);
     }
 
 
@@ -138,7 +137,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("mode", "3");
         params.put("module", "3");
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText());
+        System.out.println(result == null ? "result为空":result.getMessage());
     }
 
 
@@ -152,7 +151,7 @@ public class AccountSecureControllerTest extends BaseActionTest {
         params.put("new_ques", "day");
         params.put("new_answer", "birthday");
         Result result = sendPostLocal(url, params);
-        System.out.println(result == null ? "result为空":result.getStatusText());
+        System.out.println(result == null ? "result为空":result.getMessage());
     }
 
     // @Test

@@ -86,6 +86,8 @@
             </list>
         </property>
     </bean>
+
+
     <bean id="mappingJacksonHttpMessageConverter"
           class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
     </bean>
