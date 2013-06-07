@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -32,45 +31,45 @@ public class BaseProxyManager {
      * @return
      */
     protected Result executeResult(final RequestModel requestModel) {
-        Result result = new APIResultSupport(false);
-        try{
-            Map<String, Object> map= this.execute(requestModel);
-            if(map.containsKey(SHPPUrlConstant.RESULT_STATUS)){
-                String status=map.get(SHPPUrlConstant.RESULT_STATUS).toString();
-                if("0".equals(status)){
+            Result result = new APIResultSupport(false);
+            try {
+            Map<String, Object> map = this.execute(requestModel);
+            if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
+                String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString();
+                if ("0".equals(status)) {
                     result.setSuccess(true);
                 }
                 result.setCode(status);
                 map.remove(SHPPUrlConstant.RESULT_STATUS);
             }
-            result.setModels(map);
-        }catch (Exception e){
-            log.error(requestModel.getUrl() + " execute error ", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
-    }
-
-    protected Map<String, Object> execute(final RequestModel requestModel) {
-        if (requestModel == null) {
-            throw new IllegalArgumentException("requestModel may not be null");
+            }catch(Exception e){
+                log.error(requestModel.getUrl() + " execute error ", e);
+                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            }
+            return result;
         }
 
-        //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
-        this.paramNameAdapter(requestModel);
+        protected Map<String, Object> execute (final RequestModel requestModel){
+            if (requestModel == null) {
+                throw new IllegalArgumentException("requestModel may not be null");
+            }
 
-        //设置默认参数同时计算参数的签名
-        this.setDefaultParam(requestModel);
+            //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
+            this.paramNameAdapter(requestModel);
 
-        return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
-    }
+            //设置默认参数同时计算参数的签名
+            this.setDefaultParam(requestModel);
 
-    /**
-     * 用于判断和计算默认的code
-     * 如果requestModel中已经存在code则不再生成
-     *
-     * @param requestModel
-     */
+            return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
+        }
+
+        /**
+         * 用于判断和计算默认的code
+         * 如果requestModel中已经存在code则不再生成
+         *
+         * @param requestModel
+         */
+
     private void setDefaultParam(final RequestModel requestModel) {
         //计算默认的codeserverSecret
         Object codeObject = requestModel.getParam("code");
@@ -84,7 +83,7 @@ public class BaseProxyManager {
             try {
                 code = Coder.encryptMD5(code);
             } catch (Exception e) {
-                throw new ServiceException("calculate default code error", e);
+                throw new RuntimeException("calculate default code error", e);
             }
             requestModel.addParam("code", code);
             requestModel.addParam("ct", ct);
@@ -109,7 +108,7 @@ public class BaseProxyManager {
      * @param oldName
      * @param newName
      */
-    private void paramNameAdapter(final RequestModel requestModel, String oldName, String newName) {
+    protected void paramNameAdapter(final RequestModel requestModel, String oldName, String newName) {
         if (requestModel.containsKey(oldName)) {
             Object param = requestModel.getParam(oldName);
             requestModel.deleteParams(oldName);

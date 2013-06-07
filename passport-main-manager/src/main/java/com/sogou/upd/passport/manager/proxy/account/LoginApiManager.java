@@ -14,11 +14,11 @@ import java.util.Map;
 public interface LoginApiManager {
 
     /**
-     * 校验用户名密码是否正确
+     * web端校验用户名密码是否正确
      * @param authUserApiParams
      * @return
      */
-    Result authUser(AuthUserApiParams authUserApiParams);
+    public Result webAuthUser(AuthUserApiParams authUserApiParams);
 
 
 }
