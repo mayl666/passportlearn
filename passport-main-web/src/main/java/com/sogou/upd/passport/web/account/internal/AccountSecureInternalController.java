@@ -42,14 +42,14 @@ public class AccountSecureInternalController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         String username = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String passportId = accountManager.getPassportIdByUsername(username);
         if (passportId == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            return result;
+            return result.toString();
         }
 
         return accountSecureManager.queryAccountSecureInfo(passportId, clientId, false);
@@ -63,7 +63,7 @@ public class AccountSecureInternalController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());

@@ -18,7 +18,6 @@ public class AuthUserApiParams extends BaseApiParameters{
     @NotBlank(message = "密码不允许为空")
     private String password;
     @Min(0)
-    @NotBlank(message = "密码类型不允许为空")
     private int pwdtype; //密码类型，1为md5后的口令，缺省为明文密码
 
     public String getPassport_id() {
