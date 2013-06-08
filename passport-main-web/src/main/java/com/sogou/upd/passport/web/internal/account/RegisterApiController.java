@@ -5,9 +5,10 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
-import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.proxy.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.MobileAuthTokenApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.MobileRegApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,29 +26,29 @@ import javax.servlet.http.HttpServletRequest;
  * Time: 下午2:40
  */
 @Controller
-@RequestMapping("/internal")
-public class LoginApiController {
+@RequestMapping("/internal/account")
+public class RegisterApiController {
 
     @Autowired
     private ConfigureManager configureManager;
 
-    private LoginApiManager proxyLoginApiManager;
+    private RegisterApiManager proxyRegisterApiManager;
 
     @Autowired
     public void setAbstractFlightSearchAO(
-            @Qualifier("proxyLoginApiManager") LoginApiManager proxyLoginApiManager) {
-        this.proxyLoginApiManager = proxyLoginApiManager;
+            @Qualifier("proxyRegisterApiManager") RegisterApiManager proxyRegisterApiManager) {
+        this.proxyRegisterApiManager = proxyRegisterApiManager;
     }
 
     /**
-     * web端校验用户名和密码是否正确
+     * 注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
+    @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
-    public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
+    public Object webAuthUser(HttpServletRequest request, MobileRegApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -57,26 +58,25 @@ public class LoginApiController {
             return result.toString();
         }
         // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getPassport_id(), params.getClient_id(), params.getCt(), params.getCode());
+        result = configureManager.verifyInternalRequest(params.getMobile(), params.getClient_id(), params.getCt(), params.getCode());
         if (!result.isSuccess()) {
             result.setCode(ErrorUtil.ERR_CODE_COM_SING);
             return result.toString();
         }
         // 调用内部接口
-        result = proxyLoginApiManager.webAuthUser(params);
+        result = proxyRegisterApiManager.regMobileUser(params);
         return result.toString();
     }
 
     /**
-     * 手机应用使用第三方登录完成之后，会通过302重定向的方式将token带给产品的服务器端，
-     * 产品的服务器端通过传入userid和token验证用户的合法性，且token具有较长的有效期。
-     * TODO 注意，目前接入应用全部是验证token，没有传入passport_id
-     *
+     * 注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号
+     * @param request
+     * @param params
      * @return
      */
-    @RequestMapping(value = "/account/authtoken", method = RequestMethod.POST)
+    @RequestMapping(value = "/sendregcaptcha", method = RequestMethod.POST)
     @ResponseBody
-    public Object mobileAuthToken(HttpServletRequest request, MobileAuthTokenApiParams params) {
+    public Object webAuthUser(HttpServletRequest request, BaseMoblieApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -86,13 +86,13 @@ public class LoginApiController {
             return result.toString();
         }
         // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getToken(), params.getClient_id(), params.getCt(), params.getCode());
+        result = configureManager.verifyInternalRequest(params.getMobile(), params.getClient_id(), params.getCt(), params.getCode());
         if (!result.isSuccess()) {
             result.setCode(ErrorUtil.ERR_CODE_COM_SING);
             return result.toString();
         }
         // 调用内部接口
-        result = proxyLoginApiManager.mobileAuthToken(params);
+        result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
         return result.toString();
     }
 

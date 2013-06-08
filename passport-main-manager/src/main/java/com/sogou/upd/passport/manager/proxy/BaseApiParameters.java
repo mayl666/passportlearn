@@ -19,7 +19,9 @@ public class BaseApiParameters {
     private String code; // MD5（passport_id+client_id+ct+server_secret+ct)方法签名
     @Min(0)
     @NotBlank(message = "ct不允许为空")
-    private long ct; //单位为秒
+    private long ct; //单位为毫秒
+
+
 
     public String getCode() {
         return code;

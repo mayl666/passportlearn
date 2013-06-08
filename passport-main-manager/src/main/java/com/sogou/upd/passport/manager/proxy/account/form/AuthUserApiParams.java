@@ -11,15 +11,16 @@ import javax.validation.constraints.Min;
  * Date: 13-6-6
  * Time: 上午10:21
  */
-public class AuthUserApiParams extends BaseApiParameters{
+public class AuthUserApiParams extends BaseApiParameters {
 
     @NotBlank(message = "passport_id不允许为空")
     private String passport_id;
     @NotBlank(message = "密码不允许为空")
     private String password;
     @Min(0)
-    @NotBlank(message = "密码类型不允许为空")
-    private int pwdtype; //密码类型，1为md5后的口令，缺省为明文密码
+    private int pwdtype = 0; //密码类型，1为md5后的口令，缺省为明文密码
+    @Min(0)
+    private int usertype; // passportid的值为手机号；usertype为0，passportid值为全域名id，如：test-1@sohu.com 或 昵称 eg:zhangsan
 
     public String getPassport_id() {
         return passport_id;
@@ -43,5 +44,13 @@ public class AuthUserApiParams extends BaseApiParameters{
 
     public void setPwdtype(int pwdtype) {
         this.pwdtype = pwdtype;
+    }
+
+    public int getUsertype() {
+        return usertype;
+    }
+
+    public void setUsertype(int usertype) {
+        this.usertype = usertype;
     }
 }

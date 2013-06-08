@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.manager;
 
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -13,6 +16,8 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class ManagerHelper {
+
+    private static Logger log = LoggerFactory.getLogger(ManagerHelper.class);
 
     /**
      * 创建一个第三方账户对象
@@ -40,5 +45,24 @@ public class ManagerHelper {
         connectRelation.setPassportId(passportId);
         connectRelation.setAppKey(appKey);
         return connectRelation;
+    }
+
+    /**
+     * 内部接口方法签名生成
+     *
+     * @param passportId
+     * @return
+     * @throws Exception
+     */
+    public static String generatorCode(String passportId, int clientId, String secret, long ct) {
+        //计算默认的code
+        String code = "";
+        try {
+            code = passportId + clientId + secret + ct;
+            code = Coder.encryptMD5(code);
+        } catch (Exception e) {
+            log.error("calculate default code error", e);
+        }
+        return code;
     }
 }

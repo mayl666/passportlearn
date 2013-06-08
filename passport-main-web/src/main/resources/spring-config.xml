@@ -60,41 +60,26 @@
 
     <mvc:default-servlet-handler/>
 
-
-
-    <!-- 特定对象mapper，用于注入对特定字符进行转义的类 -->
-    <!-- <bean id="CustomObjectMapper" class="com.sogou.upd.passport.common.web.CustomObjectMapper"/> -->
-    <bean
-            class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-        <property name="order" value="1"/>
-        <property name="messageConverters">
-            <list>
-                <ref bean="stringHttpMessageConverter"/>
-                <ref bean="mappingJacksonHttpMessageConverter"/>
-            </list>
-        </property>
-    </bean>
-
-
-
     <bean id="stringHttpMessageConverter"
           class="org.springframework.http.converter.StringHttpMessageConverter">
         <property name="supportedMediaTypes">
             <list>
                 <value>text/plain;charset=UTF-8</value>
-                <value>application/json;charset=UTF-8</value>
+                <!--<value>application/json;charset=UTF-8</value>-->
             </list>
         </property>
     </bean>
+
+
     <bean id="mappingJacksonHttpMessageConverter"
           class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
     </bean>
 
-    <bean
-            class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">
             <list>
                 <ref bean="stringHttpMessageConverter" />
+                <ref bean="mappingJacksonHttpMessageConverter" />
             </list>
         </property>
     </bean>

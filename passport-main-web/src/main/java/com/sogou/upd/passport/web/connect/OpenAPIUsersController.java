@@ -44,7 +44,7 @@ public class OpenAPIUsersController extends BaseConnectController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
         //验证client_id
         int clientId;
@@ -52,12 +52,12 @@ public class OpenAPIUsersController extends BaseConnectController {
             clientId = Integer.parseInt(reqParams.getClient_id());
         } catch (NumberFormatException e) {
             result.setCode(ErrorUtil.ERR_FORMAT_CLIENTID);
-            return result;
+            return result.toString();
         }
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            return result.toString();
         }
 
         String passportId = reqParams.getPassport_id();
@@ -65,7 +65,7 @@ public class OpenAPIUsersController extends BaseConnectController {
         int provider = AccountTypeEnum.getProvider(providerStr);
 
         result = openAPIUsersManager.obtainOpenIdByPassportId(passportId, clientId, provider);
-        return result;
+        return result.toString();
     }
 
     @RequestMapping(value = "/connect/users/info", method = RequestMethod.GET)
@@ -77,7 +77,7 @@ public class OpenAPIUsersController extends BaseConnectController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
 
         //验证client_id
@@ -86,12 +86,12 @@ public class OpenAPIUsersController extends BaseConnectController {
             clientId = Integer.parseInt(reqParams.getClient_id());
         } catch (NumberFormatException e) {
             result.setCode(ErrorUtil.ERR_FORMAT_CLIENTID);
-            return result;
+            return result.toString();
         }
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            return result.toString();
         }
         String accessToken = reqParams.getAccess_token();
         String providerStr = reqParams.getProvider();
@@ -103,6 +103,6 @@ public class OpenAPIUsersController extends BaseConnectController {
         } else {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-        return result;
+        return result.toString();
     }
 }
