@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="/static/css/main.css?t=763570" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><img src="/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <ul class="info">
+            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li class="sep">|</li>
+            <li>
+                <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+            
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li >首页</li>
+            
+            <li class="current">账号安全</li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li class="index   ">
+        <a href="/safe/index.ut">账号安全</a>
+    </li>
+    
+    <li class="password   small">
+        <a href="/safe/password.ut">修改密码</a>
+    </li>
+    
+    <li class="email   small">
+        <a href="/safe/email.ut">密保邮箱</a>
+    </li>
+    
+    <li class="tel   small">
+        <a href="/safe/tel.ut">密保手机</a>
+    </li>
+    
+    <li class="question   small">
+        <a href="/safe/question.ut">密保问题</a>
+    </li>
+    
+    <li class="history current  small">
+        <a href="/safe/history.ut">登录记录</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+        <div class="inner safe-history">
+            <div class="title">
+                修改个密码撒
+            </div>
+            <ul class="hdata">
+                <script type="text/tpl" id="Target">
+                    <li class="htitle">
+                        <p class="time">登录时间</p>
+                        <p class="ip">登录IP</p>
+                        <p class="loc">登录地点</p>
+                        <p class="type">登录类型</p>
+                    </li>
+                    <% for item in records %>
+                    <li >
+                        <p class="time"><{item.time.year}>-<{item.time.month}>-<{item.time.day}> <{item.time.hour}>:<{item.time.minute}>:<{item.time.second}></p>
+                        <p class="ip"><{item.ip}></p>
+                        <p class="loc"><{item.loc}></p>
+                        <p class="type"><{item.type}></p>
+                    </li>
+                    <% endfor %>
+                </script>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        &copy;2013 sogou.com
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
+    <script type="text/javascript" src="/static/js/main.js?t=922709"></script>
+    
+    <script type="text/javascript">
+
+var server_data = '${data}';
+        
+require.config({
+    baseUrl:"/static/js"
+});
+
+
+require(['safe'] , function(module){
+    module.init('history');
+});
+
+
+    </script>
+</html>
