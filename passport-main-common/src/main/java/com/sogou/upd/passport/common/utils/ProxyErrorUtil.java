@@ -4,6 +4,9 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
 
 import org.apache.commons.collections.keyvalue.DefaultMapEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
 /**
@@ -13,6 +16,8 @@ import java.util.Map;
  * Time: 下午5:55
  */
 public class ProxyErrorUtil extends ErrorUtil {
+
+    private static Logger log = LoggerFactory.getLogger(ProxyErrorUtil.class);
 
     private static final Map<String,String> SHPPERRCODE_SGPPERRCODE_MAP= Maps.newHashMapWithExpectedSize(200);
 
@@ -95,6 +100,8 @@ public class ProxyErrorUtil extends ErrorUtil {
         String errorCode=errorCodeBuilder.toString();
         if(SHPPERRCODE_SGPPERRCODE_MAP.containsKey(errorCode)){
             return SHPPERRCODE_SGPPERRCODE_MAP.get(errorCode);
+        }else{
+            log.error("未找到相应的错误类型："+errorCode);
         }
         return SYSTEM_UNKNOWN_EXCEPTION;
     }

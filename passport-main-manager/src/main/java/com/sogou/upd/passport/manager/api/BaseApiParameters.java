@@ -21,7 +21,14 @@ public class BaseApiParameters {
     @NotBlank(message = "ct不允许为空")
     private long ct; //单位为毫秒
 
+    //签名字段，默认为userid
+    //生成签名默认算法userid + appid + key + ct的md5
+    private String signatureKey;
 
+    public BaseApiParameters(){
+        super();
+        signatureKey="userid";
+    }
 
     public String getCode() {
         return code;
@@ -45,5 +52,13 @@ public class BaseApiParameters {
 
     public void setCt(long ct) {
         this.ct = ct;
+    }
+
+    public String getSignatureKey() {
+        return signatureKey;
+    }
+
+    public void setSignatureKey(String signatureKey) {
+        this.signatureKey = signatureKey;
     }
 }
