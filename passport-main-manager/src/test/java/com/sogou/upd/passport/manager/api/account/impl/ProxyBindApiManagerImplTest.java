@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.MobileBindPassportIdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import junit.framework.Assert;
 import org.junit.Test;

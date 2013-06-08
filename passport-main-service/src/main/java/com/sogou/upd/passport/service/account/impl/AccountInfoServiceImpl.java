@@ -76,7 +76,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     }
 
     @Override
-    public Result modifyQuesByPassportId(String passportId, String question, String answer)
+    public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer)
             throws ServiceException {
         Result result = new APIResultSupport(false);
         AccountInfo accountInfo;
@@ -96,11 +96,9 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
                 redisUtils.set(cacheKey, accountInfo);
-                result.setSuccess(true);
-                return result;
+                return accountInfo;
             }
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
-            return result;
+            return null;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
