@@ -11,7 +11,7 @@ import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
-import com.sogou.upd.passport.web.form.*;
+import com.sogou.upd.passport.web.account.form.*;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/web")
+@RequestMapping("/api")
 public class AccountSecureController {
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureController.class);
 
@@ -73,7 +73,7 @@ public class AccountSecureController {
             return result.toString();
         }
 
-        return accountSecureManager.queryAccountSecureInfo(passportId, clientId, true);
+        return accountSecureManager.queryAccountSecureInfo(passportId, clientId, true).toString();
     }
 
     /**
@@ -95,7 +95,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
+        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
     }
 
     /**
