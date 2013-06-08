@@ -11,7 +11,7 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
  * Time: 下午4:33
  * To change this template use File | Settings | File Templates.
  */
-public interface AccountLoginManager {
+public interface LoginManager {
 
     public Result authorize(OAuthTokenASRequest oauthRequest);
 

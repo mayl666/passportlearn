@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -73,8 +76,9 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     }
 
     @Override
-    public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer)
+    public Result modifyQuesByPassportId(String passportId, String question, String answer)
             throws ServiceException {
+        Result result = new APIResultSupport(false);
         AccountInfo accountInfo;
         try {
             accountInfo = new AccountInfo(passportId);
@@ -92,12 +96,14 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
                 redisUtils.set(cacheKey, accountInfo);
-                return accountInfo;
+                result.setSuccess(true);
+                return result;
             }
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
+            return result;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return null;
     }
 
     private String buildAccountInfoKey(String passportId) {

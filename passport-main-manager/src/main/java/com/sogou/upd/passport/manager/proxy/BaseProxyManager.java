@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,8 +34,8 @@ public class BaseProxyManager {
      * @return
      */
     protected Result executeResult(final RequestModel requestModel) {
-            Result result = new APIResultSupport(false);
-            try {
+        Result result = new APIResultSupport(false);
+        try {
             Map<String, Object> map = this.execute(requestModel);
             if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
                 String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
@@ -42,40 +43,41 @@ public class BaseProxyManager {
                     result.setSuccess(true);
                     map.remove(SHPPUrlConstant.RESULT_STATUS);
                     result.setModels(map);
-                }else{
-                    Map.Entry<String,String> entry= ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(),status);
+                } else {
+                    Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
                     result.setCode(entry.getKey());
                     result.setMessage(entry.getValue());
                 }
             }
-            }catch(Exception e){
-                log.error(requestModel.getUrl() + " execute error ", e);
-                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION));
-            }
-            return result;
+        } catch (Exception e) {
+            log.error(requestModel.getUrl() + " execute error ", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION));
+        }
+        return result;
+
+    }
+
+    protected Map<String, Object> execute(final RequestModel requestModel) {
+        if (requestModel == null) {
+            throw new IllegalArgumentException("requestModel may not be null");
         }
 
-        protected Map<String, Object> execute (final RequestModel requestModel){
-            if (requestModel == null) {
-                throw new IllegalArgumentException("requestModel may not be null");
-            }
+        //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
+        this.paramNameAdapter(requestModel);
 
-            //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
-            this.paramNameAdapter(requestModel);
+        //设置默认参数同时计算参数的签名
+        this.setDefaultParam(requestModel);
 
-            //设置默认参数同时计算参数的签名
-            this.setDefaultParam(requestModel);
+        return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
+    }
 
-            return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
-        }
-
-        /**
-         * 用于判断和计算默认的code
-         * 如果requestModel中已经存在code则不再生成
-         *
-         * @param requestModel
-         */
+    /**
+     * 用于判断和计算默认的code
+     * 如果requestModel中已经存在code则不再生成
+     *
+     * @param requestModel
+     */
 
     private void setDefaultParam(final RequestModel requestModel) {
         //计算默认的codeserverSecret
@@ -85,7 +87,7 @@ public class BaseProxyManager {
             //系统当前时间
             long ct = System.currentTimeMillis();
             String passport_id = requestModel.getParam("userid").toString();
-            if(StringUtil.isBlank(passport_id)){
+            if (StringUtil.isBlank(passport_id)) {
                 throw new IllegalArgumentException("计算默认code时passport_id不能为空");
             }
             //计算默认的code

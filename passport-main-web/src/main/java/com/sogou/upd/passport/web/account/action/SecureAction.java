@@ -5,9 +5,11 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountCheckManager;
-import com.sogou.upd.passport.manager.account.AccountManager;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.CheckManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.ResetPwdManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
@@ -23,32 +25,61 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午1:51 To change this template use
- * File | Settings | File Templates.
+ * User: hujunfei
+ * Date: 13-4-28 Time: 下午1:51
+ * 安全中心（修改密码，修改密保手机，修改密保问题，修改密保邮箱）
  */
 @Controller
 @RequestMapping("/web")
-public class AccountSecureAction extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(AccountSecureAction.class);
+public class SecureAction extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
 
     @Autowired
-    private AccountManager accountManager;
+    private CommonManager commonManager;
     @Autowired
-    private AccountSecureManager accountSecureManager;
+    private SecureManager secureManager;
     @Autowired
-    private AccountCheckManager accountCheckManager;
+    private CheckManager checkManager;
+    @Autowired
+    private ResetPwdManager resetPwdManager;
+
+  /**
+   * 修改密码
+   *
+   * @param resetParams 传入的参数
+   */
+  @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
+  @ResponseBody
+  public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
+      throws Exception {
+    Result result = new APIResultSupport(false);
+    //todo 注解需要判断登录
+    String validateResult = ControllerHelper.validateParams(resetParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result;
+    }
+    result = secureManager.resetWebPassword(resetParams);
+    return result;
+  }
 
     /**
      * 显示找回密码界面
      */
     @RequestMapping(value = "/findpwd", method = { RequestMethod.POST, RequestMethod.GET })
-    public String findPwd() throws Exception {
-        return "recover/index";
+    public ModelAndView findPwd() throws Exception {
+        return new ModelAndView("recover/index");
     }
 
     @RequestMapping(value = "/findpwd/getsecinfo", method = RequestMethod.POST)
+    @ResponseBody
     public String querySecureInfo(UserCaptchaParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -61,25 +92,26 @@ public class AccountSecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+        if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             model.addAttribute("data", result.toString());
         }
 
         // TODO:是否允许绑定手机取得密保信息
-        String passportId = accountManager.getPassportIdByUsername(username);
+        String passportId = commonManager.getPassportIdByUsername(username);
         if (passportId == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             model.addAttribute(result.toString());
         }
 
         // TODO:需要修改为代理接口
-        result = accountSecureManager.queryAccountSecureInfo(passportId, clientId, true);
+        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         model.addAttribute(result.toString());
         return "recover/type";
     }
 
     @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
+    @ResponseBody
     public String sendEmailRegResetPwd(BaseAccountParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -90,7 +122,7 @@ public class AccountSecureAction extends BaseController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
+        return resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
     }
 
     /**
@@ -101,9 +133,9 @@ public class AccountSecureAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public String queryPassportId(AccountPwdScodeParams params, Model model) throws Exception {
+    public ModelAndView queryPassportId(AccountPwdScodeParams params, Model model) throws Exception {
         int clientId = Integer.parseInt(params.getClient_id());
-        String passportId = accountManager.getPassportIdByUsername(params.getPassport_id());
+        String passportId = commonManager.getPassportIdByUsername(params.getPassport_id());
         if (passportId == null) {
 
         }
@@ -118,10 +150,11 @@ public class AccountSecureAction extends BaseController {
 //        }
         model.addAttribute("passportId", passportId);
         model.addAttribute("clientId", clientId);
-        return "forward:";
+        return new ModelAndView("forward:");
     }
 
     @RequestMapping(value = "/mobile", method = RequestMethod.POST)
+    @ResponseBody
     public String resetPasswordByMobile(@RequestParam("username") String passportId, @RequestParam("client_id") int clientId,
                                         @RequestParam("password") String password, @RequestParam("smscode") String smsCode, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -135,7 +168,7 @@ public class AccountSecureAction extends BaseController {
             model.addAttribute("error", result);
             return "forward:";
         }
-        result = accountSecureManager.resetPasswordByMobile(passportId, clientId, password, smsCode);
+        result = resetPwdManager.resetPasswordByMobile(passportId, clientId, password, smsCode);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             // 重置密码成功
@@ -147,6 +180,7 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
+    @ResponseBody
     public String sendEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
                             Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -156,7 +190,7 @@ public class AccountSecureAction extends BaseController {
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             return "forward:";
@@ -165,6 +199,7 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
+    @ResponseBody
     public String checkEmailForResetPwd(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -176,7 +211,7 @@ public class AccountSecureAction extends BaseController {
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
-        result = accountSecureManager.checkEmailResetPwd(passportId, clientId, scode);
+        result = resetPwdManager.checkEmailResetPwd(passportId, clientId, scode);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             model.addAttribute("passport_id", passportId);
@@ -188,15 +223,17 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/email", method = RequestMethod.POST)
+    @ResponseBody
     public String resetPasswordByEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
                                        @RequestParam("password") String password, @RequestParam("token") String token, Model model) throws Exception {
         int clientId = Integer.parseInt(client_id);
-        Result result = accountSecureManager.resetPasswordByEmail(passportId, clientId, password, token);
+        Result result = resetPwdManager.resetPasswordByEmail(passportId, clientId, password, token);
         model.addAttribute("error", result);
         return "success";
     }
 
     @RequestMapping(value = "/ques", method = RequestMethod.POST)
+    @ResponseBody
     public String resetPasswordByQues(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
                                       @RequestParam("password") String password, String answer, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -207,11 +244,11 @@ public class AccountSecureAction extends BaseController {
         }
         int clientId = Integer.parseInt(client_id);
 
-        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+        if (!checkManager.checkLimitResetPwd(passportId, clientId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             model.addAttribute("error", result);
         }
-        result = accountSecureManager.resetPasswordByQues(passportId, clientId, password, answer);
+        result = resetPwdManager.resetPasswordByQues(passportId, clientId, password, answer);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             return "success";

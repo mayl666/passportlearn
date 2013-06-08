@@ -1,13 +1,12 @@
-package com.sogou.upd.passport.proxy.manager.account;
+package com.sogou.upd.passport.manager.proxy.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.utils.XMLUtil;
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
 import org.junit.Test;
-
-import javax.inject.Inject;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -19,20 +18,21 @@ public class AccountLoginManagerTest extends BaseTest {
 
     private static final int clientId = 1100;
 
-    private static final String passportId = "upd_test@sogou.com";
-
-    @Inject
-    private LoginApiManager accountLoginProxyManager;
+    @Autowired
+    private LoginApiManager proxyLoginApiManager;
 
     @Test
     public void testAuthUser() {
-        AuthUserApiParams authUserParameters = new AuthUserApiParams();
-        authUserParameters.setPassport_id(passportId);
-        authUserParameters.setClient_id(clientId);
-        authUserParameters.setPassword("testtest1");
-        Map<String, Object> map = (Map<String, Object>) accountLoginProxyManager.webAuthUser(authUserParameters);
-        String result = XMLUtil.mapToXml("result", map).asXML();
-        System.out.println(result);
+        try {
+            AuthUserApiParams authUserParameters = new AuthUserApiParams();
+            authUserParameters.setPassport_id("13621009174@sohu.com");
+            authUserParameters.setClient_id(clientId);
+            authUserParameters.setPassword(Coder.encryptMD5("spz1986411"));
+            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

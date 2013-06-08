@@ -34,6 +34,7 @@ public class ProblemDAOTest extends BaseDAOTest {
       problem.setSubTime(new Date());
       problem.setTypeId(1);
       problem.setContent("我的幼儿园");
+        problem.setQq("1037113048");
       int row = problemDAO.insertProblem(problem);
       Assert.assertTrue(row != 0);
     }
@@ -80,8 +81,7 @@ public class ProblemDAOTest extends BaseDAOTest {
     Date startDate = DateUtil.parse("2013-06-03",DateUtil.DATE_FMT_3) ;
     Date endDate = DateUtil.parse("2013-06-05",DateUtil.DATE_FMT_3) ;
     String content = "游戏";
-    int count
-            = problemDAO.getProblemCount(status,clientId,typeId,startDate,endDate,content);
+    int count = problemDAO.getProblemCount(status,clientId,typeId,startDate,endDate,content);
     System.out.println("count:"+count);
 //    Assert.assertTrue(list.size() >0);
   }

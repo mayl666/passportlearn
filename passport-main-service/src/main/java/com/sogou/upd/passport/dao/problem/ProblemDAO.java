@@ -28,27 +28,27 @@ public interface ProblemDAO {
    */
   String
       ALL_FIELD =
-      " id, passport_id, client_id, sub_time, status, type_id, content ";
+      " id, passport_id, client_id, sub_time, status, type_id, content,qq ";
 
   /**
    * 除了id之外所有字段列表
    */
   String
           ALL_FIELD_EXCEPTID =
-          " passport_id, client_id, sub_time, status, type_id, content ";
+          " passport_id, client_id, sub_time, status, type_id, content,qq ";
   /**
    * 值列表
    */
   String
       VALUE_FIELD_EXCEPTID =
-      " :problem.passportId, :problem.clientId, :problem.subTime, :problem.status, :problem.typeId, :problem.content ";
+      " :problem.passportId, :problem.clientId, :problem.subTime, :problem.status, :problem.typeId, :problem.content, :problem.qq ";
 
   /**
    * 修改字段列表
    */
   String
       UPDATE_FIELD =
-      " passport_id = :problem.passportId, client_id = :problem.clientId, sub_time = :problem.subTime, status = :problem.status, type_id = :problem.typeId, content = :problem.content ";
+      " passport_id = :problem.passportId, client_id = :problem.clientId, sub_time = :problem.subTime, status = :problem.status, type_id = :problem.typeId, content = :problem.content, qq = :problem.qq ";
 
 
   /**
@@ -57,8 +57,7 @@ public interface ProblemDAO {
   @SQL("update " +
        TABLE_NAME +
        " set status=:status where id=:id")
-  public int updateStatusById(@SQLParam("status") int status,
-                         @SQLParam("id") long id) throws DataAccessException;
+  public int updateStatusById(@SQLParam("id") long id,@SQLParam("status") int status ) throws DataAccessException;
 
   /**
    * 插入一条用户反馈

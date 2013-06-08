@@ -21,6 +21,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_COM_REQURIE = "10002";
     // 内部接口code签名错误
     public static final String ERR_CODE_COM_SING = "10003";
+    // 代理搜狐Passport接口HTTP请求发生异常
+    public static final String PROXY_SHPP_API_EXCEPTION = "10004";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
     // 签名或accessToken验证失败
@@ -31,6 +33,7 @@ public class ErrorUtil {
     public static final String INVALID_CLIENTID = "10010";
     //client_id格式不正确
     public static final String ERR_FORMAT_CLIENTID = "10011";
+
     //***************************通用的错误代码end*********************************
 
     //***************************OAuth2授权错误码start******************************
@@ -263,6 +266,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
+        ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(ERR_FORMAT_CLIENTID, "client_id格式不正确");
@@ -298,7 +302,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或绑定");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP存在异常");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP登陆操作存在异常");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "登陆账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "登陆账号被封杀");
 
