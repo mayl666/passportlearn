@@ -33,29 +33,16 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
 
     @Override
     public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regMobileCaptchaApiParams) {
-        Result result = new APIResultSupport(false);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(regMobileCaptchaApiParams);
-            result = executeResult(requestModelXml);
-        } catch (Exception e) {
-            log.error("mobile register phone account Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(regMobileCaptchaApiParams);
+        return executeResult(requestModelXml);
     }
 
     @Override
     public Result sendMobileRegCaptcha(BaseMoblieApiParams baseMoblieApiParams) {
-        Result result = new APIResultSupport(false);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(baseMoblieApiParams);
-            result = executeResult(requestModelXml);
-        } catch (Exception e) {
-            log.error("mobile register phone account Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(baseMoblieApiParams);
+        return executeResult(requestModelXml);
+
     }
 }
