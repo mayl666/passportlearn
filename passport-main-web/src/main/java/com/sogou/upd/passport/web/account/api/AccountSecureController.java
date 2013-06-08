@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
@@ -35,6 +36,8 @@ public class AccountSecureController {
     private CommonManager commonManager;
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private ResetPwdManager resetPwdManager;
     @Autowired
     private CheckManager checkManager;
     @Autowired
@@ -95,7 +98,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return secureManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
+        return resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
     }
 
     /**
@@ -117,7 +120,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return secureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        return resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
     }
 
     /*
@@ -150,7 +153,7 @@ public class AccountSecureController {
             return result.toString();
         }
 
-        return secureManager.resetPasswordByEmail(passportId, clientId, password, scode);
+        return resetPwdManager.resetPasswordByEmail(passportId, clientId, password, scode);
     }
 
     /**
@@ -261,7 +264,7 @@ public class AccountSecureController {
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
-        return secureManager.checkMobileCodeResetPwd(passportId, clientId, smsCode);
+        return resetPwdManager.checkMobileCodeResetPwd(passportId, clientId, smsCode);
     }
 
     /**
@@ -311,7 +314,7 @@ public class AccountSecureController {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result.toString();
         }
-        return secureManager.checkAnswerByPassportId(passportId, clientId, answer, token, captcha);
+        return resetPwdManager.checkAnswerByPassportId(passportId, clientId, answer, token, captcha);
     }
 
     /**
@@ -348,7 +351,7 @@ public class AccountSecureController {
         }
 
         // 第二步，修改密码
-        return secureManager.resetPassword(passportId, clientId, password);
+        return resetPwdManager.resetPassword(passportId, clientId, password);
     }
 
     /**
