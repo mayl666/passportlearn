@@ -1,14 +1,15 @@
-package com.sogou.upd.passport.manager.proxy.account.impl;
+package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
-import com.sogou.upd.passport.manager.proxy.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
@@ -70,6 +71,20 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             if (account == null) {
                 return doUserNotExist(userid, ip);
             }
+
+            //检查该账号是否为正常账号
+            if (!AccountHelper.isNormalAccount(account)) {
+                if (AccountHelper.isDisabledAccount(account)) {
+                    //登陆账号未激活
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
+                    return result;
+                } else {
+                    //登陆账号被封杀
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                    return result;
+                }
+            }
+
             String storedPwd = account.getPasswd();
             if (PwdGenerator.verify(password, false, storedPwd)) {
                 //todo 登录成功种cookie
