@@ -25,4 +25,14 @@ public interface SecureApiManager {
      * @return
      */
     Result updateQues(UpdateQuesApiParams updateQuesApiParams);
+
+    /**
+     * 获取用户安全信息接口
+     * @param getUserSecureInfoApiParams
+     * @return
+     * sec_email 密保邮箱（绑定邮箱）
+     * sec_mobile 密保手机（绑定手机）
+     * sec_ques 密保问题
+     */
+    Result getUserSecureInfo(GetUserSecureInfoApiParams getUserSecureInfoApiParams);
 }

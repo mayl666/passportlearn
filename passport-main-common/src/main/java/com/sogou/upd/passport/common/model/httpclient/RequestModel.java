@@ -106,9 +106,9 @@ public class RequestModel {
         if (StringUtil.isBlank(key)) {
             throw new IllegalArgumentException("key 不能为空");
         }
-        if (value == null || StringUtil.isBlank(value.toString())) {
-            throw new IllegalArgumentException("value 不能为空");
-        }
+//        if (value == null || StringUtil.isBlank(value.toString())) {
+//            throw new IllegalArgumentException("value 不能为空");
+//        }
         this.params.put(key, value);
     }
 

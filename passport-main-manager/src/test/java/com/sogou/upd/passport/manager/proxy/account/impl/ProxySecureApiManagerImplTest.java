@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.proxy.account.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.proxy.account.SecureApiManager;
+import com.sogou.upd.passport.manager.proxy.account.form.GetUserSecureInfoApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UpdateQuesApiParams;
 import junit.framework.Assert;
@@ -53,6 +54,15 @@ public class ProxySecureApiManagerImplTest extends BaseTest {
         updateQuesApiParams.setNewanswer("测试答案");
         updateQuesApiParams.setNewquestion("测试问题");
         Result result= secureApiManager.updateQues(updateQuesApiParams);
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
+    }
+
+    @Test
+    public void testGetUserSecureInfo(){
+        GetUserSecureInfoApiParams getUserSecureInfoApiParams=new GetUserSecureInfoApiParams();
+        getUserSecureInfoApiParams.setUserid(passportId);
+        Result result= secureApiManager.getUserSecureInfo(getUserSecureInfoApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
     }
