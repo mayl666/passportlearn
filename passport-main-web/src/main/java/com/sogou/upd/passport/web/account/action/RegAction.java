@@ -94,7 +94,7 @@ public class RegAction extends BaseController {
 
     String captchaCode = regParams.getCaptcha();
     String token = regParams.getToken();
-    //todo
+    //todo 黑白名单
     //校验验证码
     result = regManager.checkCaptchaCode(token, captchaCode);
 

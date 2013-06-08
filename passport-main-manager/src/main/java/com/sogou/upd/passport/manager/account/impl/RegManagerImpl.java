@@ -28,9 +28,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
+ * 注册管理
  * User: mayan
  * Date: 13-4-15 Time: 下午4:43
- * 注册管理
  */
 @Component
 public class RegManagerImpl implements RegManager {
