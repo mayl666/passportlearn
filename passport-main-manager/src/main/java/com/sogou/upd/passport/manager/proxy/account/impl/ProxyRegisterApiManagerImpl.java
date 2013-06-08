@@ -8,7 +8,9 @@ import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
 import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.proxy.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.MobileRegApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.RegMobileApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.RegMobileCaptchaApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -26,11 +28,21 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
     private static Logger log = LoggerFactory.getLogger(ProxyRegisterApiManagerImpl.class);
 
     @Override
-    public Result regMobileUser(MobileRegApiParams mobileRegApiParams) {
+    public Result regMailUser(RegEmailApiParams regEmailApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result regMobileUser(RegMobileApiParams regMobileApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regMobileCaptchaApiParams) {
         Result result = new APIResultSupport(false);
         try {
             RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(mobileRegApiParams);
+            requestModelXml.addParams(regMobileCaptchaApiParams);
             result = executeResult(requestModelXml);
         } catch (Exception e) {
             log.error("mobile register phone account Fail:", e);

@@ -10,6 +10,7 @@ import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.proxy.account.BindApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.MobileBindPassportIdApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 
     @Override
     public Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        Result result = new APIResultSupport(false);
         try {
             RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
             long ct = System.currentTimeMillis();
@@ -47,19 +47,20 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
             }
             baseMoblieApiParams.setCode(code);
             baseMoblieApiParams.setCt(ct);
+            baseMoblieApiParams.setClient_id(SHPPUrlConstant.APP_ID);
             requestModelXml.addParams(baseMoblieApiParams);
 
             return this.executeResult(requestModelXml);
         } catch (Exception e) {
+            Result result = new APIResultSupport(false);
             logger.error("unbindMobile Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
-        return result;
     }
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
-        Result result = new APIResultSupport(false);
         try {
             RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BIND_EMAIL, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
             bindEmailApiParams.setPwdtype(1);
@@ -75,10 +76,35 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
             requestModelXml.addParams(bindEmailApiParams);
             return this.executeResult(requestModelXml);
         } catch (Exception e) {
+            Result result = new APIResultSupport(false);
             logger.error("bindEmail Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
-        return result;
+    }
+
+    @Override
+    public Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams) {
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            long ct = System.currentTimeMillis();
+            String code = mobileBindPassportIdApiParams.getMobile() + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
+            try {
+                code = Coder.encryptMD5(code);
+            } catch (Exception e) {
+                throw new RuntimeException("calculate code error phone:" + mobileBindPassportIdApiParams.getMobile(), e);
+            }
+            mobileBindPassportIdApiParams.setClient_id(SHPPUrlConstant.APP_ID);
+            mobileBindPassportIdApiParams.setCode(code);
+            mobileBindPassportIdApiParams.setCt(ct);
+            requestModelXml.addParams(mobileBindPassportIdApiParams);
+            return this.executeResult(requestModelXml);
+        } catch (Exception e) {
+            Result result = new APIResultSupport(false);
+            logger.error("unbindMobile Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
     }
 
     @Override

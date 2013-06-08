@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.NotBlank;
 public class UpdateQuesApiParams  extends BaseApiParameters {
 
     @NotBlank(message = "账号不能为空！")
-    private String passport_id;
+    private String userid;
 
     @NotBlank(message = "原密码不能为空！")
     private String password;
@@ -41,12 +41,12 @@ public class UpdateQuesApiParams  extends BaseApiParameters {
         this.password = password;
     }
 
-    public String getPassport_id() {
-        return passport_id;
+    public String getUserid() {
+        return userid;
     }
 
-    public void setPassport_id(String passport_id) {
-        this.passport_id = passport_id;
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 
     public String getNewquestion() {

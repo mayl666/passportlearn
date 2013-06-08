@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 下午2:28
  */
 
-public class AccountLoginManagerTest extends BaseTest {
+public class ProxyLoginApiManagerTest extends BaseTest {
 
     private static final int clientId = 1100;
 
@@ -25,9 +25,10 @@ public class AccountLoginManagerTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setPassport_id("13621009174@sohu.com");
+            authUserParameters.setUserid("13621009174");
             authUserParameters.setClient_id(clientId);
             authUserParameters.setPassword(Coder.encryptMD5("spz1986411"));
+            authUserParameters.setUsertype(1);
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
             System.out.println(result);
         } catch (Exception e) {

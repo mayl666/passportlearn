@@ -8,13 +8,13 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.AssertTrue;
 
 /**
- * Created with IntelliJ IDEA.
+ * 带验证码的手机号注册参数类
  * User: shipengzhi
  * Date: 13-6-7
  * Time: 下午9:13
  * To change this template use File | Settings | File Templates.
  */
-public class MobileRegApiParams extends BaseApiParameters {
+public class RegMobileCaptchaApiParams extends BaseApiParameters {
 
     @NotBlank(message = "手机号码不允许为空")
     private String mobile;

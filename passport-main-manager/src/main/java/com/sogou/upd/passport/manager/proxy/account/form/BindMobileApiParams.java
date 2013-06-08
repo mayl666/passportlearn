@@ -15,7 +15,7 @@ import javax.validation.constraints.AssertTrue;
 public class BindMobileApiParams extends BaseApiParameters {
 
     @NotBlank(message = "passport_id不允许为空")
-    private String passport_id;
+    private String userid;
 
     @NotBlank(message = "新手机号不允许为空")
     private String mobile;
@@ -31,12 +31,12 @@ public class BindMobileApiParams extends BaseApiParameters {
         return false;
     }
 
-    public String getPassport_id() {
-        return passport_id;
+    public String getUserid() {
+        return userid;
     }
 
-    public void setPassport_id(String passport_id) {
-        this.passport_id = passport_id;
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 
     public String getMobile() {
