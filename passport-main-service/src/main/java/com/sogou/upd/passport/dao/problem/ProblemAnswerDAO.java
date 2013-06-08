@@ -46,7 +46,7 @@ public interface ProblemAnswerDAO {
 
 
   /**
-   * 插入一条用户反馈
+   * 插入一条反馈回答
    */
   @SQL(
       "insert into " +
@@ -72,8 +72,8 @@ public interface ProblemAnswerDAO {
        ALL_FIELD +
        "from" +
        TABLE_NAME +
-       " where  problem_id = :problem_id " )//
-  public List<ProblemAnswer> getAnswersByProblemId(@SQLParam("problem_id") long problem_id)
+       " where  problem_id = :problem_id order by ans_time" )//
+  public List<ProblemAnswer> getAnswerListByProblemId(@SQLParam("problem_id") long problem_id)
           throws DataAccessException;
 
 }
