@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * Date: 13-6-8
  * Time: 下午9:50
  */
-@Component("sGRegisterApiManager")
+@Component("sgRegisterApiManager")
 public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
     private static Logger log = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
