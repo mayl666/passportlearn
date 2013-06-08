@@ -46,9 +46,17 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(appAuthTokenApiParams);
-        return executeResult(requestModelXml);
+        Result result = new APIResultSupport(false);
+        appAuthTokenApiParams.setType(2);
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            requestModelXml.addParams(appAuthTokenApiParams);
+            result = executeResult(requestModelXml, appAuthTokenApiParams.getToken());
+        } catch (Exception e) {
+            log.error("App auth openLogin token Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
 }

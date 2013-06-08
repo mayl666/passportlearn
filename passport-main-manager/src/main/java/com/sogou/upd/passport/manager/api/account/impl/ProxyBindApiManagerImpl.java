@@ -35,10 +35,9 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 
     @Override
     public Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        baseMoblieApiParams.setSignatureKey("mobile");
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(baseMoblieApiParams);
-        return this.executeResult(requestModelXml);
+        return this.executeResult(requestModelXml, baseMoblieApiParams.getMobile());
     }
 
     @Override
@@ -51,10 +50,9 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 
     @Override
     public Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams) {
-        mobileBindPassportIdApiParams.setSignatureKey("mobile");
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(mobileBindPassportIdApiParams);
-        return this.executeResult(requestModelXml);
+        return this.executeResult(requestModelXml, mobileBindPassportIdApiParams.getMobile());
     }
 
     @Override

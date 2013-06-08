@@ -9,7 +9,6 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +28,7 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
 
     @Override
     public Result regMailUser(RegEmailApiParams regEmailApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Result regMobileUser(RegMobileApiParams regMobileApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
