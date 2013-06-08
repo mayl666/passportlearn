@@ -6,8 +6,8 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
+import com.sogou.upd.passport.manager.proxy.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.MobileAuthTokenApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -70,7 +70,7 @@ public class LoginApiController {
      */
     @RequestMapping(value = "/account/authtoken", method = RequestMethod.POST)
     @ResponseBody
-    public Object mobileAuthToken(HttpServletRequest request, MobileAuthTokenApiParams params) {
+    public Object mobileAuthToken(HttpServletRequest request, AppAuthTokenApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -86,7 +86,7 @@ public class LoginApiController {
             return result.toString();
         }
         // 调用内部接口
-        result = proxyLoginApiManager.mobileAuthToken(params);
+        result = proxyLoginApiManager.appAuthToken(params);
         return result.toString();
     }
 

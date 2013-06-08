@@ -8,13 +8,13 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 
 /**
- * Created with IntelliJ IDEA.
+ * 客户端验证token参数类
  * User: shipengzhi
  * Date: 13-6-7
  * Time: 下午8:26
  * To change this template use File | Settings | File Templates.
  */
-public class MobileAuthTokenApiParams extends BaseApiParameters {
+public class AppAuthTokenApiParams extends BaseApiParameters {
 
     @Min(0)
     @NotBlank(message = "type不允许为空")

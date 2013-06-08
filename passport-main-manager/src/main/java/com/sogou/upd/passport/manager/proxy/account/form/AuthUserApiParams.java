@@ -18,9 +18,9 @@ public class AuthUserApiParams extends BaseApiParameters {
     @NotBlank(message = "密码不允许为空")
     private String password;
     @Min(0)
-    private int pwdtype = 0; //密码类型，1为md5后的口令，缺省为明文密码
+    private int pwdtype = 0; //密码类型，1为md5后的口令，缺省为明文密码 TODO 暂时没应用用到
     @Min(0)
-    private int usertype; // passportid的值为手机号；usertype为0，passportid值为全域名id，如：test-1@sohu.com 或 昵称 eg:zhangsan
+    private int usertype; // userid为手机号时，usertype=1；usertype默认为0，userid值为全域名id，如：test-1@sohu.com 或 昵称 eg:zhangsan TODO 暂时用不到此参数
 
     public String getUserid() {
         return userid;

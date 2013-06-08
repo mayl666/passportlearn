@@ -1,10 +1,8 @@
 package com.sogou.upd.passport.manager.proxy.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.proxy.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.MobileAuthTokenApiParams;
-
-import java.util.Map;
 
 /**
  * 登录相关
@@ -27,9 +25,9 @@ public interface LoginApiManager {
      * 会通过302重定向的方式将token带给产品的服务器端，
      * 产品的服务器端通过传入passportid和token验证用户的合法性，且token具有较长的有效期。
      *
-     * @param mobileAuthTokenApiParams
+     * @param appAuthTokenApiParams
      * @return
      */
-    public Result mobileAuthToken(MobileAuthTokenApiParams mobileAuthTokenApiParams);
+    public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams);
 
 }
