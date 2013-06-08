@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 @Component("proxyLoginApiManager")
 public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
-    private static Logger log = LoggerFactory.getLogger(ProxyLoginApiManagerImpl.class);
-
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         String userId = authUserParameters.getUserid();

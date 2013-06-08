@@ -588,4 +588,17 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
+  @Override
+  public boolean checkCaptchaCode(String token, String captchaCode) throws Exception {
+    try {
+      //校验验证码
+      if (!checkCaptchaCodeIsVaild(token, captchaCode)) {
+        return false;
+      }
+    } catch (ServiceException e) {
+      logger.error("checkCaptchaCode fail", e);
+      return false;
+    }
+    return true;
+  }
 }
