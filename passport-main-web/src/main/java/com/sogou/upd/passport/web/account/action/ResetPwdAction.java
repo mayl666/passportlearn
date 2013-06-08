@@ -5,9 +5,10 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountCheckManager;
-import com.sogou.upd.passport.manager.account.AccountManager;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.CheckManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.ResetPwdManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
@@ -23,20 +24,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * Created with IntelliJ IDEA. User: mayan Date: 13-6-7 Time: 下午5:49 To change this template use
- * File | Settings | File Templates.
+ * User: mayan
+ * Date: 13-6-7 Time: 下午5:49
+ * 重置密码 （通过注册邮箱，密保邮箱，密保手机，密保问题）
  */
 @Controller
 @RequestMapping(value = "/web/findpwd")
-public class AccountResetPwdAction {
-    private static final Logger logger = LoggerFactory.getLogger(AccountResetPwdAction.class);
+public class ResetPwdAction {
+    private static final Logger logger = LoggerFactory.getLogger(ResetPwdAction.class);
 
     @Autowired
-    private AccountManager accountManager;
+    private CommonManager commonManager;
     @Autowired
-    private AccountSecureManager accountSecureManager;
+    private SecureManager secureManager;
     @Autowired
-    private AccountCheckManager accountCheckManager;
+    private CheckManager checkManager;
+    @Autowired
+    private ResetPwdManager resetPwdManager;
 
     @RequestMapping
     public String findPwd() throws Exception {
@@ -56,20 +60,20 @@ public class AccountResetPwdAction {
         int clientId = Integer.parseInt(params.getClient_id());
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+        if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             model.addAttribute("data", result.toString());
         }
 
         // TODO:是否允许绑定手机取得密保信息
-        String passportId = accountManager.getPassportIdByUsername(username);
+        String passportId = commonManager.getPassportIdByUsername(username);
         if (passportId == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             model.addAttribute("data", result.toString());
         }
 
         // TODO:需要修改为代理接口
-        result = accountSecureManager.queryAccountSecureInfo(passportId, clientId, true);
+        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         model.addAttribute("data", result.toString());
         return "recover/type";
     }
@@ -86,7 +90,7 @@ public class AccountResetPwdAction {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
+        result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:
@@ -105,7 +109,7 @@ public class AccountResetPwdAction {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:
@@ -126,7 +130,7 @@ public class AccountResetPwdAction {
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
 
-        accountCheckManager.checkLimitResetPwd(passportId, clientId);
+        checkManager.checkLimitResetPwd(passportId, clientId);
 
         return "";
     }
@@ -145,12 +149,12 @@ public class AccountResetPwdAction {
         String password = params.getPassword();
         String scode = params.getScode();
 
-        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+        if (!checkManager.checkLimitResetPwd(passportId, clientId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             return result.toString();
         }
 
-        result = accountSecureManager.resetPasswordByEmail(passportId, clientId, password, scode);
+        result = resetPwdManager.resetPasswordByEmail(passportId, clientId, password, scode);
         return "";
     }
 }

@@ -3,7 +3,7 @@ package com.sogou.upd.passport.web.inteceptor;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.manager.account.AccountManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
-    private AccountManager accountManager;
+    private CommonManager commonManager;
 
     @Autowired
     private HostHolder hostHolder;
@@ -30,7 +30,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         //TODO 验证cookie是否正确
-        if (accountManager.isAccountExists(passportId)){
+        if (commonManager.isAccountExists(passportId)){
             hostHolder.setPassportId(passportId);
         }
         return true;

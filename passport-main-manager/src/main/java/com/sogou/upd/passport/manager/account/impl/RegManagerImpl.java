@@ -10,7 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.AccountRegManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
@@ -32,7 +32,7 @@ import java.util.Map;
  * Templates.
  */
 @Component
-public class AccountRegManagerImpl implements AccountRegManager {
+public class RegManagerImpl implements RegManager {
 
     @Autowired
     private AccountService accountService;
@@ -45,7 +45,7 @@ public class AccountRegManagerImpl implements AccountRegManager {
     @Autowired
     private RedisUtils redisUtils;
 
-    private static final Logger logger = LoggerFactory.getLogger(AccountRegManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
 
     @Override

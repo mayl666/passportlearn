@@ -9,7 +9,7 @@ import com.sogou.upd.passport.model.account.Account;
  * Time: 下午8:34
  * To change this template use File | Settings | File Templates.
  */
-public interface AccountManager {
+public interface CommonManager {
 
     /**
      * username包括email和手机号
