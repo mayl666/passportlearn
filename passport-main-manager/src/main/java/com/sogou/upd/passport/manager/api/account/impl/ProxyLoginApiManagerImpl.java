@@ -29,7 +29,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         Result result = new APIResultSupport(false);
         String userId = authUserParameters.getUserid();
-        if(AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))) {
+        if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))) {
             authUserParameters.setUsertype(1);
         }
         authUserParameters.setPwdtype(1);
@@ -46,16 +46,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
-        Result result = new APIResultSupport(false);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(appAuthTokenApiParams);
-            result = executeResult(requestModelXml);
-        } catch (Exception e) {
-            log.error("mobile openlogin auth token Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(appAuthTokenApiParams);
+        return executeResult(requestModelXml);
     }
 
 }

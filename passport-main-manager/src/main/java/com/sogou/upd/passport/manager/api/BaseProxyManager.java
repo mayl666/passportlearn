@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -41,7 +42,7 @@ public class BaseProxyManager {
                 String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
                 if ("0".equals(status)) {
                     result.setSuccess(true);
-                    map.remove(SHPPUrlConstant.RESULT_STATUS);
+                    this.handSHPPMap(map);
                     result.setModels(map);
                 } else {
                     Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
@@ -81,26 +82,22 @@ public class BaseProxyManager {
 
     private void setDefaultParam(final RequestModel requestModel) {
         //计算默认的codeserverSecret
-        Object codeObject = requestModel.getParam("code");
-        if (codeObject == null || StringUtil.isBlank(codeObject.toString())) {
-
-            //系统当前时间
-            long ct = System.currentTimeMillis();
-            String passport_id = requestModel.getParam("userid").toString();
-            if (StringUtil.isBlank(passport_id)) {
-                throw new IllegalArgumentException("计算默认code时passport_id不能为空");
-            }
-            //计算默认的code
-            String code = passport_id + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
-            try {
-                code = Coder.encryptMD5(code);
-            } catch (Exception e) {
-                throw new RuntimeException("calculate default code error", e);
-            }
-            requestModel.addParam("code", code);
-            requestModel.addParam("ct", ct);
-            requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+        String signatureKey=requestModel.getParam("signatureKey").toString();
+        String userid = requestModel.getParam(signatureKey).toString();
+        long ct = System.currentTimeMillis();
+        if (StringUtil.isBlank(userid)) {
+            throw new IllegalArgumentException("计算code时"+signatureKey+"不能为空");
         }
+        //计算默认的code
+        String code = userid + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
+        try {
+            code = Coder.encryptMD5(code);
+        } catch (Exception e) {
+            throw new RuntimeException("calculate default code error", e);
+        }
+        requestModel.addParam("code", code);
+        requestModel.addParam("ct", ct);
+        requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
     }
 
     /**
@@ -120,11 +117,26 @@ public class BaseProxyManager {
      * @param oldName
      * @param newName
      */
-    protected void paramNameAdapter(final RequestModel requestModel, String oldName, String newName) {
+    protected void paramNameAdapter(final RequestModel requestModel, final String oldName, final String newName) {
         if (requestModel.containsKey(oldName)) {
             Object param = requestModel.getParam(oldName);
             requestModel.deleteParams(oldName);
             requestModel.addParam(newName, param);
         }
+    }
+
+    /**
+     * SHPP很多接口会返回uid，uuid等，而我们目前没有这样的属性，所以在这里做统一删除
+     *
+     * @param map
+     */
+    private void handSHPPMap(final Map<String, Object> map) {
+        if (map == null || map.size() == 0) {
+            return;
+        }
+        map.remove(SHPPUrlConstant.RESULT_STATUS);
+        map.remove("uid");
+        map.remove("uuid");
+        map.remove("uniqname");
     }
 }

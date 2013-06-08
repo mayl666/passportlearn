@@ -155,6 +155,5 @@ public class AccountSecureControllerTest extends BaseActionTest {
         System.out.println(result);
     }
 
-    // @Test
 
 }

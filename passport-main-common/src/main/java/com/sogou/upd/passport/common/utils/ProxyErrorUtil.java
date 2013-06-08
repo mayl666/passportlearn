@@ -4,6 +4,9 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
 
 import org.apache.commons.collections.keyvalue.DefaultMapEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
 /**
@@ -13,6 +16,8 @@ import java.util.Map;
  * Time: 下午5:55
  */
 public class ProxyErrorUtil extends ErrorUtil {
+
+    private static Logger log = LoggerFactory.getLogger(ProxyErrorUtil.class);
 
     private static final Map<String,String> SHPPERRCODE_SGPPERRCODE_MAP= Maps.newHashMapWithExpectedSize(200);
 
@@ -59,6 +64,11 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.3",ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定用户
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.6",SYSTEM_UNKNOWN_EXCEPTION);//查询失败
 
+        //getuserinfo 获取用户信息
+        SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.3",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在（如果是根据昵称查询，没有查询到也是返回3）
+        SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.4",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//手机号码没有绑定
+        SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.6",SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败
+
     }
 
     public static Map.Entry<String,String> shppErrToSgpp(String url,String status){
@@ -90,6 +100,8 @@ public class ProxyErrorUtil extends ErrorUtil {
         String errorCode=errorCodeBuilder.toString();
         if(SHPPERRCODE_SGPPERRCODE_MAP.containsKey(errorCode)){
             return SHPPERRCODE_SGPPERRCODE_MAP.get(errorCode);
+        }else{
+            log.error("未找到相应的错误类型："+errorCode);
         }
         return SYSTEM_UNKNOWN_EXCEPTION;
     }
