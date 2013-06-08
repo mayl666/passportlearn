@@ -12,8 +12,12 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
+import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
@@ -31,8 +35,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * User: mayan Date: 13-4-15 Time: 下午4:31 To change this template use File | Settings | File
- * Templates.
+ * 安全相关：修改密码、修改密保（手机、邮箱、问题）
+ * ——接口代理OK——
+ * .
  */
 @Component
 public class SecureManagerImpl implements SecureManager {
@@ -58,7 +63,9 @@ public class SecureManagerImpl implements SecureManager {
 
     // 自动注入Manager
     @Autowired
-    // private
+    private SecureApiManager sgSecureApiManager;
+    @Autowired
+    private SecureApiManager proxySecureApiManager;
 
     //account与smscode映射
     private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE;
@@ -292,11 +299,56 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
+    // 接口代理OK
     @Override
-    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess) throws Exception {
+    public Result queryAccountSecureInfo(String userId, int clientId, boolean doProcess) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            Account account = accountService.queryNormalAccount(passportId);
+            AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
+            GetSecureInfoApiParams params = new GetSecureInfoApiParams();
+            params.setUserid(userId);
+            params.setClient_id(clientId);
+
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // 代理接口
+                result = proxySecureApiManager.getUserSecureInfo(params);
+            } else {
+                result = sgSecureApiManager.getUserSecureInfo(params);
+            }
+
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            Map<String, String> map = result.getModels();
+            String mobile = map.get("sec_mobile");
+            String emailBind = map.get("sec_email");
+            String question = map.get("sec_ques");
+
+            if (doProcess) {
+                if (!Strings.isNullOrEmpty(emailBind)) {
+                    String emailProcessed = StringUtil.processEmail(emailBind);
+                    accountSecureInfoVO.setSec_email(emailProcessed);
+                }
+                if (!Strings.isNullOrEmpty(mobile)) {
+                    String mobileProcessed = StringUtil.processMobile(mobile);
+                    accountSecureInfoVO.setSec_mobile(mobileProcessed);
+                }
+                accountSecureInfoVO.setSec_ques(question);
+                if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
+                    String emailRegProcessed = StringUtil.processEmail(userId);
+                    accountSecureInfoVO.setReg_email(emailRegProcessed);
+                }
+            } else {
+                accountSecureInfoVO.setSec_email(emailBind);
+                accountSecureInfoVO.setSec_mobile(mobile);
+                accountSecureInfoVO.setSec_ques(question);
+                if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
+                    accountSecureInfoVO.setReg_email(userId);
+                }
+            }
+
+            /*Account account = accountService.queryNormalAccount(userId);
             if (account == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
@@ -311,7 +363,7 @@ public class SecureManagerImpl implements SecureManager {
                     accountSecureInfoVO.setSec_mobile(mobile);
                 }
             }
-            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
+            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);
             if (accountInfo != null) {
                 String emailBind = accountInfo.getEmail();
                 String question = accountInfo.getQuestion();
@@ -327,14 +379,14 @@ public class SecureManagerImpl implements SecureManager {
                     accountSecureInfoVO.setSec_ques(question);
                 }
             }
-            if (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.OTHER) {
+            if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
                 if (doProcess) {
-                    String emailRegProcessed = StringUtil.processEmail(passportId);
+                    String emailRegProcessed = StringUtil.processEmail(userId);
                     accountSecureInfoVO.setReg_email(emailRegProcessed);
                 } else {
-                    accountSecureInfoVO.setReg_email(passportId);
+                    accountSecureInfoVO.setReg_email(userId);
                 }
-            }
+            }*/
             result.setSuccess(true);
             result.setMessage("查询成功");
             result.setDefaultModel(accountSecureInfoVO);
@@ -402,9 +454,8 @@ public class SecureManagerImpl implements SecureManager {
         try {
             boolean saveEmail = true;
             AccountModuleEnum module = AccountModuleEnum.SECURE;
-            Account account = accountService.verifyUserPwdVaild(passportId, password, false);
-            if (account == null) {
-                result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
+            result = accountService.verifyUserPwdVaild(passportId, password, false);
+            if (!result.isSuccess()) {
                 return result;
             }
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
@@ -502,16 +553,21 @@ public class SecureManagerImpl implements SecureManager {
             if (firstBind) {
                 // 新绑定手机，checkCode为password
                 String password = checkCode;
-                account = accountService.verifyUserPwdVaild(passportId, password, false);
-                if (account == null || !AccountHelper.isNormalAccount(account)) {
-                    result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
+                result = accountService.verifyUserPwdVaild(passportId, password, false);
+                if (!result.isSuccess()) {
                     return result;
                 }
+                account = (Account) result.getDefaultModel();
             } else {
                 // 修改绑定手机，checkCode为secureCode
                 String secureCode = checkCode;
                 if (!accountSecureService.checkSecureCodeModSecureInfo(passportId, clientId, secureCode)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
+                    return result;
+                }
+                account = accountService.queryNormalAccount(passportId);
+                if (account == null) {
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
                 }
             }
@@ -538,24 +594,29 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     /*
-     * 接口代理?
+     * 接口代理OK
      */
     @Override
-    public Result modifyQuesByPassportId(String passportId, int clientId, String password,
-                                         String newQues, String newAnswer) throws Exception {
+    public Result modifyQuesByPassportId(String userId, int clientId, String password,
+            String newQues, String newAnswer, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             // 检验账号密码，判断是否正常用户
-            Account account = accountService.verifyUserPwdVaild(passportId, password, false);
-            if (account == null) {
-                result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
-                return result;
+            UpdateQuesApiParams updateQuesApiParams = new UpdateQuesApiParams();
+            updateQuesApiParams.setUserid(userId);
+            updateQuesApiParams.setPassword(password);
+            updateQuesApiParams.setNewquestion(newQues);
+            updateQuesApiParams.setNewanswer(newAnswer);
+            updateQuesApiParams.setModifyip(modifyIp);
+
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // 代理接口
+                result = proxySecureApiManager.updateQues(updateQuesApiParams);
+            } else {
+                // SOGOU接口
+                result = sgSecureApiManager.updateQues(updateQuesApiParams);
             }
-            if (!AccountHelper.isNormalAccount(account)) {
-                result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                return result;
-            }
-            result = accountInfoService.modifyQuesByPassportId(passportId, newQues, newAnswer);
+
             return result;
         } catch (ServiceException e) {
             logger.error("bind secure question fail:", e);

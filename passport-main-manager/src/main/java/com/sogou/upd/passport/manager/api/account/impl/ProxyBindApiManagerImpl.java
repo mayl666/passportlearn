@@ -1,16 +1,12 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
-import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.MobileBindPassportIdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +45,10 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     }
 
     @Override
-    public Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams) {
+    public Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(mobileBindPassportIdApiParams);
-        return this.executeResult(requestModelXml, mobileBindPassportIdApiParams.getMobile());
+        requestModelXml.addParams(baseMoblieApiParams);
+        return this.executeResult(requestModelXml, baseMoblieApiParams.getMobile());
     }
 
     @Override

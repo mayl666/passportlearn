@@ -56,8 +56,8 @@ public class SGHttpClientTest {
         requestModel.addParam("ct", ct);
         requestModel.addParam("code", code);
         requestModel.addParam("modifyip", "10.1.164.160");
-        requestModel.addParam("newquestion", "testtest");
-        requestModel.addParam("newanswer", "111111");
+        requestModel.addParam("newquestion", "测试啊，我是来测试的");
+        requestModel.addParam("newanswer", "测试成功");
         requestModel.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0");
         requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
         String result = SGHttpClient.executeStr(requestModel);

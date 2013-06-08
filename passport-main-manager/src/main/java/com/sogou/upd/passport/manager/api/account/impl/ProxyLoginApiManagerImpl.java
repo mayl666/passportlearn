@@ -23,40 +23,24 @@ import org.springframework.stereotype.Component;
 @Component("proxyLoginApiManager")
 public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
-    private static Logger log = LoggerFactory.getLogger(ProxyLoginApiManagerImpl.class);
-
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
-        Result result = new APIResultSupport(false);
         String userId = authUserParameters.getUserid();
         if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))) {
-            authUserParameters.setUsertype(1);
+            authUserParameters.setUsertype(1); // 手机号
         }
-        authUserParameters.setPwdtype(1);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(authUserParameters);
-            result = executeResult(requestModelXml);
-        } catch (Exception e) {
-            log.error("web auth user Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        authUserParameters.setPwdtype(1); // 密码为MD5
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(authUserParameters);
+        return executeResult(requestModelXml);
     }
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
-        Result result = new APIResultSupport(false);
-        appAuthTokenApiParams.setType(2);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(appAuthTokenApiParams);
-            result = executeResult(requestModelXml, appAuthTokenApiParams.getToken());
-        } catch (Exception e) {
-            log.error("App auth openLogin token Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        appAuthTokenApiParams.setType(2); // 手机端第三方登录后返回的token
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(appAuthTokenApiParams);
+        return executeResult(requestModelXml, appAuthTokenApiParams.getToken());
     }
 
 }

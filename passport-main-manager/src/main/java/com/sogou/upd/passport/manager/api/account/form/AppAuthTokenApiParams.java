@@ -17,7 +17,6 @@ import javax.validation.constraints.Min;
 public class AppAuthTokenApiParams extends BaseApiParameters {
 
     @Min(0)
-    @NotBlank(message = "type不允许为空")
     private int type;  //2：第三方登录（即将废除，请使用type=5）；5：手机应用使用的session token TODO 目前只是用了2，以后可以删除
     @NotBlank(message = "token不允许为空")
     private String token;  //用户登录成功之后通过302跳转传递给服务器端的token

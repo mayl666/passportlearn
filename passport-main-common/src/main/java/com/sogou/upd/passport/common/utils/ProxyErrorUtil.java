@@ -69,6 +69,13 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.4",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//手机号码没有绑定
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.6",SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败
 
+        //recoverpwd 根据密保问题重置密保
+        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.3",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
+        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.4",ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);//提示问题答案校验失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.5",ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT);//一天内重复次数过多
+        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.6",SYSTEM_UNKNOWN_EXCEPTION);//修改失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.7",ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY);//用户5日内登录过
+
     }
 
     public static Map.Entry<String,String> shppErrToSgpp(String url,String status){

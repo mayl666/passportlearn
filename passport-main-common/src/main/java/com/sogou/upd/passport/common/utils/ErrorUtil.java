@@ -112,6 +112,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
     // 账号未登录，请先登录
     public static final String ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED = "20229";
+    // 登陆用户或者ip在黑名单中
+    public static final String ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST = "20230";
     // 登陆账号未激活
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 账号已封杀
@@ -122,7 +124,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT="20236";
     //TODO 手机解除绑定失败
     public static final String ERR_CODE_PHONE_UNBIND_FAILED="20237";
-    //TODO 密码输入次数过多
+    //TODO 密码输入错误次数过多
     public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
 
 
@@ -173,6 +175,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNTSECURE_BIND_FAILED = "20290";
     // 绑定密保失败
     public static final String ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED = "20291";
+    //重置密码次数超限
+    public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT="20292";
+    //用户五日内成功登陆过
+    public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY ="20293";
 
     //***************************密保方式相关的错误代码end*********************************
 
@@ -294,6 +300,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PWDERROR, "密码必须为字母和数字且长度大于6位!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH, "当前登录账号与操作账号不一致");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT, "密码输入错误次数过多");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP登陆操作存在异常");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
@@ -331,9 +339,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED, "绑定手机失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BIND_FAILED, "修改密保链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED, "绑定密保问题失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOBIND, "手机号未被绑定");
-//        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_OTHER_ACCOUNT, "该手机已经绑定了用户");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOBIND, "手机号未绑定账号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT,"手机绑定次数超限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT,"修改密码频率过于频繁");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY,"用户5日内登录过");
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");

@@ -10,8 +10,11 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CaptchaUtils;
 import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -140,25 +143,33 @@ public class AccountServiceImpl implements AccountService {
                 }
             }
         } catch (Exception e) {
+
             throw new ServiceException();
         }
         return account;
     }
 
     @Override
-    public Account verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException {
-
+    public Result verifyUserPwdVaild(String userId, String password, boolean needMD5) throws ServiceException {
+        Result result = new APIResultSupport(false);
         Account userAccount;
         try {
-            userAccount = queryAccountByPassportId(passportId);
+            userAccount = queryAccountByPassportId(userId);
         } catch (ServiceException e) {
             throw e;
         }
         try {
-            if (userAccount != null && PwdGenerator.verify(password, needMD5, userAccount.getPasswd())) {
-                return userAccount;
+            if (userAccount == null || !AccountHelper.isNormalAccount(userAccount)) {
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
+            }
+            if (PwdGenerator.verify(password, needMD5, userAccount.getPasswd())) {
+                result.setSuccess(true);
+                result.setDefaultModel(userAccount);
+                return result;
             } else {
-                return null;
+                result.setCode(ErrorUtil.USERNAME_PWD_ERROR);
+                return result;
             }
         } catch (Exception e) {
             throw new ServiceException(e);

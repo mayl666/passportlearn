@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 
@@ -53,7 +54,7 @@ public interface AccountService {
    *
    * @return 用户名或密码不匹配，则返回null
    */
-  public Account verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
+  public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
 
   /**
    * 根据passportId删除Account，内部debug接口使用
