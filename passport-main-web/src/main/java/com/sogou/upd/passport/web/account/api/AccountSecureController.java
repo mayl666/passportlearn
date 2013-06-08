@@ -281,7 +281,7 @@ public class AccountSecureController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return Result.buildError(ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();

@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.api.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 
 /**
@@ -21,13 +20,6 @@ public interface RegisterApiManager {
      * @return
      */
     public Result regMailUser(RegEmailApiParams regEmailApiParams);
-
-    /**
-     * 手机号直接注册，无需验证码
-     * @param regMobileApiParams
-     * @return
-     */
-    public Result regMobileUser(RegMobileApiParams regMobileApiParams);
 
     /**
      * 可以通过此接口注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号。

@@ -39,7 +39,7 @@ public class RegisterApiController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "/regmobilecaptcha", method = RequestMethod.POST)
+    @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
         Result result = new APIResultSupport(false);
