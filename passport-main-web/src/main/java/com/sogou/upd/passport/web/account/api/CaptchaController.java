@@ -1,8 +1,7 @@
 package com.sogou.upd.passport.web.account.api;
 
-import com.sogou.upd.passport.common.utils.CaptchaUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.manager.account.AccountRegManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +15,6 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -30,7 +28,7 @@ public class CaptchaController{
   private RedisUtils redisUtils;
 
   @Autowired
-  private AccountRegManager accountRegManager;
+  private RegManager regManager;
 
   @RequestMapping(value = "/captcha", method = RequestMethod.GET)
   @ResponseBody
@@ -39,7 +37,7 @@ public class CaptchaController{
                               HttpServletResponse response) throws Exception {
 
     //生成验证码
-    Map<String,Object> map=accountRegManager.getCaptchaCode(token);
+    Map<String,Object> map= regManager.getCaptchaCode(token);
     if (map!=null && map.size()>0) {
       ImageIO.write((BufferedImage)map.get("image"), "JPEG", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
 

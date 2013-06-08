@@ -3,7 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountLoginManager;
+import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -11,7 +11,6 @@ import com.sogou.upd.passport.web.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,7 +32,7 @@ public class OAuthAuthorizeController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(OAuthAuthorizeController.class);
 
     @Autowired
-    private AccountLoginManager accountLoginManager;
+    private LoginManager loginManager;
 
     @Autowired
     private ConfigureManager configureManager;
@@ -58,7 +57,7 @@ public class OAuthAuthorizeController extends BaseController {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             return result.toString();
         }
-        result = accountLoginManager.authorize(oauthRequest);
+        result = loginManager.authorize(oauthRequest);
 
         return result.toString();
     }

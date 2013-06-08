@@ -6,8 +6,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
-import com.sogou.upd.passport.manager.account.AccountManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,7 +40,7 @@ public class SecureAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
 
     @Autowired
-    private AccountManager accountManager;
+    private CommonManager commonManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
     @Autowired
@@ -95,7 +95,7 @@ public class SecureAction extends BaseController {
         }
 
         // TODO:是否允许绑定手机取得密保信息
-        String passportId = accountManager.getPassportIdByUsername(username);
+        String passportId = commonManager.getPassportIdByUsername(username);
         if (passportId == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             model.addAttribute(result.toString());
@@ -132,7 +132,7 @@ public class SecureAction extends BaseController {
     @RequestMapping(value = "/query", method = RequestMethod.POST)
     public ModelAndView queryPassportId(AccountPwdScodeParams params, Model model) throws Exception {
         int clientId = Integer.parseInt(params.getClient_id());
-        String passportId = accountManager.getPassportIdByUsername(params.getPassport_id());
+        String passportId = commonManager.getPassportIdByUsername(params.getPassport_id());
         if (passportId == null) {
 
         }

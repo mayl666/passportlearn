@@ -7,8 +7,8 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountManager;
-import com.sogou.upd.passport.manager.account.AccountRegManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
@@ -37,9 +37,9 @@ public class RegAction extends BaseController {
   private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
 
   @Autowired
-  private AccountRegManager accountRegManager;
+  private RegManager regManager;
   @Autowired
-  private AccountManager accountManager;
+  private CommonManager commonManager;
   @Autowired
   private ConfigureManager configureManager;
   /**
@@ -54,7 +54,7 @@ public class RegAction extends BaseController {
     //校验username格式 todo
 
     Result result = new APIResultSupport(false);
-    boolean isExists=accountManager.isAccountExists(username);
+    boolean isExists= commonManager.isAccountExists(username);
     if(isExists){
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
     }else{
@@ -95,7 +95,7 @@ public class RegAction extends BaseController {
     String captchaCode = regParams.getCaptcha();
     String token = regParams.getToken();
     //校验用户是否可注册
-    result = accountRegManager.isAllowRegister(username, ip, token, captchaCode);
+    result = regManager.isAllowRegister(username, ip, token, captchaCode);
 
     if (!result.isSuccess()) {
       return result;
@@ -111,8 +111,8 @@ public class RegAction extends BaseController {
     }
 
     //验证用户是否注册过
-    if (!accountManager.isAccountExists(username)) {
-      result = accountRegManager.webRegister(regParams, ip);
+    if (!commonManager.isAccountExists(username)) {
+      result = regManager.webRegister(regParams, ip);
     } else {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
     }
@@ -146,7 +146,7 @@ public class RegAction extends BaseController {
     }
     String ip = getIp(request);
     //邮件激活
-    result = accountRegManager.activeEmail(activeParams, ip);
+    result = regManager.activeEmail(activeParams, ip);
     return result;
   }
 }

@@ -7,7 +7,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
-import com.sogou.upd.passport.manager.account.AccountManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.*;
@@ -32,7 +32,7 @@ public class AccountSecureController {
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureController.class);
 
     @Autowired
-    private AccountManager accountManager;
+    private CommonManager commonManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
     @Autowired
@@ -67,7 +67,7 @@ public class AccountSecureController {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result.toString();
         }
-        String passportId = accountManager.getPassportIdByUsername(username);
+        String passportId = commonManager.getPassportIdByUsername(username);
         if (passportId == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result.toString();
@@ -211,7 +211,7 @@ public class AccountSecureController {
                 return result.toString();
             }
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                if (accountManager.isAccountExists(username)) {
+                if (commonManager.isAccountExists(username)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                     return result.toString();
                 }
