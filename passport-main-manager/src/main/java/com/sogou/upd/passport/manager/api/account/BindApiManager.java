@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.api.account;
 
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.MobileBindPassportIdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.common.result.Result;
 
@@ -36,10 +35,10 @@ public interface BindApiManager {
 
     /**
      * 查询手机号绑定的账号
-     * @param mobileBindPassportIdApiParams
+     * @param baseMoblieApiParams
      * @return
      */
-    Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams);
+    Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams);
 
     /**
      * 查询手机号绑定的账号；
