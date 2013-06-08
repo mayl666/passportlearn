@@ -61,10 +61,14 @@ public enum AccountDomainEnum {
 
         // 验证手机账号（如137****@sohu.com）和sogou域账号
         if (username.endsWith("@sohu.com")) {
-            if (PhoneUtil.verifyPhoneNumberFormat(username.substring(0, username.lastIndexOf(
-                    "@sohu.com")))) {
+            String prefix = username.substring(0, username.lastIndexOf(
+                    "@sohu.com"));
+            if (PhoneUtil.verifyPhoneNumberFormat(prefix)) {
                 return AccountDomainEnum.PHONE;
             }
+        }
+
+        if (username.endsWith("@sogou.com")) {
             return AccountDomainEnum.SOGOU;
         }
 

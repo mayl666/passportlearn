@@ -5,9 +5,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.proxy.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,9 +39,9 @@ public class RegisterApiController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
+    @RequestMapping(value = "/regmobilecaptcha", method = RequestMethod.POST)
     @ResponseBody
-    public Object regMobileUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
+    public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
