@@ -140,6 +140,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             }
         } catch (Exception e) {
+
             throw new ServiceException();
         }
         return account;
