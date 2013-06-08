@@ -55,6 +55,10 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.4",USERNAME_PWD_MISMATCH);//原密码校验失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.5",ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);//新的绑定邮箱没有变化
 
+        //wapbindmobile 查询手机号绑定的账号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.3",ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定用户
+        SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.6",SYSTEM_UNKNOWN_EXCEPTION);//查询失败
+
     }
 
     public static Map.Entry<String,String> shppErrToSgpp(String url,String status){

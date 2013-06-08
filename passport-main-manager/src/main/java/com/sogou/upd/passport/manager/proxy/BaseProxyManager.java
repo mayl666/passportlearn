@@ -43,17 +43,19 @@ public class BaseProxyManager {
                     result.setSuccess(true);
                     map.remove(SHPPUrlConstant.RESULT_STATUS);
                     result.setModels(map);
-                }else{
-                    Map.Entry<String,String> entry= ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(),status);
+                } else {
+                    Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
                     result.setCode(entry.getKey());
                     result.setMessage(entry.getValue());
                 }
             }
         } catch (Exception e) {
             log.error(requestModel.getUrl() + " execute error ", e);
-            result.setCode(ErrorUtil.PROXY_SHPP_API_EXCEPTION);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION));
         }
         return result;
+
     }
 
     protected Map<String, Object> execute(final RequestModel requestModel) {
@@ -78,14 +80,27 @@ public class BaseProxyManager {
      */
 
     private void setDefaultParam(final RequestModel requestModel) {
-        //系统当前时间
-        long ct = System.currentTimeMillis();
-        String passport_id = requestModel.getParam("userid").toString();
-        //计算搜狗通行证的code
-        String code = ManagerHelper.generatorCode(passport_id, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+        //计算默认的codeserverSecret
+        Object codeObject = requestModel.getParam("code");
+        if (codeObject == null || StringUtil.isBlank(codeObject.toString())) {
+
+            //系统当前时间
+            long ct = System.currentTimeMillis();
+            String passport_id = requestModel.getParam("userid").toString();
+            if (StringUtil.isBlank(passport_id)) {
+                throw new IllegalArgumentException("计算默认code时passport_id不能为空");
+            }
+            //计算默认的code
+            String code = passport_id + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
+            try {
+                code = Coder.encryptMD5(code);
+            } catch (Exception e) {
+                throw new RuntimeException("calculate default code error", e);
+            }
+            requestModel.addParam("code", code);
+            requestModel.addParam("ct", ct);
+            requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+        }
     }
 
     /**

@@ -5,6 +5,7 @@ import com.sogou.upd.passport.manager.proxy.account.BindApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.MobileBindPassportIdApiParams;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,6 +29,11 @@ public class SGBindApiManagerImpl implements BindApiManager {
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
