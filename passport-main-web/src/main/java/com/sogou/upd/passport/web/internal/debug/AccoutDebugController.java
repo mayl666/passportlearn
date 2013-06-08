@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.internal;
+package com.sogou.upd.passport.web.internal.debug;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;

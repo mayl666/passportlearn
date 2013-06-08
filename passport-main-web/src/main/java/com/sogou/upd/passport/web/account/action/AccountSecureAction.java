@@ -23,6 +23,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午1:51 To change this template use
@@ -44,11 +46,12 @@ public class AccountSecureAction extends BaseController {
      * 显示找回密码界面
      */
     @RequestMapping(value = "/findpwd", method = { RequestMethod.POST, RequestMethod.GET })
-    public String findPwd() throws Exception {
-        return "recover/index";
+    public ModelAndView findPwd() throws Exception {
+        return new ModelAndView("recover/index");
     }
 
     @RequestMapping(value = "/findpwd/getsecinfo", method = RequestMethod.POST)
+    @ResponseBody
     public String querySecureInfo(UserCaptchaParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -80,6 +83,7 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
+    @ResponseBody
     public String sendEmailRegResetPwd(BaseAccountParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -101,7 +105,7 @@ public class AccountSecureAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public String queryPassportId(AccountPwdScodeParams params, Model model) throws Exception {
+    public ModelAndView queryPassportId(AccountPwdScodeParams params, Model model) throws Exception {
         int clientId = Integer.parseInt(params.getClient_id());
         String passportId = accountManager.getPassportIdByUsername(params.getPassport_id());
         if (passportId == null) {
@@ -118,10 +122,11 @@ public class AccountSecureAction extends BaseController {
 //        }
         model.addAttribute("passportId", passportId);
         model.addAttribute("clientId", clientId);
-        return "forward:";
+        return new ModelAndView("forward:");
     }
 
     @RequestMapping(value = "/mobile", method = RequestMethod.POST)
+    @ResponseBody
     public String resetPasswordByMobile(@RequestParam("username") String passportId, @RequestParam("client_id") int clientId,
                                         @RequestParam("password") String password, @RequestParam("smscode") String smsCode, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -147,6 +152,7 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
+    @ResponseBody
     public String sendEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
                             Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -165,6 +171,7 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
+    @ResponseBody
     public String checkEmailForResetPwd(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -188,6 +195,7 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/email", method = RequestMethod.POST)
+    @ResponseBody
     public String resetPasswordByEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
                                        @RequestParam("password") String password, @RequestParam("token") String token, Model model) throws Exception {
         int clientId = Integer.parseInt(client_id);
@@ -197,6 +205,7 @@ public class AccountSecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/ques", method = RequestMethod.POST)
+    @ResponseBody
     public String resetPasswordByQues(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
                                       @RequestParam("password") String password, String answer, Model model) throws Exception {
         Result result = new APIResultSupport(false);
