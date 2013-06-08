@@ -28,8 +28,7 @@ public class LoginAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
 
-  @Autowired
-  private CommonManager commonManager;
+
   @Autowired
   private LoginManager loginManager;
 
@@ -52,12 +51,6 @@ public class LoginAction extends BaseController {
       return result.toString();
     }
 
-    //判断用户是否存在
-    String username = loginParams.getUsername();
-    if (!commonManager.isAccountExists(username)) {
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-      return result.toString();
-    }
     result = loginManager.accountLogin(loginParams, getIp(request));
     return result.toString();
   }

@@ -2,8 +2,8 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
-import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,8 +36,9 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
             authUserParameters.setClient_id(clientId);
             authUserParameters.setPassword(Coder.encryptMD5("spz1986411"));
             authUserParameters.setUsertype(1);
+            authUserParameters.setIp("192.168.226.174");
             Result result = sgLoginApiManager.webAuthUser(authUserParameters);
-            System.out.println(result);
+            System.out.println("testAuthUser:"+result);
         } catch (Exception e) {
             e.printStackTrace();
         }
