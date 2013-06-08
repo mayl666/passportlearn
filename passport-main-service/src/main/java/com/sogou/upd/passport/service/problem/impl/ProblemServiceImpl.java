@@ -20,15 +20,20 @@ import java.util.List;
 @Service
 public class ProblemServiceImpl implements ProblemService {
 
-  private static final Logger logger = LoggerFactory.getLogger(ProblemServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProblemServiceImpl.class);
 
-  @Autowired
-  private ProblemDAO problemDAO;
+    @Autowired
+    private ProblemDAO problemDAO;
 
-  @Override
-  public List<Problem> queryProblemList(Integer status,Integer clientId,Integer typeId,Date startDate,
-                                       Date endDate,String content,Integer start,Integer end) throws ServiceException {
-    return problemDAO.queryProblemList(status, clientId, typeId, startDate, endDate, content, start,
-                                       end);
-  }
+    @Override
+    public List<Problem> queryProblemList(Integer status, Integer clientId, Integer typeId, Date startDate,
+                                          Date endDate, String content, Integer start, Integer end) throws ServiceException {
+        return problemDAO.queryProblemList(status, clientId, typeId, startDate, endDate, content, start,
+                end);
+    }
+
+    @Override
+    public int updateStatusById(long id, int status) throws ServiceException {
+       return  problemDAO.updateStatusById(id,status);
+    }
 }

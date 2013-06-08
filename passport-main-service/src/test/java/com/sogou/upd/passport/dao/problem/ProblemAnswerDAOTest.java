@@ -44,7 +44,7 @@ public class ProblemAnswerDAOTest extends BaseDAOTest {
      */
     @Test
     public void testGetProblemAnswerList() {
-      List<ProblemAnswer> list= problemAnswerDAO.getAnswersByProblemId(281l);
+      List<ProblemAnswer> list= problemAnswerDAO.getAnswerListByProblemId(281l);
         Assert.assertTrue(list.size() >0);
     }
 
