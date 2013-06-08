@@ -278,7 +278,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或绑定");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP存在异常");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP登陆操作存在异常");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "登陆账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "登陆账号被封杀");
 
