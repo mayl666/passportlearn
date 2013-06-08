@@ -7,7 +7,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
@@ -34,7 +34,7 @@ public class MobileAccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(MobileAccountController.class);
 
     @Autowired
-    private AccountSecureManager accountSecureManager;
+    private SecureManager secureManager;
     @Autowired
     private RegManager regManager;
     @Autowired
@@ -74,7 +74,7 @@ public class MobileAccountController extends BaseController {
             return result.toString();
         }
 
-        result = accountSecureManager.sendMobileCode(mobile, clientId);
+        result = secureManager.sendMobileCode(mobile, clientId);
         return result.toString();
 
     }
@@ -160,7 +160,7 @@ public class MobileAccountController extends BaseController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         }
-        result = accountSecureManager.findPassword(reqParams.getMobile(), clientId);
+        result = secureManager.findPassword(reqParams.getMobile(), clientId);
         return result.toString();
     }
 
@@ -185,7 +185,7 @@ public class MobileAccountController extends BaseController {
             return result.toString();
         }
 
-        result = accountSecureManager.resetPassword(regParams);
+        result = secureManager.resetPassword(regParams);
         return result.toString();
     }
 

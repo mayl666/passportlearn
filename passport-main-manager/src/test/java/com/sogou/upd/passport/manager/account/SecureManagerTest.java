@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,9 +10,9 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * File | Settings | File Templates.
  */
 @ContextConfiguration(locations = {"classpath:spring-config-test.xml"})
-public class AccountSecureManagerTest extends AbstractJUnit4SpringContextTests {
+public class SecureManagerTest extends AbstractJUnit4SpringContextTests {
     @Autowired
-    private AccountSecureManager accountSecureManager;
+    private SecureManager secureManager;
 
     private static final String PASSPORT_ID = "13552848876@sohu.com";
     private static final String NEW_MOBILE = "13800000000";

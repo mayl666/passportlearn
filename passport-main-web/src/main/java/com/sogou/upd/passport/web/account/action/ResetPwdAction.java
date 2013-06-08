@@ -5,9 +5,9 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountCheckManager;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
@@ -35,9 +35,9 @@ public class ResetPwdAction {
     @Autowired
     private CommonManager commonManager;
     @Autowired
-    private AccountSecureManager accountSecureManager;
+    private SecureManager secureManager;
     @Autowired
-    private AccountCheckManager accountCheckManager;
+    private CheckManager checkManager;
 
     @RequestMapping
     public String findPwd() throws Exception {
@@ -57,7 +57,7 @@ public class ResetPwdAction {
         int clientId = Integer.parseInt(params.getClient_id());
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+        if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             model.addAttribute("data", result.toString());
         }
@@ -70,7 +70,7 @@ public class ResetPwdAction {
         }
 
         // TODO:需要修改为代理接口
-        result = accountSecureManager.queryAccountSecureInfo(passportId, clientId, true);
+        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         model.addAttribute("data", result.toString());
         return "recover/type";
     }
@@ -87,7 +87,7 @@ public class ResetPwdAction {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
+        result = secureManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:
@@ -106,7 +106,7 @@ public class ResetPwdAction {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        result = secureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:
@@ -127,7 +127,7 @@ public class ResetPwdAction {
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
 
-        accountCheckManager.checkLimitResetPwd(passportId, clientId);
+        checkManager.checkLimitResetPwd(passportId, clientId);
 
         return "";
     }
@@ -146,12 +146,12 @@ public class ResetPwdAction {
         String password = params.getPassword();
         String scode = params.getScode();
 
-        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+        if (!checkManager.checkLimitResetPwd(passportId, clientId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             return result.toString();
         }
 
-        result = accountSecureManager.resetPasswordByEmail(passportId, clientId, password, scode);
+        result = secureManager.resetPasswordByEmail(passportId, clientId, password, scode);
         return "";
     }
 }
