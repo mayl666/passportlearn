@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.proxy.account.BindApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
+import com.sogou.upd.passport.manager.proxy.account.form.MobileBindPassportIdApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -55,5 +56,13 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
         Result result = bindApiManager.bindEmail(bindEmailApiParams);
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
+    }
+
+    @Test
+    public void testGetPassportIdFromMobile(){
+        MobileBindPassportIdApiParams mobileBindPassportIdApiParams=new MobileBindPassportIdApiParams();
+        mobileBindPassportIdApiParams.setMobile("18612987312");
+        Result result = bindApiManager.getPassportIdFromMobile(mobileBindPassportIdApiParams);
+        System.out.println(result.toString());
     }
 }

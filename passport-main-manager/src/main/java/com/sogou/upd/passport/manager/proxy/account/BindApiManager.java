@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.proxy.account;
 
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
+import com.sogou.upd.passport.manager.proxy.account.form.MobileBindPassportIdApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
 import com.sogou.upd.passport.common.result.Result;
 
@@ -34,4 +35,11 @@ public interface BindApiManager {
      * @return
      */
     Result bindEmail(BindEmailApiParams bindEmailApiParams);
+
+    /**
+     * 查询手机号绑定的账号
+     * @param mobileBindPassportIdApiParams
+     * @return
+     */
+    Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams);
 }

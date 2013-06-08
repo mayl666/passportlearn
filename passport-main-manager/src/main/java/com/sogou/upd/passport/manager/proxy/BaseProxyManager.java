@@ -51,6 +51,7 @@ public class BaseProxyManager {
             }catch(Exception e){
                 log.error(requestModel.getUrl() + " execute error ", e);
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION));
             }
             return result;
         }
@@ -84,6 +85,9 @@ public class BaseProxyManager {
             //系统当前时间
             long ct = System.currentTimeMillis();
             String passport_id = requestModel.getParam("userid").toString();
+            if(StringUtil.isBlank(passport_id)){
+                throw new IllegalArgumentException("计算默认code时passport_id不能为空");
+            }
             //计算默认的code
             String code = passport_id + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
             try {

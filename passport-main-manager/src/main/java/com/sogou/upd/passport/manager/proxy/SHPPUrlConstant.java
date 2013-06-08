@@ -31,6 +31,9 @@ public class SHPPUrlConstant {
     //解绑手机号
     public static final String UNBING_MOBILE = BASE_INTERNAL_URL + "wapunbindmobile";
 
+    //查询手机号绑定的账号
+    public static final String MOBILE_GET_USERID = BASE_INTERNAL_URL + "wapgetuserid";
+
     //绑定邮箱
     public static final String BIND_EMAIL = BASE_INTERNAL_URL + "bindemail";
 
