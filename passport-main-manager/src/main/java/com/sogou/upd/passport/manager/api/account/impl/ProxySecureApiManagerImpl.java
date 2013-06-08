@@ -39,6 +39,8 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
         return this.executeResult(requestModelXml);
     }
 
+
+
     @Override
     public Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
@@ -64,16 +66,23 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
 
         Map resultMap = Maps.newHashMapWithExpectedSize(3);
         if (StringUtil.isBlank(emailflag) || !emailflag.trim().equals("1")) {
-            email = null;
+            email = "";
         }
 
         if (StringUtil.isBlank(mobileflag) || !mobileflag.trim().equals("1")) {
-            mobile = null;
+            mobile = "";
         }
         resultMap.put("sec_email", email);
         resultMap.put("sec_mobile", mobile);
         resultMap.put("question", question);
         result.setModels(resultMap);
         return result;
+    }
+
+    @Override
+    public Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams) {
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.RESET_PWD_BY_QUES, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(resetPasswordBySecQuesApiParams);
+        return this.executeResult(requestModelXml);
     }
 }

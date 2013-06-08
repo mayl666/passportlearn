@@ -34,4 +34,11 @@ public interface SecureApiManager {
      * sec_ques 密保问题
      */
     Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams);
+
+    /**
+     * 通过密保答案重置密码
+     * @param resetPasswordBySecQuesApiParams
+     * @return
+     */
+    Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams);
 }

@@ -95,6 +95,7 @@ public class BaseProxyManager {
         } catch (Exception e) {
             throw new RuntimeException("calculate default code error", e);
         }
+        requestModel.deleteParams("signatureKey");
         requestModel.addParam("code", code);
         requestModel.addParam("ct", ct);
         requestModel.addParam("appid", SHPPUrlConstant.APP_ID);

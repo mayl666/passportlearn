@@ -49,6 +49,9 @@ public class SHPPUrlConstant {
     //根据老密码修改新密码
     public static final String UPDATE_PWD = BASE_INTERNAL_URL + "updatepwd";
 
+    //根据密保答案重置密码
+    public static final String RESET_PWD_BY_QUES = BASE_INTERNAL_URL + "recoverpwd";
+
     //获取用户信息
     public static final String USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
 }
