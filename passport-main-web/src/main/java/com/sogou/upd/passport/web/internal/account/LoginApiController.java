@@ -64,13 +64,13 @@ public class LoginApiController {
     /**
      * 手机应用使用第三方登录完成之后，会通过302重定向的方式将token带给产品的服务器端，
      * 产品的服务器端通过传入userid和token验证用户的合法性，且token具有较长的有效期。
-     * TODO 注意，目前接入应用全部是验证token，没有传入passport_id
+     * TODO 注意，目前接入应用全部是验证token，没有传入userid
      *
      * @return
      */
     @RequestMapping(value = "/account/authtoken", method = RequestMethod.POST)
     @ResponseBody
-    public Object mobileAuthToken(HttpServletRequest request, AppAuthTokenApiParams params) {
+    public Object appAuthToken(HttpServletRequest request, AppAuthTokenApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);

@@ -1,14 +1,15 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.MobileAuthTokenApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,10 +28,13 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         Result result = new APIResultSupport(false);
+        String userId = authUserParameters.getUserid();
+        if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            authUserParameters.setUsertype(1);
+        }
+        authUserParameters.setPwdtype(1);
         try {
-            // TODO 暂时未发现有应用传这个参数，所有不要求应用传，如果有应用传，在manager里赋值
             RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            authUserParameters.setPwdtype(1);
             requestModelXml.addParams(authUserParameters);
             result = executeResult(requestModelXml);
         } catch (Exception e) {
@@ -41,14 +45,15 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result mobileAuthToken(MobileAuthTokenApiParams mobileAuthTokenApiParams) {
+    public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
         Result result = new APIResultSupport(false);
+        appAuthTokenApiParams.setType(2);
         try {
             RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(mobileAuthTokenApiParams);
-            result = executeResult(requestModelXml);
+            requestModelXml.addParams(appAuthTokenApiParams);
+            result = executeResult(requestModelXml, appAuthTokenApiParams.getToken());
         } catch (Exception e) {
-            log.error("mobile openlogin auth token Fail:", e);
+            log.error("App auth openLogin token Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;

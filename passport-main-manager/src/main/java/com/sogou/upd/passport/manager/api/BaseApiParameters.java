@@ -21,8 +21,6 @@ public class BaseApiParameters {
     @NotBlank(message = "ct不允许为空")
     private long ct; //单位为毫秒
 
-
-
     public String getCode() {
         return code;
     }
@@ -46,4 +44,5 @@ public class BaseApiParameters {
     public void setCt(long ct) {
         this.ct = ct;
     }
+
 }

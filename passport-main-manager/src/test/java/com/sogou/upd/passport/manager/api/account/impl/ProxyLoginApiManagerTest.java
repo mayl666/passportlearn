@@ -28,7 +28,6 @@ public class ProxyLoginApiManagerTest extends BaseTest {
             authUserParameters.setUserid("13621009174");
             authUserParameters.setClient_id(clientId);
             authUserParameters.setPassword(Coder.encryptMD5("spz1986411"));
-            authUserParameters.setUsertype(1);
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
             System.out.println(result);
         } catch (Exception e) {

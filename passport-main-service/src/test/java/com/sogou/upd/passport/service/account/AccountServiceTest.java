@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.junit.Test;
@@ -72,8 +73,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyUserPwdVaild() {
-        Account account = accountService.verifyUserPwdVaild(MOBILE, PASSWORD, true);
-        if (account != null) {
+        Result result = accountService.verifyUserPwdVaild(MOBILE, PASSWORD, true);
+        if (result.isSuccess()) {
             System.out.println("正确...");
         } else {
             System.out.println("不正确!!!");

@@ -157,7 +157,7 @@ public class LoginManagerImpl implements LoginManager {
 
             //校验是否在账户黑名单或者IP黑名单之中
             if (accountService.checkUserInBlackList(username, ip)){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
 

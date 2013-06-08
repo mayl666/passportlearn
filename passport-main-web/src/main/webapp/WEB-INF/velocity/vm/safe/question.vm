@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="/static/css/main.css?t=763570" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><img src="/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <ul class="info">
+            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li class="sep">|</li>
+            <li>
+                <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+            
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li >首页</li>
+            
+            <li class="current">账号安全</li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li class="index   ">
+        <a href="/safe/index.ut">账号安全</a>
+    </li>
+    
+    <li class="password   small">
+        <a href="/safe/password.ut">修改密码</a>
+    </li>
+    
+    <li class="email   small">
+        <a href="/safe/email.ut">密保邮箱</a>
+    </li>
+    
+    <li class="tel   small">
+        <a href="/safe/tel.ut">密保手机</a>
+    </li>
+    
+    <li class="question current  small">
+        <a href="/safe/question.ut">密保问题</a>
+    </li>
+    
+    <li class="history   small">
+        <a href="/safe/history.ut">登录记录</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+        <div class="inner safe-question">
+            <div class="title">
+                修改个密码撒
+            </div>
+            <div  class="form">
+                <script type="text/tpl" id="Target">
+                    <form method="post" id="" action="">
+                        
+                        <div class="form-item">
+    <label for="QuesitonIpt">新密保问题：</label>
+    <span class="form-select">
+        <select name="quesiton">
+            
+            <option value="2">小学老师</option>
+            
+            <option value="1">就读幼儿园</option>
+            
+            <option value="0">我自己编写</option>
+            
+        </select>
+    </span>
+</div>
+                        <div class="form-item">
+    <label for="Question2Ipt">问题：</label>
+    <span class="form-el">
+        <input uui-type="require question2" type="text" name="question2" id="Question2Ipt" value="" />
+    </span>
+</div>
+                        <div class="form-item">
+    <label for="AnswerIpt">新答案：</label>
+    <span class="form-el">
+        <input uui-type="require answer" type="text" name="answer" id="AnswerIpt" value="" />
+    </span>
+</div>
+                        <div class="form-item">
+    <label for="PasswordIpt">登录密码：</label>
+    <span class="form-el">
+        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" />
+    </span>
+</div>
+                        <div class="form-btn">
+    <button type="submit">确定</button>
+</div>
+                    </form>
+                         
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        &copy;2013 sogou.com
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
+    <script type="text/javascript" src="/static/js/main.js?t=922709"></script>
+    
+    <script type="text/javascript">
+
+var server_data = '${data}';
+        
+require.config({
+    baseUrl:"/static/js"
+});
+
+
+require(['safe'] , function(module){
+    module.init('question');
+});
+
+
+    </script>
+</html>
