@@ -6,9 +6,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.account.AccountCheckManager;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.account.form.*;
@@ -34,9 +34,9 @@ public class AccountSecureController {
     @Autowired
     private CommonManager commonManager;
     @Autowired
-    private AccountSecureManager accountSecureManager;
+    private SecureManager secureManager;
     @Autowired
-    private AccountCheckManager accountCheckManager;
+    private CheckManager checkManager;
     @Autowired
     private HostHolder hostHolder;
 
@@ -63,7 +63,7 @@ public class AccountSecureController {
         int clientId = Integer.parseInt(params.getClient_id());
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+        if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result.toString();
         }
@@ -73,7 +73,7 @@ public class AccountSecureController {
             return result.toString();
         }
 
-        return accountSecureManager.queryAccountSecureInfo(passportId, clientId, true).toString();
+        return secureManager.queryAccountSecureInfo(passportId, clientId, true).toString();
     }
 
     /**
@@ -95,7 +95,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
+        return secureManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
     }
 
     /**
@@ -117,7 +117,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        return secureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
     }
 
     /*
@@ -145,12 +145,12 @@ public class AccountSecureController {
         String password = params.getPassword();
         String scode = params.getScode();
 
-        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+        if (!checkManager.checkLimitResetPwd(passportId, clientId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             return result.toString();
         }
 
-        return accountSecureManager.resetPasswordByEmail(passportId, clientId, password, scode);
+        return secureManager.resetPasswordByEmail(passportId, clientId, password, scode);
     }
 
     /**
@@ -187,7 +187,7 @@ public class AccountSecureController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
                 return result.toString();
             }
-            return accountSecureManager.sendMobileCodeByPassportId(username, clientId);
+            return secureManager.sendMobileCodeByPassportId(username, clientId);
             /*if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                 if (!accountManager.isAccountExists(username)) {
                     return Result.buildError(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
@@ -198,7 +198,7 @@ public class AccountSecureController {
             }*/
         } else if (mode.equals("2")) {
             // 发送至已绑定手机（不验证登录，不传递手机号——适用于找回密码）
-            return accountSecureManager.sendMobileCodeByPassportId(username, clientId);
+            return secureManager.sendMobileCodeByPassportId(username, clientId);
         } else if (mode.equals("3")) {
             // 发送至未绑定手机（验证登录，传递手机号——适用于修改绑定手机或注册）
             if (!hostHolder.isLogin()) {
@@ -215,7 +215,7 @@ public class AccountSecureController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                     return result.toString();
                 }
-                return accountSecureManager.sendMobileCode(username, clientId);
+                return secureManager.sendMobileCode(username, clientId);
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
                 return result.toString();
@@ -238,7 +238,7 @@ public class AccountSecureController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendMobileCodeByPassportId(passportId, clientId);
+        return secureManager.sendMobileCodeByPassportId(passportId, clientId);
     }
 
     /**
@@ -261,7 +261,7 @@ public class AccountSecureController {
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
-        return accountSecureManager.checkMobileCodeResetPwd(passportId, clientId, smsCode);
+        return secureManager.checkMobileCodeResetPwd(passportId, clientId, smsCode);
     }
 
     /**
@@ -307,11 +307,11 @@ public class AccountSecureController {
         String answer = params.getAnswer();
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+        if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result.toString();
         }
-        return accountSecureManager.checkAnswerByPassportId(passportId, clientId, answer, token, captcha);
+        return secureManager.checkAnswerByPassportId(passportId, clientId, answer, token, captcha);
     }
 
     /**
@@ -337,18 +337,18 @@ public class AccountSecureController {
         String scode = params.getScode();
 
         // 第一步，检测scode
-        if (!accountCheckManager.checkScodeResetPwd(passportId, clientId, scode)) {
+        if (!checkManager.checkScodeResetPwd(passportId, clientId, scode)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
             return result.toString();
         }
 
-        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+        if (!checkManager.checkLimitResetPwd(passportId, clientId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             return result.toString();
         }
 
         // 第二步，修改密码
-        return accountSecureManager.resetPassword(passportId, clientId, password);
+        return secureManager.resetPassword(passportId, clientId, password);
     }
 
     /**
@@ -378,7 +378,7 @@ public class AccountSecureController {
         String password = params.getPassword();
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
-        return accountSecureManager.sendEmailForBinding(passportId, clientId, password, newEmail, oldEmail);
+        return secureManager.sendEmailForBinding(passportId, clientId, password, newEmail, oldEmail);
     }
 
     /*
@@ -410,7 +410,7 @@ public class AccountSecureController {
         }
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
-        return accountSecureManager.checkMobileCodeOldForBinding(passportId, clientId, smsCode);
+        return secureManager.checkMobileCodeOldForBinding(passportId, clientId, smsCode);
     }
 
     /**
@@ -440,7 +440,7 @@ public class AccountSecureController {
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
         String scode = params.getScode();
-        return accountSecureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, scode, false);
+        return secureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, scode, false);
     }
 
     /**
@@ -470,7 +470,7 @@ public class AccountSecureController {
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
-        return accountSecureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, password, true);
+        return secureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, password, true);
     }
 
     /**
@@ -501,6 +501,6 @@ public class AccountSecureController {
         }
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
-        return accountSecureManager.modifyQuesByPassportId(passportId, clientId, password, newQues, newAnswer);
+        return secureManager.modifyQuesByPassportId(passportId, clientId, password, newQues, newAnswer);
     }
 }

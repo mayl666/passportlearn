@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.AccountCheckManager;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
  * File | Settings | File Templates.
  */
 @Component
-public class AccountCheckManagerImpl implements AccountCheckManager {
+public class CheckManagerImpl implements CheckManager {
 
-    private static Logger logger = LoggerFactory.getLogger(AccountCheckManagerImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(CheckManagerImpl.class);
 
     @Autowired
     private AccountService accountService;

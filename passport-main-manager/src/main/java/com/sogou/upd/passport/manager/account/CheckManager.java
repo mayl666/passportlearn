@@ -8,7 +8,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
  *
  * 安全限制、检查验证相关
  */
-public interface AccountCheckManager {
+public interface CheckManager {
 
     /**
      * 检测页面随机验证码

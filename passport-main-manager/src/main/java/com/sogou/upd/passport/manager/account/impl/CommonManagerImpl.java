@@ -20,9 +20,9 @@ import org.springframework.stereotype.Component;
  * To change this template use File | Settings | File Templates.
  */
 @Component
-public class AccountManagerImpl implements CommonManager {
+public class CommonManagerImpl implements CommonManager {
 
-    private static Logger log = LoggerFactory.getLogger(AccountManagerImpl.class);
+    private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
 
     @Autowired
     private AccountService accountService;

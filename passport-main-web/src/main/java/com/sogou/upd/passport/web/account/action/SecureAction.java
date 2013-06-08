@@ -5,9 +5,9 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountCheckManager;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -42,9 +42,9 @@ public class SecureAction extends BaseController {
     @Autowired
     private CommonManager commonManager;
     @Autowired
-    private AccountSecureManager accountSecureManager;
+    private SecureManager secureManager;
     @Autowired
-    private AccountCheckManager accountCheckManager;
+    private CheckManager checkManager;
 
   /**
    * 修改密码
@@ -63,7 +63,7 @@ public class SecureAction extends BaseController {
       result.setMessage(validateResult);
       return result;
     }
-    result = accountSecureManager.resetWebPassword(resetParams);
+    result = secureManager.resetWebPassword(resetParams);
     return result;
   }
 
@@ -89,7 +89,7 @@ public class SecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        if (!accountCheckManager.checkCaptcha(captcha, token)) {
+        if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             model.addAttribute("data", result.toString());
         }
@@ -102,7 +102,7 @@ public class SecureAction extends BaseController {
         }
 
         // TODO:需要修改为代理接口
-        result = accountSecureManager.queryAccountSecureInfo(passportId, clientId, true);
+        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         model.addAttribute(result.toString());
         return "recover/type";
     }
@@ -119,7 +119,7 @@ public class SecureAction extends BaseController {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        return accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
+        return secureManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
     }
 
     /**
@@ -165,7 +165,7 @@ public class SecureAction extends BaseController {
             model.addAttribute("error", result);
             return "forward:";
         }
-        result = accountSecureManager.resetPasswordByMobile(passportId, clientId, password, smsCode);
+        result = secureManager.resetPasswordByMobile(passportId, clientId, password, smsCode);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             // 重置密码成功
@@ -187,7 +187,7 @@ public class SecureAction extends BaseController {
             return "forward:";
         }
         int clientId = Integer.parseInt(client_id);
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        result = secureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             return "forward:";
@@ -208,7 +208,7 @@ public class SecureAction extends BaseController {
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
-        result = accountSecureManager.checkEmailResetPwd(passportId, clientId, scode);
+        result = secureManager.checkEmailResetPwd(passportId, clientId, scode);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             model.addAttribute("passport_id", passportId);
@@ -224,7 +224,7 @@ public class SecureAction extends BaseController {
     public String resetPasswordByEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
                                        @RequestParam("password") String password, @RequestParam("token") String token, Model model) throws Exception {
         int clientId = Integer.parseInt(client_id);
-        Result result = accountSecureManager.resetPasswordByEmail(passportId, clientId, password, token);
+        Result result = secureManager.resetPasswordByEmail(passportId, clientId, password, token);
         model.addAttribute("error", result);
         return "success";
     }
@@ -241,11 +241,11 @@ public class SecureAction extends BaseController {
         }
         int clientId = Integer.parseInt(client_id);
 
-        if (!accountCheckManager.checkLimitResetPwd(passportId, clientId)) {
+        if (!checkManager.checkLimitResetPwd(passportId, clientId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
             model.addAttribute("error", result);
         }
-        result = accountSecureManager.resetPasswordByQues(passportId, clientId, password, answer);
+        result = secureManager.resetPasswordByQues(passportId, clientId, password, answer);
         model.addAttribute("error", result);
         if (result.isSuccess()) {
             return "success";

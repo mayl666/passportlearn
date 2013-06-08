@@ -12,7 +12,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
@@ -35,9 +35,9 @@ import java.util.Map;
  * Templates.
  */
 @Component
-public class AccountSecureManagerImpl implements AccountSecureManager {
+public class SecureManagerImpl implements SecureManager {
 
-    private static Logger logger = LoggerFactory.getLogger(AccountSecureManagerImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(SecureManagerImpl.class);
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
