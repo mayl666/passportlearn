@@ -23,6 +23,6 @@ public interface AccountInfoService {
     /**
      * 修改密保问题和答案
      */
-    public Result modifyQuesByPassportId(String passportId, String question, String answer) throws ServiceException;
+    public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer) throws ServiceException;
 
 }

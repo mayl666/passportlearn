@@ -59,16 +59,13 @@ public class LoginManagerImpl implements LoginManager {
                 }
                 int pwdType = oauthRequest.getPwdType();
                 boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
-                Account account = accountService
+                result = accountService
                         .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
-                if (account == null) {
-                    result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
-                    return result;
-                } else if (!AccountHelper.isNormalAccount(account)) {
-                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                if (!result.isSuccess()) {
                     return result;
                 } else {
-                    // 为了安全每次登录生成新的token
+                    Account account =  (Account) result.getDefaultModel();
+                            // 为了安全每次登录生成新的token
                     renewAccountToken = accountTokenService.updateOrInsertAccountToken(account.getPassportId(), clientId, instanceId);
                 }
             } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {

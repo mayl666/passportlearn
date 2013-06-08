@@ -146,7 +146,7 @@ public interface SecureManager {
      * @throws Exception
      */
     public Result modifyQuesByPassportId(String passportId, int clientId, String password,
-                                         String newQues, String newAnswer) throws Exception;
+                                         String newQues, String newAnswer, String modifyIp) throws Exception;
 
     /* ------------------------------------修改密保End------------------------------------ */
 
