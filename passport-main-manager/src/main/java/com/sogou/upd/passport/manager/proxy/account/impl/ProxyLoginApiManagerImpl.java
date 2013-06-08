@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.proxy.BaseProxyManager;
 import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.proxy.account.LoginApiManager;
 import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.proxy.account.form.MobileAuthTokenApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -29,11 +30,27 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         Result result = new APIResultSupport(false);
         try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, "info");
+            // TODO 暂时未发现有应用传这个参数，所有不要求应用传，如果有应用传，在manager里赋值
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            authUserParameters.setPwdtype(1);
             requestModelXml.addParams(authUserParameters);
             result = executeResult(requestModelXml);
         } catch (Exception e) {
-            log.error("bindMobile Fail:", e);
+            log.error("web auth user Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
+    public Result mobileAuthToken(MobileAuthTokenApiParams mobileAuthTokenApiParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            requestModelXml.addParams(mobileAuthTokenApiParams);
+            result = executeResult(requestModelXml);
+        } catch (Exception e) {
+            log.error("mobile openlogin auth token Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;

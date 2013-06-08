@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.manager.app.impl;
 
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.proxy.SHPPUrlConstant;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -67,12 +65,12 @@ public class ConfigureManagerImpl implements ConfigureManager {
     }
 
     @Override
-    public Result verifyInternalRequest(int clientId, String passportId, long ct, String originalCode) {
+    public Result verifyInternalRequest(String uid, int clientId, long ct, String originalCode) {
         Result result = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             String secret = appConfig.getServerSecret();
-            String code = ManagerHelper.generatorCode(passportId, clientId, secret, ct);
+            String code = ManagerHelper.generatorCode(uid, clientId, secret, ct);
             long currentTime = System.currentTimeMillis();
             if (code.equals(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
                 result.setSuccess(true);

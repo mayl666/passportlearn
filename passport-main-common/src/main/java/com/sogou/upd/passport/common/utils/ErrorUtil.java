@@ -21,6 +21,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_COM_REQURIE = "10002";
     // 内部接口code签名错误
     public static final String ERR_CODE_COM_SING = "10003";
+    // 代理搜狐Passport接口HTTP请求发生异常
+    public static final String PROXY_SHPP_API_EXCEPTION = "10004";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
     // 签名或accessToken验证失败
@@ -31,6 +33,7 @@ public class ErrorUtil {
     public static final String INVALID_CLIENTID = "10010";
     //client_id格式不正确
     public static final String ERR_FORMAT_CLIENTID = "10011";
+
     //***************************通用的错误代码end*********************************
 
     //***************************OAuth2授权错误码start******************************
@@ -113,14 +116,15 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 登陆账号被封杀
     public static final String ERR_CODE_ACCOUNT_KILLED = "20232";
-    // 登陆时手机号未被绑定
+    //TODO 手机号未被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
-    // 账号被冻结
-    public static final String ERR_CODE_ACCOUNT_FREEZE = "20234";
-    // 该手机已经绑定了其他用户
-    public static final String ERR_CODE_PHONE_BIND_OTHER_ACCOUNT="20235";
-    // 手机绑定次数超限
+    //TODO 手机绑定次数超限
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT="20236";
+    //TODO 手机解除绑定失败
+    public static final String ERR_CODE_PHONE_UNBIND_FAILED="20237";
+    //TODO 密码输入次数过多
+    public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
+
 
     //***************************account 服务的错误代码end*********************************
 
@@ -262,6 +266,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
+        ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(ERR_FORMAT_CLIENTID, "client_id格式不正确");
@@ -297,20 +302,19 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或绑定");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP存在异常");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP登陆操作存在异常");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "登陆账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "登陆账号被封杀");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "当日邮件发送次数已达上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_FREEZE, "账号被冻结");
 
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
         ERR_CODE_MSG_MAP.put(NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT, "不允许重复绑定同一类型的账号");
         ERR_CODE_MSG_MAP.put(ACCOUNT_ALREADY_REG_OR_BIND, "此账号已经注册或绑定过，无法再次绑定");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED,"手机解除绑定失败");
 
 
         // acount secure info
@@ -327,7 +331,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BIND_FAILED, "修改密保链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED, "绑定密保问题失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOBIND, "手机号未绑定账号");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_OTHER_ACCOUNT, "该手机已经绑定了用户");
+//        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_OTHER_ACCOUNT, "该手机已经绑定了用户");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT,"手机绑定次数超限");
 
         // profile

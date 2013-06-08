@@ -12,20 +12,28 @@ import java.util.List;
  */
 public interface ProblemService {
 
-  /**
-   *
-   * @param status
-   * @param clientId
-   * @param typeId
-   * @param startDate
-   * @param endDate
-   * @param content
-   * @param start
-   * @param end
-   * @return
-   * @throws ServiceException
-   */
-  public List<Problem> queryProblemList(Integer status,Integer clientId,Integer typeId,Date startDate,
-                                        Date endDate,String content,Integer start,Integer end) throws
-                                                                                               ServiceException;
+    /**
+     * @param status
+     * @param clientId
+     * @param typeId
+     * @param startDate
+     * @param endDate
+     * @param content
+     * @param start
+     * @param end
+     * @return
+     * @throws ServiceException
+     */
+    public List<Problem> queryProblemList(Integer status, Integer clientId, Integer typeId, Date startDate,
+                                          Date endDate, String content, Integer start, Integer end) throws
+            ServiceException;
+
+    /**
+     *
+     * @param id
+     * @param status
+     * @return
+     * @throws ServiceException
+     */
+    public int updateStatusById(long id, int status) throws ServiceException;
 }

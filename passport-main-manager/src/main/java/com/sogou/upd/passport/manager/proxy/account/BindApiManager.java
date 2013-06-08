@@ -1,11 +1,9 @@
 package com.sogou.upd.passport.manager.proxy.account;
 
+import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.BindMobileProxyParams;
-import com.sogou.upd.passport.manager.proxy.account.form.UnBindMobileProxyParams;
+import com.sogou.upd.passport.manager.proxy.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.common.result.Result;
-
-import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -16,17 +14,17 @@ public interface BindApiManager {
 
     /**
      * 绑定手机接口代理
-     * @param bindMobileProxyParams
+     * @param bindMobileApiParams
      * @return
      */
-    Result bindMobile(BindMobileProxyParams bindMobileProxyParams);
+    Result bindMobile(BindMobileApiParams bindMobileApiParams);
 
     /**
      * 解绑手机接口代理
-     * @param unBindMobileProxyParams
+     * @param baseMoblieApiParams
      * @return
      */
-    Result unbindMobile(UnBindMobileProxyParams unBindMobileProxyParams);
+    Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams);
 
     /**
      * 绑定邮箱接口
@@ -34,4 +32,11 @@ public interface BindApiManager {
      * @return
      */
     Result bindEmail(BindEmailApiParams bindEmailApiParams);
+
+    /**
+     * 查询手机号绑定的账号；
+     * @param baseMoblieApiParams
+     * @return
+     */
+    Result queryPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams);
 }
