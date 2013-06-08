@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import org.slf4j.Logger;
@@ -48,17 +49,26 @@ public class ManagerHelper {
     }
 
     /**
+     * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
+     * @param passportId passport内部传输的用户id
+     * @return
+     */
+    public static boolean isInvokeProxyApi(String passportId){
+        return AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
+    }
+
+    /**
      * 内部接口方法签名生成
      *
-     * @param passportId
+     * @param firstStr code算法第一个字符串，可能为userid、mobile、userid+mobile
      * @return
      * @throws Exception
      */
-    public static String generatorCode(String passportId, int clientId, String secret, long ct) {
+    public static String generatorCode(String firstStr, int clientId, String secret, long ct) {
         //计算默认的code
         String code = "";
         try {
-            code = passportId + clientId + secret + ct;
+            code = firstStr + clientId + secret + ct;
             code = Coder.encryptMD5(code);
         } catch (Exception e) {
             log.error("calculate default code error", e);
