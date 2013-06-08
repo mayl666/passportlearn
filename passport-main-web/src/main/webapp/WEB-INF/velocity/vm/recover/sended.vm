@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="/static/css/main.css?t=763570" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><img src="/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <ul class="info">
+            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li class="sep">|</li>
+            <li>
+                <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+            
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li >首页</li>
+            
+            <li class="current">找回密码</li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content one-col">
+    <div class="inner recover" >
+        <div class="title">
+            提示信息
+        </div>
+        <div  class="center">
+            <p class="ctitle">设置新密码链接已发送至您的登录邮箱: <span id="EmailWrp"></span></p>
+            <p class="warn">请您在24小时内登录邮箱，按邮件中的指示完成设置新密码操作</p>
+            <a href="sended.ut" class="long-btn">去邮箱收信</a>
+        </div>
+    </div>
+</div>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        &copy;2013 sogou.com
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
+    <script type="text/javascript" src="/static/js/main.js?t=922709"></script>
+    
+    <script type="text/javascript">
+
+var server_data = '${data}';
+        
+require.config({
+    baseUrl:"/static/js"
+});
+
+
+require(['recover'] , function(module){
+    module.init('sended');
+});
+
+
+    </script>
+</html>

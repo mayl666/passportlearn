@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="/static/css/index.css?t=034145" type="text/css" />
+    </head>
+    <body >
+        <div class="header">
+            <div class="inner">
+                <h1><img src="/static/img/index/logo.png" class="" alt="搜狗通行证" /></h1>
+                
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="inner">
+                <div class="desc">
+                    <img src="/static/img/index/desc.jpg" class="" alt="" />
+                </div>
+                <div class="login">
+                    <h2>欢迎登录搜狗通行证</h2>
+                    <form method="post" id="Login" action="">
+                        <p class="username">
+                            <input type="text" name="username" value="" />
+                        </p>
+                        <p class="password">
+                            <input type="password" name="password" value="" />
+                        </p>
+                        <p class="func">
+                            <label>
+                                <input type="checkbox" name="" value="" id="RemChb" checked data-target="RemChbSpan"/>
+                                <span class="checkbox checkbox-checked" id="RemChbSpan" ></span>
+                                记住登录状态
+                            </label>
+                            <a href="web/findpwd">找回密码</a>
+                        </p>
+                        <button type="submit">
+                            <img src="/static/img/index/loginbtn.png" class="" alt="登录" />
+                        </button>
+                        <p class="reg">
+                            还没有搜狗通行证？<a href="/reg/email">立即注册</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="title">
+                <h3>常见问题</h3>
+            </div>
+            <ul class="items">
+                
+                <li>
+                    <a href="#">如何设置更好的密码</a>
+                </li>
+                
+                <li>
+                    <a href="#">如何设置更好的密码</a>
+                </li>
+                
+                <li>
+                    <a href="#">如何设置更好的密码</a>
+                </li>
+                
+                <li>
+                    <a href="#">如何设置更好的密码</a>
+                </li>
+                
+                <li>
+                    <a href="#">如何设置更好的密码</a>
+                </li>
+                
+            </ul>
+        </div>
+
+        <div class="footer">
+            &copy;2013 sogou.com <a href="#">京备</a>
+        </div>
+        
+    </body>
+    <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
+    <script type="text/javascript" src="/static/js/index.js?t=622864"></script>
+    <script type="text/javascript">
+        
+require.config({
+    baseUrl:"/static/js"
+});
+
+require(['index'] , function(index){
+    index.init();
+});
+
+    </script>
+</html>

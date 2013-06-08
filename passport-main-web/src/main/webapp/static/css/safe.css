@@ -1,0 +1,23 @@
+.safe-index .level{ padding:18px 0 18px 80px; font-size:16px;color:#588700; background:url(/static/img/star.png?t=011262) no-repeat 55px center; }
+.safe-index .level-status,
+.safe-index .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(/static/img/line.png?t=049072) no-repeat 0 -26px;position:relative; }
+.safe-index .level-status{margin:0 16px;}
+.safe-index .level-status b{ position:absolute;top:0;left:0; background-position:0 0; width:0; }
+.safe-index .status li{ overflow:hidden; zoom:1;height:50px;line-height:50px; }
+.safe-index .status .stitle{ float:left; text-align:right; font-weight:700;width:170px;padding-right:10px; }
+.safe-index .status .desc{ float:left; }
+
+.safe-history .hdata li{ height:44px; line-height:44px;border-top:1px #f3f3f3 solid;}
+.safe-history .hdata li.htitle{ border:0;font-size:14px; font-weight:700; }
+.safe-history .hdata li p{ float:left;text-align:center; } 
+.safe-history .hdata p.time{ padding-left:35px; width:200px; }
+.safe-history .hdata p.ip{ width:174px; }
+.safe-history .hdata p.loc{ width:80px; }
+.safe-history .hdata p.type{ width:100px; }
+
+.safe-form .binded{padding:40px 0 0 20px;font-size:16px;}
+.safe-form .binded p{ padding-bottom:20px; }
+.safe-form .binding{padding:40px 0 0 20px;font-size:16px;}
+.safe-form .binding p{ padding-bottom:20px; }
+.safe-form .binding .warn{ font-size:12px; color:red;margin-top:-10px; }
+.safe-form .form2{ padding-top:30px; }

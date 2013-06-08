@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="/static/css/main.css?t=763570" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><img src="/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <ul class="info">
+            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li class="sep">|</li>
+            <li>
+                <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+            
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li >首页</li>
+            
+            <li class="current">账号安全</li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li class="index   ">
+        <a href="/safe/index.ut">账号安全</a>
+    </li>
+    
+    <li class="password   small">
+        <a href="/safe/password.ut">修改密码</a>
+    </li>
+    
+    <li class="email   small">
+        <a href="/safe/email.ut">密保邮箱</a>
+    </li>
+    
+    <li class="tel current  small">
+        <a href="/safe/tel.ut">密保手机</a>
+    </li>
+    
+    <li class="question   small">
+        <a href="/safe/question.ut">密保问题</a>
+    </li>
+    
+    <li class="history   small">
+        <a href="/safe/history.ut">登录记录</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+        <div class="inner safe-form">
+            <div class="title">
+                修改个密码撒
+            </div>
+            <div  class="form">
+                <script type="text/tpl" id="Target">
+                        <% if status==0 %><#已绑定#>
+                        <div class="binded">
+                            <p>您已绑定到手机<{tel}></p>
+                            <a href="#" class="long-btn">修改绑定手机</a>
+                        </div>
+                            
+                        <% else %><#未绑定#>
+                            
+                        <form method="post" id="" action="" class="form2">
+                            
+                            <div class="form-item">
+    <label for="CellphoneIpt">手机号：</label>
+    <span class="form-el">
+        <input uui-type="require cellphone" type="text" name="cellphone" id="CellphoneIpt" value="" />
+    </span>
+</div>
+                            <div class="form-item">
+    <label >&nbsp;</label>
+    <span class="form-el form-el-none">
+        <span class="tel-valid-btn" >免费获取短信验证码</span>
+        <span class="tel-valid-hr" ></span>
+    </span>
+</div>
+                            <div class="form-item">
+    <label for="PwdIpt">短信验证码：</label>
+    <span class="form-el"><input type="text" name="email" id="PwdIpt" value="" uui-type="require" /></span>
+</div>
+                            <div class="form-item">
+    <label for="PasswordIpt">登录密码：</label>
+    <span class="form-el">
+        <input uui-type="require password" type="text" name="password" id="PasswordIpt" value="" />
+    </span>
+</div>
+                            <div class="form-btn">
+    <button type="submit">确定</button>
+</div>
+                        </form>
+                        <% endif %>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/tpl" id="Target2">
+    <form method="post" id="RebindStep1" action="" class="form2">
+        
+        <div class="form-item">
+    <label for="CellphoneIpt">手机号：</label>
+    <span class="form-el">
+        <input uui-type="require cellphone" type="text" name="cellphone" id="CellphoneIpt" value="" />
+    </span>
+</div>
+        <div class="form-item">
+    <label >&nbsp;</label>
+    <span class="form-el form-el-none">
+        <span class="tel-valid-btn" >免费获取短信验证码</span>
+        <span class="tel-valid-hr" ></span>
+    </span>
+</div>
+        <div class="form-item">
+    <label for="PwdIpt">短信验证码：</label>
+    <span class="form-el"><input type="text" name="email" id="PwdIpt" value="" uui-type="require" /></span>
+</div>
+        <div class="form-btn">
+    <button type="submit">下一步</button>
+</div>
+    </form>
+    
+</script>
+<script type="text/tpl" id="Target3">
+    <form method="post" id="RebindStep2" action="" class="form2">
+        
+        <div class="form-item">
+    <label for="CellphoneIpt">新手机号：</label>
+    <span class="form-el">
+        <input uui-type="require cellphone" type="text" name="cellphone" id="CellphoneIpt" value="" />
+    </span>
+</div>
+        <div class="form-item">
+    <label >&nbsp;</label>
+    <span class="form-el form-el-none">
+        <span class="tel-valid-btn" >免费获取短信验证码</span>
+        <span class="tel-valid-hr" ></span>
+    </span>
+</div>
+        <div class="form-item">
+    <label for="PwdIpt">短信验证码：</label>
+    <span class="form-el"><input type="text" name="email" id="PwdIpt" value="" uui-type="require" /></span>
+</div>
+        <div class="form-btn">
+    <button type="submit">确定</button>
+</div>
+    </form>
+    
+</script>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        &copy;2013 sogou.com
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
+    <script type="text/javascript" src="/static/js/main.js?t=922709"></script>
+    
+    <script type="text/javascript">
+
+var server_data = '${data}';
+        
+require.config({
+    baseUrl:"/static/js"
+});
+
+
+require(['safe'] , function(module){
+    module.init('tel');
+});
+
+
+    </script>
+</html>
