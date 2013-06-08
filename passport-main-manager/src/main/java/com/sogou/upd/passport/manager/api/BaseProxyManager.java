@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
