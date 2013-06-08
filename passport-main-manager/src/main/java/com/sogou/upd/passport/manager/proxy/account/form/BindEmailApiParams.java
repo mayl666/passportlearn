@@ -14,7 +14,7 @@ import javax.validation.constraints.Min;
 public class BindEmailApiParams extends BaseApiParameters {
 
     @NotBlank(message = "用户id不能为空！")
-    private String passport_id;
+    private String userid;
 
     @NotBlank(message = "密码不能为空！")
     private String password;
@@ -53,12 +53,12 @@ public class BindEmailApiParams extends BaseApiParameters {
         this.pwdtype = pwdtype;
     }
 
-    public String getPassport_id() {
-        return passport_id;
+    public String getUserid() {
+        return userid;
     }
 
-    public void setPassport_id(String passport_id) {
-        this.passport_id = passport_id;
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 
     public String getOldbindemail() {

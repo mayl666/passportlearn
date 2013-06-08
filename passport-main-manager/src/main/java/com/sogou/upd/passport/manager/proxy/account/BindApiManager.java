@@ -38,5 +38,6 @@ public interface BindApiManager {
      * @param baseMoblieApiParams
      * @return
      */
+    @Deprecated
     Result queryPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams);
 }
