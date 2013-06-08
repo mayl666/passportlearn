@@ -3,7 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.AccountManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  * To change this template use File | Settings | File Templates.
  */
 @Component
-public class AccountManagerImpl implements AccountManager {
+public class AccountManagerImpl implements CommonManager {
 
     private static Logger log = LoggerFactory.getLogger(AccountManagerImpl.class);
 

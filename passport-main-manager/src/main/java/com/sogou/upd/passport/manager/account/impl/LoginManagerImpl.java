@@ -8,7 +8,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.AccountLoginManager;
+import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -30,9 +30,9 @@ import java.util.Map;
  * User: mayan Date: 13-4-15 Time: 下午4:34 To change this template use File | Settings | File Templates.
  */
 @Component
-public class AccountLoginManagerImpl implements AccountLoginManager {
+public class LoginManagerImpl implements LoginManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(AccountLoginManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
 
     @Autowired
     private AccountService accountService;

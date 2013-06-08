@@ -3,8 +3,8 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountLoginManager;
-import com.sogou.upd.passport.manager.account.AccountManager;
+import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.web.BaseController;
 import org.slf4j.Logger;
@@ -29,9 +29,9 @@ public class LoginAction extends BaseController {
   private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
 
   @Autowired
-  private AccountManager accountManager;
+  private CommonManager commonManager;
   @Autowired
-  private AccountLoginManager accountLoginManager;
+  private LoginManager loginManager;
 
 
   /**
@@ -54,11 +54,11 @@ public class LoginAction extends BaseController {
 
     //判断用户是否存在
     String username = loginParams.getUsername();
-    if (!accountManager.isAccountExists(username)) {
+    if (!commonManager.isAccountExists(username)) {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
       return result.toString();
     }
-    result = accountLoginManager.accountLogin(loginParams, getIp(request));
+    result = loginManager.accountLogin(loginParams, getIp(request));
     return result.toString();
   }
 

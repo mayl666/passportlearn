@@ -6,7 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
-import com.sogou.upd.passport.manager.account.AccountManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
@@ -33,7 +33,7 @@ public class ResetPwdAction {
     private static final Logger logger = LoggerFactory.getLogger(ResetPwdAction.class);
 
     @Autowired
-    private AccountManager accountManager;
+    private CommonManager commonManager;
     @Autowired
     private AccountSecureManager accountSecureManager;
     @Autowired
@@ -63,7 +63,7 @@ public class ResetPwdAction {
         }
 
         // TODO:是否允许绑定手机取得密保信息
-        String passportId = accountManager.getPassportIdByUsername(username);
+        String passportId = commonManager.getPassportIdByUsername(username);
         if (passportId == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             model.addAttribute("data", result.toString());

@@ -5,8 +5,8 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.account.AccountManager;
-import com.sogou.upd.passport.manager.account.AccountRegManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
@@ -17,7 +17,6 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,9 +36,9 @@ public class MobileAccountController extends BaseController {
     @Autowired
     private AccountSecureManager accountSecureManager;
     @Autowired
-    private AccountRegManager accountRegManager;
+    private RegManager regManager;
     @Autowired
-    private AccountManager accountManager;
+    private CommonManager commonManager;
     @Autowired
     private ConfigureManager configureManager;
 
@@ -110,7 +109,7 @@ public class MobileAccountController extends BaseController {
         String ip = getIp(request);
         String mobile = regParams.getMobile();
         try {
-            if (accountManager.isAccountExists(mobile)) {
+            if (commonManager.isAccountExists(mobile)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result.toString();
             }
@@ -119,7 +118,7 @@ public class MobileAccountController extends BaseController {
             return result.toString();
         }
 
-        result = accountRegManager.mobileRegister(regParams, ip);
+        result = regManager.mobileRegister(regParams, ip);
         return result.toString();
     }
 
@@ -153,7 +152,7 @@ public class MobileAccountController extends BaseController {
 
         String mobile = reqParams.getMobile();
         try {
-            if (!accountManager.isAccountExists(mobile)) {
+            if (!commonManager.isAccountExists(mobile)) {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result.toString();
             }
