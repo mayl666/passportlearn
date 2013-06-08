@@ -31,7 +31,7 @@ public class ResultSupport implements Result {
      * @param success 是否成功
      */
     public ResultSupport(boolean success) {
-        this(success, "0", "");
+        this.success = success;
     }
 
     /**

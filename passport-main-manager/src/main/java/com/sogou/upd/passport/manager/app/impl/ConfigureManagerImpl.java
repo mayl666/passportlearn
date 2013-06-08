@@ -1,10 +1,10 @@
 package com.sogou.upd.passport.manager.app.impl;
 
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
@@ -26,7 +26,7 @@ public class ConfigureManagerImpl implements ConfigureManager {
 
     private static Logger log = LoggerFactory.getLogger(ConfigureManagerImpl.class);
 
-    private static final long API_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
+    private static final long API_REQUEST_VAILD_TERM = 5 * 60 * 1000; //接口请求的有效期为5分钟，单位为秒
 
     @Autowired
     private AppConfigService appConfigService;
@@ -65,14 +65,13 @@ public class ConfigureManagerImpl implements ConfigureManager {
     }
 
     @Override
-    public Result verifyInternalRequest(int clientId, String passportId, long ct, String originalCode) {
+    public Result verifyInternalRequest(String uid, int clientId, long ct, String originalCode) {
         Result result = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             String secret = appConfig.getServerSecret();
-            String code = passportId + clientId + secret + ct;
-            code = Coder.encryptMD5(code);
-            long currentTime = System.currentTimeMillis() / 1000;
+            String code = ManagerHelper.generatorCode(uid, clientId, secret, ct);
+            long currentTime = System.currentTimeMillis();
             if (code.equals(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
                 result.setSuccess(true);
             } else {
@@ -84,4 +83,5 @@ public class ConfigureManagerImpl implements ConfigureManager {
         }
         return result;
     }
+
 }

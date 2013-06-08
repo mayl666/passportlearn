@@ -48,4 +48,11 @@ public class BaseDAOTest extends BaseTest {
     public static final String APP_KEY = "123";
     public static final String OTHER_APP_KEY = "abc";
 
+    // Problem Test Constant
+    public static final int PRO_STATUS = 0;
+    public static final int PRO_TYPE_ID = 1;
+    public static final String CONTENT = "在同一款游戏中累计充值1000元以上，即可以成为黄金VIP； 2.在同一款游戏中累计充值10000元以上，即可以成为白金VIP。成为白金VIP的用户将自动获得黄金VIP的一切特权"
+                                         + "请问这个所谓的特权在哪里??? 怎么感觉龙将2这游戏没人管啊.. 要更新什么东西也没有一个提前公告,"
+                                         + "是你们平台无所谓 还是不想让我们好好玩?";
+
 }
