@@ -41,8 +41,14 @@ public class SHPPUrlConstant {
     public static final String MOBILE_GET_USERID = BASE_INTERNAL_URL + "wapgetuserid";
 
 
+    /*================================邮箱绑定相关=======================================*/
     //绑定邮箱
     public static final String BIND_EMAIL = BASE_INTERNAL_URL + "bindemail";
+
+    /*================================修改密码=======================================*/
     //根据老密码修改新密码
     public static final String UPDATE_PWD = BASE_INTERNAL_URL + "updatepwd";
+
+    //获取用户信息
+    public static final String USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
 }

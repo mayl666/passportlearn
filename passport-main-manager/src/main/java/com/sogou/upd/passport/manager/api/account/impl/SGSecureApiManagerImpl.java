@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -57,5 +58,10 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
 
         Result result = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
         return result;
+    }
+
+    @Override
+    public Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
