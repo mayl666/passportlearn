@@ -67,10 +67,13 @@ public class RegManagerImpl implements RegManager {
       switch (emailType) {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
-          result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId));
+          String captchaCode = regParams.getCaptcha();
+          String token = regParams.getToken();
+
+          result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId,captchaCode,token));
           return result;
         case PHONE://手机号
-//          result=sgRegisterApiManager.
+//          result=sgRegisterApiManager.regMobileCaptchaUser();
           break;
       }
 
@@ -192,24 +195,4 @@ public class RegManagerImpl implements RegManager {
     public Map<String, Object> getCaptchaCode(String code) {
         return accountService.getCaptchaCode(code);
     }
-
-  @Override
-  public Result checkCaptchaCode(String token, String captchaCode) throws Exception {
-    Result result = new APIResultSupport(false);
-    try {
-      //校验验证码
-      if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-        return result;
-      }
-      result.setSuccess(true);
-      result.setMessage("允许注册");
-    } catch (ServiceException e) {
-      logger.error("checkCaptchaCode fail", e);
-      result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-      return result;
-    }
-    return result;
-  }
-
 }

@@ -41,8 +41,4 @@ public interface RegManager {
    * @return 验证码
    */
   public Map<String,Object> getCaptchaCode(String code);
-  /*
-   *检查验证码
-   */
-  public Result checkCaptchaCode(String token, String captchaCode) throws Exception;
 }

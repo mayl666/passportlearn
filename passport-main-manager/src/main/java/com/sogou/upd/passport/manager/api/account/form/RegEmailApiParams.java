@@ -13,13 +13,18 @@ public class RegEmailApiParams {
   private String ip;
   private int provider;
   private int client_id;
+  private String captcha;//验证码
+  private String token;//标识码
 
-  public RegEmailApiParams(String username, String password, String ip, int client_id) {
+  public RegEmailApiParams(String username, String password, String ip, int client_id,String captcha,String token) {
     this.username = username;
     this.password = password;
     this.ip = ip;
     this.client_id = client_id;
+    this.captcha=captcha;
+    this.token=token;
   }
+
 
   public String getUsername() {
     return username;
@@ -59,5 +64,21 @@ public class RegEmailApiParams {
 
   public void setClient_id(int client_id) {
     this.client_id = client_id;
+  }
+
+  public String getCaptcha() {
+    return captcha;
+  }
+
+  public void setCaptcha(String captcha) {
+    this.captcha = captcha;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

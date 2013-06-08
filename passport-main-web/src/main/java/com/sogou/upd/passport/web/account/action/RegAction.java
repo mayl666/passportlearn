@@ -92,15 +92,8 @@ public class RegAction extends BaseController {
     String username = regParams.getUsername();
     String ip = getIp(request);
 
-    String captchaCode = regParams.getCaptcha();
-    String token = regParams.getToken();
-    //todo 黑白名单
-    //校验验证码
-    result = regManager.checkCaptchaCode(token, captchaCode);
 
-    if (!result.isSuccess()) {
-      return result;
-    }
+    //todo 黑白名单
 
     //验证client_id
     int clientId = Integer.parseInt(regParams.getClient_id());

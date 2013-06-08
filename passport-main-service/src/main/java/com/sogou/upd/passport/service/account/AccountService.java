@@ -160,4 +160,8 @@ public interface AccountService {
      * @return
      */
   public boolean checkUserInBlackList(String username,String ip);
+  /*
+   *检查验证码
+   */
+  public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
 }
