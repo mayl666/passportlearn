@@ -22,6 +22,9 @@ public class AuthUserApiParams extends BaseApiParameters {
     @Min(0)
     private int usertype; // userid为手机号时，usertype=1；usertype默认为0，userid值为全域名id，如：test-1@sohu.com 或 昵称 eg:zhangsan TODO 暂时用不到此参数
 
+    @NotBlank(message = "用户ip不允许为空")
+    private String ip;
+
     public String getUserid() {
         return userid;
     }
@@ -52,5 +55,13 @@ public class AuthUserApiParams extends BaseApiParameters {
 
     public void setUsertype(int usertype) {
         this.usertype = usertype;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }
