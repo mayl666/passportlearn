@@ -171,4 +171,33 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    /**
+     * 根据登陆错误次数，判断是否需要在登陆时输入验证码
+     *
+     * @param username
+     * @param ip
+     * @return
+     */
+    @Override
+    public boolean loginFailedTimesNeedCaptcha(String username,String ip) throws ServiceException{
+        boolean result = false;
+        try {
+            String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
+            result = checkTimesByKey(userNameCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
+            if(result){
+                return true;
+            }
+
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+            result = checkTimesByKey(ipCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
+            if(result){
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("getAccountLoginFailedCount:username" + username+",ip:"+ip, e);
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
 }

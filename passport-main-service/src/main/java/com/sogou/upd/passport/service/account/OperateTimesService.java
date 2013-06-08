@@ -66,4 +66,13 @@ public interface OperateTimesService {
      */
     public boolean checkRegIPInBlackList(String ip) throws ServiceException;
 
+    /**
+     * 联系登陆失败的次数超过限制，需要输入验证码
+     * @param username
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean loginFailedTimesNeedCaptcha(String username,String ip) throws ServiceException;
+
 }
