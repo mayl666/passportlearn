@@ -25,15 +25,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午1:51 To change this template use
- * File | Settings | File Templates.
+ * User: hujunfei
+ * Date: 13-4-28 Time: 下午1:51
+ * 安全中心（修改密码，修改密保手机，修改密保问题，修改密保邮箱）
  */
 @Controller
 @RequestMapping("/web")
-public class AccountSecureAction extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(AccountSecureAction.class);
+public class SecureAction extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
 
     @Autowired
     private AccountManager accountManager;
@@ -41,6 +45,27 @@ public class AccountSecureAction extends BaseController {
     private AccountSecureManager accountSecureManager;
     @Autowired
     private AccountCheckManager accountCheckManager;
+
+  /**
+   * 修改密码
+   *
+   * @param resetParams 传入的参数
+   */
+  @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
+  @ResponseBody
+  public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
+      throws Exception {
+    Result result = new APIResultSupport(false);
+    //todo 注解需要判断登录
+    String validateResult = ControllerHelper.validateParams(resetParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result;
+    }
+    result = accountSecureManager.resetWebPassword(resetParams);
+    return result;
+  }
 
     /**
      * 显示找回密码界面

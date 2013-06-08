@@ -23,13 +23,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * Created with IntelliJ IDEA. User: mayan Date: 13-6-7 Time: 下午5:49 To change this template use
- * File | Settings | File Templates.
+ * User: mayan
+ * Date: 13-6-7 Time: 下午5:49
+ * 重置密码 （通过注册邮箱，密保邮箱，密保手机，密保问题）
  */
 @Controller
 @RequestMapping(value = "/web/findpwd")
-public class AccountResetPwdAction {
-    private static final Logger logger = LoggerFactory.getLogger(AccountResetPwdAction.class);
+public class ResetPwdAction {
+    private static final Logger logger = LoggerFactory.getLogger(ResetPwdAction.class);
 
     @Autowired
     private AccountManager accountManager;
