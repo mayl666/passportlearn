@@ -18,9 +18,20 @@ public class MoblieCodeParams {
 
     @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
-    @NotBlank(message = "client_id不允许为空!")
     @Min(0)
+    @NotBlank(message = "client_id不允许为空!")
     private String client_id;
+
+    @AssertTrue(message = "请输入正确的手机号!")
+    private boolean isValidPhone() {
+        if (Strings.isNullOrEmpty(mobile)) {   // NotBlank已经校验过了，无需再校验
+            return true;
+        }
+        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+            return true;
+        }
+        return false;
+    }
 
     public String getMobile() {
         return mobile;
