@@ -46,6 +46,7 @@ public class LoginManagerImpl implements LoginManager {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
+
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
         Result result = new APIResultSupport(false);

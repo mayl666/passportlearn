@@ -6,10 +6,12 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.account.form.*;
@@ -29,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/api")
-public class AccountSecureController {
+public class AccountSecureController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureController.class);
 
     @Autowired
@@ -497,6 +499,7 @@ public class AccountSecureController {
             result.setMessage(StringUtil.defaultIfEmpty(validateResult, "必选参数未填"));
             return result.toString();
         }
+
         String passportId = params.getPassport_id();
         if (!passportId.equals(hostHolder.getPassportId())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
@@ -504,6 +507,6 @@ public class AccountSecureController {
         }
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
-        return secureManager.modifyQuesByPassportId(passportId, clientId, password, newQues, newAnswer);
+        return secureManager.modifyQuesByPassportId(passportId, clientId, password, newQues, newAnswer, null);
     }
 }
