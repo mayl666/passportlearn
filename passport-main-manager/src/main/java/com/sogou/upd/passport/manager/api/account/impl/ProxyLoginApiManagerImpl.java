@@ -27,36 +27,22 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
-        Result result = new APIResultSupport(false);
         String userId = authUserParameters.getUserid();
         if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))) {
             authUserParameters.setUsertype(1);
         }
         authUserParameters.setPwdtype(1);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(authUserParameters);
-            result = executeResult(requestModelXml);
-        } catch (Exception e) {
-            log.error("web auth user Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(authUserParameters);
+        return executeResult(requestModelXml);
     }
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
-        Result result = new APIResultSupport(false);
         appAuthTokenApiParams.setType(2);
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            requestModelXml.addParams(appAuthTokenApiParams);
-            result = executeResult(requestModelXml, appAuthTokenApiParams.getToken());
-        } catch (Exception e) {
-            log.error("App auth openLogin token Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(appAuthTokenApiParams);
+        return executeResult(requestModelXml, appAuthTokenApiParams.getToken());
     }
 
 }
