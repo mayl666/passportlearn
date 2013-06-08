@@ -22,4 +22,8 @@ public class BaseTest    extends AbstractJUnit4SpringContextTests {
     protected static final int clientId = 1100;
 
     protected static final String modifyIp = "10.1.164.160";
+
+    protected static final String question="测试啊，我是来测试的";
+
+    protected static final String answer="测试成功";
 }

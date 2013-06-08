@@ -15,7 +15,7 @@ public class ResultSupport implements Result {
     private static final long serialVersionUID = 3976733653567025460L;
     private boolean success = true;
     private String code;
-    private String message;
+    private String message = "";
     private Map<String, Object> models = Maps.newHashMap();
     private String defaultModelKey;
 

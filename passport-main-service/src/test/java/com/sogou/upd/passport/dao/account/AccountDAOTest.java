@@ -63,4 +63,15 @@ public class AccountDAOTest extends BaseDAOTest {
         Assert.assertTrue(row == 1);
     }
 
+    @Test
+    public void testModifyMobile() {
+        int row = accountDAO.updateMobile(null, PASSPORT_ID);
+        Assert.assertTrue(row == 1);
+        Account account = accountDAO.getAccountByPassportId(PASSPORT_ID);
+        Assert.assertTrue(account.getMobile() == null);
+        row = accountDAO.updateMobile(MOBILE, PASSPORT_ID);
+        Assert.assertTrue(row == 1);
+        account = accountDAO.getAccountByPassportId(PASSPORT_ID);
+        Assert.assertTrue(account.getMobile().equals(MOBILE));
+    }
 }
