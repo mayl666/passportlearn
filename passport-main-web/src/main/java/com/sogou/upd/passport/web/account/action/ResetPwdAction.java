@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountCheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.AccountSecureManager;
+import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
@@ -38,6 +39,8 @@ public class ResetPwdAction {
     private AccountSecureManager accountSecureManager;
     @Autowired
     private AccountCheckManager accountCheckManager;
+    @Autowired
+    private ResetPwdManager resetPwdManager;
 
     @RequestMapping
     public String findPwd() throws Exception {
@@ -87,7 +90,7 @@ public class ResetPwdAction {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
+        result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:
@@ -106,7 +109,7 @@ public class ResetPwdAction {
         }
         String passportId = params.getPassport_id();
         int clientId = Integer.parseInt(params.getClient_id());
-        result = accountSecureManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
+        result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:
@@ -151,7 +154,7 @@ public class ResetPwdAction {
             return result.toString();
         }
 
-        result = accountSecureManager.resetPasswordByEmail(passportId, clientId, password, scode);
+        result = resetPwdManager.resetPasswordByEmail(passportId, clientId, password, scode);
         return "";
     }
 }
