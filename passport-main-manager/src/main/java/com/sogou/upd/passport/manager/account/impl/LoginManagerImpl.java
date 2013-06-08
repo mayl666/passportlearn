@@ -41,6 +41,7 @@ public class LoginManagerImpl implements LoginManager {
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
 
+
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
         Result result = new APIResultSupport(false);

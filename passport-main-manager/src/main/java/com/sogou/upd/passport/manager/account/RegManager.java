@@ -30,14 +30,6 @@ public interface RegManager {
   public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception;
 
   /**
-   * 检查注册用户是否在黑名单中，排除恶意注册
-   *
-   * @param ip 参数封装的对象
-   * @return Result格式的返回值，提示注册成功信息
-   */
-  public boolean isInAccountBlackList(String passportId,String ip) throws Exception;
-
-  /**
    * 激活验证邮件
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息

@@ -11,6 +11,8 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.RegManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
@@ -45,9 +47,42 @@ public class RegManagerImpl implements RegManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
+  @Override
+  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
+
+    Result result = new APIResultSupport(false);
+    try {
+      int clientId = Integer.parseInt(regParams.getClient_id());
+      String username = regParams.getUsername();
+      String password = regParams.getPassword();
+
+      //判断注册账号类型，sogou用户还是手机用户
+      AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
+
+      switch (emailType) {
+        case SOGOU://个性账号直接注册
+        case OTHER://外域邮件注册
+          result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId));
+          return result;
+        case PHONE://手机号
+//          result=sgRegisterApiManager.
+          break;
+      }
+
+
+    } catch (ServiceException e) {
+      logger.error("webRegister fail,passportId:" + regParams.getUsername(), e);
+      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+      return result;
+    }
+    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+    return result;
+  }
 
     @Override
     public Result mobileRegister(MobileRegParams regParams, String ip) {
@@ -105,54 +140,6 @@ public class RegManagerImpl implements RegManager {
         }
     }
 
-    @Override
-    public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
-
-        Result result = new APIResultSupport(false);
-        try {
-            int clientId = Integer.parseInt(regParams.getClient_id());
-            String username = regParams.getUsername();
-            String password = regParams.getPassword();
-            String token = regParams.getToken();
-
-            //判断注册账号类型，sogou用户还是第三方用户
-            AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
-
-            //写缓存，发验证邮件
-            switch (emailType) {
-                case SOGOU://sogou用户，直接注册
-                    Account account = accountService.initialAccount(username, password, false, ip, AccountTypeEnum.EMAIL.getValue());
-                    if (account != null) {
-                        result.setSuccess(true);
-                        result.setMessage("注册成功！");
-                        return result;
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                        return result;
-                    }
-                case OTHER://外域邮件注册
-                    boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip);
-                    if (isSendSuccess) {
-                        result.setSuccess(true);
-                        result.setMessage("感谢注册，请立即激活账户！");
-                        return result;
-                    }
-                    break;
-            }
-        } catch (ServiceException e) {
-            logger.error("webRegister fail,passportId:" + regParams.getUsername(), e);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-            return result;
-        }
-        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-        return result;
-    }
-
-    @Override
-    public boolean isInAccountBlackList(String passportId, String ip)
-            throws Exception {
-        return accountService.isInAccountBlackListByIp(passportId, ip);
-    }
 
     @Override
     public Result activeEmail(ActiveEmailParameters activeParams, String ip) throws Exception {

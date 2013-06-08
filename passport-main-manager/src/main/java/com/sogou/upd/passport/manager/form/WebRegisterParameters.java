@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.form;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
@@ -17,6 +18,7 @@ public class WebRegisterParameters {
   @NotBlank(message = "client_id不允许为空!")
   @Min(0)
   private String client_id;
+  @Email(message = "不是有效的邮箱地址")
   @NotBlank(message = "邮箱不允许为空!")
   private String username;
   @NotBlank(message = "请输入密码!")
