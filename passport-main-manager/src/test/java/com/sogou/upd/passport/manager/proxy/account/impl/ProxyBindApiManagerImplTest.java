@@ -11,8 +11,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.inject.Inject;
-
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
@@ -26,7 +24,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     @Test
     public void testBindMobile(){
         BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-        bindMobileApiParams.setPassport_id(passportId);
+        bindMobileApiParams.setUserid(passportId);
         bindMobileApiParams.setMobile("18210193340");
         bindMobileApiParams.setClient_id(clientId);
         Result result = proxyBindApiManager.bindMobile(bindMobileApiParams);
@@ -53,7 +51,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
         bindEmailApiParams.setOldbindemail("34310327@qq.com");
         bindEmailApiParams.setPassword(password);
         bindEmailApiParams.setClient_id(clientId);
-        bindEmailApiParams.setPassport_id(passportId);
+        bindEmailApiParams.setUserid(passportId);
         bindEmailApiParams.setPwdtype(1);
         Result result = proxyBindApiManager.bindEmail(bindEmailApiParams);
         System.out.println(result.toString());

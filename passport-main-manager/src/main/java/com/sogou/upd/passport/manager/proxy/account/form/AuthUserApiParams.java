@@ -13,8 +13,8 @@ import javax.validation.constraints.Min;
  */
 public class AuthUserApiParams extends BaseApiParameters {
 
-    @NotBlank(message = "passport_id不允许为空")
-    private String passport_id;
+    @NotBlank(message = "userid不允许为空")
+    private String userid;
     @NotBlank(message = "密码不允许为空")
     private String password;
     @Min(0)
@@ -22,12 +22,12 @@ public class AuthUserApiParams extends BaseApiParameters {
     @Min(0)
     private int usertype; // passportid的值为手机号；usertype为0，passportid值为全域名id，如：test-1@sohu.com 或 昵称 eg:zhangsan
 
-    public String getPassport_id() {
-        return passport_id;
+    public String getUserid() {
+        return userid;
     }
 
-    public void setPassport_id(String passport_id) {
-        this.passport_id = passport_id;
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 
     public String getPassword() {

@@ -10,7 +10,6 @@ import com.sogou.upd.passport.manager.proxy.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.proxy.account.form.MobileAuthTokenApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,13 +30,8 @@ public class LoginApiController {
     @Autowired
     private ConfigureManager configureManager;
 
-    private LoginApiManager proxyLoginApiManager;
-
     @Autowired
-    public void setAbstractFlightSearchAO(
-            @Qualifier("proxyLoginApiManager") LoginApiManager proxyLoginApiManager) {
-        this.proxyLoginApiManager = proxyLoginApiManager;
-    }
+    private LoginApiManager proxyLoginApiManager;
 
     /**
      * web端校验用户名和密码是否正确
@@ -57,7 +51,7 @@ public class LoginApiController {
             return result.toString();
         }
         // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getPassport_id(), params.getClient_id(), params.getCt(), params.getCode());
+        result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
         if (!result.isSuccess()) {
             result.setCode(ErrorUtil.ERR_CODE_COM_SING);
             return result.toString();

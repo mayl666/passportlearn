@@ -25,7 +25,7 @@ public class ProxySecureApiManagerImplTest extends BaseTest {
     public void testUpdatePwd() throws Exception {
         //修改密码
         UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
-        updatePwdApiParams.setPassport_id(passportId);
+        updatePwdApiParams.setUserid(passportId);
         updatePwdApiParams.setPassword(password+"aaa");
         updatePwdApiParams.setModifyip(modifyIp);
         updatePwdApiParams.setNewpassword("testtest2");
@@ -35,7 +35,7 @@ public class ProxySecureApiManagerImplTest extends BaseTest {
 
 //        //再将密码改回来
 //        updatePwdApiParams=new UpdatePwdApiParams();
-//        updatePwdApiParams.setPassport_id(passportId);
+//        updatePwdApiParams.setUserid(passportId);
 //        updatePwdApiParams.setPassword("testtest2");
 //        updatePwdApiParams.setModifyip(modifyIp);
 //        updatePwdApiParams.setNewpassword(password);
@@ -48,7 +48,7 @@ public class ProxySecureApiManagerImplTest extends BaseTest {
     public void testUpdateQues() throws Exception {
         UpdateQuesApiParams updateQuesApiParams=new UpdateQuesApiParams();
         updateQuesApiParams.setModifyip(modifyIp);
-        updateQuesApiParams.setPassport_id(passportId);
+        updateQuesApiParams.setUserid(passportId);
         updateQuesApiParams.setPassword(password);
         updateQuesApiParams.setNewanswer("测试答案");
         updateQuesApiParams.setNewquestion("测试问题");

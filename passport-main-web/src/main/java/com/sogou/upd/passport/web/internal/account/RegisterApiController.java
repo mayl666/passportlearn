@@ -32,13 +32,8 @@ public class RegisterApiController {
     @Autowired
     private ConfigureManager configureManager;
 
-    private RegisterApiManager proxyRegisterApiManager;
-
     @Autowired
-    public void setAbstractFlightSearchAO(
-            @Qualifier("proxyRegisterApiManager") RegisterApiManager proxyRegisterApiManager) {
-        this.proxyRegisterApiManager = proxyRegisterApiManager;
-    }
+    private RegisterApiManager proxyRegisterApiManager;
 
     /**
      * 注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号
