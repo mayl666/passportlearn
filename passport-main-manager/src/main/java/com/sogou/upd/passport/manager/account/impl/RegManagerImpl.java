@@ -28,8 +28,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * User: mayan Date: 13-4-15 Time: 下午4:43 To change this template use File | Settings | File
- * Templates.
+ * User: mayan
+ * Date: 13-4-15 Time: 下午4:43
+ * 注册管理
  */
 @Component
 public class RegManagerImpl implements RegManager {
@@ -205,29 +206,23 @@ public class RegManagerImpl implements RegManager {
         return accountService.getCaptchaCode(code);
     }
 
-    @Override
-    public Result isAllowRegister(String username, String ip, String token, String captchaCode) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            //校验是否在黑名单中
-            if (!accountService.isInAccountBlackListByIp(username, ip)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_LIMITED);
-                return result;
-            }
-
-            //校验验证码
-            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                return result;
-            }
-            result.setSuccess(true);
-            result.setMessage("允许注册");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("isAllowRegister fail,username:" + username, e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
+  @Override
+  public Result checkCaptchaCode(String token, String captchaCode) throws Exception {
+    Result result = new APIResultSupport(false);
+    try {
+      //校验验证码
+      if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+        return result;
+      }
+      result.setSuccess(true);
+      result.setMessage("允许注册");
+    } catch (ServiceException e) {
+      logger.error("checkCaptchaCode fail", e);
+      result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+      return result;
     }
+    return result;
+  }
 
 }

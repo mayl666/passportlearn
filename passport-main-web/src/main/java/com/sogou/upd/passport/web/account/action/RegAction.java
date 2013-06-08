@@ -94,8 +94,9 @@ public class RegAction extends BaseController {
 
     String captchaCode = regParams.getCaptcha();
     String token = regParams.getToken();
-    //校验用户是否可注册
-    result = regManager.isAllowRegister(username, ip, token, captchaCode);
+    //todo
+    //校验验证码
+    result = regManager.checkCaptchaCode(token, captchaCode);
 
     if (!result.isSuccess()) {
       return result;
