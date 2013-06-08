@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountInfo;
 
@@ -22,6 +23,6 @@ public interface AccountInfoService {
     /**
      * 修改密保问题和答案
      */
-    public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer) throws ServiceException;
+    public Result modifyQuesByPassportId(String passportId, String question, String answer) throws ServiceException;
 
 }
