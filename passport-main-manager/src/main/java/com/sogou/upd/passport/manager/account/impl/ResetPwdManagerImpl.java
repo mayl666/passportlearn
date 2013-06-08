@@ -9,7 +9,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
-import com.sogou.upd.passport.manager.proxy.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;

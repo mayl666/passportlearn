@@ -50,8 +50,7 @@ public interface RegManager {
    */
   public Map<String,Object> getCaptchaCode(String code);
   /*
-   *检测是否允许注册
+   *检查验证码
    */
-  public Result isAllowRegister(String username,String ip,String token, String captchaCode) throws Exception;
-
+  public Result checkCaptchaCode(String token, String captchaCode) throws Exception;
 }

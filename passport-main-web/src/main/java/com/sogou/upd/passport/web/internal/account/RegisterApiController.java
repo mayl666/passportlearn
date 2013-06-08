@@ -5,13 +5,11 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.proxy.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.proxy.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.MobileAuthTokenApiParams;
-import com.sogou.upd.passport.manager.proxy.account.form.MobileRegApiParams;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,9 +39,9 @@ public class RegisterApiController {
      * @param params
      * @return
      */
-    @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
+    @RequestMapping(value = "/regmobilecaptcha", method = RequestMethod.POST)
     @ResponseBody
-    public Object webAuthUser(HttpServletRequest request, MobileRegApiParams params) {
+    public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -59,7 +57,7 @@ public class RegisterApiController {
             return result.toString();
         }
         // 调用内部接口
-        result = proxyRegisterApiManager.regMobileUser(params);
+        result = proxyRegisterApiManager.regMobileCaptchaUser(params);
         return result.toString();
     }
 
@@ -71,7 +69,7 @@ public class RegisterApiController {
      */
     @RequestMapping(value = "/sendregcaptcha", method = RequestMethod.POST)
     @ResponseBody
-    public Object webAuthUser(HttpServletRequest request, BaseMoblieApiParams params) {
+    public Object sendRegCaptcha(HttpServletRequest request, BaseMoblieApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);

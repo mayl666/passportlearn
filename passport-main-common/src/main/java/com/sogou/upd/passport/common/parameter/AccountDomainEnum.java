@@ -2,7 +2,9 @@ package com.sogou.upd.passport.common.parameter;
 
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-28 Time: 下午5:59 To change this template use
@@ -17,7 +19,7 @@ public enum AccountDomainEnum {
     THIRD(5); // 第三方
 
     // 域数字与字符串映射字典表
-    private static LinkedList<String> SOHU_DOMAIN = new LinkedList<>();
+    private static List<String> SOHU_DOMAIN = new ArrayList<>();
 
     static {
         SOHU_DOMAIN.add("@sohu.com");
@@ -57,12 +59,16 @@ public enum AccountDomainEnum {
             return AccountDomainEnum.PHONE;
         }
 
-        // 验证手机账号（如137****@sogou.com）和sogou域账号
-        if (username.endsWith("@sogou.com")) {
-            if (PhoneUtil.verifyPhoneNumberFormat(username.substring(0, username.lastIndexOf(
-                    "@sogou.com")))) {
+        // 验证手机账号（如137****@sohu.com）和sogou域账号
+        if (username.endsWith("@sohu.com")) {
+            String prefix = username.substring(0, username.lastIndexOf(
+                    "@sohu.com"));
+            if (PhoneUtil.verifyPhoneNumberFormat(prefix)) {
                 return AccountDomainEnum.PHONE;
             }
+        }
+
+        if (username.endsWith("@sogou.com")) {
             return AccountDomainEnum.SOGOU;
         }
 
