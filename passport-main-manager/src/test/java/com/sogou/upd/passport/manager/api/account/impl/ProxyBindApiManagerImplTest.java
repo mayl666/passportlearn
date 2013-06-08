@@ -59,9 +59,9 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
     @Test
     public void testGetPassportIdFromMobile(){
-        MobileBindPassportIdApiParams mobileBindPassportIdApiParams=new MobileBindPassportIdApiParams();
-        mobileBindPassportIdApiParams.setMobile("18612987312");
-        Result result = proxyBindApiManager.getPassportIdFromMobile(mobileBindPassportIdApiParams);
+        BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
+        baseMoblieApiParams.setMobile("18612987312");
+        Result result = proxyBindApiManager.getPassportIdFromMobile(baseMoblieApiParams);
         System.out.println(result.toString());
     }
 }

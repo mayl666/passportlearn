@@ -7,12 +7,10 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.MobileBindPassportIdApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +97,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams) {
+    public Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
