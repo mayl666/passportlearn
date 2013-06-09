@@ -1,6 +1,11 @@
 package com.sogou.upd.passport.web;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -54,5 +59,15 @@ public class ControllerHelper {
         return queryString;
     }
 
-
+    public static <T> Result checkParams(T requestParams) {
+        Result result = new APIResultSupport(false);
+        String validateResult = validateParams(requestParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
+        }
+        result.setSuccess(true);
+        return result;
+    }
 }

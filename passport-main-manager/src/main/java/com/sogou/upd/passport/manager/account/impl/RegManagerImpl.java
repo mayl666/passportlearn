@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
@@ -49,6 +50,8 @@ public class RegManagerImpl implements RegManager {
     private RedisUtils redisUtils;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
+    @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -69,8 +72,12 @@ public class RegManagerImpl implements RegManager {
         case OTHER://外域邮件注册
           String captchaCode = regParams.getCaptcha();
           String token = regParams.getToken();
-
-          result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId,captchaCode,token));
+          if (ManagerHelper.isInvokeProxyApi(username)) {
+            //todo 拼参数
+            result = proxyRegisterApiManager.regMailUser(null);
+          } else {
+            result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId,captchaCode,token));
+          }
           return result;
         case PHONE://手机号
 //          result=sgRegisterApiManager.regMobileCaptchaUser();
