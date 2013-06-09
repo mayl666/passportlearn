@@ -5,15 +5,13 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
-
-import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,11 +20,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.awt.image.BufferedImage;
-import java.util.Map;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.util.Map;
 
 /**
  * User: mayan Date: 13-5-7 Time: 下午6:22 To change this template use
@@ -44,6 +41,8 @@ public class CaptchaController {
     private ConfigureManager configureManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
 
     /**
      * web注册时页面展示的验证码
@@ -79,9 +78,9 @@ public class CaptchaController {
      *
      * @param reqParams 传入的参数
      */
-    @RequestMapping(value = {"/v2/sendmobilecode", "/mobile/sendsms"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/mobile/sendsms"}, method = RequestMethod.GET)
     @ResponseBody
-    public Object sendMobileCode(BaseMoblieApiParams reqParams)
+    public Object sendMobileCode(MoblieCodeParams reqParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -92,17 +91,30 @@ public class CaptchaController {
             return result.toString();
         }
         //验证client_id
-        int clientId = reqParams.getClient_id();
+        int clientId = Integer.parseInt(reqParams.getClient_id());
 
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
             return result.toString();
         }
-
-        result = proxyRegisterApiManager.sendMobileRegCaptcha(reqParams);
+        String mobile = reqParams.getMobile();
+        //为了数据迁移三个阶段，这里需要转换下参数类
+        BaseMoblieApiParams baseMoblieApiParams = buildProxyApiParams(clientId, mobile);
+        if (ManagerHelper.isInvokeProxyApi(mobile)) {
+            result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+        } else {
+            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+        }
         return result.toString();
 
+    }
+
+    private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {
+        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+        baseMoblieApiParams.setMobile(mobile);
+        baseMoblieApiParams.setClient_id(clientId);
+        return baseMoblieApiParams;
     }
 }
 
