@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -139,8 +140,9 @@ public class LoginManagerImpl implements LoginManager {
             authUserApiParams.setPassword(password);
             //TODO 设置clientId,暂时设置为1001
             authUserApiParams.setClient_id(1001);
-            authUserApiParams.setIp(ip);
-
+            if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username))) {
+                authUserApiParams.setUsertype(USERTYPE_PHONE); // 手机号
+            }
             //根据域名判断是否代理，一期全部走代理
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);

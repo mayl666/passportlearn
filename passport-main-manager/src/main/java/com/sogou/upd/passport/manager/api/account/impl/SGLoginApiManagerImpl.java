@@ -40,29 +40,28 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     private AccountService accountService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
-    private OperateTimesService operateTimesService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         // TODO 当Manager里方法只调用一个service时，需要把service的返回值改为Result
         // TODO 例如这里调用AccountService的verifyUserPwdVaild（）方法，就需要把返回值改为Result
-        Result result = new APIResultSupport(false);
-        try {
-            result = accountService.verifyUserPwdVaild(authUserApiParams.getUserid(), authUserApiParams.getPassword(), false);
-        } catch (Exception e) {
-            logger.error("webAuthUser fail,userId:" + authUserApiParams.getUserid(), e);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-        }
-        return result;
-    }
 
-    private Result doUserNotExist(String userid, String ip) {
         Result result = new APIResultSupport(false);
-        //记录登陆失败操作
-//        operateTimesService.incLoginFailedTimes(userid, ip);
-        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-        return result;
+        String userid = authUserApiParams.getUserid();
+        String password = authUserApiParams.getPassword();
+        int userType = authUserApiParams.getUsertype();
+        String passportId = userid;
+        try {
+            //判断登录用户类型
+            if (userType == USERTYPE_PHONE){
+                passportId = mobilePassportMappingService.queryPassportIdByUsername(userid);
+            }
+            return accountService.verifyUserPwdVaild(passportId,password,false);
+        } catch (Exception e) {
+            logger.error("accountLogin fail,userId:" + authUserApiParams.getUserid(), e);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+            return result;
+        }
     }
 
     @Override
