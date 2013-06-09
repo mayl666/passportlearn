@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 
@@ -42,6 +43,10 @@ public class RegAction extends BaseController {
   private CommonManager commonManager;
   @Autowired
   private ConfigureManager configureManager;
+
+  @Autowired
+  private OperateTimesService operateTimesService;
+
   /**
    * 用户注册检查用户名是否存在
    *
@@ -88,10 +93,7 @@ public class RegAction extends BaseController {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
       return result;
     }
-
-    String username = regParams.getUsername();
     String ip = getIp(request);
-
     //todo 黑白名单
 
     //验证client_id

@@ -35,7 +35,6 @@ public class LoginAction extends BaseController {
   @Autowired
   private LoginManager loginManager;
 
-
   /**
    * web页面登录
    *
