@@ -36,7 +36,7 @@ public class LoginManagerImpl implements LoginManager {
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
     private static final int USERTYPE_PHONE = 1;
     private static final int USERTYPE_PASSPORTID = 0;
-
+    private static final String LOGIN_URL = "/web/index";
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -155,7 +155,9 @@ public class LoginManagerImpl implements LoginManager {
                 operateTimesService.incLoginSuccessTimes(username,ip);
                 //TODO 取cookie种sogou域cookie
                 // 种sohu域cookie
-                CreateCookieUrlApiParams createCookieUrlApiParams = null;
+                CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+                createCookieUrlApiParams.setUserid(username);
+                createCookieUrlApiParams.setRu(LOGIN_URL);
                 Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
                 if (createCookieResult.isSuccess()){
                     result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
