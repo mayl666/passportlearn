@@ -579,7 +579,6 @@ public class SecureManagerImpl implements SecureManager {
             authParams.setUserid(userId);
             authParams.setClient_id(clientId);
             authParams.setPassword(password);
-            authParams.setIp(modifyIp);
 
             BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
             bindMobileApiParams.setUserid(userId);
