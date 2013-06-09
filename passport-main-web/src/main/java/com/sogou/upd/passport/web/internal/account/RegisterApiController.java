@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
@@ -89,4 +90,35 @@ public class RegisterApiController {
         return result.toString();
     }
 
+    @RequestMapping(value = "/checkuser", method = RequestMethod.POST)
+    @ResponseBody
+    public Object checkUser(HttpServletRequest request, CheckUserApiParams params){
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        // 签名和时间戳校验
+        result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
+        if (!result.isSuccess()) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+            return result.toString();
+        }
+//这里到底是检测用户名是否存在还是是否可注册，需要再做考虑
+//        String userID=params.getUserid().trim();
+//        String[] split=userID.split("@");
+//        String domain=split[split.length-1];
+//        if(!userID.endsWith("@sogou.com")){
+//            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//            result.setMessage(validateResult);
+//            return result.toString();
+//        }
+
+        // 调用内部接口
+        result = proxyRegisterApiManager.checkUser(params);
+        return result.toString();
+    }
 }

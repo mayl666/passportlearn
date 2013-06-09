@@ -124,7 +124,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_PHONE_UNBIND_FAILED="20237";
     //TODO 密码输入错误次数过多
     public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
-
+    //TODO 非法用户名
+    public static final String ERR_CODE_USERID_ILLEGAL="20239";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -267,6 +268,7 @@ public class ErrorUtil {
 
     static {
         // 通用错误
+        ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING,"code签名错误");
@@ -285,6 +287,8 @@ public class ErrorUtil {
 
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法用户名");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法用户名");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信已经到20条上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");

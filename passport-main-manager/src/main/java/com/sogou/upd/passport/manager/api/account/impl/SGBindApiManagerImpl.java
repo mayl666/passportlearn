@@ -2,10 +2,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.MobileBindPassportIdApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,7 +20,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams) {
+    public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

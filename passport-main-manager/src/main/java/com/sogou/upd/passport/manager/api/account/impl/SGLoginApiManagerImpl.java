@@ -4,6 +4,8 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,6 +27,16 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result createCookie(CreateCookieApiParams createCookieApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
