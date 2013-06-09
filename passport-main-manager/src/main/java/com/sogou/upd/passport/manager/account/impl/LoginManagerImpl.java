@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -45,7 +46,8 @@ public class LoginManagerImpl implements LoginManager {
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
-
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -129,29 +131,33 @@ public class LoginManagerImpl implements LoginManager {
                 return result;
             }
 
-            //调用sohu接口验证密码
+            //封装参数
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
             authUserApiParams.setUserid(username);
             authUserApiParams.setPassword(password);
-            //TODO 设置appid
+            //TODO 设置clientId,暂时设置为1001
+            authUserApiParams.setClient_id(1001);
             authUserApiParams.setIp(ip);
-            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+
+            //根据域名判断是否代理，一期全部走代理
+            if (ManagerHelper.isInvokeProxyApi(username)) {
+                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+            } else {
+                result = sgLoginApiManager.webAuthUser(authUserApiParams);
+            }
 
             //记录返回结果
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(username,ip);
-//                Object createTimeObj = result.getModels().get("createtime");
-//                if (createTimeObj != null){
-//                }
                 //TODO 取cookie种sogou域cookie
 
                 //TODO 种sohu域cookie
 
             } else {
-                operateTimesService.incLoginFailedTimes(username,ip);
+                operateTimesService.incLoginFailedTimes(username, ip);
                 //3次失败需要输入验证码
                 if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)){
-                    result.setDefaultModel("needCaptcha",true);
+                    result.setDefaultModel("needCaptcha", true);
                 }
             }
         } catch (Exception e) {
