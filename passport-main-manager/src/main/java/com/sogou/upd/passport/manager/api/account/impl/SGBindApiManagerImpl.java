@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
+
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -8,8 +11,10 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +38,8 @@ public class SGBindApiManagerImpl implements BindApiManager {
     private AccountInfoService accountInfoService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Override
     public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
@@ -82,28 +89,65 @@ public class SGBindApiManagerImpl implements BindApiManager {
         }
 
         if (!accountService.modifyMobile(account, null)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
+            result.setCode(ErrorUtil.ERR_CODE_PHONE_UNBIND_FAILED);
             return result;
         }
 
         result.setSuccess(true);
-        result.setMessage("绑定手机成功！");
+        result.setMessage("解绑手机成功！");
+        return result;
+    }
+
+    // TODO:验证邮件的Manager
+    @Override
+    public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
+        Result result = new APIResultSupport(false);
+        String userId = bindEmailApiParams.getUserid();
+        int clientId = bindEmailApiParams.getClient_id();
+        String password = bindEmailApiParams.getPassword();
+        String oldEmail = bindEmailApiParams.getOldbindemail();
+        String newEmail = bindEmailApiParams.getNewbindemail();
+
+        AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);
+        if (accountInfo != null) {
+            String emailBind = accountInfo.getEmail();
+            if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
+                return result;
+            }
+        }
+
+        result = accountService.verifyUserPwdVaild(userId, password, false);
+        result.setDefaultModel(null);
+        if (!result.isSuccess()) {
+            result.setCode(ErrorUtil.USERNAME_PWD_ERROR);
+            return result;
+        }
+
+        if (!emailSenderService.sendEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail, true)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+            return result;
+        }
+        result.setSuccess(true);
+        result.setMessage("绑定邮箱验证邮件发送成功！");
         return result;
     }
 
     @Override
-    public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Result result = new APIResultSupport(false);
+        String mobile = baseMoblieApiParams.getMobile();
+        int clientId = baseMoblieApiParams.getClient_id();
+
+        String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+        if (userId == null) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
+            return result;
+        }
+        result.setSuccess(true);
+        result.setMessage("查询手机绑定账号成功！");
+        result.setDefaultModel("userid", userId);
+        return result;
     }
 
-    @Override
-    public Result queryPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        // TODO 当Manager里方法只调用一个service时，需要把service的返回值改为Result
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

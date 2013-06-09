@@ -71,6 +71,7 @@ public class LoginManagerImpl implements LoginManager {
                     return result;
                 } else {
                     Account account =  (Account) result.getDefaultModel();
+                    result.setDefaultModel(null);
                             // 为了安全每次登录生成新的token
                     renewAccountToken = accountTokenService.updateOrInsertAccountToken(account.getPassportId(), clientId, instanceId);
                 }
@@ -133,18 +134,16 @@ public class LoginManagerImpl implements LoginManager {
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
             authUserApiParams.setUserid(username);
             authUserApiParams.setPassword(password);
-            if (PhoneUtil.verifyPhoneNumberFormat(username)){
-                authUserApiParams.setUsertype(USERTYPE_PHONE);
-            } else{
-                authUserApiParams.setUsertype(USERTYPE_PASSPORTID);
-            }
+            //TODO 设置appid
             authUserApiParams.setIp(ip);
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
 
             //记录返回结果
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(username,ip);
-
+//                Object createTimeObj = result.getModels().get("createtime");
+//                if (createTimeObj != null){
+//                }
                 //TODO 取cookie种sogou域cookie
 
                 //TODO 种sohu域cookie

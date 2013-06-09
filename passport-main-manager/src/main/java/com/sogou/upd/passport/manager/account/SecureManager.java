@@ -120,19 +120,32 @@ public interface SecureManager {
     public Result checkMobileCodeOldForBinding(String passportId, int clientId, String smsCode) throws Exception;
 
     /**
-     * 修改密保手机——2.验证密码或secureCode、新绑定手机短信码，绑定新手机号
+     * 绑定密保手机——2.首次绑定密保手机，验证密码、新绑定手机短信码，绑定新手机号
+     *
+     * @param passportId
+     * @param clientId
+     * @param newMobile
+     * @param smsCode
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    public Result bindMobileByPassportId(String passportId, int clientId, String newMobile,
+                                         String smsCode, String password) throws Exception;
+
+    /**
+     * 修改密保手机——2.修改密保手机，验证scode、新绑定手机短信码，绑定新手机号
      *
      * @param passportId
      * @param clientId
      * @param newMobile 新绑定手机号
      * @param smsCode   新绑定手机号短信验证码
-     * @param checkCode 验证代码，即密码或安全码。取决于firstBind
-     * @param firstBind 是否首次绑定。true，则checkCode为密码；false，则checkCode为安全码
+     * @param scode 验证安全码
      * @return
      * @throws Exception
      */
-    public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile, String smsCode,
-                                           String checkCode, boolean firstBind) throws Exception;
+    public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile,
+                                           String smsCode, String scode) throws Exception;
 
     /**
      * 修改密保问题——验证密码，绑定新问题和答案
