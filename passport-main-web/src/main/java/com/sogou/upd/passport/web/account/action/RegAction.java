@@ -92,7 +92,6 @@ public class RegAction extends BaseController {
     String username = regParams.getUsername();
     String ip = getIp(request);
 
-
     //todo 黑白名单
 
     //验证client_id

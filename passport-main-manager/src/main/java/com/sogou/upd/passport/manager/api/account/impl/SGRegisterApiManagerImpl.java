@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
@@ -31,6 +32,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private SecureManager secureManager;
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
@@ -95,6 +98,12 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
     @Override
     public Result sendMobileRegCaptcha(BaseMoblieApiParams params) {
-        return null;
+      Result result = new APIResultSupport(false);
+      try {
+        result=secureManager.sendMobileCode(params.getMobile(),params.getClient_id());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return result;
     }
 }
