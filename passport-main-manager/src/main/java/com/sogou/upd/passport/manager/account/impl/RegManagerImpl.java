@@ -73,6 +73,7 @@ public class RegManagerImpl implements RegManager {
           String captchaCode = regParams.getCaptcha();
           String token = regParams.getToken();
           if (ManagerHelper.isInvokeProxyApi(username)) {
+            //todo 拼参数
             result = proxyRegisterApiManager.regMailUser(null);
           } else {
             result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId,captchaCode,token));
