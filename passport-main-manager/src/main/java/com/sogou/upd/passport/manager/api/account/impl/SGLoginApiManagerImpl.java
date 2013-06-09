@@ -47,67 +47,14 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         // TODO 当Manager里方法只调用一个service时，需要把service的返回值改为Result
         // TODO 例如这里调用AccountService的verifyUserPwdVaild（）方法，就需要把返回值改为Result
-
         Result result = new APIResultSupport(false);
-        String userid = authUserApiParams.getUserid();
-        String password = authUserApiParams.getPassword();
-        String ip = authUserApiParams.getIp();
-        int userType = authUserApiParams.getUsertype();
         try {
-
-            Account account = null;
-            //判断登录用户类型
-
-            switch (userType) {
-                case USERTYPE_PHONE:
-                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(userid);
-                    if (Strings.isNullOrEmpty(passportId)) {
-                        return doUserNotExist(userid, ip);
-                    }
-                    account = accountService.queryAccountByPassportId(passportId);
-                    break;
-                case USERTYPE_PASSPORTID:
-                    account = accountService.queryAccountByPassportId(userid);
-                    break;
-            }
-            if (account == null) {
-                return doUserNotExist(userid, ip);
-            }
-
-            //检查该账号是否为正常账号
-            if (!AccountHelper.isNormalAccount(account)) {
-                if (AccountHelper.isDisabledAccount(account)) {
-                    //登陆账号未激活
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
-                    return result;
-                } else {
-                    //登陆账号被封杀
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                    return result;
-                }
-            }
-
-            String storedPwd = account.getPasswd();
-            if (PwdGenerator.verify(password, false, storedPwd)) {
-                //todo 登录成功种cookie
-
-                //写缓存
-                operateTimesService.incLoginSuccessTimes(userid, ip);
-                result.setSuccess(true);
-                result.setMessage("登录成功");
-                return result;
-
-            } else {
-                operateTimesService.incLoginFailedTimes(userid, ip);
-                result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
-                return result;
-            }
+            result = accountService.verifyUserPwdVaild(authUserApiParams.getUserid(), authUserApiParams.getPassword(), false);
         } catch (Exception e) {
-            operateTimesService.incLoginFailedTimes(userid, ip);
-            logger.error("accountLogin fail,userId:" + authUserApiParams.getUserid(), e);
+            logger.error("webAuthUser fail,userId:" + authUserApiParams.getUserid(), e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-            return result;
         }
+        return result;
     }
 
     private Result doUserNotExist(String userid, String ip) {
