@@ -56,7 +56,6 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         return result;
     }
 
-    //------------------------------OK
     @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) throws ServiceException {
         String userId = updateQuesApiParams.getUserid();

@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -8,6 +10,7 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
@@ -87,12 +90,32 @@ public class SGBindApiManagerImpl implements BindApiManager {
         }
 
         result.setSuccess(true);
-        result.setMessage("绑定手机成功！");
+        result.setMessage("解绑手机成功！");
         return result;
     }
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
+        Result result = new APIResultSupport(false);
+        String userId = bindEmailApiParams.getUserid();
+        String password = bindEmailApiParams.getPassword();
+        String oldEmail = bindEmailApiParams.getOldbindemail();
+        String newEmail = bindEmailApiParams.getNewbindemail();
+
+        AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);
+        if (accountInfo != null) {
+            String emailBind = accountInfo.getEmail();
+            if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
+                return result;
+            }
+        }
+        // TODO:只发送申请邮件
+        /*
+        accountInfo = accountInfoService.modifyEmailByPassportId(userId, newEmail);
+        if (accountInfo == null) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
+        }*/
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
