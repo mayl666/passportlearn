@@ -52,4 +52,13 @@ public interface MobileCodeSenderService {
      */
     public Map<String, String> getCacheMapByKey(String cacheKey);
 
+    /**
+     * 根据手机号检查验证码是否正确，正确则删除验证码
+     *
+     * @param mobile
+     * @param clientId
+     * @param smsCode
+     * @return
+     */
+    public Result checkSmsCode(String mobile, int clientId, String smsCode);
 }

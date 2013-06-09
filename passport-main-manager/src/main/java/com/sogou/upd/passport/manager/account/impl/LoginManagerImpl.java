@@ -71,6 +71,7 @@ public class LoginManagerImpl implements LoginManager {
                     return result;
                 } else {
                     Account account =  (Account) result.getDefaultModel();
+                    result.setDefaultModel(null);
                             // 为了安全每次登录生成新的token
                     renewAccountToken = accountTokenService.updateOrInsertAccountToken(account.getPassportId(), clientId, instanceId);
                 }

@@ -49,6 +49,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
             return result;
         }
         Account account = (Account) result.getDefaultModel();
+        result.setDefaultModel(null);
         if (!accountService.resetPassword(account, newPassword, false)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
@@ -114,6 +115,15 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams) {
+        String userId = resetPasswordBySecQuesApiParams.getUserid();
+        int clientId = resetPasswordBySecQuesApiParams.getClient_id();
+        String password = resetPasswordBySecQuesApiParams.getNewpassword();
+        String answer = resetPasswordBySecQuesApiParams.getAnswer();
+        String modifyIp = resetPasswordBySecQuesApiParams.getModifyip();
+
+        Result result = new APIResultSupport(false);
+
+        // TODO:放到之后再写
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

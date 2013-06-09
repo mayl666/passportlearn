@@ -34,17 +34,17 @@ public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAndSetSecureCode() {
         System.out.println("测试三");
-        String secureCode = accountSecureService.getSecureCodeModSecureInfo(PASSPORT_ID, CLIENT_ID);
+        String secureCode = accountSecureService.getSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID);
         System.out.println("Secure Code is: " + secureCode);
         boolean checkRes = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID,
                                                                         secureCode);
-        boolean checkRandom = accountSecureService.checkSecureCodeModSecureInfo(PASSPORT_ID,
-                                                                                CLIENT_ID,
-                                                                                secureCode);
+        boolean checkRandom = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID,
+                                                                             CLIENT_ID,
+                                                                             secureCode);
         System.out.println("验证结果是：" + checkRes + " _ " + checkRandom);
         checkRes = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID, secureCode);
-        checkRandom = accountSecureService.checkSecureCodeModSecureInfo(PASSPORT_ID, CLIENT_ID,
-                                                                        secureCode);
+        checkRandom = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID,
+                                                                     secureCode);
         System.out.println("二次验证结果是：" + checkRes + " _ " + checkRandom);
 
     }
@@ -52,17 +52,17 @@ public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAndSetSecureCodeMod() {
         System.out.println("测试二");
-        String secureCode = accountSecureService.getSecureCodeModSecureInfo(PASSPORT_ID, CLIENT_ID);
+        String secureCode = accountSecureService.getSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID);
         System.out.println("Secure Code is: " + secureCode);
-        boolean checkRes = accountSecureService.checkSecureCodeModSecureInfo(PASSPORT_ID, CLIENT_ID,
-                                                                             secureCode);
-        boolean checkRandom = accountSecureService.checkSecureCodeModSecureInfo(PASSPORT_ID,
-                                                                                CLIENT_ID, "ABC");
+        boolean checkRes = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID,
+                                                                          secureCode);
+        boolean checkRandom = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID,
+                                                                             CLIENT_ID, "ABC");
         System.out.println("验证结果是：" + checkRes + " _ " + checkRandom);
-        checkRes = accountSecureService.checkSecureCodeModSecureInfo(PASSPORT_ID, CLIENT_ID,
-                                                                     secureCode);
-        checkRandom = accountSecureService.checkSecureCodeModSecureInfo(PASSPORT_ID, CLIENT_ID,
-                                                                        "ABC");
+        checkRes = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID,
+                                                                  secureCode);
+        checkRandom = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID,
+                                                                     "ABC");
         System.out.println("二次验证结果是：" + checkRes + " _ " + checkRandom);
 
     }
