@@ -8,6 +8,8 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -120,4 +122,15 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public Result createCookie(CreateCookieApiParams createCookieApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 }

@@ -18,21 +18,21 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
-    @Autowired
-    private CommonManager commonManager;
+//    @Autowired
+//    private CommonManager commonManager;
 
     @Autowired
     private HostHolder hostHolder;
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, java.lang.Object handler) throws java.lang.Exception {
-        String passportId= CookieUtils.getCookie(request, LoginConstant.PASSPORTID_COOKIE_ID);
-        if (StringUtil.isBlank(passportId)){
+        String userid= request.getHeader(LoginConstant.USER_ID_HEADER);
+        if (StringUtil.isBlank(userid)){
             return true;
         }
-        //TODO 验证cookie是否正确
-        if (commonManager.isAccountExists(passportId)){
-            hostHolder.setPassportId(passportId);
-        }
+//        if (commonManager.isAccountExists(userid)){
+//            hostHolder.setPassportId(userid);
+//        }
+        hostHolder.setPassportId(userid);
         return true;
     }
 }

@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
@@ -100,7 +99,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         return resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
     }
@@ -122,7 +121,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         return resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
     }
@@ -147,7 +146,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();
@@ -243,7 +242,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         return secureManager.sendMobileCodeByPassportId(passportId, clientId);
     }
@@ -265,7 +264,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
         return resetPwdManager.checkMobileCodeResetPwd(passportId, clientId, smsCode);
@@ -309,7 +308,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String answer = params.getAnswer();
         String captcha = params.getCaptcha();
@@ -338,7 +337,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();
@@ -376,7 +375,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         if (!passportId.equals(hostHolder.getPassportId())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
             return result.toString();
@@ -410,7 +409,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         if (!passportId.equals(hostHolder.getPassportId())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
             return result.toString();
@@ -438,7 +437,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         if (!passportId.equals(hostHolder.getPassportId())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
             return result.toString();
@@ -469,7 +468,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         if (!passportId.equals(hostHolder.getPassportId())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
             return result.toString();
@@ -477,7 +476,8 @@ public class AccountSecureController extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
-        return secureManager.bindMobileByPassportId(passportId, clientId, newMobile, smsCode, password);
+        return secureManager.bindMobileByPassportId(passportId, clientId, newMobile, smsCode,
+                                                    password);
     }
 
     /**
@@ -502,7 +502,7 @@ public class AccountSecureController extends BaseController {
             return result.toString();
         }
         String ip = getIp(request);
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         if (!passportId.equals(hostHolder.getPassportId())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
             return result.toString();

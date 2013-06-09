@@ -5,24 +5,15 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Min;
 
 /**
- * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-23 Time: 下午2:57 To change this template use
+ * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-9 Time: 下午3:02 To change this template use
  * File | Settings | File Templates.
+ *
+ * 基本参数类，只有client_id，userid从登录cookie中获取
  */
-public class BaseAccountParams {
-
-    @NotBlank(message = "账号不允许为空!")
-    protected String userid;
+public class BaseWebParams {
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     protected String client_id;
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
 
     public String getClient_id() {
         return client_id;

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 
@@ -37,5 +38,12 @@ public interface RegisterApiManager {
      * @return
      */
     public Result sendMobileRegCaptcha(BaseMoblieApiParams baseMoblieApiParams);
+
+    /**
+     * 检查用户名是否已经被注册
+     * @param checkUserApiParams
+     * @return
+     */
+    public Result checkUser(CheckUserApiParams checkUserApiParams);
 
 }

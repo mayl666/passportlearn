@@ -74,7 +74,7 @@ public class ResetPwdAction {
             model.addAttribute("data", result.toString());
         }
 
-        // TODO:需要修改为代理接口
+        // TODO:已修改为代理接口
         result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         model.addAttribute("data", result.toString());
         return "recover/type";
@@ -90,7 +90,7 @@ public class ResetPwdAction {
             model.addAttribute("data", result.toString());
             return "recover/type";
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
         model.addAttribute("data", result.toString());
@@ -109,7 +109,7 @@ public class ResetPwdAction {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("data", result.toString());
@@ -128,7 +128,7 @@ public class ResetPwdAction {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
 
@@ -146,7 +146,7 @@ public class ResetPwdAction {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();

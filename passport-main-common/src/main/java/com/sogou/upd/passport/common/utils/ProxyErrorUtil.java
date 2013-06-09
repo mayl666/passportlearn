@@ -60,9 +60,9 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.4",USERNAME_PWD_ERROR);//原密码校验失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.5",ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);//新的绑定邮箱没有变化
 
-        //wapbindmobile 查询手机号绑定的账号
-        SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.3",ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定用户
-        SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.6",SYSTEM_UNKNOWN_EXCEPTION);//查询失败
+        //wapgetuserid 查询手机号绑定的账号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("wapgetuserid.3",ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定用户
+        SHPPERRCODE_SGPPERRCODE_MAP.put("wapgetuserid.6",SYSTEM_UNKNOWN_EXCEPTION);//查询失败
 
         //getuserinfo 获取用户信息
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.3",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在（如果是根据昵称查询，没有查询到也是返回3）
@@ -75,6 +75,11 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.5",ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT);//一天内重复次数过多
         SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.6",SYSTEM_UNKNOWN_EXCEPTION);//修改失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.7",ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY);//用户5日内登录过
+
+        //checkuser 检查用户名是否可以
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//非法用户名
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.4",ERR_CODE_ACCOUNT_REGED);//用户名已经存在
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.6",SYSTEM_UNKNOWN_EXCEPTION);//修改失败
 
     }
 

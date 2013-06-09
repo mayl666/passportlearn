@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -12,10 +13,17 @@ import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
+import com.sogou.upd.passport.web.account.form.AccountBindEmailParams;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
-import com.sogou.upd.passport.web.account.form.BaseAccountParams;
-import com.sogou.upd.passport.web.account.form.UserCaptchaParams;
+import com.sogou.upd.passport.web.account.form.BaseWebParams;
+import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
+import com.sogou.upd.passport.web.account.form.security.WebBindMobileParams;
+import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
+import com.sogou.upd.passport.web.account.form.security.WebMobileParams;
+import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
+import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
+import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,18 +34,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * User: hujunfei
- * Date: 13-4-28 Time: 下午1:51
- * 安全中心（修改密码，修改密保手机，修改密保问题，修改密保邮箱）
+ * User: hujunfei Date: 13-4-28 Time: 下午1:51 安全中心（修改密码，修改密保手机，修改密保问题，修改密保邮箱）
  */
 @Controller
 @RequestMapping("/web/security")
 public class SecureAction extends BaseController {
+
     private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
 
     @Autowired
@@ -48,115 +54,39 @@ public class SecureAction extends BaseController {
     private CheckManager checkManager;
     @Autowired
     private ResetPwdManager resetPwdManager;
+    @Autowired
+    private HostHolder hostHolder;
 
-  /**
-   * 修改密码
-   *
-   * @param resetParams 传入的参数
-   */
-  @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
-  @ResponseBody
-  public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
-      throws Exception {
-    Result result = new APIResultSupport(false);
-    //todo 注解需要判断登录
-    String validateResult = ControllerHelper.validateParams(resetParams);
-    if (!Strings.isNullOrEmpty(validateResult)) {
-      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-      result.setMessage(validateResult);
-      return result;
-    }
-    result = secureManager.resetWebPassword(resetParams);
-    return result;
-  }
+    // TODO:GET方法怎么处理？
 
     /**
-     * 显示找回密码界面
-     */
-    @RequestMapping(value = "/findpwd", method = { RequestMethod.POST, RequestMethod.GET })
-    public ModelAndView findPwd() throws Exception {
-        return new ModelAndView("recover/index");
-    }
-
-    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
-    @ResponseBody
-    public String querySecureInfo(UserCaptchaParams params, Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-        }
-        String username = params.getUsername();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String captcha = params.getCaptcha();
-        String token = params.getToken();
-        if (!checkManager.checkCaptcha(captcha, token)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-            model.addAttribute("data", result.toString());
-        }
-
-        // TODO:是否允许绑定手机取得密保信息
-        String passportId = commonManager.getPassportIdByUsername(username);
-        if (passportId == null) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            model.addAttribute(result.toString());
-        }
-
-        // TODO:需要修改为代理接口
-        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
-        model.addAttribute(result.toString());
-        return "recover/type";
-    }
-
-    @RequestMapping(value = "/sendremail", method = RequestMethod.POST)
-    @ResponseBody
-    public String sendEmailRegResetPwd(BaseAccountParams params, Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String passportId = params.getPassport_id();
-        int clientId = Integer.parseInt(params.getClient_id());
-        return resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true).toString();
-    }
-
-    /**
-     * 查询账号所拥有的密码找回方式
+     * 修改密码
      *
-     * @param params 传入的参数
-     * @return
-     * @throws Exception
+     * @param resetParams 传入的参数
      */
-    @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public ModelAndView queryPassportId(AccountPwdScodeParams params, Model model) throws Exception {
-        int clientId = Integer.parseInt(params.getClient_id());
-        String passportId = commonManager.getPassportIdByUsername(params.getPassport_id());
-        if (passportId == null) {
-
+    @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
+    @ResponseBody
+    public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //todo 注解需要判断登录
+        String validateResult = ControllerHelper.validateParams(resetParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
         }
-        params.setPassport_id(passportId);
-//        // model.addAttribute("exist", true);
-//        Result result = accountSecureManager.queryAccountSecureInfo(
-//                passportId, clientId);
-//        if (result.getStatus().equals("0")) {
-//            model.addAttribute("secInfo",result.getData());
-//        } else {
-//            model.addAttribute("error", result);
-//        }
-        model.addAttribute("passportId", passportId);
-        model.addAttribute("clientId", clientId);
-        return new ModelAndView("forward:");
+        result = secureManager.resetWebPassword(resetParams);
+        return result;
     }
 
     @RequestMapping(value = "/mobile", method = RequestMethod.POST)
     @ResponseBody
-    public String resetPasswordByMobile(@RequestParam("username") String passportId, @RequestParam("client_id") int clientId,
-                                        @RequestParam("password") String password, @RequestParam("smscode") String smsCode, Model model) throws Exception {
+    public String resetPasswordByMobile(@RequestParam("username") String passportId,
+                                        @RequestParam("client_id") int clientId,
+                                        @RequestParam("password") String password,
+                                        @RequestParam("smscode") String smsCode, Model model)
+            throws Exception {
         Result result = new APIResultSupport(false);
         if (Strings.isNullOrEmpty(passportId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -179,82 +109,214 @@ public class SecureAction extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
-    @ResponseBody
-    public String sendEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-                            Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        if (!StringUtil.checkIsDigit(client_id)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            model.addAttribute("error", result);
-            return "forward:";
-        }
-        int clientId = Integer.parseInt(client_id);
-        result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
-        model.addAttribute("error", result);
-        if (result.isSuccess()) {
-            return "forward:";
-        }
-        return "forward:";
-    }
-
-    @RequestMapping(value = "/security/checkemail", method = RequestMethod.GET)
-    @ResponseBody
-    public String checkEmailForResetPwd(AccountScodeParams params, Model model) throws Exception {
+    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
+    @LoginRequired
+    public String querySecureInfo(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("error", result);
+            model.addAttribute("data", result.toString());
+            return ""; // TODO:返回错误页面
         }
-        String passportId = params.getPassport_id();
+        String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+
+        // TODO:已修改为代理接口
+        result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+        model.addAttribute("data", result.toString());
+
+        return "ucenter/index";
+    }
+
+
+    @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
+    @LoginRequired
+    public String sendEmailForBind(WebBindEmailParams params, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("data", result.toString());
+            return ""; // TODO:错误页面
+        }
+        String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String password = params.getPassword();
+        String newEmail = params.getNew_email();
+        String oldEmail = params.getOld_email();
+        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
+        model.addAttribute("data", result.toString());
+        if (result.isSuccess()) {
+            return ""; // TODO:成功页面
+        } else {
+            return ""; // TODO：错误页面
+        }
+    }
+
+    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
+    public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("data", result.toString());
+            return ""; // TODO:错误页面
+        }
+        String userId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
-        result = resetPwdManager.checkEmailResetPwd(passportId, clientId, scode);
-        model.addAttribute("error", result);
+
+        result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
+        model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
-            model.addAttribute("passport_id", passportId);
-            model.addAttribute("client_id", clientId);
-            model.addAttribute("scode", scode);
-            return "resetpwd";
-        }
-        return "forward:";
-    }
-
-    @RequestMapping(value = "/email", method = RequestMethod.POST)
-    @ResponseBody
-    public String resetPasswordByEmail(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-                                       @RequestParam("password") String password, @RequestParam("token") String token, Model model) throws Exception {
-        int clientId = Integer.parseInt(client_id);
-        Result result = resetPwdManager.resetPasswordByEmail(passportId, clientId, password, token);
-        model.addAttribute("error", result);
-        return "success";
-    }
-
-    @RequestMapping(value = "/ques", method = RequestMethod.POST)
-    @ResponseBody
-    public String resetPasswordByQues(@RequestParam("username") String passportId, @RequestParam("client_id") String client_id,
-                                      @RequestParam("password") String password, String answer, Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        if (Strings.isNullOrEmpty(passportId) || Strings.isNullOrEmpty(password) || Strings.isNullOrEmpty(answer)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            model.addAttribute("error", result);
-            return "forward:";
-        }
-        int clientId = Integer.parseInt(client_id);
-
-        if (!checkManager.checkLimitResetPwd(passportId, clientId)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
-            model.addAttribute("error", result);
-        }
-        result = resetPwdManager.resetPasswordByQues(passportId, clientId, password, answer);
-        model.addAttribute("error", result);
-        if (result.isSuccess()) {
-            return "success";
+            return ""; // TODO:成功页面
         } else {
-            return "forward:";
+            return ""; // TODO:错误页面
         }
     }
 
+    @RequestMapping(value = "/sendsms", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    @LoginRequired
+    public Object sendSmsSecMobile(BaseWebParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+
+        result = secureManager.sendMobileCodeByPassportId(userId, clientId);
+        return result.toString();
+    }
+
+    @RequestMapping(value = "/sendsmsnew", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    @LoginRequired
+    public Object sendSmsNewMobile(WebMobileParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        // TODO:要不要在检验smscode时，验证userId
+        // String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String newMobile = params.getNew_mobile();
+
+        result = secureManager.sendMobileCode(newMobile, clientId);
+        return result.toString();
+    }
+
+    @RequestMapping(value = "/bindmobile", method = RequestMethod.POST)
+    @LoginRequired
+    public String bindMobile(WebBindMobileParams params, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("data", result.toString());
+            return ""; // TODO:错误页面
+        }
+        String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String smsCode = params.getSmscode();
+        String newMobile = params.getNew_mobile();
+        String password = params.getPassword();
+
+        result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password);
+        model.addAttribute("data", result.toString());
+        if (result.isSuccess()) {
+            return ""; // TODO:成功页面
+        } else {
+            return ""; // TODO:错误页面
+        }
+    }
+
+    @RequestMapping(value = "/checksms", method = RequestMethod.POST)
+    @LoginRequired
+    public String checkSmsSecMobile(WebSmsParams params, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("data", result.toString());
+            return ""; // TODO:错误页面
+        }
+        String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String smsCode = params.getSmscode();
+
+        result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
+        model.addAttribute("data", result.toString());
+        if (result.isSuccess()) {
+            return ""; // TODO:成功页面
+        } else {
+            return ""; // TODO:错误页面
+        }
+    }
+
+    @RequestMapping(value = "bindmobilenew", method = RequestMethod.POST)
+    @LoginRequired
+    public String modifyMobile(WebModifyMobileParams params, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("data", result.toString());
+            return ""; // TODO:错误页面
+        }
+        String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String smsCode = params.getSmscode();
+        String newMobile = params.getNew_mobile();
+        String scode = params.getScode();
+
+        result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode);
+        model.addAttribute("data", result.toString());
+        if (result.isSuccess()) {
+            return ""; // TODO:成功页面
+        } else {
+            return ""; // TODO:错误页面
+        }
+    }
+
+    @RequestMapping(value = "/bindques", method = RequestMethod.POST)
+    @LoginRequired
+    public String bindQues(WebBindQuesParams params, HttpServletRequest request, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("data", result.toString());
+            return ""; // TODO:错误页面
+        }
+        String userId = hostHolder.getPassportId();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String password = params.getPassword();
+        String newQues = params.getNew_ques();
+        String newAnswer = params.getNew_answer();
+        String modifyIp = getIp(request);
+
+        result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
+        model.addAttribute("data", result.toString());
+        if (result.isSuccess()) {
+            return ""; // TODO:成功页面
+        } else {
+            return ""; // TODO:错误页面
+        }
+    }
 }

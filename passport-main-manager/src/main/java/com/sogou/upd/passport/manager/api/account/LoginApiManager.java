@@ -3,6 +3,8 @@ package com.sogou.upd.passport.manager.api.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 
 /**
  * 登录相关
@@ -30,4 +32,16 @@ public interface LoginApiManager {
      */
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams);
 
+    /**
+     * 根据用户信息，生成cookie
+     * @return
+     */
+    public Result createCookie(CreateCookieApiParams createCookieApiParams);
+
+    /**
+     * 构造sohu生成并设置cookie的url
+     * @param createCookieApiParams
+     * @return
+     */
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams);
 }

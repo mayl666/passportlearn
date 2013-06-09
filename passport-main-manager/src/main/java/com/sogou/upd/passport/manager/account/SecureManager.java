@@ -102,11 +102,11 @@ public interface SecureManager {
      *
      * @param passportId
      * @param clientId
-     * @param token
+     * @param scode
      * @return
      * @throws Exception
      */
-    public Result modifyEmailByPassportId(String passportId, int clientId, String token) throws Exception;
+    public Result modifyEmailByPassportId(String passportId, int clientId, String scode) throws Exception;
 
     /**
      * 修改密保手机——1.检查原绑定手机短信码，成功则返回secureCode记录成功标志

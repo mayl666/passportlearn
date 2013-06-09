@@ -73,12 +73,12 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyUserPwdVaild() {
-        Result result = accountService.verifyUserPwdVaild(MOBILE, PASSWORD, true);
-        if (result.isSuccess()) {
-            System.out.println("正确...");
-        } else {
-            System.out.println("不正确!!!");
-        }
+//        Result result = accountService.verifyUserPwdVaild(MOBILE, PASSWORD, true);
+//        if (result.isSuccess()) {
+//            System.out.println("正确...");
+//        } else {
+//            System.out.println("不正确!!!");
+//        }
     }
 
 

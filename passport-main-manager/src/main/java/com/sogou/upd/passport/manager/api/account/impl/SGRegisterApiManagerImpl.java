@@ -9,6 +9,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -122,6 +123,11 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
+    }
+
+    @Override
+    public Result checkUser(CheckUserApiParams checkUserApiParams) {
+        return null;
     }
 
     @Override

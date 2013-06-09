@@ -13,6 +13,8 @@ public class SHPPUrlConstant {
 
     public static final String APP_KEY = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
+    public static final String COOKIE_KEY="a80d&p4^9t";
+
     //请求SHPP时xml默认的rootNodeName
     public static final String DEFAULT_REQUEST_ROOTNODE = "info";
 
@@ -28,7 +30,14 @@ public class SHPPUrlConstant {
     /*================================登录相关=======================================*/
     public static final String AUTH_USER = BASE_INTERNAL_URL + "authuser"; //检查用户名密码是否正确
     public static final String MOBILE_AUTH_TOKEN = BASE_INTERNAL_URL + "token/auth"; //检查用户名密码是否正确
+//    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
+    public static final String GET_COOKIE_VALUE="http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
+    public static final String SET_COOKIE="http://passport.sohu.com/act/setcookie";//用于前端设置cookie
+
+
     /*================================注册相关=======================================*/
+    public static final String CHECK_USER=BASE_INTERNAL_URL+"checkuser";//查询用户名是否注册过
+
 
     /*================================手机绑定相关=======================================*/
     //绑定手机号
@@ -54,4 +63,6 @@ public class SHPPUrlConstant {
 
     //获取用户信息
     public static final String USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
+
+
 }

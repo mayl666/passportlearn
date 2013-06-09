@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
@@ -70,32 +71,33 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        Result result = new APIResultSupport(false);
-        String mobile = baseMoblieApiParams.getMobile();
-        int clientId = baseMoblieApiParams.getClient_id();
-
-        String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-
-        Account account = accountService.queryNormalAccount(userId);
-        if (account == null) {
-            result.setCode(ErrorUtil.INVALID_ACCOUNT);
-            return result;
-        }
-
-        if (!mobilePassportMappingService.deleteMobilePassportMapping(mobile)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-            return result;
-        }
-
-        if (!accountService.modifyMobile(account, null)) {
-            result.setCode(ErrorUtil.ERR_CODE_PHONE_UNBIND_FAILED);
-            return result;
-        }
-
-        result.setSuccess(true);
-        result.setMessage("解绑手机成功！");
-        return result;
+    public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
+//        Result result = new APIResultSupport(false);
+//        String mobile = baseMoblieApiParams.getMobile();
+//        int clientId = baseMoblieApiParams.getClient_id();
+//
+//        String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+//
+//        Account account = accountService.queryNormalAccount(userId);
+//        if (account == null) {
+//            result.setCode(ErrorUtil.INVALID_ACCOUNT);
+//            return result;
+//        }
+//
+//        if (!mobilePassportMappingService.deleteMobilePassportMapping(mobile)) {
+//            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+//            return result;
+//        }
+//
+//        if (!accountService.modifyMobile(account, null)) {
+//            result.setCode(ErrorUtil.ERR_CODE_PHONE_UNBIND_FAILED);
+//            return result;
+//        }
+//
+//        result.setSuccess(true);
+//        result.setMessage("解绑手机成功！");
+//        return result;
+        return null;
     }
 
     // TODO:验证邮件的Manager
