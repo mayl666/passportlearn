@@ -98,6 +98,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
         return result;
     }
 
+    // TODO:验证邮件的Manager
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
         Result result = new APIResultSupport(false);

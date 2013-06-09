@@ -26,8 +26,9 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**
- * User: mayan Date: 13-5-7 Time: 下午6:22 To change this template use
- * File | Settings | File Templates.
+ * 手机验证码和 web注册时页面展示的验证码
+ * User: mayan
+ * Date: 13-5-7 Time: 下午6:22
  */
 @Controller
 public class CaptchaController {
@@ -68,7 +69,6 @@ public class CaptchaController {
             response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
             response.setHeader("Cache-Control", "no-cache");
             response.setDateHeader("Expire", 0);
-
         }
         return null;
     }
