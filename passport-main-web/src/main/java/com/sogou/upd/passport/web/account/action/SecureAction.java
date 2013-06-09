@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
  * 安全中心（修改密码，修改密保手机，修改密保问题，修改密保邮箱）
  */
 @Controller
-@RequestMapping("/web")
+@RequestMapping("/web/security")
 public class SecureAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
 
@@ -78,7 +78,7 @@ public class SecureAction extends BaseController {
         return new ModelAndView("recover/index");
     }
 
-    @RequestMapping(value = "/findpwd/getsecinfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
     @ResponseBody
     public String querySecureInfo(UserCaptchaParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -110,7 +110,7 @@ public class SecureAction extends BaseController {
         return "recover/type";
     }
 
-    @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
+    @RequestMapping(value = "/sendremail", method = RequestMethod.POST)
     @ResponseBody
     public String sendEmailRegResetPwd(BaseAccountParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -198,7 +198,7 @@ public class SecureAction extends BaseController {
         return "forward:";
     }
 
-    @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
+    @RequestMapping(value = "/security/checkemail", method = RequestMethod.GET)
     @ResponseBody
     public String checkEmailForResetPwd(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
