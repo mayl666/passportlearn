@@ -40,11 +40,4 @@ public interface BindApiManager {
      */
     Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams);
 
-    /**
-     * 查询手机号绑定的账号；
-     * @param baseMoblieApiParams
-     * @return
-     */
-    @Deprecated
-    Result queryPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams);
 }
