@@ -10,6 +10,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
@@ -28,11 +30,11 @@ public class LoginManagerImplTest extends BaseTest {
     @Test
     public void testAccountLogin() {
         try {
-            WebLoginParameters webLoginParameters = new WebLoginParameters();
-            webLoginParameters.setUsername(username);
-            webLoginParameters.setPassword(Coder.encryptMD5("spz1986411"));
-            webLoginParameters.setCaptcha("");
-            Result result =LoginManagerImpl.accountLogin(webLoginParameters,ip);
+            AtomicReference<WebLoginParameters> webLoginParameters = new AtomicReference<WebLoginParameters>(new WebLoginParameters());
+            webLoginParameters.get().setUsername(username);
+            webLoginParameters.get().setPassword(Coder.encryptMD5("spz1986411"));
+            webLoginParameters.get().setCaptcha("");
+            Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip);
             System.out.println("testAccountLogin:"+result);
         } catch (Exception e) {
             e.printStackTrace();

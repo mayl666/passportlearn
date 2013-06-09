@@ -133,18 +133,16 @@ public class LoginManagerImpl implements LoginManager {
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
             authUserApiParams.setUserid(username);
             authUserApiParams.setPassword(password);
-            if (PhoneUtil.verifyPhoneNumberFormat(username)){
-                authUserApiParams.setUsertype(USERTYPE_PHONE);
-            } else{
-                authUserApiParams.setUsertype(USERTYPE_PASSPORTID);
-            }
+            //TODO 设置appid
             authUserApiParams.setIp(ip);
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
 
             //记录返回结果
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(username,ip);
-
+//                Object createTimeObj = result.getModels().get("createtime");
+//                if (createTimeObj != null){
+//                }
                 //TODO 取cookie种sogou域cookie
 
                 //TODO 种sohu域cookie
