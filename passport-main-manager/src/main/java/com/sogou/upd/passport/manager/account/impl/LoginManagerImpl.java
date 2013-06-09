@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -151,8 +152,15 @@ public class LoginManagerImpl implements LoginManager {
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(username,ip);
                 //TODO 取cookie种sogou域cookie
-
-                //TODO 种sohu域cookie
+                // 种sohu域cookie
+                CreateCookieUrlApiParams createCookieUrlApiParams = null;
+                Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
+                if (createCookieResult.isSuccess()){
+                    result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
+                } else{
+                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                    return result;
+                }
 
             } else {
                 operateTimesService.incLoginFailedTimes(username, ip);
