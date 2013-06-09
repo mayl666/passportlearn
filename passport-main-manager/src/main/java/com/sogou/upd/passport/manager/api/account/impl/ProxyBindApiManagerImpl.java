@@ -51,11 +51,4 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         return this.executeResult(requestModelXml, baseMoblieApiParams.getMobile());
     }
 
-    @Override
-    public Result queryPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.QUERY_MOBILE_BING_ACCOUNT, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(baseMoblieApiParams);
-        return executeResult(requestModelXml);
-    }
-
 }

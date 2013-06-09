@@ -55,6 +55,7 @@ public class ResetPwdAction {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
+            return "recover/index";
         }
         String username = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -63,6 +64,7 @@ public class ResetPwdAction {
         if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             model.addAttribute("data", result.toString());
+            return "recover/index";
         }
 
         // TODO:是否允许绑定手机取得密保信息
@@ -156,5 +158,15 @@ public class ResetPwdAction {
 
         result = resetPwdManager.resetPasswordByEmail(passportId, clientId, password, scode);
         return "";
+    }
+
+    @RequestMapping(value = "/mobile", method = RequestMethod.POST)
+    public String mobile() throws Exception {
+        return "";
+    }
+
+    @RequestMapping(value = "/email", method = RequestMethod.GET)
+    public String email() throws Exception {
+        return "recover/email";
     }
 }

@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-9 Time: 上午11:50 To change this template use
  * File | Settings | File Templates.
@@ -491,7 +493,7 @@ public class AccountSecureController extends BaseController {
     @ResponseBody
     @LoginRequired
     public Object bindQues(AccountPwdParams params, @RequestParam("new_ques") String newQues,
-                           @RequestParam("new_answer") String newAnswer) throws Exception {
+                           @RequestParam("new_answer") String newAnswer, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult) || StringUtil.checkExistNullOrEmpty(newQues, newAnswer)) {
@@ -499,7 +501,7 @@ public class AccountSecureController extends BaseController {
             result.setMessage(StringUtil.defaultIfEmpty(validateResult, "必选参数未填"));
             return result.toString();
         }
-
+        String ip = getIp(request);
         String passportId = params.getPassport_id();
         if (!passportId.equals(hostHolder.getPassportId())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH);
@@ -507,6 +509,6 @@ public class AccountSecureController extends BaseController {
         }
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
-        return secureManager.modifyQuesByPassportId(passportId, clientId, password, newQues, newAnswer, null);
+        return secureManager.modifyQuesByPassportId(passportId, clientId, password, newQues, newAnswer, ip);
     }
 }
