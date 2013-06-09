@@ -42,12 +42,12 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     @Override
-    public String getSecureCodeModSecureInfo(String passportId, int clientId) throws ServiceException {
+    public String getSecureCodeModSecInfo(String passportId, int clientId) throws ServiceException {
         return getSecureCode(passportId, clientId, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
     }
 
     @Override
-    public boolean checkSecureCodeModSecureInfo(String passportId, int clientId, String secureCode)
+    public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException {
         return checkSecureCode(passportId, clientId, secureCode, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
     }

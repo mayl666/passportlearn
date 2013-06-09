@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * 登录注册页面跳转页
  */
 @Controller
-@RequestMapping("/web/account")
+@RequestMapping("/web")
 public class AccountWeb extends BaseController {
   /*
    web注册页跳转
@@ -29,11 +29,11 @@ public class AccountWeb extends BaseController {
   /*
   web登录页跳转
 */
-  @RequestMapping(value = "/login", method = RequestMethod.GET)
+  @RequestMapping(value = "/index", method = RequestMethod.GET)
   public String login(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
 
-    return "login";
+    return "index";
   }
     /*
    web修改密码页跳转

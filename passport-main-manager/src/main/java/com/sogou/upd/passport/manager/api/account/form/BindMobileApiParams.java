@@ -8,28 +8,15 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.AssertTrue;
 
 /**
+ * 绑定手机账号的参数类
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
  * Time: 上午10:25
  */
-public class BindMobileApiParams extends BaseApiParameters {
+public class BindMobileApiParams extends BaseMoblieApiParams {
 
     @NotBlank(message = "passport_id不允许为空")
     private String userid;
-
-    @NotBlank(message = "新手机号不允许为空")
-    private String mobile;
-
-    @AssertTrue(message = "请输入正确的手机号!")
-    private boolean isValidPhone() {
-        if (Strings.isNullOrEmpty(mobile)) {   // NotBlank已经校验过了，无需再校验
-            return true;
-        }
-        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-            return true;
-        }
-        return false;
-    }
 
     public String getUserid() {
         return userid;
@@ -39,11 +26,4 @@ public class BindMobileApiParams extends BaseApiParameters {
         this.userid = userid;
     }
 
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
 }

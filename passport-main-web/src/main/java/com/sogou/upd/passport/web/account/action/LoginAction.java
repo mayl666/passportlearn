@@ -10,6 +10,7 @@ import com.sogou.upd.passport.web.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,12 +25,13 @@ import javax.servlet.http.HttpServletRequest;
  *  Date: 13-6-7 Time: 下午5:48
  *  web登录
  */
+@Controller
+@RequestMapping("/web")
 public class LoginAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
 
-  @Autowired
-  private CommonManager commonManager;
+
   @Autowired
   private LoginManager loginManager;
 
@@ -39,7 +41,7 @@ public class LoginAction extends BaseController {
    *
    * @param loginParams 传入的参数
    */
-  @RequestMapping(value = "login", method = RequestMethod.POST)
+  @RequestMapping(value = "/login", method = RequestMethod.POST)
   @ResponseBody
   public Object login(HttpServletRequest request, WebLoginParameters loginParams)
       throws Exception {
@@ -52,12 +54,6 @@ public class LoginAction extends BaseController {
       return result.toString();
     }
 
-    //判断用户是否存在
-    String username = loginParams.getUsername();
-    if (!commonManager.isAccountExists(username)) {
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-      return result.toString();
-    }
     result = loginManager.accountLogin(loginParams, getIp(request));
     return result.toString();
   }

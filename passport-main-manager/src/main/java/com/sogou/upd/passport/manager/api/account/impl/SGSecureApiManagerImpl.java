@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -10,6 +13,7 @@ import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApi
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 
@@ -17,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-7 Time: 下午8:24 To change this template use
@@ -38,12 +44,12 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String password = updatePwdApiParams.getPassword();
         String newPassword = updatePwdApiParams.getNewpassword();
         String modifyIp = updatePwdApiParams.getModifyip();
-        Account account = accountService.verifyUserPwdVaild(userId, password, false);
-        if (account == null) {
-            result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
+        result = accountService.verifyUserPwdVaild(userId, password, false);
+        if (!result.isSuccess()) {
             return result;
         }
-
+        Account account = (Account) result.getDefaultModel();
+        result.setDefaultModel(null);
         if (!accountService.resetPassword(account, newPassword, false)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
@@ -54,20 +60,70 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) throws ServiceException {
         String userId = updateQuesApiParams.getUserid();
+        String password = updateQuesApiParams.getPassword();
         String newQues = updateQuesApiParams.getNewquestion();
         String newAnswer = updateQuesApiParams.getNewanswer();
+        String modifyIp = updateQuesApiParams.getModifyip();
 
-        Result result = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
+        Result result = accountService.verifyUserPwdVaild(userId, password, false);
+        result.setDefaultModel(null);
+        if (!result.isSuccess()) {
+            return result;
+        }
+
+        AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
+        if (accountInfo == null) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
+            return result;
+        }
+        result.setSuccess(true);
+        result.setMessage("绑定密保问题成功！");
         return result;
     }
 
     @Override
     public Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        String userId = getSecureInfoApiParams.getUserid();
+
+        Result result = new APIResultSupport(false);
+        try {
+            Account account = accountService.queryNormalAccount(userId);
+            if (account == null) {
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
+            }
+            Map<String, String> map = Maps.newHashMap();
+            String mobile = account.getMobile();
+            map.put("sec_mobile", mobile);
+            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);
+            if (accountInfo != null) {
+                String emailBind = accountInfo.getEmail();
+                String question = accountInfo.getQuestion();
+                map.put("sec_email", emailBind);
+                map.put("sec_ques", question);
+            }
+
+            result.setSuccess(true);
+            result.setMessage("查询成功");
+            result.setModels(map);
+            return result;
+        } catch (ServiceException e) {
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
     }
 
     @Override
     public Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams) {
+        String userId = resetPasswordBySecQuesApiParams.getUserid();
+        int clientId = resetPasswordBySecQuesApiParams.getClient_id();
+        String password = resetPasswordBySecQuesApiParams.getNewpassword();
+        String answer = resetPasswordBySecQuesApiParams.getAnswer();
+        String modifyIp = resetPasswordBySecQuesApiParams.getModifyip();
+
+        Result result = new APIResultSupport(false);
+
+        // TODO:放到之后再写
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

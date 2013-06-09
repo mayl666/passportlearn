@@ -38,7 +38,7 @@ public interface AccountSecureService {
      * @return
      * @throws ServiceException
      */
-    public String getSecureCodeModSecureInfo(String passportId, int clientId) throws ServiceException;
+    public String getSecureCodeModSecInfo(String passportId, int clientId) throws ServiceException;
 
     /**
      * 检测secureCode——记录前一步操作成功
@@ -49,6 +49,6 @@ public interface AccountSecureService {
      * @return
      * @throws ServiceException
      */
-    public boolean checkSecureCodeModSecureInfo(String passportId, int clientId, String secureCode)
+    public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException;
 }

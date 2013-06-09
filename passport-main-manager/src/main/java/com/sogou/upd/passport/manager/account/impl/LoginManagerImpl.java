@@ -2,23 +2,22 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
-import com.sogou.upd.passport.service.account.AccountHelper;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,8 @@ import java.util.Map;
 public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
+    private static final int USERTYPE_PHONE = 1;
+    private static final int USERTYPE_PASSPORTID = 0;
 
     @Autowired
     private AccountService accountService;
@@ -40,6 +41,13 @@ public class LoginManagerImpl implements LoginManager {
     private AccountTokenService accountTokenService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private OperateTimesService operateTimesService;
+
+    @Autowired
+    private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -59,16 +67,14 @@ public class LoginManagerImpl implements LoginManager {
                 }
                 int pwdType = oauthRequest.getPwdType();
                 boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
-                Account account = accountService
+                result = accountService
                         .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
-                if (account == null) {
-                    result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
-                    return result;
-                } else if (!AccountHelper.isNormalAccount(account)) {
-                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                if (!result.isSuccess()) {
                     return result;
                 } else {
-                    // 为了安全每次登录生成新的token
+                    Account account =  (Account) result.getDefaultModel();
+                    result.setDefaultModel(null);
+                            // 为了安全每次登录生成新的token
                     renewAccountToken = accountTokenService.updateOrInsertAccountToken(account.getPassportId(), clientId, instanceId);
                 }
             } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
@@ -108,31 +114,11 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public Result accountLogin(WebLoginParameters loginParameters, String ip) {
         Result result = new APIResultSupport(false);
-        String username = null;
+        String username = loginParameters.getUsername();
+        String password = loginParameters.getPassword();
         try {
-            username = loginParameters.getUsername();
-            String password = loginParameters.getPassword();
-            Account account = null;
-            //判断登录用户类型
-            AccountDomainEnum domainEnum = AccountDomainEnum.getAccountDomain(username);
-            switch (domainEnum) {
-                case PHONE:
-                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
-                    if (Strings.isNullOrEmpty(passportId)) {
-                        return doUserNotExist(username,ip);
-                    }
-                    account = accountService.queryAccountByPassportId(passportId);
-                    break;
-                case SOHU:
-                    account = accountService.queryAccountByPassportId(username);
-                    break;
-            }
-            if (account == null) {
-                return doUserNotExist(username,ip);
-            }
-
             //校验验证码
-            if (accountService.loginFailedNumNeedCaptcha(username, ip)) {
+            if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
                 if (!this.checkCaptcha(username, captchaCode, token)) {
@@ -140,64 +126,50 @@ public class LoginManagerImpl implements LoginManager {
                     return result;
                 }
             }
-
-            //检查该账号是否为正常账号
-            if (!AccountHelper.isNormalAccount(account)) {
-                if (AccountHelper.isDisabledAccount(account)) {
-                    //登陆账号未激活
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
-                    return result;
-                } else {
-                    //登陆账号被封杀
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                    return result;
-                }
-            }
-
             //校验是否在账户黑名单或者IP黑名单之中
-            if (accountService.checkUserInBlackList(username, ip)){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+            if (operateTimesService.checkLoginUserInBlackList(username, ip)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
 
-            String storedPwd = account.getPasswd();
-            if (PwdGenerator.verify(password, false, storedPwd)) {
-                //todo 登录成功种cookie
+            //封装参数
+            AuthUserApiParams authUserApiParams = new AuthUserApiParams();
+            authUserApiParams.setUserid(username);
+            authUserApiParams.setPassword(password);
+            //TODO 设置clientId,暂时设置为1001
+            authUserApiParams.setClient_id(1001);
+            authUserApiParams.setIp(ip);
 
-                //写缓存
-                accountService.incLoginSuccessNum(username,ip);
-                result.setSuccess(true);
-                result.setMessage("登录成功");
-                return result;
+            //根据域名判断是否代理，一期全部走代理
+            if (ManagerHelper.isInvokeProxyApi(username)) {
+                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+            } else {
+                result = sgLoginApiManager.webAuthUser(authUserApiParams);
+            }
+
+            //记录返回结果
+            if (result.isSuccess()){
+                operateTimesService.incLoginSuccessTimes(username,ip);
+                //TODO 取cookie种sogou域cookie
+
+                //TODO 种sohu域cookie
 
             } else {
-                accountService.incLoginFailedNum(username, ip);
-                result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
-                return result;
+                operateTimesService.incLoginFailedTimes(username, ip);
+                //3次失败需要输入验证码
+                if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)){
+                    result.setDefaultModel("needCaptcha", true);
+                }
             }
         } catch (Exception e) {
-            accountService.incLoginFailedNum(username, ip);
+            operateTimesService.incLoginFailedTimes(username,ip);
             logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
+            //3次失败需要输入验证码
+            if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)){
+                result.setDefaultModel("needCaptcha",true);
+            }
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
-        }
-    }
-
-    private Result doUserNotExist(String username, String ip) {
-        Result result = new APIResultSupport(false);
-        //记录登陆失败操作
-        accountService.incLoginFailedNum(username, ip);
-        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-        /*
-        * 用户在登陆的时候是否需要输入验证码
-        * 目前的策略
-        * 1.连续3次输入密码错误
-        * 2.ip超过100次
-         */
-        if (accountService.loginFailedNumNeedCaptcha(username, ip)) {
-            Map<String, Object> mapResult = Maps.newHashMap();
-            mapResult.put("needCaptcha",1);
-            result.setModels(mapResult);
         }
         return result;
     }

@@ -112,6 +112,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
     // 账号未登录，请先登录
     public static final String ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED = "20229";
+    // 登陆用户或者ip在黑名单中
+    public static final String ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST = "20230";
     // 登陆账号未激活
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 账号已封杀
@@ -303,6 +305,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH, "当前登录账号与操作账号不一致");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT, "密码输入错误次数过多");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP登陆操作存在异常");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");

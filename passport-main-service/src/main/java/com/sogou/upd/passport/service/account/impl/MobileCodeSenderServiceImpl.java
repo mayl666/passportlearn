@@ -164,29 +164,6 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         }
     }
 
-    /*
-     * 设置smscode验证次数限制，验证失败时递增
-     * TODO：暂时为private方法，只供checkSmsInfoFromCache方法调用
-     */
-    private boolean setSmsFailLimited(String account, int clientId) throws ServiceException {
-        try {
-            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
-                    + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
-            // 由于既需要自增，同时又需要设置有效时间，无法在自增同时设置有效时间，不可避免建立两次连接
-            if (redisUtils.checkKeyIsExist(cacheKey)) {
-                redisUtils.increment(cacheKey);
-            } else {
-                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
-                /*redisUtils.set(cacheKey, "1");
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error("[SMS] service method setSmsFailLimited error.{}", e);
-            new ServiceException(e);
-        }
-        return false;
-    }
 
     @Override
     public boolean checkSmsFailLimited(String account, int clientId)
@@ -221,4 +198,55 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         return mapCacheResult;
     }
 
+    @Override
+    public Result checkSmsCode(String mobile, int clientId, String smsCode) throws ServiceException {
+        Result result = new APIResultSupport(false);
+        try {
+            if (!checkSmsFailLimited(mobile, clientId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
+                return result;
+            }
+
+            // 验证手机号码与验证码是否匹配
+            if (!checkSmsInfoFromCache(mobile, smsCode, clientId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                return result;
+            }
+
+            //清除验证码的缓存
+            deleteSmsCache(mobile, clientId);
+            result.setSuccess(true);
+            result.setMessage("短信随机码验证成功！");
+            return result;
+        } catch (Exception e) {
+            logger.error("[SMS] service method check sms code error.{}", e);
+            // new ServiceException(e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    /*
+     * 设置smscode验证次数限制，验证失败时递增
+     * TODO：暂时为private方法，只供checkSmsInfoFromCache方法调用
+     */
+    private boolean setSmsFailLimited(String account, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
+                              + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            // 由于既需要自增，同时又需要设置有效时间，无法在自增同时设置有效时间，不可避免建立两次连接
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                redisUtils.increment(cacheKey);
+            } else {
+                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                /*redisUtils.set(cacheKey, "1");
+                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("[SMS] service method setSmsFailLimited error.{}", e);
+            new ServiceException(e);
+        }
+        return false;
+    }
 }

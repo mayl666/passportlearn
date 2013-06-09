@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -9,6 +8,9 @@ import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -37,7 +39,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         //检查新手机号是否已经绑定了其他用户
         BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
         baseMoblieApiParams.setMobile(updateBindMobileApiParams.getNewMobile());
-        Result resultQuery = this.queryPassportIdByMobile(baseMoblieApiParams);
+        Result resultQuery = this.getPassportIdFromMobile(baseMoblieApiParams);
         switch(resultQuery.getCode()){
             //新手机已经绑定了其他用户
             case "0":
@@ -99,7 +101,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     private boolean checkBind(String userid, String mobile) {
         BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
         baseMoblieApiParams.setMobile(mobile);
-        Result result = this.queryPassportIdByMobile(baseMoblieApiParams);
+        Result result = this.getPassportIdFromMobile(baseMoblieApiParams);
         if (result.isSuccess() && result.getModels().containsKey("userid")) {
             String bindUserId = result.getModels().get("userid").toString();
             if (bindUserId.trim().equals(userid.trim())) {
@@ -132,17 +134,10 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     }
 
     @Override
-    public Result getPassportIdFromMobile(MobileBindPassportIdApiParams mobileBindPassportIdApiParams) {
+    public Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(mobileBindPassportIdApiParams);
-        return this.executeResult(requestModelXml, mobileBindPassportIdApiParams.getMobile());
-    }
-
-    @Override
-    public Result queryPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.QUERY_MOBILE_BING_ACCOUNT, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(baseMoblieApiParams);
-        return executeResult(requestModelXml,baseMoblieApiParams.getMobile());
+        return executeResult(requestModelXml, baseMoblieApiParams.getMobile());
     }
 
 }

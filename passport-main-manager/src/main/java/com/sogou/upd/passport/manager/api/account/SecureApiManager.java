@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.manager.api.account;
 
-import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 
 /**
  * 用于安全相关的代理

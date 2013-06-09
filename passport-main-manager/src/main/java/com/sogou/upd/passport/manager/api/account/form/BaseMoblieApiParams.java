@@ -8,7 +8,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.AssertTrue;
 
 /**
- * Created with IntelliJ IDEA.
+ * 涉及到手机号相关的参数类的基类
+ * 参数只有手机号
  * User: shipengzhi
  * Date: 13-6-7
  * Time: 下午9:25

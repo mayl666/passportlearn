@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
@@ -38,9 +37,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         String userId = authUserParameters.getUserid();
         if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))) {
-            authUserParameters.setUsertype(1);
+            authUserParameters.setUsertype(1); // 手机号
         }
-        authUserParameters.setPwdtype(1);
+        authUserParameters.setPwdtype(1); // 密码为MD5
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(authUserParameters);
         return executeResult(requestModelXml);
@@ -48,7 +47,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
-        appAuthTokenApiParams.setType(2);
+        appAuthTokenApiParams.setType(2); // 手机端第三方登录后返回的token
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(appAuthTokenApiParams);
         return executeResult(requestModelXml, appAuthTokenApiParams.getToken());
