@@ -27,7 +27,7 @@ public class PwdGeneratorTest extends BaseGeneratorTest {
     @Test
     public void testGeneratorStoredPwd() {
         try {
-            String pwdSign = PwdGenerator.generatorStoredPwd("111111", true);
+            String pwdSign = PwdGenerator.generatorStoredPwd("123456", true);
             System.out.println("pwdSign:" + pwdSign);
             Assert.assertTrue(true);
         } catch (Exception e) {

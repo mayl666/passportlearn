@@ -41,4 +41,7 @@ public class CacheConstant {
     /*================CONFIG 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_CLIENTID_APPCONFIG = "SP.CLIENTID:APPCONFIG_";     //clientid与appConfig映射
     public static final String CACHE_PREFIX_CLIENTID_CONNECTCONFIG = "SP.CLIENTID:CONNECTCONFIG_";     //clientid与connectConfig映射
+
+    /*================用户反馈相关缓存常量=====================*/
+    public static final String CACHE_PREFIX_ID_PROBLEM = "SP.ID:PROBLEM_"; // Id与problem映射
 }

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.utils.RedisUtils;
 
+import com.sogou.upd.passport.model.problem.ProblemType;
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -10,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: mayan Date: 12-11-22 Time: 下午6:26 To change this template use
@@ -64,6 +67,31 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
             sub_value = redisUtils.hGet(TEST_KEY, TEST_SUB_KEY);
             Assert.assertTrue(sub_value != null && "1".equals(value));
 
+        } catch (Exception e) {
+            Assert.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testlGet() throws Exception {
+        try {
+            List<ProblemType> list = new ArrayList<ProblemType>();
+            ProblemType problemType1 = new ProblemType();
+            problemType1.setId(1);
+            problemType1.setTypeName("类型1");
+            list.add(problemType1);
+
+            ProblemType problemType2 = new ProblemType();
+            problemType2.setId(2);
+            problemType2.setTypeName("类型2");
+            list.add(problemType2);
+
+            redisUtils.lPutAllObject("key1",list);
+
+            List<ProblemType> result = redisUtils.lGetAll("key1",ProblemType.class);
+            for (ProblemType problemType:list){
+              System.out.println("id:"+problemType.getId()+",typename:"+problemType.getTypeName());
+            }
         } catch (Exception e) {
             Assert.assertTrue(false);
         }

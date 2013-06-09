@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.service.problem.impl;
 
+import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.problem.ProblemDAO;
 import com.sogou.upd.passport.dao.problem.ProblemTypeDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.problem.Problem;
+import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.service.problem.ProblemService;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
 
@@ -22,13 +25,40 @@ import java.util.List;
 @Service
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
-  private static final Logger logger = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
+    private static final String CACHE_PREFIX_ID_PROBLEM = CacheConstant.CACHE_PREFIX_ID_PROBLEM;
 
-  @Autowired
-  private ProblemTypeDAO problemTypeDAO;
+    @Autowired
+    private ProblemTypeDAO problemTypeDAO;
+    @Autowired
+    private RedisUtils redisUtils;
 
-  @Override
-  public String getTypeNameById(long id) throws ServiceException {
-    return problemTypeDAO.getTypeNameById(id);
-  }
+    @Override
+    public ProblemType getProblemTypeById(long id) throws ServiceException {
+        ProblemType problemType = null;
+        try {
+            String cacheKey = buildAccountKey(String.valueOf(id));
+
+            problemType = redisUtils.getObject(cacheKey, ProblemType.class);
+            if (problemType == null) {
+                problemType = problemTypeDAO.getProblemTypeById(id);
+                if (problemType != null) {
+                    redisUtils.set(cacheKey, problemType);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        return problemType;
+    }
+
+    @Override
+    public List<ProblemType> getProblemTypeList() throws ServiceException {
+        //TODO 加上redis缓存
+        return problemTypeDAO.getProblemTypeList();
+    }
+
+    private String buildAccountKey(String id) {
+        return CACHE_PREFIX_ID_PROBLEM + id;
+    }
 }
