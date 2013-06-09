@@ -15,7 +15,9 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
@@ -66,6 +68,10 @@ public class SecureManagerImpl implements SecureManager {
     private SecureApiManager sgSecureApiManager;
     @Autowired
     private SecureApiManager proxySecureApiManager;
+    @Autowired
+    private BindApiManager sgBindApiManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     //account与smscode映射
     private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE;
@@ -507,6 +513,31 @@ public class SecureManagerImpl implements SecureManager {
             return result;
         } catch (ServiceException e) {
             logger.error("modify binding email Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    // TODO:需要把scode的检测单独提出一个Manager
+    public Result bindEmail(String userId, int clientId, String password, String newEmail, String oldEmail) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            BindEmailApiParams params = new BindEmailApiParams();
+            params.setUserid(userId);
+            params.setClient_id(clientId);
+            params.setPassword(password);
+            params.setNewbindemail(newEmail);
+            params.setOldbindemail(oldEmail);
+
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // 代理接口
+                result = proxyBindApiManager.bindEmail(params);
+            } else {
+                result = sgBindApiManager.bindEmail(params);
+            }
+            return result;
+        } catch (ServiceException e) {
+            logger.error("bind email Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
