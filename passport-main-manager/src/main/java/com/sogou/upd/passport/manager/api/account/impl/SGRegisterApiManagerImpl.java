@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
@@ -62,6 +61,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
         switch (emailType) {
           case SOGOU://个性账号直接注册
+          case UNKNOWN:
             Account account = accountService.initialAccount(username,password , false, ip, AccountTypeEnum
                 .EMAIL.getValue());
             if (account != null) {

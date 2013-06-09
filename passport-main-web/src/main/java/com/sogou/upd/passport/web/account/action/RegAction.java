@@ -103,13 +103,8 @@ public class RegAction extends BaseController {
       return result;
     }
 
-    //验证用户是否注册过
-    if (!commonManager.isAccountExists(username)) {
-      result = regManager.webRegister(regParams, ip);
-    } else {
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-    }
-    return result;
+    result = regManager.webRegister(regParams, ip);
+    return result.toString();
   }
 
   /**

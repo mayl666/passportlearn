@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -8,7 +9,6 @@ import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
@@ -24,6 +24,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,6 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
@@ -73,6 +72,7 @@ public class RegManagerImpl implements RegManager {
       switch (emailType) {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
+        case UNKNOWN:
           String token = regParams.getToken();
           if (ManagerHelper.isInvokeProxyApi(username)) {
             //todo 拼参数
@@ -91,8 +91,6 @@ public class RegManagerImpl implements RegManager {
           }
           break;
       }
-
-
     } catch (ServiceException e) {
       logger.error("webRegister fail,passportId:" + regParams.getUsername(), e);
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
