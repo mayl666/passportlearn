@@ -6,6 +6,7 @@ import com.sogou.upd.passport.manager.api.BaseApiParameters;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 
 /**
  * 带验证码的手机号注册参数类
@@ -22,6 +23,9 @@ public class RegMobileCaptchaApiParams extends BaseApiParameters {
     private String password;  //必须为md5
     @NotBlank(message = "手机验证码不允许为空")
     private String captcha;
+    @NotBlank(message = "ip不允许为空")
+    private String ip;
+
 
     @AssertTrue(message = "请输入正确的手机号!")
     private boolean isValidPhone() {
@@ -57,4 +61,12 @@ public class RegMobileCaptchaApiParams extends BaseApiParameters {
     public void setCaptcha(String captcha) {
         this.captcha = captcha;
     }
+
+  public String getIp() {
+    return ip;
+  }
+
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
 }

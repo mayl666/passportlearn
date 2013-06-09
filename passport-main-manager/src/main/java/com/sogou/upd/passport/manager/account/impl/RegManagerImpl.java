@@ -14,6 +14,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
@@ -64,23 +65,30 @@ public class RegManagerImpl implements RegManager {
       String username = regParams.getUsername();
       String password = regParams.getPassword();
 
+      String captcha = regParams.getCaptcha();
+
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
 
       switch (emailType) {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
-          String captchaCode = regParams.getCaptcha();
           String token = regParams.getToken();
           if (ManagerHelper.isInvokeProxyApi(username)) {
             //todo 拼参数
             result = proxyRegisterApiManager.regMailUser(null);
           } else {
-            result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId,captchaCode,token));
+            result = sgRegisterApiManager.regMailUser(
+                new RegEmailApiParams(username, password, ip, clientId, captcha, token));
           }
           return result;
         case PHONE://手机号
-//          result=sgRegisterApiManager.regMobileCaptchaUser();
+          RegMobileCaptchaApiParams regMobileCaptchaApiParams=buildProxyApiParams(username,password,captcha,clientId,ip);
+          if (ManagerHelper.isInvokeProxyApi(username)) {
+            result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+          } else {
+            result=sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+          }
           break;
       }
 
@@ -92,6 +100,15 @@ public class RegManagerImpl implements RegManager {
     }
     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     return result;
+  }
+  private RegMobileCaptchaApiParams buildProxyApiParams(String mobile,String password,String captcha,int clientId,String ip) {
+    RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
+    regMobileCaptchaApiParams.setMobile(mobile);
+    regMobileCaptchaApiParams.setPassword(password);
+    regMobileCaptchaApiParams.setCaptcha(captcha);
+    regMobileCaptchaApiParams.setClient_id(clientId);
+    regMobileCaptchaApiParams.setIp(ip);
+    return regMobileCaptchaApiParams;
   }
 
     @Override
