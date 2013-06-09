@@ -73,7 +73,7 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
         }
         resultMap.put("sec_email", email);
         resultMap.put("sec_mobile", mobile);
-        resultMap.put("question", question);
+        resultMap.put("sec_ques", question);
         result.setModels(resultMap);
         return result;
     }
