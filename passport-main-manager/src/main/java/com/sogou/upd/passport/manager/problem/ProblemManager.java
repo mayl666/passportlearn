@@ -24,7 +24,15 @@ public interface ProblemManager {
      * @return
      * @throws Exception
      */
-    public int updateStatusById(long id, int status) throws Exception;
+    public Result updateStatusById(long id, int status) throws Exception;
+
+    /**
+     * 关闭反馈
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Result closeProblemById(long id) throws Exception;
 
     public Result insertProblem(WebAddProblemParameters addProblemParams,String ip)throws Exception;
 

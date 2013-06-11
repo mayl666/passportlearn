@@ -31,7 +31,7 @@ import java.util.List;
 public class ProblemManagerImpl implements ProblemManager {
 
     private static Logger logger = LoggerFactory.getLogger(ProblemManagerImpl.class);
-
+    private static final int PROBLEM_CLOSE_STATE = 2;
 
     @Autowired
     private ProblemService problemService;
@@ -41,9 +41,31 @@ public class ProblemManagerImpl implements ProblemManager {
     private ProblemAnswerService problemAnswerService;
 
     @Override
-    public int updateStatusById(long id, int status) throws Exception {
-        //TODO 删除redis缓存
-        return problemService.updateStatusById(id, status);
+    public Result updateStatusById(long id, int status) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+             int row =problemService.updateStatusById(id, status);
+             if(row >0){
+                 result.setSuccess(true);
+                 result.setMessage("更新问题状态成功");
+             }else{
+                 result.setCode(ErrorUtil.ERR_CODE_PROBLEM_CLOSE_FAILED);
+             }
+        }catch (Exception e) {
+            logger.error("insertProblem fail,id:" + id, e);
+            result.setCode(ErrorUtil.ERR_CODE_PROBLEM_CLOSE_FAILED);
+            return result;
+        }
+        return result;
+    }
+
+    @Override
+    public Result closeProblemById(long id) throws Exception{
+        Result result = updateStatusById(id,PROBLEM_CLOSE_STATE);
+        if(result.isSuccess()){
+            result.setMessage("关闭问题成功");
+        }
+        return result;
     }
 
     @Override

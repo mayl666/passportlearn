@@ -277,6 +277,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_PROBLEM_INSERT_FAILED = "30601";
     //提交反馈评论失败
     public static final String ERR_CODE_PROBLEMANSWER_INSERT_FAILED = "30602";
+    //关闭反馈失败
+    public static final String ERR_CODE_PROBLEM_CLOSE_FAILED = "30603";
     //***************************反馈相关错误代码end********************************
 
     static {
@@ -400,6 +402,7 @@ public class ErrorUtil {
         //反馈相关
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_INSERT_FAILED, "提交用户反馈失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEMANSWER_INSERT_FAILED, "提交反馈评论失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
     }
 
     public static Map<String, Object> buildError(String code) {

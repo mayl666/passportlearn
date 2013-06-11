@@ -111,9 +111,19 @@ public class ProblemAction extends BaseController {
         return "/problem/myProblem";
     }
 
+    @RequestMapping(value = "/problem/colseProblem", method = RequestMethod.POST)
+    @ResponseBody
+    public Object colseProblem(HttpServletRequest request,long problemId, Model model)
+            throws Exception {
+        // TODO 获取并set passportId
+        String  passportId = null;
+
+        return problemManager.closeProblemById(problemId);
+    }
+
     @RequestMapping(value = "/problem/problemAnswer", method = RequestMethod.GET)
     @ResponseBody
-    public Object listProblemAnswer(HttpServletRequest request,int problemId, Model model)
+    public Object listProblemAnswer(HttpServletRequest request,long problemId, Model model)
             throws Exception {
         // TODO 获取并set passportId
         String  passportId = null;

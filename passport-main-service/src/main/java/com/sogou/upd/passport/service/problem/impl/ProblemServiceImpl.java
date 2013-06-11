@@ -71,7 +71,6 @@ public class ProblemServiceImpl implements ProblemService {
         try {
             int result = problemDAO.updateStatusById(id, status);
             if(result >0){
-                //TODO 使用设置id-problem缓存
                 Problem problem = problemDAO.getProblemById(id);
                 //删除该用户的c反馈缓存
                 String cacheKey = buildProblemListKey(problem.getPassportId());

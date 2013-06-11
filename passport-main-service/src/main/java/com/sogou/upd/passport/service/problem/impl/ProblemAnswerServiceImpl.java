@@ -36,7 +36,6 @@ public class ProblemAnswerServiceImpl implements ProblemAnswerService {
 
     @Override
     public int insertProblemAnswer(ProblemAnswer problemAnswer) throws ServiceException {
-        //TODO 加上redis
         try {
             int row = problemAnswerDAO.insertProblemAnswer(problemAnswer);
             if (row > 0) {

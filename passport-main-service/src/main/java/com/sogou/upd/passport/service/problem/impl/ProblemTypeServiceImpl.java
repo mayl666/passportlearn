@@ -41,7 +41,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     public ProblemType getProblemTypeById(long id) throws ServiceException {
         ProblemType problemType = null;
         try {
-            String cacheKey = buildAccountKey(String.valueOf(id));
+            String cacheKey = buildProblemTypeListKey(String.valueOf(id));
 
             problemType = redisUtils.getObject(cacheKey, ProblemType.class);
             if (problemType == null) {
@@ -60,7 +60,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     public List<ProblemType> getProblemTypeList() throws ServiceException {
         List<ProblemType> list = null;
         try {
-            String cacheKey = buildAccountKey(CACHE_PROBLEM_LIST);
+            String cacheKey = buildProblemTypeListKey(CACHE_PROBLEM_LIST);
             String listStr = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(listStr)) {
                 list = problemTypeDAO.getProblemTypeList();
@@ -78,7 +78,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         return list;
     }
 
-    private String buildAccountKey(String id) {
+    private String buildProblemTypeListKey(String id) {
         return CACHE_PREFIX_ID_PROBLEMTYPE + id;
     }
 }
