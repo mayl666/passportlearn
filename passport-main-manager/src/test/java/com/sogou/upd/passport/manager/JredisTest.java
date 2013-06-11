@@ -86,12 +86,12 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
             problemType2.setTypeName("类型2");
             list.add(problemType2);
 
-            redisUtils.lPutAllObject("key1",list);
-
-            List<ProblemType> result = redisUtils.lGetAll("key1",ProblemType.class);
-            for (ProblemType problemType:list){
-              System.out.println("id:"+problemType.getId()+",typename:"+problemType.getTypeName());
-            }
+//            redisUtils.lPutAllObject("key1",list);
+//
+//            List<ProblemType> result = redisUtils.lGetAll("key1",ProblemType.class);
+//            for (ProblemType problemType:list){
+//              System.out.println("id:"+problemType.getId()+",typename:"+problemType.getTypeName());
+//            }
         } catch (Exception e) {
             Assert.assertTrue(false);
         }

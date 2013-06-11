@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.service.problem.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.problem.ProblemDAO;
 import com.sogou.upd.passport.dao.problem.ProblemTypeDAO;
@@ -10,6 +12,8 @@ import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.service.problem.ProblemService;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +30,8 @@ import java.util.List;
 public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProblemTypeServiceImpl.class);
-    private static final String CACHE_PREFIX_ID_PROBLEM = CacheConstant.CACHE_PREFIX_ID_PROBLEM;
-
+    private static final String CACHE_PREFIX_ID_PROBLEMTYPE = CacheConstant.CACHE_PREFIX_ID_PROBLEMTYPE;
+    private static final String CACHE_PROBLEM_LIST = "PROBLEMTYPELIST";
     @Autowired
     private ProblemTypeDAO problemTypeDAO;
     @Autowired
@@ -54,11 +58,27 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     public List<ProblemType> getProblemTypeList() throws ServiceException {
-        //TODO 加上redis缓存
-        return problemTypeDAO.getProblemTypeList();
+        List<ProblemType> list = null;
+        try {
+            String cacheKey = buildAccountKey(CACHE_PROBLEM_LIST);
+            String listStr = redisUtils.get(cacheKey);
+            if (Strings.isNullOrEmpty(listStr)) {
+                list = problemTypeDAO.getProblemTypeList();
+                if (list != null) {
+                    String jsonResult = new ObjectMapper().writeValueAsString(list);
+                    redisUtils.set(cacheKey, jsonResult);
+                }
+            } else {
+                list = new ObjectMapper().readValue(listStr, new TypeReference<List<ProblemType>>() {
+                });
+            }
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        return list;
     }
 
     private String buildAccountKey(String id) {
-        return CACHE_PREFIX_ID_PROBLEM + id;
+        return CACHE_PREFIX_ID_PROBLEMTYPE + id;
     }
 }

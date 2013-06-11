@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.problem;
 
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.problem.vo.ProblemAnswerVO;
 import com.sogou.upd.passport.model.problem.ProblemAnswer;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public interface ProblemAnswerManager {
      * @return
      * @throws Exception
      */
-    public int insertProblemAnswer(ProblemAnswer problemAnswer) throws Exception;
+    public Result insertProblemAnswer(ProblemAnswer problemAnswer,String ip) throws Exception;
 
     /**
      * @param id
@@ -26,5 +28,13 @@ public interface ProblemAnswerManager {
      * @throws Exception
      */
     public List<ProblemAnswer> getAnswerListByProblemId(long id) throws Exception;
+
+    /**
+     * 获取VO列表
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Result getAnswerVOList(long id, String passportId) throws Exception;
 
 }

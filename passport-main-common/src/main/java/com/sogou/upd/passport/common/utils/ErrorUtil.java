@@ -271,6 +271,14 @@ public class ErrorUtil {
 
     //***************************好友类API错误代码end********************************
 
+
+    //***************************反馈相关错误代码start********************************
+    //用户允许提交反馈，但提交失败
+    public static final String ERR_CODE_PROBLEM_INSERT_FAILED = "30601";
+    //提交反馈评论失败
+    public static final String ERR_CODE_PROBLEMANSWER_INSERT_FAILED = "30602";
+    //***************************反馈相关错误代码end********************************
+
     static {
         // 通用错误
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
@@ -389,6 +397,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过帐号");
         ERR_CODE_MSG_MAP.put(ALREADY_FOLLOWED, "已经关注此用户");
 
+        //反馈相关
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_INSERT_FAILED, "提交用户反馈失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEMANSWER_INSERT_FAILED, "提交反馈评论失败");
     }
 
     public static Map<String, Object> buildError(String code) {

@@ -86,4 +86,14 @@ public class ProblemDAOTest extends BaseDAOTest {
 //    Assert.assertTrue(list.size() >0);
   }
 
+    /**
+     * 测试单条记录查询
+     */
+    @Test
+    public void testQueryProblemListByPassportId() {
+        List<Problem> list = problemDAO.queryProblemListByPassportId("18612532596@sohu.com",1,2);
+        System.out.println("size:"+list.size());
+    }
+
+
 }
