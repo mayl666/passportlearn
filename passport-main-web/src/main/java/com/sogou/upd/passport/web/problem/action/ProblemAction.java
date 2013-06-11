@@ -56,7 +56,7 @@ public class ProblemAction extends BaseController {
     private ProblemAnswerManager problemAnswerManager;
 
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
-    public Object login(HttpServletRequest request, Model model)
+    public Object addProblem(HttpServletRequest request, Model model)
             throws Exception {
         // TODO 获取并set passportId
         // TODO 获取应用列表
@@ -117,8 +117,8 @@ public class ProblemAction extends BaseController {
             throws Exception {
         // TODO 获取并set passportId
         String  passportId = null;
-
-        return problemManager.closeProblemById(problemId);
+        Result result =  problemManager.closeProblemById(problemId);
+        return result.toString();
     }
 
     @RequestMapping(value = "/problem/problemAnswer", method = RequestMethod.GET)
@@ -127,8 +127,8 @@ public class ProblemAction extends BaseController {
             throws Exception {
         // TODO 获取并set passportId
         String  passportId = null;
-
-        return problemAnswerManager.getAnswerVOList(problemId,passportId);
+        Result result =   problemAnswerManager.getAnswerVOList(problemId,passportId);
+        return  result.toString();
     }
 
     @RequestMapping(value = "/problem/saveProblemAnswer", method = RequestMethod.POST)
