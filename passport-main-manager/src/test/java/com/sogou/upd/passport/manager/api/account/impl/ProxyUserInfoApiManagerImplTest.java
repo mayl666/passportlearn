@@ -25,10 +25,9 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         GetUserInfoApiparams getUserInfoApiparams=new GetUserInfoApiparams();
         getUserInfoApiparams.setUserid(passportId);
         getUserInfoApiparams.setFields("usertype,createip,birthday,gender,createip,createtime,"
-//        );
                 +
-                "personalid,personalidflag,mobile,mobileflag,email,emailflag,province," +
-                "city,createtime,uniqname,uniqname_force,avatarurl,regappid");
+                "personalid,personalidflag,sec_mobile,sec_email,province," +
+                "city,createtime,sec_ques,avatarurl,regappid");
         Result result= proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
         System.out.println(result);
     }
