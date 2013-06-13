@@ -703,8 +703,14 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     var checkUsername = function($el , cb){
         var ipt = $el.find('input[name="username"]');
-        if( !ipt || !ipt.length )
+        if( !ipt || !ipt.length ){
             cb && cb(0);
+            return;
+        }
+        if( !ipt.val().length ){
+            cb && cb(0);
+            return;
+        }
         $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
@@ -794,6 +800,14 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
     };
 });
 
+define('conf',[],function(){
+
+
+    return{
+        client_id:1100
+    };
+});
+
 /*
  * reg module script
  * @author zhengxin
@@ -802,7 +816,7 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
 
 
 
-define('reg',['./common','./form'] , function(common , form){
+define('reg',['./common','./form' , './conf'] , function(common , form , conf){
 
 
     var bindFormEvent = function(){
@@ -810,7 +824,52 @@ define('reg',['./common','./form'] , function(common , form){
     };
 
     var addFormItem = function(){
-        $('.main-content .form form').append('<input name="client_id" value="1100" type="hidden"/>');
+        $('.main-content .form form').append('<input name="client_id" value="'+ conf.client_id +'" type="hidden"/>');
+    };
+
+    var telInit = function(){
+        var tm,
+            text = '秒后重新获取验证码',
+            oldText,
+            timeout = 60,
+            status;
+        $('.tel-valid-btn').click(function(){
+            if(status)return;
+
+            var usernameIpt = $('.main-content .form form input[name="username"]');
+            var errorSpan = usernameIpt.parent().parent().find('.error');
+            if( !$.trim(usernameIpt.val()).length ){
+                usernameIpt.blur();
+                return;
+            }
+            if( errorSpan.length && errorSpan.css('display') != 'none' )
+                return;
+
+            status = true;
+            var el = $(this);
+            oldText = el.html();
+            el.html(timeout + text);
+            
+            $.get('/mobile/sendsms' , {
+                mobile: usernameIpt.val(),
+                client_id: conf.client_id
+            } , function(data){
+                
+            });
+
+            tm=setInterval(function(){
+                if( !--timeout  ){
+                    el.html(oldText);
+                    clearInterval(tm);
+                    status = false;
+                    timeout = 3;
+                }else{
+                    el.html(timeout + text);
+
+                }
+                    
+            } , 1000);
+        });
     };
 
     return{
@@ -819,6 +878,8 @@ define('reg',['./common','./form'] , function(common , form){
 
             bindFormEvent();
             addFormItem();
+
+            telInit();
         }
     };
 });

@@ -80,8 +80,14 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     var checkUsername = function($el , cb){
         var ipt = $el.find('input[name="username"]');
-        if( !ipt || !ipt.length )
+        if( !ipt || !ipt.length ){
             cb && cb(0);
+            return;
+        }
+        if( !ipt.val().length ){
+            cb && cb(0);
+            return;
+        }
         $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
