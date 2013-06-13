@@ -85,12 +85,11 @@ public class RegManagerImpl implements RegManager {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
         case UNKNOWN:
+          RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip, clientId);
           if (ManagerHelper.isInvokeProxyApi(username)) {
-            //todo 拼参数
-            result = proxyRegisterApiManager.regMailUser(null);
+            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
           } else {
-            result = sgRegisterApiManager.regMailUser(
-                new RegEmailApiParams(username, password, ip, clientId));
+            result = sgRegisterApiManager.regMailUser(regEmailApiParams);
           }
           return result;
         case PHONE://手机号
@@ -128,6 +127,13 @@ public class RegManagerImpl implements RegManager {
     }
     return result;
   }
+
+  private RegEmailApiParams buildRegMailProxyApiParams(String username,String password,String ip,int clientId){
+    return new RegEmailApiParams(username, password, ip, clientId);
+  }
+
+
+
   private RegMobileCaptchaApiParams buildProxyApiParams(String mobile,String password,String captcha,int clientId,String ip) {
     RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
     regMobileCaptchaApiParams.setMobile(mobile);

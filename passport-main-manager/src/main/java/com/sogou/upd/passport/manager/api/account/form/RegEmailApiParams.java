@@ -21,6 +21,8 @@ public class RegEmailApiParams extends BaseApiParams {
     @NotBlank(message = "注册IP不允许为空")
     private String createip;  //注册IP
 
+
+
     public RegEmailApiParams(String username, String password, String createip, int client_id) {
         this.username = username;
         this.password = password;
