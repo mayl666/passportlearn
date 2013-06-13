@@ -700,6 +700,8 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     var checkUsername = function($el , cb){
         var ipt = $el.find('input[name="username"]');
+        if( !ipt || !ipt.length )
+            cb && cb(0);
         $.get('/web/checkusername' , {
             username: ipt.val()
         } , function(data){
