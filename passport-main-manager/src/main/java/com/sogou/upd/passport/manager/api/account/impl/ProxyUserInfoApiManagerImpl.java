@@ -23,7 +23,6 @@ import java.util.Map;
 @Component("proxyUserInfoApiManagerImpl")
 public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
-
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
@@ -34,8 +33,77 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         }
         requestModelXml.addParams(getUserInfoApiparams);
         requestModelXml.deleteParams("fields");
-        return this.executeResult(requestModelXml);
+        requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
+        Result result= this.executeResult(requestModelXml);
+        return getUserInfoResultHandel(result);
     }
+
+    /**
+     * SHPP参数名和SGPP参数名不一样，在这里做了相关的转换
+     * @param requestModelXml
+     * @return
+     */
+    private RequestModelXml replaceGetUserInfoParams(final RequestModelXml requestModelXml){
+        if(requestModelXml.containsKey("sec_email")){
+            requestModelXml.addParam("email","");
+            requestModelXml.addParam("emailflag","");
+            requestModelXml.deleteParams("sec_email");
+        }
+        if(requestModelXml.containsKey("sec_mobile")){
+            requestModelXml.addParam("mobile","");
+            requestModelXml.addParam("mobileflag","");
+            requestModelXml.deleteParams("sec_mobile");
+        }
+        if(requestModelXml.containsKey("sec_ques")){
+            requestModelXml.addParam("question","");
+            requestModelXml.deleteParams("sec_ques");
+        }
+        return requestModelXml;
+    }
+
+    /**
+     * SHPP所使用的一些数据名称和SGPP
+     * @param result
+     * @return
+     */
+    private Result getUserInfoResultHandel(final Result result){
+        if(!result.isSuccess()){
+            return result;
+        }
+        //判断手机和邮箱是否是绑定的同时将SHPP的相关属性转换为SGPP的属性
+        Map<String, String> map = result.getModels();
+
+        if(map.containsKey("email")){
+            String email = map.get("email");
+            String emailflag = map.get("emailflag");
+            if (StringUtil.isBlank(emailflag) || !emailflag.trim().equals("1")) {
+                email = "";
+            }
+            map.put("sec_email", email);
+            map.remove("email");
+            map.remove("emailflag");
+        }
+
+        if(map.containsKey("mobile")){
+            String mobile = map.get("mobile");
+            String mobileflag = map.get("mobileflag");
+            if (StringUtil.isBlank(mobileflag) || !mobileflag.trim().equals("1")) {
+                mobile = "";
+            }
+            map.put("sec_mobile", mobile);
+            map.remove("mobile");
+            map.remove("mobileflag");
+        }
+
+        if(map.containsKey("question")){
+            String question = map.get("question");
+            map.put("sec_ques", question);
+            map.remove("question");
+        }
+        result.setModels(map);
+        return result;
+    }
+
 
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams updateUserInfoApiParams) {

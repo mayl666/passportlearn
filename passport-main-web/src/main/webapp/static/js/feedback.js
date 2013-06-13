@@ -6,7 +6,7 @@
 
 
 
-define(['./common','./form'] , function(common , form){
+define(['./common','./form' , './conf'] , function(common , form , conf){
 
 
     var bindFormEvent = function(){
@@ -14,7 +14,7 @@ define(['./common','./form'] , function(common , form){
     };
 
     var addFormItem = function(){
-        $('.main-content .form form').append('<input name="client_id" value="1100" type="hidden"/>');
+        $('.main-content .form form').append('<input name="client_id" value="'+ conf.client_id +'" type="hidden"/>');
     };
 
     return{
