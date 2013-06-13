@@ -33,7 +33,7 @@ public class LoginManagerImplTest extends BaseTest {
             AtomicReference<WebLoginParameters> webLoginParameters = new AtomicReference<WebLoginParameters>(new WebLoginParameters());
             webLoginParameters.get().setUsername(username);
             webLoginParameters.get().setPassword(Coder.encryptMD5("123456"));
-            webLoginParameters.get().setCaptcha("");
+            webLoginParameters.get().setCaptcha("ssss");
             Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip);
             System.out.println("testAccountLogin:"+result);
         } catch (Exception e) {
