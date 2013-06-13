@@ -30,7 +30,7 @@
             
             <li >首页</li>
             
-            <li class="current">找回密码</li>
+            <li class="current">意见反馈</li>
             
         </ul>
     </div>
@@ -44,22 +44,48 @@
         </div>
         <div  class="form">
             <form method="post" id="" action="">
-                <p class="ptitle">请输入新密码</p>
+                <p class="ptitle">请您对我们的产品提出宝贵意见和建议，您留下的每个意见都是我们产品改进的动力！</p>
                 
                 <div class="form-item">
-    <label for="PasswordIpt">新密码：</label>
+    <label for="EmailIpt">邮箱：</label>
     <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" />
+        <input uui-type="require email" type="text" name="email" id="EmailIpt" value="" />
     </span>
 </div>
                 <div class="form-item">
-    <label for="Password2Ipt">确认新密码：</label>
-    <span class="form-el">
-        <input uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" />
+    <label for="QuesitonIpt">类型：</label>
+    <span class="form-select">
+        <select name="quesiton">
+            
+            <option value="2">小学老师</option>
+            
+            <option value="1">就读幼儿园</option>
+            
+            <option value="0">我自己编写</option>
+            
+        </select>
     </span>
 </div>
+                <div class="form-item">
+    <label for="TitleIpt">标题：</label>
+    <span class="form-el">
+        <input uui-type="require max(20)" type="text" name="title" id="TitleIpt" value="" />
+    </span>
+</div>
+                <div class="form-item form-tall">
+    <label for="ContentIpt">内容：</label>
+    <span class="form-textarea">
+        <textarea uui-type="require max(140)" type="text" name="content" id="ContentIpt" value="" ></textarea>
+    </span>
+</div>
+                <div class="form-item form-item-vcode">
+    <label for="ValidIpt">验证码：</label>
+    <span class="form-el form-el-s"><input type="text" name="captcha" id="ValidIpt" value="" uui-type="require" /></span>
+    <span class="vpic"><img src="about:blank" class="" alt="" /></span>
+    <a href="#" class="change-vpic">看不清，换一张</a>
+</div>
                 <div class="form-btn">
-    <button type="submit">确定</button>
+    <button type="submit">提交</button>
 </div>
             </form>
         </div>
@@ -88,8 +114,8 @@ require.config({
 });
 
 
-require(['recover'] , function(module){
-    module.init('reset');
+require(['feedback'] , function(module){
+    module.init('');
 });
 
 

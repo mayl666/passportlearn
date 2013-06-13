@@ -105,9 +105,9 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
     // 手机号已绑定其他账号
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
-    //登录失败
+    // 登录失败
     public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
-    //密码必须为字母和数字且长度大于6位!
+    // 密码必须为字母和数字且长度大于6位!
     public static final String ERR_CODE_ACCOUNT_PWDERROR = "20227";
     // 当前登录账号与所操作账号不一致
     public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
@@ -180,6 +180,9 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT = "20292";
     //用户五日内成功登陆过
     public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY = "20293";
+    public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY ="20293";
+    //用户已经存在
+    public static final String ERR_CODE_USER_ID_EXIST ="20294";
 
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
@@ -298,7 +301,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信验证码已经达到上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法用户名");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法用户名");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信已经到20条上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");

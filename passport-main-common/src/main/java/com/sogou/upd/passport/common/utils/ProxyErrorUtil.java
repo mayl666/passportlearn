@@ -91,8 +91,8 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.7",ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY);//用户5日内登录过
 
         //checkuser 检查用户名是否可以
-        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//非法用户名
-        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.4",ERR_CODE_ACCOUNT_REGED);//用户名已经存在
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3",ERR_CODE_USERID_ILLEGAL);//非法用户名
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.4",ERR_CODE_USER_ID_EXIST);//用户名已经存在
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.6",SYSTEM_UNKNOWN_EXCEPTION);//修改失败
 
     }

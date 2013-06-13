@@ -30,6 +30,11 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
         result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         System.out.println(result.toString());
         Assert.assertFalse(result.isSuccess());
+        checkUserApiParams=new CheckUserApiParams();
+        checkUserApiParams.setUserid("13621009174@sohu.com");
+        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
     }
 
 

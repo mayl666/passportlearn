@@ -662,6 +662,9 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
         },
         range: function($el){
             return "";
+        },
+        max: function($el , max){
+            return '输入字符请少于' + max + '个字';
         }
     };
 
@@ -688,19 +691,21 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
         });
         return type? ( NormalDesc[type] || '' ) : '';
     };
-    var getError = function($el , name){
-        return ErrorDesc[name] && ErrorDesc[name]($el) || '';
+    var getError = function($el , name , args){
+        return ErrorDesc[name] && ErrorDesc[name]($el , args) || '';
     };
 
     var initToken = function($el){
         var token = utils.uuid();
         $el.find('.token').val(token);
-        $el.find('.vpic img').attr('src' , "https://account.sogou.com/captcha?token="+ token);
+        $el.find('.vpic img').attr('src' , "/captcha?token="+ token);
     };
 
     var checkUsername = function($el , cb){
         var ipt = $el.find('input[name="username"]');
-        $.get('/web/checkusername' , {
+        if( !ipt || !ipt.length )
+            cb && cb(0);
+        $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
             if( typeof data == 'string' ){
@@ -732,7 +737,7 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     var bindOptEvent = function($el){
         $el.find('.vpic img,.change-vpic').click(function(){
-            initToken($el);
+            $el.find('.vpic img').attr('src' , "/captcha?token="+ $el.find('.token').val() + '&t=' + +new Date());
             return false;
         });
         
@@ -759,10 +764,13 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
                     getSpan($el , 'desc').hide();
                 },
                 onsinglefail: function($el , name){
+                    var args = name.split('(')[1];
                     name = name.split('(')[0];
-                    var desc = getError($el , name);
+                    args = args ? args.slice(0,-1).split(','):[];
+                    var desc = getError($el , name , args);
                     if( desc && desc.length ){
                         createSpan($el,'error');
+                        getSpan($el , 'desc').hide();
                         getSpan($el , 'error').show().html(desc);
                     }
                 },

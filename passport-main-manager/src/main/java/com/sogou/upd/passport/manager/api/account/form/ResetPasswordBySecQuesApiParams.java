@@ -8,10 +8,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-8
  * Time: 下午5:22
  */
-public class ResetPasswordBySecQuesApiParams extends BaseApiParams {
-
-    @NotBlank(message = "用户名不允许为空")
-    private String userid;
+public class ResetPasswordBySecQuesApiParams extends BaseUserApiParams {
 
     @NotBlank(message = "密保答案不能为空")
     private String answer;
@@ -44,13 +41,5 @@ public class ResetPasswordBySecQuesApiParams extends BaseApiParams {
 
     public void setAnswer(String answer) {
         this.answer = answer;
-    }
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
     }
 }
