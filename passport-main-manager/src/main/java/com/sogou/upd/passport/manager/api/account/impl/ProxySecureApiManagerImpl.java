@@ -42,7 +42,7 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
 
     @Override
     public Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(getSecureInfoApiParams);
         requestModelXml.addParam("email", "");
         requestModelXml.addParam("emailflag", "");

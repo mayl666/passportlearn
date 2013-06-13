@@ -30,16 +30,25 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
 
     @Override
     public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regMobileCaptchaApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.REG_MOBILE_CAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(regMobileCaptchaApiParams);
-        return executeResult(requestModelXml);
+        Result result = executeResult(requestModelXml, regMobileCaptchaApiParams.getMobile());
+        if (result.isSuccess()) {
+            result.setMessage("注册成功");
+        }
+        return result;
     }
 
     @Override
     public Result sendMobileRegCaptcha(BaseMoblieApiParams baseMoblieApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.SEND_MOBILE_REG_CAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(baseMoblieApiParams);
-        return executeResult(requestModelXml);
+        String mobile = baseMoblieApiParams.getMobile();
+        Result result = executeResult(requestModelXml, mobile);
+        if (result.isSuccess()) {
+            result.setMessage("验证码已发送至" + mobile);
+        }
+        return result;
     }
 
     @Override
@@ -52,6 +61,4 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
         }
         return result;
     }
-
-
 }

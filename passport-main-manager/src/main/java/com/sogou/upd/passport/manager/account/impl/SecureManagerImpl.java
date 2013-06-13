@@ -24,6 +24,7 @@ import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateBindMobileApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
@@ -418,42 +419,33 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         String username = null;
         try {
-            username = resetPwdParameters.getPassport_id();
-            String password = resetPwdParameters.getPassword();
-            String newpwd = resetPwdParameters.getNewpwd();
+          username = resetPwdParameters.getPassport_id();
 
-            //校验用户名和密码是否匹配
-            Account account = accountService.queryAccountByPassportId(username);
-            if (account != null) {
-                String oldPwd = account.getPasswd();
-                if (PwdGenerator.verify(password, false, oldPwd)) {
-                    account = new Account();
-                    account.setPassportId(username);
-                    account.setPasswd(password);
-                    //不需要加密
-                    if (accountService.resetPassword(account, newpwd, false)) {
-                        result.setSuccess(true);
-                        result.setMessage("重置密码成功！");
-                        return result;
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
-                        return result;
-                    }
-                } else {
-                    //原密码不匹配
-                    result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
-                    return result;
-                }
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
+          UpdatePwdApiParams updatePwdApiParams=buildProxyApiParams(resetPwdParameters);
+
+          if (ManagerHelper.isInvokeProxyApi(username)) {
+            result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+          } else {
+            result = sgSecureApiManager.updatePwd(updatePwdApiParams);
+          }
+
         } catch (ServiceException e) {
             logger.error("resetWebPassword Fail username:" + username, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+      return result;
     }
+
+  private UpdatePwdApiParams buildProxyApiParams(ResetPwdParameters resetPwdParameters){
+    UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
+    updatePwdApiParams.setUserid(resetPwdParameters.getPassport_id());
+    updatePwdApiParams.setPassword(resetPwdParameters.getPassword());
+    updatePwdApiParams.setNewpassword(resetPwdParameters.getNewpwd());
+    updatePwdApiParams.setModifyip(resetPwdParameters.getIp());
+
+    return updatePwdApiParams;
+  }
 
     /* --------------------------------------------修改密保内容-------------------------------------------- */
     /*

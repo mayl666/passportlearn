@@ -1,20 +1,18 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
 
 /**
+ * 绑定邮箱参数
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
  * Time: 上午11:53
  */
-public class BindEmailApiParams extends BaseApiParameters {
-
-    @NotBlank(message = "用户id不能为空！")
-    private String userid;
+public class BindEmailApiParams extends BaseUserApiParams {
 
     @NotBlank(message = "密码不能为空！")
     private String password;
@@ -51,14 +49,6 @@ public class BindEmailApiParams extends BaseApiParameters {
 
     public void setPwdtype(int pwdtype) {
         this.pwdtype = pwdtype;
-    }
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
     }
 
     public String getOldbindemail() {

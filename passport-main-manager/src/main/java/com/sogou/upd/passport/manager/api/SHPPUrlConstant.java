@@ -35,9 +35,11 @@ public class SHPPUrlConstant {
     public static final String SET_COOKIE="http://passport.sohu.com/act/setcookie";//用于前端设置cookie
 
 
-    /*================================注册相关=======================================*/
-    public static final String CHECK_USER=BASE_INTERNAL_URL+"checkuser";//查询用户名是否注册过
 
+    /*================================注册相关=======================================*/
+    public static final String SEND_MOBILE_REG_CAPTCHA = BASE_INTERNAL_URL + "sendmobileregcaptcha"; //获取注册的手机验证码
+    public static final String REG_MOBILE_CAPTCHA = BASE_INTERNAL_URL + "register/mobilecaptcha";  //手机号验证码注册
+    public static final String CHECK_USER=BASE_INTERNAL_URL+"checkuser";//查询用户名是否注册过
 
     /*================================手机绑定相关=======================================*/
     //绑定手机号
@@ -62,7 +64,9 @@ public class SHPPUrlConstant {
     public static final String RESET_PWD_BY_QUES = BASE_INTERNAL_URL + "recoverpwd";
 
     //获取用户信息
-    public static final String USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
+    public static final String GET_USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
 
+    //更新用户信息
+    public static final String UPDATE_USER_INFO=BASE_INTERNAL_URL + "updateuser";
 
 }

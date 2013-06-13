@@ -70,13 +70,17 @@ public class SecureAction extends BaseController {
     public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //todo 注解需要判断登录
+
         String validateResult = ControllerHelper.validateParams(resetParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             return result;
         }
+
+        String modifyIp = getIp(request);
+        resetParams.setIp(modifyIp);
+
         result = secureManager.resetWebPassword(resetParams);
         return result;
     }

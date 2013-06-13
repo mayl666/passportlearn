@@ -1,16 +1,16 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 绑定手机账号的参数类
  * User: ligang201716@sogou-inc.com
- * Date: 13-6-7
- * Time: 上午10:25
+ * Date: 13-6-13
+ * Time: 上午10:32
  */
-public class BindMobileApiParams extends BaseMoblieApiParams {
+public class BaseUserApiParams extends BaseApiParams {
 
-    @NotBlank(message = "passport_id不允许为空")
+    @NotBlank(message = "用户id（userid）不能为空")
     private String userid;
 
     public String getUserid() {
@@ -20,5 +20,4 @@ public class BindMobileApiParams extends BaseMoblieApiParams {
     public void setUserid(String userid) {
         this.userid = userid;
     }
-
 }
