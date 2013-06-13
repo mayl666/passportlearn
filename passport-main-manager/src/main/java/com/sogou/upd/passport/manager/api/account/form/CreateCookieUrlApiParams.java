@@ -15,7 +15,7 @@ public class CreateCookieUrlApiParams {
     @NotBlank(message = "用户id不能为空")
     private String userid;
 
-    //是否使用持久cookie
+    //是否使用持久cookie 0:session级别的cookie 1:长时间有效的cookie，目前是两周
     private int persistentcookie;
 
     public String getUserid() {
