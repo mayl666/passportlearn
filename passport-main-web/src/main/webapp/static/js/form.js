@@ -72,7 +72,7 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
     var initToken = function($el){
         var token = utils.uuid();
         $el.find('.token').val(token);
-        $el.find('.vpic img').attr('src' , "https://account.sogou.com/captcha?token="+ token);
+        $el.find('.vpic img').attr('src' , "/captcha?token="+ token);
     };
 
     var checkUsername = function($el , cb){
@@ -109,7 +109,7 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     var bindOptEvent = function($el){
         $el.find('.vpic img,.change-vpic').click(function(){
-            initToken($el);
+            $el.find('.vpic img').attr('src' , "/captcha?token="+ $el.find('.token').val() + '&t=' + +new Date());
             return false;
         });
         
@@ -140,6 +140,7 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
                     var desc = getError($el , name);
                     if( desc && desc.length ){
                         createSpan($el,'error');
+                        getSpan($el , 'desc').hide();
                         getSpan($el , 'error').show().html(desc);
                     }
                 },
