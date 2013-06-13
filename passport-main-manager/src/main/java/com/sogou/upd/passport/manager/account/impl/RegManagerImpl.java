@@ -77,7 +77,10 @@ public class RegManagerImpl implements RegManager {
         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
         return result;
       }
-
+      //判断是否是个性账号
+      if(username.indexOf("@")==-1){
+        username=username+"@sogou.com";
+      }
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
 
