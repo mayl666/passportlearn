@@ -34,7 +34,7 @@ public class WebLoginParameters {
   /**
    * 是否自动登陆，自动登陆cookie时长设置两周
    */
-  private boolean autoLogin;
+  private int autoLogin; // 0-否  1-真
 
   /**
    * 验证码 用户连续3次登陆失败需要输入验证码
@@ -44,6 +44,7 @@ public class WebLoginParameters {
 //  @NotBlank(message = "标识码不允许为空!")
   private String token;//标识码
 
+    private String ru;//登陆来源
   public String getUsername() {
     return username;
   }
@@ -67,12 +68,12 @@ public class WebLoginParameters {
     this.password = password;
   }
 
-  public boolean isAutoLogin() {
-    return autoLogin;
+  public int getAutoLogin() {
+      return autoLogin;
   }
 
-  public void setAutoLogin(boolean autoLogin) {
-    this.autoLogin = autoLogin;
+  public void setAutoLogin(int autoLogin) {
+      this.autoLogin = autoLogin;
   }
 
   public String getCaptcha() {
@@ -90,4 +91,12 @@ public class WebLoginParameters {
   public void setToken(String token) {
     this.token = token;
   }
+
+    public String getRu() {
+        return ru;
+    }
+
+    public void setRu(String ru) {
+        this.ru = ru;
+    }
 }

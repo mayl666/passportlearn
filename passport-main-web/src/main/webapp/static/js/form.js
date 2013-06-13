@@ -39,6 +39,9 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
         },
         range: function($el){
             return "";
+        },
+        max: function($el , max){
+            return '输入字符请少于' + max + '个字';
         }
     };
 
@@ -65,8 +68,8 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
         });
         return type? ( NormalDesc[type] || '' ) : '';
     };
-    var getError = function($el , name){
-        return ErrorDesc[name] && ErrorDesc[name]($el) || '';
+    var getError = function($el , name , args){
+        return ErrorDesc[name] && ErrorDesc[name]($el , args) || '';
     };
 
     var initToken = function($el){
@@ -138,8 +141,10 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
                     getSpan($el , 'desc').hide();
                 },
                 onsinglefail: function($el , name){
+                    var args = name.split('(')[1];
                     name = name.split('(')[0];
-                    var desc = getError($el , name);
+                    args = args ? args.slice(0,-1).split(','):[];
+                    var desc = getError($el , name , args);
                     if( desc && desc.length ){
                         createSpan($el,'error');
                         getSpan($el , 'desc').hide();
