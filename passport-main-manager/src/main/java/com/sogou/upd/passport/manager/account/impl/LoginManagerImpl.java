@@ -156,7 +156,12 @@ public class LoginManagerImpl implements LoginManager {
                 //TODO 取cookie种sogou域cookie
                 // 种sohu域cookie
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-                createCookieUrlApiParams.setUserid(username);
+                String passportId = username;
+                //判断登录用户类型
+                if (authUserApiParams.getUsertype() == USERTYPE_PHONE){
+                    passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
+                }
+                createCookieUrlApiParams.setUserid(passportId);
                 createCookieUrlApiParams.setRu(LOGIN_URL);
                 Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
                 if (createCookieResult.isSuccess()){
