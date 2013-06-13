@@ -3,19 +3,19 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="./static/css/index.css?t=034145" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=034145" type="text/css" />
     </head>
     <body >
         <div class="header">
             <div class="inner">
-                <h1><img src="@img_prefix@/static/img/index/logo.png" class="" alt="搜狗通行证" /></h1>
+                <h1><img src="/./static/img/index/logo.png" class="" alt="搜狗通行证" /></h1>
                 
             </div>
         </div>
         <div class="wrapper">
             <div class="inner">
                 <div class="desc">
-                    <img src="@img_prefix@/static/img/index/desc.jpg" class="" alt="" />
+                    <img src="/./static/img/index/desc.jpg" class="" alt="" />
                 </div>
                 <div class="login">
                     <h2>欢迎登录搜狗通行证</h2>
@@ -35,7 +35,7 @@
                             <a href="recover/index.ut">找回密码</a>
                         </p>
                         <button type="submit">
-                            <img src="@img_prefix@/static/img/index/loginbtn.png" class="" alt="登录" />
+                            <img src="/./static/img/index/loginbtn.png" class="" alt="登录" />
                         </button>
                         <p class="reg">
                             还没有搜狗通行证？<a href="/reg/email.ut">立即注册</a>
@@ -80,11 +80,11 @@
         
     </body>
     <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
-    <script type="text/javascript" src="./static/js/index.js?t=622864"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=622864"></script>
     <script type="text/javascript">
         
 require.config({
-    baseUrl:"./static/js"
+    baseUrl:"/./static/js"
 });
 
 require(['index'] , function(index){

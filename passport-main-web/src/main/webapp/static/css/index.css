@@ -58,12 +58,12 @@ body{ background:#f9f9f9; }
 .header .inner{ width:960px;margin:0 auto; height:88px; }
 .header h1{ padding-top:26px; }
 
-.wrapper{ height:412px; background:url(@img_prefix@/static/img/index/bg.png?t=964137) repeat-x 0 0;  }
+.wrapper{ height:412px; background:url(/./static/img/index/bg.png?t=964137) repeat-x 0 0;  }
 .wrapper .inner{ width:960px; margin:0 auto; position:relative;}
 .wrapper .desc{ padding-top:30px; }
 
 
-.login{ position:absolute; right:40px;top:30px;width:319px;height:304px; background:url(@img_prefix@/static/img/index/login.png?t=903686) }
+.login{ position:absolute; right:40px;top:30px;width:319px;height:304px; background:url(/./static/img/index/login.png?t=903686) }
 .login a{color:#1777d1;}
 .login h2{ display:none; }
 .login form{ position:relative;top:75px; }
@@ -73,7 +73,7 @@ body{ background:#f9f9f9; }
 .login button{ height:43px; width:273px;border:none;background:none;padding:0;margin:0;position:relative;left:24px; } 
 .login .func{line-height:38px;padding:5px 0 0 25px; position:relative;color:#999;font-size:12px;}
 .login .func input{width:auto;height:auto;width:1px;height:1px;position:absolute;left:-3000px;}
-.login .checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(@img_prefix@/static/img/checkbox.png?t=582595) no-repeat 0 -14px; position:relative; top:3px; *top:0;margin-right:2px; }
+.login .checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(/./static/img/checkbox.png?t=582595) no-repeat 0 -14px; position:relative; top:3px; *top:0;margin-right:2px; }
 .login .checkbox-checked{ background-position:0 0; }
 .login .func a{ position:absolute;right:25px;*top:-6px;; }
 .login .reg{ line-height:40px;text-align:center;color:#505050;font-size:14px; }
@@ -81,8 +81,8 @@ body{ background:#f9f9f9; }
 
 
 .question{ width:960px; margin:0 auto;padding-top:14px; }
-.question .title{ background:url(@img_prefix@/static/img/index/qbg.png?t=234754) repeat-x 0 0; height:17px; }
-.question h3{ background:url(@img_prefix@/static/img/index/qtitle.png?t=929483) no-repeat 0 0; width:183px;height:0;padding-top:17px;overflow:hidden; }
+.question .title{ background:url(/./static/img/index/qbg.png?t=234754) repeat-x 0 0; height:17px; }
+.question h3{ background:url(/./static/img/index/qtitle.png?t=929483) no-repeat 0 0; width:183px;height:0;padding-top:17px;overflow:hidden; }
 .question .items{ overflow:hidden;zoom:1;line-height:42px; }
 .question .items li{ float:left;width:192px;list-style:square inside;color:#666;font-size:10px; }
 .question .items a{ font-size:12px; color:#666; text-decoration:none; }

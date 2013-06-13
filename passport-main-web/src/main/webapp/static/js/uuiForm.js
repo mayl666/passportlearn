@@ -120,7 +120,7 @@
                     result = me._validate($(el)) && result;
                 });
 
-                return (result? me.options.onformsuccess() : me.options.onformfail());
+                return (result? me.options.onformsuccess(form) : me.options.onformfail(form));
             });
 
             $el.on('focus' , ':input' , function(){
