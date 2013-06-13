@@ -3,12 +3,12 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/static/css/main.css?t=763570" type="text/css" />
+        <link rel="stylesheet" href="./static/css/main.css?t=666480" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
     <div class="inner">
-        <h1><img src="/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <h1><img src="@img_prefix@/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
         <ul class="info">
             <li>欢迎您&nbsp;<span class="username"></span></li>
             <li class="sep">|</li>
@@ -182,14 +182,14 @@
 </div>
     </body>
     <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
-    <script type="text/javascript" src="/static/js/main.js?t=922709"></script>
+    <script type="text/javascript" src="./static/js/main.js?t=922709"></script>
     
     <script type="text/javascript">
 
 var server_data = '${data}';
         
 require.config({
-    baseUrl:"/static/js"
+    baseUrl:"./static/js"
 });
 
 
