@@ -20,6 +20,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,36 +118,38 @@ public class LoginManagerImpl implements LoginManager {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();
+        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+        String passportId = username;
         try {
+            AccountDomainEnum accountDomainEnum =  AccountDomainEnum.getAccountDomain(username);
+            //默认是sogou.com
+            if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
+                passportId = passportId+"@sogou.com";
+            }
+
             //校验验证码
-            if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
+            if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
-                if (!this.checkCaptcha(username, captchaCode, token)) {
+                if (!this.checkCaptcha(passportId, captchaCode, token)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     return result;
                 }
             }
             //校验是否在账户黑名单或者IP黑名单之中
-            if (operateTimesService.checkLoginUserInBlackList(username, ip)){
+            if (operateTimesService.checkLoginUserInBlackList(passportId, ip)){
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-            String passportId = username;
+
             //封装参数
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
-            AccountDomainEnum accountDomainEnum =  AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.PHONE.equals(accountDomainEnum)) {
-                authUserApiParams.setUsertype(USERTYPE_PHONE); // 手机号
-            }else if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
-                passportId=passportId+"@sogou.com";
-            }
-            authUserApiParams.setUserid(username);
-            authUserApiParams.setPassword(password);
+            authUserApiParams.setUserid(passportId);
+            authUserApiParams.setPassword(pwdMD5);
             //TODO 设置clientId,暂时设置为1100
             authUserApiParams.setClient_id(1100);
             //根据域名判断是否代理，一期全部走代理
-            if (ManagerHelper.isInvokeProxyApi(username)) {
+            if (ManagerHelper.isInvokeProxyApi(passportId)) {
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
             } else {
                 result = sgLoginApiManager.webAuthUser(authUserApiParams);
@@ -154,7 +157,7 @@ public class LoginManagerImpl implements LoginManager {
 
             //记录返回结果
             if (result.isSuccess()){
-                operateTimesService.incLoginSuccessTimes(username,ip);
+                operateTimesService.incLoginSuccessTimes(passportId,ip);
                 // 种sohu域cookie
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
                 createCookieUrlApiParams.setUserid(passportId);
@@ -170,17 +173,17 @@ public class LoginManagerImpl implements LoginManager {
                 }
 
             } else {
-                operateTimesService.incLoginFailedTimes(username, ip);
+                operateTimesService.incLoginFailedTimes(passportId, ip);
                 //3次失败需要输入验证码
-                if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)){
+                if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
                     result.setDefaultModel("needCaptcha", true);
                 }
             }
         } catch (Exception e) {
-            operateTimesService.incLoginFailedTimes(username,ip);
+            operateTimesService.incLoginFailedTimes(passportId,ip);
             logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
             //3次失败需要输入验证码
-            if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)){
+            if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
                 result.setDefaultModel("needCaptcha",true);
             }
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
