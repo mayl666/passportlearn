@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
-  private static final String LOGIN_INDEX_URL = "http://account.sogou.com?client_id=1100";
+  private static final String LOGIN_INDEX_URL = "https://account.sogou.com?client_id=1100";
     private static final String TEST_LOGIN_INDEX_URL = "http://localhost?client_id=1100";
   @Autowired
   private LoginManager loginManager;
