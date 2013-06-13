@@ -6,7 +6,7 @@
 
 
 
-define(['./common' , './tpl'] , function(common , ursa ){
+define(['./common' , './tpl' , './form'] , function(common , ursa , form ){
 
     var pagefunc = {
         common: function(data){
@@ -25,6 +25,9 @@ define(['./common' , './tpl'] , function(common , ursa ){
             wrapper.html( ursa.render(tpl.html() , data));
             wrapper.find('.level-status b').css( 'width' , data.score + '%' );
             
+        },
+        password: function(){
+
         },
         email: function(data){
             var tpl = $('#Target');
@@ -100,6 +103,9 @@ define(['./common' , './tpl'] , function(common , ursa ){
             pagefunc.common(data);
 
             pagefunc[type] && pagefunc[type](data);
+
+            form.render($('.main-content .form form'));
+
         }
     };
 });
