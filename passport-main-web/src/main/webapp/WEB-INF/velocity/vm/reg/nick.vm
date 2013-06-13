@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=405218" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=297690" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -41,15 +41,15 @@
         <ul class="nav">
     
     <li class="email   ">
-        <a href="/reg/email.ut">邮箱注册</a>
+        <a href="/web/reg/email">邮箱注册</a>
     </li>
     
     <li class="tel   ">
-        <a href="/reg/tel.ut">手机注册</a>
+        <a href="/web/reg/mobile">手机注册</a>
     </li>
     
     <li class="nick current  ">
-        <a href="/reg/nick.ut">个性账号</a>
+        <a href="/web/reg/email">个性账号</a>
     </li>
     
 </ul>

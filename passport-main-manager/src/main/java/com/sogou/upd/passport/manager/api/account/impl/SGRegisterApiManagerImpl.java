@@ -45,7 +45,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
       try {
         String username=params.getUsername();
         String password=params.getPassword();
-        String ip=params.getIp();
+        String ip=params.getCreateip();
         int clientId=params.getClient_id();
 
         String captcha=params.getCaptcha();
