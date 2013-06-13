@@ -36,6 +36,20 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.8",ERR_CODE_ACCOUNT_KILLED);// 账号已被锁定
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.9",USERNAME_PWD_ERROR);//登陆保护用户的stoken错误
 
+        //sendmobileregcaptcha获取手机号注册的验证码
+        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.3",ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
+        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.4",ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.5",ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
+        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.6",SYSTEM_UNKNOWN_EXCEPTION);  //系统级错误
+
+        //mobilecaptcha 手机号验证码注册接口
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.3",SYSTEM_UNKNOWN_EXCEPTION); //系统级错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.4",ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.5",ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.6",ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.7",ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT); //今日验证码校验错误次数已超过上限
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.8",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
+
         //wapbindmobile 绑定手机号
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.3",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户不存在
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.4",ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);//用户已经绑定了手机号码

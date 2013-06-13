@@ -34,34 +34,35 @@ public class ErrorUtil {
     //client_id格式不正确
     public static final String ERR_FORMAT_CLIENTID = "10011";
 
-    //***************************通用的错误代码end*********************************
-
-    //***************************OAuth2授权错误码start******************************
-     // client_id或client_secret不匹配
+    /* ============================================================================ */
+    /*  OAuth2授权错误码                                                             */
+    /* ============================================================================ */
+    // client_id或client_secret不匹配
     public static final String INVALID_CLIENT = "101";
-     //invalid_grant
+    //invalid_grant
 //    public static final String INVALID_GRANT = "102";
-     //错误的grant_type
+    //错误的grant_type
     public static final String UNSUPPORTED_GRANT_TYPE = "103";
-     //unsupported_response_type
+    //unsupported_response_type
     public static final String UNSUPPORTED_RESPONSE_TYPE = "104";
-     // invalid_scope
+    // invalid_scope
 //    public static final String INVALID_SCOPE = "105";
-     // insufficient_scope
+    // insufficient_scope
 //    public static final String INSUFFICIENT_SCOPE = "106";
-     // expired_token
+    // expired_token
 //    public static final String EXPIRED_TOKEN = "107";
-     // access_token不存在或已过期
+    // access_token不存在或已过期
 //    public static final String INVALID_ACCESS_TOKEN = "108";
-     //refresh_token不存在或已过期
+    //refresh_token不存在或已过期
     public static final String INVALID_REFRESH_TOKEN = "109";
-     // login/authorize fail,数据库写入失败
+    // login/authorize fail,数据库写入失败
     public static final String AUTHORIZE_FAIL = "110";
-     // 用户名密码不匹配
+    // 用户名密码不匹配
     public static final String USERNAME_PWD_MISMATCH = "111";  // 与20206一样，因为T3历史原因，暂不删除
-    //***************************OAuth2授权错误码end******************************
 
-    //***************************account 服务的错误代码start*********************************
+    /* ============================================================================ */
+    /*  account 服务的错误代码                                                       */
+    /* ============================================================================ */
     // 帐号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
     // 短信发送已达今天的最高上限20条
@@ -70,13 +71,13 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONEERROR = "20203";
     // 一分钟内只能发一条短信
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
-    // 没有这个用户
+    // 帐号不存在
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
     // 用户名密码不正确
     public static final String USERNAME_PWD_ERROR = "20206";
-    // 验证码不正确，或已过期
+    // 验证码错误或已过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
-    // 当日短信验证错误次数已超过上限
+    // 今日验证码校验错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
     // 昵称验证失败
 //    public static final String ERR_CODE_ACCOUNT_VERIFY_FIELDS = "20212";
@@ -86,7 +87,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_REGISTER_FAILED = "20214";
     //验证码错误或已过期
     public static final String ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE = "20216";
-    //手机号获取失败,没有此用户
+    //手机账号不存在或手机号未被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS = "20217";
     //重置密码失败
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED = "20218";
@@ -102,7 +103,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED = "20223";
     // 当日注册次数已达上限
     public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
-    // 手机号已注册或绑定
+    // 手机号已绑定其他账号
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
     //登录失败
     public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
@@ -121,9 +122,9 @@ public class ErrorUtil {
     //TODO 手机号未被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
     //TODO 手机绑定次数超限
-    public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT="20236";
+    public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT = "20236";
     //TODO 手机解除绑定失败
-    public static final String ERR_CODE_PHONE_UNBIND_FAILED="20237";
+    public static final String ERR_CODE_PHONE_UNBIND_FAILED = "20237";
     //TODO 密码输入错误次数过多
     public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
     //TODO 非法用户名
@@ -132,15 +133,13 @@ public class ErrorUtil {
     //生成cookie失败
     public static final String ERR_CODE_CREATE_COOKIE_FAILED = "20240";
 
-    //***************************account 服务的错误代码end*********************************
+    /* ============================================================================ */
+    /*  account secure 服务的错误代码                                                */
+    /* ============================================================================ */
 
-
-    //***************************account secure 服务的错误代码start*********************************
-
-
-    //***************************account secure 服务的错误代码end*********************************
-
-    //***************************账号绑定相关的错误代码start*********************************
+    /* ============================================================================ */
+    /*  账号绑定相关的错误代码                                                       */
+    /* ============================================================================ */
     // 绑定第三方账号失败
     public static final String BIND_CONNECT_ACCOUNT_FAIL = "20250";
     // 不能绑定与主账号同一类型的账号
@@ -150,11 +149,9 @@ public class ErrorUtil {
     // 此账号已经注册或绑定过
     public static final String ACCOUNT_ALREADY_REG_OR_BIND = "20253";
 
-
-
-    //***************************账号绑定相关的错误代码end*********************************
-
-    //***************************密保方式相关的错误代码start*********************************
+    /* ============================================================================ */
+    /*  密保方式相关的错误代码                                                       */
+    /* ============================================================================ */
     // 未绑定邮箱
     public static final String NOTHAS_BINDINGEMAIL = "20280";
     // 未设置密保问题及答案
@@ -180,21 +177,19 @@ public class ErrorUtil {
     // 绑定密保失败
     public static final String ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED = "20291";
     //重置密码次数超限
-    public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT="20292";
+    public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT = "20292";
     //用户五日内成功登陆过
-    public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY ="20293";
+    public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY = "20293";
 
-    //***************************密保方式相关的错误代码end*********************************
-
-
-    //***************************profile 服务的错误代码start*********************************
+    /* ============================================================================ */
+    /*  profile 服务的错误代码                                                       */
+    /* ============================================================================ */
     // 字段非法
     public static final String ERR_CODE_PROFILE_FIELD = "20301";
 
-
-    //***************************profile 服务的错误代码end*********************************
-
-    //***************************IMAGE 服务的错误代码start*********************************
+    /* ============================================================================ */
+    /*  IMAGE 服务的错误代码                                                         */
+    /* ============================================================================ */
     // 上传头像的文件扩展名不对
     public static final String ERR_CODE_PROFILE_IMGEXT = "20401";
     // 上传错误，没有找到上传的文件
@@ -204,11 +199,9 @@ public class ErrorUtil {
     // 获取图片的URL出错或者服务器连不上
     public static final String ERR_CODE_ACHIEVE_PROFILE = "20404";
 
-    //***************************IMAGE 服务的错误代码end*********************************
-
-    /**
-     * ************************Connect通用的错误代码start********************************
-     */
+    /* ============================================================================ */
+    /*  Connect通用的错误代码                                                        */
+    /* ============================================================================ */
     // 访问频率受限
     public static final String CONNECT_REQUEST_FREQUENCY_LIMIT = "30001";
     // 用户拒绝登录授权
@@ -232,9 +225,9 @@ public class ErrorUtil {
     //第三方openid获取失败,没有此用户
     public static final String ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR = "30013";
 
-    //***************************通用的错误代码end*********************************
-
-    //***************************Friend 服务的错误代码start************************
+    /* ============================================================================ */
+    /*  Friend 服务的错误代码                                                        */
+    /* ============================================================================ */
     // 无法读入上传文件
     public static final String READ_FILE_FAILED = "30301";
     // 上传文件失败
@@ -245,9 +238,10 @@ public class ErrorUtil {
     public static final String FOLLOW_ACCOUNT_NOT_EXISTS = "30310";
     // 已经关注此用户
     public static final String ALREADY_FOLLOWED = "30311";
-    //***************************Friend 服务的错误代码end*******************************
 
-    //***************************信息类API错误代码start*********************************
+    /* ============================================================================ */
+    /*  信息类API错误代码                                                            */
+    /* ============================================================================ */
     // 图片url不能为空
     public static final String PIC_URL_NOT_NULL = "30401";
     // 发送失败
@@ -263,9 +257,9 @@ public class ErrorUtil {
     // 不允许发送相同内容
     public static final String REPEAT_CONTENT = "30407";
 
-    //***************************信息类API错误代码end*********************************
-
-    //***************************好友类API错误代码start********************************
+    /* ============================================================================ */
+    /*  好友类API错误代码                                                           */
+    /* ============================================================================ */
     // 上传的通讯录file不能为空
     public static final String UPDATE_CONATCT_NOT_NULL = "30501";
 
@@ -286,7 +280,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING,"code签名错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "code签名错误");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
@@ -302,6 +296,7 @@ public class ErrorUtil {
 
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信验证码已经达到上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法用户名");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法用户名");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信已经到20条上限啦");
@@ -310,7 +305,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_ERROR, "用户名或密码不正确");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日短信验证错误次数已超过上限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日验证码校验错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "用户注册失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
@@ -321,12 +316,12 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP登陆操作存在异常");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机号获取失败，或没有此用户");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机账号不存在或手机号未被绑定");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "验证码验证失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或绑定");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已绑定其他账号");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
@@ -341,7 +336,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
         ERR_CODE_MSG_MAP.put(NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT, "不允许重复绑定同一类型的账号");
         ERR_CODE_MSG_MAP.put(ACCOUNT_ALREADY_REG_OR_BIND, "此账号已经注册或绑定过，无法再次绑定");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED,"手机解除绑定失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
 
 
         // acount secure info
@@ -358,9 +353,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BIND_FAILED, "修改密保链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED, "绑定密保问题失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOBIND, "手机号未绑定账号");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT,"手机绑定次数超限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT,"修改密码频率过于频繁");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY,"用户5日内登录过");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT, "手机绑定次数超限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT, "修改密码频率过于频繁");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY, "用户5日内登录过");
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");

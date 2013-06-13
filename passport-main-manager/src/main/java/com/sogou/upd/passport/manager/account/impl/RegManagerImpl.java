@@ -79,7 +79,7 @@ public class RegManagerImpl implements RegManager {
             result = proxyRegisterApiManager.regMailUser(null);
           } else {
             result = sgRegisterApiManager.regMailUser(
-                new RegEmailApiParams(username, password, ip, clientId, captcha, token));
+                new RegEmailApiParams(username, password, ip, clientId));
           }
           return result;
         case PHONE://手机号
