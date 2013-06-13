@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
@@ -35,8 +36,6 @@ import java.util.Map;
 public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
-    private static final int USERTYPE_PHONE = 1;
-    private static final int USERTYPE_PASSPORTID = 0;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -147,7 +146,7 @@ public class LoginManagerImpl implements LoginManager {
             authUserApiParams.setUserid(passportId);
             authUserApiParams.setPassword(pwdMD5);
             //TODO 设置clientId,暂时设置为1100
-            authUserApiParams.setClient_id(1100);
+            authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
             //根据域名判断是否代理，一期全部走代理
             if (ManagerHelper.isInvokeProxyApi(passportId)) {
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
