@@ -446,7 +446,7 @@ public class AccountSecureController extends BaseController {
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
         String scode = params.getScode();
-        return secureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, scode);
+        return secureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, scode, null);
     }
 
     /**
@@ -477,7 +477,7 @@ public class AccountSecureController extends BaseController {
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
         return secureManager.bindMobileByPassportId(passportId, clientId, newMobile, smsCode,
-                                                    password);
+                                                    password, null);
     }
 
     /**

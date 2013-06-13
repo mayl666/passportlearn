@@ -58,6 +58,7 @@ public class SecureAction extends BaseController {
     private HostHolder hostHolder;
 
     // TODO:GET方法怎么处理？
+    // TODO:以下为TEST，需要删除
 
     /**
      * 修改密码
@@ -69,13 +70,17 @@ public class SecureAction extends BaseController {
     public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //todo 注解需要判断登录
+
         String validateResult = ControllerHelper.validateParams(resetParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             return result;
         }
+
+        String modifyIp = getIp(request);
+        resetParams.setIp(modifyIp);
+
         result = secureManager.resetWebPassword(resetParams);
         return result;
     }
@@ -219,7 +224,7 @@ public class SecureAction extends BaseController {
 
     @RequestMapping(value = "/bindmobile", method = RequestMethod.POST)
     @LoginRequired
-    public String bindMobile(WebBindMobileParams params, Model model) throws Exception {
+    public String bindMobile(WebBindMobileParams params, HttpServletRequest request, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -233,8 +238,9 @@ public class SecureAction extends BaseController {
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
         String password = params.getPassword();
+        String modifyIp = getIp(request);
 
-        result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password);
+        result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:成功页面
@@ -269,7 +275,7 @@ public class SecureAction extends BaseController {
 
     @RequestMapping(value = "bindmobilenew", method = RequestMethod.POST)
     @LoginRequired
-    public String modifyMobile(WebModifyMobileParams params, Model model) throws Exception {
+    public String modifyMobile(WebModifyMobileParams params, HttpServletRequest request, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -283,8 +289,9 @@ public class SecureAction extends BaseController {
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
         String scode = params.getScode();
+        String modifyIp = getIp(request);
 
-        result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode);
+        result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
             return ""; // TODO:成功页面

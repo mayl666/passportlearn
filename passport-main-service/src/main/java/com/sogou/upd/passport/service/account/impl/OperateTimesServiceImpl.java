@@ -149,26 +149,41 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public long incRegIPTimes(String ip) throws ServiceException {
+    public long incRegTimes(String ip,String cookieStr) throws ServiceException {
         try {
-            String cacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            return recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+            recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+
+            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+            recordTimes(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+
         } catch (Exception e) {
             logger.error("incRegIPTimes:ip" + ip, e);
             throw new ServiceException(e);
         }
+        return 1;
 
     }
 
     @Override
-    public boolean checkRegIPInBlackList(String ip) throws ServiceException {
+    public boolean checkRegInBlackList(String ip,String cookieStr) throws ServiceException {
+        boolean result = false;
         try {
-            String cacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            return checkTimesByKey(cacheKey, LoginConstant.IP_LIMITED);
+            String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+            result = checkTimesByKey(ipCacheKey, LoginConstant.REGISTER_IP_LIMITED);
+            if(result){
+                return true;
+            }
+            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+            result = checkTimesByKey(cookieCacheKey, LoginConstant.REGISTER_COOKIE_LIMITED);
+            if(result){
+                return true;
+            }
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
             throw new ServiceException(e);
         }
+        return result;
     }
 
     /**

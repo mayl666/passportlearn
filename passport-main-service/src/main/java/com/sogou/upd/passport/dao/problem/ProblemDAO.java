@@ -72,7 +72,7 @@ public interface ProblemDAO {
   /**
    * 根据id获取Problem
    */
-  @SQL("select" +
+  @SQL("select " +
        ALL_FIELD +
        "from" +
        TABLE_NAME +
@@ -82,9 +82,9 @@ public interface ProblemDAO {
   /**
    * 根据拼接的字符串获取Problem
    */
-  @SQL("select" +
+  @SQL("select " +
        ALL_FIELD +
-       "from" +
+       " from " +
        TABLE_NAME +
        " where 1=1 "
        + "#if(:status != null){and status = :status }" //根据状态筛选
@@ -106,7 +106,7 @@ public interface ProblemDAO {
           throws DataAccessException;
 
   /**
-   * 根据拼接的字符串获取Problem
+   * 根据passportId获取问题列表
    */
   @SQL("select count(id) from " +
        TABLE_NAME +
@@ -125,6 +125,19 @@ public interface ProblemDAO {
                                       @SQLParam("content") String content)
           throws DataAccessException;
 
-
+    /**
+     * 根据拼接的字符串获取Problem
+     */
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where passport_Id = :passportId"
+            + " order by sub_time DESC "
+            + " #if((:start != null)&&(:end !=null)){ limit :start,:end }" )
+    public List<Problem> queryProblemListByPassportId(@SQLParam("passportId") String  passportId,
+                                          @SQLParam("start") Integer start,
+                                          @SQLParam("end") Integer end)
+            throws DataAccessException;
 
 }

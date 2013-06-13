@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -20,8 +20,18 @@ public class AuthUserApiParams extends BaseUserApiParams {
     @Min(0)
     private int usertype; // userid为手机号时，usertype=1；usertype默认为0，userid值为全域名id，如：test-1@sohu.com 或 昵称 eg:zhangsan TODO 暂时用不到此参数
 
+<<<<<<< HEAD
     @NotBlank(message = "用户ip不允许为空")
     private String ip;
+=======
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+>>>>>>> d03d87ec33639ecd1032b0f19a4450c58e559196
 
     public String getPassword() {
         return password;
@@ -45,13 +55,5 @@ public class AuthUserApiParams extends BaseUserApiParams {
 
     public void setUsertype(int usertype) {
         this.usertype = usertype;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
     }
 }

@@ -16,6 +16,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORT_ACCOUNTTOKEN = "SP.PASSPORTID:ACCOUNTTOKEN_"; // passportId:Map<client_id+instance_id, accountToken>
     public static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = "SP.PASSPORTID:IPBLACKLIST_"; // passportId与ip blacklist映射
     public static final String CACHE_PREFIX_REGISTER_IPBLACKLIST = "SP.REGISTER:IPBLACKLIST_"; // ip与注册次数映射
+    public static final String CACHE_PREFIX_REGISTER_COOKIEBLACKLIST = "SP.REGISTER:COOKIEBLACKLIST_"; // cookie与注册次数映射
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = "SP.PASSPORTID:RESETPWDEMAILTOKEN_"; //passportId与邮件重置密码token有效期验证
     public static final String CACHE_PREFIX_PASSPORTID_ACCOUNTINFO = "SP.PASSPORTID:ACCOUNTINFO_"; // passportId与accountInfo映射
@@ -41,4 +42,11 @@ public class CacheConstant {
     /*================CONFIG 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_CLIENTID_APPCONFIG = "SP.CLIENTID:APPCONFIG_";     //clientid与appConfig映射
     public static final String CACHE_PREFIX_CLIENTID_CONNECTCONFIG = "SP.CLIENTID:CONNECTCONFIG_";     //clientid与connectConfig映射
+
+    /*================用户反馈相关缓存常量=====================*/
+    public static final String CACHE_PREFIX_ID_PROBLEMTYPE = "SP.ID:PROBLEMTYPE_"; // Id与problem映射 CACHE_PREFIX_PASSPORTID_PROBLEM
+    public static final String CACHE_PREFIX_PASSPORTID_PROBLEMLIST = "SP.PASSPORTID:PROBLEMLIST_"; // passortId与问题列表之前的映射
+    public static final String CACHE_PREFIX_PROBLEMID_PROBLEMANSWERSIZE = "SP.PROBLEMID_:PROBLEMANSWERSIZE_"; // problemId与问题回答数量之前的映射
+    public static final String CACHE_PREFIX_PROBLEMID_PROBLEMANSWERLIST = "SP.PROBLEMID_:PROBLEMANSWERLIST_"; // problemId与问题回答数量之前的映射
+
 }

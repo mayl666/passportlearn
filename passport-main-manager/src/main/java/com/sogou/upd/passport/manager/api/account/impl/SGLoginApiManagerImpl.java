@@ -40,8 +40,6 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     private AccountService accountService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
-    private OperateTimesService operateTimesService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -51,71 +49,19 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
         Result result = new APIResultSupport(false);
         String userid = authUserApiParams.getUserid();
         String password = authUserApiParams.getPassword();
-        String ip = authUserApiParams.getIp();
         int userType = authUserApiParams.getUsertype();
+        String passportId = userid;
         try {
-
-            Account account = null;
             //判断登录用户类型
-
-            switch (userType) {
-                case USERTYPE_PHONE:
-                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(userid);
-                    if (Strings.isNullOrEmpty(passportId)) {
-                        return doUserNotExist(userid, ip);
-                    }
-                    account = accountService.queryAccountByPassportId(passportId);
-                    break;
-                case USERTYPE_PASSPORTID:
-                    account = accountService.queryAccountByPassportId(userid);
-                    break;
+            if (userType == USERTYPE_PHONE){
+                passportId = mobilePassportMappingService.queryPassportIdByUsername(userid);
             }
-            if (account == null) {
-                return doUserNotExist(userid, ip);
-            }
-
-            //检查该账号是否为正常账号
-            if (!AccountHelper.isNormalAccount(account)) {
-                if (AccountHelper.isDisabledAccount(account)) {
-                    //登陆账号未激活
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
-                    return result;
-                } else {
-                    //登陆账号被封杀
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                    return result;
-                }
-            }
-
-            String storedPwd = account.getPasswd();
-            if (PwdGenerator.verify(password, false, storedPwd)) {
-                //todo 登录成功种cookie
-
-                //写缓存
-                operateTimesService.incLoginSuccessTimes(userid, ip);
-                result.setSuccess(true);
-                result.setMessage("登录成功");
-                return result;
-
-            } else {
-                operateTimesService.incLoginFailedTimes(userid, ip);
-                result.setCode(ErrorUtil.USERNAME_PWD_MISMATCH);
-                return result;
-            }
+            return accountService.verifyUserPwdVaild(passportId,password,false);
         } catch (Exception e) {
-            operateTimesService.incLoginFailedTimes(userid, ip);
             logger.error("accountLogin fail,userId:" + authUserApiParams.getUserid(), e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
         }
-    }
-
-    private Result doUserNotExist(String userid, String ip) {
-        Result result = new APIResultSupport(false);
-        //记录登陆失败操作
-//        operateTimesService.incLoginFailedTimes(userid, ip);
-        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-        return result;
     }
 
     @Override

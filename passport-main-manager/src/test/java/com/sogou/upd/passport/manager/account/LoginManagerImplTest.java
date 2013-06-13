@@ -24,7 +24,7 @@ public class LoginManagerImplTest extends BaseTest {
 
 
     private static final int clientId = 1100;
-    private static final String username = "13621009174";
+    private static final String username = "18600369478";
     private static final String ip = "192.168.226.174";
 //    private static String passpword = Coder.encryptMD5("spz1986411");
     @Test
@@ -32,7 +32,7 @@ public class LoginManagerImplTest extends BaseTest {
         try {
             AtomicReference<WebLoginParameters> webLoginParameters = new AtomicReference<WebLoginParameters>(new WebLoginParameters());
             webLoginParameters.get().setUsername(username);
-            webLoginParameters.get().setPassword(Coder.encryptMD5("spz1986411"));
+            webLoginParameters.get().setPassword(Coder.encryptMD5("123456"));
             webLoginParameters.get().setCaptcha("");
             Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip);
             System.out.println("testAccountLogin:"+result);

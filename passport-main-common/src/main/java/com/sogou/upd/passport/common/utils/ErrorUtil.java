@@ -129,6 +129,9 @@ public class ErrorUtil {
     //TODO 非法用户名
     public static final String ERR_CODE_USERID_ILLEGAL="20239";
 
+    //生成cookie失败
+    public static final String ERR_CODE_CREATE_COOKIE_FAILED = "20240";
+
     //***************************account 服务的错误代码end*********************************
 
 
@@ -270,6 +273,16 @@ public class ErrorUtil {
 
     //***************************好友类API错误代码end********************************
 
+
+    //***************************反馈相关错误代码start********************************
+    //用户允许提交反馈，但提交失败
+    public static final String ERR_CODE_PROBLEM_INSERT_FAILED = "30601";
+    //提交反馈评论失败
+    public static final String ERR_CODE_PROBLEMANSWER_INSERT_FAILED = "30602";
+    //关闭反馈失败
+    public static final String ERR_CODE_PROBLEM_CLOSE_FAILED = "30603";
+    //***************************反馈相关错误代码end********************************
+
     static {
         // 通用错误
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
@@ -321,6 +334,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "账号已封杀");
 
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_COOKIE_FAILED, "生成cookie失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "当日邮件发送次数已达上限");
 
@@ -387,6 +401,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过帐号");
         ERR_CODE_MSG_MAP.put(ALREADY_FOLLOWED, "已经关注此用户");
 
+        //反馈相关
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_INSERT_FAILED, "提交用户反馈失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEMANSWER_INSERT_FAILED, "提交反馈评论失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
     }
 
     public static Map<String, Object> buildError(String code) {

@@ -3,12 +3,12 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/static/css/main.css?t=763570" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=405218" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
     <div class="inner">
-        <h1><img src="/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <h1><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></h1>
         <ul class="info">
             <li>欢迎您&nbsp;<span class="username"></span></li>
             <li class="sep">|</li>
@@ -43,19 +43,19 @@
             提示信息
         </div>
         <div  class="form">
-            <form method="post" id="" action="/web/findpwd/getsecinfo">
+            <form method="post" id="" action="">
                 <p class="ptitle">请输入您要找回的账号</p>
                 
                 <div class="form-item">
     <label for="UnameIpt">账号名：</label>
     <span class="form-el">
-        <input uui-type="require username" type="text" name="username" id="UnameIpt" value="" />
+        <input uui-type="require uname" type="text" name="uname" id="UnameIpt" value="" />
     </span>
 </div>
-                <div class="form-item">
+                <div class="form-item form-item-vcode">
     <label for="ValidIpt">验证码：</label>
-    <span class="form-el form-el-s"><input type="text" name="vcode" id="ValidIpt" value="" /></span>
-    <span class="vpic"><img src="http://account.sogou.com/captcha" class="" alt="" /></span>
+    <span class="form-el form-el-s"><input type="text" name="captcha" id="ValidIpt" value="" uui-type="require" /></span>
+    <span class="vpic"><img src="about:blank" class="" alt="" /></span>
     <a href="#" class="change-vpic">看不清，换一张</a>
 </div>
                 <div class="form-btn">
@@ -77,14 +77,14 @@
 </div>
     </body>
     <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
-    <script type="text/javascript" src="/static/js/main.js?t=922709"></script>
+    <script type="text/javascript" src="/./static/js/main.js?t=922709"></script>
     
     <script type="text/javascript">
 
 var server_data = '${data}';
         
 require.config({
-    baseUrl:"/static/js"
+    baseUrl:"/./static/js"
 });
 
 

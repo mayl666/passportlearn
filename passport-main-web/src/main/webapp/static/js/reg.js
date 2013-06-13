@@ -21,6 +21,32 @@ define('common',[],function(){
     };
 });
 
+/*
+ * form module script
+ * @author zhengxin
+*/
+ 
+
+
+
+define('utils',[], function(){
+
+    
+    return {
+        uuid: function(){
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };            
+            return s4() + s4()  + s4()  + s4()  +
+                s4() +  s4() + s4() + s4();
+
+        }
+    };
+
+});
+
 /**
  给jQuery添加可直接操作uui的接口，以支持链式语法
 
@@ -512,7 +538,7 @@ define("uuibase", function(){});
                     result = me._validate($(el)) && result;
                 });
 
-                return (result? me.options.onformsuccess() : me.options.onformfail());
+                return (result? me.options.onformsuccess(form) : me.options.onformfail(form));
             });
 
             $el.on('focus' , ':input' , function(){
@@ -603,10 +629,10 @@ define("uuiForm", function(){});
 
 
 
-define('form',['./uuibase' , './uuiForm'] , function(){
+define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     $.uuiForm.addType('password' , function(value){
-        
+        return value.length<=16 && value.length>=6;
     });
     $.uuiForm.addType('vpasswd' , function(value , target){
         var targetIpt = $( '#' + target.slice(0,1).toUpperCase() + target.slice(1) + 'Ipt' );
@@ -626,13 +652,16 @@ define('form',['./uuibase' , './uuiForm'] , function(){
             return '邮箱格式不正确';
         },
         password: function(){
-            return '密码不正确';
+            return '密码长度为6-16位';
         },
         cellphone: function(){
             return '请输入正确的手机号码';
         },
         vpasswd: function(){
             return '两次密码输入不一致';
+        },
+        range: function($el){
+            return "";
         }
     };
 
@@ -654,7 +683,7 @@ define('form',['./uuibase' , './uuiForm'] , function(){
         types = (types || '').split(' ');
         var type;
         _.forEach(types , function(value){
-            if( value!= 'require' && !type )
+            if( value!= 'require' && !type && NormalDesc[value] )
                 type = value;
         });
         return type? ( NormalDesc[type] || '' ) : '';
@@ -663,16 +692,54 @@ define('form',['./uuibase' , './uuiForm'] , function(){
         return ErrorDesc[name] && ErrorDesc[name]($el) || '';
     };
 
+    var initToken = function($el){
+        var token = utils.uuid();
+        $el.find('.token').val(token);
+        $el.find('.vpic img').attr('src' , "https://account.sogou.com/captcha?token="+ token);
+    };
+
+    var checkUsername = function($el , cb){
+        var ipt = $el.find('input[name="username"]');
+        $.get('/web/checkusername' , {
+            username: ipt.val()
+        } , function(data){
+            if( typeof data == 'string' ){
+                try{
+                    data = eval('('+data+')');
+                }catch(e){
+                    data = {status:-1,statusText:'服务器故障'};
+                }
+            }
+            if( !+data.status ){//success
+                cb && cb(0);
+            }else{
+                createSpan(ipt,'error');
+                getSpan(ipt , 'error').show().html(data.statusText);
+                cb && cb(1);
+            }
+        });
+        
+    };
+
+    var bindReg = function($el){
+        $el.find('input[name=username]').blur(function(){
+            var errorspan = $(this).parent().parent().find('.error');
+            if( !errorspan || !errorspan.length || errorspan.css('display') == 'none' ){
+                checkUsername($el );
+            }
+        });
+    };
 
     var bindOptEvent = function($el){
         $el.find('.vpic img,.change-vpic').click(function(){
-            var img = $el.find('.vpic img');
-            if( img && img.length && img.attr('src') ){
-                var src = img.attr('src').split('?')[0] + '?t='+ +new Date();
-                img.attr( 'src' , src );
-            }
+            initToken($el);
             return false;
         });
+        
+        var action = $el.attr('action');
+        if( action.indexOf('reguser') ){
+            bindReg($el);
+        }
     };
 
     return{
@@ -698,9 +765,22 @@ define('form',['./uuibase' , './uuiForm'] , function(){
                         createSpan($el,'error');
                         getSpan($el , 'error').show().html(desc);
                     }
+                },
+                onformsuccess: function($el){
+                    
+                    checkUsername($el,function(status){
+                        if( !status ){
+                            $.post($el.attr('action'), $el.serialize() , function(data){
+                                
+                            });
+                        }
+                        return false;
+                    });
+                    return false;
                 }
-                
             });
+            $el.append('<input type="hidden" name="token" value="" class="token"/>');
+            initToken($el);
             bindOptEvent($el);
         }
     };
@@ -721,11 +801,16 @@ define('reg',['./common','./form'] , function(common , form){
         form.render($('.main-content .form form'));
     };
 
+    var addFormItem = function(){
+        $('.main-content .form form').append('<input name="client_id" value="1100" type="hidden"/>');
+    };
+
     return{
         init: function(){
             common.showBannerUnderLine();
 
             bindFormEvent();
+            addFormItem();
         }
     };
 });
