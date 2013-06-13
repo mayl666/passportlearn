@@ -1,22 +1,14 @@
 package com.sogou.upd.passport.web.problem.action;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
-import com.sogou.upd.passport.manager.form.WebLoginParameters;
-import com.sogou.upd.passport.manager.form.WebRegisterParameters;
-import com.sogou.upd.passport.manager.problem.ProblemAnswerManager;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
-import com.sogou.upd.passport.manager.problem.vo.ProblemAnswerVO;
 import com.sogou.upd.passport.manager.problem.vo.ProblemVO;
-import com.sogou.upd.passport.model.problem.Problem;
-import com.sogou.upd.passport.model.problem.ProblemAnswer;
 import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -52,8 +44,7 @@ public class ProblemAction extends BaseController {
     private ProblemTypeManager problemTypeManager;
     @Autowired
     private ConfigureManager configureManager;
-    @Autowired
-    private ProblemAnswerManager problemAnswerManager;
+
 
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
     public Object addProblem(HttpServletRequest request, Model model)
@@ -118,34 +109,6 @@ public class ProblemAction extends BaseController {
         // TODO 获取并set passportId
         String  passportId = null;
         Result result =  problemManager.closeProblemById(problemId);
-        return result.toString();
-    }
-
-    @RequestMapping(value = "/problem/problemAnswer", method = RequestMethod.GET)
-    @ResponseBody
-    public Object listProblemAnswer(HttpServletRequest request,long problemId, Model model)
-            throws Exception {
-        // TODO 获取并set passportId
-        String  passportId = null;
-        Result result =   problemAnswerManager.getAnswerVOList(problemId,passportId);
-        return  result.toString();
-    }
-
-    @RequestMapping(value = "/problem/saveProblemAnswer", method = RequestMethod.POST)
-    @ResponseBody
-    public Object saveProblemAnswer(HttpServletRequest request,long problemId, String content)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        // TODO 获取并set passportId
-        String  passportId = null;
-
-        ProblemAnswer problemAnswer = new ProblemAnswer();
-        problemAnswer.setProblemId(problemId);
-        problemAnswer.setAnsContent(content);
-        problemAnswer.setAnsTime(new Date());
-        problemAnswer.setAnsPassportId(passportId);
-
-        result = problemAnswerManager.insertProblemAnswer(problemAnswer,getIp(request));
         return result.toString();
     }
 }

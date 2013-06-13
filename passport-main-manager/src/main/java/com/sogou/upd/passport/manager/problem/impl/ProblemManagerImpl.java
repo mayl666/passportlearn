@@ -8,7 +8,6 @@ import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.vo.ProblemVO;
 import com.sogou.upd.passport.model.problem.Problem;
 import com.sogou.upd.passport.model.problem.ProblemType;
-import com.sogou.upd.passport.service.problem.ProblemAnswerService;
 import com.sogou.upd.passport.service.problem.ProblemService;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
 import org.slf4j.Logger;
@@ -37,8 +36,6 @@ public class ProblemManagerImpl implements ProblemManager {
     private ProblemService problemService;
     @Autowired
     private ProblemTypeService problemTypeService;
-    @Autowired
-    private ProblemAnswerService problemAnswerService;
 
     @Override
     public Result updateStatusById(long id, int status) throws Exception {
@@ -106,8 +103,7 @@ public class ProblemManagerImpl implements ProblemManager {
             for (Problem problem : problemsList) {
                 long problemId = problem.getId();
                 ProblemType problemType = problemTypeService.getProblemTypeById(problemId);
-                int answerSize = problemAnswerService.getAnswerSizeByProblemId(problemId);
-                ProblemVO problemVO = new ProblemVO(problemType.getTypeName(), answerSize, problem);
+                ProblemVO problemVO = new ProblemVO(problemType.getTypeName(), problem);
                 resultList.add(problemVO);
             }
             return resultList;

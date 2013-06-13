@@ -1,9 +1,6 @@
 package com.sogou.upd.passport.manager.problem.vo;
 
 import com.sogou.upd.passport.model.problem.Problem;
-import com.sogou.upd.passport.model.problem.ProblemAnswer;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: chenjiameng Date: 13-6-4 Time: 下午4:59 To change this template
@@ -13,7 +10,7 @@ public class ProblemVO extends Problem {
 //    private String mobile;
     private String typeName;
     private int ansNum;
-    public ProblemVO(String typeName,int ansNum,Problem problem) {
+    public ProblemVO(String typeName,Problem problem) {
 //        this.mobile = mobile;
         this.typeName = typeName;
 

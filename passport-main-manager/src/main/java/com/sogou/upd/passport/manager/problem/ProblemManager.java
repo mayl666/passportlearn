@@ -3,8 +3,6 @@ package com.sogou.upd.passport.manager.problem;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.vo.ProblemVO;
-import com.sogou.upd.passport.model.problem.Problem;
-import com.sogou.upd.passport.model.problem.ProblemAnswer;
 
 import java.util.List;
 
