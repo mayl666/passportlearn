@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
-
+  private static final String LOGIN_INDEX_URL = "https://account.sogou.com/web/web/index";
 
   @Autowired
   private LoginManager loginManager;
@@ -51,6 +51,14 @@ public class LoginAction extends BaseController {
       result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
       result.setMessage(validateResult);
       return result.toString();
+    }
+
+
+    //设置来源
+    String ru =  loginParams.getRu();
+    if(Strings.isNullOrEmpty(ru)){
+//        loginParams.setRu(request.getServerName()+LOGIN_INDEX_URL);
+        loginParams.setRu(LOGIN_INDEX_URL);
     }
 
     result = loginManager.accountLogin(loginParams, getIp(request));
