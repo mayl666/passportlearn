@@ -70,6 +70,13 @@ public class RegManagerImpl implements RegManager {
       String password = regParams.getPassword();
 
       String captcha = regParams.getCaptcha();
+      String token=regParams.getToken();
+
+      //判断验证码
+      if(!accountService.checkCaptchaCode(token,captcha)){
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+        return result;
+      }
 
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
@@ -78,7 +85,6 @@ public class RegManagerImpl implements RegManager {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
         case UNKNOWN:
-          String token = regParams.getToken();
           if (ManagerHelper.isInvokeProxyApi(username)) {
             //todo 拼参数
             result = proxyRegisterApiManager.regMailUser(null);
