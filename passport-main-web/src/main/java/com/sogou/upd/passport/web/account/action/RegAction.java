@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -56,9 +58,16 @@ public class RegAction extends BaseController {
   @ResponseBody
   public String checkusername(@RequestParam(defaultValue = "") String username)
       throws Exception {
-    //校验username格式 todo
 
+    //校验username格式 todo
+    username= URLDecoder.decode(username, "utf-8");
     Result result = new APIResultSupport(false);
+    //校验是否是@sohu.com
+    if(!isSohuUserName(username)){
+      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+      return result.toString();
+    }
+
     boolean isExists= commonManager.isAccountExists(username);
     if(isExists){
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
@@ -67,6 +76,16 @@ public class RegAction extends BaseController {
       result.setMessage("账户未被占用，可以注册");
     }
     return result.toString();
+  }
+
+  private boolean isSohuUserName(String username) {
+    if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
+      return true;
+    }
+    if(username.endsWith("@sohu.com")){
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -84,14 +103,14 @@ public class RegAction extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
       result.setMessage(validateResult);
-      return result;
+      return result.toString();
     }
 
     String password = regParams.getPassword();
 
     if (!CommonHelper.checkPasswd(password) && StringUtil.checkPwdFormat(password)) {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
-      return result;
+      return result.toString();
     }
     String ip = getIp(request);
     //todo 黑白名单
@@ -102,7 +121,7 @@ public class RegAction extends BaseController {
     //检查client_id格式以及client_id是否存在
     if (!configureManager.checkAppIsExist(clientId)) {
       result.setCode(ErrorUtil.INVALID_CLIENTID);
-      return result;
+      return result.toString();
     }
 
     result = regManager.webRegister(regParams, ip);

@@ -36,11 +36,12 @@ public class RegisterApiController {
 
     /**
      * 注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号
+     * 需要/sendregcaptcha下发的验证码
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value = "/regmobilecaptcha", method = RequestMethod.POST)
+    @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
         Result result = new APIResultSupport(false);
@@ -63,7 +64,7 @@ public class RegisterApiController {
     }
 
     /**
-     * 注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号
+     * 发送手机验证码
      * @param request
      * @param params
      * @return

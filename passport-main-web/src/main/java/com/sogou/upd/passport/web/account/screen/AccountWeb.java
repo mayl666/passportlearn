@@ -19,13 +19,31 @@ import javax.servlet.http.HttpServletResponse;
 public class AccountWeb extends BaseController {
 
   /*
-   web注册页跳转
+   web邮箱注册
  */
-  @RequestMapping(value = "/register", method = RequestMethod.GET)
-  public String register(HttpServletRequest request, HttpServletResponse response)
+  @RequestMapping(value = "/reg/email", method = RequestMethod.GET)
+  public String regEmail(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
 
     return "/reg/email";
+  }
+  /*
+   web手机注册
+ */
+  @RequestMapping(value = "/reg/mobile", method = RequestMethod.GET)
+  public String regMobile(HttpServletRequest request, HttpServletResponse response)
+      throws Exception {
+
+    return "/reg/tel";
+  }
+  /*
+   web个性账号注册
+ */
+  @RequestMapping(value = "/reg/nick", method = RequestMethod.GET)
+  public String register(HttpServletRequest request, HttpServletResponse response)
+      throws Exception {
+
+    return "/reg/nick";
   }
   /*
   web登录页跳转
