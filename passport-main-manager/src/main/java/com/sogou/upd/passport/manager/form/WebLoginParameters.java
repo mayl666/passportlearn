@@ -44,7 +44,7 @@ public class WebLoginParameters {
 //  @NotBlank(message = "标识码不允许为空!")
   private String token;//标识码
 
-    private String ru;//登陆来源
+  private String ru;//登陆来源
   public String getUsername() {
     return username;
   }
@@ -92,11 +92,11 @@ public class WebLoginParameters {
     this.token = token;
   }
 
-    public String getRu() {
-        return ru;
-    }
+  public String getRu() {
+    return ru;
+  }
 
-    public void setRu(String ru) {
-        this.ru = ru;
-    }
+  public void setRu(String ru) {
+    this.ru = ru;
+  }
 }
