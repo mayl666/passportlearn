@@ -13,6 +13,7 @@ import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 
@@ -66,6 +67,11 @@ public class RegAction extends BaseController {
     if(!isSohuUserName(username)){
       result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
       return result.toString();
+    }
+
+    //判断是否是个性账号
+    if(username.indexOf("@")==-1){
+      username=username+"@sogou.com";
     }
 
     boolean isExists= commonManager.isAccountExists(username);
