@@ -45,17 +45,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
       try {
         String username=params.getUsername();
         String password=params.getPassword();
-        String ip=params.getIp();
+        String ip=params.getCreateip();
         int clientId=params.getClient_id();
-
-        String captcha=params.getCaptcha();
-        String token=params.getToken();
-
-        //判断验证码
-        if(!accountService.checkCaptchaCode(token,captcha)){
-          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-          return result;
-        }
 
         //判断注册账号类型，外域用户还是个性用户
         AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
