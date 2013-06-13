@@ -125,7 +125,6 @@ public class LoginManagerImpl implements LoginManager {
             if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
                 passportId = passportId+"@sogou.com";
             }
-
             //校验验证码
             if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
@@ -158,8 +157,16 @@ public class LoginManagerImpl implements LoginManager {
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(passportId,ip);
                 // 种sohu域cookie
+
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-                createCookieUrlApiParams.setUserid(passportId);
+                //获取passportId
+                String passportIdTmp =  passportId;
+                if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                    passportId = mobilePassportMappingService.queryPassportIdByUsername(passportId);
+                }
+                passportId = passportIdTmp;
+
+                createCookieUrlApiParams.setUserid(passportIdTmp);
                 createCookieUrlApiParams.setRu(loginParameters.getRu());
                 createCookieUrlApiParams.setPersistentcookie(loginParameters.getAutoLogin());
 
