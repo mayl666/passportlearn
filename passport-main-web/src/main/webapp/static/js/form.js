@@ -79,7 +79,7 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
         var ipt = $el.find('input[name="username"]');
         if( !ipt || !ipt.length )
             cb && cb(0);
-        $.get('/web/checkusername' , {
+        $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
             if( typeof data == 'string' ){
