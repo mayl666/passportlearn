@@ -21,13 +21,6 @@ public interface BindApiManager {
     Result bindMobile(BindMobileApiParams bindMobileApiParams);
 
     /**
-     * 解绑手机接口代理
-     * @param updateBindMobileApiParams
-     * @return
-     */
-    Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams);
-
-    /**
      * 绑定邮箱接口
      * @param bindEmailApiParams
      * @return
@@ -41,4 +34,10 @@ public interface BindApiManager {
      */
     Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams);
 
+    /**
+     * 发送验证码相关接口
+     * @param sendCaptchaApiParams
+     * @return
+     */
+    Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams);
 }

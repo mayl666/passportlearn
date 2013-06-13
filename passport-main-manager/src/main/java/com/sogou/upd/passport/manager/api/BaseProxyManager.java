@@ -27,7 +27,7 @@ public class BaseProxyManager {
 
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
-    protected Result executeResult(final RequestModel requestModel){
+    public  Result executeResult(final RequestModel requestModel){
         return executeResult(requestModel, null);
     }
 
@@ -38,7 +38,7 @@ public class BaseProxyManager {
      * @param signVariableStr 计算code时第一个参数值，如果为null默认是userid
      * @return
      */
-    protected Result executeResult(final RequestModel requestModel, String signVariableStr) {
+    public Result executeResult(final RequestModel requestModel, String signVariableStr) {
         Result result = new APIResultSupport(false);
         try {
             Map<String, Object> map = this.execute(requestModel, signVariableStr);

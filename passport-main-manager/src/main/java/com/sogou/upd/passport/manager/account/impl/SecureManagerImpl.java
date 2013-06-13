@@ -319,7 +319,6 @@ public class SecureManagerImpl implements SecureManager {
     public Result queryAccountSecureInfo(String userId, int clientId, boolean doProcess) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
             GetSecureInfoApiParams params = new GetSecureInfoApiParams();
             params.setUserid(userId);
@@ -345,39 +344,24 @@ public class SecureManagerImpl implements SecureManager {
                 if (!Strings.isNullOrEmpty(emailBind)) {
                     String emailProcessed = StringUtil.processEmail(emailBind);
                     accountSecureInfoVO.setSec_email(emailProcessed);
-                    score += 30;
                 }
                 if (!Strings.isNullOrEmpty(mobile)) {
                     String mobileProcessed = StringUtil.processMobile(mobile);
                     accountSecureInfoVO.setSec_mobile(mobileProcessed);
-                    score += 30;
                 }
-                if (!Strings.isNullOrEmpty(question)) {
-                    accountSecureInfoVO.setSec_ques(question);
-                    score += 30;
-                }
+                accountSecureInfoVO.setSec_ques(question);
                 if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
                     String emailRegProcessed = StringUtil.processEmail(userId);
                     accountSecureInfoVO.setReg_email(emailRegProcessed);
                 }
             } else {
-                if (!Strings.isNullOrEmpty(emailBind)) {
-                    accountSecureInfoVO.setSec_email(emailBind);
-                    score += 30;
-                }
-                if (!Strings.isNullOrEmpty(mobile)) {
-                    accountSecureInfoVO.setSec_mobile(mobile);
-                    score += 30;
-                }
-                if (!Strings.isNullOrEmpty(question)) {
-                    accountSecureInfoVO.setSec_ques(question);
-                    score += 30;
-                }
+                accountSecureInfoVO.setSec_email(emailBind);
+                accountSecureInfoVO.setSec_mobile(mobile);
+                accountSecureInfoVO.setSec_ques(question);
                 if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
                     accountSecureInfoVO.setReg_email(userId);
                 }
             }
-            accountSecureInfoVO.setSec_score(score);
 
             /*Account account = accountService.queryNormalAccount(userId);
             if (account == null) {
@@ -418,7 +402,6 @@ public class SecureManagerImpl implements SecureManager {
                     accountSecureInfoVO.setReg_email(userId);
                 }
             }*/
-
             result.setSuccess(true);
             result.setMessage("查询成功");
             result.setDefaultModel(accountSecureInfoVO);
@@ -592,7 +575,7 @@ public class SecureManagerImpl implements SecureManager {
             BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
             bindMobileApiParams.setUserid(userId);
             bindMobileApiParams.setClient_id(clientId);
-            bindMobileApiParams.setMobile(newMobile);
+//            bindMobileApiParams.setMobile(newMobile);
             // TODO:IP和其他成员
 
             if (ManagerHelper.isInvokeProxyApi(userId)) {
@@ -675,7 +658,7 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxySecureApiManager.getUserSecureInfo(getSecureInfoApiParams);
                 Map<String, String> mapResult = result.getModels();
                 updateBindMobileApiParams.setOldMobile(mapResult.get("sec_mobile"));
-                result = proxyBindApiManager.updateBindMobile(updateBindMobileApiParams);
+//                result = proxyBindApiManager.updateBindMobile(updateBindMobileApiParams);
             } else {
                 // TODO:
                 account = accountService.queryNormalAccount(userId);
