@@ -58,7 +58,6 @@ public class SecureAction extends BaseController {
     private HostHolder hostHolder;
 
     // TODO:GET方法怎么处理？
-    // TODO:以下为TEST，需要删除
 
     /**
      * 修改密码
