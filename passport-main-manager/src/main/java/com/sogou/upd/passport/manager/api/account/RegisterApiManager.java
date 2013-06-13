@@ -17,6 +17,7 @@ public interface RegisterApiManager {
 
     /**
      * 注册邮箱、个性域名（昵称+@Sogou）账号
+     * 外域邮箱发送激活邮件，其他账号直接注册
      * @param regEmailApiParams
      * @return
      */

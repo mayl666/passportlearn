@@ -43,7 +43,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
     public Result regMailUser(RegEmailApiParams params) {
       Result result = new APIResultSupport(false);
       try {
-        String username=params.getUsername();
+        String username=params.getUserid();
         String password=params.getPassword();
         String ip=params.getCreateip();
         int clientId=params.getClient_id();
