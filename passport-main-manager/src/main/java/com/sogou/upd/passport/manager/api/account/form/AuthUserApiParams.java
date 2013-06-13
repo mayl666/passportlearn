@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -11,7 +11,7 @@ import javax.validation.constraints.Min;
  * Date: 13-6-6
  * Time: 上午10:21
  */
-public class AuthUserApiParams extends BaseApiParameters {
+public class AuthUserApiParams extends BaseApiParams {
 
     @NotBlank(message = "userid不允许为空")
     private String userid;

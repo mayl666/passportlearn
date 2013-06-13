@@ -2,7 +2,7 @@ package com.sogou.upd.passport.manager.api.account.form;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
@@ -15,7 +15,7 @@ import javax.validation.constraints.AssertTrue;
  * Time: 下午9:25
  * To change this template use File | Settings | File Templates.
  */
-public class BaseMoblieApiParams extends BaseApiParameters {
+public class BaseMoblieApiParams extends BaseApiParams {
 
     @NotBlank(message = "手机号不允许为空")
     private String mobile;

@@ -10,7 +10,7 @@ import javax.validation.constraints.Min;
  * Date: 13-6-6
  * Time: 上午10:22
  */
-public class BaseApiParameters {
+public class BaseApiParams {
 
     @Min(0)
     @NotBlank(message = "client_id不允许为空")

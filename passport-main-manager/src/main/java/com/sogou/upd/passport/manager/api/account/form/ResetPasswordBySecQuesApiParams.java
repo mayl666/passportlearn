@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-8
  * Time: 下午5:22
  */
-public class ResetPasswordBySecQuesApiParams extends BaseApiParameters {
+public class ResetPasswordBySecQuesApiParams extends BaseApiParams {
 
     @NotBlank(message = "用户名不允许为空")
     private String userid;
