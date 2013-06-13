@@ -150,11 +150,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result verifyUserPwdVaild(String userId, String password, boolean needMD5) throws ServiceException {
+    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException {
         Result result = new APIResultSupport(false);
         Account userAccount;
         try {
-            userAccount = queryAccountByPassportId(userId);
+            userAccount = queryAccountByPassportId(passportId);
         } catch (ServiceException e) {
             throw e;
         }
