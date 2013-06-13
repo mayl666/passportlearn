@@ -40,7 +40,7 @@ public interface LoginApiManager {
 
     /**
      * 构造sohu生成并设置cookie的url
-     * @param createCookieApiParams
+     * @param createCookieUrlApiParams
      * @return
      */
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams);

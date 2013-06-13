@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -8,10 +8,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-7
  * Time: 下午12:11
  */
-public class UpdatePwdApiParams extends BaseApiParameters {
-
-    @NotBlank(message = "账号不能为空！")
-    private String userid;
+public class UpdatePwdApiParams extends BaseUserApiParams {
 
     @NotBlank(message = "原密码不能为空！")
     private String password;
@@ -36,14 +33,6 @@ public class UpdatePwdApiParams extends BaseApiParameters {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
     }
 
     public String getModifyip() {
