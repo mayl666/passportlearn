@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import junit.framework.Assert;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 /**
@@ -27,6 +28,10 @@ public class PwdGeneratorTest extends BaseGeneratorTest {
     @Test
     public void testGeneratorStoredPwd() {
         try {
+            String pwd = "123456";
+            String pwdMD5 = DigestUtils.md5Hex(pwd.getBytes());
+            System.out.println("pwdMD5:" + pwdMD5);
+
             String pwdSign = PwdGenerator.generatorStoredPwd("123456", true);
             System.out.println("pwdSign:" + pwdSign);
             Assert.assertTrue(true);
