@@ -43,13 +43,13 @@
             提示信息
         </div>
         <div  class="form">
-            <form method="post" id="" action="">
+            <form method="post" id="" action="/web/findpwd/getsecinfo">
                 <p class="ptitle">请输入您要找回的账号</p>
                 
                 <div class="form-item">
-    <label for="UnameIpt">账号名：</label>
+    <label for="UsernameIpt">账号名：</label>
     <span class="form-el">
-        <input uui-type="require uname" type="text" name="uname" id="UnameIpt" value="" />
+        <input uui-type="require username" type="text" name="username" id="UsernameIpt" value="" />
     </span>
 </div>
                 <div class="form-item form-item-vcode">
