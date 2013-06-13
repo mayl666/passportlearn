@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -18,11 +20,13 @@ import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateBindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
@@ -51,6 +55,8 @@ public class SecureManagerImpl implements SecureManager {
 
     private static Logger logger = LoggerFactory.getLogger(SecureManagerImpl.class);
 
+    private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
+
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
@@ -73,6 +79,8 @@ public class SecureManagerImpl implements SecureManager {
     private SecureApiManager sgSecureApiManager;
     @Autowired
     private SecureApiManager proxySecureApiManager;
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private BindApiManager sgBindApiManager;
     @Autowired
@@ -321,22 +329,28 @@ public class SecureManagerImpl implements SecureManager {
         try {
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
-            GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-            params.setUserid(userId);
-            params.setClient_id(clientId);
 
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
-                result = proxySecureApiManager.getUserSecureInfo(params);
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             } else {
+                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
+                params.setUserid(userId);
+                params.setClient_id(clientId);
                 result = sgSecureApiManager.getUserSecureInfo(params);
             }
+
+            Map<String, String> map = result.getModels();
+            result.setModels(Maps.newHashMap());
 
             if (!result.isSuccess()) {
                 return result;
             }
 
-            Map<String, String> map = result.getModels();
             String mobile = map.get("sec_mobile");
             String emailBind = map.get("sec_email");
             String question = map.get("sec_ques");
@@ -378,6 +392,7 @@ public class SecureManagerImpl implements SecureManager {
                 }
             }
             accountSecureInfoVO.setSec_score(score);
+            accountSecureInfoVO.setLast_login(System.currentTimeMillis()); // TODO:修改
 
             /*Account account = accountService.queryNormalAccount(userId);
             if (account == null) {
