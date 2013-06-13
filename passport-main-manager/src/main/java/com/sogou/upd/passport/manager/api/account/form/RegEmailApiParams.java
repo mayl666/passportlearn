@@ -15,55 +15,28 @@ import javax.validation.constraints.AssertTrue;
  */
 public class RegEmailApiParams extends BaseApiParams {
     @NotBlank(message = "注册账号不允许为空")
-    private String username;  //注册账号
+    private String userid;  //注册账号
     @NotBlank(message = "密码不允许为空")
     private String password;  //明文密码，需要对格式校验
     @NotBlank(message = "注册IP不允许为空")
     private String createip;  //注册IP
+    private String send_email; //如果是外域账号，是否发生激活邮件，1为发生激活邮件，否则不发生激活邮件
 
+    public RegEmailApiParams(){}
 
-
-    public RegEmailApiParams(String username, String password, String createip, int client_id) {
-        this.username = username;
+    public RegEmailApiParams(String userid, String password, String createip, int client_id) {
+        this.userid = userid;
         this.password = password;
         this.createip = createip;
         setClient_id(client_id);
     }
-    @AssertTrue(message = "暂不支持sohu账号注册")
-    private boolean isSohuUserName() {
-        if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
-            return true;
-        }
-        if(username.endsWith("@sohu.com")){
-          return false;
-        }
-        return true;
+
+    public String getUserid() {
+        return userid;
     }
 
-    @AssertTrue(message = "密码格式不正确")
-    public boolean isVaildUsername(){
-        if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
-            return true;
-        }
-        //TODO username格式校验
-        return false;
-    }
-
-    @AssertTrue(message = "密码格式不正确")
-    public boolean isVaildPwd(){
-        if (Strings.isNullOrEmpty(password)) {   // NotBlank已经校验过了，无需再校验
-            return true;
-        }
-        //TODO password格式校验
-        return false;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 
     public String getPassword() {
@@ -80,5 +53,13 @@ public class RegEmailApiParams extends BaseApiParams {
 
     public void setCreateip(String createip) {
         this.createip = createip;
+    }
+
+    public String getSend_email() {
+        return send_email;
+    }
+
+    public void setSend_email(String send_email) {
+        this.send_email = send_email;
     }
 }
