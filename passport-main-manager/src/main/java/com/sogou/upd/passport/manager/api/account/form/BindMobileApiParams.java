@@ -1,11 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.AssertTrue;
 
 /**
  * 绑定手机账号的参数类

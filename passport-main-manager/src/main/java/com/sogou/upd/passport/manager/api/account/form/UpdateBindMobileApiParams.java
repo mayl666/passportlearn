@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-9
  * Time: 下午3:08
  */
-public class UpdateBindMobileApiParams extends BaseApiParameters {
+public class UpdateBindMobileApiParams extends BaseApiParams {
 
     @NotBlank(message = "要换绑定用户不能为空")
     private String userid;

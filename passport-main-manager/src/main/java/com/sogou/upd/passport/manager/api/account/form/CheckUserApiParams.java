@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 
 /**
  *
@@ -8,7 +8,7 @@ import com.sogou.upd.passport.manager.api.BaseApiParameters;
  * Date: 13-6-9
  * Time: 下午2:04
  */
-public class CheckUserApiParams extends BaseApiParameters {
+public class CheckUserApiParams extends BaseApiParams {
 
     /**
      * 要检查的用户名

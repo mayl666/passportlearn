@@ -3,12 +3,12 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="./static/css/main.css?t=666480" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=405218" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
     <div class="inner">
-        <h1><img src="@img_prefix@/static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <h1><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></h1>
         <ul class="info">
             <li>欢迎您&nbsp;<span class="username"></span></li>
             <li class="sep">|</li>
@@ -60,12 +60,12 @@
                 注册个性账号
             </div>
             <div  class="form">
-                <form method="post" id="" action="">
+                <form method="post" id="" action="/web/reguser">
                     
                     <div class="form-item">
-    <label for="TelIpt">通行证：</label>
+    <label for="UsernameIpt">通行证：</label>
     <span class="form-el">
-        <input uui-type="require tel" type="text" name="tel" id="TelIpt" value="" />
+        <input uui-type="require username" type="text" name="username" id="UsernameIpt" value="" />
     </span>
 </div>
                     <div class="form-item">
@@ -80,9 +80,9 @@
         <input uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" />
     </span>
 </div>
-                    <div class="form-item">
+                    <div class="form-item form-item-vcode">
     <label for="ValidIpt">验证码：</label>
-    <span class="form-el form-el-s"><input type="text" name="vcode" id="ValidIpt" value="" /></span>
+    <span class="form-el form-el-s"><input type="text" name="captcha" id="ValidIpt" value="" uui-type="require" /></span>
     <span class="vpic"><img src="about:blank" class="" alt="" /></span>
     <a href="#" class="change-vpic">看不清，换一张</a>
 </div>
@@ -112,14 +112,14 @@
 </div>
     </body>
     <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
-    <script type="text/javascript" src="./static/js/main.js?t=922709"></script>
+    <script type="text/javascript" src="/./static/js/main.js?t=922709"></script>
     
     <script type="text/javascript">
 
 var server_data = '${data}';
         
 require.config({
-    baseUrl:"./static/js"
+    baseUrl:"/./static/js"
 });
 
 
