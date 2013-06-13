@@ -42,9 +42,42 @@ public class ResetPwdAction {
     @Autowired
     private ResetPwdManager resetPwdManager;
 
+    // TODO:不允许SOHU域执行此操作
+
     @RequestMapping
-    public String findPwd() throws Exception {
-        return "recover/index";
+    public String findPwd(UserCaptchaParams params, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            model.addAttribute("data", result.toString());
+            return "recover/index";
+        }
+        String username = params.getUsername();
+        int clientId = Integer.parseInt(params.getClient_id());
+        String captcha = params.getCaptcha();
+        String token = params.getToken();
+        /*
+         * TODO：暂时不测
+        if (!checkManager.checkCaptcha(captcha, token)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+            model.addAttribute("data", result.toString());
+            return "recover/index";
+        }*/
+
+        // TODO:是否允许绑定手机取得密保信息
+        String passportId = commonManager.getPassportIdByUsername(username);
+        if (passportId == null) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            model.addAttribute("data", result.toString());
+        }
+
+        // TODO:已修改为代理接口
+        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
+        model.addAttribute("data", result.toString());
+        return "recover/type";
+        // return "recover/index";
     }
 
     @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
@@ -74,7 +107,7 @@ public class ResetPwdAction {
             model.addAttribute("data", result.toString());
         }
 
-        // TODO:需要修改为代理接口
+        // TODO:已修改为代理接口
         result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         model.addAttribute("data", result.toString());
         return "recover/type";
@@ -90,7 +123,7 @@ public class ResetPwdAction {
             model.addAttribute("data", result.toString());
             return "recover/type";
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
         model.addAttribute("data", result.toString());
@@ -109,7 +142,7 @@ public class ResetPwdAction {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         model.addAttribute("data", result.toString());
@@ -128,7 +161,7 @@ public class ResetPwdAction {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
 
@@ -146,7 +179,7 @@ public class ResetPwdAction {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getPassport_id();
+        String passportId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String scode = params.getScode();

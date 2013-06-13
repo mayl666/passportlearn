@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
@@ -41,6 +42,9 @@ public class SGBindApiManagerImpl implements BindApiManager {
     @Autowired
     private EmailSenderService emailSenderService;
 
+    /*
+     * 首次绑定手机，需要检测是否已绑定手机
+     */
     @Override
     public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
         Result result = new APIResultSupport(false);
@@ -70,12 +74,14 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams) {
+    public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
         Result result = new APIResultSupport(false);
-        String mobile = baseMoblieApiParams.getMobile();
-        int clientId = baseMoblieApiParams.getClient_id();
+        String userId = updateBindMobileApiParams.getUserid();
+        String newMobile = updateBindMobileApiParams.getNewMobile();
+        String oldMobile = updateBindMobileApiParams.getOldMobile();
+        int clientId = updateBindMobileApiParams.getClient_id();
 
-        String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+        // String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
 
         Account account = accountService.queryNormalAccount(userId);
         if (account == null) {
@@ -83,7 +89,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             return result;
         }
 
-        if (!mobilePassportMappingService.deleteMobilePassportMapping(mobile)) {
+        if (!mobilePassportMappingService.deleteMobilePassportMapping(oldMobile)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
             return result;
         }

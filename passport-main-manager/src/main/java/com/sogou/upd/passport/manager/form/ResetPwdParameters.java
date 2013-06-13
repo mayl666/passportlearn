@@ -13,6 +13,7 @@ public class ResetPwdParameters {
   private String newpwd;
   @NotBlank(message = "passport_id不允许为空!")
   private String passport_id;
+  private String ip;
 
   public String getPassword() {
     return password;
@@ -36,5 +37,13 @@ public class ResetPwdParameters {
 
   public void setPassport_id(String passport_id) {
     this.passport_id = passport_id;
+  }
+
+  public String getIp() {
+    return ip;
+  }
+
+  public void setIp(String ip) {
+    this.ip = ip;
   }
 }

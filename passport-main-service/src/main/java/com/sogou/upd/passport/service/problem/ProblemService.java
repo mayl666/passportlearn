@@ -36,4 +36,14 @@ public interface ProblemService {
      * @throws ServiceException
      */
     public int updateStatusById(long id, int status) throws ServiceException;
+
+    public int insertProblem(Problem problem) throws ServiceException;
+
+    /**
+     * 根据passportId获取反馈类型
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public List<Problem> queryProblemListByPassportId(String passportId,Integer start,Integer end);
 }

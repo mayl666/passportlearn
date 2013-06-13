@@ -8,7 +8,9 @@ package com.sogou.upd.passport.common;
  */
 public class LoginConstant {
 
-    public static final String PASSPORTID_COOKIE_ID = "passport_id";
+    //nginx module验证完cookie之后会将用户的userid放在header中，这个是key
+    public static final String USER_ID_HEADER="X-SohuPassport-UserId";
+
 
     /**
      * 连续登陆失败多少次需要用户在登陆时输入验证码 >=
@@ -43,6 +45,10 @@ public class LoginConstant {
     /**
      * 一天内某一个ip注册次数限制
      */
-    public static final int IP_LIMITED = 20; // ip一天限制次数
+    public static final int REGISTER_IP_LIMITED = 20; // ip一天限制次数
+    /**
+     * 一天内某一个cookie注册次数限制
+     */
+    public static final int REGISTER_COOKIE_LIMITED = 20; // cookie一天限制次数
 
 }

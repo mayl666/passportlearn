@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -12,6 +13,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -34,7 +36,7 @@ public class LoginManagerImpl implements LoginManager {
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
     private static final int USERTYPE_PHONE = 1;
     private static final int USERTYPE_PASSPORTID = 0;
-
+    private static final String LOGIN_URL = "/web/index";
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -138,8 +140,9 @@ public class LoginManagerImpl implements LoginManager {
             authUserApiParams.setPassword(password);
             //TODO 设置clientId,暂时设置为1001
             authUserApiParams.setClient_id(1001);
-            authUserApiParams.setIp(ip);
-
+            if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username))) {
+                authUserApiParams.setUsertype(USERTYPE_PHONE); // 手机号
+            }
             //根据域名判断是否代理，一期全部走代理
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
@@ -151,8 +154,22 @@ public class LoginManagerImpl implements LoginManager {
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(username,ip);
                 //TODO 取cookie种sogou域cookie
-
-                //TODO 种sohu域cookie
+                // 种sohu域cookie
+                CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+                String passportId = username;
+                //判断登录用户类型
+                if (authUserApiParams.getUsertype() == USERTYPE_PHONE){
+                    passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
+                }
+                createCookieUrlApiParams.setUserid(passportId);
+                createCookieUrlApiParams.setRu(LOGIN_URL);
+                Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
+                if (createCookieResult.isSuccess()){
+                    result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
+                } else{
+                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                    return result;
+                }
 
             } else {
                 operateTimesService.incLoginFailedTimes(username, ip);

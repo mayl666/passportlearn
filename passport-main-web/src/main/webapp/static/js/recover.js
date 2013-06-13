@@ -35,7 +35,7 @@ define(['./common','./form' , './tpl'] , function(common , form , ursa){
     return{
         init: function(type){
             common.showBannerUnderLine();
-
+            
             var data ={};
             try{
                 data = $.evalJSON(server_data);

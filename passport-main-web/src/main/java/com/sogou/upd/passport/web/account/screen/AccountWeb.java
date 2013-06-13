@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/web")
 public class AccountWeb extends BaseController {
+
   /*
    web注册页跳转
  */
@@ -24,7 +25,7 @@ public class AccountWeb extends BaseController {
   public String register(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
 
-    return "reg";
+    return "/reg/email";
   }
   /*
   web登录页跳转

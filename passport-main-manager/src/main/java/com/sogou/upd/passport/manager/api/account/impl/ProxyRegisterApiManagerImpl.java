@@ -6,6 +6,7 @@ import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import org.slf4j.Logger;
@@ -46,6 +47,17 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
         Result result = executeResult(requestModelXml, mobile);
         if (result.isSuccess()) {
             result.setMessage("验证码已发送至" + mobile);
+        }
+        return result;
+    }
+
+    @Override
+    public Result checkUser(CheckUserApiParams checkUserApiParams) {
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.CHECK_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(checkUserApiParams);
+        Result result= executeResult(requestModelXml);
+        if(!result.isSuccess()){
+            result.setDefaultModel("userid","");
         }
         return result;
     }

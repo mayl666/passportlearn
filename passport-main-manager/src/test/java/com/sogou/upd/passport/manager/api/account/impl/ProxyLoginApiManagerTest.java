@@ -5,6 +5,8 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,4 +37,21 @@ public class ProxyLoginApiManagerTest extends BaseTest {
         }
     }
 
+    @Test
+    public void testCreateCookie(){
+        CreateCookieApiParams createCookieApiParams=new CreateCookieApiParams();
+        createCookieApiParams.setUserid(passportId);
+        createCookieApiParams.setIp(modifyIp);
+        Result result = proxyLoginApiManager.createCookie(createCookieApiParams);
+        System.out.println(result);
+    }
+
+    @Test
+    public void testBuildCreateCookieUrl(){
+        CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu("http://ie.sogou.com");
+        Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
+        System.out.println(result);
+    }
 }

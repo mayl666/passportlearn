@@ -5,14 +5,16 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.MobileCodeSenderService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
     private AccountService accountService;
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private MobileCodeSenderService mobileCodeSenderService;
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
@@ -57,6 +61,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
         switch (emailType) {
           case SOGOU://个性账号直接注册
+          case UNKNOWN:
             Account account = accountService.initialAccount(username,password , false, ip, AccountTypeEnum
                 .EMAIL.getValue());
             if (account != null) {
@@ -84,16 +89,45 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
       return result;
     }
 
+
     @Override
-    public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regMobileCaptchaApiParams) {
+    public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regParams) {
+
         Result result = new APIResultSupport(false);
         try {
 
+          int clientId =regParams.getClient_id();
+          String mobile = regParams.getMobile();
+          String username = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
+          String password = regParams.getPassword();
+          String ip=regParams.getIp();
+
+          String captcha = regParams.getCaptcha();
+          //验证手机号码与验证码是否匹配
+          boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, captcha, clientId);
+          if (!checkSmsInfo) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+            return result;
+          }
+
+          Account account = accountService.initialAccount(username,password , false, ip, AccountTypeEnum
+              .PHONE.getValue());
+          if (account != null) {
+            result.setSuccess(true);
+            result.setMessage("注册成功！");
+          } else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+          }
         } catch (Exception e) {
             logger.error("mobile register phone account Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
+    }
+
+    @Override
+    public Result checkUser(CheckUserApiParams checkUserApiParams) {
+        return null;
     }
 
     @Override

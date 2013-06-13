@@ -46,13 +46,12 @@ public class BaseProxyManager {
                 String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
                 if ("0".equals(status)) {
                     result.setSuccess(true);
-                    this.handSHPPMap(map);
-                    result.setModels(map);
-                } else {
-                    Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
-                    result.setCode(entry.getKey());
-                    result.setMessage(entry.getValue());
                 }
+                Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
+                result.setCode(entry.getKey());
+                result.setMessage(entry.getValue());
+                this.handSHPPMap(map);
+                result.setModels(map);
             }
         } catch (Exception e) {
             log.error(requestModel.getUrl() + " execute error ", e);
@@ -84,7 +83,7 @@ public class BaseProxyManager {
      * @param requestModel
      */
 
-    private void setDefaultParam(final RequestModel requestModel, String signVariableStr) {
+    protected void setDefaultParam(final RequestModel requestModel, String signVariableStr) {
         //计算默认的codeserverSecret
         if (Strings.isNullOrEmpty(signVariableStr)) {
             signVariableStr = requestModel.getParam("userid").toString();
@@ -105,9 +104,9 @@ public class BaseProxyManager {
      *
      * @param requestModel
      */
-    private void paramNameAdapter(final RequestModel requestModel) {
+    protected void paramNameAdapter(final RequestModel requestModel) {
         this.paramNameAdapter(requestModel, "client_id", "appid");
-        this.paramNameAdapter(requestModel, "passport_id", "userid");
+//        this.paramNameAdapter(requestModel, "passport_id", "userid");
     }
 
     /**

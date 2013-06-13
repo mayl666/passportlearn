@@ -133,13 +133,28 @@ public class SGHttpClientTest {
         RequestModel requestModel = new RequestModel("http://internal.passport.sohu.com/act/getcookievalue");
         String userid = "upd_test@sogou.com";
         long ct = System.currentTimeMillis();
-        String code = userid + key + ct;
+        String code = userid + "a80d&p4^9t" + ct;
         code = Coder.encryptMD5(code);
         requestModel.addParam("userid", userid);
         requestModel.addParam("ct", ct);
         requestModel.addParam("code", code);
         requestModel.addParam("ip", "10.1.164.160");
-        requestModel.addParam("persistentcookie", "1");
+        requestModel.addParam("persistentcookie", "0");
+        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+        String result = SGHttpClient.executeStr(requestModel);
+        System.out.println(result);
+    }
+
+    @Test
+    public void testGetCookieKey() throws Exception {
+        RequestModel requestModel = new RequestModel("http://internal.passport.sohu.com/act/getcookiekey");
+        long ct = System.currentTimeMillis();
+        String code = appId+key+ ct;
+        code = Coder.encryptMD5(code);
+        requestModel.addParam("appid", appId);
+        requestModel.addParam("ct", ct);
+        requestModel.addParam("code", code);
+        requestModel.addParam("date", "2013-06-08");
         requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
         String result = SGHttpClient.executeStr(requestModel);
         System.out.println(result);

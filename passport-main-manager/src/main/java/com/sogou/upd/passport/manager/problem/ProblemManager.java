@@ -1,5 +1,9 @@
 package com.sogou.upd.passport.manager.problem;
 
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
+import com.sogou.upd.passport.manager.problem.vo.ProblemVO;
+import com.sogou.upd.passport.model.problem.Problem;
 import com.sogou.upd.passport.model.problem.ProblemAnswer;
 
 import java.util.List;
@@ -20,6 +24,17 @@ public interface ProblemManager {
      * @return
      * @throws Exception
      */
-    public int updateStatusById(long id, int status) throws Exception;
+    public Result updateStatusById(long id, int status) throws Exception;
 
+    /**
+     * 关闭反馈
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Result closeProblemById(long id) throws Exception;
+
+    public Result insertProblem(WebAddProblemParameters addProblemParams,String ip)throws Exception;
+
+    public List<ProblemVO> queryProblemListByPassportId(String passportId,int start,int end) throws Exception;
 }

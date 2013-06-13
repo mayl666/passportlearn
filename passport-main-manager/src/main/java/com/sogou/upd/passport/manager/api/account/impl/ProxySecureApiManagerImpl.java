@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
-import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -74,7 +73,7 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
         }
         resultMap.put("sec_email", email);
         resultMap.put("sec_mobile", mobile);
-        resultMap.put("question", question);
+        resultMap.put("sec_ques", question);
         result.setModels(resultMap);
         return result;
     }

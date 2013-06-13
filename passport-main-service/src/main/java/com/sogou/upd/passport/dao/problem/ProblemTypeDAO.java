@@ -18,49 +18,56 @@ import java.util.List;
 @DAO
 public interface ProblemTypeDAO {
 
-  /**
-   * 对应数据库表名称
-   */
-  String TABLE_NAME = " problem_type ";
+    /**
+     * 对应数据库表名称
+     */
+    String TABLE_NAME = " problem_type ";
 
-  /**
-   * 所有字段列表
-   */
-  String
-      ALL_FIELD =
-      " id, type_name ";
+    /**
+     * 所有字段列表
+     */
+    String
+            ALL_FIELD =
+            " id, type_name ";
 
-  /**
-   * 除了id之外所有字段列表
-   */
-  String
-          ALL_FIELD_EXCEPTID =
-          " type_name ";
-  /**
-   * 值列表
-   */
-  String
-      VALUE_FIELD_EXCEPTID =
-      " :problemType.typeName ";
+    /**
+     * 除了id之外所有字段列表
+     */
+    String
+            ALL_FIELD_EXCEPTID =
+            " type_name ";
+    /**
+     * 值列表
+     */
+    String
+            VALUE_FIELD_EXCEPTID =
+            " :problemType.typeName ";
 
 
-  /**
-   * 插入一条用户反馈
-   */
-  @SQL(
-      "insert into " +
-              TABLE_NAME +
-              "("+ALL_FIELD_EXCEPTID+") "
-      + "values ("+ VALUE_FIELD_EXCEPTID +")")
-  public int insertProblemType(@SQLParam("problemType") ProblemType problemType) throws DataAccessException;
+    /**
+     * 插入一条用户反馈类型
+     */
+    @SQL(
+            "insert into " +
+                    TABLE_NAME +
+                    "(" + ALL_FIELD_EXCEPTID + ") "
+                    + "values (" + VALUE_FIELD_EXCEPTID + ")")
+    public int insertProblemType(@SQLParam("problemType") ProblemType problemType) throws DataAccessException;
 
-  /**
-   * 根据id获取Problem
-   */
-  @SQL("select type_name from "
-     +TABLE_NAME +
-       " where id=:id")
-  public String getTypeNameById(@SQLParam("id") long id) throws DataAccessException;
+    /**
+     * 根据id获取Problem类型
+     */
+    @SQL("select "+ALL_FIELD+ " from "
+            + TABLE_NAME +
+            " where id=:id")
+    public ProblemType getProblemTypeById(@SQLParam("id") long id) throws DataAccessException;
+
+    /**
+     * 获取Problem类型列表
+     */
+    @SQL("select "+ALL_FIELD+ " from "
+            + TABLE_NAME)
+    public List<ProblemType> getProblemTypeList() throws DataAccessException;
 
 
 }

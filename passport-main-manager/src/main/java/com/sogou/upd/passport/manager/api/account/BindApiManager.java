@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account;
 
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
@@ -21,10 +22,10 @@ public interface BindApiManager {
 
     /**
      * 解绑手机接口代理
-     * @param baseMoblieApiParams
+     * @param updateBindMobileApiParams
      * @return
      */
-    Result unbindMobile(BaseMoblieApiParams baseMoblieApiParams);
+    Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams);
 
     /**
      * 绑定邮箱接口

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -8,11 +9,12 @@ import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
@@ -22,6 +24,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +49,9 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private RegisterApiManager sgRegisterApiManager;
+    @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -61,23 +64,33 @@ public class RegManagerImpl implements RegManager {
       String username = regParams.getUsername();
       String password = regParams.getPassword();
 
+      String captcha = regParams.getCaptcha();
+
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
 
       switch (emailType) {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
-          String captchaCode = regParams.getCaptcha();
+        case UNKNOWN:
           String token = regParams.getToken();
-
-          result = sgRegisterApiManager.regMailUser(new RegEmailApiParams(username,password , ip, clientId,captchaCode,token));
+          if (ManagerHelper.isInvokeProxyApi(username)) {
+            //todo 拼参数
+            result = proxyRegisterApiManager.regMailUser(null);
+          } else {
+            result = sgRegisterApiManager.regMailUser(
+                new RegEmailApiParams(username, password, ip, clientId, captcha, token));
+          }
           return result;
         case PHONE://手机号
-//          result=sgRegisterApiManager.regMobileCaptchaUser();
+          RegMobileCaptchaApiParams regMobileCaptchaApiParams=buildProxyApiParams(username,password,captcha,clientId,ip);
+          if (ManagerHelper.isInvokeProxyApi(username)) {
+            result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+          } else {
+            result=sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+          }
           break;
       }
-
-
     } catch (ServiceException e) {
       logger.error("webRegister fail,passportId:" + regParams.getUsername(), e);
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -85,6 +98,15 @@ public class RegManagerImpl implements RegManager {
     }
     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     return result;
+  }
+  private RegMobileCaptchaApiParams buildProxyApiParams(String mobile,String password,String captcha,int clientId,String ip) {
+    RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
+    regMobileCaptchaApiParams.setMobile(mobile);
+    regMobileCaptchaApiParams.setPassword(password);
+    regMobileCaptchaApiParams.setCaptcha(captcha);
+    regMobileCaptchaApiParams.setClient_id(clientId);
+    regMobileCaptchaApiParams.setIp(ip);
+    return regMobileCaptchaApiParams;
   }
 
     @Override

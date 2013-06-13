@@ -11,17 +11,17 @@ import javax.validation.constraints.Min;
 public class BaseAccountParams {
 
     @NotBlank(message = "账号不允许为空!")
-    protected String passport_id;
+    protected String userid;
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     protected String client_id;
 
-    public String getPassport_id() {
-        return passport_id;
+    public String getUserid() {
+        return userid;
     }
 
-    public void setPassport_id(String passport_id) {
-        this.passport_id = passport_id;
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 
     public String getClient_id() {

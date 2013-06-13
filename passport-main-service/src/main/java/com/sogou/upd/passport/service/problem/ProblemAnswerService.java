@@ -25,4 +25,12 @@ public interface ProblemAnswerService {
      * @throws ServiceException
      */
     public List<ProblemAnswer> getAnswerListByProblemId(long id) throws ServiceException;
+
+    /**
+     * 根据问题id获取回答数量
+     * @param problem_id
+     * @return
+     * @throws ServiceException
+     */
+    public int getAnswerSizeByProblemId(long problem_id)throws ServiceException;
 }
