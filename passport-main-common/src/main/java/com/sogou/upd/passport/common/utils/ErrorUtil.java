@@ -179,7 +179,6 @@ public class ErrorUtil {
     //重置密码次数超限
     public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT = "20292";
     //用户五日内成功登陆过
-    public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY = "20293";
     public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY ="20293";
     //用户已经存在
     public static final String ERR_CODE_USER_ID_EXIST ="20294";
