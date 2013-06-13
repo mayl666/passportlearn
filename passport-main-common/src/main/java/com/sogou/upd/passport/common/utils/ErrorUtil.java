@@ -128,9 +128,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
     //TODO 非法用户名
     public static final String ERR_CODE_USERID_ILLEGAL="20239";
-
     //生成cookie失败
     public static final String ERR_CODE_CREATE_COOKIE_FAILED = "20240";
+    //暂时不支持sohu域内邮箱注册
+    public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER="20241";
 
     //***************************account 服务的错误代码end*********************************
 
@@ -333,6 +334,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "账号已封杀");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱注册");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_COOKIE_FAILED, "生成cookie失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");

@@ -32,13 +32,15 @@ public class RegEmailApiParams extends BaseApiParams {
         this.captcha=captcha;
         this.token=token;
     }
-    @AssertTrue(message = "请输入正确的手机号!")
+    @AssertTrue(message = "暂不支持sohu账号注册")
     private boolean isSohuUserName() {
         if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
             return true;
         }
-       // TODO
-        return false;
+        if(username.endsWith("@sohu.com")){
+          return false;
+        }
+        return true;
     }
 
     public String getUsername() {
