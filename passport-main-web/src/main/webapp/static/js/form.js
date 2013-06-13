@@ -19,6 +19,9 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
         }
         return true;
     });
+    $.uuiForm.addType('nick' , function(value){
+        return /^([a-zA-Z0-9_]+)$/.test(value) && !/^\d+$/.test(value);
+    });
 
     var ErrorDesc = {
         require: function($el){
@@ -42,12 +45,16 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
         },
         max: function($el , max){
             return '输入字符请少于' + max + '个字';
+        },
+        nick: function(){
+            return '非纯数字的字母数字下划线组合';
         }
     };
 
     var NormalDesc = {
         email:"请输入您作为账号的邮箱名",
-        password:"6-16位，字母(区分大小写)、数字、符号"
+        password:"6-16位，字母(区分大小写)、数字、符号",
+        nick: "非纯数字的字母数字下划线组合"
     };
 
     var createSpan= function($el , className){
@@ -80,18 +87,18 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     var checkUsername = function($el , cb){
         var ipt = $el.find('input[name="username"]');
-        if( !ipt || !ipt.length )
+        if( !ipt || !ipt.length ){
             cb && cb(0);
+            return;
+        }
+        if( !ipt.val().length ){
+            cb && cb(0);
+            return;
+        }
         $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
-            if( typeof data == 'string' ){
-                try{
-                    data = eval('('+data+')');
-                }catch(e){
-                    data = {status:-1,statusText:'服务器故障'};
-                }
-            }
+            data = utils.parseResponse(data);
             if( !+data.status ){//success
                 cb && cb(0);
             }else{

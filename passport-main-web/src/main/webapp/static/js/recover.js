@@ -44,6 +44,9 @@ define(['./common','./form' , './tpl'] , function(common , form , ursa){
             pagefunc.common(data);
 
             pagefunc[type] && pagefunc[type](data);
+
+
+            form.render($('.main-content .form form'));
         }
     };
 });

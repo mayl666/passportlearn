@@ -58,7 +58,6 @@ public class SecureAction extends BaseController {
     private HostHolder hostHolder;
 
     // TODO:GET方法怎么处理？
-    // TODO:以下为TEST，需要删除
 
     /**
      * 修改密码
@@ -114,7 +113,7 @@ public class SecureAction extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @LoginRequired
     public String querySecureInfo(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -128,11 +127,10 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        // TODO:已修改为代理接口
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         model.addAttribute("data", result.toString());
 
-        return "ucenter/index";
+        return "safe/index";
     }
 
 

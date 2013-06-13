@@ -50,7 +50,7 @@ public class BaseProxyManager {
                 Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
                 result.setCode(entry.getKey());
                 result.setMessage(entry.getValue());
-                this.handSHPPMap(map);
+                this.handSHPPMap(map);   //搜狐Passport接口返回的无用信息删除掉
                 result.setModels(map);
             }
         } catch (Exception e) {
@@ -136,5 +136,6 @@ public class BaseProxyManager {
         map.remove("uid");
         map.remove("uuid");
         map.remove("uniqname");
+        map.remove("errmsg");
     }
 }
