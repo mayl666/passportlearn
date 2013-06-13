@@ -15,6 +15,9 @@ public class CreateCookieUrlApiParams {
     @NotBlank(message = "用户id不能为空")
     private String userid;
 
+    //是否使用持久cookie
+    private int persistentcookie;
+
     public String getUserid() {
         return userid;
     }
@@ -29,5 +32,13 @@ public class CreateCookieUrlApiParams {
 
     public void setRu(String ru) {
         this.ru = ru;
+    }
+
+    public int getPersistentcookie() {
+        return persistentcookie;
+    }
+
+    public void setPersistentcookie(int persistentcookie) {
+        this.persistentcookie = persistentcookie;
     }
 }

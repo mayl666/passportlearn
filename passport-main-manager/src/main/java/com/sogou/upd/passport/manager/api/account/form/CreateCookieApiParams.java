@@ -8,24 +8,12 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-8
  * Time: 下午7:09
  */
-public class CreateCookieApiParams extends BaseApiParameters {
-
-    @NotBlank(message = "用户账号不能为空！")
-    private String userid;
+public class CreateCookieApiParams extends BaseUserApiParams {
 
     @NotBlank(message = "ip地址不能为空")
     private String ip;
 
     private boolean autologin;
-
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
 
     public boolean isAutologin() {
         return autologin;

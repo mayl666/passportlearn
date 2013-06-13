@@ -11,10 +11,8 @@ import javax.validation.constraints.Min;
  * Date: 13-6-6
  * Time: 上午10:21
  */
-public class AuthUserApiParams extends BaseApiParameters {
+public class AuthUserApiParams extends BaseUserApiParams {
 
-    @NotBlank(message = "userid不允许为空")
-    private String userid;
     @NotBlank(message = "密码不允许为空")
     private String password;
     @Min(0)
@@ -24,14 +22,6 @@ public class AuthUserApiParams extends BaseApiParameters {
 
     @NotBlank(message = "用户ip不允许为空")
     private String ip;
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
 
     public String getPassword() {
         return password;

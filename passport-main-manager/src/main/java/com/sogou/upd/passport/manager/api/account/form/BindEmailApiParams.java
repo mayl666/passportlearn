@@ -11,10 +11,8 @@ import javax.validation.constraints.Min;
  * Date: 13-6-7
  * Time: 上午11:53
  */
-public class BindEmailApiParams extends BaseApiParameters {
+public class BindEmailApiParams extends BaseUserApiParams {
 
-    @NotBlank(message = "用户id不能为空！")
-    private String userid;
 
     @NotBlank(message = "密码不能为空！")
     private String password;
@@ -51,14 +49,6 @@ public class BindEmailApiParams extends BaseApiParameters {
 
     public void setPwdtype(int pwdtype) {
         this.pwdtype = pwdtype;
-    }
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
     }
 
     public String getOldbindemail() {

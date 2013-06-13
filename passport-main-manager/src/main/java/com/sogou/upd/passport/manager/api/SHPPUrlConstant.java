@@ -62,7 +62,9 @@ public class SHPPUrlConstant {
     public static final String RESET_PWD_BY_QUES = BASE_INTERNAL_URL + "recoverpwd";
 
     //获取用户信息
-    public static final String USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
+    public static final String GET_USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
 
+    //更新用户信息
+    public static final String UPDATE_USER_INFO=BASE_INTERNAL_URL + "updateuser";
 
 }

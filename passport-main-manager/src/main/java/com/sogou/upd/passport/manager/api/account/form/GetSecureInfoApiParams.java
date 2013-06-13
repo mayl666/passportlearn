@@ -15,16 +15,16 @@ import java.util.Set;
  * Date: 13-6-8
  * Time: 下午2:22
  */
-public class GetSecureInfoApiParams extends BaseApiParameters {
+public class GetSecureInfoApiParams extends BaseUserApiParams {
 
-    @NotBlank(message = "用户id不能为空")
-    private String userid;
+    @NotBlank(message = "需要返回的字段fields不能为空")
+    private String fields;
 
-    public String getUserid() {
-        return userid;
+    public String getFields() {
+        return fields;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setFields(String fields) {
+        this.fields = fields;
     }
 }
