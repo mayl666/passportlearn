@@ -25,7 +25,14 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
 
     @Override
     public Result regMailUser(RegEmailApiParams regEmailApiParams) {
-        return null;
+        regEmailApiParams.setSend_email("1");
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.WEB_EMAIL_REG, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(regEmailApiParams);
+        Result result = executeResult(requestModelXml);
+        if (result.isSuccess()) {
+            result.setMessage("注册成功");
+        }
+        return result;
     }
 
     @Override
