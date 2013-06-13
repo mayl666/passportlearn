@@ -91,13 +91,7 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
         $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
-            if( typeof data == 'string' ){
-                try{
-                    data = eval('('+data+')');
-                }catch(e){
-                    data = {status:-1,statusText:'服务器故障'};
-                }
-            }
+            data = utils.parseResponse(data);
             if( !+data.status ){//success
                 cb && cb(0);
             }else{

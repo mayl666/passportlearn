@@ -42,6 +42,16 @@ define('utils',[], function(){
             return s4() + s4()  + s4()  + s4()  +
                 s4() +  s4() + s4() + s4();
 
+        },
+        parseResponse: function(data){
+            if( typeof data == 'string' ){
+                try{
+                    data = eval('('+data+')');
+                }catch(e){
+                    data = {status:-1,statusText:'服务器故障'};
+                }
+            }
+            return data;
         }
     };
 
@@ -714,13 +724,7 @@ define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
         $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
-            if( typeof data == 'string' ){
-                try{
-                    data = eval('('+data+')');
-                }catch(e){
-                    data = {status:-1,statusText:'服务器故障'};
-                }
-            }
+            data = utils.parseResponse(data);
             if( !+data.status ){//success
                 cb && cb(0);
             }else{
@@ -831,7 +835,8 @@ define('reg',['./common','./form' , './conf'] , function(common , form , conf){
         var tm,
             text = '秒后重新获取验证码',
             oldText,
-            timeout = 60,
+            oldtimeout = 60,
+            timeout = oldtimeout,
             status;
         $('.tel-valid-btn').click(function(){
             if(status)return;
@@ -849,6 +854,7 @@ define('reg',['./common','./form' , './conf'] , function(common , form , conf){
             var el = $(this);
             oldText = el.html();
             el.html(timeout + text);
+            el.addClass('tel-valid-btn-disable');
             
             $.get('/mobile/sendsms' , {
                 mobile: usernameIpt.val(),
@@ -862,7 +868,8 @@ define('reg',['./common','./form' , './conf'] , function(common , form , conf){
                     el.html(oldText);
                     clearInterval(tm);
                     status = false;
-                    timeout = 3;
+                    timeout = oldtimeout;
+                    el.removeClass('tel-valid-btn-disable');
                 }else{
                     el.html(timeout + text);
 
