@@ -49,7 +49,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
         Result result = new APIResultSupport(false);
         String userid = bindMobileApiParams.getUserid();
-        String mobile = bindMobileApiParams.getMobile();
+        String mobile = bindMobileApiParams.getNewMobile();
         int clientId = bindMobileApiParams.getClient_id();
 
         Account account = accountService.queryNormalAccount(userid);
@@ -73,7 +73,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
         return result;
     }
 
-    @Override
+//    @Override
     public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
         Result result = new APIResultSupport(false);
         String userId = updateBindMobileApiParams.getUserid();
@@ -154,6 +154,11 @@ public class SGBindApiManagerImpl implements BindApiManager {
         result.setMessage("查询手机绑定账号成功！");
         result.setDefaultModel("userid", userId);
         return result;
+    }
+
+    @Override
+    public Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 }

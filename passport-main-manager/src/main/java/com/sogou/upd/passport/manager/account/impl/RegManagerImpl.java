@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
@@ -68,18 +69,14 @@ public class RegManagerImpl implements RegManager {
       int clientId = Integer.parseInt(regParams.getClient_id());
       username = regParams.getUsername();
       String password = regParams.getPassword();
-
       String captcha = regParams.getCaptcha();
-      String token=regParams.getToken();
 
-      //判断验证码
-      if(!accountService.checkCaptchaCode(token,captcha)){
-        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-        return result;
-      }
       //判断是否是个性账号
       if(username.indexOf("@")==-1){
-        username=username+"@sogou.com";
+        //判断是否是手机号注册
+        if(!PhoneUtil.verifyPhoneNumberFormat(username)){
+          username=username+"@sogou.com";
+        }
       }
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
@@ -88,7 +85,14 @@ public class RegManagerImpl implements RegManager {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
         case UNKNOWN:
-          RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip, clientId);
+          String token=regParams.getToken();
+          //判断验证码
+          if(!accountService.checkCaptchaCode(token,captcha)){
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+            return result;
+          }
+          RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
+                                                                         clientId);
           if (ManagerHelper.isInvokeProxyApi(username)) {
             result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
           } else {
