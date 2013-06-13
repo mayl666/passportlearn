@@ -8,17 +8,50 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-7
  * Time: 上午10:25
  */
-public class BindMobileApiParams extends BaseMoblieApiParams {
+public class BindMobileApiParams extends BaseUserApiParams {
 
-    @NotBlank(message = "passport_id不允许为空")
-    private String userid;
+    //原来绑定的手机号
+    private String oldMobile;
 
-    public String getUserid() {
-        return userid;
+    //老手机的验证码
+    private String oldCaptcha;
+
+    //新手机号
+    private String newMobile;
+
+    //新绑定手机号的验证码
+    private String newCaptcha;
+
+
+    public String getOldMobile() {
+        return oldMobile;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setOldMobile(String oldMobile) {
+        this.oldMobile = oldMobile;
     }
 
+    public String getOldCaptcha() {
+        return oldCaptcha;
+    }
+
+    public void setOldCaptcha(String oldCaptcha) {
+        this.oldCaptcha = oldCaptcha;
+    }
+
+    public String getNewMobile() {
+        return newMobile;
+    }
+
+    public void setNewMobile(String newMobile) {
+        this.newMobile = newMobile;
+    }
+
+    public String getNewCaptcha() {
+        return newCaptcha;
+    }
+
+    public void setNewCaptcha(String newCaptcha) {
+        this.newCaptcha = newCaptcha;
+    }
 }

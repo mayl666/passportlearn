@@ -19,6 +19,16 @@ define( function(){
             return s4() + s4()  + s4()  + s4()  +
                 s4() +  s4() + s4() + s4();
 
+        },
+        parseResponse: function(data){
+            if( typeof data == 'string' ){
+                try{
+                    data = eval('('+data+')');
+                }catch(e){
+                    data = {status:-1,statusText:'服务器故障'};
+                }
+            }
+            return data;
         }
     };
 

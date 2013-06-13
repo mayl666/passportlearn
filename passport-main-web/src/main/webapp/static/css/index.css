@@ -63,15 +63,23 @@ body{ background:#f9f9f9; }
 .wrapper .desc{ padding-top:30px; }
 
 
-.login{ position:absolute; right:40px;top:30px;width:319px;height:304px; background:url(/./static/img/index/login.png?t=903686) }
+.login{ position:absolute; right:40px;top:30px;width:319px;height:289px; background:url(/./static/img/index/login.png?t=050313) no-repeat bottom center; }
+.login-inner{ height:167px;background:url(/./static/img/index/login.png?t=050313) no-repeat top center; }
+.login-vcode{ height:338px; }
 .login a{color:#1777d1;}
 .login h2{ display:none; }
-.login form{ position:relative;top:75px; }
-.login input{ border:1px #fff solid; width:230px; height:30px;outline:none;font-size:14px;line-height:30px\9; }
+.login form{ position:relative;top:74px; }
+.login input{ border:1px #fff solid; width:230px; height:26px;outline:none;font-size:14px;line-height:30px\9; }
 .login .password, .login .username{ padding-left:59px; }
-.login .password{ padding-top:23px; *padding-top:20px;}
+.login .password{ padding-top:22px; *padding-top:19px;}
+.login .vcode { display:none; }
+.login-vcode .vcode{display:block;padding-top:17px;padding-left:30px; }
+.login .vcode *{ vertical-align:top; }
+.login .vcode input{width:67px;text-align:center;position:relative;top:5px;}
+.login .vcode img{ width:81px; height:38px;position:relative;  margin-left:16px; }
+.login .vcode a{ color:#333; font-size:12px;position:relative; top:12px; left:6px; }
 .login button{ height:43px; width:273px;border:none;background:none;padding:0;margin:0;position:relative;left:24px; } 
-.login .func{line-height:38px;padding:5px 0 0 25px; position:relative;color:#999;font-size:12px;}
+.login .func{line-height:34px;padding:5px 0 0 25px; position:relative;color:#999;font-size:12px;}
 .login .func input{width:auto;height:auto;width:1px;height:1px;position:absolute;left:-3000px;}
 .login .checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(/./static/img/checkbox.png?t=582595) no-repeat 0 -14px; position:relative; top:3px; *top:0;margin-right:2px; }
 .login .checkbox-checked{ background-position:0 0; }

@@ -1,7 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.SGHttpClient;
+import com.sogou.upd.passport.manager.api.BaseProxyManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
@@ -20,6 +24,9 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
     @Autowired
     private BindApiManager proxyBindApiManager;
+
+    @Autowired
+    private BaseProxyManager baseProxyManager;
 
 //    @Test
 //    public void testBindMobile(){
@@ -43,16 +50,60 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //        System.out.println(result.toString());
 //        Assert.assertTrue(result.isSuccess());
 //    }
+//
+//    @Test
+//    public void testUpdataBindMobile(){
+//        UpdateBindMobileApiParams updateBindMobileApiParams=new UpdateBindMobileApiParams();
+//        updateBindMobileApiParams.setUserid(passportId);
+//        updateBindMobileApiParams.setOldMobile("18912987312");
+//        updateBindMobileApiParams.setNewMobile("13940075348");
+//        Result result = proxyBindApiManager.updateBindMobile(updateBindMobileApiParams);
+//        System.out.println(result.toString());
+//    }
 
-    @Test
-    public void testUpdataBindMobile(){
-        UpdateBindMobileApiParams updateBindMobileApiParams=new UpdateBindMobileApiParams();
-        updateBindMobileApiParams.setUserid(passportId);
-        updateBindMobileApiParams.setOldMobile("18912987312");
-        updateBindMobileApiParams.setNewMobile("13940075348");
-        Result result = proxyBindApiManager.updateBindMobile(updateBindMobileApiParams);
-        System.out.println(result.toString());
-    }
+//    @Test
+//    public void testUnbindMobile(){
+//        String mobile="13940075348";
+//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+//        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+//        baseMoblieApiParams.setMobile(mobile);
+//        requestModelXml.addParams(baseMoblieApiParams);
+//        Result result= baseProxyManager.executeResult(requestModelXml,mobile);
+//        System.out.println(result.toString());
+//    }
+//
+//
+//    @Test
+//    public void testSendCaptchaUnbind(){
+//        SendCaptchaApiParams sendCaptchaApiParams=new SendCaptchaApiParams();
+//        sendCaptchaApiParams.setType(4);
+//        sendCaptchaApiParams.setMobile("15210832767");
+//        Result result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
+//        System.out.println(result.toString());
+//    }
+//
+//    @Test
+//    public void testSendCaptchaBind(){
+//        SendCaptchaApiParams sendCaptchaApiParams=new SendCaptchaApiParams();
+//        sendCaptchaApiParams.setType(3);
+//        sendCaptchaApiParams.setMobile("18210696900");
+//        Result result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
+//        System.out.println(result.toString());
+//    }
+//
+//    @Test
+//    public void testBindMobile(){
+//        BindMobileApiParams bindMobileApiParams=new BindMobileApiParams();
+//        bindMobileApiParams.setNewMobile("18210696900");
+//        bindMobileApiParams.setNewCaptcha("1454");
+//        bindMobileApiParams.setOldCaptcha("1621");
+//        bindMobileApiParams.setOldMobile("15210832767");
+//        bindMobileApiParams.setUserid(passportId);
+//        Result result = proxyBindApiManager.bindMobile(bindMobileApiParams);
+//        System.out.println(result.toString());
+//    }
+
+
 
     @Test
     public void testBindEmail(){
