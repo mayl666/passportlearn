@@ -143,8 +143,8 @@ public class LoginManagerImpl implements LoginManager {
             }
             authUserApiParams.setUserid(username);
             authUserApiParams.setPassword(password);
-            //TODO 设置clientId,暂时设置为1001
-            authUserApiParams.setClient_id(1001);
+            //TODO 设置clientId,暂时设置为1100
+            authUserApiParams.setClient_id(1100);
             //根据域名判断是否代理，一期全部走代理
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
@@ -155,7 +155,6 @@ public class LoginManagerImpl implements LoginManager {
             //记录返回结果
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(username,ip);
-                //TODO 取cookie种sogou域cookie
                 // 种sohu域cookie
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
                 createCookieUrlApiParams.setUserid(passportId);
