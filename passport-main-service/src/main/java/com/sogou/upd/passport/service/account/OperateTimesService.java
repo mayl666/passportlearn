@@ -59,12 +59,12 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public long incRegIPTimes(String ip) throws ServiceException;
+    public long incRegTimes(String ip,String cookieStr) throws ServiceException;
 
     /**
      *   检查一天内某ip注册次数
      */
-    public boolean checkRegIPInBlackList(String ip) throws ServiceException;
+    public boolean checkRegInBlackList(String ip,String cookieStr) throws ServiceException;
 
     /**
      * 联系登陆失败的次数超过限制，需要输入验证码
