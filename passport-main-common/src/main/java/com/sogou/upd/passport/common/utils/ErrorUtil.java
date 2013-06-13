@@ -266,17 +266,15 @@ public class ErrorUtil {
     // 上传的通讯录file不能为空
     public static final String UPDATE_CONATCT_NOT_NULL = "30501";
 
-    //***************************好友类API错误代码end********************************
-
-
-    //***************************反馈相关错误代码start********************************
+    /* ============================================================================ */
+    /*  反馈相关错误代码                                                            */
+    /* ============================================================================ */
     //用户允许提交反馈，但提交失败
     public static final String ERR_CODE_PROBLEM_INSERT_FAILED = "30601";
     //提交反馈评论失败
     public static final String ERR_CODE_PROBLEMANSWER_INSERT_FAILED = "30602";
     //关闭反馈失败
     public static final String ERR_CODE_PROBLEM_CLOSE_FAILED = "30603";
-    //***************************反馈相关错误代码end********************************
 
     static {
         // 通用错误
