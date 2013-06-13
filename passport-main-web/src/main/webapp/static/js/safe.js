@@ -1,5 +1,5 @@
 /*
- * ucenter module script
+ * safe module script
  * @author zhengxin
 */
  

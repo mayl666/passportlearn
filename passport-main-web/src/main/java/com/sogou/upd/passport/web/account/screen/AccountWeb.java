@@ -25,7 +25,7 @@ public class AccountWeb extends BaseController {
   public String register(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
 
-    return "/reg/tel";
+    return "/reg/email";
   }
   /*
   web登录页跳转

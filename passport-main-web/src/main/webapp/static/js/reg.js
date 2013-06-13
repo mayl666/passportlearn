@@ -21,6 +21,32 @@ define('common',[],function(){
     };
 });
 
+/*
+ * form module script
+ * @author zhengxin
+*/
+ 
+
+
+
+define('utils',[], function(){
+
+    
+    return {
+        uuid: function(){
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };            
+            return s4() + s4()  + s4()  + s4()  +
+                s4() +  s4() + s4() + s4();
+
+        }
+    };
+
+});
+
 /**
  给jQuery添加可直接操作uui的接口，以支持链式语法
 
@@ -603,10 +629,10 @@ define("uuiForm", function(){});
 
 
 
-define('form',['./uuibase' , './uuiForm'] , function(){
+define('form',['./utils','./uuibase' , './uuiForm'] , function(utils){
 
     $.uuiForm.addType('password' , function(value){
-        
+        return true;
     });
     $.uuiForm.addType('vpasswd' , function(value , target){
         var targetIpt = $( '#' + target.slice(0,1).toUpperCase() + target.slice(1) + 'Ipt' );
@@ -663,16 +689,18 @@ define('form',['./uuibase' , './uuiForm'] , function(){
         return ErrorDesc[name] && ErrorDesc[name]($el) || '';
     };
 
+    var initToken = function($el){
+        var token = utils.uuid();
+        $el.find('.token').val(token);
+        $el.find('.vpic img').attr('src' , "http://account.sogou.com/captcha?token="+ token);
+    };
 
     var bindOptEvent = function($el){
         $el.find('.vpic img,.change-vpic').click(function(){
-            var img = $el.find('.vpic img');
-            if( img && img.length && img.attr('src') ){
-                var src = img.attr('src').split('?')[0] + '?t='+ +new Date();
-                img.attr( 'src' , src );
-            }
+            initToken($el);
             return false;
         });
+        
     };
 
     return{
@@ -698,9 +726,16 @@ define('form',['./uuibase' , './uuiForm'] , function(){
                         createSpan($el,'error');
                         getSpan($el , 'error').show().html(desc);
                     }
+                },
+                onformfail: function(){
+                    console.log(1)
+                },
+                onformsuccess: function(){
+                    console.log(0)
                 }
-                
             });
+            $el.append('<input type="hidden" name="token" value="" class="token"/>');
+            initToken($el);
             bindOptEvent($el);
         }
     };
