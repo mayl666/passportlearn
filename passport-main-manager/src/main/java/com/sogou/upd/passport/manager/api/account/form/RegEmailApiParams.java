@@ -24,6 +24,14 @@ public class RegEmailApiParams extends BaseApiParams {
     private String captcha;//验证码
     private String token;//标识码
 
+    public RegEmailApiParams(String username, String password, String ip, int client_id,String captcha,String token) {
+        this.username = username;
+        this.password = password;
+        this.ip = ip;
+        setClient_id(client_id);
+        this.captcha=captcha;
+        this.token=token;
+    }
     @AssertTrue(message = "请输入正确的手机号!")
     private boolean isSohuUserName() {
         if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验

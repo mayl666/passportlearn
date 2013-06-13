@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParameters;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-8
  * Time: 下午7:09
  */
-public class CreateCookieApiParams extends BaseApiParameters {
+public class CreateCookieApiParams extends BaseApiParams {
 
     @NotBlank(message = "用户账号不能为空！")
     private String userid;
