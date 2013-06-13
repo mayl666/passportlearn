@@ -51,6 +51,7 @@ public class ProxyLoginApiManagerTest extends BaseTest {
         CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
         createCookieUrlApiParams.setRu("http://ie.sogou.com");
+        createCookieUrlApiParams.setPersistentcookie(1);
         Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
         System.out.println(result);
     }

@@ -106,7 +106,6 @@ public class BaseProxyManager {
      */
     protected void paramNameAdapter(final RequestModel requestModel) {
         this.paramNameAdapter(requestModel, "client_id", "appid");
-//        this.paramNameAdapter(requestModel, "passport_id", "userid");
     }
 
     /**

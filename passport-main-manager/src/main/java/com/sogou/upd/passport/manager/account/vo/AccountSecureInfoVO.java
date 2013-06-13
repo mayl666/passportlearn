@@ -12,6 +12,7 @@ public class AccountSecureInfoVO {
     protected String sec_email;
     protected String reg_email;
     protected String sec_ques;
+    protected int sec_score;
 
     public String getSec_mobile() {
         return sec_mobile;
@@ -43,5 +44,13 @@ public class AccountSecureInfoVO {
 
     public void setSec_ques(String sec_ques) {
         this.sec_ques = sec_ques;
+    }
+
+    public int getSec_score() {
+        return sec_score;
+    }
+
+    public void setSec_score(int sec_score) {
+        this.sec_score = sec_score;
     }
 }
