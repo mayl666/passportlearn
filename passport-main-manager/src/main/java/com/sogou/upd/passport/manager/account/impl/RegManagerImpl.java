@@ -12,7 +12,9 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
@@ -52,6 +54,8 @@ public class RegManagerImpl implements RegManager {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
+    @Autowired
+    private LoginApiManager proxyLoginApiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -59,12 +63,20 @@ public class RegManagerImpl implements RegManager {
   public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
 
     Result result = new APIResultSupport(false);
+    String username =null;
     try {
       int clientId = Integer.parseInt(regParams.getClient_id());
-      String username = regParams.getUsername();
+      username = regParams.getUsername();
       String password = regParams.getPassword();
 
       String captcha = regParams.getCaptcha();
+      String token=regParams.getToken();
+
+      //判断验证码
+      if(!accountService.checkCaptchaCode(token,captcha)){
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+        return result;
+      }
 
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
@@ -73,13 +85,11 @@ public class RegManagerImpl implements RegManager {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
         case UNKNOWN:
-          String token = regParams.getToken();
+          RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip, clientId);
           if (ManagerHelper.isInvokeProxyApi(username)) {
-            //todo 拼参数
-            result = proxyRegisterApiManager.regMailUser(null);
+            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
           } else {
-            result = sgRegisterApiManager.regMailUser(
-                new RegEmailApiParams(username, password, ip, clientId, captcha, token));
+            result = sgRegisterApiManager.regMailUser(regEmailApiParams);
           }
           return result;
         case PHONE://手机号
@@ -96,9 +106,34 @@ public class RegManagerImpl implements RegManager {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
       return result;
     }
-    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+    if (result.isSuccess()) {
+      //TODO 取cookie种sogou域cookie
+      // 种sohu域cookie
+      CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+      createCookieUrlApiParams.setUserid(username);
+      createCookieUrlApiParams.setRu(regParams.getRu());
+
+      Result
+          createCookieResult =
+          proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
+      if (createCookieResult.isSuccess()) {
+        result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
+      } else {
+        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+        return result;
+      }
+    } else {
+      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+    }
     return result;
   }
+
+  private RegEmailApiParams buildRegMailProxyApiParams(String username,String password,String ip,int clientId){
+    return new RegEmailApiParams(username, password, ip, clientId);
+  }
+
+
+
   private RegMobileCaptchaApiParams buildProxyApiParams(String mobile,String password,String captcha,int clientId,String ip) {
     RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
     regMobileCaptchaApiParams.setMobile(mobile);

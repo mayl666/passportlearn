@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 
@@ -26,6 +28,18 @@ public class WebRegisterParameters {
   private String captcha;//验证码
   @NotBlank(message = "标识码不允许为空!")
   private String token;//标识码
+  private String ru;//回跳url
+
+  @AssertTrue(message = "暂不支持sohu账号注册")
+  private boolean isSohuUserName() {
+    if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
+      return true;
+    }
+    if(username.endsWith("@sohu.com")){
+      return false;
+    }
+    return true;
+  }
 
   public String getClient_id() {
     return client_id;
@@ -65,5 +79,13 @@ public class WebRegisterParameters {
 
   public void setCaptcha(String captcha) {
     this.captcha = captcha;
+  }
+
+  public String getRu() {
+    return ru;
+  }
+
+  public void setRu(String ru) {
+    this.ru = ru;
   }
 }
