@@ -275,6 +275,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_PROBLEMANSWER_INSERT_FAILED = "30602";
     //关闭反馈失败
     public static final String ERR_CODE_PROBLEM_CLOSE_FAILED = "30603";
+    //用户未登陆，而提及反馈
+    public static final String ERR_CODE_PROBLEM_NOT_LOGIN = "30604";
 
     static {
         // 通用错误
@@ -400,6 +402,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_INSERT_FAILED, "提交用户反馈失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEMANSWER_INSERT_FAILED, "提交反馈评论失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_NOT_LOGIN, "您还未登陆，不能提及反馈");
     }
 
     public static Map<String, Object> buildError(String code) {

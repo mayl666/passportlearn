@@ -11,6 +11,7 @@ import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
 import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,21 +35,18 @@ import java.util.List;
 @RequestMapping("/web")
 public class ProblemAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(ProblemAction.class);
-    private static final Integer PAGE_SIZE = 10;
 
     @Autowired
     private ProblemManager problemManager;
     @Autowired
     private ProblemTypeManager problemTypeManager;
     @Autowired
-    private ConfigureManager configureManager;
+    private HostHolder hostHolder;
 
 
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
     public Object addProblem(HttpServletRequest request, Model model)
             throws Exception {
-        // TODO 获取并set passportId
-        // TODO 获取应用列表
 
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
@@ -63,6 +61,12 @@ public class ProblemAction extends BaseController {
     public Object saveProblem(HttpServletRequest request, WebAddProblemParameters addProblemParams)
             throws Exception {
         Result result = new APIResultSupport(false);
+        // TODO 获取并set passportId
+        String passportId = hostHolder.getPassportId();
+        if(Strings.isNullOrEmpty(passportId)){
+            result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
+            return result;
+        }
         //参数验证
         String validateResult = ControllerHelper.validateParams(addProblemParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -71,6 +75,7 @@ public class ProblemAction extends BaseController {
             return result;
         }
 
+        addProblemParams.setPassportId(passportId);
         result = problemManager.insertProblem(addProblemParams,getIp(request));
         return result.toString();
     }
