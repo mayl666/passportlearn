@@ -15,7 +15,7 @@ define(['./common' , './tpl' , './form'] , function(common , ursa , form ){
         index: function(data){
             var tpl = $('#Target');
             var wrapper = tpl.parent();
-            var last_login_time = new Date(data.last_login_time);
+            var last_login_time = new Date(+data.last_login);
             data.time = {
                 year: last_login_time.getFullYear(),
                 month: last_login_time.getMonth()+1,
@@ -118,7 +118,7 @@ define(['./common' , './tpl' , './form'] , function(common , ursa , form ){
             try{
                 data = $.evalJSON(server_data).data;
             }catch(e){window['console'] && console.log(e);}
-            
+
             pagefunc.common(data);
 
             pagefunc[type] && pagefunc[type](data);

@@ -20,7 +20,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         return true;
     });
     $.uuiForm.addType('nick' , function(value){
-        return /^([a-zA-Z0-9_]+)$/.test(value) && !/^\d+$/.test(value);
+        return /^[a-z]([a-zA-Z0-9_.]{3,15})$/.test(value);
     });
 
     var ErrorDesc = {
