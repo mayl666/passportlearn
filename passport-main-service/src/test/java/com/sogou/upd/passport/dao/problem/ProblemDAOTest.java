@@ -34,7 +34,7 @@ public class ProblemDAOTest extends BaseDAOTest {
       problem.setSubTime(new Date());
       problem.setTypeId(1);
       problem.setContent("我的幼儿园");
-        problem.setQq("1037113048");
+       // problem.setQq("1037113048");
       int row = problemDAO.insertProblem(problem);
       Assert.assertTrue(row != 0);
     }
