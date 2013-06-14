@@ -75,7 +75,6 @@ public class ProblemManagerImpl implements ProblemManager {
             problem.setPassportId(addProblemParams.getPassportId());
             problem.setClientId(Integer.parseInt(addProblemParams.getClient_id()));
             problem.setStatus(0);
-            problem.setQq(addProblemParams.getQq());
             problem.setContent(addProblemParams.getContent());
             problem.setTypeId(addProblemParams.getTypeId());
             problem.setSubTime(new Date());
