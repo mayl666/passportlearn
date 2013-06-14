@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * User: mayan
@@ -50,15 +51,16 @@ public class AccountWeb extends BaseController {
   /*
   web登录页跳转
 */
-  @RequestMapping(value = "/index", method = RequestMethod.GET)
+  @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
   public String login(HttpServletRequest request, HttpServletResponse response,Model model)
       throws Exception {
       //连接来源
-      String ru = request.getParameter("ru");
+     String ru = request.getParameter("ru");
       if (!Strings.isNullOrEmpty(ru)){
+          ru = URLEncoder.encode(ru, "UTF-8");
           model.addAttribute("ru",ru);
-      }
-    return "index";
+     }
+    return "login";
   }
     /*
    web修改密码页跳转
