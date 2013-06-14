@@ -1,10 +1,15 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -14,6 +19,7 @@ import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,6 +31,11 @@ import org.springframework.stereotype.Component;
 public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApiManager {
 
     private static Logger logger = LoggerFactory.getLogger(ProxyBindApiManagerImpl.class);
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    private static String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_PROXY;
 
 //    @Override
 //    public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
@@ -162,6 +173,32 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         String newMoblie=bindMobileApiParams.getNewMobile();
         String newCaptcha=bindMobileApiParams.getNewCaptcha();
         return this.bindMobileByCaptcha(userid,newMoblie,newCaptcha);
+    }
+
+    @Override
+    public boolean cacheOldCaptcha(String mobile, int clientId, String captcha) throws ServiceException{
+        String cacheKey = buildOldCaptchaKey(mobile, clientId);
+        try {
+            redisUtils.setWithinSeconds(cacheKey, captcha, SMSUtil.SMS_VALID);
+            return true;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public String getOldCaptcha(String mobile, int clientId) throws ServiceException {
+        String cacheKey = buildOldCaptchaKey(mobile, clientId);
+        try {
+            String captcha = redisUtils.get(cacheKey);
+            return captcha;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    private String buildOldCaptchaKey(String mobile, int clientId) {
+        return CACHE_PREFIX_MOBILE_SMSCODE_PROXY + mobile + "_" + clientId;
     }
 
     /**

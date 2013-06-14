@@ -158,6 +158,21 @@ public class SGBindApiManagerImpl implements BindApiManager {
 
     @Override
     public Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams) {
+        String mobile = sendCaptchaApiParams.getMobile();
+        int clientId = sendCaptchaApiParams.getClient_id();
+        int type = sendCaptchaApiParams.getType();
+
+
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean cacheOldCaptcha(String mobile, int clientId, String captcha) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getOldCaptcha(String mobile, int clientId) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

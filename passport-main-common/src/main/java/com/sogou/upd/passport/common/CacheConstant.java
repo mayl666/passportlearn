@@ -49,4 +49,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PROBLEMID_PROBLEMANSWERSIZE = "SP.PROBLEMID_:PROBLEMANSWERSIZE_"; // problemId与问题回答数量之前的映射
     public static final String CACHE_PREFIX_PROBLEMID_PROBLEMANSWERLIST = "SP.PROBLEMID_:PROBLEMANSWERLIST_"; // problemId与问题回答数量之前的映射
 
+    /*==================proxy相关缓存常量=====================*/
+    // TODO:迁移后，此常量将删除
+    public static final String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = "SP.MOBILE:PROXY_SMSCODE_";
 }
