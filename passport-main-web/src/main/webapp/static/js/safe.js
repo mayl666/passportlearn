@@ -116,7 +116,7 @@ define(['./common' , './tpl' , './form'] , function(common , ursa , form ){
 
             var data ={};
             try{
-                data = $.evalJSON(server_data);
+                data = $.evalJSON(server_data).data;
             }catch(e){window['console'] && console.log(e);}
             
             pagefunc.common(data);

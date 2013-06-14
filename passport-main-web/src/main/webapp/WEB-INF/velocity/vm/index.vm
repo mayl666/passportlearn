@@ -40,9 +40,6 @@
                                 </label>
                                 <a href="recover/index.ut">找回密码</a>
                             </p>
-                            #if($ru)
-                                <input type="hidden" name="ru" value="${ru}" />
-                            #end
                             <button type="submit">
                                 <img src="/./static/img/index/loginbtn.png" class="" alt="登录" />
                             </button>
