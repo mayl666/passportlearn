@@ -75,7 +75,8 @@
             </div>
             <div  class="form">
                 <script type="text/tpl" id="Target">
-                    <form method="post" id="" action="">
+                    <form method="post" id="" action="/web/security/bindques">
+                        <input type="hidden" name="new_ques" value="" id="NewQues" />
                         
                         <div class="form-item">
     <label for="QuesitonIpt">新密保问题：</label>
@@ -98,9 +99,9 @@
     </span>
 </div>
                         <div class="form-item">
-    <label for="AnswerIpt">新答案：</label>
+    <label for="New_answerIpt">新答案：</label>
     <span class="form-el">
-        <input uui-type="require answer" type="text" name="answer" id="AnswerIpt" value="" />
+        <input uui-type="require new_answer" type="text" name="new_answer" id="New_answerIpt" value="" />
     </span>
 </div>
                         <div class="form-item">

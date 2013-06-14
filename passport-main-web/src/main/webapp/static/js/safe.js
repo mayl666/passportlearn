@@ -60,12 +60,17 @@ define(['./common' , './tpl' , './form'] , function(common , ursa , form ){
             wrapper.html( ursa.render(tpl.html() , {}) );
             var selfQuestion = wrapper.find('label[for=Question2Ipt]').parent();
             selfQuestion.hide();
+            var selfInput = selfQuestion.find('input');
+            var oldUuitype = selfInput.attr('uui-type');
+            selfInput.attr('uui-type' , '');
 
             wrapper.find('select').on('change' , function(){
                 if($(this).val() ==0){ //self question
                     selfQuestion.show();
+                    selfInput.attr('uui-type' , oldUuitype);
                 }else{
                     selfQuestion.hide();
+                    selfInput.attr('uui-type' , '');
                 }
             });
         },
@@ -90,6 +95,20 @@ define(['./common' , './tpl' , './form'] , function(common , ursa , form ){
         }
     };
 
+    var formfunc = {
+        question: function(){
+            var wrapper = $('.main-content .form form');
+            var newques = $('#NewQues');
+            var qselect = wrapper.find('select');
+
+            if( +qselect.val() ){
+                newques.val( qselect.find( 'option[value='+ qselect.val() +']' ).html() );
+            }else{
+                newques.val( wrapper.find('input[name="question2"]').val() );
+            }
+        }
+    };
+
 
     return{
         init: function(type){
@@ -104,7 +123,10 @@ define(['./common' , './tpl' , './form'] , function(common , ursa , form ){
 
             pagefunc[type] && pagefunc[type](data);
 
-            form.render($('.main-content .form form'));
+            form.render($('.main-content .form form') , function(){
+                formfunc[type] && formfunc[type](data);
+                return true;
+            });
 
         }
     };

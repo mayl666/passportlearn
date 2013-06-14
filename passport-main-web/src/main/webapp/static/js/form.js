@@ -6,7 +6,7 @@
 
 
 
-define(['./utils','./uuibase' , './uuiForm'] , function(utils){
+define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
 
     $.uuiForm.addType('password' , function(value){
         return value.length<=16 && value.length>=6;
@@ -85,39 +85,6 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
         $el.find('.vpic img').attr('src' , "/captcha?token="+ token);
     };
 
-    var checkUsername = function($el , cb){
-        var ipt = $el.find('input[name="username"]');
-        if( !ipt || !ipt.length ){
-            cb && cb(0);
-            return;
-        }
-        if( !ipt.val().length ){
-            cb && cb(0);
-            return;
-        }
-        $.get('/web/account/checkusername' , {
-            username: ipt.val()
-        } , function(data){
-            data = utils.parseResponse(data);
-            if( !+data.status ){//success
-                cb && cb(0);
-            }else{
-                createSpan(ipt,'error');
-                getSpan(ipt , 'error').show().html(data.statusText);
-                cb && cb(1);
-            }
-        });
-        
-    };
-
-    var bindReg = function($el){
-        $el.find('input[name=username]').blur(function(){
-            var errorspan = $(this).parent().parent().find('.error');
-            if( !errorspan || !errorspan.length || errorspan.css('display') == 'none' ){
-                checkUsername($el );
-            }
-        });
-    };
 
     var bindOptEvent = function($el){
         $el.find('.vpic img,.change-vpic').click(function(){
@@ -125,14 +92,10 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
             return false;
         });
         
-        var action = $el.attr('action');
-        if( action.indexOf('reguser') ){
-            bindReg($el);
-        }
     };
 
     return{
-        render: function($el){
+        render: function($el , onsuccess , onfailure){
             $el.uuiForm({
                 type:'blur',
                 onfocus: function($el){
@@ -159,19 +122,17 @@ define(['./utils','./uuibase' , './uuiForm'] , function(utils){
                     }
                 },
                 onformsuccess: function($el){
-                    
-                    checkUsername($el,function(status){
-                        if( !status ){
-                            $.post($el.attr('action'), $el.serialize() , function(data){
-                                
-                            });
-                        }
-                        return false;
-                    });
+                    if( !onsuccess || onsuccess($el) ){
+                        $.post($el.attr('action'), $el.serialize() , function(data){
+                            
+                        });
+                    }
                     return false;
                 }
             });
             $el.append('<input type="hidden" name="token" value="" class="token"/>');
+            $el.append('<input name="client_id" value="'+ conf.client_id +'" type="hidden"/>');
+
             initToken($el);
             bindOptEvent($el);
         }

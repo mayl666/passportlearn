@@ -75,20 +75,13 @@
             </div>
             <div  class="form">
                 <script type="text/tpl" id="Target">
-                    <% if status==0 %><#已绑定#>
+                    <% if vemail.length %><#已绑定#>
                     <div class="binded">
                         <p>您当前的密保邮箱是<{vemail}></p>
                         <a href="#" class="long-btn">修改密保邮箱</a>
                     </div>
-                    <% elif status==1 %><# 待验证 #>
-                        
-                    <div class="binding">
-                        <p>验证邮件已发送至您的邮箱：<{vemail}></p>
-                        <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
-                        <a href="#" class="long-btn">去邮箱验证</a>
-                    </div>
                     <% else %><# 未绑定 #>
-                    <form method="post" id="" action="" class="form2">
+                    <form method="post" id="" action="/web/security/sendemail" class="form2">
                         
                         <div class="form-item">
     <label for="EmailIpt">密保邮箱：</label>
@@ -114,8 +107,18 @@
     </div>
 </div>
 
+<script type="text/tpl" id="Target3">
+
+    <div class="binding">
+        <p>验证邮件已发送至您的邮箱：<{vemail}></p>
+        <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
+        <a href="#" class="long-btn">去邮箱验证</a>
+    </div>
+
+</script>
+
 <script type="text/tpl" id="Target2">
-    <form method="post" id="" action="" class="form2">
+    <form method="post" id="" action="/web/security/sendemail" class="form2">
         
         <div class="form-item">
     <label for="EmailIpt">当前密保邮箱：</label>

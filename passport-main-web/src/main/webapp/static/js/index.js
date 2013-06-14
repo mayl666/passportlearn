@@ -30,7 +30,7 @@ define('index' , ['./ui' , './utils'] , function(ui , utils){
 
                     if( !data.status ){
                         alert('登录成功');
-                        data.ru && (window.location.href = data.ru);
+                        data.cookieUrl && (window.location.href = data.cookieUrl);
                     }else if( data.needCaptcha ){
                         initVcode();
                     }
