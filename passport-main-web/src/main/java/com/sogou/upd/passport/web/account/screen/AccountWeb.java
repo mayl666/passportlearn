@@ -60,7 +60,7 @@ public class AccountWeb extends BaseController {
           ru = URLEncoder.encode(ru, "UTF-8");
           model.addAttribute("ru",ru);
      }
-    return "login";
+    return "index";
   }
     /*
    web修改密码页跳转
