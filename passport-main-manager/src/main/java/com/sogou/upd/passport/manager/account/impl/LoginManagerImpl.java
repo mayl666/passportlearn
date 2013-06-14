@@ -159,8 +159,14 @@ public class LoginManagerImpl implements LoginManager {
                 // 种sohu域cookie
 
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-                //获取passportId
-                String passportIdTmp =  result.getModels().get("userid").toString();
+                //从返回结果中获取passportId,二期待优化
+                String passportIdTmp =  passportId;
+                if(ManagerHelper.isInvokeProxyApi(passportId)) {
+                    passportIdTmp =  result.getModels().get("userid").toString();
+                } else{
+                    Account account =  (Account)result.getDefaultModel();
+                    passportIdTmp =  account.getPassportId();
+                }
                 createCookieUrlApiParams.setUserid(passportIdTmp);
                 createCookieUrlApiParams.setRu(loginParameters.getRu());
                 createCookieUrlApiParams.setPersistentcookie(loginParameters.getAutoLogin());
