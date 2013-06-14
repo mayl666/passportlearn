@@ -196,7 +196,8 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        result = secureManager.sendMobileCodeByPassportId(userId, clientId);
+        // result = secureManager.sendMobileCodeByPassportId(userId, clientId);
+        result = secureManager.sendMobileCodeOld(userId, clientId);
         return result.toString();
     }
 
@@ -212,11 +213,12 @@ public class SecureAction extends BaseController {
             return result.toString();
         }
         // TODO:要不要在检验smscode时，验证userId
-        // String userId = hostHolder.getPassportId();
+        String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
         String newMobile = params.getNew_mobile();
 
-        result = secureManager.sendMobileCode(newMobile, clientId);
+        // result = secureManager.sendMobileCode(newMobile, clientId);
+        result = secureManager.sendMobileCodeNew(userId, clientId, newMobile);
         return result.toString();
     }
 

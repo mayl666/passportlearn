@@ -40,4 +40,23 @@ public interface BindApiManager {
      * @return
      */
     Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams);
+
+    /**
+     * 缓存旧手机号验证码
+     *
+     * @param mobile
+     * @param clientId
+     * @param captcha
+     * @return
+     */
+    public boolean cacheOldCaptcha(String mobile, int clientId, String captcha);
+
+    /**
+     * 提取旧手机号验证码
+     *
+     * @param mobile
+     * @param clientId
+     * @return
+     */
+    public String getOldCaptcha(String mobile, int clientId);
 }
