@@ -31,7 +31,7 @@ public class LoginAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
   private static final String LOGIN_INDEX_URL = "https://account.sogou.com?client_id=1100";
-    private static final String TEST_LOGIN_INDEX_URL = "http://localhost?client_id=1100";
+  private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com?client_id=1100";
   @Autowired
   private LoginManager loginManager;
 
@@ -58,7 +58,8 @@ public class LoginAction extends BaseController {
     String ru =  loginParams.getRu();
     if(Strings.isNullOrEmpty(ru)){
 //        loginParams.setRu(request.getServerName()+LOGIN_INDEX_URL);
-        loginParams.setRu(LOGIN_INDEX_URL);
+        //TODO 上线前改为  LOGIN_INDEX_URL
+        loginParams.setRu(TEST_LOGIN_INDEX_URL);
     }
 
     result = loginManager.accountLogin(loginParams, getIp(request));

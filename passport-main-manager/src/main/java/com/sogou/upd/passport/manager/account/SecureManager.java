@@ -21,6 +21,11 @@ public interface SecureManager {
      */
     public Result sendMobileCodeByPassportId(String passportId, int clientId) throws Exception;
 
+
+    public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception;
+
+    public Result sendMobileCodeOld(String userId, int clientId) throws Exception;
+
     /**
      * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法调用
      *

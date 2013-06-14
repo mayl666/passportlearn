@@ -33,8 +33,10 @@ public class ProblemDAOTest extends BaseDAOTest {
       problem.setClientId(CLIENT_ID);
       problem.setSubTime(new Date());
       problem.setTypeId(1);
+        problem.setTitle("标题");
       problem.setContent("我的幼儿园");
-        problem.setQq("1037113048");
+        problem.setEmail("jiamengchen@126.com");
+       // problem.setQq("1037113048");
       int row = problemDAO.insertProblem(problem);
       Assert.assertTrue(row != 0);
     }
@@ -48,8 +50,8 @@ public class ProblemDAOTest extends BaseDAOTest {
      */
     @Test
     public void testUpdateStatusById() {
-//        int row = problemDAO.updateStatusById(1, 263);
-//        Assert.assertTrue(row >0);
+        int row = problemDAO.updateStatusById(1, 2);
+        Assert.assertTrue(row >0);
     }
 
   /**
@@ -62,12 +64,13 @@ public class ProblemDAOTest extends BaseDAOTest {
     Integer  clientId = 1001;
     Integer  typeId = 1;
     Date startDate = DateUtil.parse("2013-06-03",DateUtil.DATE_FMT_3) ;
-    Date endDate = DateUtil.parse("2013-06-05",DateUtil.DATE_FMT_3) ;
-    String content = "游戏";
+    Date endDate = DateUtil.parse("2013-06-18",DateUtil.DATE_FMT_3) ;
+    String content = null;
+      String title ="标题";
     Integer  start = 1;
     Integer  end = 100;
     List<Problem> list
-            = problemDAO.queryProblemList(status,clientId,typeId,startDate,endDate,content,start,end);
+            = problemDAO.queryProblemList(status,clientId,typeId,startDate,endDate,title,content,start,end);
     System.out.println("list.size():"+list.size());
     Assert.assertTrue(list.size() >0);
   }

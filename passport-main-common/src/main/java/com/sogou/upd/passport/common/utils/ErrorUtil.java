@@ -266,17 +266,19 @@ public class ErrorUtil {
     // 上传的通讯录file不能为空
     public static final String UPDATE_CONATCT_NOT_NULL = "30501";
 
-    //***************************好友类API错误代码end********************************
-
-
-    //***************************反馈相关错误代码start********************************
+    /* ============================================================================ */
+    /*  反馈相关错误代码                                                            */
+    /* ============================================================================ */
     //用户允许提交反馈，但提交失败
     public static final String ERR_CODE_PROBLEM_INSERT_FAILED = "30601";
     //提交反馈评论失败
     public static final String ERR_CODE_PROBLEMANSWER_INSERT_FAILED = "30602";
     //关闭反馈失败
     public static final String ERR_CODE_PROBLEM_CLOSE_FAILED = "30603";
-    //***************************反馈相关错误代码end********************************
+    //用户未登陆，而提及反馈
+    public static final String ERR_CODE_PROBLEM_NOT_LOGIN = "30604";
+    //用户提及反馈的次数超限
+    public static final String ERR_CODE_PROBLEM_ADDTIMES_LIMITED = "30605";
 
     static {
         // 通用错误
@@ -402,6 +404,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_INSERT_FAILED, "提交用户反馈失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEMANSWER_INSERT_FAILED, "提交反馈评论失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_NOT_LOGIN, "您还未登陆，不能提及反馈");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
     }
 
     public static Map<String, Object> buildError(String code) {

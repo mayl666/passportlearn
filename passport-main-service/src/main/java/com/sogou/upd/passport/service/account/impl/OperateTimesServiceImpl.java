@@ -215,4 +215,41 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         return false;
     }
 
+    @Override
+    public long incAddProblemTimes(String passportId,String ip) throws ServiceException {
+        try {
+            String passportIdCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST + passportId;
+            recordTimes(passportIdCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+
+            String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
+            recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+
+
+        } catch (Exception e) {
+            logger.error("incAddProblemTimes:passportId"+passportId+",ip" + ip, e);
+            throw new ServiceException(e);
+        }
+        return 1;
+    }
+    @Override
+    public boolean checkAddProblemInBlackList(String passportId,String ip) throws ServiceException {
+        boolean result = false;
+        try {
+            String passportIdCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST + passportId;
+            result = checkTimesByKey(passportIdCacheKey, LoginConstant.ADDPROBLEM_PASSPORTID_LIMITED);
+            if(result){
+                return true;
+            }
+            String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
+            result = checkTimesByKey(ipCacheKey, LoginConstant.ADDPROBLEM_IP_LIMITED);
+            if(result){
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("checkRegIPInBlackList:ip" + ip, e);
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
 }

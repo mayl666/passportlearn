@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -18,11 +20,14 @@ import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateBindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
@@ -51,6 +56,8 @@ public class SecureManagerImpl implements SecureManager {
 
     private static Logger logger = LoggerFactory.getLogger(SecureManagerImpl.class);
 
+    private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
+
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
@@ -73,6 +80,8 @@ public class SecureManagerImpl implements SecureManager {
     private SecureApiManager sgSecureApiManager;
     @Autowired
     private SecureApiManager proxySecureApiManager;
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private BindApiManager sgBindApiManager;
     @Autowired
@@ -154,6 +163,75 @@ public class SecureManagerImpl implements SecureManager {
             return sendSmsCodeToMobile(mobile, clientId);
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    // 为SOHU接口修改
+    @Override
+    public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+
+            SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
+            sendCaptchaApiParams.setMobile(mobile);
+            sendCaptchaApiParams.setClient_id(clientId);
+            sendCaptchaApiParams.setType(3);
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // SOHU接口
+                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
+            } else {
+                result = sendMobileCode(mobile, clientId);
+                // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
+            }
+
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            result.setMessage("绑定手机验证码发送成功！");
+            return result;
+        } catch (ServiceException e) {
+            logger.error("send mobile code new Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    @Override
+    public Result sendMobileCodeOld(String userId, int clientId) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // SOHU接口
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                Map<String, String> mapResult = result.getModels();
+                String mobile = mapResult.get("sec_mobile");
+
+                SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
+                sendCaptchaApiParams.setMobile(mobile);
+                sendCaptchaApiParams.setClient_id(clientId);
+                sendCaptchaApiParams.setType(4);
+                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
+            } else {
+                result = sendMobileCodeByPassportId(userId, clientId);
+                // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
+            }
+
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            result.setMessage("解绑手机验证码发送成功！");
+            return result;
+        } catch (ServiceException e) {
+            logger.error("send mobile code old Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -321,22 +399,28 @@ public class SecureManagerImpl implements SecureManager {
         try {
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
-            GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-            params.setUserid(userId);
-            params.setClient_id(clientId);
 
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
-                result = proxySecureApiManager.getUserSecureInfo(params);
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             } else {
+                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
+                params.setUserid(userId);
+                params.setClient_id(clientId);
                 result = sgSecureApiManager.getUserSecureInfo(params);
             }
+
+            Map<String, String> map = result.getModels();
+            result.setModels(Maps.newHashMap());
 
             if (!result.isSuccess()) {
                 return result;
             }
 
-            Map<String, String> map = result.getModels();
             String mobile = map.get("sec_mobile");
             String emailBind = map.get("sec_email");
             String question = map.get("sec_ques");
@@ -378,6 +462,7 @@ public class SecureManagerImpl implements SecureManager {
                 }
             }
             accountSecureInfoVO.setSec_score(score);
+            accountSecureInfoVO.setLast_login(System.currentTimeMillis()); // TODO:修改
 
             /*Account account = accountService.queryNormalAccount(userId);
             if (account == null) {
@@ -559,7 +644,23 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            result = checkMobileCodeByPassportId(passportId, clientId, smsCode);
+            if (ManagerHelper.isInvokeProxyApi(passportId)) {
+                // 代理接口
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(passportId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                Map<String, String> mapResult = result.getModels();
+                String mobile = mapResult.get("sec_mobile");
+
+                if (proxyBindApiManager.cacheOldCaptcha(mobile, clientId, smsCode)) {
+                    result.setSuccess(true);
+                }
+            } else {
+                result = checkMobileCodeByPassportId(passportId, clientId, smsCode);
+            }
+
             if (result.isSuccess()) {
                 result.setDefaultModel("scode", accountSecureService.getSecureCodeModSecInfo(
                         passportId, clientId));
@@ -579,34 +680,36 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account;
 
-            result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
-            if (!result.isSuccess()) {
-                return result;
-            }
-
-            AuthUserApiParams authParams = new AuthUserApiParams();
-            authParams.setUserid(userId);
-            authParams.setClient_id(clientId);
-            authParams.setPassword(password);
-
-            BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-            bindMobileApiParams.setUserid(userId);
-            bindMobileApiParams.setClient_id(clientId);
-            bindMobileApiParams.setMobile(newMobile);
-            // TODO:IP和其他成员
-
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
+                AuthUserApiParams authParams = new AuthUserApiParams();
+                authParams.setUserid(userId);
+                authParams.setClient_id(clientId);
+                authParams.setPassword(password);
+
+                BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
+                bindMobileApiParams.setUserid(userId);
+                bindMobileApiParams.setClient_id(clientId);
+                bindMobileApiParams.setNewMobile(newMobile);
+                bindMobileApiParams.setNewCaptcha(smsCode);
+                // TODO:IP和其他成员
+
                 result = proxyLoginApiManager.webAuthUser(authParams);
                 if (!result.isSuccess()) {
                     return result;
                 }
                 result = proxyBindApiManager.bindMobile(bindMobileApiParams);
             } else {
+
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
                 result = accountService.verifyUserPwdVaild(userId, password, false);
                 account = (Account) result.getDefaultModel();
-                result.setDefaultModel(null);
+                // result.setDefaultModel(null);
+
+                result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
+                if (!result.isSuccess()) {
+                    return result;
+                }
 
                 String oldMobile = account.getMobile();
                 if (!Strings.isNullOrEmpty(oldMobile)) {
@@ -649,35 +752,45 @@ public class SecureManagerImpl implements SecureManager {
                                            String smsCode, String scode, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            Account account;
-
-            result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
-            if (!result.isSuccess()) {
-                return result;
-            }
-
-            // 修改绑定手机，checkCode为secureCode
-            if (!accountSecureService.checkSecureCodeModSecInfo(userId, clientId, scode)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
-                return result;
-            }
-
-            UpdateBindMobileApiParams updateBindMobileApiParams = new UpdateBindMobileApiParams();
-            updateBindMobileApiParams.setUserid(userId);
-            updateBindMobileApiParams.setClient_id(clientId);
-            updateBindMobileApiParams.setNewMobile(newMobile);
-
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
-                GetSecureInfoApiParams getSecureInfoApiParams = new GetSecureInfoApiParams();
-                getSecureInfoApiParams.setUserid(userId);
-                getSecureInfoApiParams.setClient_id(clientId);
-                result = proxySecureApiManager.getUserSecureInfo(getSecureInfoApiParams);
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
-                updateBindMobileApiParams.setOldMobile(mapResult.get("sec_mobile"));
-                result = proxyBindApiManager.updateBindMobile(updateBindMobileApiParams);
+                String mobile = mapResult.get("sec_mobile");
+
+                String captcha = proxyBindApiManager.getOldCaptcha(mobile, clientId);
+                if (Strings.isNullOrEmpty(captcha)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                    return result;
+                }
+
+                BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
+                bindMobileApiParams.setUserid(userId);
+                bindMobileApiParams.setClient_id(clientId);
+                bindMobileApiParams.setNewMobile(newMobile);
+                bindMobileApiParams.setNewCaptcha(smsCode);
+                bindMobileApiParams.setOldMobile(mobile);
+                bindMobileApiParams.setOldCaptcha(captcha);
+
+                result = proxyBindApiManager.bindMobile(bindMobileApiParams);
             } else {
-                // TODO:
+                Account account;
+
+                result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
+                if (!result.isSuccess()) {
+                    return result;
+                }
+
+                // 修改绑定手机，checkCode为secureCode
+                if (!accountSecureService.checkSecureCodeModSecInfo(userId, clientId, scode)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
+                    return result;
+                }
+
                 account = accountService.queryNormalAccount(userId);
                 if (account == null) {
                     result.setCode(ErrorUtil.INVALID_ACCOUNT);

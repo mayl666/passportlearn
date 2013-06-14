@@ -51,4 +51,13 @@ public class LoginConstant {
      */
     public static final int REGISTER_COOKIE_LIMITED = 20; // cookie一天限制次数
 
+    /**
+     * 一天内某一个ip提及反馈次数限制
+     */
+    public static final int ADDPROBLEM_IP_LIMITED = 100; // ip一天限制次数
+    /**
+     * 一天内某一个passportId提及反馈次数限制
+     */
+    public static final int ADDPROBLEM_PASSPORTID_LIMITED = 20; // passportId一天限制次数
+
 }

@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.web.account.screen;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.web.BaseController;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -49,9 +51,13 @@ public class AccountWeb extends BaseController {
   web登录页跳转
 */
   @RequestMapping(value = "/index", method = RequestMethod.GET)
-  public String login(HttpServletRequest request, HttpServletResponse response)
+  public String login(HttpServletRequest request, HttpServletResponse response,Model model)
       throws Exception {
-
+      //连接来源
+      String ru = request.getParameter("ru");
+      if (!Strings.isNullOrEmpty(ru)){
+          model.addAttribute("ru",ru);
+      }
     return "index";
   }
     /*

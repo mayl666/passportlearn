@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.manager.problem.impl;
 
-import com.sogou.upd.passport.manager.problem.ProblemAnswerManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
-import com.sogou.upd.passport.model.problem.ProblemAnswer;
 import com.sogou.upd.passport.model.problem.ProblemType;
-import com.sogou.upd.passport.service.problem.ProblemAnswerService;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -30,52 +30,18 @@ public class ProblemServiceImpl implements ProblemService {
     private static final String CACHE_PREFIX_PASSPORTID_PROBLEMList = CacheConstant.CACHE_PREFIX_PASSPORTID_PROBLEMLIST;
     @Autowired
     private ProblemDAO problemDAO;
-    @Autowired
-    private RedisUtils redisUtils;
 
     @Override
     public List<Problem> queryProblemList(Integer status, Integer clientId, Integer typeId, Date startDate,
-                                          Date endDate, String content, Integer start, Integer end) throws ServiceException {
-        return problemDAO.queryProblemList(status, clientId, typeId, startDate, endDate, content, start,
+                                          Date endDate, String title, String content, Integer start, Integer end) throws ServiceException {
+        return problemDAO.queryProblemList(status, clientId, typeId, startDate, endDate, title,content, start,
                 end);
-    }
-
-    @Override
-    public List<Problem> queryProblemListByPassportId(String passportId, Integer start, Integer end) throws ServiceException {
-        List<Problem> list = null;
-        try {
-            String cacheKey = buildProblemListKey(passportId);
-            String listStr = redisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(listStr)) {
-                list = problemDAO.queryProblemListByPassportId(passportId, start, end);
-                if (list != null) {
-                    String jsonResult = new ObjectMapper().writeValueAsString(list);
-                    redisUtils.set(cacheKey, jsonResult);
-                }
-            } else {
-                list = new ObjectMapper().readValue(listStr, new TypeReference<List<Problem>>() {
-                });
-            }
-        } catch (Exception e) {
-            throw new ServiceException();
-        }
-        return list;
-    }
-
-    private String buildProblemListKey(String id) {
-        return CACHE_PREFIX_PASSPORTID_PROBLEMList + id;
     }
 
     @Override
     public int updateStatusById(long id, int status) throws ServiceException {
         try {
             int result = problemDAO.updateStatusById(id, status);
-            if(result >0){
-                Problem problem = problemDAO.getProblemById(id);
-                //删除该用户的c反馈缓存
-                String cacheKey = buildProblemListKey(problem.getPassportId());
-                redisUtils.delete(cacheKey);
-            }
             return  result;
         }catch (Exception e) {
             throw new ServiceException();
@@ -86,11 +52,6 @@ public class ProblemServiceImpl implements ProblemService {
     public int insertProblem(Problem problem) throws ServiceException {
         try {
             int result =  problemDAO.insertProblem(problem);
-            if(result >0){
-                //删除该用户的c反馈缓存
-                String cacheKey = buildProblemListKey(problem.getPassportId());
-                redisUtils.delete(cacheKey);
-            }
             return result;
         } catch (Exception e) {
             throw new ServiceException();
