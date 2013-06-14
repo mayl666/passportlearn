@@ -160,11 +160,11 @@ public class LoginManagerImpl implements LoginManager {
 
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
                 //获取passportId
-                String passportIdTmp =  passportId;
-                if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(passportId))) {
-                    passportId = mobilePassportMappingService.queryPassportIdByUsername(passportId);
-                }
-                passportId = passportIdTmp;
+                String passportIdTmp =  result.getModels().get("userid").toString();
+//                if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+//                    passportId = passportIdTmp;
+//                }
+//                passportId = passportIdTmp;
 
                 createCookieUrlApiParams.setUserid(passportIdTmp);
                 createCookieUrlApiParams.setRu(loginParameters.getRu());
