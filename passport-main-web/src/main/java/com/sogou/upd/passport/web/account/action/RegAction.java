@@ -88,13 +88,7 @@ public class RegAction extends BaseController {
       }
     }
 
-    boolean isExists= commonManager.isAccountExists(username);
-    if(isExists){
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-    }else{
-      result.setSuccess(true);
-      result.setMessage("账户未被占用，可以注册");
-    }
+    result= regManager.isAccountExists(username);
     return result.toString();
   }
 
