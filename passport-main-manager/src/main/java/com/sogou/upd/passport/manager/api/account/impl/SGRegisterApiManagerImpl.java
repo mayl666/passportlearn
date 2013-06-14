@@ -89,7 +89,6 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
           int clientId =regParams.getClient_id();
           String mobile = regParams.getMobile();
-          String username = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
           String password = regParams.getPassword();
           String ip=regParams.getIp();
 
@@ -101,7 +100,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             return result;
           }
 
-          Account account = accountService.initialAccount(username,password , false, ip, AccountTypeEnum
+          Account account = accountService.initialAccount(mobile,password , false, ip, AccountTypeEnum
               .PHONE.getValue());
           if (account != null) {
             result.setSuccess(true);
