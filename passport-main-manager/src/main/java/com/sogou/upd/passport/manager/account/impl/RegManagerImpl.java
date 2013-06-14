@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
@@ -259,4 +261,27 @@ public class RegManagerImpl implements RegManager {
     public Map<String, Object> getCaptchaCode(String code) {
         return accountService.getCaptchaCode(code);
     }
+
+  @Override
+  public Result isAccountExists(String username) throws Exception {
+    Result result = new APIResultSupport(false);
+    try {
+      CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
+      if (ManagerHelper.isInvokeProxyApi(username)) {
+        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+      } else {
+        result = sgRegisterApiManager.checkUser(checkUserApiParams);
+      }
+    } catch (ServiceException e) {
+      logger.error("Check account is exists Exception, username:" + username, e);
+      throw new Exception(e);
+    }
+    return result;
+  }
+
+  private CheckUserApiParams buildProxyApiParams(String username){
+    CheckUserApiParams checkUserApiParams=new CheckUserApiParams();
+    checkUserApiParams.setUserid(username);
+    return checkUserApiParams;
+  }
 }

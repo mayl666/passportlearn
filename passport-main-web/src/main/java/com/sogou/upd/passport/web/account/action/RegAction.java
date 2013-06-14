@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
+import com.sogou.upd.passport.manager.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
@@ -54,16 +55,23 @@ public class RegAction extends BaseController {
   /**
    * 用户注册检查用户名是否存在
    *
-   * @param username
+   * @param checkParam
    */
   @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
   @ResponseBody
-  public String checkusername(@RequestParam(defaultValue = "") String username)
+  public String checkusername(CheckUserNameExistParameters checkParam)
       throws Exception {
 
-    //校验username格式 todo
-    username= URLDecoder.decode(username, "utf-8");
     Result result = new APIResultSupport(false);
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(checkParam);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result.toString();
+    }
+
+    String username= URLDecoder.decode(checkParam.getUsername(), "utf-8");
     //校验是否是@sohu.com
     if(!StringUtil.isSohuUserName(username)){
       result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
@@ -80,13 +88,7 @@ public class RegAction extends BaseController {
       }
     }
 
-    boolean isExists= commonManager.isAccountExists(username);
-    if(isExists){
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-    }else{
-      result.setSuccess(true);
-      result.setMessage("账户未被占用，可以注册");
-    }
+    result= regManager.isAccountExists(username);
     return result.toString();
   }
 
