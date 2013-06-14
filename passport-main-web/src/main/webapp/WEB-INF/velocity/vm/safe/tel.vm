@@ -43,23 +43,23 @@
         <ul class="nav">
     
     <li class="index   ">
-        <a href="/safe/index.ut">账号安全</a>
+        <a href="/web/security">账号安全</a>
     </li>
     
     <li class="password   small">
-        <a href="/safe/password.ut">修改密码</a>
+        <a href="/web/security/resetpwd">修改密码</a>
     </li>
     
     <li class="email   small">
-        <a href="/safe/email.ut">密保邮箱</a>
+        <a href="/web/security/email">密保邮箱</a>
     </li>
     
     <li class="tel current  small">
-        <a href="/safe/tel.ut">密保手机</a>
+        <a href="/web/security/mobile">密保手机</a>
     </li>
     
     <li class="question   small">
-        <a href="/safe/question.ut">密保问题</a>
+        <a href="/web/security/question">密保问题</a>
     </li>
     
     <li class="history   small">
@@ -77,7 +77,7 @@
                 <script type="text/tpl" id="Target">
                         <% if status==0 %><#已绑定#>
                         <div class="binded">
-                            <p>您已绑定到手机<{tel}></p>
+                            <p>您已绑定到手机<{sec_mobile}></p>
                             <a href="#" class="long-btn">修改绑定手机</a>
                         </div>
                             

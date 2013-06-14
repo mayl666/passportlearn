@@ -43,23 +43,23 @@
         <ul class="nav">
     
     <li class="index   ">
-        <a href="/safe/index.ut">账号安全</a>
+        <a href="/web/security">账号安全</a>
     </li>
     
     <li class="password   small">
-        <a href="/safe/password.ut">修改密码</a>
+        <a href="/web/security/resetpwd">修改密码</a>
     </li>
     
     <li class="email current  small">
-        <a href="/safe/email.ut">密保邮箱</a>
+        <a href="/web/security/email">密保邮箱</a>
     </li>
     
     <li class="tel   small">
-        <a href="/safe/tel.ut">密保手机</a>
+        <a href="/web/security/mobile">密保手机</a>
     </li>
     
     <li class="question   small">
-        <a href="/safe/question.ut">密保问题</a>
+        <a href="/web/security/question">密保问题</a>
     </li>
     
     <li class="history   small">
@@ -75,9 +75,9 @@
             </div>
             <div  class="form">
                 <script type="text/tpl" id="Target">
-                    <% if vemail.length %><#已绑定#>
+                    <% if sec_email.length %><#已绑定#>
                     <div class="binded">
-                        <p>您当前的密保邮箱是<{vemail}></p>
+                        <p>您当前的密保邮箱是<{sec_email}></p>
                         <a href="#" class="long-btn">修改密保邮箱</a>
                     </div>
                     <% else %><# 未绑定 #>
@@ -110,7 +110,7 @@
 <script type="text/tpl" id="Target3">
 
     <div class="binding">
-        <p>验证邮件已发送至您的邮箱：<{vemail}></p>
+        <p>验证邮件已发送至您的邮箱：<{sec_email}></p>
         <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
         <a href="#" class="long-btn">去邮箱验证</a>
     </div>
