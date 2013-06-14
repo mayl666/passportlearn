@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.model.problem.Problem;
 import com.sogou.upd.passport.model.problem.ProblemType;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.problem.ProblemService;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
 import org.slf4j.Logger;
@@ -35,8 +36,7 @@ public class ProblemManagerImpl implements ProblemManager {
     @Autowired
     private ProblemService problemService;
     @Autowired
-    private ProblemTypeService problemTypeService;
-
+    private OperateTimesService operateTimesService;
     @Override
     public Result updateStatusById(long id, int status) throws Exception {
         Result result = new APIResultSupport(false);
@@ -69,8 +69,11 @@ public class ProblemManagerImpl implements ProblemManager {
     public Result insertProblem(WebAddProblemParameters addProblemParams, String ip) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            //TODO 提交反馈次数检查
-
+            //提交反馈次数检查
+            if(operateTimesService.checkAddProblemInBlackList(addProblemParams.getPassportId(),ip)){
+                result.setCode(ErrorUtil.ERR_CODE_PROBLEM_ADDTIMES_LIMITED);
+                return result;
+            }
             Problem problem = new Problem();
             problem.setPassportId(addProblemParams.getPassportId());
             if (!Strings.isNullOrEmpty(addProblemParams.getClientId())){
@@ -88,12 +91,16 @@ public class ProblemManagerImpl implements ProblemManager {
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_PROBLEM_INSERT_FAILED);
             }
-
+            //记录提交反馈次数，包括成功和失败
+            operateTimesService.incAddProblemTimes(addProblemParams.getPassportId(),ip);
         } catch (Exception e) {
+            //记录提交反馈次数，包括成功和失败
+            operateTimesService.incAddProblemTimes(addProblemParams.getPassportId(),ip);
             logger.error("insertProblem fail,passportId:" + addProblemParams.getPassportId(), e);
             result.setCode(ErrorUtil.ERR_CODE_PROBLEM_INSERT_FAILED);
             return result;
         }
+
         return result;
     }
 }
