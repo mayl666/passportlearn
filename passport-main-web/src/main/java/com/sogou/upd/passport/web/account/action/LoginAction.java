@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -30,8 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
-  private static final String LOGIN_INDEX_URL = "https://account.sogou.com?client_id=1100";
-  private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com?client_id=1100";
+
   @Autowired
   private LoginManager loginManager;
 
@@ -51,15 +51,6 @@ public class LoginAction extends BaseController {
       result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
       result.setMessage(validateResult);
       return result.toString();
-    }
-
-
-    //设置来源
-    String ru =  loginParams.getRu();
-    if(Strings.isNullOrEmpty(ru)){
-//        loginParams.setRu(request.getServerName()+LOGIN_INDEX_URL);
-        //TODO 上线前改为  LOGIN_INDEX_URL
-        loginParams.setRu(TEST_LOGIN_INDEX_URL);
     }
 
     result = loginManager.accountLogin(loginParams, getIp(request));
