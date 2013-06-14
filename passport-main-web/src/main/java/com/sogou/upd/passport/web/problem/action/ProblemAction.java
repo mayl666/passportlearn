@@ -8,7 +8,6 @@ import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
-import com.sogou.upd.passport.manager.problem.vo.ProblemVO;
 import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -73,42 +71,7 @@ public class ProblemAction extends BaseController {
             return result;
         }
 
-        //验证client_id
-        int clientId = Integer.parseInt(addProblemParams.getClient_id());
-        //检查client_id格式以及client_id是否存在
-        if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
-        }
-
         result = problemManager.insertProblem(addProblemParams,getIp(request));
-        return result.toString();
-    }
-
-    @RequestMapping(value = "/problem/myProblem", method = RequestMethod.GET)
-    public Object listMyProblem(HttpServletRequest request,int page, Model model)
-            throws Exception {
-        // TODO 获取并set passportId
-        String  passportId = null;
-        int start=1;
-        int end =PAGE_SIZE;
-        if (page > 1) {
-            start = (page - 1) * PAGE_SIZE+1;
-            end = page * PAGE_SIZE;
-        }
-        List<ProblemVO> problemVOList=problemManager.queryProblemListByPassportId(passportId,start,end);
-        model.addAttribute("problemVOList",problemVOList);
-        model.addAttribute("problemSize",problemVOList.size());
-        return "/problem/myProblem";
-    }
-
-    @RequestMapping(value = "/problem/colseProblem", method = RequestMethod.POST)
-    @ResponseBody
-    public Object colseProblem(HttpServletRequest request,long problemId, Model model)
-            throws Exception {
-        // TODO 获取并set passportId
-        String  passportId = null;
-        Result result =  problemManager.closeProblemById(problemId);
         return result.toString();
     }
 }

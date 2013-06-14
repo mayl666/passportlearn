@@ -25,14 +25,5 @@ public class ProblemServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testQueryProblemListByPassportId() {
-        List<Problem> list = problemService.queryProblemListByPassportId(PASSPORT_ID,null,null);
-        if (list  != null) {
-            System.out.println("查询成功！");
-            for(Problem problem:list){
-                System.out.println(problem.getId()+","+problem.getContent());
-            }
-        } else {
-            System.out.println("查询失败！");
-        }
     }
 }

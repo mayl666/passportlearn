@@ -25,7 +25,7 @@ public interface ProblemService {
      * @throws ServiceException
      */
     public List<Problem> queryProblemList(Integer status, Integer clientId, Integer typeId, Date startDate,
-                                          Date endDate, String content, Integer start, Integer end) throws
+                                          Date endDate,String title,  String content, Integer start, Integer end) throws
             ServiceException;
 
     /**
@@ -38,12 +38,4 @@ public interface ProblemService {
     public int updateStatusById(long id, int status) throws ServiceException;
 
     public int insertProblem(Problem problem) throws ServiceException;
-
-    /**
-     * 根据passportId获取反馈类型
-     * @param passportId
-     * @return
-     * @throws ServiceException
-     */
-    public List<Problem> queryProblemListByPassportId(String passportId,Integer start,Integer end);
 }

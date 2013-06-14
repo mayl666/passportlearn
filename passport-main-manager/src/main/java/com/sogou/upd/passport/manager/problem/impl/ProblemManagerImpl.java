@@ -1,11 +1,11 @@
 package com.sogou.upd.passport.manager.problem.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
-import com.sogou.upd.passport.manager.problem.vo.ProblemVO;
 import com.sogou.upd.passport.model.problem.Problem;
 import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.service.problem.ProblemService;
@@ -73,8 +73,11 @@ public class ProblemManagerImpl implements ProblemManager {
 
             Problem problem = new Problem();
             problem.setPassportId(addProblemParams.getPassportId());
-            problem.setClientId(Integer.parseInt(addProblemParams.getClient_id()));
-            problem.setStatus(0);
+            if (!Strings.isNullOrEmpty(addProblemParams.getClientId())){
+                problem.setClientId(Integer.parseInt(addProblemParams.getClientId()));
+            }
+            problem.setTitle(addProblemParams.getTitile());
+            problem.setEmail(addProblemParams.getEmail());
             problem.setContent(addProblemParams.getContent());
             problem.setTypeId(addProblemParams.getTypeId());
             problem.setSubTime(new Date());
@@ -92,23 +95,5 @@ public class ProblemManagerImpl implements ProblemManager {
             return result;
         }
         return result;
-    }
-
-    @Override
-    public List<ProblemVO> queryProblemListByPassportId(String passportId, int start, int end) throws Exception {
-        try {
-            List<Problem> problemsList = problemService.queryProblemListByPassportId(passportId, start, end);
-            List<ProblemVO> resultList = new ArrayList<ProblemVO>();
-            for (Problem problem : problemsList) {
-                long problemId = problem.getId();
-                ProblemType problemType = problemTypeService.getProblemTypeById(problemId);
-                ProblemVO problemVO = new ProblemVO(problemType.getTypeName(), problem);
-                resultList.add(problemVO);
-            }
-            return resultList;
-        } catch (Exception e) {
-            logger.error("queryProblemListByPassportId fail,passportId:" + passportId, e);
-            return null;
-        }
     }
 }

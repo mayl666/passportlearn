@@ -28,27 +28,28 @@ public interface ProblemDAO {
    */
   String
       ALL_FIELD =
-      " id, passport_id, client_id, sub_time, status, type_id, content,qq ";
+      " id, passport_id, client_id, sub_time, status, type_id,title, content,email ";
 
   /**
    * 除了id之外所有字段列表
    */
   String
           ALL_FIELD_EXCEPTID =
-          " passport_id, client_id, sub_time, status, type_id, content,qq ";
+          " passport_id, client_id, sub_time, status, type_id,title, content,email ";
   /**
    * 值列表
    */
   String
       VALUE_FIELD_EXCEPTID =
-      " :problem.passportId, :problem.clientId, :problem.subTime, :problem.status, :problem.typeId, :problem.content, :problem.qq ";
+      " :problem.passportId, :problem.clientId, :problem.subTime, :problem.status, :problem.typeId,:problem.title, :problem.content, :problem.email ";
 
   /**
    * 修改字段列表
    */
   String
       UPDATE_FIELD =
-      " passport_id = :problem.passportId, client_id = :problem.clientId, sub_time = :problem.subTime, status = :problem.status, type_id = :problem.typeId, content = :problem.content, qq = :problem.qq ";
+      " passport_id = :problem.passportId, client_id = :problem.clientId, sub_time = :problem.subTime, status = :problem.status, type_id = :problem.typeId," +
+              " title = :problem.title,content = :problem.content, email = :problem.email ";
 
 
   /**
@@ -92,6 +93,7 @@ public interface ProblemDAO {
        +  "#if(:type_id != null){and type_id = :type_id }" //根据反馈类型ID筛选
        +  "#if(:start_date != null){and sub_time >= :start_date }" //根据开始和结束时间筛选
        +  "#if(:end_date != null){and sub_time <= :end_date }" //
+       +  "#if(:title != null){AND UPPER(title) LIKE BINARY CONCAT('%',UPPER(:title),'%')}"//根据反馈内容模糊匹配
        +  "#if(:content != null){AND UPPER(content) LIKE BINARY CONCAT('%',UPPER(:content),'%')}"//根据反馈内容模糊匹配
        + " order by sub_time DESC "
        + " #if((:start != null)&&(:end !=null)){ limit :start,:end }" )
@@ -100,6 +102,7 @@ public interface ProblemDAO {
                                       @SQLParam("type_id") Integer typeId,
                                       @SQLParam("start_date") Date startDate,
                                       @SQLParam("end_date") Date endDate,
+                                      @SQLParam("title") String title,
                                       @SQLParam("content") String content,
                                       @SQLParam("start") Integer start,
                                       @SQLParam("end") Integer end)
