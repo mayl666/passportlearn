@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -35,9 +36,21 @@ public class WebRegisterParameters {
     if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
       return true;
     }
-    if(username.endsWith("@sohu.com")){
-      return false;
+    return StringUtil.isSohuUserName(username);
+  }
+
+  @AssertTrue(message = "暂不支持sohu账号注册")
+  private boolean isVaildUserName() {
+    if (Strings.isNullOrEmpty(username)) {
+      return true;
     }
+    if(username.indexOf("@") == -1){
+        //手机账号或者个性账号
+    } else {
+      //邮箱格式
+
+    }
+
     return true;
   }
 

@@ -65,7 +65,7 @@ public class RegAction extends BaseController {
     username= URLDecoder.decode(username, "utf-8");
     Result result = new APIResultSupport(false);
     //校验是否是@sohu.com
-    if(!isSohuUserName(username)){
+    if(!StringUtil.isSohuUserName(username)){
       result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
       return result.toString();
     }
@@ -90,15 +90,7 @@ public class RegAction extends BaseController {
     return result.toString();
   }
 
-  private boolean isSohuUserName(String username) {
-    if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
-      return true;
-    }
-    if(username.endsWith("@sohu.com")){
-      return false;
-    }
-    return true;
-  }
+
 
   /**
    * web页面注册
