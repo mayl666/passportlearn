@@ -9,12 +9,13 @@ import java.util.Date;
 public class Problem {
     private long id;
     private String passportId;
-    private int clientId;
+    private int clientId=1100; //问题所在产品代码,默认为1100
     private Date subTime;
-    private int status;   // 0-未回复, 1-已回复，2-已关闭
+    private int status=0;   // 0-未回复, 1-已回复，2-已关闭
     private int typeId; // 问题类型
+    private String title;
     private String content;
-    private String qq;
+    private String email;
 
     public Problem() {
     }
@@ -75,11 +76,19 @@ public class Problem {
         this.passportId = passportId;
     }
 
-    public String getQq() {
-        return qq;
+    public String getTitle() {
+        return title;
     }
 
-    public void setQq(String qq) {
-        this.qq = qq;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
