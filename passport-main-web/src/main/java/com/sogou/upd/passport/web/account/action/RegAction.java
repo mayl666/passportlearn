@@ -89,8 +89,9 @@ public class RegAction extends BaseController {
       } else {
         username=username+"@sogou.com";
         result= regManager.isAccountExists(username,false);
-
       }
+    }else {
+      result= regManager.isAccountExists(username,false);
     }
 
     return result.toString();
