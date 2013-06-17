@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -13,7 +15,7 @@ import javax.validation.constraints.Min;
 public class BaseWebParams {
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
-    protected String client_id;
+    protected String client_id = String.valueOf(SHPPUrlConstant.APP_ID); // TODO:默认值
 
     public String getClient_id() {
         return client_id;
