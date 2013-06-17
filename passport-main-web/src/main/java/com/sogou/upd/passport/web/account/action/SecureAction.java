@@ -173,7 +173,6 @@ public class SecureAction extends BaseController {
     @LoginRequired
     public String showHistoryView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
-        params.setClient_id("1100");  // TODO:如何取client_id
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
