@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
@@ -62,9 +64,16 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                                       String curtime, String smsCode) throws ServiceException {
         boolean flag = true;
         try {
-            redisUtils.hIncrBy(cacheKeySendNum, "sendNum");
-            redisUtils.hPut(cacheKeySmscode, "sendTime", curtime);
-            redisUtils.hPut(cacheKeySmscode, "smsCode", smsCode);
+            String sendNumStr = redisUtils.get(cacheKeySendNum);
+            if (Strings.isNullOrEmpty(sendNumStr) || !StringUtil.checkIsDigit(sendNumStr)) {
+                redisUtils.setWithinSeconds(cacheKeySendNum, "1", SMSUtil.SMS_ONEDAY);
+            } else {
+                redisUtils.increment(cacheKeySendNum);
+            }
+            Map<String, String> mapData = Maps.newHashMap();
+            mapData.put("smsCode", smsCode);    //初始化验证码
+            mapData.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
+            redisUtils.hPutAll(cacheKeySmscode, mapData);
         } catch (Exception e) {
             flag = false;
             logger.error("[SMS] service method updateSmsCacheInfo error.{}", e);
@@ -88,66 +97,93 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     @Override
-    public Result handleSendSms(String mobile, int clientId) throws ServiceException {
+    public Result sendSmsCode(String mobile, int clientId, AccountModuleEnum module) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
-            String cacheKey = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile + "_" + clientId;
-
-            if (!redisUtils.checkKeyIsExist(cacheKey)) {
-                boolean flag = redisUtils.hPutIfAbsent(cacheKey, "sendNum", "1");
-                if (flag) {
-                    redisUtils.expire(cacheKey, SMSUtil.SMS_ONEDAY);
-                }
-            } else {
-                //如果存在，判断是否已经超出日发送最高限额   (比如30分钟后失效了，再次获取验证码 需要和此用户当天发送的总的条数对比)
-                Map<String, String> mapCacheSendNumResult = redisUtils.hGetAll(cacheKey);
-                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
-                    int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
-                    if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                        redisUtils.hIncrBy(cacheKey, "sendNum");
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
-                        return result;
-                    }
-                }
+            if (!checkSmsSendLimit(mobile, clientId, module)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
+                return result;
             }
+
+            String cacheKeySendNum = buildCacheKeyForSmsLimit(mobile, clientId, module);
+
             //生成随机数
             String randomCode = RandomStringUtils.randomNumeric(5);
             //写入缓存
-            cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
+            String cacheKey = buildCacheKeyForSmsCode(mobile, clientId, module);
             //初始化缓存映射
-            Map<String, String> mapData = Maps.newHashMap();
-            mapData.put("smsCode", randomCode);    //初始化验证码
-            mapData.put("mobile", mobile);        //发送手机号
-            mapData.put("sendTime", Long.toString(System.currentTimeMillis()));   //发送时间
+            Map<String, String> cacheMap = redisUtils.hGetAll(cacheKey);
+            if (MapUtils.isEmpty(cacheMap) || !StringUtil.checkIsDigit(cacheMap.get("sendTime"))) {
+                //读取短信内容
+                String smsText = appConfigService.querySmsText(clientId, randomCode);
+                if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                    //更新缓存
+                    updateSmsCacheInfo(cacheKeySendNum, cacheKey, String.valueOf(System.currentTimeMillis()), randomCode);
+                    redisUtils.expire(cacheKey, SMSUtil.SMS_VALID);
 
-            redisUtils.hPutAll(cacheKey, mapData);
+                    result.setSuccess(true);
+                    result.setMessage("验证码已发送至" + mobile);
+                    return result;
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                    return result;
+                }
+            } else {
+                //获取缓存数据
+                long sendTime = Long.parseLong(cacheMap.get("sendTime"));
+                long curtime = System.currentTimeMillis();
+                boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
+                if (!valid) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
+                    return result;
+                }
+                //读取短信内容
+                String smsText = appConfigService.querySmsText(clientId, randomCode);
+                if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                    //更新缓存
+                    updateSmsCacheInfo(cacheKeySendNum, cacheKey, String.valueOf(curtime), randomCode);
 
-            //设置失效时间 30分钟  ，1800秒
-            redisUtils.expire(cacheKey, SMSUtil.SMS_VALID);
-
-            //读取短信内容
-            String smsText = appConfigService.querySmsText(clientId, randomCode);
-            if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
-                result.setSuccess(true);
-                result.setMessage("验证码已发送至" + mobile);
-                return result;
+                    result.setSuccess(true);
+                    result.setMessage("验证码已发送至" + mobile);
+                    return result;
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                    return result;
+                }
             }
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-            return result;
         } catch (Exception e) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-            logger.error("[SMS] service method handleSendSms error.{}", e);
-            new ServiceException(e);
+            logger.error("[SMS] service method sendSms error.{}", e);
+            return result;
         }
-        return result;
+    }
+
+    public boolean checkSmsSendLimit(String mobile, int clientId, AccountModuleEnum module) {
+        try {
+            String cacheKey = buildCacheKeyForSmsLimit(mobile, clientId, module);
+            String sendNumStr = redisUtils.get(cacheKey);
+            if (Strings.isNullOrEmpty(sendNumStr) || !StringUtil.checkIsDigit(sendNumStr)) {
+                return true;
+            } else {
+                //如果存在，判断是否已经超出日发送最高限额   (比如30分钟后失效了，再次获取验证码 需要和此用户当天发送的总的条数对比)
+                int sendNum = Integer.parseInt(sendNumStr);
+                if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("[SMS] service method check sms send limit error.{}", e);
+            return true; // TODO:缓存出现问题不影响发送短信
+        }
     }
 
     @Override
-    public boolean checkSmsInfoFromCache(String account, String smsCode, int clientId)
+    public boolean checkSmsInfoFromCache(String mobile, int clientId, AccountModuleEnum module, String smsCode)
             throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + account + "_" + clientId;
+            String cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
             Map<String, String> mapResult = redisUtils.hGetAll(cacheKey);
             if (MapUtils.isNotEmpty(mapResult)) {
                 String strValue = mapResult.get("smsCode");
@@ -155,7 +191,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                     return true;
                 }
                 // TODO:目前所有手机随机码验证服务统一限制验证失败次数
-                setSmsFailLimited(account, clientId);
+                setSmsFailLimited(mobile, clientId, module);
             }
             return false;
         } catch (Exception e) {
@@ -166,11 +202,10 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
 
     @Override
-    public boolean checkSmsFailLimited(String account, int clientId)
+    public boolean checkSmsFailLimit(String mobile, int clientId, AccountModuleEnum module)
             throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
-                    + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            String cacheKey = buildCacheKeyForSmsFailLimit(mobile, clientId, module);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
                 if (checkNum > SMSUtil.MAX_CHECKSMS_COUNT_ONEDAY) {
@@ -199,16 +234,16 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     @Override
-    public Result checkSmsCode(String mobile, int clientId, String smsCode) throws ServiceException {
+    public Result checkSmsCode(String mobile, int clientId, AccountModuleEnum module, String smsCode) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
-            if (!checkSmsFailLimited(mobile, clientId)) {
+            if (!checkSmsFailLimit(mobile, clientId, module)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
 
             // 验证手机号码与验证码是否匹配
-            if (!checkSmsInfoFromCache(mobile, smsCode, clientId)) {
+            if (!checkSmsInfoFromCache(mobile, clientId, module, smsCode)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
                 return result;
             }
@@ -230,10 +265,9 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
      * 设置smscode验证次数限制，验证失败时递增
      * TODO：暂时为private方法，只供checkSmsInfoFromCache方法调用
      */
-    private boolean setSmsFailLimited(String account, int clientId) throws ServiceException {
+    private boolean setSmsFailLimited(String mobile, int clientId, AccountModuleEnum module) throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_MOBILE_CHECKSMSFAIL + account + "_" + clientId
-                              + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            String cacheKey = buildCacheKeyForSmsFailLimit(mobile, clientId, module);
             // 由于既需要自增，同时又需要设置有效时间，无法在自增同时设置有效时间，不可避免建立两次连接
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 redisUtils.increment(cacheKey);
@@ -248,5 +282,19 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             new ServiceException(e);
         }
         return false;
+    }
+
+    private String buildCacheKeyForSmsCode(String mobile, int clientId, AccountModuleEnum module) {
+        return CACHE_PREFIX_ACCOUNT_SMSCODE + module + "_" + clientId + "_" + mobile;
+    }
+
+    private String buildCacheKeyForSmsFailLimit(String mobile, int clientId, AccountModuleEnum module) {
+        return CACHE_PREFIX_MOBILE_CHECKSMSFAIL + module + "_" + clientId + "_" + mobile + "_" +
+               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+    }
+
+    private String buildCacheKeyForSmsLimit(String mobile, int clientId, AccountModuleEnum module) {
+        return CACHE_PREFIX_ACCOUNT_SENDNUM + module + "_" + clientId + "_" + mobile +
+               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 }

@@ -47,7 +47,7 @@
     </li>
     
     <li class="password   small">
-        <a href="/web/security/password">修改密码</a>
+        <a href="/web/security/resetpwd">修改密码</a>
     </li>
     
     <li class="email current  small">
@@ -75,7 +75,7 @@
             </div>
             <div  class="form">
                 <script type="text/tpl" id="Target">
-                    <% if sec_email.length %><#已绑定#>
+                    <% if sec_email && sec_email.length %><#已绑定#>
                     <div class="binded">
                         <p>您当前的密保邮箱是<{sec_email}></p>
                         <a href="#" class="long-btn">修改密保邮箱</a>

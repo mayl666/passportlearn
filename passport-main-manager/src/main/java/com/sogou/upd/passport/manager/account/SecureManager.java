@@ -21,9 +21,25 @@ public interface SecureManager {
      */
     public Result sendMobileCodeByPassportId(String passportId, int clientId) throws Exception;
 
-
+    /**
+     * 为SOHU接口适配，发送短信验证码至待绑定手机
+     *
+     * @param userId
+     * @param clientId
+     * @param mobile
+     * @return
+     * @throws Exception
+     */
     public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception;
 
+    /**
+     * 为SOHU接口适配，发送短信验证码至原绑定手机
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
     public Result sendMobileCodeOld(String userId, int clientId) throws Exception;
 
     /**
@@ -35,11 +51,6 @@ public interface SecureManager {
      * @throws Exception
      */
     public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
-
-    /**
-     * 重发验证码时更新缓存状态
-     */
-    public Result updateSmsCacheInfo(String cacheKey, int clientId);
 
     /**
      * 检查发送邮件限制
