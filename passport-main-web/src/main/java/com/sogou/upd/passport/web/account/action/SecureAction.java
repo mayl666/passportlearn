@@ -149,7 +149,7 @@ public class SecureAction extends BaseController {
         return "safe/question";
     }
 
-    @RequestMapping(value = "/resetpwd", method = RequestMethod.GET)
+    @RequestMapping(value = "/password", method = RequestMethod.GET)
     @LoginRequired
     public String modifyPasswordView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -198,6 +198,7 @@ public class SecureAction extends BaseController {
      */
     @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
     @ResponseBody
+    @LoginRequired
     public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
             throws Exception {
         Result result = new APIResultSupport(false);
@@ -209,6 +210,7 @@ public class SecureAction extends BaseController {
             return result;
         }
 
+        resetParams.setPassport_id(hostHolder.getPassportId());
         String modifyIp = getIp(request);
         resetParams.setIp(modifyIp);
 
