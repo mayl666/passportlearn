@@ -132,7 +132,6 @@ public class LoginManagerImpl implements LoginManager {
                 if (AccountDomainEnum.SOHU.equals(accountDomainEnum)) {
                     loginParameters.setRu(SOHU_LOGIN_INDEX_URL);
                 }else{
-                    //TODO 上线前改为  LOGIN_INDEX_URL
                     loginParameters.setRu(scheme+LOGIN_INDEX_URLSTR);
                 }
             }
@@ -161,7 +160,6 @@ public class LoginManagerImpl implements LoginManager {
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
             authUserApiParams.setUserid(passportId);
             authUserApiParams.setPassword(pwdMD5);
-            //TODO 设置clientId,暂时设置为1100
             authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
             //根据域名判断是否代理，一期全部走代理
             if (ManagerHelper.isInvokeProxyApi(passportId)) {

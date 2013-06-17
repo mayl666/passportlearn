@@ -12,7 +12,7 @@ import javax.validation.constraints.Min;
 public class WebAddProblemParameters {
 //    @NotBlank(message = "client_id不允许为空!")
 //    @Min(0)
-    private String clientId= "1100";
+    private String clientId= "1120";
 //    @NotBlank(message = "passportId不允许为空!")
     private String passportId;
     @NotBlank(message = "请选择反馈类型!")
