@@ -14,16 +14,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
-public class BaseTest    extends AbstractJUnit4SpringContextTests {
-    protected static final String passportId = "upd_test@sogou.com";
+public class BaseTest extends AbstractJUnit4SpringContextTests {
+    protected static final String userid = "upd_test@sogou.com";
 
     protected static final String password = "testtest1";
 
     protected static final int clientId = 1100;
+    protected static final String serverSecret = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
     protected static final String modifyIp = "10.1.164.160";
 
-    protected static final String question="测试啊，我是来测试的";
+    protected static final String question = "测试啊，我是来测试的";
 
-    protected static final String answer="测试成功";
+    protected static final String answer = "测试成功";
 }

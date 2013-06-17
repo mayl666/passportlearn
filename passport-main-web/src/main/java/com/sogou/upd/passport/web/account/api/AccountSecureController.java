@@ -46,8 +46,6 @@ public class AccountSecureController extends BaseController {
     @Autowired
     private HostHolder hostHolder;
 
-    // TODO:method是POST或GET，或者POST的话，GET怎么处理
-
     /**
      * 查询密保方式，用于重置密码/修改密保内容
      *

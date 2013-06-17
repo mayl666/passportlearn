@@ -10,7 +10,8 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Created with IntelliJ IDEA.
+ * The string has to be a well-formed phone.
+ *
  * User: shipengzhi
  * Date: 13-6-17
  * Time: 下午5:32
