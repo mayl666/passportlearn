@@ -4,12 +4,22 @@
         <meta charset="utf-8" />
         <title></title>
     </head>
-    <body >
+    <body ></body>
     <script type="text/javascript">
         
         var data = eval( '(' + '${data}' + ')' );
 
+        (function(){
+
+            var xdurl = data.data.xd;
+            var status = data.data.status;
+
+            if( !+status ){
+                var iframe = document.createElement('iframe');
+                
+            }
         
+        })();
         
     </script>
 </html>
