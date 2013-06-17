@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import org.apache.commons.collections.MapUtils;
 import org.junit.Test;
@@ -72,13 +73,8 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
      */
     @Test
     public void testHandleSendSms() {
-        Map<String, Object> mapResult = null;
-        mobileCodeSenderService.handleSendSms(MOBILE, CLIENT_ID);
-        if (MapUtils.isNotEmpty(mapResult)) {
-            System.out.println(mapResult.size());
-        } else {
-            System.out.println(ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND));
-        }
+        Result result = mobileCodeSenderService.handleSendSms(MOBILE, CLIENT_ID);
+        System.out.println(result);
     }
 
     /**
@@ -86,12 +82,7 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
      */
     @Test
     public void testUpdateSmsInfo() {
-        Map<String, Object> mapResult = null;
-        mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "","","");
-        if (MapUtils.isNotEmpty(mapResult)) {
-            System.out.println(mapResult.size());
-        } else {
-            System.out.println(ErrorUtil.buildError(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND));
-        }
+        boolean isSuccess = mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "", "", "");
+        System.out.println(isSuccess);
     }
 }

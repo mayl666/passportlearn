@@ -13,7 +13,9 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -23,13 +25,28 @@ import java.util.Map;
 @Component("proxyUserInfoApiManagerImpl")
 public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
+    private static Set<String> SUPPORT_FIELDS_MAP=null;
+
+    static{
+        SUPPORT_FIELDS_MAP=new HashSet<>(7);
+        SUPPORT_FIELDS_MAP.add("birthday");
+        SUPPORT_FIELDS_MAP.add("gender");
+        SUPPORT_FIELDS_MAP.add("sec_mobile");
+        SUPPORT_FIELDS_MAP.add("sec_email");
+        SUPPORT_FIELDS_MAP.add("sec_ques");
+        SUPPORT_FIELDS_MAP.add("province");
+        SUPPORT_FIELDS_MAP.add("city");
+    }
+
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         String fields = getUserInfoApiparams.getFields();
         String[] fieldList = fields.split(",");
         for (String field : fieldList) {
-            requestModelXml.addParam(field, "");
+            if(SUPPORT_FIELDS_MAP.contains(field)){
+                requestModelXml.addParam(field, "");
+            }
         }
         requestModelXml.addParams(getUserInfoApiparams);
         requestModelXml.deleteParams("fields");
