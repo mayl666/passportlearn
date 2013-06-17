@@ -44,15 +44,6 @@ public class StringUtil {
     return true;
   }
 
-  /*
-   *校验是否是邮箱格式
-   */
-  public static boolean isEmail(String username) {
-    String regex="(\\w)+(\\.\\w+)*@([\\w_\\-])+((\\.\\w+)+)";
-    return username.matches(regex);
-  }
-
-
   /**
    * <p>Checks if a CharSequence is empty ("") or null.</p>
    *

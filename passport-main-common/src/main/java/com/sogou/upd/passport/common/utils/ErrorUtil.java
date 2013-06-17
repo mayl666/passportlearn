@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
 
 import java.util.Map;
 
@@ -19,14 +18,16 @@ public class ErrorUtil {
     public static final String SYSTEM_UNKNOWN_EXCEPTION = "10001";
     // 必填的参数错误
     public static final String ERR_CODE_COM_REQURIE = "10002";
-    // 内部接口code签名错误或ct过期
-    public static final String ERR_CODE_COM_SING = "10003";
+    // 内部接口code签名错误
+    public static final String INTERNAL_CODE_ERROR = "10003";
     // 代理搜狐Passport接口HTTP请求发生异常
     public static final String PROXY_SHPP_API_EXCEPTION = "10004";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
     // 签名或accessToken验证失败
 //    public static final String ERR_OPEN_ID = "10006";
+    // 内部接口请求超时
+    public static final String INTERNAL_CT_OVERTIME = "10007";
     // 接口调用频次超限
     public static final String INVOKE_BEYOND_FREQUENCY_LIMIT = "10008";
     // 账号不存在或异常或未激活
@@ -79,8 +80,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 今日验证码校验错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
-    // 昵称验证失败
-//    public static final String ERR_CODE_ACCOUNT_VERIFY_FIELDS = "20212";
+
     // 手机验证码发送失败
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
     //创建用户失败
@@ -131,6 +131,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CREATE_COOKIE_FAILED = "20240";
     //暂时不支持sohu域内邮箱注册
     public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER = "20241";
+    //TODO sohu内部接口使用，以后删除，手机app校验第三方登录的token失败
+    public static final String ERR_CODE_APPCONNECT_TOKEN_ERROR = "20242";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -261,9 +263,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "code签名错误或ct过期");
+        ERR_CODE_MSG_MAP.put(INTERNAL_CODE_ERROR, "内部接口code签名错误");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
+        ERR_CODE_MSG_MAP.put(INTERNAL_CT_OVERTIME, "内部接口ct超时");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT,"接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
@@ -307,6 +310,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "账号已封杀");
         ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱注册");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_APPCONNECT_TOKEN_ERROR, "手机app校验第三方登录的token失败");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_COOKIE_FAILED, "生成cookie失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");

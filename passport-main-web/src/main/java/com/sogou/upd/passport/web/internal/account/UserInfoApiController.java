@@ -60,7 +60,7 @@ public class UserInfoApiController {
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
         if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
             return result.toString();
         }
         // 调用内部接口
@@ -88,7 +88,7 @@ public class UserInfoApiController {
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
         if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
             return result.toString();
         }
         // 调用内部接口
