@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -9,6 +10,7 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,7 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
         Result result = executeResult(requestModelXml);
         if (result.isSuccess()) {
             result.setMessage("注册成功");
+            result.setDefaultModel("userid", regEmailApiParams.getUserid());
         }
         return result;
     }
@@ -42,6 +45,8 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
         Result result = executeResult(requestModelXml, regMobileCaptchaApiParams.getMobile());
         if (result.isSuccess()) {
             result.setMessage("注册成功");
+            String passportId = PassportIDGenerator.generator(regMobileCaptchaApiParams.getMobile(), AccountTypeEnum.PHONE.getValue());
+            result.setDefaultModel("userid", passportId);
         }
         return result;
     }
@@ -62,9 +67,10 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
     public Result checkUser(CheckUserApiParams checkUserApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.CHECK_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(checkUserApiParams);
-        Result result= executeResult(requestModelXml);
-        if(!result.isSuccess()){
-            result.setDefaultModel("userid","");
+        Result result = executeResult(requestModelXml);
+        if (!result.isSuccess()) {
+            // TODO 这里不知道是否可能为手机号
+            result.setDefaultModel("userid", checkUserApiParams.getUserid());
         }
         return result;
     }
