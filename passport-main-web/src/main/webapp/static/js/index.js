@@ -65,7 +65,15 @@ define('utils',[], function(){
 
 });
 
-define('index' , ['./ui' , './utils'] , function(ui , utils){
+define('conf',[],function(){
+
+
+    return{
+        client_id:"1120"
+    };
+});
+
+define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
     
     var vcodeInited = false;
     var initVcode = function(){
@@ -97,26 +105,31 @@ define('index' , ['./ui' , './utils'] , function(ui , utils){
     return {
         init: function(){
             ui.checkbox('#RemChb');
-            $('#Login').append('<input type="hidden" name="token" value="'+ utils.uuid()  +'" class="token"/>');
 
+            PassportSC.appid = conf.client_id;
             $('#Login').on('submit' , function(){
-                $.post($(this).attr('action'), $(this).serialize() , function(data){
-                    data = utils.parseResponse(data);
-
-                    if( !+data.status ){
-                        alert('登录成功');
-                        data.data && data.data.cookieUrl && (window.location.href = data.data.cookieUrl);
-                        return;
-                    }else if( data.data.needCaptcha ){
-                        initVcode();
-                        showVcodeError('请输入验证码');
-                    }
-                    if( +data.status == 20221 ){//vcode
-                        showVcodeError('请输入验证码');
-                    }else{
-                        showUnameError('用户名或密码错，请重新输入');
-                    }
-                });
+                var $el = $('#Login');
+                PassportSC.loginHandle( $el.find('input[name="username"]').val() , 
+                                        $el.find('input[name="password"]').val() ,
+                                        $el.find('input[name="captcha"]').val() , 
+                                        $el.find('input[name="autoLogin"]').val(),
+                                        document.getElementById('logdiv'),
+                                        function(data){
+                                            if( data.data.needCaptcha ){
+                                                initVcode();
+                                                showVcodeError('请输入验证码');
+                                            }
+                                            if( +data.status == 20221 ){//vcode
+                                                showVcodeError('请输入验证码');
+                                            }else{
+                                                showUnameError('用户名或密码错，请重新输入');
+                                            }
+                                        } ,
+                                        function(){
+                                            alert('登录成功');
+                                            return;
+                                        }
+                                      );
                 
                 return false;
             });

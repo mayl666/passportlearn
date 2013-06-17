@@ -61,7 +61,7 @@ define('conf',[],function(){
 
 
     return{
-        client_id:"1100"
+        client_id:"1120"
     };
 });
 
