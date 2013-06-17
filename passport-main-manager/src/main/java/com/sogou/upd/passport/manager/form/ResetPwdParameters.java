@@ -11,7 +11,7 @@ public class ResetPwdParameters {
   private String password;
   @NotBlank(message = "新密码不允许为空!")
   private String newpwd;
-  @NotBlank(message = "passport_id不允许为空!")
+  // @NotBlank(message = "passport_id不允许为空!")
   private String passport_id;
   private String ip;
 
