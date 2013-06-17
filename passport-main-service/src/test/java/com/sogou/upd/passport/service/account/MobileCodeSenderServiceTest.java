@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import org.apache.commons.collections.MapUtils;
@@ -33,7 +34,7 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
      */
     @Test
     public void testCheckSmsInfoFromCache() {
-        boolean flag = mobileCodeSenderService.checkSmsInfoFromCache(MOBILE, SMSCODE, CLIENT_ID);
+        boolean flag = mobileCodeSenderService.checkSmsInfoFromCache(MOBILE, CLIENT_ID, AccountModuleEnum.RESETPWD, SMSCODE);
         if (flag) {
             System.out.println("匹配...");
         } else {
@@ -73,7 +74,9 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
      */
     @Test
     public void testHandleSendSms() {
-        Result result = mobileCodeSenderService.handleSendSms(MOBILE, CLIENT_ID);
+        Map<String, Object> mapResult = null;
+        Result
+                result = mobileCodeSenderService.sendSmsCode(MOBILE, CLIENT_ID, AccountModuleEnum.RESETPWD);
         System.out.println(result);
     }
 
@@ -82,7 +85,8 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
      */
     @Test
     public void testUpdateSmsInfo() {
-        boolean isSuccess = mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "", "", "");
+        Map<String, Object> mapResult = null;
+        boolean isSuccess = mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "","","");
         System.out.println(isSuccess);
     }
 }

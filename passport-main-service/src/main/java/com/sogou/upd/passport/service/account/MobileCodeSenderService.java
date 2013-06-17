@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 
 import java.util.Map;
@@ -31,21 +32,26 @@ public interface MobileCodeSenderService {
     public boolean deleteSmsCache(final String mobile, final int clientId);
 
     /**
-     * 手机验证码的获取与重发
+     * 发送短信验证码
+     *
+     * @param mobile
+     * @param clientId
+     * @param module
+     * @return
      */
-    public Result handleSendSms(String account, int clientId);
+    public Result sendSmsCode(String mobile, int clientId, AccountModuleEnum module);
 
     /**
      * 注册时检查手机号，发送验证码是否正确
      */
-    public boolean checkSmsInfoFromCache(String account, String smsCode, int clientId);
+    public boolean checkSmsInfoFromCache(String mobile, int clientId, AccountModuleEnum module, String smsCode);
 
     /**
      * 检查是否不超过验证码验证失败次数
      *
      * @return 不超过失败次数，返回true；超过，返回false
      */
-    public boolean checkSmsFailLimited(String account, int clientId);
+    public boolean checkSmsFailLimit(String account, int clientId, AccountModuleEnum module);
 
     /**
      * 根据key获取对应的cacheMap
@@ -60,5 +66,5 @@ public interface MobileCodeSenderService {
      * @param smsCode
      * @return
      */
-    public Result checkSmsCode(String mobile, int clientId, String smsCode);
+    public Result checkSmsCode(String mobile, int clientId, AccountModuleEnum module, String smsCode);
 }
