@@ -1693,7 +1693,7 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
     return{
         init: function(type){
             common.showBannerUnderLine();
-            addUrlClientId();
+            //addUrlClientId();
 
             var data ={};
             try{
