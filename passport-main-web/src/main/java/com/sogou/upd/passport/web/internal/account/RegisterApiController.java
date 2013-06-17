@@ -101,9 +101,9 @@ public class RegisterApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyRegisterApiManager.checkUser(params);
         }
 //这里到底是检测用户名是否存在还是是否可注册，需要再做考虑
 //        String userID=params.getUserid().trim();
@@ -114,9 +114,6 @@ public class RegisterApiController {
 //            result.setMessage(validateResult);
 //            return result.toString();
 //        }
-
-        // 调用内部接口
-        result = proxyRegisterApiManager.checkUser(params);
         return result.toString();
     }
 }
