@@ -64,6 +64,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                 .EMAIL.getValue());
             if (account != null) {
               result.setSuccess(true);
+              result.setDefaultModel("userid", account.getPassportId());
               result.setMessage("注册成功！");
             } else {
               result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -111,6 +112,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
               .PHONE.getValue());
           if (account != null) {
             result.setSuccess(true);
+            result.setDefaultModel("userid", account.getPassportId());
             result.setMessage("注册成功！");
           } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
