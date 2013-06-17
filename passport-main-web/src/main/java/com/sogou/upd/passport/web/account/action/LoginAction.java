@@ -53,6 +53,7 @@ public class LoginAction extends BaseController {
       result.setMessage(validateResult);
       return result.toString();
     }
+    result = loginManager.accountLogin(loginParams, getIp(request));
     model.addAttribute("data",result.toString());
     return "/login/api";
   }
