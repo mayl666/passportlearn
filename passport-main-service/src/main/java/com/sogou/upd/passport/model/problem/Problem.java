@@ -9,7 +9,7 @@ import java.util.Date;
 public class Problem {
     private long id;
     private String passportId;
-    private int clientId=1100; //问题所在产品代码,默认为1100
+    private int clientId=1120; //问题所在产品代码,默认为1120
     private Date subTime;
     private int status=0;   // 0-未回复, 1-已回复，2-已关闭
     private int typeId; // 问题类型

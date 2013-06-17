@@ -69,7 +69,6 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
         requestModelXml.addParams(checkUserApiParams);
         Result result = executeResult(requestModelXml);
         if (!result.isSuccess()) {
-            // TODO 这里不知道是否可能为手机号
             result.setDefaultModel("userid", checkUserApiParams.getUserid());
         }
         return result;

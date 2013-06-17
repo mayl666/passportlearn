@@ -277,10 +277,15 @@ public class RegManagerImpl implements RegManager {
     Result result = new APIResultSupport(false);
     try {
       CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
-      if (ManagerHelper.isInvokeProxyApi(username) && type) {
-        BaseMoblieApiParams params=new BaseMoblieApiParams();
-        params.setMobile(username);
-        result = proxyBindApiManager.getPassportIdFromMobile(params);
+      if (ManagerHelper.isInvokeProxyApi(username)) {
+        if(type){
+          //手机号
+          BaseMoblieApiParams params=new BaseMoblieApiParams();
+          params.setMobile(username);
+          result = proxyBindApiManager.getPassportIdFromMobile(params);
+        }else {
+          result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        }
       } else {
         result = sgRegisterApiManager.checkUser(checkUserApiParams);
       }

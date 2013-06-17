@@ -15,7 +15,7 @@ public interface LoginManager {
 
     public Result authorize(OAuthTokenASRequest oauthRequest);
 
-    public Result accountLogin(WebLoginParameters parameters,String ip);
+    public Result accountLogin(WebLoginParameters parameters,String ip,String scheme);
 
     /**
      * 获取passportId登陆的时候是否需要登陆验证码
