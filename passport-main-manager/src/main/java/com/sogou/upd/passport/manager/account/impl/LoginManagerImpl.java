@@ -36,10 +36,11 @@ import java.util.Map;
 public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
-    private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com";
+
     private static final String SOHU_LOGIN_INDEX_URL = "https://passport.sohu.com";
-    private static final String COOKIE_URL_RU = "http://account.sogou.com/static/api/ru.htm";
+    private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
+    private static final String COOKIE_URL_RUSTR = "://account.sogou.com/static/api/ru.htm";
+
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -117,7 +118,7 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public Result accountLogin(WebLoginParameters loginParameters, String ip) {
+    public Result accountLogin(WebLoginParameters loginParameters, String ip,String scheme) {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();
@@ -132,7 +133,7 @@ public class LoginManagerImpl implements LoginManager {
                     loginParameters.setRu(SOHU_LOGIN_INDEX_URL);
                 }else{
                     //TODO 上线前改为  LOGIN_INDEX_URL
-                    loginParameters.setRu(TEST_LOGIN_INDEX_URL);
+                    loginParameters.setRu(scheme+LOGIN_INDEX_URLSTR);
                 }
             }
 
@@ -184,7 +185,7 @@ public class LoginManagerImpl implements LoginManager {
                     passportIdTmp =  account.getPassportId();
                 }
                 createCookieUrlApiParams.setUserid(passportIdTmp);
-                createCookieUrlApiParams.setRu(COOKIE_URL_RU);
+                createCookieUrlApiParams.setRu(scheme+COOKIE_URL_RUSTR);
                 createCookieUrlApiParams.setPersistentcookie(loginParameters.getAutoLogin());
                 Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
                 if (createCookieResult.isSuccess()){
