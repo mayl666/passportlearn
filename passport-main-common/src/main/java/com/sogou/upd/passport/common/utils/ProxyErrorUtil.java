@@ -25,7 +25,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         //所有接口共用的错误码
         SHPPERRCODE_SGPPERRCODE_MAP.put("0",SUCCESS);
         SHPPERRCODE_SGPPERRCODE_MAP.put("1",ERR_CODE_COM_REQURIE);
-        SHPPERRCODE_SGPPERRCODE_MAP.put("2", INTERNAL_CODE_ERROR);
+        SHPPERRCODE_SGPPERRCODE_MAP.put("2", INTERNAL_REQUEST_INVALID);
 
         //authuser 登录接口
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.3",USERNAME_PWD_ERROR);//用户名或密码不正确
@@ -37,8 +37,8 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.9",USERNAME_PWD_ERROR);//登陆保护用户的stoken错误
 
         //手机app校验第三方登录的token
-        SHPPERRCODE_SGPPERRCODE_MAP.put("authtoken.-1",ERR_CODE_APPCONNECT_TOKEN_ERROR);//token校验失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.9",SYSTEM_UNKNOWN_EXCEPTION);//系统错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("auth.-1",ERR_CODE_APPCONNECT_TOKEN_ERROR);//token校验失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("auth.9",SYSTEM_UNKNOWN_EXCEPTION);//系统错误
 
         //sendmobileregcaptcha获取手机号注册的验证码
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.3",ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
@@ -148,7 +148,7 @@ public class ProxyErrorUtil extends ErrorUtil {
             case "1":
                 return ERR_CODE_COM_REQURIE;
             case "2":
-                return INTERNAL_CODE_ERROR;
+                return INTERNAL_REQUEST_INVALID;
         }
         //通过分解url获取 authuser.3 这样的code
         String[] urls= url.split("/");

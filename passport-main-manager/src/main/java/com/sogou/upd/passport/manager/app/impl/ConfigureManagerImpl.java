@@ -26,7 +26,7 @@ public class ConfigureManagerImpl implements ConfigureManager {
 
     private static Logger log = LoggerFactory.getLogger(ConfigureManagerImpl.class);
 
-    private static final long API_REQUEST_VAILD_TERM = 5000000 * 60 * 1000; //接口请求的有效期为5分钟，单位为秒
+    private static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
 
     @Autowired
     private AppConfigService appConfigService;
@@ -72,20 +72,15 @@ public class ConfigureManagerImpl implements ConfigureManager {
             String secret = appConfig.getServerSecret();
             String code = ManagerHelper.generatorCode(uid, clientId, secret, ct);
             long currentTime = System.currentTimeMillis();
-            if (code.equals(originalCode)) {
+            long t = currentTime - API_REQUEST_VAILD_TERM;
+            if (code.equals(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
                 result.setSuccess(true);
             } else {
-                result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
+                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             }
-            if(ct > currentTime - API_REQUEST_VAILD_TERM)  {
-                result.setSuccess(true);
-            }  else{
-                result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
-            }
-
         } catch (Exception e) {
             log.error("Verify Code And Ct Error!", e);
-            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
         }
         return result;
     }
