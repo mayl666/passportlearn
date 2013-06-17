@@ -117,10 +117,6 @@ public class RegAction extends BaseController {
 
     String password = regParams.getPassword();
 
-    if (!CommonHelper.checkPasswd(password) && StringUtil.checkPwdFormat(password)) {
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PWDERROR);
-      return result.toString();
-    }
     String ip = getIp(request);
     String passportId=regParams.getUsername();
     //黑白名单

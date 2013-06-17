@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -20,9 +19,10 @@ public class AuthUserApiParams extends BaseUserApiParams {
     @Min(0)
     private int usertype; // userid为手机号时，usertype=1；usertype默认为0，userid值为全域名id，如：test-1@sohu.com 或 昵称 eg:zhangsan TODO 暂时用不到此参数
 
-    public AuthUserApiParams(){}
+    public AuthUserApiParams() {
+    }
 
-    public AuthUserApiParams(int clientId, String userId, String password){
+    public AuthUserApiParams(int clientId, String userId, String password) {
         this.setClient_id(clientId);
         this.setUserid(userId);
         this.password = password;
@@ -51,4 +51,5 @@ public class AuthUserApiParams extends BaseUserApiParams {
     public void setUsertype(int usertype) {
         this.usertype = usertype;
     }
+
 }

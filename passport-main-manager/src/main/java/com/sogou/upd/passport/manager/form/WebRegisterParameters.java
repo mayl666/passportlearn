@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
+import com.sogou.upd.passport.common.validation.constraints.Password;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -24,6 +25,8 @@ public class WebRegisterParameters {
   private String client_id;
   @NotBlank(message = "邮箱不允许为空!")
   private String username;
+
+  @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
   @NotBlank(message = "请输入密码!")
   private String password;
   @NotBlank(message = "验证码不允许为空!")

@@ -12,7 +12,7 @@ public enum AccountModuleEnum {
     REGISTER(1, "register", "注册"),
     LOGIN(2, "login", "登录"),
     RESETPWD(3, "findpwd", "找回密码"),
-    SECURE(4, "secure", "安全")
+    SECURE(4, "security", "安全")
     ;
 
     private int value;

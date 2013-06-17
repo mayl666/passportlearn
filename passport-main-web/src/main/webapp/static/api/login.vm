@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Login Api test</title>
+    </head>
+    <body>
+        <p>
+            <label>
+                用户名
+                <input type="" name="" value="" id="Username"/>
+            </label>
+        </p>
+        <p>
+            <label>
+                密码
+                <input type="password" name="" value="" id="Password"/>
+            </label>
+        </p>
+        <p>
+            <label>
+                <input type="checkbox" name="" value="" id="Autologin"/>
+                记住密码
+            </label>
+        </p>
+        <p>
+            <button id="Submit">提交</button>
+        </p>
+        
+        <div id="Target">
+            
+        </div> 
+    </body>
+    <script type="text/javascript" src="./login.js"></script>
+    <script type="text/javascript">
+        
+document.getElementById('Submit').onclick = function(){
+    var username = document.getElementById('Username');
+    var password = document.getElementById('Password');
+    var autologin = document.getElementById('Autologin').checked ? 1 :0;
+    if( !username.value.length || !password.value.length ){
+        alert('输入内容');
+        return;
+    }
+        
+    PassportSC.loginHandle(username.value , password.value , autologin , document.getElementById('Target') , function(){} , function(){});
+};
+
+    </script>
+</html>

@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -102,7 +103,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
           String captcha = regParams.getCaptcha();
           //验证手机号码与验证码是否匹配
-          boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, captcha, clientId);
+          boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
           if (!checkSmsInfo) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             return result;

@@ -1,17 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +25,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //    @Test
 //    public void testBindMobile(){
 //        BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-//        bindMobileApiParams.setUserid(passportId);
+//        bindMobileApiParams.setUserid(userid);
 //        bindMobileApiParams.setMobile("13940075348");
 //        bindMobileApiParams.setClient_id(clientId);
 //        Result result = proxyBindApiManager.bindMobile(bindMobileApiParams);
@@ -54,7 +48,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //    @Test
 //    public void testUpdataBindMobile(){
 //        UpdateBindMobileApiParams updateBindMobileApiParams=new UpdateBindMobileApiParams();
-//        updateBindMobileApiParams.setUserid(passportId);
+//        updateBindMobileApiParams.setUserid(userid);
 //        updateBindMobileApiParams.setOldMobile("18912987312");
 //        updateBindMobileApiParams.setNewMobile("13940075348");
 //        Result result = proxyBindApiManager.updateBindMobile(updateBindMobileApiParams);
@@ -98,7 +92,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //        bindMobileApiParams.setNewCaptcha("1454");
 //        bindMobileApiParams.setOldCaptcha("1621");
 //        bindMobileApiParams.setOldMobile("15210832767");
-//        bindMobileApiParams.setUserid(passportId);
+//        bindMobileApiParams.setUserid(userid);
 //        Result result = proxyBindApiManager.bindMobile(bindMobileApiParams);
 //        System.out.println(result.toString());
 //    }
@@ -112,7 +106,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
         bindEmailApiParams.setOldbindemail("34310327@qq.com");
         bindEmailApiParams.setPassword(password);
         bindEmailApiParams.setClient_id(clientId);
-        bindEmailApiParams.setUserid(passportId);
+        bindEmailApiParams.setUserid(userid);
         bindEmailApiParams.setPwdtype(1);
         Result result = proxyBindApiManager.bindEmail(bindEmailApiParams);
         System.out.println(result.toString());

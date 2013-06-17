@@ -129,14 +129,15 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
 
             // 验证错误次数是否小于限制次数
             boolean checkFailLimited =
-                    mobileCodeSenderService.checkSmsFailLimited(mobile, clientId);
+                    mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId,
+                                                                 AccountModuleEnum.RESETPWD);
             if (!checkFailLimited) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
 
             // 验证手机号码与验证码是否匹配
-            if (!mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId)) {
+            if (!mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
                 return result;
             }

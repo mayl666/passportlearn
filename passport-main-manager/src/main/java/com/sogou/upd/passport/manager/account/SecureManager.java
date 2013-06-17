@@ -21,38 +21,37 @@ public interface SecureManager {
      */
     public Result sendMobileCodeByPassportId(String passportId, int clientId) throws Exception;
 
-
+    /**
+     * 为SOHU接口适配，发送短信验证码至待绑定手机
+     *
+     * @param userId
+     * @param clientId
+     * @param mobile
+     * @return
+     * @throws Exception
+     */
     public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception;
 
+    /**
+     * 为SOHU接口适配，发送短信验证码至原绑定手机
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
     public Result sendMobileCodeOld(String userId, int clientId) throws Exception;
 
     /**
-     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法调用
+     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法内部调用
      *
      * @param mobile
      * @param clientId
      * @return
      * @throws Exception
      */
-    public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
+    // public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
 
-    /**
-     * 重发验证码时更新缓存状态
-     */
-    public Result updateSmsCacheInfo(String cacheKey, int clientId);
-
-    /**
-     * 检查发送邮件限制
-     *
-     * @param passportId
-     * @param clientId
-     * @param module
-     * @param email
-     * @return
-     * @throws Exception
-     */
-    public Result checkLimitSendEmail(String passportId, int clientId, AccountModuleEnum module,
-                                      String email) throws Exception;
 
     /**
      * 手机用户找回密码

@@ -12,16 +12,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class CommonHelper {
 
-    /**
-     * 检查密码格式
-     *
-     * @param passwd
-     * @return
-     */
-    public static boolean checkPasswd(String passwd) {
-        return StringUtils.isAsciiPrintable(passwd) && passwd.length() >= 6 && passwd.length() <= 16;
-    }
-
     public static String constructStateCookieKey(int provider) {
         return AccountTypeEnum.getProviderStr(provider) + "_state";
     }

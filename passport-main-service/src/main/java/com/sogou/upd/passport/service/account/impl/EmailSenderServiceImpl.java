@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     // private static final String PASSPORT_RESETPWD_EMAIL_URL="http://account.sogou.com/web/findpwd/checkemail?";
     // TODO:以下PASSPORT_RESETPWD_EMAIL_URL值仅供本机测试用
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
-    private static final String PASSPORT_HOST = "http://localhost";
+    private static final String PASSPORT_HOST = "https://account.sogou.com";
     private static final String PASSPORT_EMAIL_URL_PREFIX = PASSPORT_HOST + "/web/";
     private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
     private static final Map<AccountModuleEnum, String> subjects = AccountModuleEnum.buildEmailSubjects();
@@ -86,11 +88,11 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
 
             // 设置邮件发送次数限制
-            String resetCacheKey = buildCacheKeyForEmailLimited(passportId, clientId, module, address);
-            if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                redisUtils.increment(resetCacheKey);
+            String cacheKeySendEmail = buildCacheKeyForEmailLimited(passportId, clientId, module, address);
+            if (redisUtils.checkKeyIsExist(cacheKeySendEmail)) {
+                redisUtils.increment(cacheKeySendEmail);
             } else {
-                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(cacheKeySendEmail, "1", DateAndNumTimesConstant.TIME_ONEDAY);
             }
             return true;
         } catch(MailException me) {
@@ -135,7 +137,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
                 if (checkNum > MailUtils.MAX_EMAIL_COUNT_ONEDAY) {
-                    // 当日密码修改次数不超过上限
+                    // 当日邮件发送次数不超过上限
                     return false;
                 }
             }
@@ -167,5 +169,14 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private String buildCacheKeyForEmailLimited(String passportId, int clientId, AccountModuleEnum module, String email) {
         return CACHE_PREFIX_PASSPORTID_SENDEMAILNUM + module + "_" + email + "_"
                + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+    }
+
+    private String encodeParam(String param) {
+        try {
+            return URLEncoder.encode(param, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("encode param error.", e);
+            return param;
+        }
     }
 }
