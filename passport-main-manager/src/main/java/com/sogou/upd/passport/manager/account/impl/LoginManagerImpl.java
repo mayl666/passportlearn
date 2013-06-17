@@ -148,6 +148,7 @@ public class LoginManagerImpl implements LoginManager {
                     String captchaCode = loginParameters.getCaptcha();
                     String token = loginParameters.getToken();
                     if (!this.checkCaptcha(passportId, captchaCode, token)) {
+                        result.setDefaultModel("needCaptcha", true);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         return result;
                     }
