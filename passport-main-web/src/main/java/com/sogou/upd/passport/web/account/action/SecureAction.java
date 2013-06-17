@@ -215,7 +215,7 @@ public class SecureAction extends BaseController {
         resetParams.setIp(modifyIp);
 
         result = secureManager.resetWebPassword(resetParams);
-        return result;
+        return result.toString();
     }
 
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
