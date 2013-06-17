@@ -15,7 +15,7 @@ public class BaseApiParams {
     @Min(0)
     private int client_id; //应用id
     @NotBlank(message = "code不允许为空")
-    private String code; // MD5（passport_id+client_id+ct+server_secret+ct)方法签名
+    private String code; // MD5（str+client_id+ct+server_secret+ct)方法签名
     @Min(0)
     private long ct; //单位为毫秒
 
