@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * 用于更新用户基本信息接口参数
@@ -17,6 +17,7 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams{
     private String modifyip;
 
     //用户生日
+    @DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
     private Date birthday;
 
     //用户性别

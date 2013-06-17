@@ -43,27 +43,15 @@ public interface SecureManager {
     public Result sendMobileCodeOld(String userId, int clientId) throws Exception;
 
     /**
-     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法调用
+     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法内部调用
      *
      * @param mobile
      * @param clientId
      * @return
      * @throws Exception
      */
-    public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
+    // public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
 
-    /**
-     * 检查发送邮件限制
-     *
-     * @param passportId
-     * @param clientId
-     * @param module
-     * @param email
-     * @return
-     * @throws Exception
-     */
-    public Result checkLimitSendEmail(String passportId, int clientId, AccountModuleEnum module,
-                                      String email) throws Exception;
 
     /**
      * 手机用户找回密码

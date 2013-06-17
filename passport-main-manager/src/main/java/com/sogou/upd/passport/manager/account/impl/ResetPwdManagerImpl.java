@@ -129,8 +129,8 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
 
             // 验证错误次数是否小于限制次数
             boolean checkFailLimited =
-                    mobileCodeSenderService.checkSmsFailLimit(mobile, clientId,
-                                                              AccountModuleEnum.RESETPWD);
+                    mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId,
+                                                                 AccountModuleEnum.RESETPWD);
             if (!checkFailLimited) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;

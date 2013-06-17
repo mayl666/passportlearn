@@ -19,7 +19,7 @@ public class ErrorUtil {
     public static final String SYSTEM_UNKNOWN_EXCEPTION = "10001";
     // 必填的参数错误
     public static final String ERR_CODE_COM_REQURIE = "10002";
-    // 内部接口code签名错误
+    // 内部接口code签名错误或ct过期
     public static final String ERR_CODE_COM_SING = "10003";
     // 代理搜狐Passport接口HTTP请求发生异常
     public static final String PROXY_SHPP_API_EXCEPTION = "10004";
@@ -107,8 +107,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
     // 登录失败
     public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
-    // 密码必须为字母和数字且长度大于6位!
-    public static final String ERR_CODE_ACCOUNT_PWDERROR = "20227";
     // 当前登录账号与所操作账号不一致
     public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
     // 账号未登录，请先登录
@@ -263,7 +261,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "code签名错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "code签名错误或ct过期");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT,"接口调用频次超限");
@@ -292,7 +290,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "创建用户失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PWDERROR, "密码必须为字母和数字且长度大于6位!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH, "当前登录账号与操作账号不一致");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT, "密码输入错误次数过多");

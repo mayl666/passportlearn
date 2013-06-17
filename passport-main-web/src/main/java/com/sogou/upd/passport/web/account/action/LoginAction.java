@@ -46,10 +46,12 @@ public class LoginAction extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
       result.setMessage(validateResult);
+      result.setDefaultModel("xd",loginParams.getXd());
       model.addAttribute("data",result.toString());
       return "/login/api";
     }
     result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
+    result.setDefaultModel("xd",loginParams.getXd());
     model.addAttribute("data",result.toString());
     return "/login/api";
   }

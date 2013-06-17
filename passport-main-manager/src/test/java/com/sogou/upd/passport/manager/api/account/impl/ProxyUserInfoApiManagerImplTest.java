@@ -23,7 +23,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams getUserInfoApiparams=new GetUserInfoApiparams();
-        getUserInfoApiparams.setUserid(passportId);
+        getUserInfoApiparams.setUserid(userid);
         getUserInfoApiparams.setFields("usertype,createip,birthday,gender,createip,createtime,"
                 +
                 "personalid,personalidflag,sec_mobile,sec_email,province," +
@@ -35,7 +35,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testUpdateUserInfo(){
         UpdateUserInfoApiParams updateUserInfoApiParams=new UpdateUserInfoApiParams();
-        updateUserInfoApiParams.setUserid(passportId);
+        updateUserInfoApiParams.setUserid(userid);
         updateUserInfoApiParams.setGender("2");
         Calendar calendar=Calendar.getInstance();
         calendar.set(Calendar.YEAR,1988);

@@ -149,7 +149,7 @@ public class SecureAction extends BaseController {
         return "safe/question";
     }
 
-    @RequestMapping(value = "/resetpwd", method = RequestMethod.GET)
+    @RequestMapping(value = "/password", method = RequestMethod.GET)
     @LoginRequired
     public String modifyPasswordView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -198,6 +198,7 @@ public class SecureAction extends BaseController {
      */
     @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
     @ResponseBody
+    @LoginRequired
     public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
             throws Exception {
         Result result = new APIResultSupport(false);
@@ -209,14 +210,16 @@ public class SecureAction extends BaseController {
             return result;
         }
 
+        resetParams.setPassport_id(hostHolder.getPassportId());
         String modifyIp = getIp(request);
         resetParams.setIp(modifyIp);
 
         result = secureManager.resetWebPassword(resetParams);
-        return result;
+        return result.toString();
     }
 
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
+    @ResponseBody
     @LoginRequired
     public String sendEmailForBind(WebBindEmailParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -224,8 +227,7 @@ public class SecureAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "safe/email"; // TODO:错误页面
+            return result.toString();
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -233,12 +235,7 @@ public class SecureAction extends BaseController {
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
-        model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return "safe/email"; // TODO:成功页面
-        } else {
-            return "safe/email"; // TODO：错误页面
-        }
+        return result.toString();
     }
 
     @RequestMapping(value = "checkemail", method = RequestMethod.GET)

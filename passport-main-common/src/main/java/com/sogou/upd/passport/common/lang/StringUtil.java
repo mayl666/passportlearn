@@ -35,18 +35,6 @@ public class StringUtil {
   }
 
   /*
-   *检查密码格式是否是数字与字母组合
-   */
-  public static boolean checkPwdFormat(String pwd) {
-    Pattern pattern = Pattern.compile("[a-zA-Z]+[0-9]+");
-    Matcher resultMatcher = pattern.matcher(pwd);
-    if (resultMatcher.matches()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  /*
    *校验是否是@sohu.com
    */
   public static boolean isSohuUserName(String username) {

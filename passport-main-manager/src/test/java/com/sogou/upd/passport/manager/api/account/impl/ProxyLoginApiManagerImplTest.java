@@ -40,7 +40,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     @Test
     public void testCreateCookie(){
         CreateCookieApiParams createCookieApiParams=new CreateCookieApiParams();
-        createCookieApiParams.setUserid(passportId);
+        createCookieApiParams.setUserid(userid);
         createCookieApiParams.setIp(modifyIp);
         Result result = proxyLoginApiManager.createCookie(createCookieApiParams);
         System.out.println(result);
@@ -49,7 +49,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     @Test
     public void testBuildCreateCookieUrl(){
         CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
-        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setUserid(userid);
         createCookieUrlApiParams.setRu("http://account.sogou.com/login/success");
         createCookieUrlApiParams.setPersistentcookie(1);
         Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
