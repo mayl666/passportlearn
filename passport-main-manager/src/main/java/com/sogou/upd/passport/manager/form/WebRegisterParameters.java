@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -13,8 +15,8 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 
 /**
- * User: mayan Date: 13-4-15 Time: 下午5:15 To change this template use File | Settings | File
- * Templates.
+ * User: mayan
+ * Date: 13-4-15 Time: 下午5:15
  */
 public class WebRegisterParameters {
   @NotBlank(message = "client_id不允许为空!")
@@ -35,8 +37,26 @@ public class WebRegisterParameters {
     if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
       return true;
     }
-    if(username.endsWith("@sohu.com")){
-      return false;
+    return StringUtil.isSohuUserName(username);
+  }
+
+  @AssertTrue(message = "用户账号格式错误")
+  private boolean checkAccount() {
+    if (Strings.isNullOrEmpty(username)) {
+      return true;
+    }
+    if(username.indexOf("@") == -1){
+      if(!PhoneUtil.verifyPhoneNumberFormat(username)){
+          //个性账号格式是否拼配
+        String regx="[a-z]([a-zA-Z0-9_.]{3,15})";
+        if(!username.matches(regx)){
+             return false;
+        }
+      }
+    } else {
+      //邮箱格式
+      String regex="(\\w)+(\\.\\w+)*@([\\w_\\-])+((\\.\\w+)+)";
+      return username.matches(regex);
     }
     return true;
   }

@@ -15,88 +15,110 @@ import javax.validation.constraints.AssertTrue;
  */
 public class WebLoginParameters {
 
-  /**
-   * 登陆用户名
-   */
-  @Length(min = 1, max = 200, message = "用户名或密码错误，请重新输入！")
-  @NotBlank(message = "请输入用户名！")
-  private String username;
+    /**
+     * 登陆用户名
+     */
+    @Length(min = 1, max = 200, message = "用户名或密码错误，请重新输入！")
+    @NotBlank(message = "请输入用户名！")
+    private String username;
 
 
-  /**
-   * 登陆密码
-   */
-  @Length(min = 1, max = 200, message = "用户名或密码错误，请重新输入！")
-  @NotBlank(message = "请输入密码！")
-  private String password;
+    /**
+     * 登陆密码
+     */
+    @Length(min = 1, max = 200, message = "用户名或密码错误，请重新输入！")
+    @NotBlank(message = "请输入密码！")
+    private String password;
 
 
-  /**
-   * 是否自动登陆，自动登陆cookie时长设置两周
-   */
-  private int autoLogin; // 0-否  1-真
+    /**
+     * 是否自动登陆，自动登陆cookie时长设置两周
+     */
+    private int autoLogin; // 0-否  1-真
 
-  /**
-   * 验证码 用户连续3次登陆失败需要输入验证码
-   */
+    /**
+     * 验证码 用户连续3次登陆失败需要输入验证码
+     */
 //  @NotBlank(message = "验证码不允许为空!")
-  private String captcha;//验证码
-//  @NotBlank(message = "标识码不允许为空!")
-  private String token;//标识码
+    private String captcha;//验证码
+    //  @NotBlank(message = "标识码不允许为空!")
+    private String token;//标识码
 
-  private String ru;//登陆来源
-  public String getUsername() {
-    return username;
-  }
+    private String ru;//登陆来源
 
-  public void setUsername(String username) {
-    if (username != null) {
-      username = username.trim();
+    @AssertTrue(message = "用户账号格式错误")
+    private boolean checkAccount() {
+        if (Strings.isNullOrEmpty(username)) {
+            return true;
+        }
+        if (username.indexOf("@") == -1) {
+            if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+                //个性账号格式是否拼配
+                String regx = "[a-z]([a-zA-Z0-9_.]{3,15})";
+                if (!username.matches(regx)) {
+                    return false;
+                }
+            }
+        } else {
+            //邮箱格式
+            String regex = "(\\w)+(\\.\\w+)*@([\\w_\\-])+((\\.\\w+)+)";
+            return username.matches(regex);
+        }
+        return true;
     }
-    this.username = username;
-  }
 
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    if (password != null) {
-      password = password.trim();
+    public String getUsername() {
+        return username;
     }
-    this.password = password;
-  }
 
-  public int getAutoLogin() {
-      return autoLogin;
-  }
+    public void setUsername(String username) {
+        if (username != null) {
+            username = username.trim();
+        }
+        this.username = username;
+    }
 
-  public void setAutoLogin(int autoLogin) {
-      this.autoLogin = autoLogin;
-  }
 
-  public String getCaptcha() {
-    return captcha;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setCaptcha(String captcha) {
-    this.captcha = captcha;
-  }
+    public void setPassword(String password) {
+        if (password != null) {
+            password = password.trim();
+        }
+        this.password = password;
+    }
 
-  public String getToken() {
-    return token;
-  }
+    public int getAutoLogin() {
+        return autoLogin;
+    }
 
-  public void setToken(String token) {
-    this.token = token;
-  }
+    public void setAutoLogin(int autoLogin) {
+        this.autoLogin = autoLogin;
+    }
 
-  public String getRu() {
-    return ru;
-  }
+    public String getCaptcha() {
+        return captcha;
+    }
 
-  public void setRu(String ru) {
-    this.ru = ru;
-  }
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getRu() {
+        return ru;
+    }
+
+    public void setRu(String ru) {
+        this.ru = ru;
+    }
 }

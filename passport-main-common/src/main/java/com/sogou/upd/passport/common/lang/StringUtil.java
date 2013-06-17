@@ -3,6 +3,7 @@ package com.sogou.upd.passport.common.lang;
 import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,24 @@ public class StringUtil {
       return false;
     }
   }
+  /*
+   *校验是否是@sohu.com
+   */
+  public static boolean isSohuUserName(String username) {
+    if(username.endsWith("@sohu.com")){
+      return false;
+    }
+    return true;
+  }
+
+  /*
+   *校验是否是邮箱格式
+   */
+  public static boolean isEmail(String username) {
+    String regex="(\\w)+(\\.\\w+)*@([\\w_\\-])+((\\.\\w+)+)";
+    return username.matches(regex);
+  }
+
 
   /**
    * <p>Checks if a CharSequence is empty ("") or null.</p>

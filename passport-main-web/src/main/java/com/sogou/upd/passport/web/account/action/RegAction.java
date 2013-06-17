@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
+import com.sogou.upd.passport.manager.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
@@ -32,14 +33,17 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * User: mayan Date: 13-6-7 Time: 下午5:48
  * web注册
+ * User: mayan
+ * Date: 13-6-7 Time: 下午5:48
  */
 @Controller
 @RequestMapping("/web")
 public class RegAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
+  private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+  private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com";
 
   @Autowired
   private RegManager regManager;
@@ -54,18 +58,25 @@ public class RegAction extends BaseController {
   /**
    * 用户注册检查用户名是否存在
    *
-   * @param username
+   * @param checkParam
    */
   @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
   @ResponseBody
-  public String checkusername(@RequestParam(defaultValue = "") String username)
+  public String checkusername(CheckUserNameExistParameters checkParam)
       throws Exception {
 
-    //校验username格式 todo
-    username= URLDecoder.decode(username, "utf-8");
     Result result = new APIResultSupport(false);
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(checkParam);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result.toString();
+    }
+
+    String username= URLDecoder.decode(checkParam.getUsername(), "utf-8");
     //校验是否是@sohu.com
-    if(!isSohuUserName(username)){
+    if(!StringUtil.isSohuUserName(username)){
       result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
       return result.toString();
     }
@@ -79,25 +90,8 @@ public class RegAction extends BaseController {
         username=username+"@sogou.com";
       }
     }
-
-    boolean isExists= commonManager.isAccountExists(username);
-    if(isExists){
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-    }else{
-      result.setSuccess(true);
-      result.setMessage("账户未被占用，可以注册");
-    }
+    result= regManager.isAccountExists(username);
     return result.toString();
-  }
-
-  private boolean isSohuUserName(String username) {
-    if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
-      return true;
-    }
-    if(username.endsWith("@sohu.com")){
-      return false;
-    }
-    return true;
   }
 
   /**
@@ -137,6 +131,15 @@ public class RegAction extends BaseController {
     }
 
     result = regManager.webRegister(regParams, ip);
+
+    if(result.isSuccess()){
+      //设置来源
+      String ru =  regParams.getRu();
+      if(Strings.isNullOrEmpty(ru)){
+        //TODO 上线前改为  安全中心
+        regParams.setRu(TEST_LOGIN_INDEX_URL);
+      }
+    }
     return result.toString();
   }
 
