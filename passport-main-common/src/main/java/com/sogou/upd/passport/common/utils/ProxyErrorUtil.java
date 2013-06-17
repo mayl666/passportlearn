@@ -45,15 +45,15 @@ public class ProxyErrorUtil extends ErrorUtil {
         //web端email注册接口
         SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.3",ERR_CODE_USERID_ILLEGAL);//非法userid
         SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.4",ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.5",ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.6",ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.7",ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT); //今日验证码校验错误次数已超过上限
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.8",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.9",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.10",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.11",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.12",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.13",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.5",ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);   //登陆用户或者ip在黑名单中
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.6",ERR_CODE_ACCOUNT_REGISTER_FAILED);  //创建用户失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.7",ERR_CODE_ACCOUNT_PHONE_BINDED); //手机号已绑定其他账号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.8",ERR_CODE_COM_REQURIE); //非法用户名uniquename
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.9",ERR_CODE_COM_REQURIE); //用户名uniquename已存在
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.10",INVOKE_BEYOND_FREQUENCY_LIMIT); //调用超限（5分钟调用超过了1000次）
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.11",ERR_CODE_COM_REQURIE); //不能注册vip.sohu.com的账号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.12",ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED); //当日邮件发送次数已达上限
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.13",ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED); //激活链接已失效
 
         //mobilecaptcha 手机号验证码注册接口
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.3",SYSTEM_UNKNOWN_EXCEPTION); //系统级错误
