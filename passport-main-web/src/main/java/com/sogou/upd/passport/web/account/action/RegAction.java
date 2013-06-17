@@ -33,14 +33,17 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * User: mayan Date: 13-6-7 Time: 下午5:48
  * web注册
+ * User: mayan
+ * Date: 13-6-7 Time: 下午5:48
  */
 @Controller
 @RequestMapping("/web")
 public class RegAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
+  private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+  private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com";
 
   @Autowired
   private RegManager regManager;
@@ -87,12 +90,9 @@ public class RegAction extends BaseController {
         username=username+"@sogou.com";
       }
     }
-
     result= regManager.isAccountExists(username);
     return result.toString();
   }
-
-
 
   /**
    * web页面注册
@@ -131,6 +131,15 @@ public class RegAction extends BaseController {
     }
 
     result = regManager.webRegister(regParams, ip);
+
+    if(result.isSuccess()){
+      //设置来源
+      String ru =  regParams.getRu();
+      if(Strings.isNullOrEmpty(ru)){
+        //TODO 上线前改为  安全中心
+        regParams.setRu(TEST_LOGIN_INDEX_URL);
+      }
+    }
     return result.toString();
   }
 

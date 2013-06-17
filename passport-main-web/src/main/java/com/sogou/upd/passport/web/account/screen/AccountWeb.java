@@ -25,34 +25,49 @@ public class AccountWeb extends BaseController {
    web邮箱注册
  */
   @RequestMapping(value = "/reg/email", method = RequestMethod.GET)
-  public String regEmail(HttpServletRequest request, HttpServletResponse response)
+  public String regEmail(HttpServletRequest request, Model model)
       throws Exception {
-
+    //连接来源
+    String ru = request.getParameter("ru");
+    if (!Strings.isNullOrEmpty(ru)){
+      ru = URLEncoder.encode(ru, "UTF-8");
+      model.addAttribute("ru",ru);
+    }
     return "/reg/email";
   }
   /*
    web手机注册
  */
   @RequestMapping(value = "/reg/mobile", method = RequestMethod.GET)
-  public String regMobile(HttpServletRequest request, HttpServletResponse response)
+  public String regMobile(HttpServletRequest request, Model model)
       throws Exception {
-
+    //连接来源
+    String ru = request.getParameter("ru");
+    if (!Strings.isNullOrEmpty(ru)){
+      ru = URLEncoder.encode(ru, "UTF-8");
+      model.addAttribute("ru",ru);
+    }
     return "/reg/tel";
   }
   /*
    web个性账号注册
  */
   @RequestMapping(value = "/reg/nick", method = RequestMethod.GET)
-  public String register(HttpServletRequest request, HttpServletResponse response)
+  public String register(HttpServletRequest request, Model model)
       throws Exception {
-
+    //连接来源
+    String ru = request.getParameter("ru");
+    if (!Strings.isNullOrEmpty(ru)){
+      ru = URLEncoder.encode(ru, "UTF-8");
+      model.addAttribute("ru",ru);
+    }
     return "/reg/nick";
   }
   /*
   web登录页跳转
 */
   @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
-  public String login(HttpServletRequest request, HttpServletResponse response,Model model)
+  public String login(HttpServletRequest request, Model model)
       throws Exception {
       //连接来源
      String ru = request.getParameter("ru");
