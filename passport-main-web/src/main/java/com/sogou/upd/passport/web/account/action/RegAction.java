@@ -119,7 +119,13 @@ public class RegAction extends BaseController {
       return result.toString();
     }
     String ip = getIp(request);
-    //todo 黑白名单
+    String passportId=regParams.getUsername();
+    //黑白名单
+    //校验是否在账户黑名单或者IP黑名单之中
+    if (operateTimesService.checkRegInBlackList(passportId, null)){
+      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+      return result;
+    }
 
     //验证client_id
     int clientId = Integer.parseInt(regParams.getClient_id());
@@ -139,7 +145,9 @@ public class RegAction extends BaseController {
         //TODO 上线前改为  安全中心
         regParams.setRu(TEST_LOGIN_INDEX_URL);
       }
+      result.setDefaultModel("ru",ru);
     }
+    operateTimesService.incRegTimes(ip,null);
     return result.toString();
   }
 

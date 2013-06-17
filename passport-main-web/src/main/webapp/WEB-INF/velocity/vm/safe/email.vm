@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=195614" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=736350" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -47,7 +47,7 @@
     </li>
     
     <li class="password   small">
-        <a href="/web/security/resetpwd">修改密码</a>
+        <a href="/web/security/password">修改密码</a>
     </li>
     
     <li class="email current  small">
@@ -63,7 +63,7 @@
     </li>
     
     <li class="history   small">
-        <a href="/safe/history.ut">登录记录</a>
+        <a href="/web/security/history">登录记录</a>
     </li>
     
 </ul>
