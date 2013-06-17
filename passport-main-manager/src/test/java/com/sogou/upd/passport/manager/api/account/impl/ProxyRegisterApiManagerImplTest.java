@@ -56,20 +56,21 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testCheckUser() {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("test_lg_upd@sogou.com");
+        checkUserApiParams.setUserid("shipengzhi1986@sogou.com");
         Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-        System.out.println(result.toString());
-        Assert.assertTrue(result.isSuccess());
+        System.out.println("result1:" + result.toString());
         checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("lg-coder@sogou.com");
+        checkUserApiParams.setUserid("spz1986411@sohu.com");
         result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-        System.out.println(result.toString());
-        Assert.assertFalse(result.isSuccess());
+        System.out.println("result2:" + result.toString());
         checkUserApiParams = new CheckUserApiParams();
         checkUserApiParams.setUserid("13621009174@sohu.com");
         result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-        System.out.println(result.toString());
-        Assert.assertTrue(result.isSuccess());
+        System.out.println("result3:" + result.toString());
+        checkUserApiParams = new CheckUserApiParams();
+        checkUserApiParams.setUserid("D6BDDEDDA8A9C09C7B22A7D7140CC167@qq.sohu.com");
+        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        System.out.println("result4:" + result.toString());
     }
 
 
