@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 
 /**
  * 用于web端的登陆的参数 User: liagng201716@sogou-inc.com Date: 13-5-12 Time: 下午10:01
@@ -47,6 +48,8 @@ public class WebLoginParameters {
 
     private String ru;//登陆来源
 
+    @NotBlank(message = "client_id不允许为空!")
+    @Min(0)
     private int client_id; // 1120-passport
 
     private String xd; // 跨域通信所用字段，直接返回
