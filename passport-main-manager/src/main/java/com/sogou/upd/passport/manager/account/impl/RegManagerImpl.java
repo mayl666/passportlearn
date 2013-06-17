@@ -14,8 +14,10 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
@@ -59,6 +61,8 @@ public class RegManagerImpl implements RegManager {
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -269,12 +273,14 @@ public class RegManagerImpl implements RegManager {
     }
 
   @Override
-  public Result isAccountExists(String username) throws Exception {
+  public Result isAccountExists(String username,boolean type) throws Exception {
     Result result = new APIResultSupport(false);
     try {
       CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
-      if (ManagerHelper.isInvokeProxyApi(username)) {
-        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+      if (ManagerHelper.isInvokeProxyApi(username) && type) {
+        BaseMoblieApiParams params=new BaseMoblieApiParams();
+        params.setMobile(username);
+        result = proxyBindApiManager.getPassportIdFromMobile(params);
       } else {
         result = sgRegisterApiManager.checkUser(checkUserApiParams);
       }

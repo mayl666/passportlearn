@@ -46,5 +46,5 @@ public interface RegManager {
    *
    * @return 验证码
    */
-  public Result isAccountExists(String username) throws Exception;
+  public Result isAccountExists(String username,boolean type) throws Exception;
 }
