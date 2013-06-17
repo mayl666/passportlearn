@@ -46,7 +46,8 @@ public class LoginAction extends BaseController {
     if (!Strings.isNullOrEmpty(validateResult)) {
       result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
       result.setMessage(validateResult);
-      return result.toString();
+      model.addAttribute("data",result.toString());
+      return "/login/api";
     }
     result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
     model.addAttribute("data",result.toString());

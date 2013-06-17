@@ -21,21 +21,18 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdateBindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.*;
-import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -91,10 +88,6 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
-    //account与smscode映射
-    private static final String CACHE_PREFIX_ACCOUNT_SMSCODE = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE;
-    private static final String CACHE_PREFIX_ACCOUNT_SENDNUM = CacheConstant.CACHE_PREFIX_MOBILE_SENDNUM;
-
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
      */
@@ -125,19 +118,16 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             // 验证错误次数是否小于限制次数
-            boolean checkFailLimited = mobileCodeSenderService.checkSmsFailLimited(mobile, clientId);
+            boolean checkFailLimited = mobileCodeSenderService.checkSmsFailLimit(mobile, clientId,
+                                                                                 AccountModuleEnum.SECURE);
             if (!checkFailLimited) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
 
-            String cacheKey = mobile + "_" + clientId;
-            boolean isExistFromCache = mobileCodeSenderService.checkIsExistMobileCode(cacheKey);
-            if (isExistFromCache) {
-                return updateSmsCacheInfo(cacheKey, clientId);
-            } else {
-                return mobileCodeSenderService.handleSendSms(mobile, clientId);
-            }
+            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, AccountModuleEnum.SECURE);
+
+            return result;
         } catch (ServiceException e) {
             logger.error("send sms code to mobile Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -238,65 +228,6 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public Result updateSmsCacheInfo(String cacheKey, int clientId) {
-        Result result = new APIResultSupport(false);
-        try {
-            String cacheKeySmscode = CACHE_PREFIX_ACCOUNT_SMSCODE + cacheKey;
-            Map<String, String>
-                    mapCacheResult =
-                    mobileCodeSenderService.getCacheMapByKey(cacheKeySmscode);
-            if (MapUtils.isNotEmpty(mapCacheResult)) {
-                //获取缓存数据
-                long sendTime = Long.parseLong(mapCacheResult.get("sendTime"));
-                String smsCode = mapCacheResult.get("smsCode");
-                String mobile = mapCacheResult.get("mobile");
-                //获取当天发送次数
-                String cacheKeySendNum = CACHE_PREFIX_ACCOUNT_SENDNUM + mobile + "_" + clientId;
-
-                Map<String, String>
-                        mapCacheSendNumResult =
-                        mobileCodeSenderService.getCacheMapByKey(cacheKeySendNum);
-                if (MapUtils.isNotEmpty(mapCacheSendNumResult)) {
-                    int sendNum = Integer.parseInt(mapCacheSendNumResult.get("sendNum"));
-                    long curtime = System.currentTimeMillis();
-                    boolean valid = curtime >= (sendTime + SMSUtil.SEND_SMS_INTERVAL); // 1分钟只能发1条短信
-                    if (valid) {
-                        if (sendNum < SMSUtil.MAX_SMS_COUNT_ONEDAY) {     //每日最多发送短信验证码条数
-                            //生成随机数
-                            String randomCode = RandomStringUtils.randomNumeric(5);
-                            //读取短信内容
-                            String smsText = appConfigService.querySmsText(clientId, randomCode);
-                            if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
-                                //更新缓存
-                                mobileCodeSenderService.updateSmsCacheInfo(cacheKeySendNum, cacheKeySmscode,
-                                        String.valueOf(curtime), randomCode);
-                                result.setSuccess(true);
-                                result.setMessage("验证码已发送至" + mobile);
-                                return result;
-                            } else {
-                                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                                return result;
-                            }
-                        } else {
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
-                            return result;
-                        }
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
-                        return result;
-                    }
-                }
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-            }
-        } catch (Exception e) {
-            logger.error("[SMS] service method updateSmsCacheInfoByKeyAndClientId error.{}", e);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-        }
-        return result;
-    }
-
-    @Override
     public Result checkLimitSendEmail(String passportId, int clientId, AccountModuleEnum module,
                                       String email) throws Exception {
         Result result = new APIResultSupport(false);
@@ -319,17 +250,9 @@ public class SecureManagerImpl implements SecureManager {
     public Result findPassword(String mobile, int clientId) {
         Result result = new APIResultSupport(false);
         try {
-            //判断账号是否被缓存
-            String cacheKey = mobile + "_" + clientId;
-            boolean isExistFromCache = mobileCodeSenderService.checkIsExistMobileCode(cacheKey);
-            Result mapResult;
-            if (isExistFromCache) {
-                //更新缓存状态
-                mapResult = updateSmsCacheInfo(cacheKey, clientId);
-            } else {
-                mapResult = mobileCodeSenderService.handleSendSms(mobile, clientId);
-            }
-            return mapResult;
+            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, AccountModuleEnum.RESETPWD);
+
+            return result;
         } catch (ServiceException e) {
             logger.error("find passport Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -351,7 +274,7 @@ public class SecureManagerImpl implements SecureManager {
         try {
             //验证手机号码与验证码是否匹配
             boolean checkSmsInfo =
-                    mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
+                    mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
             if (!checkSmsInfo) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
                 return result;
@@ -871,7 +794,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            return mobileCodeSenderService.checkSmsCode(mobile, clientId, smsCode);
+            return mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
         } catch (ServiceException e) {
             logger.error("check new mobile code Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -894,7 +817,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             String mobile = account.getMobile();
 
-            return mobileCodeSenderService.checkSmsCode(mobile, clientId, smsCode);
+            return mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
         } catch (ServiceException e) {
             logger.error("check existed mobile code Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

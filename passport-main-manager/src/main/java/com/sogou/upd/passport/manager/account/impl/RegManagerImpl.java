@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
@@ -175,7 +176,8 @@ public class RegManagerImpl implements RegManager {
 
         Result result = new APIResultSupport(false);
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
+        boolean checkSmsInfo =
+                mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.REGISTER, smsCode);
         if (!checkSmsInfo) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             return result;
