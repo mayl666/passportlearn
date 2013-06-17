@@ -33,15 +33,16 @@ public class IndexAction extends BaseController {
     public String indexPage(BaseWebParams params, Model model) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return "index"; // TODO:返回错误页面
+            return "redirect:/web/webLogin"; // TODO:返回错误页面
         }
         if (hostHolder.isLogin()) {
             String userId = hostHolder.getPassportId();
             int clientId = Integer.parseInt(params.getClient_id());
             Result result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+            result.setDefaultModel("username", userId);
             model.addAttribute("data", result.toString());
             return "ucenter/index";
         }
-        return "index";
+        return "redirect:/web/webLogin";
     }
 }

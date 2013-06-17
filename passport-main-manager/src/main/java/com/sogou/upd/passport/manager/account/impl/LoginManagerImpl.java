@@ -36,6 +36,10 @@ import java.util.Map;
 public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
+    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+    private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com";
+
+    private static final String SOHU_LOGIN_INDEX_URL = "http://passport.sohu.com";
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -121,10 +125,22 @@ public class LoginManagerImpl implements LoginManager {
         String passportId = username;
         try {
             AccountDomainEnum accountDomainEnum =  AccountDomainEnum.getAccountDomain(username);
+            //设置来源
+            String ru =  loginParameters.getRu();
+            if(Strings.isNullOrEmpty(ru)){
+                if (AccountDomainEnum.SOHU.equals(accountDomainEnum)) {
+                    loginParameters.setRu(SOHU_LOGIN_INDEX_URL);
+                }else{
+                    //TODO 上线前改为  LOGIN_INDEX_URL
+                    loginParameters.setRu(TEST_LOGIN_INDEX_URL);
+                }
+            }
+
             //默认是sogou.com
             if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
                 passportId = passportId+"@sogou.com";
             }
+
             //校验验证码
             if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
                 String captchaCode = loginParameters.getCaptcha();

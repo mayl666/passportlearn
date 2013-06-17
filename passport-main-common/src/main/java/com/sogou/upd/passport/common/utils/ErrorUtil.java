@@ -183,6 +183,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY ="20293";
     //用户已经存在
     public static final String ERR_CODE_USER_ID_EXIST ="20294";
+    // 手机用户不允许此操作
+    public static final String ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED = "20295";
 
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
@@ -362,6 +364,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT, "手机绑定次数超限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT, "修改密码频率过于频繁");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY, "用户5日内登录过");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
