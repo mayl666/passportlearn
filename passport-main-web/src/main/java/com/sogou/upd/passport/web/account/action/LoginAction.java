@@ -38,7 +38,7 @@ public class LoginAction extends BaseController {
    * @param loginParams 传入的参数
    */
   @RequestMapping(value = "/login", method = RequestMethod.POST)
-  public Object login(HttpServletRequest request,Model model, WebLoginParameters loginParams)
+  public String login(HttpServletRequest request,Model model, WebLoginParameters loginParams)
       throws Exception {
     Result result = new APIResultSupport(false);
     //参数验证
