@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=341554" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=808400" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -40,15 +40,14 @@
                                 </label>
                                 <a href="recover/index.ut">找回密码</a>
                             </p>
-                            #if($ru)
-                                <input type="hidden" name="ru" value="${ru}" />
-                            #end
                             <button type="submit">
                                 <img src="/./static/img/index/loginbtn.png" class="" alt="登录" />
                             </button>
                             <p class="reg">
                                 还没有搜狗通行证？<a href="/reg/email.ut">立即注册</a>
                             </p>
+                            <p class="error uname-error" ><span class="text"></span><a href="#"></a></p>
+                            <p class="error vcode-error"><span class="text"></span><a href="#"></a></p>
                         </form>
                         
                     </div>
@@ -91,7 +90,7 @@
         
     </body>
     <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=151274"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=935127"></script>
     <script type="text/javascript">
         
 require.config({

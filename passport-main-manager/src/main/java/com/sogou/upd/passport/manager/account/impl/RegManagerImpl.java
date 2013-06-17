@@ -14,8 +14,10 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
@@ -59,6 +61,8 @@ public class RegManagerImpl implements RegManager {
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -100,7 +104,7 @@ public class RegManagerImpl implements RegManager {
           } else {
             result = sgRegisterApiManager.regMailUser(regEmailApiParams);
           }
-          return result;
+          break;
         case PHONE://手机号
           RegMobileCaptchaApiParams regMobileCaptchaApiParams=buildProxyApiParams(username,password,captcha,clientId,ip);
           if (ManagerHelper.isInvokeProxyApi(username)) {
@@ -116,18 +120,24 @@ public class RegManagerImpl implements RegManager {
       return result;
     }
     if (result.isSuccess()) {
-      //TODO 取cookie种sogou域cookie
       // 种sohu域cookie
+
       CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-      createCookieUrlApiParams.setUserid(username);
+      //从返回结果中获取passportId,二期待优化
+      String passportIdTmp =  username;
+      if(ManagerHelper.isInvokeProxyApi(username)) {
+        passportIdTmp =  result.getModels().get("userid").toString();
+      } else{
+        Account account =  (Account)result.getDefaultModel();
+        passportIdTmp =  account.getPassportId();
+      }
+      createCookieUrlApiParams.setUserid(passportIdTmp);
       createCookieUrlApiParams.setRu(regParams.getRu());
 
-      Result
-          createCookieResult =
-          proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
-      if (createCookieResult.isSuccess()) {
-        result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
-      } else {
+      Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
+      if (createCookieResult.isSuccess()){
+        result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
+      } else{
         result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         return result;
       }
@@ -263,12 +273,14 @@ public class RegManagerImpl implements RegManager {
     }
 
   @Override
-  public Result isAccountExists(String username) throws Exception {
+  public Result isAccountExists(String username,boolean type) throws Exception {
     Result result = new APIResultSupport(false);
     try {
       CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
-      if (ManagerHelper.isInvokeProxyApi(username)) {
-        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+      if (ManagerHelper.isInvokeProxyApi(username) && type) {
+        BaseMoblieApiParams params=new BaseMoblieApiParams();
+        params.setMobile(username);
+        result = proxyBindApiManager.getPassportIdFromMobile(params);
       } else {
         result = sgRegisterApiManager.checkUser(checkUserApiParams);
       }

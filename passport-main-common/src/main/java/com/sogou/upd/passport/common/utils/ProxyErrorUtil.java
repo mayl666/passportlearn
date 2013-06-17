@@ -43,7 +43,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.6",SYSTEM_UNKNOWN_EXCEPTION);  //系统级错误
 
         //web端email注册接口
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.3",SYSTEM_UNKNOWN_EXCEPTION); //系统级错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.3",ERR_CODE_USERID_ILLEGAL);//非法userid
         SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.4",ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
         SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.5",ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.6",ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
@@ -120,7 +120,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.7",ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY);//用户5日内登录过
 
         //checkuser 检查用户名是否可以
-        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3",ERR_CODE_USERID_ILLEGAL);//非法用户名
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3",ERR_CODE_USERID_ILLEGAL);//非法userid
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.4",ERR_CODE_USER_ID_EXIST);//用户名已经存在
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.6",SYSTEM_UNKNOWN_EXCEPTION);//修改失败
 
