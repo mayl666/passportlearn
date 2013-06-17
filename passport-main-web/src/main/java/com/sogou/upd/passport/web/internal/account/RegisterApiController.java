@@ -35,6 +35,32 @@ public class RegisterApiController {
     private RegisterApiManager proxyRegisterApiManager;
 
     /**
+     * 发送手机验证码
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "/sendregcaptcha", method = RequestMethod.POST)
+    @ResponseBody
+    public Object sendRegCaptcha(HttpServletRequest request, BaseMoblieApiParams params) {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        // 签名和时间戳校验
+        result = configureManager.verifyInternalRequest(params.getMobile(), params.getClient_id(), params.getCt(), params.getCode());
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
+        }
+        return result.toString();
+    }
+
+    /**
      * 注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号
      * 需要/sendregcaptcha下发的验证码
      * @param request
@@ -54,40 +80,11 @@ public class RegisterApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getMobile(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyRegisterApiManager.regMobileCaptchaUser(params);
         }
-        // 调用内部接口
-        result = proxyRegisterApiManager.regMobileCaptchaUser(params);
-        return result.toString();
-    }
 
-    /**
-     * 发送手机验证码
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value = "/sendregcaptcha", method = RequestMethod.POST)
-    @ResponseBody
-    public Object sendRegCaptcha(HttpServletRequest request, BaseMoblieApiParams params) {
-        Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getMobile(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
-            return result.toString();
-        }
-        // 调用内部接口
-        result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
         return result.toString();
     }
 
@@ -105,7 +102,7 @@ public class RegisterApiController {
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
         if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
+            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
             return result.toString();
         }
 //这里到底是检测用户名是否存在还是是否可注册，需要再做考虑

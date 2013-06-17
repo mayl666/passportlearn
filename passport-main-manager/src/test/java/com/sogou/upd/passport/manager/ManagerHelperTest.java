@@ -17,11 +17,11 @@ public class ManagerHelperTest extends BaseTest {
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode(userid, clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCode("aaa", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         try {
-            String pwdMD5 = Coder.encryptMD5(password);
+            String pwdMD5 = Coder.encryptMD5("111111");
             System.out.println("pwdMD5:" + pwdMD5);
         } catch (Exception e) {
             e.printStackTrace();

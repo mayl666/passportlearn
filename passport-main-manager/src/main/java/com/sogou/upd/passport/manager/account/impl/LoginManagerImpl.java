@@ -223,8 +223,8 @@ public class LoginManagerImpl implements LoginManager {
         return result;
     }
 
-    private boolean needCaptchaCheck(int client_id) {
-        if (client_id == SHPPUrlConstant.APP_ID) {
+    private boolean needCaptchaCheck(String client_id) {
+        if (Integer.parseInt(client_id) == SHPPUrlConstant.APP_ID) {
             return true;
         } else {
             return false;
