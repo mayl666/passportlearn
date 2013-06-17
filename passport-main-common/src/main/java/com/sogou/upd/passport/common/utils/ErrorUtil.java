@@ -127,7 +127,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_PHONE_UNBIND_FAILED = "20237";
     //TODO 密码输入错误次数过多
     public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
-    //TODO 非法用户名
+    //TODO 非法userId
     public static final String ERR_CODE_USERID_ILLEGAL="20239";
     //生成cookie失败
     public static final String ERR_CODE_CREATE_COOKIE_FAILED = "20240";
@@ -304,7 +304,7 @@ public class ErrorUtil {
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信验证码已经达到上限啦");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法用户名");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信已经到20条上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
