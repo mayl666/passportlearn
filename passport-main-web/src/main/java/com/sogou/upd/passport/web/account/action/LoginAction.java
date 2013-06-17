@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,7 +43,7 @@ public class LoginAction extends BaseController {
    */
   @RequestMapping(value = "/login", method = RequestMethod.POST)
   @ResponseBody
-  public Object login(HttpServletRequest request, WebLoginParameters loginParams)
+  public Object login(HttpServletRequest request,Model model, WebLoginParameters loginParams)
       throws Exception {
     Result result = new APIResultSupport(false);
     //参数验证
@@ -52,9 +53,8 @@ public class LoginAction extends BaseController {
       result.setMessage(validateResult);
       return result.toString();
     }
-
-    result = loginManager.accountLogin(loginParams, getIp(request));
-    return result.toString();
+    model.addAttribute("data",result.toString());
+    return "/login/api";
   }
 
 }
