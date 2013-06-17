@@ -124,6 +124,7 @@ public class LoginManagerImpl implements LoginManager {
         String password = loginParameters.getPassword();
         String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         String passportId = username;
+        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id());
         try {
             AccountDomainEnum accountDomainEnum =  AccountDomainEnum.getAccountDomain(username);
             //设置来源
@@ -142,14 +143,17 @@ public class LoginManagerImpl implements LoginManager {
             }
 
             //校验验证码
-            if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
-                String captchaCode = loginParameters.getCaptcha();
-                String token = loginParameters.getToken();
-                if (!this.checkCaptcha(passportId, captchaCode, token)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    return result;
+            if(needCaptcha) {
+                if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
+                    String captchaCode = loginParameters.getCaptcha();
+                    String token = loginParameters.getToken();
+                    if (!this.checkCaptcha(passportId, captchaCode, token)) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result;
+                    }
                 }
             }
+
             //校验是否在账户黑名单或者IP黑名单之中
             if (operateTimesService.checkLoginUserInBlackList(passportId, ip)){
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
@@ -183,7 +187,7 @@ public class LoginManagerImpl implements LoginManager {
                     passportIdTmp =  account.getPassportId();
                 }
                 createCookieUrlApiParams.setUserid(passportIdTmp);
-                createCookieUrlApiParams.setRu(scheme+COOKIE_URL_RUSTR);
+                createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
                 createCookieUrlApiParams.setPersistentcookie(loginParameters.getAutoLogin());
                 Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
                 if (createCookieResult.isSuccess()){
@@ -198,21 +202,33 @@ public class LoginManagerImpl implements LoginManager {
             } else {
                 operateTimesService.incLoginFailedTimes(passportId, ip);
                 //3次失败需要输入验证码
-                if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
-                    result.setDefaultModel("needCaptcha", true);
+                if(needCaptcha) {
+                    if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
+                        result.setDefaultModel("needCaptcha", true);
+                    }
                 }
             }
         } catch (Exception e) {
             operateTimesService.incLoginFailedTimes(passportId,ip);
             logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
             //3次失败需要输入验证码
-            if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
-                result.setDefaultModel("needCaptcha",true);
+            if (needCaptcha) {
+                if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
+                    result.setDefaultModel("needCaptcha", true);
+                }
             }
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
         }
         return result;
+    }
+
+    private boolean needCaptchaCheck(int client_id) {
+        if (client_id == SHPPUrlConstant.APP_ID) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private boolean checkCaptcha(String passportId, String captcha, String token) {
