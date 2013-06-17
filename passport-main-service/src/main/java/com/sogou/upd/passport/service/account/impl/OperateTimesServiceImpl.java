@@ -154,8 +154,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
             recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
 
-            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-            recordTimes(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+//            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+//            recordTimes(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
 
         } catch (Exception e) {
             logger.error("incRegIPTimes:ip" + ip, e);
