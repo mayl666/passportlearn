@@ -9,11 +9,16 @@ import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.converters.CustomDateEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Date;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -23,6 +28,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/internal/account")
 public class UserInfoApiController {
+
+    //TODO 需要改为配置的，但目前配置有问题
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(true));
+    }
 
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManagerImpl;
