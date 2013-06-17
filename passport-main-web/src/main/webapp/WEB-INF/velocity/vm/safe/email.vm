@@ -47,7 +47,7 @@
     </li>
     
     <li class="password   small">
-        <a href="/web/security/resetpwd">修改密码</a>
+        <a href="/web/security/password">修改密码</a>
     </li>
     
     <li class="email current  small">
