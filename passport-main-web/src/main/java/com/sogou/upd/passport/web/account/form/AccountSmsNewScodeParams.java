@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Phone;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -8,6 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class AccountSmsNewScodeParams extends AccountSmsScodeParams {
     @NotBlank(message = "新手机号不能为空")
+    @Phone
     protected String new_mobile;
 
     public String getNew_mobile() {

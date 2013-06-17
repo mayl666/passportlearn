@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
+import com.sogou.upd.passport.common.validation.constraints.Password;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -26,7 +27,7 @@ public class WebLoginParameters {
     /**
      * 登陆密码
      */
-    @Length(min = 1, max = 200, message = "用户名或密码错误，请重新输入！")
+    @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     @NotBlank(message = "请输入密码！")
     private String password;
 

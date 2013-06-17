@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form.security;
 
+import com.sogou.upd.passport.common.validation.constraints.Phone;
 import com.sogou.upd.passport.web.account.form.BaseWebParams;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -10,6 +11,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class WebMobileParams extends BaseWebParams {
     @NotBlank(message = "手机号不允许为空!")
+    @Phone
     protected String new_mobile;
 
     public String getNew_mobile() {
