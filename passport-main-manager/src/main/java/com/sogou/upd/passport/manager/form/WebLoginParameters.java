@@ -50,7 +50,7 @@ public class WebLoginParameters {
 
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
-    private int client_id; // 1120-passport
+    private String client_id;
 
     private String xd; // 跨域通信所用字段，直接返回
 
@@ -130,11 +130,11 @@ public class WebLoginParameters {
         this.ru = ru;
     }
 
-    public int getClient_id() {
+    public String getClient_id() {
         return client_id;
     }
 
-    public void setClient_id(int client_id) {
+    public void setClient_id(String client_id) {
         this.client_id = client_id;
     }
 
