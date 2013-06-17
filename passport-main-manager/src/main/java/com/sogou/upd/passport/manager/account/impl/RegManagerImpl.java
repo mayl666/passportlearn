@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
@@ -14,8 +15,10 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
@@ -59,6 +62,8 @@ public class RegManagerImpl implements RegManager {
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -171,7 +176,8 @@ public class RegManagerImpl implements RegManager {
 
         Result result = new APIResultSupport(false);
         //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, smsCode, clientId);
+        boolean checkSmsInfo =
+                mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.REGISTER, smsCode);
         if (!checkSmsInfo) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             return result;
@@ -269,12 +275,19 @@ public class RegManagerImpl implements RegManager {
     }
 
   @Override
-  public Result isAccountExists(String username) throws Exception {
+  public Result isAccountExists(String username,boolean type) throws Exception {
     Result result = new APIResultSupport(false);
     try {
       CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
       if (ManagerHelper.isInvokeProxyApi(username)) {
-        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        if(type){
+          //手机号
+          BaseMoblieApiParams params=new BaseMoblieApiParams();
+          params.setMobile(username);
+          result = proxyBindApiManager.getPassportIdFromMobile(params);
+        }else {
+          result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        }
       } else {
         result = sgRegisterApiManager.checkUser(checkUserApiParams);
       }

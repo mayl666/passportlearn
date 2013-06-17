@@ -38,7 +38,7 @@ public class LoginManagerImplTest extends BaseTest {
 //            webLoginParameters.get().setPassword(Coder.encryptMD5("123456"));
             webLoginParameters.get().setPassword(pwd);
 //            webLoginParameters.get().setCaptcha("ssss");
-            Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip);
+            Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip,"http");
             System.out.println("testAccountLogin:"+result);
         } catch (Exception e) {
             e.printStackTrace();

@@ -36,10 +36,11 @@ import java.util.Map;
 public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
-    private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com";
 
-    private static final String SOHU_LOGIN_INDEX_URL = "http://passport.sohu.com";
+    private static final String SOHU_LOGIN_INDEX_URL = "https://passport.sohu.com";
+    private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
+    private static final String COOKIE_URL_RUSTR = "://account.sogou.com/static/api/ru.htm";
+
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -117,12 +118,13 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public Result accountLogin(WebLoginParameters loginParameters, String ip) {
+    public Result accountLogin(WebLoginParameters loginParameters, String ip,String scheme) {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();
         String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         String passportId = username;
+        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id());
         try {
             AccountDomainEnum accountDomainEnum =  AccountDomainEnum.getAccountDomain(username);
             //设置来源
@@ -131,8 +133,7 @@ public class LoginManagerImpl implements LoginManager {
                 if (AccountDomainEnum.SOHU.equals(accountDomainEnum)) {
                     loginParameters.setRu(SOHU_LOGIN_INDEX_URL);
                 }else{
-                    //TODO 上线前改为  LOGIN_INDEX_URL
-                    loginParameters.setRu(TEST_LOGIN_INDEX_URL);
+                    loginParameters.setRu(scheme+LOGIN_INDEX_URLSTR);
                 }
             }
 
@@ -142,14 +143,17 @@ public class LoginManagerImpl implements LoginManager {
             }
 
             //校验验证码
-            if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
-                String captchaCode = loginParameters.getCaptcha();
-                String token = loginParameters.getToken();
-                if (!this.checkCaptcha(passportId, captchaCode, token)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    return result;
+            if(needCaptcha) {
+                if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
+                    String captchaCode = loginParameters.getCaptcha();
+                    String token = loginParameters.getToken();
+                    if (!this.checkCaptcha(passportId, captchaCode, token)) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result;
+                    }
                 }
             }
+
             //校验是否在账户黑名单或者IP黑名单之中
             if (operateTimesService.checkLoginUserInBlackList(passportId, ip)){
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
@@ -160,7 +164,6 @@ public class LoginManagerImpl implements LoginManager {
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
             authUserApiParams.setUserid(passportId);
             authUserApiParams.setPassword(pwdMD5);
-            //TODO 设置clientId,暂时设置为1100
             authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
             //根据域名判断是否代理，一期全部走代理
             if (ManagerHelper.isInvokeProxyApi(passportId)) {
@@ -184,35 +187,48 @@ public class LoginManagerImpl implements LoginManager {
                     passportIdTmp =  account.getPassportId();
                 }
                 createCookieUrlApiParams.setUserid(passportIdTmp);
-                createCookieUrlApiParams.setRu(loginParameters.getRu());
+                createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
                 createCookieUrlApiParams.setPersistentcookie(loginParameters.getAutoLogin());
-
                 Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
                 if (createCookieResult.isSuccess()){
                     result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
+
                 } else{
                     result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
                     return result;
                 }
+                result.setDefaultModel("ru",loginParameters.getRu());
 
             } else {
                 operateTimesService.incLoginFailedTimes(passportId, ip);
                 //3次失败需要输入验证码
-                if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
-                    result.setDefaultModel("needCaptcha", true);
+                if(needCaptcha) {
+                    if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
+                        result.setDefaultModel("needCaptcha", true);
+                    }
                 }
             }
         } catch (Exception e) {
             operateTimesService.incLoginFailedTimes(passportId,ip);
             logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
             //3次失败需要输入验证码
-            if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)){
-                result.setDefaultModel("needCaptcha",true);
+            if (needCaptcha) {
+                if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
+                    result.setDefaultModel("needCaptcha", true);
+                }
             }
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
         }
         return result;
+    }
+
+    private boolean needCaptchaCheck(int client_id) {
+        if (client_id == SHPPUrlConstant.APP_ID) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private boolean checkCaptcha(String passportId, String captcha, String token) {

@@ -27,7 +27,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("13621009174@sohu.com");
+            authUserParameters.setUserid("13621009174");
             authUserParameters.setClient_id(clientId);
             authUserParameters.setPassword(Coder.encryptMD5("spz1986411"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
@@ -50,7 +50,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testBuildCreateCookieUrl(){
         CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu("http://ie.sogou.com");
+        createCookieUrlApiParams.setRu("http://account.sogou.com/login/success");
         createCookieUrlApiParams.setPersistentcookie(1);
         Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
         System.out.println(result);
