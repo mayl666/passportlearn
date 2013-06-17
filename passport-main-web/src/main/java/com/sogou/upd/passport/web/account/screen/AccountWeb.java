@@ -67,14 +67,9 @@ public class AccountWeb extends BaseController {
   web登录页跳转
 */
   @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
-  public String login(HttpServletRequest request, Model model)
+  public String login(HttpServletRequest request)
       throws Exception {
-      //连接来源
-     String ru = request.getParameter("ru");
-      if (!Strings.isNullOrEmpty(ru)){
-//          ru = URLEncoder.encode(ru, "UTF-8");
-          model.addAttribute("ru",ru);
-     }
+
     return "index";
   }
     /*

@@ -100,7 +100,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     public Result sendSmsCode(String mobile, int clientId, AccountModuleEnum module) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
-            if (!checkSmsSendLimit(mobile, clientId, module)) {
+            if (!checkLimitForSendSms(mobile, clientId, module)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CANTSENTSMS);
                 return result;
             }
@@ -158,7 +158,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         }
     }
 
-    public boolean checkSmsSendLimit(String mobile, int clientId, AccountModuleEnum module) {
+    public boolean checkLimitForSendSms(String mobile, int clientId, AccountModuleEnum module) {
         try {
             String cacheKey = buildCacheKeyForSmsLimit(mobile, clientId, module);
             String sendNumStr = redisUtils.get(cacheKey);
@@ -202,7 +202,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
 
     @Override
-    public boolean checkSmsFailLimit(String mobile, int clientId, AccountModuleEnum module)
+    public boolean checkLimitForSmsFail(String mobile, int clientId, AccountModuleEnum module)
             throws ServiceException {
         try {
             String cacheKey = buildCacheKeyForSmsFailLimit(mobile, clientId, module);
@@ -237,7 +237,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     public Result checkSmsCode(String mobile, int clientId, AccountModuleEnum module, String smsCode) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
-            if (!checkSmsFailLimit(mobile, clientId, module)) {
+            if (!checkLimitForSmsFail(mobile, clientId, module)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }

@@ -88,11 +88,11 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
 
             // 设置邮件发送次数限制
-            String resetCacheKey = buildCacheKeyForEmailLimited(passportId, clientId, module, address);
-            if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                redisUtils.increment(resetCacheKey);
+            String cacheKeySendEmail = buildCacheKeyForEmailLimited(passportId, clientId, module, address);
+            if (redisUtils.checkKeyIsExist(cacheKeySendEmail)) {
+                redisUtils.increment(cacheKeySendEmail);
             } else {
-                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+                redisUtils.setWithinSeconds(cacheKeySendEmail, "1", DateAndNumTimesConstant.TIME_ONEDAY);
             }
             return true;
         } catch(MailException me) {
@@ -137,7 +137,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
                 if (checkNum > MailUtils.MAX_EMAIL_COUNT_ONEDAY) {
-                    // 当日密码修改次数不超过上限
+                    // 当日邮件发送次数不超过上限
                     return false;
                 }
             }
