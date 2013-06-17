@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common;
 
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.utils.RedisUtils;
 
 import junit.framework.Assert;
@@ -11,6 +13,8 @@ import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -41,6 +45,29 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
         }
 
 
+    }
+
+    @Test
+    public void testPutAll() throws Exception {
+        try {
+            Map<String, String> map = Maps.newHashMap();
+            map.put("key1", "value1");
+            map.put("key2", "value2");
+            redisUtils.hPutAll(TEST_KEY, map);
+
+            map = Maps.newHashMap();
+            map.put("key1", "value3");
+            map.put("key4", "value4");
+            redisUtils.hPutAll(TEST_KEY, map);
+
+            map = redisUtils.hGetAll(TEST_KEY);
+
+            System.out.println(map.get("key1"));
+            System.out.println(map.get("key2"));
+            System.out.println(map.get("key4"));
+        } catch (Exception e) {
+            Assert.assertTrue(false);
+        }
     }
 
     @Test
