@@ -69,7 +69,8 @@ define('conf',[],function(){
 
 
     return{
-        client_id:"1120"
+        client_id:"1120",
+        redirectUrl: "/static/api/jump.htm"
     };
 });
 
@@ -107,6 +108,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
             ui.checkbox('#RemChb');
 
             PassportSC.appid = conf.client_id;
+            PassportSC.redirectUrl = location.protocol +  '//' + location.hostname + ( location.port ? (':' + location.port) :'' ) + conf.redirectUrl;
             $('#Login').on('submit' , function(){
                 var $el = $('#Login');
                 PassportSC.loginHandle( $el.find('input[name="username"]').val() , 

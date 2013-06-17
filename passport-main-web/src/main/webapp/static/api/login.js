@@ -31,14 +31,13 @@
     
     var PassportSC = window['PassportSC'] || {};
     
-    PassportSC.appid = PassportSC.appid || 9999;
-
     PassportSC._passhtml = '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
         +'<input type="hidden" name="username" value="<%=username%>">'
         +'<input type="hidden" name="password" value="<%=password%>">'
         +'<input type="hidden" name="captcha" value="<%=vcode%>">'
         +'<input type="hidden" name="autoLogin" value="<%=isAutoLogin%>">'
         +'<input type="hidden" name="client_id" value="<%=appid%>">'
+        +'<input type="hidden" name="xd" value="<%=redirectUrl%>">'
         +'</form>'
         +'<iframe id="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
 
@@ -52,6 +51,17 @@
             vcode = '';
         }
 
+        if( !PassportSC.redirectUrl ){
+            window['console'] && console.error('Must specify redirect url.Exit!');
+            return;
+        }
+        if( !PassportSC.appid ){
+            window['console'] && console.error('Must specify appid.Exit!');
+            return;
+        }
+
+
+
         if(!container)
             return;
         container.innerHTML = utils.tmpl(PassportSC._passhtml , {
@@ -59,7 +69,8 @@
             password:password,
             vcode:vcode,
             isAutoLogin: isAutoLogin,
-            appid: PassportSC.appid
+            appid: PassportSC.appid,
+            redirectUrl:PassportSC.redirectUrl
         });
         container.getElementsByTagName('form')[0].submit();
     };

@@ -7,7 +7,9 @@
     <body >
     <script type="text/javascript">
         
-        var data = '${data}';
+        var data = eval( '(' + '${data}' + ')' );
 
+        
+        
     </script>
 </html>
