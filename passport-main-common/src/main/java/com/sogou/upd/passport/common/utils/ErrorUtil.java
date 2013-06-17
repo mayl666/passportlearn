@@ -107,8 +107,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
     // 登录失败
     public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
-    // 密码必须为字母和数字且长度大于6位!
-    public static final String ERR_CODE_ACCOUNT_PWDERROR = "20227";
     // 当前登录账号与所操作账号不一致
     public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
     // 账号未登录，请先登录
@@ -292,7 +290,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "创建用户失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PWDERROR, "密码必须为字母和数字且长度大于6位!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH, "当前登录账号与操作账号不一致");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT, "密码输入错误次数过多");

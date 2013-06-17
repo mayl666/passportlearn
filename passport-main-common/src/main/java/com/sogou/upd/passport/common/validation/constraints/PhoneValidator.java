@@ -26,10 +26,10 @@ public class PhoneValidator implements ConstraintValidator<Phone, String> {
     }
 
     @Override
-    public boolean isValid(String object, ConstraintValidatorContext constraintContext) {
-        if (Strings.isNullOrEmpty(object)) {
+    public boolean isValid(String value, ConstraintValidatorContext constraintContext) {
+        if (Strings.isNullOrEmpty(value)) {
             return true;
         }
-        return object.matches(PhoneUtil.PHONE_FORMAT);
+        return value.matches(PhoneUtil.PHONE_FORMAT);
     }
 }
