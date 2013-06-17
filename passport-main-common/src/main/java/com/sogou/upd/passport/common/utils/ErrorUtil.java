@@ -27,12 +27,12 @@ public class ErrorUtil {
     public static final String ERR_ACCESS_TOKEN = "10005";
     // 签名或accessToken验证失败
 //    public static final String ERR_OPEN_ID = "10006";
+    // 接口调用频次超限
+    public static final String INVOKE_BEYOND_FREQUENCY_LIMIT = "10008";
     // 账号不存在或异常或未激活
     public static final String INVALID_ACCOUNT = "10009";
     //client_id不存在
     public static final String INVALID_CLIENTID = "10010";
-    //client_id格式不正确
-    public static final String ERR_FORMAT_CLIENTID = "10011";
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -83,7 +83,7 @@ public class ErrorUtil {
 //    public static final String ERR_CODE_ACCOUNT_VERIFY_FIELDS = "20212";
     // 手机验证码发送失败
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
-    //用户允许注册，但注册失败
+    //创建用户失败
     public static final String ERR_CODE_ACCOUNT_REGISTER_FAILED = "20214";
     //验证码错误或已过期
     public static final String ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE = "20216";
@@ -126,13 +126,13 @@ public class ErrorUtil {
     //TODO 手机解除绑定失败
     public static final String ERR_CODE_PHONE_UNBIND_FAILED = "20237";
     //TODO 密码输入错误次数过多
-    public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT="20238";
+    public static final String ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT = "20238";
     //TODO 非法userId
-    public static final String ERR_CODE_USERID_ILLEGAL="20239";
+    public static final String ERR_CODE_USERID_ILLEGAL = "20239";
     //生成cookie失败
     public static final String ERR_CODE_CREATE_COOKIE_FAILED = "20240";
     //暂时不支持sohu域内邮箱注册
-    public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER="20241";
+    public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER = "20241";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -180,9 +180,9 @@ public class ErrorUtil {
     //重置密码次数超限
     public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT = "20292";
     //用户五日内成功登陆过
-    public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY ="20293";
+    public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY = "20293";
     //用户已经存在
-    public static final String ERR_CODE_USER_ID_EXIST ="20294";
+    public static final String ERR_CODE_USER_ID_EXIST = "20294";
     // 手机用户不允许此操作
     public static final String ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED = "20295";
 
@@ -191,18 +191,6 @@ public class ErrorUtil {
     /* ============================================================================ */
     // 字段非法
     public static final String ERR_CODE_PROFILE_FIELD = "20301";
-
-    /* ============================================================================ */
-    /*  IMAGE 服务的错误代码                                                         */
-    /* ============================================================================ */
-    // 上传头像的文件扩展名不对
-    public static final String ERR_CODE_PROFILE_IMGEXT = "20401";
-    // 上传错误，没有找到上传的文件
-    public static final String ERR_CODE_PROFILE_FILE = "20402";
-    // 上传头像不成功，更新数据库错误
-    public static final String ERR_CODE_PROFILE_UPDATE = "20403";
-    // 获取图片的URL出错或者服务器连不上
-    public static final String ERR_CODE_ACHIEVE_PROFILE = "20404";
 
     /* ============================================================================ */
     /*  Connect通用的错误代码                                                        */
@@ -233,12 +221,6 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
     /* ============================================================================ */
-    // 无法读入上传文件
-    public static final String READ_FILE_FAILED = "30301";
-    // 上传文件失败
-    public static final String UPDATE_FILE_FAILED = "30302";
-    // 用户没有手机帐号，无法获取通讯录好友
-    public static final String PHONE_ACCOUNT_NOT_EXISTS = "30303";
     // 关注的用户不存在
     public static final String FOLLOW_ACCOUNT_NOT_EXISTS = "30310";
     // 已经关注此用户
@@ -263,12 +245,6 @@ public class ErrorUtil {
     public static final String REPEAT_CONTENT = "30407";
 
     /* ============================================================================ */
-    /*  好友类API错误代码                                                           */
-    /* ============================================================================ */
-    // 上传的通讯录file不能为空
-    public static final String UPDATE_CONATCT_NOT_NULL = "30501";
-
-    /* ============================================================================ */
     /*  反馈相关错误代码                                                            */
     /* ============================================================================ */
     //用户允许提交反馈，但提交失败
@@ -290,9 +266,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_SING, "code签名错误");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
+        ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT,"接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
-        ERR_CODE_MSG_MAP.put(ERR_FORMAT_CLIENTID, "client_id格式不正确");
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
@@ -314,7 +290,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日验证码校验错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "用户注册失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "创建用户失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PWDERROR, "密码必须为字母和数字且长度大于6位!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH, "当前登录账号与操作账号不一致");
@@ -369,12 +345,6 @@ public class ErrorUtil {
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
 
-        // image
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_IMGEXT, "图片扩展名不对，支持的格式为：bmp, gif, jpg, jpeg, png");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FILE, "没有找到上传的文件");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_UPDATE, "上传头像失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACHIEVE_PROFILE, "URL或服务器出错，待会儿再试试吧");
-
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
         ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
@@ -396,10 +366,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(REPEAT_CONTENT, "同样的内容请勿重复发送");
 
         // friend
-        ERR_CODE_MSG_MAP.put(UPDATE_CONATCT_NOT_NULL, "通讯录是空的哦");
-        ERR_CODE_MSG_MAP.put(READ_FILE_FAILED, "无法读取上传文件");
-        ERR_CODE_MSG_MAP.put(UPDATE_FILE_FAILED, "上传通讯录失败");
-        ERR_CODE_MSG_MAP.put(PHONE_ACCOUNT_NOT_EXISTS, "没找到你的通讯录呢");
         ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过帐号");
         ERR_CODE_MSG_MAP.put(ALREADY_FOLLOWED, "已经关注此用户");
 
@@ -409,20 +375,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_NOT_LOGIN, "您还未登陆，不能提及反馈");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
-    }
-
-    public static Map<String, Object> buildError(String code) {
-        Map<String, Object> retMap = Maps.newHashMap();
-        retMap.put(CommonConstant.RESPONSE_STATUS, code);
-        retMap.put(CommonConstant.RESPONSE_STATUS_TEXT, ERR_CODE_MSG_MAP.get(code));
-        return retMap;
-    }
-
-    public static Map<String, Object> buildError(String code, String msg) {
-        Map<String, Object> retMap = Maps.newHashMap();
-        retMap.put(CommonConstant.RESPONSE_STATUS, code);
-        retMap.put(CommonConstant.RESPONSE_STATUS_TEXT, msg);
-        return retMap;
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

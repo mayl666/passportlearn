@@ -46,6 +46,8 @@ public class WebLoginParameters {
 
     private String ru;//登陆来源
 
+    private int client_id; // 1120-passport
+
     @AssertTrue(message = "用户账号格式错误")
     private boolean checkAccount() {
         if (Strings.isNullOrEmpty(username)) {
@@ -120,5 +122,13 @@ public class WebLoginParameters {
 
     public void setRu(String ru) {
         this.ru = ru;
+    }
+
+    public int getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(int client_id) {
+        this.client_id = client_id;
     }
 }
