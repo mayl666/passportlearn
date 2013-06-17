@@ -10,6 +10,8 @@
 .ucenter .table .level-status{margin:0 16px;}
 .ucenter .table .level-status b{ position:absolute;top:0;left:0; background-position:0 0; width:0; }
 
+.ucenter .table .level-status,.ucenter .table .level-num { _position: relative; _top: 22px;}
+
 .ucenter-sidebar{ padding-left:13px; }
 .ucenter-sidebar .item{ display:inline-block; *display:inline; *zoom:1; width:103px; height:45px; line-height:45px; padding-left:12px;background:url(/./static/img/desc-arrow.png?t=707808) no-repeat 0 center;font-size:14px; }
 .ucenter-sidebar .item a{ color:#000; }

@@ -61,7 +61,7 @@ define('conf',[],function(){
 
 
     return{
-        client_id:1100
+        client_id:"1100"
     };
 });
 
@@ -661,7 +661,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
         return true;
     });
     $.uuiForm.addType('nick' , function(value){
-        return /^([a-zA-Z0-9_]+)$/.test(value) && !/^\d+$/.test(value);
+        return /^[a-z]([a-zA-Z0-9_.]{3,15})$/.test(value);
     });
 
     var ErrorDesc = {
@@ -765,7 +765,8 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
                 onformsuccess: function($el){
                     if( !onsuccess || onsuccess($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
-                            
+                            data = utils.parseResponse(data);
+                            alert(data.statusText)
                         });
                     }
                     return false;
@@ -790,6 +791,14 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
 
 define('reg',['./common','./form' , './conf' , './utils'] , function(common , form , conf , utils){
 
+    var createSpan= function($el , className){
+        if( !$el.parent().parent().find('.'+className).length ){
+            $el.parent().parent().append('<span class="'+ className +'"></span>');
+        }
+    };
+    var getSpan=function( $el, className ){
+        return $el.parent().parent().find('.' + className);
+    };
     var checkUsername = function($el , cb){
         var ipt = $el.find('input[name="username"]');
         if( !ipt || !ipt.length ){
@@ -823,13 +832,15 @@ define('reg',['./common','./form' , './conf' , './utils'] , function(common , fo
             checkUsername($el,function(status) {
                 if( !status ){
                     $.post($el.attr('action'), $el.serialize() , function(data){
-                        
+                            data = utils.parseResponse(data);
+                            alert(data.statusText)
                     });
                 }
                 return false;
             });
 
         });
+        $el.append('<input type="hidden" name="ru" value="" class="ru"/>');
 
         $el.find('input[name=username]').blur(function(){
             var errorspan = $(this).parent().parent().find('.error');

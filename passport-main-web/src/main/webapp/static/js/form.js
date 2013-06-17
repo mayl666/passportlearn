@@ -20,7 +20,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         return true;
     });
     $.uuiForm.addType('nick' , function(value){
-        return /^([a-zA-Z0-9_]+)$/.test(value) && !/^\d+$/.test(value);
+        return /^[a-z]([a-zA-Z0-9_.]{3,15})$/.test(value);
     });
 
     var ErrorDesc = {
@@ -124,7 +124,8 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 onformsuccess: function($el){
                     if( !onsuccess || onsuccess($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
-                            
+                            data = utils.parseResponse(data);
+                            alert(data.statusText)
                         });
                     }
                     return false;

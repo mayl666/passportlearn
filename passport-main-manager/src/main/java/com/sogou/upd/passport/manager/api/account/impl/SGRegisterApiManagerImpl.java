@@ -1,10 +1,14 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
@@ -14,6 +18,7 @@ import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 
 import org.slf4j.Logger;
@@ -38,6 +43,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
     private SecureManager secureManager;
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
@@ -57,6 +64,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                 .EMAIL.getValue());
             if (account != null) {
               result.setSuccess(true);
+              result.setDefaultModel("userid", account.getPassportId());
               result.setMessage("注册成功！");
             } else {
               result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -89,7 +97,6 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
           int clientId =regParams.getClient_id();
           String mobile = regParams.getMobile();
-          String username = PassportIDGenerator.generator(mobile, AccountTypeEnum.PHONE.getValue());
           String password = regParams.getPassword();
           String ip=regParams.getIp();
 
@@ -101,10 +108,11 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             return result;
           }
 
-          Account account = accountService.initialAccount(username,password , false, ip, AccountTypeEnum
+          Account account = accountService.initialAccount(mobile,password , false, ip, AccountTypeEnum
               .PHONE.getValue());
           if (account != null) {
             result.setSuccess(true);
+            result.setDefaultModel("userid", account.getPassportId());
             result.setMessage("注册成功！");
           } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -116,10 +124,32 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         return result;
     }
 
-    @Override
-    public Result checkUser(CheckUserApiParams checkUserApiParams) {
-        return null;
+  @Override
+  public Result checkUser(CheckUserApiParams checkUserApiParams) {
+    Result result = new APIResultSupport(false);
+    String username = null;
+    try {
+      username = checkUserApiParams.getUserid();
+      if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+        String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+        if (!Strings.isNullOrEmpty(passportId)) {
+          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+        }
+        return result;
+      } else {
+        Account account = accountService.queryAccountByPassportId(username);
+        if (account != null) {
+          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+        }
+        return result;
+      }
+    } catch (ServiceException e) {
+      logger.error("Check account is exists Exception, username:" + username, e);
     }
+    result.setSuccess(true);
+    result.setMessage("账户未被占用，可以注册");
+    return result;
+  }
 
     @Override
     public Result sendMobileRegCaptcha(BaseMoblieApiParams params) {

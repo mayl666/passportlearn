@@ -154,8 +154,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
             recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
 
-            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-            recordTimes(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+//            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+//            recordTimes(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
 
         } catch (Exception e) {
             logger.error("incRegIPTimes:ip" + ip, e);
@@ -174,11 +174,11 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if(result){
                 return true;
             }
-            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-            result = checkTimesByKey(cookieCacheKey, LoginConstant.REGISTER_COOKIE_LIMITED);
-            if(result){
-                return true;
-            }
+//            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+//            result = checkTimesByKey(cookieCacheKey, LoginConstant.REGISTER_COOKIE_LIMITED);
+//            if(result){
+//                return true;
+//            }
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
             throw new ServiceException(e);

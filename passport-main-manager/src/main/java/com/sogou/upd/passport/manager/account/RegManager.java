@@ -41,4 +41,10 @@ public interface RegManager {
    * @return 验证码
    */
   public Map<String,Object> getCaptchaCode(String code);
+  /**
+   * 判断用户名是否被占用
+   *
+   * @return 验证码
+   */
+  public Result isAccountExists(String username,boolean type) throws Exception;
 }
