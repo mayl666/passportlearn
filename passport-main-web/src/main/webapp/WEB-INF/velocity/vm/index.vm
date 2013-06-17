@@ -20,7 +20,9 @@
                 <div class="login ">
                     <div class="login-inner">
                         <h2>欢迎登录搜狗通行证</h2>
+                        <div id="logdiv" style="display:none;"></div>
                         <form method="post" id="Login" action="/web/login">
+                                
                             <p class="username">
                                 <input type="text" name="username" value="" />
                             </p>
@@ -90,7 +92,8 @@
         
     </body>
     <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=935127"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=905446"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=116498"></script>
     <script type="text/javascript">
         
 require.config({
