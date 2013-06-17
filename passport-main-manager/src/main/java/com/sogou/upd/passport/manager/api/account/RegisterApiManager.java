@@ -42,6 +42,8 @@ public interface RegisterApiManager {
 
     /**
      * 检查用户名是否已经被注册
+     * userid可以为xxx@sogou.com、xxx@sohu.com、xxx@126.com、xxx@qq.sohu.com
+     * 不允许为13621009174@sohu.com，如果是手机账号需要调用wapgetuserid接口
      * @param checkUserApiParams
      * @return
      */

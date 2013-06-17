@@ -67,7 +67,7 @@ a:hover{ text-decoration:underline; }
 .banner{ height:44px;line-height:44px;margin-bottom:13px;border:1px #cdcdcd solid; border-radius:2px; padding-left:30px;background-position:0 -90px; position:relative;}
 .banner ul{overflow:hidden;zoom:1;}
 .banner li{ font-size:18px; font-family:"Microsoft Yahei", sans-serif;color:#333;float:left;margin-right:40px; }
-.banner .underline{ height:3px;background:#6da700;position:absolute;bottom:-1px;left:0; }
+.banner .underline{ height:3px;background:#6da700;position:absolute;bottom:-1px;left:0; font-size: 0;}
 .nav,.sidebar{ border:1px #cdcdcd solid; border-radius:2px; overflow:hidden;}
 .nav .current{ background:#fbffeb url(/./static/img/nav-arrow.png?t=447357) no-repeat 195px center; }
 .nav li{ height:45px; line-height:45px;border-top:1px #cdcdcd solid; margin-top:-1px; font-size:18px; font-family:'Microsoft Yahei', sans-serif; }
@@ -79,7 +79,7 @@ a:hover{ text-decoration:underline; }
 .two-col-r{ overflow:hidden;zoom:1; }
 .two-col-r .col-l{ float:left;width:249px; }
 .two-col-r .col-r{ float:right;width:717px; }
-.two-col-r .col-r .inner{ border:1px #cdcdcd solid; border-radius:2px; min-height:380px; padding:13px;}
+.two-col-r .col-r .inner{ border:1px #cdcdcd solid; border-radius:2px; min-height:380px; _height: 380px; padding:13px;}
 .two-col-r .col-r .title,
 .two-col-l{ overflow:hidden;zoom:1; }
 .two-col-l .col-l{ float:left; width:717px;}
@@ -169,6 +169,7 @@ a.medium-btn{ width:83px; height:27px; background:url(/./static/img/btn-medium.p
 .ucenter .table .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(/./static/img/line.png?t=049072) no-repeat 0 -26px;position:relative; }
 .ucenter .table .level-status{margin:0 16px;}
 .ucenter .table .level-status b{ position:absolute;top:0;left:0; background-position:0 0; width:0; }
+.ucenter .table .level-status,.ucenter .table .level-num { _position: relative; _top: 22px;}
 .ucenter-sidebar{ padding-left:13px; }
 .ucenter-sidebar .item{ display:inline-block; *display:inline; *zoom:1; width:103px; height:45px; line-height:45px; padding-left:12px;background:url(/./static/img/desc-arrow.png?t=707808) no-repeat 0 center;font-size:14px; }
 .ucenter-sidebar .item a{ color:#000; }

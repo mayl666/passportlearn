@@ -9,9 +9,9 @@ package com.sogou.upd.passport.manager.api;
 public class SHPPUrlConstant {
 
 
-    public static final int APP_ID = 1100;
+    public static final int APP_ID = 1120;
 
-    public static final String APP_KEY = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+    public static final String APP_KEY = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
 
     public static final String COOKIE_KEY="a80d&p4^9t";
 

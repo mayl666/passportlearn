@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.manager.api.account.impl;
+package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
@@ -7,7 +7,9 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+
 import junit.framework.Assert;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-9
  * Time: 下午2:08
  */
-public class ProxyRegisterApiManagerImplTest extends BaseTest {
+public class SGRegisterApiManagerImplTest extends BaseTest {
 
     private static final String MOBILE = "18738963584";
     private static final String USERID = "281168178@qq.com";
@@ -56,21 +58,20 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testCheckUser() {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("shipengzhi1986@sogou.com");
+        checkUserApiParams.setUserid("test_lg_upd@sogou.com");
         Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-        System.out.println("result1:" + result.toString());
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
         checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("spz1986411@sohu.com");
+        checkUserApiParams.setUserid("lg-coder@sogou.com");
         result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-        System.out.println("result2:" + result.toString());
+        System.out.println(result.toString());
+        Assert.assertFalse(result.isSuccess());
         checkUserApiParams = new CheckUserApiParams();
         checkUserApiParams.setUserid("13621009174@sohu.com");
         result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-        System.out.println("result3:" + result.toString());
-        checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("D6BDDEDDA8A9C09C7B22A7D7140CC167@qq.sohu.com");
-        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-        System.out.println("result4:" + result.toString());
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
     }
 
 

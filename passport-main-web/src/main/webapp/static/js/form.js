@@ -124,7 +124,8 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 onformsuccess: function($el){
                     if( !onsuccess || onsuccess($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
-                            
+                            data = utils.parseResponse(data);
+                            alert(data.statusText)
                         });
                     }
                     return false;
