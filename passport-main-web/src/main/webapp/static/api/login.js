@@ -41,7 +41,15 @@
         +'</form>'
         +'<iframe id="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
 
+    PassportSC._logincb = function(data){
+        if( !+data.status ){
+            PassportSC.onsuccess && PassportSC.onsuccess(data);
+        }else{
+            PassportSC.onfailure && PassportSC.onfailure(data);
+        }
+    };
 
+    
 
     PassportSC.loginHandle = function(username, password , vcode , isAutoLogin , container , onfailure, onsuccess){
         if( arguments.length < 7 ){
@@ -60,10 +68,13 @@
             return;
         }
 
-
+        
 
         if(!container)
             return;
+
+        PassportSC.onsuccess = onsuccess,
+        PassportSC.onfailure = onfailure;
         container.innerHTML = utils.tmpl(PassportSC._passhtml , {
             username:username,
             password:password,
