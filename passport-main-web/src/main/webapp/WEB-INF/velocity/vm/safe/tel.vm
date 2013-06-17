@@ -47,7 +47,7 @@
     </li>
     
     <li class="password   small">
-        <a href="/web/security/resetpwd">修改密码</a>
+        <a href="/web/security/password">修改密码</a>
     </li>
     
     <li class="email   small">
@@ -75,7 +75,7 @@
             </div>
             <div  class="form">
                 <script type="text/tpl" id="Target">
-                        <% if status==0 %><#已绑定#>
+                        <% if sec_mobile %><#已绑定#>
                         <div class="binded">
                             <p>您已绑定到手机<{sec_mobile}></p>
                             <a href="#" class="long-btn">修改绑定手机</a>
