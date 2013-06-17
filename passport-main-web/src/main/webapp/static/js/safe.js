@@ -848,7 +848,8 @@ define('conf',[],function(){
 
 
     return{
-        client_id:"1100"
+        client_id:"1120",
+        redirectUrl: "/static/api/jump.htm"
     };
 });
 
@@ -1576,7 +1577,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
 
 
 
-define('safe',['./common' , './tpl' , './form'] , function(common , ursa , form ){
+define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , ursa , form , conf ){
 
     var pagefunc = {
         common: function(data){
@@ -1665,6 +1666,8 @@ define('safe',['./common' , './tpl' , './form'] , function(common , ursa , form 
         }
     };
 
+
+
     var formfunc = {
         question: function(){
             var wrapper = $('.main-content .form form');
@@ -1679,10 +1682,18 @@ define('safe',['./common' , './tpl' , './form'] , function(common , ursa , form 
         }
     };
 
+    var addUrlClientId = function(){
+        var targets = $('.main-content .nav li a');
+        targets.each(function(idx,item){
+            $(item).attr('href' , $(item).attr('href') + '?client_id=' + conf.client_id);
+        });
+    };
+
 
     return{
         init: function(type){
             common.showBannerUnderLine();
+            addUrlClientId();
 
             var data ={};
             try{
