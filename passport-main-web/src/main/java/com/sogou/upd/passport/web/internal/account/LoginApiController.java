@@ -35,6 +35,7 @@ public class LoginApiController {
 
     /**
      * web端校验用户名和密码是否正确
+     *
      * @param request
      * @param params
      * @return
@@ -52,12 +53,11 @@ public class LoginApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyLoginApiManager.webAuthUser(params);
         }
-        // 调用内部接口
-        result = proxyLoginApiManager.webAuthUser(params);
+
         return result.toString();
     }
 
@@ -81,12 +81,10 @@ public class LoginApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getToken(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyLoginApiManager.appAuthToken(params);
         }
-        // 调用内部接口
-        result = proxyLoginApiManager.appAuthToken(params);
         return result.toString();
     }
 

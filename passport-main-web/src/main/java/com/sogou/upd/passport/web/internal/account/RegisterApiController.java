@@ -53,12 +53,10 @@ public class RegisterApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getMobile(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
         }
-        // 调用内部接口
-        result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
         return result.toString();
     }
 
@@ -82,12 +80,11 @@ public class RegisterApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getMobile(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.INTERNAL_CODE_ERROR);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyRegisterApiManager.regMobileCaptchaUser(params);
         }
-        // 调用内部接口
-        result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+
         return result.toString();
     }
 
