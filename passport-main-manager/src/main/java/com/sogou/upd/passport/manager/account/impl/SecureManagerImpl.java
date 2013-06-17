@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
-import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -12,7 +11,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -34,8 +32,7 @@ import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,32 +106,6 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
-    @Override
-    public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
-                return result;
-            }
-            // 验证错误次数是否小于限制次数
-            boolean checkFailLimited = mobileCodeSenderService.checkSmsFailLimit(mobile, clientId,
-                                                                                 AccountModuleEnum.SECURE);
-            if (!checkFailLimited) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
-                return result;
-            }
-
-            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, AccountModuleEnum.SECURE);
-
-            return result;
-        } catch (ServiceException e) {
-            logger.error("send sms code to mobile Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-
-    }
 
     @Override
     public Result sendMobileCodeByPassportId(String passportId, int clientId) throws Exception {
@@ -222,25 +193,6 @@ public class SecureManagerImpl implements SecureManager {
             return result;
         } catch (ServiceException e) {
             logger.error("send mobile code old Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
-
-    @Override
-    public Result checkLimitSendEmail(String passportId, int clientId, AccountModuleEnum module,
-                                      String email) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
-                return result;
-            }
-            result.setSuccess(true);
-            result.setMessage("发送邮件限制验证通过");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("check email limit fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -475,7 +427,6 @@ public class SecureManagerImpl implements SecureManager {
     /* --------------------------------------------修改密保内容-------------------------------------------- */
     /*
      * 修改密保邮箱——1.验证原绑定邮箱及发送邮件至待绑定邮箱
-     * TODO:发送邮件限制未做进去？接口代理OK
      */
     @Override
     public Result sendEmailForBinding(String userId, int clientId, String password,
@@ -483,6 +434,10 @@ public class SecureManagerImpl implements SecureManager {
                                       String oldEmail) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            if (!emailSenderService.checkLimitForSendEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
+                return result;
+            }
             BindEmailApiParams params = new BindEmailApiParams();
             params.setUserid(userId);
             params.setClient_id(clientId);
@@ -495,6 +450,9 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxyBindApiManager.bindEmail(params);
             } else {
                 result = sgBindApiManager.bindEmail(params);
+            }
+            if (result.isSuccess()) {
+                result.setMessage("发送绑定邮箱申请邮件成功！");
             }
             return result;
 
@@ -825,4 +783,33 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
+    /*
+     * 供sendMobileCode*调用
+     */
+    private Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
+                return result;
+            }
+            // 验证错误次数是否小于限制次数
+            boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile,
+                                                                                    clientId,
+                                                                                    AccountModuleEnum.SECURE);
+            if (!checkFailLimited) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
+                return result;
+            }
+
+            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, AccountModuleEnum.SECURE);
+
+            return result;
+        } catch (ServiceException e) {
+            logger.error("send sms code to mobile Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+
+    }
 }

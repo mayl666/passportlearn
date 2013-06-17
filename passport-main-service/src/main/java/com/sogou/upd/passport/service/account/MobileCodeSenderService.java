@@ -51,7 +51,7 @@ public interface MobileCodeSenderService {
      *
      * @return 不超过失败次数，返回true；超过，返回false
      */
-    public boolean checkSmsFailLimit(String account, int clientId, AccountModuleEnum module);
+    public boolean checkLimitForSmsFail(String account, int clientId, AccountModuleEnum module);
 
     /**
      * 根据key获取对应的cacheMap
