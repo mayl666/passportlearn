@@ -90,6 +90,9 @@ body{ background:#f9f9f9; }
 .login .vcode-error{width:123px;background-position:0 -33px;top:69px;}
 .login .error a{ position:absolute;background:url(/./static/img/index/error.png?t=653954) no-repeat -241px -45px;width:12px;height:12px;top:8px;right:30px; }
 .login .error a:hover{ background-position:-261px -45px; }
+.login .third-login{position:absolute;bottom:-33px;padding-left:15px;font-size:12px;color:#649608;background:url(/./static/img/index/third.png?t=655015) no-repeat right center;height:24px;line-height:24px;width:270px;}
+.login .third-login span{ display:inline-block;*display:inline; *zoom:1;height:24px;position:absolute;top:0; }
+.login .third-login a{ display:inline-block;*display:inline; *zoom:1; width:24px;height:0;padding-top:24px;overflow:hidden;margin-right:15px;position:relative;left:124px; }
 
 
 .question{ width:960px; margin:0 auto;padding-top:14px; }
