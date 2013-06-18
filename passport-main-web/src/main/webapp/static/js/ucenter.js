@@ -10,7 +10,7 @@ define(['./common' , './tpl'] , function(common , ursa ){
 
     var pagefunc = {
         common: function(data){
-            $('#Header .username').html(data.username);
+            common.parseHeader(data);
         },
         index: function(data){
             var tpl = $('#Target');

@@ -25,6 +25,35 @@
         
         <div class="wrapper">
             
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li ><a href="">首页</a></li>
+            
+            <li ><a href="1">意见反馈</a></li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content one-col">
+    <div class="inner recover" >
+        <div class="title">
+            提示信息
+        </div>
+            
+            404
+
+    </div>
+</div>
+
+
+
         </div>
         
         <div class="footer">
@@ -45,7 +74,7 @@ require.config({
 });
 
 
-require(['parent'] , function(module){
+require(['500'] , function(module){
     module.init('');
 });
 

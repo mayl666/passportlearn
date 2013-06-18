@@ -17,6 +17,22 @@ define('common',[],function(){
                 $('.banner .underline').css('left' , currentBanner.position().left)
                     .css('width' , currentBanner.css('width'));
             }
+        },
+        parseHeader: function(data){
+            $('#Header .username').html(data.username);
+            if( data.username ){
+                $('#Header .logout').show().prev().show();
+                $('#Header .logout a').click(function(){
+                    $.getScript($(this).attr('href') , function(){
+                        if( window['logout_status'] == 'success' ){
+                            location.reload();
+                        }else{
+                            alert('系统错误');
+                        }
+                    });
+                    return false;
+                });
+            }
         }
     };
 });
@@ -52,6 +68,12 @@ define('utils',[], function(){
                 }
             }
             return data;
+        },
+        addIframe: function(url){
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            
+            document.body.appendChild(iframe);
         }
     };
 
@@ -62,7 +84,8 @@ define('conf',[],function(){
 
     return{
         client_id:"1120",
-        redirectUrl: "/static/api/jump.htm"
+        redirectUrl: "/static/api/jump.htm",
+        thirdRedirectUrl:"/static/api/tj.htm"
     };
 });
 

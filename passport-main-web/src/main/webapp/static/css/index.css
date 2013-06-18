@@ -70,16 +70,17 @@ body{ background:#f9f9f9; }
 .login h2{ display:none; }
 .login form{ position:relative;top:74px; }
 .login input{ border:1px #fff solid; width:230px; height:26px;outline:none;font-size:14px;line-height:30px\9; }
-.login .password, .login .username{ padding-left:59px; }
-.login .password{ padding-top:22px; *padding-top:19px;}
-.login .vcode { display:none; }
+.login .password, .login .username{ padding-left:59px; zoom:1;float:left;}
+.login .password input, .login .username input{  }
+.login .password{ padding-top:22px; *padding-top:17px;}
+.login .vcode { display:none; clear:both;}
 .login-vcode .vcode{display:block;padding-top:17px;padding-left:30px; }
 .login .vcode *{ vertical-align:top; }
 .login .vcode input{width:67px;text-align:center;position:relative;top:5px;}
 .login .vcode img{ width:81px; height:38px;position:relative;  margin-left:16px; }
 .login .vcode a{ color:#333; font-size:12px;position:relative; top:12px; left:6px; }
 .login button{ height:43px; width:273px;border:none;background:none;padding:0;margin:0;position:relative;left:24px; cursor: pointer;} 
-.login .func{line-height:34px;padding:5px 0 0 25px; position:relative;color:#999;font-size:12px;}
+.login .func{line-height:34px;padding:5px 0 0 25px; position:relative;color:#999;font-size:12px;clear:both;}
 .login .func input{width:auto;height:auto;width:1px;height:1px;position:absolute;left:-3000px;}
 .login .checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(/./static/img/checkbox.png?t=582595) no-repeat 0 -14px; position:relative; top:3px; *top:0;margin-right:2px; }
 .login .checkbox-checked{ background-position:0 0; }

@@ -64,6 +64,8 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
+    private BindApiManager sgBindApiManager;
+    @Autowired
     private CommonManager commonManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
@@ -122,7 +124,7 @@ public class RegManagerImpl implements RegManager {
       return result;
     }
     if (result.isSuccess()) {
-      //判断是否是外域邮箱注册
+      //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
       Object obj= result.getModels().get("isSetCookie");
       if(obj !=null && (obj instanceof Boolean) && (boolean)obj){
         // 种sohu域cookie
@@ -267,7 +269,7 @@ public class RegManagerImpl implements RegManager {
       CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
       if (ManagerHelper.isInvokeProxyApi(username)) {
         if(type){
-          //手机号
+          //手机号 判断绑定账户
           BaseMoblieApiParams params=new BaseMoblieApiParams();
           params.setMobile(username);
           result = proxyBindApiManager.getPassportIdByMobile(params);
@@ -284,7 +286,24 @@ public class RegManagerImpl implements RegManager {
           result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         }
       } else {
-        result = sgRegisterApiManager.checkUser(checkUserApiParams);
+        if(type){
+          //手机号 判断绑定账户
+          BaseMoblieApiParams params=new BaseMoblieApiParams();
+          params.setMobile(username);
+
+          result=sgBindApiManager.getPassportIdByMobile(params) ;
+          if(result.isSuccess()) {
+            result= new APIResultSupport(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            return result;
+          } else{
+            result= new APIResultSupport(false);
+            result.setSuccess(true);
+            result.setMessage("账户未被占用，可以注册");
+          }
+        } else {
+          result = sgRegisterApiManager.checkUser(checkUserApiParams);
+        }
       }
     } catch (ServiceException e) {
       logger.error("Check account is exists Exception, username:" + username, e);

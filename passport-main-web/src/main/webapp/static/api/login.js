@@ -39,7 +39,7 @@
         +'<input type="hidden" name="client_id" value="<%=appid%>">'
         +'<input type="hidden" name="xd" value="<%=redirectUrl%>">'
         +'</form>'
-        +'<iframe id="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
+        +'<iframe id="_PassportIframe" name="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
 
     PassportSC._logincb = function(data){
         if( !+data.status ){
