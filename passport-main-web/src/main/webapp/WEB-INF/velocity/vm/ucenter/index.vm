@@ -53,7 +53,7 @@
                         <span class="label">安全级别</span>
                         <span class="value">
                             <span class="level-status"><b></b></span>
-                            <span href="#" class="level-num"><{score}>分</span>
+                            <span href="#" class="level-num"><{sec_score}>分</span>
                         </span>
                     </p>
                     <p>
@@ -63,12 +63,12 @@
                     </p>
                     <p>
                         <span class="label">密保邮箱：</span>
-                        <span class="value"><{secure_email}></span>
+                        <span class="value"><{sec_email}></span>
                         <a href="#" class="btn medium-btn">修改</a>
                     </p>
                     <p>
                         <span class="label">绑定手机：</span>
-                        <span class="value"><{secure_phone}></span>
+                        <span class="value"><{sec_mobile}></span>
                         <a href="#" class="btn medium-btn">修改</a>
                     </p>
                 </script>

@@ -23,7 +23,7 @@ define(['./common' , './tpl'] , function(common , ursa ){
             };
 
             wrapper.html( ursa.render(tpl.html() , data));
-            wrapper.find('.level-status b').css( 'width' , data.score + '%' );
+            wrapper.find('.level-status b').css( 'width' , data.sec_score + '%' );
             
         }
 
