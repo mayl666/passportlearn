@@ -59,7 +59,6 @@ public class SecureAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
 
-    // TODO:GET或POST方法不支持时，前端页面
 
     @RequestMapping(method = RequestMethod.GET)
     @LoginRequired
@@ -69,14 +68,18 @@ public class SecureAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "safe/index"; // TODO:返回错误页面
+            // model.addAttribute("data", result.toString());
+            return "redirect:/"; // TODO:返回错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
 
         return "safe/index";
@@ -99,7 +102,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/email";
     }
@@ -121,7 +128,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/tel";
     }
@@ -136,7 +147,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return "safe/question"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -144,7 +155,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/question";
     }
@@ -164,7 +179,11 @@ public class SecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/password";
     }
@@ -186,7 +205,11 @@ public class SecureAction extends BaseController {
         // TODO:登录历史
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/history";
     }
