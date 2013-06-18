@@ -60,7 +60,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.13", ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED); //激活链接已失效
 
         //mobilecaptcha 手机号验证码注册接口
-        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.3", SYSTEM_UNKNOWN_EXCEPTION); //系统级错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.3", ERR_CODE_ACCOUNT_CANTSENTSMS); //发送短信验证码次数超限
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.4", ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.5", ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.6", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
