@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -39,7 +40,6 @@ public class LoginManagerImpl implements LoginManager {
 
     private static final String SOHU_LOGIN_INDEX_URL = "https://passport.sohu.com";
     private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
-    private static final String COOKIE_URL_RUSTR = "://account.sogou.com/static/api/ru.htm";
 
     @Autowired
     private AccountService accountService;
@@ -54,6 +54,8 @@ public class LoginManagerImpl implements LoginManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -148,6 +150,7 @@ public class LoginManagerImpl implements LoginManager {
                     String captchaCode = loginParameters.getCaptcha();
                     String token = loginParameters.getToken();
                     if (!this.checkCaptcha(passportId, captchaCode, token)) {
+                        result.setDefaultModel("needCaptcha", true);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         return result;
                     }
@@ -176,27 +179,7 @@ public class LoginManagerImpl implements LoginManager {
             if (result.isSuccess()){
                 operateTimesService.incLoginSuccessTimes(passportId,ip);
                 // 种sohu域cookie
-
-                CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-                //从返回结果中获取passportId,二期待优化
-                String passportIdTmp =  passportId;
-                if(ManagerHelper.isInvokeProxyApi(passportId)) {
-                    passportIdTmp =  result.getModels().get("userid").toString();
-                } else{
-                    Account account =  (Account)result.getDefaultModel();
-                    passportIdTmp =  account.getPassportId();
-                }
-                createCookieUrlApiParams.setUserid(passportIdTmp);
-                createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
-                createCookieUrlApiParams.setPersistentcookie(loginParameters.getAutoLogin());
-                Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
-                if (createCookieResult.isSuccess()){
-                    result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
-
-                } else{
-                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-                    return result;
-                }
+                result=commonManager.createCookieUrl(result,passportId,scheme,loginParameters.getAutoLogin());
                 result.setDefaultModel("ru",loginParameters.getRu());
 
             } else {

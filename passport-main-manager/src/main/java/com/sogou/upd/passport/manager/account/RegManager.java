@@ -27,7 +27,7 @@ public interface RegManager {
    * @param regParams 参数封装的对象
    * @return Result格式的返回值，提示注册成功信息
    */
-  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception;
+  public Result webRegister(WebRegisterParameters regParams, String ip, String scheme) throws Exception;
 
   /**
    * 激活验证邮件

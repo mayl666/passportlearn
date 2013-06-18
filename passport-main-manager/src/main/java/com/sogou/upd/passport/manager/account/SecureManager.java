@@ -104,29 +104,29 @@ public interface SecureManager {
     /**
      * 修改密保邮箱——2.根据验证链接修改绑定邮箱
      *
-     * @param passportId
+     * @param userId
      * @param clientId
      * @param scode
      * @return
      * @throws Exception
      */
-    public Result modifyEmailByPassportId(String passportId, int clientId, String scode) throws Exception;
+    public Result modifyEmailByPassportId(String userId, int clientId, String scode) throws Exception;
 
     /**
      * 修改密保手机——1.检查原绑定手机短信码，成功则返回secureCode记录成功标志
      *
-     * @param passportId
+     * @param userId
      * @param clientId
      * @param smsCode
      * @return
      * @throws Exception
      */
-    public Result checkMobileCodeOldForBinding(String passportId, int clientId, String smsCode) throws Exception;
+    public Result checkMobileCodeOldForBinding(String userId, int clientId, String smsCode) throws Exception;
 
     /**
      * 绑定密保手机——2.首次绑定密保手机，验证密码、新绑定手机短信码，绑定新手机号
      *
-     * @param passportId
+     * @param userId
      * @param clientId
      * @param newMobile
      * @param smsCode
@@ -134,13 +134,13 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result bindMobileByPassportId(String passportId, int clientId, String newMobile,
+    public Result bindMobileByPassportId(String userId, int clientId, String newMobile,
                                          String smsCode, String password, String modifyIp) throws Exception;
 
     /**
      * 修改密保手机——2.修改密保手机，验证scode、新绑定手机短信码，绑定新手机号
      *
-     * @param passportId
+     * @param userId
      * @param clientId
      * @param newMobile 新绑定手机号
      * @param smsCode   新绑定手机号短信验证码
@@ -148,13 +148,13 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile,
+    public Result modifyMobileByPassportId(String userId, int clientId, String newMobile,
                                            String smsCode, String scode, String modifyIp) throws Exception;
 
     /**
      * 修改密保问题——验证密码，绑定新问题和答案
      *
-     * @param passportId
+     * @param userId
      * @param clientId
      * @param password
      * @param newQues
@@ -162,7 +162,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result modifyQuesByPassportId(String passportId, int clientId, String password,
+    public Result modifyQuesByPassportId(String userId, int clientId, String password,
                                          String newQues, String newAnswer, String modifyIp) throws Exception;
 
     /* ------------------------------------修改密保End------------------------------------ */

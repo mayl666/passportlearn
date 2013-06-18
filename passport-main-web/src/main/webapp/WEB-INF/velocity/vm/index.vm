@@ -92,8 +92,8 @@
         
     </body>
     <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=145240"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=116498"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=950532"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=978721"></script>
     <script type="text/javascript">
         
 require.config({

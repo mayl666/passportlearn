@@ -7,16 +7,30 @@
     <body ></body>
     <script type="text/javascript">
         
-        var data = eval( '(' + '${data}' + ')' );
+        var sdata = eval( '(' + '${data}' + ')' );
 
         (function(){
+            var xdurl = sdata.data.xd;
+            var status = sdata.status;
+            
+            var xdfunc = function(status){
+                location.href = xdurl + ( xdurl.indexOf('?') == -1 ? '?' : '&' ) + "status=" + status + "&needcaptcha=" + (+sdata.data.needCaptcha || 0);
+            };
 
-            var xdurl = data.data.xd;
-            var status = data.data.status;
+            window['rucallback'] = function(data){
+                xdfunc(data.status || -1);
+            };
+
+
 
             if( !+status ){
                 var iframe = document.createElement('iframe');
+                iframe.src = sdata.data.cookieUrl;
                 
+                document.body.appendChild(iframe);
+                
+            }else{
+                xdfunc(status);
             }
         
         })();

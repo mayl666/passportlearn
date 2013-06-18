@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=736350" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -28,9 +28,9 @@
     <div class="inner reg">
         <ul>
             
-            <li >首页</li>
+            <li class="current"><a href="/">首页</a></li>
             
-            <li class="current">账号安全</li>
+            <li ><a href="/web/security">账号安全</a></li>
             
         </ul>
     </div>
@@ -47,29 +47,29 @@
                     <p class="item my">
                         <span class="label">我的账号</span>
                         <span class="value"><{username}></span>
-                        <a href="#" class="btn medium-btn">修改密码</a>
+                        <a href="/web/security/password" class="btn medium-btn">修改密码</a>
                     </p>
                     <p class="item level">
                         <span class="label">安全级别</span>
                         <span class="value">
                             <span class="level-status"><b></b></span>
-                            <span href="#" class="level-num"><{score}>分</span>
+                            <span href="#" class="level-num"><{sec_score}>分</span>
                         </span>
                     </p>
                     <p>
                         <span class="label">最近一次登录时间：</span>
                         <span class="value"><{time.year}>年<{time.month}>月<{time.day}>日</span>
-                        <a href="#" class="btn medium-btn">查看记录</a>
+                        <a href="/web/security/history" class="btn medium-btn">查看记录</a>
                     </p>
                     <p>
                         <span class="label">密保邮箱：</span>
-                        <span class="value"><{secure_email}></span>
-                        <a href="#" class="btn medium-btn">修改</a>
+                        <span class="value"><{sec_email}></span>
+                        <a href="/web/security/email" class="btn medium-btn">修改</a>
                     </p>
                     <p>
                         <span class="label">绑定手机：</span>
-                        <span class="value"><{secure_phone}></span>
-                        <a href="#" class="btn medium-btn">修改</a>
+                        <span class="value"><{sec_mobile}></span>
+                        <a href="/web/security/mobile" class="btn medium-btn">修改</a>
                     </p>
                 </script>
                 
@@ -86,18 +86,18 @@
             <div class="ucenter-sidebar">
                 
                 
-                <span class="item"><a href="fdf">修改密码</a></span>
+                <span class="item"><a href="/web/security/password">修改密码</a></span>
                 
                 
-                <span class="item"><a href="fd">修改密保邮箱</a></span>
+                <span class="item"><a href="/web/security/email">修改密保邮箱</a></span>
                 
                 <p class="hr"></p>
                 
                 
-                <span class="item"><a href="fdsf">绑定手机</a></span>
+                <span class="item"><a href="/web/security/mobile">绑定手机</a></span>
                 
                 
-                <span class="item"><a href="">修改密保问题</a></span>
+                <span class="item"><a href="/web/security/question">修改密保问题</a></span>
                 
                 
             </div>

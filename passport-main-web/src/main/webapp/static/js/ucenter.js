@@ -15,7 +15,7 @@ define(['./common' , './tpl'] , function(common , ursa ){
         index: function(data){
             var tpl = $('#Target');
             var wrapper = tpl.parent();
-            var last_login_time = new Date(data.last_login_time);
+            var last_login_time = new Date(+data.last_login);
             data.time = {
                 year: last_login_time.getFullYear(),
                 month: last_login_time.getMonth()+1,
@@ -23,7 +23,7 @@ define(['./common' , './tpl'] , function(common , ursa ){
             };
 
             wrapper.html( ursa.render(tpl.html() , data));
-            wrapper.find('.level-status b').css( 'width' , data.score + '%' );
+            wrapper.find('.level-status b').css( 'width' , data.sec_score + '%' );
             
         }
 

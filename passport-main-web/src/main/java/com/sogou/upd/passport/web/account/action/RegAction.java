@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -104,7 +105,7 @@ public class RegAction extends BaseController {
    */
   @RequestMapping(value = "/reguser", method = RequestMethod.POST)
   @ResponseBody
-  public Object reguser(HttpServletRequest request, WebRegisterParameters regParams)
+  public Object reguser(HttpServletRequest request, WebRegisterParameters regParams,Model model)
       throws Exception {
     Result result = new APIResultSupport(false);
     //参数验证
@@ -135,7 +136,7 @@ public class RegAction extends BaseController {
       return result.toString();
     }
 
-    result = regManager.webRegister(regParams, ip);
+    result = regManager.webRegister(regParams, ip, request.getScheme());
 
     if(result.isSuccess()){
       //设置来源
@@ -147,7 +148,8 @@ public class RegAction extends BaseController {
       result.setDefaultModel("ru",ru);
     }
     operateTimesService.incRegTimes(ip,null);
-    return result.toString();
+    model.addAttribute("data",result.toString());
+    return "/login/api";
   }
 
   /**

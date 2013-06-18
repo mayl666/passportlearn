@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=736350" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -28,9 +28,9 @@
     <div class="inner reg">
         <ul>
             
-            <li >首页</li>
+            <li ><a href="">首页</a></li>
             
-            <li class="current">意见反馈</li>
+            <li ><a href="1">意见反馈</a></li>
             
         </ul>
     </div>
