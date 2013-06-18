@@ -262,7 +262,7 @@ public class SecureAction extends BaseController {
     }
 
 
-    @RequestMapping(value = "/sendsms", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/sendsms", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
     public Object sendSmsSecMobile(BaseWebParams params) throws Exception {
@@ -281,7 +281,7 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/sendsmsnew", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/sendsmsnew", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
     public Object sendSmsNewMobile(WebMobileParams params) throws Exception {
