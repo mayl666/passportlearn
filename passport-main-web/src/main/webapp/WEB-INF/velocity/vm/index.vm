@@ -96,6 +96,8 @@
     <script type="text/javascript" src="/./static/js/index.js?t=978721"></script>
     <script type="text/javascript">
         
+var server_data = '${data}';
+
 require.config({
     baseUrl:"/./static/js"
 });
