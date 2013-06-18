@@ -77,4 +77,13 @@ public class SHPPUrlConstant {
     //更新用户信息
     public static final String UPDATE_USER_INFO=BASE_INTERNAL_URL + "updateuser";
 
+     /*================================安全中心操作URL=======================================*/
+    // 修改密码
+    public static final String SOHU_RESETPWD_URL = "https://passport.sohu.com/web/updateInfo.action?modifyType=password";
+    // 修改密保邮箱
+    public static final String SOHU_BINDEMAIL_URL = "https://passport.sohu.com/web/requestModifyEmailAction.action";
+    // 修改密保手机
+    public static final String SOHU_BINDMOBILE_URL = "https://passport.sohu.com/web/requestBindMobileAction.action";
+    // 修改密保问题
+    public static final String SOHU_BINDQUES_URL = "https://passport.sohu.com/web/updateInfo.action?modifyType=question";
 }
