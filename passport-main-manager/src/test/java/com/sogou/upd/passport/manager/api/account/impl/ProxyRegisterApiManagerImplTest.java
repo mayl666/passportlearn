@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ProxyRegisterApiManagerImplTest extends BaseTest {
 
-    private static final String MOBILE = "18738963584";
+    private static final String MOBILE = "13520069535";
     private static final String USERID = "281168178@qq.com";
     private static final String PASSWORD = "111111";
 
