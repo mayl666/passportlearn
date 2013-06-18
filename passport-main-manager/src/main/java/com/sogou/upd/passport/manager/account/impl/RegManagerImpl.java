@@ -14,6 +14,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -64,11 +65,13 @@ public class RegManagerImpl implements RegManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private BindApiManager proxyBindApiManager;
+    @Autowired
+    private CommonManager commonManager;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
   @Override
-  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
+  public Result webRegister(WebRegisterParameters regParams, String ip, String scheme) throws Exception {
 
     Result result = new APIResultSupport(false);
     String username =null;
@@ -122,26 +125,7 @@ public class RegManagerImpl implements RegManager {
     }
     if (result.isSuccess()) {
       // 种sohu域cookie
-
-      CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-      //从返回结果中获取passportId,二期待优化
-      String passportIdTmp =  username;
-      if(ManagerHelper.isInvokeProxyApi(username)) {
-        passportIdTmp =  result.getModels().get("userid").toString();
-      } else{
-        Account account =  (Account)result.getDefaultModel();
-        passportIdTmp =  account.getPassportId();
-      }
-      createCookieUrlApiParams.setUserid(passportIdTmp);
-      createCookieUrlApiParams.setRu(regParams.getRu());
-
-      Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
-      if (createCookieResult.isSuccess()){
-        result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
-      } else{
-        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-        return result;
-      }
+      result=commonManager.createCookieUrl(result,username,scheme,1) ;
     } else {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     }
