@@ -1,6 +1,7 @@
 .two-col-r .col-r .reg-email{padding:14px 12px 20px;}
 .reg-email .step{ border-bottom:1px #f3f3f3 solid;padding-bottom:20px; }
 .reg-email .form{ padding-top:14px; }
-.tel-valid-btn{ display:block;width:182px;height:28px;line-height:28px;font-weight:700;color:#666;background:url(/./static/img/tel-valid-btn.png?t=311781) no-repeat 0 0;text-align:center;cursor:pointer; }
+.tel-valid-btn{ display:inline-block;*display:inline;*zoom:1;width:182px;height:28px;line-height:28px;font-weight:700;color:#666;background:url(/./static/img/tel-valid-btn.png?t=311781) no-repeat 0 0;text-align:center;cursor:pointer; }
 .tel-valid-btn-disable{ background-position:0 -32px; cursor:default; }
 .tel-valid-hr{display:block; width:182px;height:0px;overflow:hidden;border-top:1px #eaeaea dashed;position:relative;top:10px; }
+.form .tel-valid-error{ float:none;display:inline-block;*display:inline;*zoom:1;position:absolute;top:0;right:-295px;display:none;  }

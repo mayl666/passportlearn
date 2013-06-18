@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=476048" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -71,7 +71,8 @@
                     <div class="form-item">
     <label >&nbsp;</label>
     <span class="form-el form-el-none">
-        <span class="tel-valid-btn" >免费获取短信验证码</span>
+        <span class="tel-valid-btn" action="" >免费获取短信验证码</span>
+        <span class="tel-valid-error error"></span>
         <span class="tel-valid-hr" ></span>
     </span>
 </div>

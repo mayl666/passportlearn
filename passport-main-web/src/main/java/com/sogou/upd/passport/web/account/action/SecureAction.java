@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -47,6 +48,11 @@ import javax.servlet.http.HttpServletRequest;
 public class SecureAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
+
+    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
+    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
+    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
+    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
 
     @Autowired
     private CommonManager commonManager;
@@ -99,6 +105,10 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDEMAIL_URL;
+        }
+
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
@@ -124,6 +134,10 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
+        }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
@@ -152,6 +166,10 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDQUES_URL;
+        }
+
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
@@ -177,6 +195,10 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_RESETPWD_URL;
+        }
 
         result.setSuccess(true);
         String nickName = hostHolder.getNickName();
@@ -233,7 +255,13 @@ public class SecureAction extends BaseController {
             return result;
         }
 
-        resetParams.setPassport_id(hostHolder.getPassportId());
+        String userId = hostHolder.getPassportId();
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_RESETPWD_URL;
+        }
+
+        resetParams.setPassport_id(userId);
         String modifyIp = getIp(request);
         resetParams.setIp(modifyIp);
 
@@ -257,6 +285,11 @@ public class SecureAction extends BaseController {
         String password = params.getPassword();
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDEMAIL_URL;
+        }
+
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
         return result.toString();
     }
@@ -274,6 +307,10 @@ public class SecureAction extends BaseController {
         String userId = params.getUserid();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDEMAIL_URL;
+        }
 
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
         model.addAttribute("data", result.toString());
@@ -348,6 +385,10 @@ public class SecureAction extends BaseController {
             return result.toString();
         }
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
+        }
+
         result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
         return result.toString();
     }
@@ -370,6 +411,10 @@ public class SecureAction extends BaseController {
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
             return result.toString();
+        }
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
         }
 
         result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
@@ -399,6 +444,10 @@ public class SecureAction extends BaseController {
             return result.toString();
         }
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
+        }
+
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
         return result.toString();
     }
@@ -420,6 +469,10 @@ public class SecureAction extends BaseController {
         String newQues = params.getNew_ques();
         String newAnswer = params.getNew_answer();
         String modifyIp = getIp(request);
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDQUES_URL;
+        }
 
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
         return result.toString();

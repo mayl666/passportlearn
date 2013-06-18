@@ -30,7 +30,7 @@
             
             <li ><a href="">首页</a></li>
             
-            <li ><a href="1">找回密码</a></li>
+            <li ><a href="1">意见反馈</a></li>
             
         </ul>
     </div>
@@ -42,27 +42,9 @@
         <div class="title">
             提示信息
         </div>
-        <div  class="form">
-            <form method="post" id="" action="">
-                <script type="text/tpl" id="Target">
-                    <p class="ptitle">您正要找回的账户是 </p>
-                    <p class="type-title">请选择验证方式</p>
-                    <ul class="type-list">
-                        <% set names={email:"注册邮箱",vemail:"绑定邮箱",phone:"绑定手机",question:"通过密码提示问题找回"} %>
-                        
-                        <% for key,value in names %>
-                        <li>
-                            <span class="type">
-                                <{ value }><% if key != 'question' %>：<span class="name"><{ verify_type[key] }></span><%endif%>
-                            </span>
-                            <a href="/recover/<{key}>.ut" class="btn short-btn">去验证</a>
-                        </li>
-                        <% endfor %>
-                    </ul>
-                    
-                </script>
-            </form>
-        </div>
+            
+            404
+
     </div>
 </div>
 
@@ -88,8 +70,8 @@ require.config({
 });
 
 
-require(['recover'] , function(module){
-    module.init('type');
+require(['404'] , function(module){
+    module.init('');
 });
 
 
