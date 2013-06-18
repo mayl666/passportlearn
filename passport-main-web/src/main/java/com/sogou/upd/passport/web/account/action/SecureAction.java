@@ -304,14 +304,14 @@ public class SecureAction extends BaseController {
 
     @RequestMapping(value = "/bindmobile", method = RequestMethod.POST)
     @LoginRequired
-    public String bindMobile(WebBindMobileParams params, HttpServletRequest request, Model model) throws Exception {
+    @ResponseBody
+    public Object bindMobile(WebBindMobileParams params, HttpServletRequest request, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return result.toString();
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -322,29 +322,23 @@ public class SecureAction extends BaseController {
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
-            model.addAttribute("data", result.toString());
-            return "safe/tel"; // TODO:错误页面
+            return result.toString();
         }
 
         result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
-        model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return "safe/tel"; // TODO:成功页面
-        } else {
-            return "safe/tel"; // TODO:错误页面
-        }
+        return result.toString();
     }
 
     @RequestMapping(value = "/checksms", method = RequestMethod.POST)
     @LoginRequired
-    public String checkSmsSecMobile(WebSmsParams params, Model model) throws Exception {
+    @ResponseBody
+    public Object checkSmsSecMobile(WebSmsParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "safe/tel"; // TODO:错误页面
+            return result.toString();
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -352,29 +346,23 @@ public class SecureAction extends BaseController {
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
-            model.addAttribute("data", result.toString());
-            return "safe/tel"; // TODO:错误页面
+            return result.toString();
         }
 
         result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
-        model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return "safe/tel"; // TODO:成功页面
-        } else {
-            return "safe/tel"; // TODO:错误页面
-        }
+        return result.toString();
     }
 
     @RequestMapping(value = "bindmobilenew", method = RequestMethod.POST)
     @LoginRequired
-    public String modifyMobile(WebModifyMobileParams params, HttpServletRequest request, Model model) throws Exception {
+    @ResponseBody
+    public Object modifyMobile(WebModifyMobileParams params, HttpServletRequest request, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return result.toString();
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -385,29 +373,23 @@ public class SecureAction extends BaseController {
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
-            model.addAttribute("data", result.toString());
-            return "safe/tel"; // TODO:错误页面
+            return result.toString();
         }
 
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
-        model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return "safe/tel"; // TODO:成功页面
-        } else {
-            return "safe/tel"; // TODO:错误页面
-        }
+        return result.toString();
     }
 
     @RequestMapping(value = "/bindques", method = RequestMethod.POST)
     @LoginRequired
-    public String bindQues(WebBindQuesParams params, HttpServletRequest request, Model model) throws Exception {
+    @ResponseBody
+    public Object bindQues(WebBindQuesParams params, HttpServletRequest request, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "safe/question"; // TODO:错误页面
+            return result.toString();
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -417,11 +399,6 @@ public class SecureAction extends BaseController {
         String modifyIp = getIp(request);
 
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
-        model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return "safe/question"; // TODO:成功页面
-        } else {
-            return "safe/question"; // TODO:错误页面
-        }
+        return result.toString();
     }
 }

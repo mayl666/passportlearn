@@ -369,6 +369,7 @@ public class AccountServiceImpl implements AccountService {
             String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
             String captchaCodeCache = redisUtils.get(cacheKey);
             if (!Strings.isNullOrEmpty(captchaCodeCache) && captchaCodeCache.equalsIgnoreCase(captchaCode)) {
+                redisUtils.delete(cacheKey);
                 return true;
             }
             return false;
