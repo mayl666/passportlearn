@@ -37,8 +37,6 @@ import java.util.Map;
 public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
-
-    private static final String SOHU_LOGIN_INDEX_URL = "https://passport.sohu.com";
     private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
 
     @Autowired
@@ -132,11 +130,7 @@ public class LoginManagerImpl implements LoginManager {
             //设置来源
             String ru =  loginParameters.getRu();
             if(Strings.isNullOrEmpty(ru)){
-                if (AccountDomainEnum.SOHU.equals(accountDomainEnum)) {
-                    loginParameters.setRu(SOHU_LOGIN_INDEX_URL);
-                }else{
-                    loginParameters.setRu(scheme+LOGIN_INDEX_URLSTR);
-                }
+                loginParameters.setRu(scheme+LOGIN_INDEX_URLSTR);
             }
 
             //默认是sogou.com
