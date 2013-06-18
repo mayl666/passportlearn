@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -100,11 +101,11 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
 
     @Test
-    public void testBindEmail(){
+    public void testBindEmail() throws Exception {
         BindEmailApiParams bindEmailApiParams=new BindEmailApiParams();
         bindEmailApiParams.setNewbindemail("411541129@qq.com");
         bindEmailApiParams.setOldbindemail("34310327@qq.com");
-        bindEmailApiParams.setPassword(password);
+        bindEmailApiParams.setPassword(Coder.encryptMD5(password));
         bindEmailApiParams.setClient_id(clientId);
         bindEmailApiParams.setUserid(userid);
         bindEmailApiParams.setPwdtype(1);

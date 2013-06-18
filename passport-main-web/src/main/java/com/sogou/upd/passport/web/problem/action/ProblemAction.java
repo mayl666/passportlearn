@@ -45,7 +45,7 @@ public class ProblemAction extends BaseController {
 
 
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
-    public Object addProblem(HttpServletRequest request, Model model)
+    public String addProblem(HttpServletRequest request, Model model)
             throws Exception {
 
         //获取问题类型列表
@@ -53,7 +53,7 @@ public class ProblemAction extends BaseController {
         model.addAttribute("typeList", typeList);
         //TODO 获取并set验证码
 
-        return "/problem/addProblem";
+        return "feedback";
     }
 
     @RequestMapping(value = "/problem/saveProblem", method = RequestMethod.POST)

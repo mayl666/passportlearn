@@ -252,4 +252,69 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         return result;
     }
 
+    @Override
+    public boolean incLimitBindEmail(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDEMAILNUM + userId +
+                    "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean incLimitBindMobile(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDMOBILENUM + userId +
+                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean incLimitBindQues(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDQUESNUM + userId +
+                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDEMAILNUM + userId +
+                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    public boolean checkLimitBindMobile(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDMOBILENUM + userId +
+                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    public boolean checkLimitBindQues(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDQUESNUM + userId +
+                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
+        } catch (Exception e) {
+            return true;
+        }
+    }
 }
