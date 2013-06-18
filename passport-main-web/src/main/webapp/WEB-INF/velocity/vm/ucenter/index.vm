@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=476048" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -63,13 +63,13 @@
                     </p>
                     <p>
                         <span class="label">密保邮箱：</span>
-                        <span class="value"><{sec_email}></span>
-                        <a href="/web/security/email" class="btn medium-btn">修改</a>
+                        <span class="value"><{sec_email?sec_email:'未绑定'}></span>
+                        <a href="/web/security/email" class="btn medium-btn"><{sec_email?'修改':'绑定'}></a>
                     </p>
                     <p>
                         <span class="label">绑定手机：</span>
-                        <span class="value"><{sec_mobile}></span>
-                        <a href="/web/security/mobile" class="btn medium-btn">修改</a>
+                        <span class="value"><{sec_mobile?sec_mobile:'未绑定'}></span>
+                        <a href="/web/security/mobile" class="btn medium-btn"><{sec_mobile?'修改':'绑定'}></a>
                     </p>
                 </script>
                 

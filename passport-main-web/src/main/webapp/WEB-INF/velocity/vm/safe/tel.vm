@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=476048" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -94,13 +94,14 @@
                             <div class="form-item">
     <label >&nbsp;</label>
     <span class="form-el form-el-none">
-        <span class="tel-valid-btn" >免费获取短信验证码</span>
+        <span class="tel-valid-btn" action="/web/security/sendsmsnew" >免费获取短信验证码</span>
+        <span class="tel-valid-error error"></span>
         <span class="tel-valid-hr" ></span>
     </span>
 </div>
                             <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
                             <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
@@ -119,24 +120,19 @@
     </div>
 </div>
 <script type="text/tpl" id="Target2">
-    <form method="post" id="RebindStep1" action="" class="form2">
+    <form method="post" id="RebindStep1" action="/web/security/checksms" class="form2">
         
-        <div class="form-item">
-    <label for="CellphoneIpt">手机号：</label>
-    <span class="form-el">
-        <input uui-type="require cellphone" type="text" name="cellphone" id="CellphoneIpt" value="" />
-    </span>
-</div>
         <div class="form-item">
     <label >&nbsp;</label>
     <span class="form-el form-el-none">
-        <span class="tel-valid-btn" >免费获取短信验证码</span>
+        <span class="tel-valid-btn" action="/web/security/sendsms" >免费获取短信验证码</span>
+        <span class="tel-valid-error error"></span>
         <span class="tel-valid-hr" ></span>
     </span>
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">下一步</button>
@@ -145,28 +141,30 @@
     
 </script>
 <script type="text/tpl" id="Target3">
-    <form method="post" id="RebindStep2" action="" class="form2">
+    <form method="post" id="RebindStep2" action="/web/security/bindmobilenew" class="form2">
         
         <div class="form-item">
-    <label for="CellphoneIpt">新手机号：</label>
+    <label for="New_mobileIpt">新手机号：</label>
     <span class="form-el">
-        <input uui-type="require cellphone" type="text" name="cellphone" id="CellphoneIpt" value="" />
+        <input uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" />
     </span>
 </div>
         <div class="form-item">
     <label >&nbsp;</label>
     <span class="form-el form-el-none">
-        <span class="tel-valid-btn" >免费获取短信验证码</span>
+        <span class="tel-valid-btn" action="/web/security/sendsmsnew" >免费获取短信验证码</span>
+        <span class="tel-valid-error error"></span>
         <span class="tel-valid-hr" ></span>
     </span>
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">确定</button>
 </div>
+        <input type="hidden" name="scode" value="<{scode}>" />
     </form>
     
 </script>
