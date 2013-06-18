@@ -1,8 +1,9 @@
 package com.sogou.upd.passport.web.account.screen;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.web.BaseController;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,9 +68,16 @@ public class AccountWeb extends BaseController {
   web登录页跳转
 */
   @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
-  public String login(HttpServletRequest request)
+  public String login(HttpServletRequest request,Model model)
       throws Exception {
-
+      //连接来源
+      String ru = request.getParameter("ru");
+      if (!Strings.isNullOrEmpty(ru)){
+          Result result = new APIResultSupport(false);
+          result.setDefaultModel("ru",ru);
+          result.setSuccess(true);
+          model.addAttribute("data",result.toString());
+      }
     return "index";
   }
     /*
