@@ -48,8 +48,12 @@
             <mvc:mapping path="/**"/>      <!-- 打印请求响应时间 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
         </mvc:interceptor>
+        <mvc:interceptor>       
+            <mvc:mapping path="/**"/>
+            <bean class="com.sogou.upd.passport.web.inteceptor.SchemeInteceptor"/>
+        </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>        <!-- 设置登录后的用户信息 -->
+            <mvc:mapping path="/**"/>       <!-- 设置登录后的用户信息 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>

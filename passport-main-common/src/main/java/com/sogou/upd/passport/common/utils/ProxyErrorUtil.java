@@ -60,7 +60,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.13", ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED); //激活链接已失效
 
         //mobilecaptcha 手机号验证码注册接口
-        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.3", ERR_CODE_ACCOUNT_CANTSENTSMS); //发送短信验证码次数超限
+        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.3", SYSTEM_UNKNOWN_EXCEPTION); //系统错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.4", ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.5", ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.6", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
@@ -82,7 +82,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.5", SYSTEM_UNKNOWN_EXCEPTION);//系统错误
 
         //sendcaptcha 发送手机验证码
-        SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.3", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定帐号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.3", ERR_CODE_ACCOUNT_CANTSENTSMS);//发送短信验证码次数超限
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.5", ERR_CODE_ACCOUNT_PHONE_BINDED);//手机号已经绑定了其他账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.6", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号没有绑定账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.7", ERR_CODE_PHONE_UNBIND_FAILED);//手机号没有绑定账号

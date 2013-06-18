@@ -31,7 +31,7 @@
     
     var PassportSC = window['PassportSC'] || {};
     
-    PassportSC._passhtml = '<form method="post" action="http://account.sogou.com/web/login" target="_PassportIframe">'
+    PassportSC._passhtml = '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
         +'<input type="hidden" name="username" value="<%=username%>">'
         +'<input type="hidden" name="password" value="<%=password%>">'
         +'<input type="hidden" name="captcha" value="<%=vcode%>">'
@@ -39,7 +39,7 @@
         +'<input type="hidden" name="client_id" value="<%=appid%>">'
         +'<input type="hidden" name="xd" value="<%=redirectUrl%>">'
         +'</form>'
-        +'<iframe id="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
+        +'<iframe id="_PassportIframe" name="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
 
     PassportSC._logincb = function(data){
         if( !+data.status ){

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=913865" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=079157" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -35,7 +35,7 @@
                                 <a href="#">看不清，换一张</a>
                             </p>
                             <p class="func">
-                                <label>
+                                <label for="RemChb">
                                     <input type="checkbox" name="autoLogin" value="1" id="RemChb" checked data-target="RemChbSpan"/>
                                     <span class="checkbox checkbox-checked" id="RemChbSpan" ></span>
                                     记住登录状态
@@ -98,8 +98,8 @@
         
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=950532"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=032708"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=706415"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=700548"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';
