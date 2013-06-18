@@ -1668,6 +1668,7 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
 
             $('.form .binded a').click(function(){
                 wrapper.html( ursa.render( $('#Target2').html() , {} ) );
+                form.render($('.main-content .form form') );
                 return false;
             });
         },
