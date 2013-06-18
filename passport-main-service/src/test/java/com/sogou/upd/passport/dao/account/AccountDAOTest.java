@@ -26,7 +26,7 @@ public class AccountDAOTest extends BaseDAOTest {
         account.setPassportId(PASSPORT_ID);
         account.setMobile(MOBILE);
         try {
-            account.setPasswd(PwdGenerator.generatorPwdSign(PASSWORD));
+            account.setPasswd(PwdGenerator.generatorStoredPwd(PASSWORD,true));
         } catch (Exception e) {
             e.printStackTrace();
         }

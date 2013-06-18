@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=736350" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -28,7 +28,7 @@
     <div class="inner reg">
         <ul>
             
-            <li class="current">搜狗通行证注册</li>
+            <li ><a href="1">搜狗通行证注册</a></li>
             
         </ul>
     </div>
@@ -77,7 +77,7 @@
 </div>
                     <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>

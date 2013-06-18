@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=736350" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -28,9 +28,9 @@
     <div class="inner reg">
         <ul>
             
-            <li >首页</li>
+            <li ><a href="/">首页</a></li>
             
-            <li class="current">账号安全</li>
+            <li class="current"><a href="/web/security">账号安全</a></li>
             
         </ul>
     </div>
@@ -83,12 +83,12 @@
                             
                         <% else %><#未绑定#>
                             
-                        <form method="post" id="" action="" class="form2">
+                        <form method="post" id="" action="/web/security/bindmobile" class="form2">
                             
                             <div class="form-item">
-    <label for="CellphoneIpt">手机号：</label>
+    <label for="New_mobileIpt">手机号：</label>
     <span class="form-el">
-        <input uui-type="require cellphone" type="text" name="cellphone" id="CellphoneIpt" value="" />
+        <input uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" />
     </span>
 </div>
                             <div class="form-item">
@@ -100,12 +100,12 @@
 </div>
                             <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
                             <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
     <span class="form-el">
-        <input uui-type="require password" type="text" name="password" id="PasswordIpt" value="" />
+        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" />
     </span>
 </div>
                             <div class="form-btn">
@@ -136,7 +136,7 @@
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">下一步</button>
@@ -162,7 +162,7 @@
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">确定</button>
