@@ -97,7 +97,7 @@
         </div>
         
     </body>
-    <script type="text/javascript" src="/./static/js/ursa.js?t=346533"></script>
+    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=950532"></script>
     <script type="text/javascript" src="/./static/js/index.js?t=005436"></script>
     <script type="text/javascript">

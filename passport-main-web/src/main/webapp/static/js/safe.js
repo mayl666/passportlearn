@@ -848,7 +848,7 @@ define('conf',[],function(){
 
 
     return{
-        client_id:"@client_id@",
+        client_id:"1120",
         redirectUrl: "/static/api/jump.htm"
     };
 });
@@ -1749,7 +1749,10 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
 
     var formsuccess = {
         email: function($el){
-            console.log($el)
+            var mailIpt = $el.find('input[name="new_email"]');
+            $el.parent().html( ursa.render($('#Target3').html() , {
+                sec_email: mailIpt.val()
+            }) );
         }
     };
 
