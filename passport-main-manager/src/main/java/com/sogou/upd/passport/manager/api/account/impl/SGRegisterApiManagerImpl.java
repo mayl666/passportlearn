@@ -67,6 +67,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
               result.setSuccess(true);
               result.setDefaultModel("userid", account.getPassportId());
               result.setMessage("注册成功！");
+              result.setDefaultModel(true);
             } else {
               result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
@@ -76,6 +77,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             if (isSendSuccess) {
               result.setSuccess(true);
               result.setMessage("感谢注册，请立即激活账户！");
+              result.setDefaultModel(false);
             } else {
               result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
@@ -103,8 +105,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
           String captcha = regParams.getCaptcha();
           //验证手机号码与验证码是否匹配
-          boolean checkSmsInfo = mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
-          if (!checkSmsInfo) {
+          result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
+          if (!result.isSuccess()) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             return result;
           }
@@ -115,6 +117,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             result.setSuccess(true);
             result.setDefaultModel("userid", account.getPassportId());
             result.setMessage("注册成功！");
+            result.setDefaultModel(true);
           } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
           }
@@ -135,14 +138,14 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
         if (!Strings.isNullOrEmpty(passportId)) {
           result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+          return result;
         }
-        return result;
       } else {
         Account account = accountService.queryAccountByPassportId(username);
         if (account != null) {
           result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+          return result;
         }
-        return result;
       }
     } catch (ServiceException e) {
       logger.error("Check account is exists Exception, username:" + username, e);
