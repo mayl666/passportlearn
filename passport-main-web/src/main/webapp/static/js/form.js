@@ -98,6 +98,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
 
     return{
         render: function($el , config){
+            config = config || {};
             $el.uuiForm({
                 type:'blur',
                 onfocus: function($el){
@@ -130,7 +131,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                             
                             if( !+data.status ){
                                 $el.find('.form-success').show().find('span').html('提交成功');
-                                config.onsuccess && config.onsuccess($el);
+                                config.onsuccess && config.onsuccess($el , data);
                             }else{
                                 $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
                                 config.onfailure && config.onfailure($el);
@@ -159,36 +160,48 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
 
             $('.tel-valid-btn').click(function(){
                 if(status)return;
+                $('.main-content .form form').find('.tel-valid-error').hide();
 
                 var usernameIpt = $('.main-content .form form input[name="'+ ( iptname?iptname: 'username' ) +'"]');
-                var errorSpan = usernameIpt.parent().find('.error');
-                if( !$.trim(usernameIpt.val()).length ){
-                    usernameIpt.blur();
-                    return;
+                if( usernameIpt && usernameIpt.length ){
+                    var errorSpan = usernameIpt.parent().find('.error');
+                    if( !$.trim(usernameIpt.val()).length ){
+                        usernameIpt.blur();
+                        return;
+                    }
+                    if( errorSpan.length && errorSpan.css('display') != 'none' )
+                        return;
                 }
-                if( errorSpan.length && errorSpan.css('display') != 'none' )
-                    return;
-
                 status = true;
                 var el = $(this);
                 oldText = el.html();
                 el.html(timeout + text);
                 el.addClass('tel-valid-btn-disable');
-                
-                $.get('/mobile/sendsms' , {
+
+                var url = el.attr('action') || '/mobile/sendsms';
+                $.get(url , {
                     mobile: usernameIpt.val(),
+                    new_mobile: usernameIpt.val(),
                     client_id: conf.client_id
                 } , function(data){
-                    
+                    data = utils.parseResponse(data);
+                    if( +data.status ){
+                        $('.main-content .form form').find('.tel-valid-error').show().html(data.statusText? data.statusText : '系统错误');;
+                        resetBtn();
+                    }
+                        
                 });
 
+                function resetBtn(){
+                    el.html(oldText);
+                    clearInterval(tm);
+                    status = false;
+                    timeout = oldtimeout;
+                    el.removeClass('tel-valid-btn-disable');
+                }
                 tm=setInterval(function(){
                     if( !--timeout  ){
-                        el.html(oldText);
-                        clearInterval(tm);
-                        status = false;
-                        timeout = oldtimeout;
-                        el.removeClass('tel-valid-btn-disable');
+                        resetBtn();
                     }else{
                         el.html(timeout + text);
 
@@ -197,6 +210,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 } , 1000);
             });
 
+        },
+        showFormError: function(text){
+            $('.main-content .form form').find('.form-error').show().find('span').html(text);;
         }
     };
 });

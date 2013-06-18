@@ -740,6 +740,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
 
     return{
         render: function($el , config){
+            config = config || {};
             $el.uuiForm({
                 type:'blur',
                 onfocus: function($el){
@@ -772,7 +773,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
                             
                             if( !+data.status ){
                                 $el.find('.form-success').show().find('span').html('提交成功');
-                                config.onsuccess && config.onsuccess($el);
+                                config.onsuccess && config.onsuccess($el , data);
                             }else{
                                 $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
                                 config.onfailure && config.onfailure($el);
@@ -801,36 +802,48 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
 
             $('.tel-valid-btn').click(function(){
                 if(status)return;
+                $('.main-content .form form').find('.tel-valid-error').hide();
 
                 var usernameIpt = $('.main-content .form form input[name="'+ ( iptname?iptname: 'username' ) +'"]');
-                var errorSpan = usernameIpt.parent().find('.error');
-                if( !$.trim(usernameIpt.val()).length ){
-                    usernameIpt.blur();
-                    return;
+                if( usernameIpt && usernameIpt.length ){
+                    var errorSpan = usernameIpt.parent().find('.error');
+                    if( !$.trim(usernameIpt.val()).length ){
+                        usernameIpt.blur();
+                        return;
+                    }
+                    if( errorSpan.length && errorSpan.css('display') != 'none' )
+                        return;
                 }
-                if( errorSpan.length && errorSpan.css('display') != 'none' )
-                    return;
-
                 status = true;
                 var el = $(this);
                 oldText = el.html();
                 el.html(timeout + text);
                 el.addClass('tel-valid-btn-disable');
-                
-                $.get('/mobile/sendsms' , {
+
+                var url = el.attr('action') || '/mobile/sendsms';
+                $.get(url , {
                     mobile: usernameIpt.val(),
+                    new_mobile: usernameIpt.val(),
                     client_id: conf.client_id
                 } , function(data){
-                    
+                    data = utils.parseResponse(data);
+                    if( +data.status ){
+                        $('.main-content .form form').find('.tel-valid-error').show().html(data.statusText? data.statusText : '系统错误');;
+                        resetBtn();
+                    }
+                        
                 });
 
+                function resetBtn(){
+                    el.html(oldText);
+                    clearInterval(tm);
+                    status = false;
+                    timeout = oldtimeout;
+                    el.removeClass('tel-valid-btn-disable');
+                }
                 tm=setInterval(function(){
                     if( !--timeout  ){
-                        el.html(oldText);
-                        clearInterval(tm);
-                        status = false;
-                        timeout = oldtimeout;
-                        el.removeClass('tel-valid-btn-disable');
+                        resetBtn();
                     }else{
                         el.html(timeout + text);
 
@@ -839,6 +852,9 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
                 } , 1000);
             });
 
+        },
+        showFormError: function(text){
+            $('.main-content .form form').find('.form-error').show().find('span').html(text);;
         }
     };
 });
@@ -887,16 +903,27 @@ define('reg',['./common','./form' , './conf' , './utils'] , function(common , fo
     };
 
 
-    var bindFormEvent = function(){
+    var bindFormEvent = function(type){
         var $el = $('.main-content .form form');
 
         form.render($el ,{
             onbeforesubmit: function(){
                 checkUsername($el,function(status) {
                     if( !status ){
+                        
+                        var isdescchecked = $el.find('.form-desc input').prop('checked');
+                        if( !isdescchecked ){
+                            form.showFormError('请阅读协议');
+                            return;
+                        }
+                        
                         $.post($el.attr('action'), $el.serialize() , function(data){
                             data = utils.parseResponse(data);
-                            alert(data.statusText)
+                            if( !+data.status ){
+                                formsuccess[type] && formsuccess[type]($el,data);
+                            }else{
+                                form.showFormError(data.statusText);
+                            }
                         });
                     }
                     return false;
@@ -905,7 +932,7 @@ define('reg',['./common','./form' , './conf' , './utils'] , function(common , fo
         });
         $el.append('<input type="hidden" name="ru" value="" class="ru"/>');
 
-        $el.find('input[name=username]').blur(function(){
+        $el.find('input[name=username]').change(function(){
             var errorspan = $(this).parent().parent().find('.error');
             if( !errorspan || !errorspan.length || errorspan.css('display') == 'none' ){
                 checkUsername($el );
@@ -915,11 +942,19 @@ define('reg',['./common','./form' , './conf' , './utils'] , function(common , fo
     };
 
 
+    var formsuccess = {
+        nick: function($el,data){
+            if( data.data.ru ){
+                location.href = data.data.ru;
+            }
+        }
+    };
+
     return{
-        init: function(){
+        init: function(type){
             common.showBannerUnderLine();
 
-            bindFormEvent();
+            bindFormEvent(type);
 
             form.initTel();
         }

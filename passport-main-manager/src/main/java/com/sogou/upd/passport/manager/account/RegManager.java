@@ -8,8 +8,9 @@ import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import java.util.Map;
 
 /**
- * 注册管理 User: mayan Date: 13-4-15 Time: 下午4:43 To change this template use File | Settings | File
- * Templates.
+ * 注册管理
+ * User: mayan
+ * Date: 13-4-15 Time: 下午4:43
  */
 public interface RegManager {
 
@@ -46,5 +47,5 @@ public interface RegManager {
    *
    * @return 验证码
    */
-  public Result isAccountExists(String username,boolean type) throws Exception;
+  public Result isAccountNotExists(String username,boolean type) throws Exception;
 }

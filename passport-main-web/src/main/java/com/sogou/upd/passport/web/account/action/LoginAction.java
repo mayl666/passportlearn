@@ -1,10 +1,13 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -19,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *  User: mayan
@@ -60,14 +64,14 @@ public class LoginAction extends BaseController {
 
     /**
      * web页面退出
-     *
-     * @param loginParams 传入的参数
      */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ModelAndView logout(HttpServletRequest request,Model model, WebLoginParameters loginParams)
+    public ModelAndView logout(HttpServletRequest request,HttpServletResponse response)
             throws Exception {
         String redirectUrl = "";
-        return new ModelAndView(new RedirectView(redirectUrl));
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+        return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
     }
 
 }

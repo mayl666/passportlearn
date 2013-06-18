@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=033335" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=476048" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -83,9 +83,21 @@
     <span class="form-select">
         <select name="quesiton">
             
-            <option value="2">小学老师</option>
+            <option value="8">您就读的幼儿园名称</option>
             
-            <option value="1">就读幼儿园</option>
+            <option value="7">您就读的小学名称</option>
+            
+            <option value="6">您就读的中学名称</option>
+            
+            <option value="5">您父亲的生日</option>
+            
+            <option value="4">您母亲的生日</option>
+            
+            <option value="3">您配偶的生日</option>
+            
+            <option value="2">您孩子的生日</option>
+            
+            <option value="1">您的结婚纪念日</option>
             
             <option value="0">我自己编写</option>
             

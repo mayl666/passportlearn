@@ -119,6 +119,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
     //TODO 手机绑定次数超限
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT = "20236";
+
     //TODO 手机解除绑定失败
     public static final String ERR_CODE_PHONE_UNBIND_FAILED = "20237";
     //TODO 密码输入错误次数过多
@@ -131,6 +132,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER = "20241";
     //TODO sohu内部接口使用，以后删除，手机app校验第三方登录的token失败
     public static final String ERR_CODE_APPCONNECT_TOKEN_ERROR = "20242";
+
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -282,7 +284,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信验证码已经达到上限啦");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "今天的短信已经到20条上限啦");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "手机短信发送频率超过限制");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
@@ -341,6 +343,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT, "修改密码频率过于频繁");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY, "用户5日内登录过");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
+
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");

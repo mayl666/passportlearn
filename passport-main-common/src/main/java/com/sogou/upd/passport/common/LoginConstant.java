@@ -11,6 +11,12 @@ public class LoginConstant {
     //nginx module验证完cookie之后会将用户的userid放在header中，这个是key
     public static final String USER_ID_HEADER="X-SohuPassport-UserId";
 
+    //用户登陆的信息
+    public static final String COOKIE_PPINF="ppinf";
+
+    //PPINF 的数字签名
+    public static final String COOKIE_PPRDIG ="pprdig";
+
 
     /**
      * 连续登陆失败多少次需要用户在登陆时输入验证码 >=
