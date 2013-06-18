@@ -17,6 +17,12 @@ define('common',[],function(){
                 $('.banner .underline').css('left' , currentBanner.position().left)
                     .css('width' , currentBanner.css('width'));
             }
+        },
+        parseHeader: function(data){
+            $('#Header .username').html(data.username);
+            if( data.username ){
+                $('#Header .logout').show().prev().show();
+            }
         }
     };
 });
@@ -52,6 +58,12 @@ define('utils',[], function(){
                 }
             }
             return data;
+        },
+        addIframe: function(url){
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            
+            document.body.appendChild(iframe);
         }
     };
 

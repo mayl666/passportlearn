@@ -60,6 +60,12 @@ define('utils',[], function(){
                 }
             }
             return data;
+        },
+        addIframe: function(url){
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            
+            document.body.appendChild(iframe);
         }
     };
 

@@ -17,6 +17,12 @@ define('common',[],function(){
                 $('.banner .underline').css('left' , currentBanner.position().left)
                     .css('width' , currentBanner.css('width'));
             }
+        },
+        parseHeader: function(data){
+            $('#Header .username').html(data.username);
+            if( data.username ){
+                $('#Header .logout').show().prev().show();
+            }
         }
     };
 });
@@ -839,6 +845,12 @@ define('utils',[], function(){
                 }
             }
             return data;
+        },
+        addIframe: function(url){
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            
+            document.body.appendChild(iframe);
         }
     };
 
@@ -1658,7 +1670,7 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
 
     var pagefunc = {
         common: function(data){
-            $('#Header .username').html(data.username);
+            common.parseHeader(data);
         },
         index: function(data){
             var tpl = $('#Target');
@@ -1669,6 +1681,15 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
                 month: last_login_time.getMonth()+1,
                 day: last_login_time.getDate()
             };
+            if( +data.sec_score<25 ){
+                data.sec_score_desc = '极低，强烈建议设置密保措施';
+            }else if( +data.sec_score<50 ){
+                data.sec_score_desc = '较低，建议设置多个密保措施';
+            }else if( +data.sec_score<75 ){
+                data.sec_score_desc = '适中，可以设置多个密保措施';
+            }else{
+                data.sec_score_desc = '较高，已设置多个密保措施';
+            }
 
             wrapper.html( ursa.render(tpl.html() , data));
             wrapper.find('.level-status b').css( 'width' , data.sec_score + '%' );

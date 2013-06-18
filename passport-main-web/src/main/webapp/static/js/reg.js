@@ -17,6 +17,12 @@ define('common',[],function(){
                 $('.banner .underline').css('left' , currentBanner.position().left)
                     .css('width' , currentBanner.css('width'));
             }
+        },
+        parseHeader: function(data){
+            $('#Header .username').html(data.username);
+            if( data.username ){
+                $('#Header .logout').show().prev().show();
+            }
         }
     };
 });
@@ -52,6 +58,12 @@ define('utils',[], function(){
                 }
             }
             return data;
+        },
+        addIframe: function(url){
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            
+            document.body.appendChild(iframe);
         }
     };
 
@@ -943,10 +955,28 @@ define('reg',['./common','./form' , './conf' , './utils'] , function(common , fo
 
 
     var formsuccess = {
+        common: function($el,data){
+            var ru = data.data.ru;
+            window['rucallback'] = function(data){
+                if( !+data.status ){
+                    if( ru ){
+                        location.href = ru;
+                    }
+                }else{
+                    alert('系统错误');
+                }
+            };
+            utils.addIframe(data.data.cookieUrl);
+
+        },
         nick: function($el,data){
-            if( data.data.ru ){
-                location.href = data.data.ru;
-            }
+            formsuccess.common($el,data);
+        },
+        tel: function($el,data){
+            formsuccess.common($el,data);
+        },
+        email:function(){
+            
         }
     };
 
