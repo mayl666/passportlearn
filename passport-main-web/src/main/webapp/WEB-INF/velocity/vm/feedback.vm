@@ -43,7 +43,7 @@
             提示信息
         </div>
         <div  class="form">
-            <form method="post" id="" action="/web/problem/saveProblem">
+            <form method="post" id="" action="">
                 <p class="ptitle">请您对我们的产品提出宝贵意见和建议，您留下的每个意见都是我们产品改进的动力！</p>
                 
                 <div class="form-item">
