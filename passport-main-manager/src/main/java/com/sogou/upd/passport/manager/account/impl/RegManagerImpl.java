@@ -125,7 +125,7 @@ public class RegManagerImpl implements RegManager {
     }
     if (result.isSuccess()) {
       //判断是否是外域邮箱注册
-      Object obj= result.getDefaultModel();
+      Object obj= result.getModels().get("isSetCookie");
       if(obj !=null && (obj instanceof Boolean) && (boolean)obj){
         // 种sohu域cookie
         result=commonManager.createCookieUrl(result,username,scheme,1) ;
