@@ -35,6 +35,11 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = "SP.PASSPORTID:EMAILSCODE_"; // passportId与email中scode的映射
     public static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = "SP.PASSPORTID:SENDEMAILNUM_"; // passportId与email发送次数的映射
 
+    /*================绑定密保限制相关缓存常量=====================*/
+    public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_";
+    public static final String CACHE_PREFIX_PASSPORTID_BINDMOBILENUM = "SP.PASSPORTID:BINDMOBILENUM_";
+    public static final String CACHE_PREFIX_PASSPORTID_BINDQUESNUM = "SP.PASSPORTID:BINDQUESNUM_";
+
   /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
     public static final String CACHE_PREFIX_OPENID_CONNECTRELATION = "SP.OPENID:CONNECTRELATION_";  // openid+provider与ConnectRelation的映射

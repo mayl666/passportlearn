@@ -185,6 +185,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_USER_ID_EXIST = "20294";
     // 手机用户不允许此操作
     public static final String ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED = "20295";
+    // 今日绑定次数已超过10次
+    public static final String ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED = "20296";
 
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */

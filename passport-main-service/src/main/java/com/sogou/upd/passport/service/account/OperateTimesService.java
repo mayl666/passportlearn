@@ -93,4 +93,15 @@ public interface OperateTimesService {
      */
     public boolean checkAddProblemInBlackList(String passportId,String ip) throws ServiceException;
 
+    public boolean incLimitBindEmail(String userId, int clientId) throws ServiceException;
+
+    public boolean incLimitBindMobile(String userId, int clientId) throws ServiceException;
+
+    public boolean incLimitBindQues(String userId, int clientId) throws ServiceException;
+
+    public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException;
+
+    public boolean checkLimitBindMobile(String userId, int clientId) throws ServiceException;
+
+    public boolean checkLimitBindQues(String userId, int clientId) throws ServiceException;
 }

@@ -323,15 +323,15 @@ public class SecureAction extends BaseController {
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
             model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return "safe/tel"; // TODO:错误页面
         }
 
         result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
-            return ""; // TODO:成功页面
+            return "safe/tel"; // TODO:成功页面
         } else {
-            return ""; // TODO:错误页面
+            return "safe/tel"; // TODO:错误页面
         }
     }
 
@@ -344,7 +344,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return "safe/tel"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -353,15 +353,15 @@ public class SecureAction extends BaseController {
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
             model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return "safe/tel"; // TODO:错误页面
         }
 
         result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
-            return ""; // TODO:成功页面
+            return "safe/tel"; // TODO:成功页面
         } else {
-            return ""; // TODO:错误页面
+            return "safe/tel"; // TODO:错误页面
         }
     }
 
@@ -386,15 +386,15 @@ public class SecureAction extends BaseController {
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
             model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return "safe/tel"; // TODO:错误页面
         }
 
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
-            return ""; // TODO:成功页面
+            return "safe/tel"; // TODO:成功页面
         } else {
-            return ""; // TODO:错误页面
+            return "safe/tel"; // TODO:错误页面
         }
     }
 
@@ -407,7 +407,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return "safe/question"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -419,9 +419,9 @@ public class SecureAction extends BaseController {
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
-            return ""; // TODO:成功页面
+            return "safe/question"; // TODO:成功页面
         } else {
-            return ""; // TODO:错误页面
+            return "safe/question"; // TODO:错误页面
         }
     }
 }
