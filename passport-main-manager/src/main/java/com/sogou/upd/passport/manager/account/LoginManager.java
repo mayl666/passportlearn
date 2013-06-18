@@ -9,7 +9,6 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
  * User: mayan
  * Date: 13-4-15
  * Time: 下午4:33
- * To change this template use File | Settings | File Templates.
  */
 public interface LoginManager {
 
