@@ -254,7 +254,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             //清除验证码的缓存
             deleteSmsCache(mobile, clientId);
             result.setSuccess(true);
-            result.setMessage("短信随机码验证成功！");
+//            result.setMessage("短信随机码验证成功！");
             return result;
         } catch (Exception e) {
             logger.error("[SMS] service method check sms code error.{}", e);

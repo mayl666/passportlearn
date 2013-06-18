@@ -32,7 +32,7 @@ public interface BindApiManager {
      * @param baseMoblieApiParams
      * @return
      */
-    Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams);
+    Result getPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams);
 
     /**
      * 发送验证码相关接口
