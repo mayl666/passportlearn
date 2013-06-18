@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.model.problem.Problem;
 import com.sogou.upd.passport.model.problem.ProblemType;
+import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.problem.ProblemService;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
@@ -37,6 +38,9 @@ public class ProblemManagerImpl implements ProblemManager {
     private ProblemService problemService;
     @Autowired
     private OperateTimesService operateTimesService;
+    @Autowired
+    private AccountService accountService;
+
     @Override
     public Result updateStatusById(long id, int status) throws Exception {
         Result result = new APIResultSupport(false);
@@ -69,6 +73,10 @@ public class ProblemManagerImpl implements ProblemManager {
     public Result insertProblem(WebAddProblemParameters addProblemParams, String ip) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            if(!checkCaptcha(addProblemParams.getCaptcha(),addProblemParams.getToken())){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE);
+                return result;
+            }
             //提交反馈次数检查
             if(operateTimesService.checkAddProblemInBlackList(addProblemParams.getPassportId(),ip)){
                 result.setCode(ErrorUtil.ERR_CODE_PROBLEM_ADDTIMES_LIMITED);
@@ -82,7 +90,7 @@ public class ProblemManagerImpl implements ProblemManager {
             problem.setTitle(addProblemParams.getTitile());
             problem.setEmail(addProblemParams.getEmail());
             problem.setContent(addProblemParams.getContent());
-            problem.setTypeId(addProblemParams.getTypeId());
+            problem.setTypeId(Integer.parseInt(addProblemParams.getTypeId()));
             problem.setSubTime(new Date());
             int count = problemService.insertProblem(problem);
             if (count > 0) {
@@ -102,5 +110,12 @@ public class ProblemManagerImpl implements ProblemManager {
         }
 
         return result;
+    }
+    private boolean checkCaptcha(String captcha, String token) {
+        //校验验证码
+        if (!accountService.checkCaptchaCodeIsVaild(token, captcha)) {
+            return false;
+        }
+        return true;
     }
 }
