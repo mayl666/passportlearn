@@ -13,6 +13,6 @@
 .ucenter .table .level-status,.ucenter .table .level-num { _position: relative; _top: 22px;}
 
 .ucenter-sidebar{ padding-left:13px; }
-.ucenter-sidebar .item{ display:inline-block; *display:inline; *zoom:1; width:103px; height:45px; line-height:45px; padding-left:12px;background:url(/./static/img/desc-arrow.png?t=707808) no-repeat 0 center;font-size:14px; }
+.ucenter-sidebar .item{ display:inline-block; *display:inline; *zoom:1; width:102px; height:45px; line-height:45px; padding-left:12px;background:url(/./static/img/desc-arrow.png?t=707808) no-repeat 0 center;font-size:14px; }
 .ucenter-sidebar .item a{ color:#000; }
 .ucenter-sidebar .hr{ height:0;overflow:hidden;border-bottom:1px #e1e1e1 dotted; width:216px; }
