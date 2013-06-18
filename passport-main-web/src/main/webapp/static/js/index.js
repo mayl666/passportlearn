@@ -76,7 +76,8 @@ define('conf',[],function(){
 
     return{
         client_id:"1120",
-        redirectUrl: "/static/api/jump.htm"
+        redirectUrl: "/static/api/jump.htm",
+        thirdRedirectUrl:"/static/api/tj.html"
     };
 });
 
@@ -96,6 +97,14 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
 
         refreshVcode($el);
     };
+
+    var Module_Size = {
+        renren:[880,620],
+        sina:[780,640],
+        qq:[500,300]
+    };
+
+
 
     var refreshVcode = function(){
         $('#Login').find('.vcode img').attr('src' , "/captcha?token="+ $('#Login').find('.token').val() + '&t=' + +new Date() );
@@ -154,6 +163,22 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
             $('#Login .error a').click(function(){
                 $('#Login .error').hide();
                 return false;
+            });
+
+            $('.login .third-login a').each(function(idx,item){
+                $(item).attr('href' , 'http://account.sogou.com/connect/login?provider=' + $(item).html() 
+                             + '&client_id=' + conf.client_id
+                             + '&ru=' + encodeURIComponent(location.protocol +  '//' + location.hostname + ( location.port ? (':' + location.port) :'' ) + conf.thirdRedirectUrl)
+                             + '&display=popup'
+                            );
+
+                $(item).click(function(){
+                    var module = $(this).html();
+                    var size = Module_Size[module];
+                    var left = (window.screen.availWidth-size[0])/2;
+                    window.open($(this).attr('href') , 'OPEN_LOGIN' , 'height='+ size[1] +',width='+ size[0] +',top=80,left='+left+',toolbar=no,menubar=no');
+                    return false;
+                });
             });
         }
     };
