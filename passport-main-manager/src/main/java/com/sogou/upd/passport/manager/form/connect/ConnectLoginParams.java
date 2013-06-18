@@ -28,8 +28,8 @@ public class ConnectLoginParams {
     private String ru;  // 回调地址
 
     private String display;  // 样式
-    private boolean force = true;   // 是否强制输入用户名、密码登录
-    private String type;     // 应用类型
+    private boolean force = false;   // 是否强制输入用户名、密码登录
+    private String type = "web";     // 应用类型
 
     @AssertTrue(message = "不支持的第三方")
     private boolean isSupportProvider() {

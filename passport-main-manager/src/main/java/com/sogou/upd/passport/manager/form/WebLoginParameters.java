@@ -20,7 +20,7 @@ public class WebLoginParameters {
     /**
      * 登陆用户名
      */
-    @Length(min = 1, max = 200, message = "用户名或密码错误，请重新输入！")
+    @Length(min = 1, max = 200, message = "用户名错误，请重新输入！")
     @NotBlank(message = "请输入用户名！")
     private String username;
 

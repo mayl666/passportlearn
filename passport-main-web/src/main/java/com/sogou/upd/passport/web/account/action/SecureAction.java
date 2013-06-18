@@ -221,7 +221,7 @@ public class SecureAction extends BaseController {
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
-    public String sendEmailForBind(WebBindEmailParams params, Model model) throws Exception {
+    public Object sendEmailForBind(WebBindEmailParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {

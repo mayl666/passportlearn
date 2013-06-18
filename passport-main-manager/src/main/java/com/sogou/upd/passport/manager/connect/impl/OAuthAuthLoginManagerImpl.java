@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -155,47 +156,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public OAuthAuthzClientRequest buildConnectLoginRequest(ConnectLoginParams connectLoginParams, ConnectConfig connectConfig,
-                                                            String uuid, int provider, String ip) throws OAuthProblemException {
-        OAuthConsumer oAuthConsumer;
-        OAuthAuthzClientRequest request;
-        try {
-            oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        } catch (IOException e) {
-            logger.error("read oauth consumer IOException!", e);
-            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-
-        String redirectURI = constructRedirectURI(connectLoginParams, oAuthConsumer.getCallbackUrl(), ip);
-        String scope = connectConfig.getScope();
-        String appkey = connectConfig.getAppKey();
-        String connectType = connectLoginParams.getType();
-        String requestUrl;
-        // web应用采用Authorization Code Flow流程，sina的web应用和客户端均采用此流程
-        if (ConnectTypeEnum.WEB.toString().equals(connectType) || AccountTypeEnum.SINA.getValue() == provider) {
-            requestUrl = oAuthConsumer.getWebUserAuthzUrl();
-            request = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appkey)
-                    .setRedirectURI(redirectURI)
-                    .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForce(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
-        } else {  // 客户端应用采用Implicit Flow
-            requestUrl = oAuthConsumer.getAppUserAuthzUrl();
-            request = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appkey)
-                    .setRedirectURI(redirectURI)
-                    .setResponseType(ResponseTypeEnum.TOKEN).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForce(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
-        }
-
-        return request;
-    }
-
-    @Override
     public OAuthTokenVO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
         OAuthTokenVO oAuthTokenDO;
         OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req, connectType);
@@ -242,22 +202,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return passportId;
     }
 
-    private String constructRedirectURI(ConnectLoginParams oauthLoginParams, String pCallbackUrl, String ip) {
-        try {
-            String ru = oauthLoginParams.getRu();
-            ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            Map<String, Object> callbackParams = Maps.newHashMap();
-            callbackParams.put("client_id", oauthLoginParams.getClient_id());
-            callbackParams.put("ru", ru);
-            callbackParams.put("ip", ip);
-            StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
-            String redirectURI = pCallbackUrl + query;
-            redirectURI = URLEncoder.encode(redirectURI, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            return redirectURI;
-        } catch (UnsupportedEncodingException e) {
-            return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
-    }
+
 
     private String obtainPassportId(Map<String, ConnectRelation> connectRelations) {
         String passportId = "";

@@ -31,8 +31,8 @@ import java.util.Map;
 /**
  * GET请求 构造URL的参数
  * 不带#access_Token锚点
- * @author shipengzhi
  *
+ * @author shipengzhi
  */
 public class QueryParameterApplier implements OAuthParametersApplier {
 
@@ -40,22 +40,26 @@ public class QueryParameterApplier implements OAuthParametersApplier {
 
         String messageUrl = message.getLocationUri();
         if (messageUrl != null) {
-            boolean isContainsQuery = messageUrl.contains("?");
-            StringBuffer url = new StringBuffer(messageUrl);
-
-            StringBuffer query = new StringBuffer(OAuthUtils.format(params.entrySet(),
-                    CommonConstant.DEFAULT_CONTENT_CHARSET));
-
-            if (!Strings.isNullOrEmpty(query.toString())) {
-                if (isContainsQuery) {
-                    url.append("&").append(query);
-                } else {
-                    url.append("?").append(query);
-                }
-            }
-
-            message.setLocationUri(url.toString());
+            String url = applyOAuthParametersString(messageUrl, params);
+            message.setLocationUri(url);
         }
         return message;
+    }
+
+    public static String applyOAuthParametersString(String messageUrl, Map<String, Object> params) {
+        boolean isContainsQuery = messageUrl.contains("?");
+        StringBuilder url = new StringBuilder(messageUrl);
+
+        StringBuilder query = new StringBuilder(OAuthUtils.format(params.entrySet(),
+                CommonConstant.DEFAULT_CONTENT_CHARSET));
+
+        if (!Strings.isNullOrEmpty(query.toString())) {
+            if (isContainsQuery) {
+                url.append("&").append(query);
+            } else {
+                url.append("?").append(query);
+            }
+        }
+        return url.toString();
     }
 }
