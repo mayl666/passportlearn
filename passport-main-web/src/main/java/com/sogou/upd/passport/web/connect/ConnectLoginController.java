@@ -6,12 +6,11 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
-import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -35,9 +34,10 @@ import java.util.UUID;
 @Controller
 public class ConnectLoginController extends BaseConnectController {
 
-
     @Autowired
     private OAuthAuthLoginManager oAuthAuthLoginManager;
+    @Autowired
+    private ConnectApiManager proxyConnectApiManager;
     @Autowired
     private ConfigureManager configureManager;
 
@@ -71,35 +71,33 @@ public class ConnectLoginController extends BaseConnectController {
     public ModelAndView authorize(HttpServletRequest req, HttpServletResponse res,
                                   ConnectLoginParams connectLoginParams) {
 
-        ModelAndView defaultMV = new ModelAndView(new RedirectView(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL));
+        String url = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         int provider = AccountTypeEnum.getProvider(connectLoginParams.getProvider());
         //验证client_id
         int clientId = Integer.parseInt(connectLoginParams.getClient_id());
 
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            return defaultMV;
+            url = buildAppErrorRu(connectLoginParams.getType(), ErrorUtil.INVALID_CLIENTID, null);
+            return new ModelAndView(new RedirectView(url));
         }
 
         // 校验参数
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return defaultMV;
-        }
-        // 获取connect配置
-        ConnectConfig connectConfig = configureManager.obtainConnectConfig(clientId, provider);
-        if (connectConfig == null) {
-            return defaultMV;
+            url = buildAppErrorRu(connectLoginParams.getType(), ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            return new ModelAndView(new RedirectView(url));
         }
 
         // 避免重复提交的唯一码
         String uuid = UUID.randomUUID().toString();
         try {
-            OAuthAuthzClientRequest oauthRequest = oAuthAuthLoginManager.buildConnectLoginRequest(connectLoginParams, connectConfig, uuid, provider, getIp(req));
+            url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
             writeOAuthStateCookie(res, uuid, provider);
-            return new ModelAndView(new RedirectView(oauthRequest.getLocationUri()));
+            return new ModelAndView(new RedirectView(url));
         } catch (OAuthProblemException e) {
-            return defaultMV;
+            url = buildAppErrorRu(connectLoginParams.getType(), e.getError(), e.getDescription());
+            return new ModelAndView(new RedirectView(url));
         }
     }
 

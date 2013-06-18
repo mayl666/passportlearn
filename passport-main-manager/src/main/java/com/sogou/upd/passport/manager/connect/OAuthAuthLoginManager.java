@@ -29,16 +29,5 @@ public interface OAuthAuthLoginManager {
      */
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip);
 
-    /**
-     * 第三方账户登录接口
-     *
-     * @param connectLoginParams OAuth2登录授权请求参数
-     * @param provider           第三方平台
-     * @param ip                 登录的ip
-     * @return Result格式的返回值
-     */
-    public OAuthAuthzClientRequest buildConnectLoginRequest(ConnectLoginParams connectLoginParams, ConnectConfig connectConfig,
-                                                            String uuid, int provider, String ip) throws OAuthProblemException;
-
     public OAuthTokenVO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException;
 }
