@@ -168,7 +168,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
             $('.login .third-login a').each(function(idx,item){
                 $(item).attr('href' , 'http://account.sogou.com/connect/login?provider=' + $(item).html() 
                              + '&client_id=' + conf.client_id
-                             + '&ru=' 
+                             + '&ru=' + encodeURIComponent(location.href)
                             );
             });
         }
