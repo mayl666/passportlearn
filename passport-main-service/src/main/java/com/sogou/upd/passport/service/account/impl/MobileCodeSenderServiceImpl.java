@@ -186,7 +186,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     public boolean checkSmsInfoFromCache(String mobile, int clientId, AccountModuleEnum module, String smsCode)
             throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
+            String cacheKey = buildCacheKeyForSmsCode(mobile, clientId, module);
             Map<String, String> mapResult = redisUtils.hGetAll(cacheKey);
             if (MapUtils.isNotEmpty(mapResult)) {
                 String strValue = mapResult.get("smsCode");
