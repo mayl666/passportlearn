@@ -739,7 +739,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
     };
 
     return{
-        render: function($el , onsuccess , onfailure){
+        render: function($el , config){
             $el.uuiForm({
                 type:'blur',
                 onfocus: function($el){
@@ -766,14 +766,16 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
                     }
                 },
                 onformsuccess: function($el){
-                    if( !onsuccess || onsuccess($el) ){
+                    if( !config.onbeforesubmit || config.onbeforesubmit($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
                             data = utils.parseResponse(data);
                             
                             if( !+data.status ){
                                 $el.find('.form-success').show().find('span').html('提交成功');
+                                config.onsuccess && config.onsuccess($el);
                             }else{
                                 $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
+                                config.onfailure && config.onfailure($el);
                             }
                         });
                     }
@@ -888,17 +890,18 @@ define('reg',['./common','./form' , './conf' , './utils'] , function(common , fo
     var bindFormEvent = function(){
         var $el = $('.main-content .form form');
 
-        form.render($el ,function(){
-            checkUsername($el,function(status) {
-                if( !status ){
-                    $.post($el.attr('action'), $el.serialize() , function(data){
+        form.render($el ,{
+            onbeforesubmit: function(){
+                checkUsername($el,function(status) {
+                    if( !status ){
+                        $.post($el.attr('action'), $el.serialize() , function(data){
                             data = utils.parseResponse(data);
                             alert(data.statusText)
-                    });
-                }
-                return false;
-            });
-
+                        });
+                    }
+                    return false;
+                });
+            }
         });
         $el.append('<input type="hidden" name="ru" value="" class="ru"/>');
 

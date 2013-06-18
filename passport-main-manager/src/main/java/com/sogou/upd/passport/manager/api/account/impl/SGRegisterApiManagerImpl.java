@@ -67,7 +67,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
               result.setSuccess(true);
               result.setDefaultModel("userid", account.getPassportId());
               result.setMessage("注册成功！");
-              result.setDefaultModel(true);
+              result.setDefaultModel("isSetCookie",true);
+              result.setDefaultModel(account);
             } else {
               result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
@@ -77,7 +78,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             if (isSendSuccess) {
               result.setSuccess(true);
               result.setMessage("感谢注册，请立即激活账户！");
-              result.setDefaultModel(false);
+              result.setDefaultModel("isSetCookie",false);
             } else {
               result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
@@ -117,7 +118,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             result.setSuccess(true);
             result.setDefaultModel("userid", account.getPassportId());
             result.setMessage("注册成功！");
-            result.setDefaultModel(true);
+            result.setDefaultModel("isSetCookie",true);
+            result.setDefaultModel(account);
           } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
           }
