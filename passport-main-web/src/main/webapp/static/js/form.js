@@ -97,7 +97,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
     };
 
     return{
-        render: function($el , onsuccess , onfailure){
+        render: function($el , config){
             $el.uuiForm({
                 type:'blur',
                 onfocus: function($el){
@@ -124,14 +124,16 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                     }
                 },
                 onformsuccess: function($el){
-                    if( !onsuccess || onsuccess($el) ){
+                    if( !config.onbeforesubmit || config.onbeforesubmit($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
                             data = utils.parseResponse(data);
                             
                             if( !+data.status ){
                                 $el.find('.form-success').show().find('span').html('提交成功');
+                                config.onsuccess && config.onsuccess($el);
                             }else{
                                 $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
+                                config.onfailure && config.onfailure($el);
                             }
                         });
                     }

@@ -1,79 +1,3 @@
-
-/*
- * ui module script
- * @author zhengxin
-*/
- 
-
-
-
-define('ui',[],function(){
-
-
-
-    return{
-        checkbox: function(el){
-            el = $(el);
-            var target = el.data('target');
-            if( !target ) return;
-            target = $('#' +target);
-            var checkedClass = 'checkbox-checked';
-            
-            el.click( function(){
-                var checked = el.prop('checked');
-                checked ? target.addClass(checkedClass) :
-                    target.removeClass(checkedClass);
-            });
-        }
-
-    };
-});
-
-/*
- * form module script
- * @author zhengxin
-*/
- 
-
-
-
-define('utils',[], function(){
-
-    
-    return {
-        uuid: function(){
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            };            
-            return s4() + s4()  + s4()  + s4()  +
-                s4() +  s4() + s4() + s4();
-
-        },
-        parseResponse: function(data){
-            if( typeof data == 'string' ){
-                try{
-                    data = eval('('+data+')');
-                }catch(e){
-                    data = {status:-1,statusText:'服务器故障'};
-                }
-            }
-            return data;
-        }
-    };
-
-});
-
-define('conf',[],function(){
-
-
-    return{
-        client_id:"1120",
-        redirectUrl: "/static/api/jump.htm"
-    };
-});
-
 define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
     
     var vcodeInited = false;
@@ -134,7 +58,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                             }
                                         } ,
                                         function(){
-                                            location.href = "http://" + location.hostname;
+                                            location.href = "@protocol@://" + location.hostname;
                                             return;
                                         }
                                       );
