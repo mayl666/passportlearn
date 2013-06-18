@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -34,6 +35,17 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
         if (result.isSuccess()) {
             result.setMessage("注册成功");
             result.setDefaultModel("userid", regEmailApiParams.getUserid());
+
+          //判断注册账号类型
+          AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(regEmailApiParams.getUserid());
+          switch (emailType){
+            case OTHER:
+              result.setDefaultModel("isSetCookie",false);
+              break;
+            default:
+              result.setDefaultModel("isSetCookie",true);
+              break;
+          }
         }
         return result;
     }
@@ -47,6 +59,7 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
             result.setMessage("注册成功");
             String passportId = PassportIDGenerator.generator(regMobileCaptchaApiParams.getMobile(), AccountTypeEnum.PHONE.getValue());
             result.setDefaultModel("userid", passportId);
+            result.setDefaultModel("isSetCookie",true);
         }
         return result;
     }

@@ -94,7 +94,6 @@ public class RegAction extends BaseController {
     }else {
       result= regManager.isAccountExists(username,false);
     }
-
     return result.toString();
   }
 
@@ -115,8 +114,6 @@ public class RegAction extends BaseController {
       result.setMessage(validateResult);
       return result.toString();
     }
-
-    String password = regParams.getPassword();
 
     String ip = getIp(request);
     String passportId=regParams.getUsername();
@@ -178,6 +175,10 @@ public class RegAction extends BaseController {
     String ip = getIp(request);
     //邮件激活
     result = regManager.activeEmail(activeParams, ip);
+    if(result.isSuccess()){
+      // 种sohu域cookie
+      result=commonManager.createCookieUrl(result,activeParams.getPassport_id(),request.getScheme(),1) ;
+    }
     return result;
   }
 }
