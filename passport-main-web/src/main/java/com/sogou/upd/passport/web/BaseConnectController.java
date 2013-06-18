@@ -42,7 +42,7 @@ public class BaseConnectController extends BaseController {
      */
     protected String buildAppErrorRu(String type, String errorCode, String errorText) {
         String url = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        boolean isApp = type.equals(ConnectTypeEnum.APP.toString());
+        boolean isApp = type.equals(ConnectTypeEnum.MAPP.toString());
         if (isApp && !Strings.isNullOrEmpty(errorCode)) {
             Map params = Maps.newHashMap();
             params.put(CommonConstant.RESPONSE_STATUS, errorCode);
