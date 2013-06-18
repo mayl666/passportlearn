@@ -159,7 +159,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
     public Result sendMobileRegCaptcha(BaseMoblieApiParams params) {
       Result result = new APIResultSupport(false);
       try {
-        result=secureManager.sendMobileCode(params.getMobile(),params.getClient_id());
+        result=secureManager.sendMobileCode(params.getMobile(),params.getClient_id(), AccountModuleEnum.REGISTER);
       } catch (Exception e) {
         e.printStackTrace();
       }
