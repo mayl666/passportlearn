@@ -733,7 +733,9 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
             $el.find('.vpic img').attr('src' , "/captcha?token="+ $el.find('.token').val() + '&t=' + +new Date());
             return false;
         });
-        
+        $el.click(function(){
+            $el.find('.form-error,.form-success').hide();;
+        });
     };
 
     return{
@@ -767,7 +769,12 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
                     if( !onsuccess || onsuccess($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
                             data = utils.parseResponse(data);
-                            alert(data.statusText)
+                            
+                            if( !+data.status ){
+                                $el.find('.form-success').show().find('span').html('提交成功');
+                            }else{
+                                $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
+                            }
                         });
                     }
                     return false;
@@ -775,7 +782,10 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
             });
             $el.append('<input type="hidden" name="token" value="" class="token"/>');
             $el.append('<input name="client_id" value="'+ conf.client_id +'" type="hidden"/>');
-
+            
+            $el.find('.form-btn').before('<div class="form-error"><span></span></div>');
+            $el.find('.form-btn').before('<div class="form-success"><span></span></div>');
+            
             initToken($el);
             bindOptEvent($el);
         }

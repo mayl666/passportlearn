@@ -24,22 +24,6 @@ public class PwdGenerator {
     public static final String MD5_SIGN = "$1$";  // md5型salt标识
 
     /**
-     * 对明文密码采用HMAC_SHA加密
-     */
-    public static String generatorPwdSign(String pwd) throws Exception {
-        byte[] encryByte;
-        try {
-            byte[] key = Coder.decryptBASE64(HMAC_SHA_KEY);
-            encryByte = Coder.encryptHMAC(pwd, key);
-        } catch (Exception e) {
-            logger.error("Password encrypt fail, password:{}", pwd);
-            throw e;
-        }
-
-        return Coder.toHexString(encryByte);
-    }
-
-    /**
      * 生成密码
      *
      * @param pwd   密码

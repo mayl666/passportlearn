@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -55,5 +57,17 @@ public class LoginAction extends BaseController {
     model.addAttribute("data",result.toString());
     return "/login/api";
   }
+
+    /**
+     * web页面退出
+     *
+     * @param loginParams 传入的参数
+     */
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public ModelAndView logout(HttpServletRequest request,Model model, WebLoginParameters loginParams)
+            throws Exception {
+        String redirectUrl = "";
+        return new ModelAndView(new RedirectView(redirectUrl));
+    }
 
 }

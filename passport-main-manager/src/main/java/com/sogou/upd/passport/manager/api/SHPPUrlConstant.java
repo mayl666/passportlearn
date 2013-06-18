@@ -15,6 +15,8 @@ public class SHPPUrlConstant {
 
     public static final String COOKIE_KEY="a80d&p4^9t";
 
+    public static final String CONNECT_LOGIN_ULR = "http://passport.sohu.com/openlogin/request.action";
+
     //请求SHPP时xml默认的rootNodeName
     public static final String DEFAULT_REQUEST_ROOTNODE = "info";
 
