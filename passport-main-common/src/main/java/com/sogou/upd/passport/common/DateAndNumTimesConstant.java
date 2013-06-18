@@ -13,4 +13,5 @@ public class DateAndNumTimesConstant {
     public static final long CAPTCHA_INTERVAL = 60; // 注册验证码1分钟，单位s
     public static final long SECURECODE_VALID = 15 * 60;
     public static final long TIME_ONEHOUR = 60 * 60; // 时间 一小时,单位s
+    public static final int BIND_LIMIT = 10;
 }
