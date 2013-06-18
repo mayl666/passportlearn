@@ -7,12 +7,9 @@
 	,config = {};
 	for(var i in queryStr){
         oneQueryStr = queryStr[i].split('=');
-		if(!callbackStr && oneQueryStr[0] == 'callback'){
-			callbackStr = oneQueryStr[1];
-		};
 		config[oneQueryStr[0]] = oneQueryStr[1];
     }
-	parent.bdPass.api[callbackStr](config);
+	parent.PassportSC._logincb(config);
 })();
 </script>
 </body></html>

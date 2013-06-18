@@ -18,16 +18,14 @@ public class ErrorUtil {
     public static final String SYSTEM_UNKNOWN_EXCEPTION = "10001";
     // 必填的参数错误
     public static final String ERR_CODE_COM_REQURIE = "10002";
-    // 内部接口code签名错误
-    public static final String INTERNAL_CODE_ERROR = "10003";
+    // 内部接口code签名错误或请求超时
+    public static final String INTERNAL_REQUEST_INVALID = "10003";
     // 代理搜狐Passport接口HTTP请求发生异常
     public static final String PROXY_SHPP_API_EXCEPTION = "10004";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
     // 签名或accessToken验证失败
 //    public static final String ERR_OPEN_ID = "10006";
-    // 内部接口请求超时
-    public static final String INTERNAL_CT_OVERTIME = "10007";
     // 接口调用频次超限
     public static final String INVOKE_BEYOND_FREQUENCY_LIMIT = "10008";
     // 账号不存在或异常或未激活
@@ -265,10 +263,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
-        ERR_CODE_MSG_MAP.put(INTERNAL_CODE_ERROR, "内部接口code签名错误");
+        ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "内部接口code签名错误或请求超时");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
-        ERR_CODE_MSG_MAP.put(INTERNAL_CT_OVERTIME, "内部接口ct超时");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT,"接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");

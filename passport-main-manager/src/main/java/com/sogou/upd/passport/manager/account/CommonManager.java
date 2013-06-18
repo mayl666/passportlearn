@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.Account;
 
 /**
@@ -56,5 +57,15 @@ public interface CommonManager {
    * @throws Exception
    */
     public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception;
+
+  /**
+   *
+   * @param result
+   * @param passportId
+   * @param scheme
+   * @param autoLogin
+   * @return
+   */
+    public Result createCookieUrl(Result result,String passportId,String scheme,int autoLogin);
 
 }
