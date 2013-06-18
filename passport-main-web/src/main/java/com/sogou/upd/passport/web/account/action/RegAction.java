@@ -86,13 +86,13 @@ public class RegAction extends BaseController {
     if(username.indexOf("@")==-1){
       //判断是否是手机号注册
       if(PhoneUtil.verifyPhoneNumberFormat(username)){
-        result= regManager.isAccountExists(username,true);
+        result= regManager.isAccountNotExists(username,true);
       } else {
         username=username+"@sogou.com";
-        result= regManager.isAccountExists(username,false);
+        result= regManager.isAccountNotExists(username,false);
       }
     }else {
-      result= regManager.isAccountExists(username,false);
+      result= regManager.isAccountNotExists(username,false);
     }
     return result.toString();
   }

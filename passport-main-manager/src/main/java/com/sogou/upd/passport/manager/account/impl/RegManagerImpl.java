@@ -261,8 +261,8 @@ public class RegManagerImpl implements RegManager {
     }
 
   @Override
-  public Result isAccountExists(String username,boolean type) throws Exception {
-    Result result = new APIResultSupport(false);
+  public Result isAccountNotExists(String username,boolean type) throws Exception {
+    Result result =null;
     try {
       CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
       if (ManagerHelper.isInvokeProxyApi(username)) {
@@ -272,10 +272,13 @@ public class RegManagerImpl implements RegManager {
           params.setMobile(username);
           result = proxyBindApiManager.getPassportIdByMobile(params);
             if(result.isSuccess()) {
-                result.setSuccess(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-            } else if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND)){
-                result = new APIResultSupport(true);
+              result= new APIResultSupport(false);
+              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+              return result;
+            } else{
+              result= new APIResultSupport(false);
+              result.setSuccess(true);
+              result.setMessage("账户未被占用，可以注册");
             }
         }else {
           result = proxyRegisterApiManager.checkUser(checkUserApiParams);
