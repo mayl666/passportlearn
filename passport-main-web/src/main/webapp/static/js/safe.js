@@ -1526,7 +1526,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
     };
 
     return{
-        render: function($el , onsuccess , onfailure){
+        render: function($el , config){
             $el.uuiForm({
                 type:'blur',
                 onfocus: function($el){
@@ -1553,14 +1553,16 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
                     }
                 },
                 onformsuccess: function($el){
-                    if( !onsuccess || onsuccess($el) ){
+                    if( !config.onbeforesubmit || config.onbeforesubmit($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
                             data = utils.parseResponse(data);
                             
                             if( !+data.status ){
                                 $el.find('.form-success').show().find('span').html('提交成功');
+                                config.onsuccess && config.onsuccess($el);
                             }else{
                                 $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
+                                config.onfailure && config.onfailure($el);
                             }
                         });
                     }
@@ -1745,6 +1747,15 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
         }
     };
 
+    var formsuccess = {
+        email: function($el){
+            var mailIpt = $el.find('input[name="new_email"]');
+            $el.parent().html( ursa.render($('#Target3').html() , {
+                sec_email: mailIpt.val()
+            }) );
+        }
+    };
+
     var addUrlClientId = function(){
         var targets = $('.main-content .nav li a');
         targets.each(function(idx,item){
@@ -1767,9 +1778,14 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
 
             pagefunc[type] && pagefunc[type](data);
 
-            form.render($('.main-content .form form') , function(){
-                formfunc[type] && formfunc[type](data);
-                return true;
+            form.render($('.main-content .form form') , {
+                onbeforesubmit: function(){
+                    formfunc[type] && formfunc[type]();
+                    return true;
+                },
+                onsuccess: function(el){
+                    formsuccess[type] && formsuccess[type](el);
+                }
             });
 
         }

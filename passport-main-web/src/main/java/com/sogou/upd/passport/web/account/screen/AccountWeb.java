@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,8 @@ import java.net.URLEncoder;
 @Controller
 @RequestMapping("/web")
 public class AccountWeb extends BaseController {
+  @Autowired
+  private HostHolder hostHolder;
 
   /*
    web邮箱注册
@@ -70,6 +74,9 @@ public class AccountWeb extends BaseController {
   @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
   public String login(HttpServletRequest request,Model model)
       throws Exception {
+      if (hostHolder.isLogin()) {
+          return "forward:/";
+      }
       //连接来源
       String ru = request.getParameter("ru");
       if (!Strings.isNullOrEmpty(ru)){

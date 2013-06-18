@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=808400" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=913865" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -40,18 +40,24 @@
                                     <span class="checkbox checkbox-checked" id="RemChbSpan" ></span>
                                     记住登录状态
                                 </label>
-                                <a href="recover/index.ut">找回密码</a>
+                                <a href="https://passport.sohu.com/web/recoverpwd">找回密码</a>
                             </p>
                             <button type="submit">
                                 <img src="/./static/img/index/loginbtn.png" class="" alt="登录" />
                             </button>
                             <p class="reg">
-                                还没有搜狗通行证？<a href="/reg/email.ut">立即注册</a>
+                                还没有搜狗通行证？<a href="/web/reg/email">立即注册</a>
                             </p>
                             <p class="error uname-error" ><span class="text"></span><a href="#"></a></p>
                             <p class="error vcode-error"><span class="text"></span><a href="#"></a></p>
                         </form>
-                        
+                        <div class="third-login">
+                            <span >使用其他账号登录</span>
+                            <a href="#">weibo</a>
+                            <a href="#">qq</a>
+                            <a href="#">tqq</a>
+                            <a href="#">sohu</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -91,9 +97,9 @@
         </div>
         
     </body>
-    <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
+    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=950532"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=978721"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=005436"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';

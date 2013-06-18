@@ -111,6 +111,12 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
             PassportSC.redirectUrl = location.protocol +  '//' + location.hostname + ( location.port ? (':' + location.port) :'' ) + conf.redirectUrl;
             $('#Login').on('submit' , function(){
                 var $el = $('#Login');
+
+                if( !$.trim($el.find('input[name="username"]').val()) || !$.trim($el.find('input[name="password"]').val()) ){
+                    showUnameError('请输入用户名密码');
+                    return false;;
+                }
+
                 PassportSC.loginHandle( $el.find('input[name="username"]').val() , 
                                         $el.find('input[name="password"]').val() ,
                                         $el.find('input[name="captcha"]').val() , 
