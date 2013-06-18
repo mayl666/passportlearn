@@ -168,17 +168,8 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
             $('.login .third-login a').each(function(idx,item){
                 $(item).attr('href' , 'http://account.sogou.com/connect/login?provider=' + $(item).html() 
                              + '&client_id=' + conf.client_id
-                             + '&ru=' + encodeURIComponent(location.protocol +  '//' + location.hostname + ( location.port ? (':' + location.port) :'' ) + conf.thirdRedirectUrl)
-                             + '&display=popup'
+                             + '&ru=' 
                             );
-
-                $(item).click(function(){
-                    var module = $(this).html();
-                    var size = Module_Size[module];
-                    var left = (window.screen.availWidth-size[0])/2;
-                    window.open($(this).attr('href') , 'OPEN_LOGIN' , 'height='+ size[1] +',width='+ size[0] +',top=80,left='+left+',toolbar=no,menubar=no');
-                    return false;
-                });
             });
         }
     };
