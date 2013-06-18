@@ -23,8 +23,8 @@ public class ProxySecureApiManagerImplTest  extends BaseTest {
         UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
         updatePwdApiParams.setUserid(userid);
         updatePwdApiParams.setModifyip(modifyIp);
-        updatePwdApiParams.setPassword("testtest");
-        updatePwdApiParams.setNewpassword("testtest1");
+        updatePwdApiParams.setPassword("111111");
+        updatePwdApiParams.setNewpassword("111111");
         Result result= proxySecureApiManager.updatePwd(updatePwdApiParams);
         System.out.println(result.toString());
     }
