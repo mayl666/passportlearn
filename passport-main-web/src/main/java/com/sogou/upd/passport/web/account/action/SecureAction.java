@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -48,6 +49,11 @@ public class SecureAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
 
+    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
+    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
+    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
+    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
+
     @Autowired
     private CommonManager commonManager;
     @Autowired
@@ -59,7 +65,6 @@ public class SecureAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
 
-    // TODO:GET或POST方法不支持时，前端页面
 
     @RequestMapping(method = RequestMethod.GET)
     @LoginRequired
@@ -69,14 +74,18 @@ public class SecureAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "safe/index"; // TODO:返回错误页面
+            // model.addAttribute("data", result.toString());
+            return "redirect:/"; // TODO:返回错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
 
         return "safe/index";
@@ -96,10 +105,18 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDEMAIL_URL;
+        }
+
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/email";
     }
@@ -118,10 +135,18 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
+        }
+
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/tel";
     }
@@ -136,15 +161,23 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
+            return "safe/question"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDQUES_URL;
+        }
+
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/question";
     }
@@ -163,8 +196,16 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_RESETPWD_URL;
+        }
+
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/password";
     }
@@ -186,7 +227,11 @@ public class SecureAction extends BaseController {
         // TODO:登录历史
 
         result.setSuccess(true);
-        result.setDefaultModel("username", userId);
+        String nickName = hostHolder.getNickName();
+        if (Strings.isNullOrEmpty(nickName)) {
+            nickName = userId;
+        }
+        result.setDefaultModel("username", nickName);
         model.addAttribute("data", result.toString());
         return "safe/history";
     }
@@ -210,7 +255,13 @@ public class SecureAction extends BaseController {
             return result;
         }
 
-        resetParams.setPassport_id(hostHolder.getPassportId());
+        String userId = hostHolder.getPassportId();
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_RESETPWD_URL;
+        }
+
+        resetParams.setPassport_id(userId);
         String modifyIp = getIp(request);
         resetParams.setIp(modifyIp);
 
@@ -234,6 +285,11 @@ public class SecureAction extends BaseController {
         String password = params.getPassword();
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDEMAIL_URL;
+        }
+
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
         return result.toString();
     }
@@ -252,6 +308,10 @@ public class SecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDEMAIL_URL;
+        }
+
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
         model.addAttribute("data", result.toString());
         if (result.isSuccess()) {
@@ -262,7 +322,7 @@ public class SecureAction extends BaseController {
     }
 
 
-    @RequestMapping(value = "/sendsms", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/sendsms", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
     public Object sendSmsSecMobile(BaseWebParams params) throws Exception {
@@ -281,7 +341,7 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/sendsmsnew", method = { RequestMethod.POST, RequestMethod.GET })
+    @RequestMapping(value = "/sendsmsnew", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
     public Object sendSmsNewMobile(WebMobileParams params) throws Exception {
@@ -325,6 +385,10 @@ public class SecureAction extends BaseController {
             return result.toString();
         }
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
+        }
+
         result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
         return result.toString();
     }
@@ -347,6 +411,10 @@ public class SecureAction extends BaseController {
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
             return result.toString();
+        }
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
         }
 
         result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
@@ -376,6 +444,10 @@ public class SecureAction extends BaseController {
             return result.toString();
         }
 
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDMOBILE_URL;
+        }
+
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
         return result.toString();
     }
@@ -397,6 +469,10 @@ public class SecureAction extends BaseController {
         String newQues = params.getNew_ques();
         String newAnswer = params.getNew_answer();
         String modifyIp = getIp(request);
+
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
+            return "redirect:" + SOHU_BINDQUES_URL;
+        }
 
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
         return result.toString();

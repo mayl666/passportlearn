@@ -51,7 +51,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 //        //检查新手机号是否已经绑定了其他用户
 //        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
 //        baseMoblieApiParams.setMobile(updateBindMobileApiParams.getNewMobile());
-//        Result resultQuery = this.getPassportIdFromMobile(baseMoblieApiParams);
+//        Result resultQuery = this.getPassportIdByMobile(baseMoblieApiParams);
 //        switch(resultQuery.getCode()){
 //            //新手机已经绑定了其他用户
 //            case "0":
@@ -113,7 +113,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 //    private boolean checkBind(String userid, String mobile) {
 //        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
 //        baseMoblieApiParams.setMobile(mobile);
-//        Result result = this.getPassportIdFromMobile(baseMoblieApiParams);
+//        Result result = this.getPassportIdByMobile(baseMoblieApiParams);
 //        if (result.isSuccess() && result.getModels().containsKey("userid")) {
 //            String bindUserId = result.getModels().get("userid").toString();
 //            if (bindUserId.trim().equals(userid.trim())) {
@@ -146,7 +146,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     }
 
     @Override
-    public Result getPassportIdFromMobile(BaseMoblieApiParams baseMoblieApiParams) {
+    public Result getPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(baseMoblieApiParams);
         return executeResult(requestModelXml, baseMoblieApiParams.getMobile());

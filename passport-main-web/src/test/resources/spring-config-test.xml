@@ -90,26 +90,6 @@
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
     <bean  class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
 
-    <!--<bean id="dateFormatter" class="org.springframework.format.datetime.DateFormatter">-->
-        <!--<property name="pattern" value="yyyy-MM-dd"></property>-->
-    <!--</bean>-->
-
-    <!--<bean id="timeFormatter" class="org.springframework.format.datetime.DateFormatter">-->
-        <!--<property name="pattern" value="yyyy-MM-dd HH:mm:ss"></property>-->
-    <!--</bean>-->
-
-    <!--<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">-->
-        <!--<property name="registerDefaultFormatters" value="false" />-->
-        <!--<property name="formatterRegistrars">-->
-            <!--<set>-->
-                <!--<bean class="org.springframework.format.datetime.joda.JodaTimeFormatterRegistrar">-->
-                    <!--<property name="dateStyle" ref="dateFormatter"></property>-->
-                    <!--<property name="timeStyle" ref="timeFormatter"></property>-->
-                <!--</bean>-->
-            <!--</set>-->
-        <!--</property>-->
-    <!--</bean>-->
-
 
     <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
     </bean>

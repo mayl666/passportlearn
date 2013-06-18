@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -21,7 +20,6 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
@@ -263,8 +261,8 @@ public class RegManagerImpl implements RegManager {
     }
 
   @Override
-  public Result isAccountExists(String username,boolean type) throws Exception {
-    Result result = new APIResultSupport(false);
+  public Result isAccountNotExists(String username,boolean type) throws Exception {
+    Result result =null;
     try {
       CheckUserApiParams checkUserApiParams=buildProxyApiParams(username);
       if (ManagerHelper.isInvokeProxyApi(username)) {
@@ -272,7 +270,16 @@ public class RegManagerImpl implements RegManager {
           //手机号
           BaseMoblieApiParams params=new BaseMoblieApiParams();
           params.setMobile(username);
-          result = proxyBindApiManager.getPassportIdFromMobile(params);
+          result = proxyBindApiManager.getPassportIdByMobile(params);
+            if(result.isSuccess()) {
+              result= new APIResultSupport(false);
+              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+              return result;
+            } else{
+              result= new APIResultSupport(false);
+              result.setSuccess(true);
+              result.setMessage("账户未被占用，可以注册");
+            }
         }else {
           result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         }
