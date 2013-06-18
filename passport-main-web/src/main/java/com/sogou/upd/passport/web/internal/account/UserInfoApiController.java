@@ -59,12 +59,10 @@ public class UserInfoApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyUserInfoApiManagerImpl.getUserInfo(params);
         }
-        // 调用内部接口
-        result = proxyUserInfoApiManagerImpl.getUserInfo(params);
         return result.toString();
     }
 
@@ -87,12 +85,10 @@ public class UserInfoApiController {
         }
         // 签名和时间戳校验
         result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_SING);
-            return result.toString();
+        if (result.isSuccess()) {
+            // 调用内部接口
+            result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
         }
-        // 调用内部接口
-        result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
         return result.toString();
     }
 

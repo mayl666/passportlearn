@@ -135,7 +135,7 @@ public class RegAction extends BaseController {
       return result.toString();
     }
 
-    result = regManager.webRegister(regParams, ip);
+    result = regManager.webRegister(regParams, ip, request.getScheme());
 
     if(result.isSuccess()){
       //设置来源

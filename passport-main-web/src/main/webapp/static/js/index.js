@@ -117,7 +117,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                         $el.find('input[name="autoLogin"]').val(),
                                         document.getElementById('logdiv'),
                                         function(data){
-                                            if( data.data.needCaptcha ){
+                                            if( data.needCaptcha ){
                                                 initVcode();
                                                 showVcodeError('请输入验证码');
                                             }
@@ -128,7 +128,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                             }
                                         } ,
                                         function(){
-                                            alert('登录成功');
+                                            location.href = "http://" + location.hostname;
                                             return;
                                         }
                                       );
