@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=476048" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=049012" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -14,6 +14,10 @@
             <li class="sep">|</li>
             <li>
                 <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+            <li class="sep" style="display:none;">|</li>
+            <li class="logout" style="display:none;">
+                <a href="https://account.sogou.com/web/logout">退出</a>
             </li>
         </ul>
     </div>
@@ -83,7 +87,7 @@
                         账号安全级别
                         <span class="level-status"><b></b></span>
                         <span class="level-num"><{sec_score}></span>
-                        <span class="level-desc">(您的账号安全性还不错)</span>
+                        <span class="level-desc">(<{sec_score_desc}>)</span>
                     </p>
                     
                     <ul class="status">
