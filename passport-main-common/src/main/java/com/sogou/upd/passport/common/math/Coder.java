@@ -8,6 +8,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 
@@ -70,6 +71,17 @@ public class Coder {
     public static byte[] decryptBASE64(String key) {
         return Base64.decodeBase64(key);
     }
+
+    /**
+     * 解码base64
+     * @param key
+     * @return
+     */
+    public  static String decodeBASE64(String key){
+        byte[] bytes= Base64.decodeBase64(key);
+        return  new String(bytes);
+    }
+
 
     /**
      * BASE64加密

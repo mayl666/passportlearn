@@ -26,4 +26,17 @@ public interface HostHolder {
      */
     String getPassportId();
 
+    /**
+     * 设置昵称
+     * @param nickName
+     */
+    void setNickName(String nickName);
+
+
+    /**
+     * 获取昵称
+     * @return
+     */
+    String getNickName();
+
 }
