@@ -788,6 +788,55 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
             
             initToken($el);
             bindOptEvent($el);
+        },
+        initTel: function(iptname){
+            var tm,
+                text = '秒后重新获取验证码',
+                oldText,
+                oldtimeout = 60,
+                timeout = oldtimeout,
+                status;
+
+            $('.tel-valid-btn').click(function(){
+                if(status)return;
+
+                var usernameIpt = $('.main-content .form form input[name="'+ ( iptname?iptname: 'username' ) +'"]');
+                var errorSpan = usernameIpt.parent().find('.error');
+                if( !$.trim(usernameIpt.val()).length ){
+                    usernameIpt.blur();
+                    return;
+                }
+                if( errorSpan.length && errorSpan.css('display') != 'none' )
+                    return;
+
+                status = true;
+                var el = $(this);
+                oldText = el.html();
+                el.html(timeout + text);
+                el.addClass('tel-valid-btn-disable');
+                
+                $.get('/mobile/sendsms' , {
+                    mobile: usernameIpt.val(),
+                    client_id: conf.client_id
+                } , function(data){
+                    
+                });
+
+                tm=setInterval(function(){
+                    if( !--timeout  ){
+                        el.html(oldText);
+                        clearInterval(tm);
+                        status = false;
+                        timeout = oldtimeout;
+                        el.removeClass('tel-valid-btn-disable');
+                    }else{
+                        el.html(timeout + text);
+
+                    }
+                    
+                } , 1000);
+            });
+
         }
     };
 });
@@ -863,61 +912,13 @@ define('reg',['./common','./form' , './conf' , './utils'] , function(common , fo
     };
 
 
-    var telInit = function(){
-        var tm,
-            text = '秒后重新获取验证码',
-            oldText,
-            oldtimeout = 60,
-            timeout = oldtimeout,
-            status;
-        $('.tel-valid-btn').click(function(){
-            if(status)return;
-
-            var usernameIpt = $('.main-content .form form input[name="username"]');
-            var errorSpan = usernameIpt.parent().parent().find('.error');
-            if( !$.trim(usernameIpt.val()).length ){
-                usernameIpt.blur();
-                return;
-            }
-            if( errorSpan.length && errorSpan.css('display') != 'none' )
-                return;
-
-            status = true;
-            var el = $(this);
-            oldText = el.html();
-            el.html(timeout + text);
-            el.addClass('tel-valid-btn-disable');
-            
-            $.get('/mobile/sendsms' , {
-                mobile: usernameIpt.val(),
-                client_id: conf.client_id
-            } , function(data){
-                
-            });
-
-            tm=setInterval(function(){
-                if( !--timeout  ){
-                    el.html(oldText);
-                    clearInterval(tm);
-                    status = false;
-                    timeout = oldtimeout;
-                    el.removeClass('tel-valid-btn-disable');
-                }else{
-                    el.html(timeout + text);
-
-                }
-                    
-            } , 1000);
-        });
-    };
-
     return{
         init: function(){
             common.showBannerUnderLine();
 
             bindFormEvent();
 
-            telInit();
+            form.initTel();
         }
     };
 });
