@@ -11,11 +11,14 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sogou.upd.passport.manager.ManagerHelper;
+import org.apache.struts.mock.MockServletContext;
 import org.junit.BeforeClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
@@ -42,10 +45,21 @@ public class JUnitActionBase {
     @BeforeClass
     public static void setUp() throws UnsupportedEncodingException {
         if (handlerMapping == null) {
-            ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring-config-test.xml");
-            handlerMapping = context.getBean(DefaultAnnotationHandlerMapping.class);
-            handlerAdapter = (HandlerAdapter) context.getBean(context
-                    .getBeanNamesForType(AnnotationMethodHandlerAdapter.class)[0]);
+
+//            ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring-config-test.xml");
+
+
+            String[] configs = { "classpath:spring-config-test.xml" };
+            XmlWebApplicationContext context = new XmlWebApplicationContext();
+            context.setConfigLocations(configs);
+            MockServletContext msc = new MockServletContext();
+            context.setServletContext(msc);
+            context.refresh();
+            msc.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+
+            handlerMapping = (HandlerMapping) context
+                    .getBean(DefaultAnnotationHandlerMapping.class);
+            handlerAdapter = (HandlerAdapter) context.getBean(context.getBeanNamesForType(AnnotationMethodHandlerAdapter.class)[0]);
         }
     }
 
