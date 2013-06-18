@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -21,7 +20,6 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
@@ -272,7 +270,13 @@ public class RegManagerImpl implements RegManager {
           //手机号
           BaseMoblieApiParams params=new BaseMoblieApiParams();
           params.setMobile(username);
-          result = proxyBindApiManager.getPassportIdFromMobile(params);
+          result = proxyBindApiManager.getPassportIdByMobile(params);
+            if(result.isSuccess()) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            } else if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND)){
+                result = new APIResultSupport(true);
+            }
         }else {
           result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         }
