@@ -1594,7 +1594,7 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
             };
 
             wrapper.html( ursa.render(tpl.html() , data));
-            wrapper.find('.level-status b').css( 'width' , data.score + '%' );
+            wrapper.find('.level-status b').css( 'width' , data.sec_score + '%' );
             
         },
         password: function(){
