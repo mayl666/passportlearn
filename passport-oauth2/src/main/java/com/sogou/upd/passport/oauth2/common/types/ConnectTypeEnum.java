@@ -11,7 +11,8 @@ public enum ConnectTypeEnum {
 
     WEB("web"),
     TOKEN("token"),
-    APP("app");
+    APP("app"),
+    MAPP("mapp");
 
     private String connectType;
 
