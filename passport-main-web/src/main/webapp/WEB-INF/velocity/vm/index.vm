@@ -99,7 +99,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=950532"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=643608"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=461518"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';
