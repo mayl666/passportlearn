@@ -430,6 +430,7 @@ public class SecureManagerImpl implements SecureManager {
         updatePwdApiParams.setPassword(resetPwdParameters.getPassword());
         updatePwdApiParams.setNewpassword(resetPwdParameters.getNewpwd());
         updatePwdApiParams.setModifyip(resetPwdParameters.getIp());
+        updatePwdApiParams.setClient_id(Integer.parseInt(resetPwdParameters.getClient_id()));
 
         return updatePwdApiParams;
     }
@@ -525,6 +526,9 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             emailSenderService.deleteScodeCacheForEmail(userId, clientId, module);
+
+            operateTimesService.incLimitBindEmail(userId, clientId);
+
             result.setSuccess(true);
             result.setMessage("修改绑定邮箱成功！");
             return result;
@@ -576,7 +580,7 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
-    // TODO:等proxyManager修改好之后修改
+    @Override
     public Result bindMobileByPassportId(String userId, int clientId, String newMobile,
                                          String smsCode, String password, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
@@ -636,6 +640,8 @@ public class SecureManagerImpl implements SecureManager {
             if (!result.isSuccess()) {
                 return result;
             }
+
+            operateTimesService.incLimitBindMobile(userId, clientId);
 
             result.setMessage("绑定手机成功！");
             return result;
@@ -722,6 +728,8 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
+            operateTimesService.incLimitBindMobile(userId, clientId);
+
             result.setMessage("修改绑定手机成功！");
             return result;
         } catch (ServiceException e) {
@@ -759,6 +767,12 @@ public class SecureManagerImpl implements SecureManager {
                 result = sgSecureApiManager.updateQues(updateQuesApiParams);
             }
 
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            operateTimesService.incLimitBindQues(userId, clientId);
+            result.setMessage("绑定密保问题成功！");
             return result;
         } catch (ServiceException e) {
             logger.error("bind secure question fail:", e);

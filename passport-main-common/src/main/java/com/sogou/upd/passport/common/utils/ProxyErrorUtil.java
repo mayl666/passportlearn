@@ -68,6 +68,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.8",ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
 
         //wapbindmobile 绑定手机号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.2",ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.3",ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户不存在
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.4",ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);//用户已经绑定了手机号码
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.5",ERR_CODE_ACCOUNT_PHONE_BINDED);//该手机已经绑定了其他用户
@@ -75,11 +76,12 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.7",ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT);//手机绑定次数超限（一个手机一天只能绑定3次）
 
         //wapunbindmobile 解除手机绑定
+        SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.2",ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.3",ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定帐号
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.4",ERR_CODE_PHONE_UNBIND_FAILED);//,该用户是手机邮箱用户，不能进行解除绑定
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.5",SYSTEM_UNKNOWN_EXCEPTION);//系统错误
 
-        //wapunbindmobile 解除手机绑定
+        //sendcaptcha 发送手机验证码
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.3",ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定帐号
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.5",ERR_CODE_ACCOUNT_PHONE_BINDED);//手机号已经绑定了其他账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.6",ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号没有绑定账号
