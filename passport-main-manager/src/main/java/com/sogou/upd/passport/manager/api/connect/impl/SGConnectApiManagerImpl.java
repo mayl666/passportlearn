@@ -15,11 +15,7 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
-import com.sogou.upd.passport.service.connect.ConnectRelationService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +74,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     .authorizationLocation(requestUrl).setAppKey(appKey)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForce(), provider)
+                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
                     .setState(uuid)
                     .buildQueryMessage(OAuthAuthzClientRequest.class);
         } else {  // 客户端应用采用Implicit Flow
@@ -87,7 +83,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     .authorizationLocation(requestUrl).setAppKey(appKey)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.TOKEN).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForce(), provider)
+                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
                     .setState(uuid)
                     .buildQueryMessage(OAuthAuthzClientRequest.class);
         }

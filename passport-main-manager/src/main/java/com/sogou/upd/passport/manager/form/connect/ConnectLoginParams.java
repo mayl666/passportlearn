@@ -28,7 +28,7 @@ public class ConnectLoginParams {
     private String ru;  // 回调地址
 
     private String display;  // 样式
-    private boolean force = false;   // 是否强制输入用户名、密码登录
+    private boolean forcelogin = true;   // 是否强制输入用户名、密码登录
     private String type = "web";     // 应用类型
 
     @AssertTrue(message = "不支持的第三方")
@@ -82,12 +82,12 @@ public class ConnectLoginParams {
         this.display = display;
     }
 
-    public boolean isForce() {
-        return force;
+    public boolean isForcelogin() {
+        return forcelogin;
     }
 
-    public void setForce(boolean force) {
-        this.force = force;
+    public void setForcelogin(boolean forcelogin) {
+        this.forcelogin = forcelogin;
     }
 
     public String getType() {

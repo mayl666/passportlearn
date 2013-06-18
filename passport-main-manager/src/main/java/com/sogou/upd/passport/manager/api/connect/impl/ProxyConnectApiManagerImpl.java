@@ -6,10 +6,7 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.parameters.OAuthParametersApplier;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
-import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
-import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -34,7 +31,7 @@ public class ProxyConnectApiManagerImpl implements ConnectApiManager {
         params.put("ru", connectLoginParams.getRu());
         params.put("display", connectLoginParams.getDisplay());
         params.put("type", connectLoginParams.getType());
-        params.put("forcelogin", connectLoginParams.isForce());
+        params.put("forcelogin", connectLoginParams.isForcelogin());
 
         String url = QueryParameterApplier.applyOAuthParametersString(SHPPUrlConstant.CONNECT_LOGIN_ULR, params);
         return url;
