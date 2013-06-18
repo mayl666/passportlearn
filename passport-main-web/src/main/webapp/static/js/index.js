@@ -138,7 +138,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                         $el.find('input[name="autoLogin"]').val(),
                                         document.getElementById('logdiv'),
                                         function(data){
-                                            if( data.needCaptcha ){
+                                            if( data.needcaptcha ){
                                                 initVcode();
                                                 showVcodeError('请输入验证码');
                                             }
@@ -149,7 +149,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                             }
                                         } ,
                                         function(){
-                                            location.href = "http://" + location.hostname;
+                                            location.href = "https://" + location.hostname;
                                             return;
                                         }
                                       );
@@ -166,7 +166,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
             });
 
             $('.login .third-login a').each(function(idx,item){
-                $(item).attr('href' , 'http://account.sogou.com/connect/login?provider=' + $(item).html() 
+                $(item).attr('href' , 'https://account.sogou.com/connect/login?provider=' + $(item).html() 
                              + '&client_id=' + conf.client_id
                              + '&ru=' + encodeURIComponent(location.href)
                             );
