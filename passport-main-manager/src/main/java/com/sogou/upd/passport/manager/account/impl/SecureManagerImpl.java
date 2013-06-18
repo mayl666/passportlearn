@@ -99,12 +99,12 @@ public class SecureManagerImpl implements SecureManager {
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
      */
     @Override
-    public Result sendMobileCode(String mobile, int clientId) throws Exception {
+    public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
             if (Strings.isNullOrEmpty(passportId)) {
-                return sendSmsCodeToMobile(mobile, clientId);
+                return sendSmsCodeToMobile(mobile, clientId, module);
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 return result;
@@ -118,7 +118,7 @@ public class SecureManagerImpl implements SecureManager {
 
 
     @Override
-    public Result sendMobileCodeByPassportId(String passportId, int clientId) throws Exception {
+    public Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             Account account = accountService.queryAccountByPassportId(passportId);
@@ -131,7 +131,7 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
                 return result;
             }
-            return sendSmsCodeToMobile(mobile, clientId);
+            return sendSmsCodeToMobile(mobile, clientId, module);
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -153,7 +153,7 @@ public class SecureManagerImpl implements SecureManager {
                 // SOHU接口
                 result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
             } else {
-                result = sendMobileCode(mobile, clientId);
+                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
                 // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
             }
 
@@ -191,7 +191,7 @@ public class SecureManagerImpl implements SecureManager {
                 sendCaptchaApiParams.setType(4);
                 result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
             } else {
-                result = sendMobileCodeByPassportId(userId, clientId);
+                result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
                 // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
             }
 
@@ -430,6 +430,7 @@ public class SecureManagerImpl implements SecureManager {
         updatePwdApiParams.setPassword(resetPwdParameters.getPassword());
         updatePwdApiParams.setNewpassword(resetPwdParameters.getNewpwd());
         updatePwdApiParams.setModifyip(resetPwdParameters.getIp());
+        updatePwdApiParams.setClient_id(Integer.parseInt(resetPwdParameters.getClient_id()));
 
         return updatePwdApiParams;
     }
@@ -525,6 +526,9 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             emailSenderService.deleteScodeCacheForEmail(userId, clientId, module);
+
+            operateTimesService.incLimitBindEmail(userId, clientId);
+
             result.setSuccess(true);
             result.setMessage("修改绑定邮箱成功！");
             return result;
@@ -576,7 +580,7 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
-    // TODO:等proxyManager修改好之后修改
+    @Override
     public Result bindMobileByPassportId(String userId, int clientId, String newMobile,
                                          String smsCode, String password, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
@@ -636,6 +640,8 @@ public class SecureManagerImpl implements SecureManager {
             if (!result.isSuccess()) {
                 return result;
             }
+
+            operateTimesService.incLimitBindMobile(userId, clientId);
 
             result.setMessage("绑定手机成功！");
             return result;
@@ -722,6 +728,8 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
+            operateTimesService.incLimitBindMobile(userId, clientId);
+
             result.setMessage("修改绑定手机成功！");
             return result;
         } catch (ServiceException e) {
@@ -759,6 +767,12 @@ public class SecureManagerImpl implements SecureManager {
                 result = sgSecureApiManager.updateQues(updateQuesApiParams);
             }
 
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            operateTimesService.incLimitBindQues(userId, clientId);
+            result.setMessage("绑定密保问题成功！");
             return result;
         } catch (ServiceException e) {
             logger.error("bind secure question fail:", e);
@@ -816,7 +830,7 @@ public class SecureManagerImpl implements SecureManager {
     /*
      * 供sendMobileCode*调用
      */
-    private Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception {
+    private Result sendSmsCodeToMobile(String mobile, int clientId, AccountModuleEnum module) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
@@ -824,15 +838,13 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             // 验证错误次数是否小于限制次数
-            boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile,
-                                                                                    clientId,
-                                                                                    AccountModuleEnum.SECURE);
+            boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId, module);
             if (!checkFailLimited) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
 
-            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, AccountModuleEnum.SECURE);
+            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
 
             return result;
         } catch (ServiceException e) {

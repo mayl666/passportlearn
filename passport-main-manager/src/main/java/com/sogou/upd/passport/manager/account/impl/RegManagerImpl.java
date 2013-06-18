@@ -124,8 +124,12 @@ public class RegManagerImpl implements RegManager {
       return result;
     }
     if (result.isSuccess()) {
-      // 种sohu域cookie
-      result=commonManager.createCookieUrl(result,username,scheme,1) ;
+      //判断是否是外域邮箱注册
+      Object obj= result.getModels().get("isSetCookie");
+      if(obj !=null && (obj instanceof Boolean) && (boolean)obj){
+        // 种sohu域cookie
+        result=commonManager.createCookieUrl(result,username,scheme,1) ;
+      }
     } else {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     }

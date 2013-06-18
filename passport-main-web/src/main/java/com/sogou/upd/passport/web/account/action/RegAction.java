@@ -142,14 +142,12 @@ public class RegAction extends BaseController {
       //设置来源
       String ru =  regParams.getRu();
       if(Strings.isNullOrEmpty(ru)){
-        //TODO 上线前改为  安全中心
-        regParams.setRu(TEST_LOGIN_INDEX_URL);
+        ru=TEST_LOGIN_INDEX_URL;
       }
       result.setDefaultModel("ru",ru);
     }
     operateTimesService.incRegTimes(ip,null);
-    model.addAttribute("data",result.toString());
-    return "/login/api";
+    return result.toString();
   }
 
   /**

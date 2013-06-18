@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.app.AppConfigService;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +29,8 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-21 Time: 下午5:59 To change this template
+ * User: mayan
+ * Date: 13-6-18 Time: 上午10:22 To change this template
  * use File | Settings | File Templates.
  */
 @Service
@@ -183,15 +186,15 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     public boolean checkSmsInfoFromCache(String mobile, int clientId, AccountModuleEnum module, String smsCode)
             throws ServiceException {
         try {
-            String cacheKey = CACHE_PREFIX_ACCOUNT_SMSCODE + mobile + "_" + clientId;
+            String cacheKey = buildCacheKeyForSmsCode(mobile, clientId, module);
             Map<String, String> mapResult = redisUtils.hGetAll(cacheKey);
             if (MapUtils.isNotEmpty(mapResult)) {
                 String strValue = mapResult.get("smsCode");
                 if (StringUtils.isNotBlank(strValue) && strValue.equals(smsCode)) {
                     return true;
+                }else{
+                  setSmsFailLimited(mobile, clientId, module);
                 }
-                // TODO:目前所有手机随机码验证服务统一限制验证失败次数
-                setSmsFailLimited(mobile, clientId, module);
             }
             return false;
         } catch (Exception e) {
@@ -263,7 +266,6 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
     /*
      * 设置smscode验证次数限制，验证失败时递增
-     * TODO：暂时为private方法，只供checkSmsInfoFromCache方法调用
      */
     private boolean setSmsFailLimited(String mobile, int clientId, AccountModuleEnum module) throws ServiceException {
         try {

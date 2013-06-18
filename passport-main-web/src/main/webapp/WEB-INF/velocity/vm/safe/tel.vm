@@ -100,7 +100,7 @@
 </div>
                             <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
                             <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
@@ -136,7 +136,7 @@
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">下一步</button>
@@ -162,7 +162,7 @@
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input type="text" name="captcha" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">确定</button>
@@ -181,7 +181,7 @@
     </div>
 </div>
     </body>
-    <script type="text/javascript" src="http://p0.123.sogou.com/u/js/ursa.js"></script>
+    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/js/main.js?t=922709"></script>
     
     <script type="text/javascript">
