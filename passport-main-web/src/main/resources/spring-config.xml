@@ -45,16 +45,20 @@
     <!-- Inteceptor 记录API请求url和执行时间 -->
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>
+            <mvc:mapping path="/**"/>      <!-- 打印请求响应时间 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>
+            <mvc:mapping path="/**"/>        <!-- 设置登录后的用户信息 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>
+            <mvc:mapping path="/**"/>    <!-- 检测是否需要登录 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/internal/**"/>     <!-- 内部接口code和ct校验 -->
+            <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 

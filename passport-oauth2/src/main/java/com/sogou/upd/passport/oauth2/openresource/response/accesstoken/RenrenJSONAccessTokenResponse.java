@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -19,7 +20,7 @@ public class RenrenJSONAccessTokenResponse extends OAuthAccessTokenResponse {
             this.parameters = new ObjectMapper().readValue(this.body, Map.class);
         } catch (Exception e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
-                    "Invalid response! Response body is not " + OAuth.ContentType.JSON + " encoded");
+                    "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");
         }
     }
 

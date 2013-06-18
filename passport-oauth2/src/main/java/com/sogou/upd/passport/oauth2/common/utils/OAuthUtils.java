@@ -3,6 +3,7 @@ package com.sogou.upd.passport.oauth2.common.utils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
@@ -167,11 +168,11 @@ public class OAuthUtils {
                 parameters = new ObjectMapper().readValue(json, Map.class);
             } catch (Exception e) {
                 throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
-                        "Invalid response! Response body is not " + OAuth.ContentType.JSON + " encoded");
+                        "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");
             }
         } else {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE, "Invalid response! Response body is not "
-                    + OAuth.ContentType.HTML_TEXT + " encoded");
+                    + HttpConstant.ContentType.HTML_TEXT + " encoded");
         }
 
         return parameters;

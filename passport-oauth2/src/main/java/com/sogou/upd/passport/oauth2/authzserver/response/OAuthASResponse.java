@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.oauth2.authzserver.response;
 
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.OAuthError;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -173,7 +174,7 @@ public class OAuthASResponse implements OAuthMessage {
         }
 
         public OAuthErrorResponseBuilder setRealm(String realm) {
-            this.parameters.put(OAuth.WWWAuthHeader.REALM, realm);
+            this.parameters.put(HttpConstant.WWWAuthHeader.REALM, realm);
             return this;
         }
 

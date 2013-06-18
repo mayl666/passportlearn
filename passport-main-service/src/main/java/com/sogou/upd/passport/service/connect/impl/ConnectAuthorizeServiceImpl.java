@@ -1,17 +1,15 @@
 package com.sogou.upd.passport.service.connect.impl;
 
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthorizeService;
@@ -56,17 +54,17 @@ public class ConnectAuthorizeServiceImpl implements ConnectAuthorizeService {
         if (provider == AccountTypeEnum.SINA.getValue()) {
             //sina微博获取access_token接口，只允许POST方式
             request = builder.buildBodyMessage(OAuthAuthzClientRequest.class);
-            oauthResponse = OAuthHttpClient.execute(request, OAuth.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.QQ.getValue()) {
             request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
-            oauthResponse = OAuthHttpClient.execute(request, OAuth.HttpMethod.GET, QQHTMLTextAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, QQHTMLTextAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {
             request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
-            oauthResponse = OAuthHttpClient.execute(request, OAuth.HttpMethod.GET, RenrenJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.TAOBAO.getValue()) {
             //taobao获取access_token接口，只允许POST方式
             request = builder.buildBodyMessage(OAuthAuthzClientRequest.class);
-            oauthResponse = OAuthHttpClient.execute(request, OAuth.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }

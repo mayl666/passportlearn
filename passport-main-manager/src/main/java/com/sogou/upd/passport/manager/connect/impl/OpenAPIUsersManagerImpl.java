@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -12,7 +13,6 @@ import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.utils.RenrenSignatureUtils;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenMethod;
@@ -126,7 +126,7 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
                         .setUids(openid).setMethod(method).setSign(sign).setAccessToken(connectAccessToken)
                         .buildBodyMessage(RenrenUserAPIRequest.class);
 
-                response = OAuthHttpClient.execute(request, OAuth.HttpMethod.POST, RenrenUserAPIResponse.class);
+                response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenUserAPIResponse.class);
             } else {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
