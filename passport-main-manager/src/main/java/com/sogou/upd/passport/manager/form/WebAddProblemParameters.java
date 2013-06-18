@@ -16,7 +16,7 @@ public class WebAddProblemParameters {
 //    @NotBlank(message = "passportId不允许为空!")
     private String passportId;
     @NotBlank(message = "请选择反馈类型!")
-    private int typeId;
+    private String typeId;
     @NotBlank(message = "反馈标题不允许为空!")
     private String titile;
     @NotBlank(message = "反馈内容不允许为空!")
@@ -53,14 +53,6 @@ public class WebAddProblemParameters {
         this.passportId = passportId;
     }
 
-    public int getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
-    }
-
     public String getContent() {
         return content;
     }
@@ -91,5 +83,13 @@ public class WebAddProblemParameters {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
     }
 }
