@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=476048" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=049012" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -32,7 +32,7 @@
     <div class="inner reg">
         <ul>
             
-            <li ><a href="1">搜狗通行证注册</a></li>
+            <li class="current"><a href="/web/reg/nick">搜狗通行证注册</a></li>
             
         </ul>
     </div>
@@ -95,7 +95,8 @@
 </div>
                     <div class="form-desc">
     <label>
-        <input type="checkbox" name="" value="" />
+        <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan"/>
+        <span class="checkbox " id="ConfirmChbSpan" ></span>
         我已阅读并接受
     </label>
 </div>

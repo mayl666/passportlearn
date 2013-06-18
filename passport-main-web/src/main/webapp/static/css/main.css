@@ -127,12 +127,20 @@ a.long-btn{ width:182px; height:36px; background:url(/./static/img/btn-long.png?
 .medium-btn,
 a.medium-btn{ width:83px; height:27px; background:url(/./static/img/btn-medium.png?t=475411) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; text-align:center; color:#fff;text-decoration:none;line-height:27px; }
 .two-col-r .col-r .reg-email{padding:14px 12px 20px;}
-.reg-email .step{ border-bottom:1px #f3f3f3 solid;padding-bottom:20px; }
+.reg-email .step{ border-bottom:1px #f3f3f3 solid;padding-bottom:20px;}
+.reg-email .step span{display:block;width:686px;height:102px;background:url(/./static/img/email-step.jpg?t=873162) no-repeat 0 0; }
+.reg-email .step2 span{background-position: 0 -102px; }
+.reg-email .binding{padding:20px 0 0 20px;font-size:16px;}
+.reg-email .binding p{ padding-bottom:20px; }
+.reg-email .binding .warn{ font-size:12px; color:red;margin-top:-10px; }
 .reg-email .form{ padding-top:14px; }
 .tel-valid-btn{ display:inline-block;*display:inline;*zoom:1;width:182px;height:28px;line-height:28px;font-weight:700;color:#666;background:url(/./static/img/tel-valid-btn.png?t=311781) no-repeat 0 0;text-align:center;cursor:pointer; }
 .tel-valid-btn-disable{ background-position:0 -32px; cursor:default; }
 .tel-valid-hr{display:block; width:182px;height:0px;overflow:hidden;border-top:1px #eaeaea dashed;position:relative;top:10px; }
 .form .tel-valid-error{ float:none;display:inline-block;*display:inline;*zoom:1;position:absolute;top:0;right:-295px;display:none;  }
+.checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(/./static/img/checkbox.png?t=582595) no-repeat 0 -14px; position:relative; top:3px; *top:0;margin-right:2px; }
+.checkbox-checked{ background-position:0 0; }
+#ConfirmChb{width:auto;height:auto;width:1px;height:1px;position:absolute;left:-3000px;}
 .safe-index .level{ padding:18px 0 18px 80px; font-size:16px;color:#588700; background:url(/./static/img/star.png?t=011262) no-repeat 55px center; }
 .safe-index .level-status,
 .safe-index .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(/./static/img/line.png?t=049072) no-repeat 0 -26px;position:relative; }
