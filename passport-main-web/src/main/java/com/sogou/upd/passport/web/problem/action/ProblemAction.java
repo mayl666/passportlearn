@@ -57,8 +57,7 @@ public class ProblemAction extends BaseController {
         result.setDefaultModel("userid", userId);
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
-        String jsonResult = new ObjectMapper().writeValueAsString(typeList);
-        result.setDefaultModel("problemTypeList",jsonResult);
+        result.setDefaultModel("problemTypeList",typeList);
         model.addAttribute("data", result.toString());
 
         return "feedback";
