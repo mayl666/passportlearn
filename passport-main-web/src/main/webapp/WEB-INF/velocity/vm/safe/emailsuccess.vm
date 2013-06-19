@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="/./static/css/main.css?t=488165" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <ul class="info">
+            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li class="sep">|</li>
+            <li>
+                <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+            <li class="sep" style="display:none;">|</li>
+            <li class="logout" style="display:none;">
+                <a href="https://account.sogou.com/web/logout">退出</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+            
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li ><a href="/">首页</a></li>
+            
+            <li class="current"><a href="/web/security">账号安全</a></li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li class="index   ">
+        <a href="/web/security">账号安全</a>
+    </li>
+    
+    <li class="password   small">
+        <a href="/web/security/password">修改密码</a>
+    </li>
+    
+    <li class="email   small">
+        <a href="/web/security/email">密保邮箱</a>
+    </li>
+    
+    <li class="tel   small">
+        <a href="/web/security/mobile">密保手机</a>
+    </li>
+    
+    <li class="question   small">
+        <a href="/web/security/question">密保问题</a>
+    </li>
+    
+    <li class="history   small">
+        <a href="/web/security/history">登录记录</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+        <div class="inner safe-form">
+            <div class="title">
+                修改个密码撒
+            </div>
+            <div  class="form">
+                <div class="binded">
+                    <p>绑定成功</p>
+                    <a href="/" class="long-btn">返回首页</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        &copy;2013 sogou.com
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
+    <script type="text/javascript" src="/./static/js/main.js?t=922709"></script>
+    
+    <script type="text/javascript">
+
+var server_data = '${data}';
+        
+require.config({
+    baseUrl:"/./static/js"
+});
+
+
+require(['safe'] , function(module){
+    module.init('emailsuccess');
+});
+
+
+    </script>
+</html>
