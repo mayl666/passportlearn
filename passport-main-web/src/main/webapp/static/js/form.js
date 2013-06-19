@@ -66,6 +66,8 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         return $el.parent().parent().find('.' + className);
     };
     var getDesc= function($el){
+        if( $el.attr('data-desc') )
+            return $el.attr('data-desc');
         var types = $el.attr('uui-type');
         types = (types || '').split(' ');
         var type;

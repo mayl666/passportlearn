@@ -18,7 +18,7 @@ public class WebAddProblemParameters {
     @NotBlank(message = "请选择反馈类型!")
     private String typeId;
     @NotBlank(message = "反馈标题不允许为空!")
-    private String titile;
+    private String title;
     @NotBlank(message = "反馈内容不允许为空!")
     private String content;
     @NotBlank(message = "email不允许为空!")
@@ -69,14 +69,6 @@ public class WebAddProblemParameters {
         this.clientId = clientId;
     }
 
-    public String getTitile() {
-        return titile;
-    }
-
-    public void setTitile(String titile) {
-        this.titile = titile;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -91,5 +83,13 @@ public class WebAddProblemParameters {
 
     public void setTypeId(String typeId) {
         this.typeId = typeId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

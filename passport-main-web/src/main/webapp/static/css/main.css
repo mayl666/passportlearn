@@ -71,7 +71,7 @@ a:hover{ text-decoration:underline; }
 .banner .underline{ height:3px;background:#6da700;position:absolute;bottom:-1px;left:0; font-size: 0;}
 .nav,.sidebar{ border:1px #cdcdcd solid; border-radius:2px; overflow:hidden;}
 .nav .current{ background:#fbffeb url(/./static/img/nav-arrow.png?t=447357) no-repeat 195px center; }
-.nav li{ height:45px; line-height:45px;border-top:1px #cdcdcd solid; margin-top:-1px; font-size:18px; font-family:'Microsoft Yahei', sans-serif; }
+.nav li{ height:45px; line-height:45px;border-top:1px #cdcdcd solid;  font-size:18px; font-family:'Microsoft Yahei', sans-serif; }
 .nav li.small{font-size:16px;}
 .nav li a{ display:block; height:45px;padding-left:25px;color:#333; }
 .nav li.current a{ color:#000; }
@@ -112,6 +112,7 @@ a:hover{ text-decoration:underline; }
 .form-tall .error{width:136px;}
 .form-btn { padding:10px 0 0 185px; }
 .form-btn button{ border:0;padding:0;margin:0;background:url(/./static/img/btn-long.png?t=928174) no-repeat 0 0;width:182px;height:36px;color:#fff;font-size:16px;}
+.form-btn button:hover{background-position:0 -44px;}
 .form-desc{ padding:5px 0 0 185px; }
 .form .vpic{ float:left; padding:0 9px; position:relative; top:10px;}
 .form .vpic img{ width:80px; height:28px; }

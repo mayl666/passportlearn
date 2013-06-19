@@ -83,7 +83,7 @@ public class ProblemManagerImpl implements ProblemManager {
             if (!Strings.isNullOrEmpty(addProblemParams.getClientId())){
                 problem.setClientId(Integer.parseInt(addProblemParams.getClientId()));
             }
-            problem.setTitle(addProblemParams.getTitile());
+            problem.setTitle(addProblemParams.getTitle());
             problem.setEmail(addProblemParams.getEmail());
             problem.setContent(addProblemParams.getContent());
             problem.setTypeId(Integer.parseInt(addProblemParams.getTypeId()));

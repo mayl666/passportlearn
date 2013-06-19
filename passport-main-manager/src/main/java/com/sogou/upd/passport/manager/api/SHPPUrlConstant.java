@@ -37,7 +37,7 @@ public class SHPPUrlConstant {
 //    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
     public static final String GET_COOKIE_VALUE="http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
     public static final String SET_COOKIE="https://passport.sohu.com/act/setcookie";//用于前端设置cookie
-    public static final String CLEAN_COOKIE="https://passport.sohu.com/act/logout?domain=sogou.com";
+    public static final String CLEAN_COOKIE="https://passport.sohu.com/act/logout";
     public static final String CHECK_USER=BASE_INTERNAL_URL+"checkuser";//查询用户名是否注册过
 
     /*================================注册相关=======================================*/
