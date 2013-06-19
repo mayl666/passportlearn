@@ -25,35 +25,9 @@ import com.sogou.upd.passport.oauth2.common.types.ParameterStyleEnum;
 import com.sogou.upd.passport.oauth2.common.types.TokenTypeEnum;
 
 /**
- *
- *
- *
+ * OAuth协议相关的常量类
  */
 public class OAuth {
-
-    public static final class HttpMethod {
-        public static final String POST = "POST";
-        public static final String GET = "GET";
-        public static final String DELETE = "DELETE";
-        public static final String PUT = "PUT";
-    }
-
-    public static final class HeaderType {
-        public static final String CONTENT_TYPE = "Content-Type";
-        public static final String WWW_AUTHENTICATE = "WWW-Authenticate";
-        public static final String AUTHORIZATION = "Authorization";
-    }
-
-    public static final class WWWAuthHeader {
-        public static final String REALM = "realm";
-    }
-
-    public static final class ContentType {
-        public static final String URL_ENCODED = "application/x-www-form-urlencoded";
-        public static final String UPLOAD_FILE = "multipart/form-data";
-        public static final String JSON = "application/json";
-        public static final String HTML_TEXT = "text/html";
-    }
 
     // Authorization request params
     public static final String OAUTH_RESPONSE_TYPE = "response_type";

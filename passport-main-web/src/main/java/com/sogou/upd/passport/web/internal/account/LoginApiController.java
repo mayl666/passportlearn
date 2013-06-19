@@ -4,11 +4,11 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginApiController {
 
     @Autowired
-    private ConfigureManager configureManager;
-
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
 
     /**
@@ -40,6 +37,7 @@ public class LoginApiController {
      * @param params
      * @return
      */
+    @InterfaceSecurity
     @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
     @ResponseBody
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
@@ -51,12 +49,8 @@ public class LoginApiController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
-        if (result.isSuccess()) {
-            // 调用内部接口
-            result = proxyLoginApiManager.webAuthUser(params);
-        }
+        // 调用内部接口
+        result = proxyLoginApiManager.webAuthUser(params);
 
         return result.toString();
     }
@@ -68,6 +62,7 @@ public class LoginApiController {
      *
      * @return
      */
+    @InterfaceSecurity
     @RequestMapping(value = "/account/authtoken", method = RequestMethod.POST)
     @ResponseBody
     public Object appAuthToken(HttpServletRequest request, AppAuthTokenApiParams params) {
@@ -79,12 +74,9 @@ public class LoginApiController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getToken(), params.getClient_id(), params.getCt(), params.getCode());
-        if (result.isSuccess()) {
-            // 调用内部接口
-            result = proxyLoginApiManager.appAuthToken(params);
-        }
+        // 调用内部接口
+        result = proxyLoginApiManager.appAuthToken(params);
+
         return result.toString();
     }
 

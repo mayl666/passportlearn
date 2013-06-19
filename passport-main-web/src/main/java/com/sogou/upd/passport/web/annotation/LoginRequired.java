@@ -29,7 +29,7 @@ public @interface LoginRequired {
     String message() default "请先登录！";
 
     //返回前端信息时采用的格式
-    LoginRequiredResultType resultType() default LoginRequiredResultType.json;
+    ResponseResultType resultType() default ResponseResultType.json;
 
     //当检测失败的时候跳转的页面
     String url() default "/web/login";

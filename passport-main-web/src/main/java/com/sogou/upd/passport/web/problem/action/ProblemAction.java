@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
@@ -12,6 +11,7 @@ import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +50,8 @@ public class ProblemAction extends BaseController {
 
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
-        model.addAttribute("typeList", typeList);
-        //TODO 获取并set验证码
+        String jsonResult = new ObjectMapper().writeValueAsString(typeList);
+        model.addAttribute("data", jsonResult);
 
         return "feedback";
     }

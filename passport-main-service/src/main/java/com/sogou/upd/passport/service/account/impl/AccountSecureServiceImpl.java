@@ -4,8 +4,11 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.lang.ObjectUtil;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 
@@ -13,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-21 Time: 上午11:52 To change this template
@@ -24,6 +29,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE;
     private static final String CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE;
 
+    private static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIONRECORD;
 
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureServiceImpl.class);
 
@@ -50,6 +56,39 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException {
         return checkSecureCode(passportId, clientId, secureCode, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
+    }
+
+    @Override
+    public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note) {
+        ActionRecord actionRecord = new ActionRecord();
+
+        actionRecord.setAction(action);
+        actionRecord.setUserId(userId);
+        actionRecord.setClientId(clientId);
+        actionRecord.setIp(ip);
+        actionRecord.setDate(System.currentTimeMillis());
+
+        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+        storeRecord(cacheKey, actionRecord, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+    }
+
+    @Override
+    public void setActionRecord(ActionRecord actionRecord) {
+        if (actionRecord == null) {
+            return;
+        }
+        String userId = actionRecord.getUserId();
+        int clientId = actionRecord.getClientId();
+        AccountModuleEnum action = actionRecord.getAction();
+        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+        storeRecord(cacheKey, actionRecord, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+    }
+
+    @Override
+    public List<ActionRecord> getActionRecords(String userId, int clientId, AccountModuleEnum action) {
+        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+        List<ActionRecord> records = queryRecords(cacheKey, ActionRecord.class);
+        return records;
     }
 
     private String getSecureCode(String passportId, int clientId, String prefix)
@@ -82,4 +121,19 @@ public class AccountSecureServiceImpl implements AccountSecureService {
             throw new ServiceException(e);
         }
     }
+
+    // 方便以后修改存储方式
+    private <T> void storeRecord(String key, T record, int maxLen) {
+        redisUtils.lPushObjectWithMaxLen(key, record, maxLen);
+    }
+
+    // 方便以后修改存储方式
+    private <T> List<T> queryRecords(String key, Class<T> clazz) {
+        return redisUtils.getList(key, clazz);
+    }
+
+    private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {
+        return CACHE_PREFIX_PASSPORTID_ACTIONRECORD + action + "_" + userId;
+    }
+
 }

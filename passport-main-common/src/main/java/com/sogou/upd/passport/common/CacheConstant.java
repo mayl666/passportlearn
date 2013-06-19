@@ -54,6 +54,9 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST = "SP.PASSPORTID_:ADDPROBLEMTIMES_"; // passortId与提交反馈次数之间的映射
     public static final String CACHE_PREFIX_PROBLEM_IPINBLACKLIST = "SP.IP_ADDPROBLEMTIMES:_"; // IP与提交反馈次数之间的映射
 
+    /*==================动作记录相关缓存常量=====================*/
+    public static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = "SP.PASSPORTID:ACTIONRECORD_LIST_";
+
     /*==================proxy相关缓存常量=====================*/
     // TODO:迁移后，此常量将删除
     public static final String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = "SP.MOBILE:PROXY_SMSCODE_";
