@@ -51,10 +51,15 @@ public class ProblemAction extends BaseController {
         if (!hostHolder.isLogin()) {
             return "redirect:/web/webLogin";
         }
+
+        Result result = new  APIResultSupport(false);
+        String userId = hostHolder.getPassportId();
+        result.setDefaultModel("userid", userId);
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
         String jsonResult = new ObjectMapper().writeValueAsString(typeList);
-        model.addAttribute("data", jsonResult);
+        result.setDefaultModel("problemTypeList",jsonResult);
+        model.addAttribute("data", result.toString());
 
         return "feedback";
     }
