@@ -200,7 +200,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result logActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note) throws Exception;
+    public Result logActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note);
 
     /**
      * 查询某用户某一动作的所有执行记录
@@ -211,7 +211,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum action) throws Exception;
+    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum action);
 
     /**
      * 查询某用户的所有动作执行记录
@@ -221,5 +221,5 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result queryAllActionRecords(String userId, int clientId) throws Exception;
+    public Result queryAllActionRecords(String userId, int clientId);
 }
