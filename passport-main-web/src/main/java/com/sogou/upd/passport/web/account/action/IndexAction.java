@@ -49,7 +49,13 @@ public class IndexAction extends BaseController {
             } else {
                 result = secureManager.queryAccountSecureInfo(userId, clientId, true);
             }
-            result.setDefaultModel("username", userId);
+
+            String nickName = hostHolder.getNickName();
+            if (Strings.isNullOrEmpty(nickName)) {
+                nickName = userId;
+            }
+
+            result.setDefaultModel("username", nickName);
             model.addAttribute("data", result.toString());
             return "ucenter/index";
         }
