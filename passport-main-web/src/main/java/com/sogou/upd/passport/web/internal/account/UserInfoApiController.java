@@ -9,6 +9,7 @@ import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.converters.CustomDateEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,17 +39,16 @@ public class UserInfoApiController {
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManagerImpl;
 
-    @Autowired
-    private ConfigureManager configureManager;
-
     /**
      * 获取用户基本信息
+     *
      * @param params
      * @return
      */
+    @InterfaceSecurity
     @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
     @ResponseBody
-    public Object getUserInfo(GetUserInfoApiparams params){
+    public Object getUserInfo(GetUserInfoApiparams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -57,24 +57,22 @@ public class UserInfoApiController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
-        if (result.isSuccess()) {
-            // 调用内部接口
-            result = proxyUserInfoApiManagerImpl.getUserInfo(params);
-        }
+        // 调用内部接口
+        result = proxyUserInfoApiManagerImpl.getUserInfo(params);
         return result.toString();
     }
 
 
     /**
      * 更新用户基本信息
+     *
      * @param params
      * @return
      */
+    @InterfaceSecurity
     @RequestMapping(value = "/updateuserinfo", method = RequestMethod.POST)
     @ResponseBody
-    public Object updateUserInfo(UpdateUserInfoApiParams params){
+    public Object updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -83,12 +81,8 @@ public class UserInfoApiController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        // 签名和时间戳校验
-        result = configureManager.verifyInternalRequest(params.getUserid(), params.getClient_id(), params.getCt(), params.getCode());
-        if (result.isSuccess()) {
-            // 调用内部接口
-            result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
-        }
+        // 调用内部接口
+        result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
         return result.toString();
     }
 

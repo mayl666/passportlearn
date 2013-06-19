@@ -64,25 +64,4 @@ public class ConfigureManagerImpl implements ConfigureManager {
         return false;
     }
 
-    @Override
-    public Result verifyInternalRequest(String uid, int clientId, long ct, String originalCode) {
-        Result result = new APIResultSupport(false);
-        try {
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            String secret = appConfig.getServerSecret();
-            String code = ManagerHelper.generatorCode(uid, clientId, secret, ct);
-            long currentTime = System.currentTimeMillis();
-            long t = currentTime - API_REQUEST_VAILD_TERM;
-            if (code.equals(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
-                result.setSuccess(true);
-            } else {
-                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
-            }
-        } catch (Exception e) {
-            log.error("Verify Code And Ct Error!", e);
-            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
-        }
-        return result;
-    }
-
 }
