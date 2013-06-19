@@ -1,10 +1,14 @@
 package com.sogou.upd.passport.model.account;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-18 Time: 下午5:48 To change this template use
  * File | Settings | File Templates.
+ *
+ * 传递动作记录的参数类
+ *
  */
 public class ActionRecord {
     private AccountModuleEnum action;
@@ -60,5 +64,10 @@ public class ActionRecord {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public ActionStoreRecordDO obtainStoreRecord() {
+        ActionStoreRecordDO actionStoreRecord = new ActionStoreRecordDO(this);
+        return actionStoreRecord;
     }
 }
