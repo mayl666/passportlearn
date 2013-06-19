@@ -26,7 +26,7 @@
         </filter>
     </appender>
     <appender name="FILE-ALL" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="DatePattern" value="'.'yyyy-mm-dd"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
         <param name="File" value="${passport.log.path}/couponActive.log"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -36,7 +36,7 @@
 
     <!--start:httpClient性能log-->
     <appender name="fileAppender" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="DatePattern" value="'.'yyyy-mm-dd"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
         <param name="File" value="${passport.log.path}/httpclient/perfStats.log" />
         <layout class="org.apache.log4j.PatternLayout">
