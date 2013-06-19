@@ -65,8 +65,7 @@ public class ProblemAction extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         // TODO 获取并set passportId
-//        String passportId = hostHolder.getPassportId();
-        String passportId ="tinkame28@sohu.com";
+        String passportId = hostHolder.getPassportId();
         if(Strings.isNullOrEmpty(passportId)){
             result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
             return result.toString();
