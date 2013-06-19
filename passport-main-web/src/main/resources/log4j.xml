@@ -57,6 +57,31 @@
     </logger>
     <!--end:httpClient性能log-->
 
+    <!--start:web服务器性能log-->
+    <appender name="webPerfFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="true"/>
+        <param name="File" value="${passport.log.path}/webperf/perfStats.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%m%n" />
+        </layout>
+    </appender>
+
+    <appender name="webCoalescingStatistics"
+              class="org.perf4j.log4j.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000" />
+        <appender-ref ref="webPerfFileAppender" />
+    </appender>
+
+    <logger name="webTimingLogger" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="webCoalescingStatistics" />
+    </logger>
+    <!--end:web服务器性能log-->
+
+
+
 
     <category name="java.sql" additivity="false">
         <priority value="${passport.log.level}"/>
