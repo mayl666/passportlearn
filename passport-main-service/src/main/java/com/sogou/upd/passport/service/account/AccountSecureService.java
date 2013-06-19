@@ -1,6 +1,10 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.ActionRecord;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-21 Time: 上午10:51 To change this template
@@ -51,4 +55,9 @@ public interface AccountSecureService {
      */
     public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException;
+
+    public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip);
+
+    public List<ActionRecord> getActionRecords(String userId, int clientId, AccountModuleEnum action);
+
 }
