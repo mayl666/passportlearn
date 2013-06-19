@@ -66,6 +66,26 @@ define('utils',[], function(){
             iframe.src = url;
             
             document.body.appendChild(iframe);
+        },
+        getScript: function(url , callback){
+            var script = document.createElement("script");
+            var head = document.head;
+            script.async = true;
+            script.src = url;
+            script.onload = script.onreadystatechange = function( _, isAbort ) {
+                if ( isAbort || !script.readyState || /loaded|complete/.test( script.readyState ) ) {
+                    script.onload = script.onreadystatechange = null;
+                    if ( script.parentNode ) {
+                        script.parentNode.removeChild( script );
+                    }
+                    script = null;
+                    if ( !isAbort ) {
+                        callback( );
+                    }
+                };
+            };
+
+            head.insertBefore( script, head.firstChild );
         }
     };
 
@@ -96,6 +116,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
         });
 
         refreshVcode($el);
+        return true;
     };
 
     var Module_Size = {
@@ -138,12 +159,20 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                         $el.find('input[name="autoLogin"]').val(),
                                         document.getElementById('logdiv'),
                                         function(data){
+                                            var refreshed = false;
+                                            var captchaIpt = $el.find('input[name=captcha]');
                                             if( +data.needcaptcha ){
-                                                initVcode();
+                                                if(initVcode()) {
+                                                    refreshed = true;
+                                                }
                                                 showVcodeError('请输入验证码');
+                                                captchaIpt.focus();
                                             }
                                             if( +data.status == 20221 ){//vcode
-                                                showVcodeError('请输入验证码');
+                                                var text = captchaIpt.val() ? '验证码错误':"请输入验证码";
+                                                showVcodeError(text);
+                                                !refreshed && refreshVcode();
+                                                captchaIpt.focus();
                                             }else{
                                                 showUnameError('用户名或密码错，请重新输入');
                                             }
