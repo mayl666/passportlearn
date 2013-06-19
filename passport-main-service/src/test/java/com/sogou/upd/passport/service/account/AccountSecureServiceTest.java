@@ -2,6 +2,9 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.model.account.ActionRecord;
+import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
+
+import junit.framework.Assert;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
@@ -81,23 +84,18 @@ public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
                     AccountModuleEnum.RESETPWD, "127.0.0.1 - " + i, null);
         }
 
-        List<ActionRecord>
-                list = accountSecureService.getActionRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.RESETPWD);
-        List<ActionRecord>
-                list1 = accountSecureService.getActionRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.REGISTER);
+        List<ActionStoreRecordDO>
+                list = accountSecureService.getActionStoreRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.RESETPWD);
+        List<ActionStoreRecordDO>
+                list1 = accountSecureService.getActionStoreRecords(PASSPORT_ID, CLIENT_ID,
+                                                                   AccountModuleEnum.REGISTER);
         Iterator it = list.iterator();
         System.out.println("List: ");
+        System.out.println(new ObjectMapper().writeValueAsString(list));
         while (it.hasNext()) {
             System.out.println(new ObjectMapper().writeValueAsString(it.next()));
         }
-        if (list1 == null) {
-            return;
-        }
-        it = list1.iterator();
-        System.out.println("List1: ");
-        while (it.hasNext()) {
-            System.out.println(it.next());
-        }
+        Assert.assertTrue(list1 == null);
     }
 
     private ActionRecord newRecord() {

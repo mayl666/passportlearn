@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.AccountSecureService;
+import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 
 import org.slf4j.Logger;
@@ -60,16 +61,11 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Override
     public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note) {
-        ActionRecord actionRecord = new ActionRecord();
-
-        actionRecord.setAction(action);
-        actionRecord.setUserId(userId);
-        actionRecord.setClientId(clientId);
-        actionRecord.setIp(ip);
-        actionRecord.setDate(System.currentTimeMillis());
+        // 获取实际需要存储的参数类，节省存储空间
+        ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(System.currentTimeMillis(), ip);
 
         String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-        storeRecord(cacheKey, actionRecord, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+        storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
     }
 
     @Override
@@ -80,14 +76,19 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         String userId = actionRecord.getUserId();
         int clientId = actionRecord.getClientId();
         AccountModuleEnum action = actionRecord.getAction();
+
+        // 获取实际需要存储的参数类，节省存储空间
+        ActionStoreRecordDO storeRecordDO = actionRecord.obtainStoreRecord();
+
         String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-        storeRecord(cacheKey, actionRecord, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+        storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
     }
 
     @Override
-    public List<ActionRecord> getActionRecords(String userId, int clientId, AccountModuleEnum action) {
+    public List<ActionStoreRecordDO> getActionStoreRecords(String userId, int clientId, AccountModuleEnum action) {
         String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-        List<ActionRecord> records = queryRecords(cacheKey, ActionRecord.class);
+        List<ActionStoreRecordDO> records = queryRecords(cacheKey, ActionStoreRecordDO.class);
+
         return records;
     }
 

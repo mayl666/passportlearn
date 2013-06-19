@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.ActionRecord;
+import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 
 import java.util.List;
 
@@ -60,6 +61,6 @@ public interface AccountSecureService {
 
     public void setActionRecord(ActionRecord actionRecord);
 
-    public List<ActionRecord> getActionRecords(String userId, int clientId, AccountModuleEnum action);
+    public List<ActionStoreRecordDO> getActionStoreRecords(String userId, int clientId, AccountModuleEnum action);
 
 }
