@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
@@ -12,6 +11,7 @@ import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +47,19 @@ public class ProblemAction extends BaseController {
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
     public String addProblem(HttpServletRequest request, Model model)
             throws Exception {
+        //检测是否登录
+        if (!hostHolder.isLogin()) {
+            return "redirect:/web/webLogin";
+        }
 
+        Result result = new  APIResultSupport(false);
+        String userId = hostHolder.getPassportId();
+        result.setDefaultModel("userid", userId);
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
-        model.addAttribute("typeList", typeList);
-        //TODO 获取并set验证码
+        String jsonResult = new ObjectMapper().writeValueAsString(typeList);
+        result.setDefaultModel("problemTypeList",jsonResult);
+        model.addAttribute("data", result.toString());
 
         return "feedback";
     }
@@ -65,14 +73,14 @@ public class ProblemAction extends BaseController {
         String passportId = hostHolder.getPassportId();
         if(Strings.isNullOrEmpty(passportId)){
             result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
-            return result;
+            return result.toString();
         }
         //参数验证
         String validateResult = ControllerHelper.validateParams(addProblemParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
 
         addProblemParams.setPassportId(passportId);

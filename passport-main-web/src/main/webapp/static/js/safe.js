@@ -1,5 +1,67 @@
 
 /*
+ * form module script
+ * @author zhengxin
+*/
+ 
+
+
+
+define('utils',[], function(){
+
+    
+    return {
+        uuid: function(){
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };            
+            return s4() + s4()  + s4()  + s4()  +
+                s4() +  s4() + s4() + s4();
+
+        },
+        parseResponse: function(data){
+            if( typeof data == 'string' ){
+                try{
+                    data = eval('('+data+')');
+                }catch(e){
+                    data = {status:-1,statusText:'服务器故障'};
+                }
+            }
+            return data;
+        },
+        addIframe: function(url){
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            
+            document.body.appendChild(iframe);
+        },
+        getScript: function(url , callback){
+            var script = document.createElement("script");
+            var head = document.head;
+            script.async = true;
+            script.src = url;
+            script.onload = script.onreadystatechange = function( _, isAbort ) {
+                if ( isAbort || !script.readyState || /loaded|complete/.test( script.readyState ) ) {
+                    script.onload = script.onreadystatechange = null;
+                    if ( script.parentNode ) {
+                        script.parentNode.removeChild( script );
+                    }
+                    script = null;
+                    if ( !isAbort ) {
+                        callback( );
+                    }
+                };
+            };
+
+            head.insertBefore( script, head.firstChild );
+        }
+    };
+
+});
+
+/*
  * common module script
  * @author zhengxin
 */
@@ -7,7 +69,7 @@
 
 
 
-define('common',[],function(){
+define('common',['./utils'],function(utils){
 
 
     return{
@@ -23,7 +85,7 @@ define('common',[],function(){
             if( data.username ){
                 $('#Header .logout').show().prev().show();
                 $('#Header .logout a').click(function(){
-                    $.getScript($(this).attr('href') , function(){
+                    utils.getScript($(this).attr('href') , function(){
                         if( window['logout_status'] == 'success' ){
                             location.reload();
                         }else{
@@ -824,48 +886,6 @@ define('tpl',['./Ursa'] , function(Ursa){
     };
 });
 
-/*
- * form module script
- * @author zhengxin
-*/
- 
-
-
-
-define('utils',[], function(){
-
-    
-    return {
-        uuid: function(){
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            };            
-            return s4() + s4()  + s4()  + s4()  +
-                s4() +  s4() + s4() + s4();
-
-        },
-        parseResponse: function(data){
-            if( typeof data == 'string' ){
-                try{
-                    data = eval('('+data+')');
-                }catch(e){
-                    data = {status:-1,statusText:'服务器故障'};
-                }
-            }
-            return data;
-        },
-        addIframe: function(url){
-            var iframe = document.createElement('iframe');
-            iframe.src = url;
-            
-            document.body.appendChild(iframe);
-        }
-    };
-
-});
-
 define('conf',[],function(){
 
 
@@ -1518,6 +1538,8 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
         return $el.parent().parent().find('.' + className);
     };
     var getDesc= function($el){
+        if( $el.attr('data-desc') )
+            return $el.attr('data-desc');
         var types = $el.attr('uui-type');
         types = (types || '').split(' ');
         var type;

@@ -32,43 +32,56 @@
     <div class="inner reg">
         <ul>
             
-            <li ><a href="">首页</a></li>
-            
-            <li ><a href="1">找回密码</a></li>
+            <li class="current"><a href="/web/reg/email">搜狗通行证注册</a></li>
             
         </ul>
     </div>
     <span class="underline"></span>
 </div>
 
-<div class="main-content one-col">
-    <div class="inner recover" >
-        <div class="title">
-            提示信息
-        </div>
-        <div  class="form">
-            <form method="post" id="" action="">
-                <p class="ptitle">请输入新密码</p>
-                
-                <div class="form-item">
-    <label for="PasswordIpt">新密码：</label>
-    <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
-    </span>
-</div>
-                <div class="form-item">
-    <label for="Password2Ipt">确认新密码：</label>
-    <span class="form-el">
-        <input uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" />
-    </span>
-</div>
-                <div class="form-btn">
-    <button type="submit">确定</button>
-</div>
-            </form>
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li style="border:none;" class="email   ">
+        <a href="/web/reg/email">邮箱注册</a>
+    </li>
+    
+    <li  class="tel   ">
+        <a href="/web/reg/mobile">手机注册</a>
+    </li>
+    
+    <li  class="nick   ">
+        <a href="/web/reg/nick">个性账号</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+        <div class="inner reg-email">
+            <div class="step step3">
+                <span ></span>
+            </div>
+            <div  class="form">
+                <div class="binded">
+                    <p>注册成功！</p>
+                    <a href="/" class="long-btn">返回首页</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script type="text/tpl" id="Target3">
+
+    <div class="binding">
+        <p>验证邮件已发送至您的邮箱：<{sec_email}></p>
+        <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
+        <a href="#" class="long-btn">去邮箱验证</a>
+    </div>
+
+</script>
 
 
 
@@ -92,8 +105,8 @@ require.config({
 });
 
 
-require(['recover'] , function(module){
-    module.init('reset');
+require(['reg'] , function(module){
+    module.init('emailsuccess');
 });
 
 

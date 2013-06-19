@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -8,11 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisUtils {
 
-    private static Logger log = LoggerFactory.getLogger(RedisUtils.class);
+    private static Logger logger = LoggerFactory.getLogger(RedisUtils.class);
 
     private static RedisTemplate redisTemplate;
 
@@ -38,11 +42,11 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value);
         } catch (Exception e) {
-            log.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
+            logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             try {
                 delete(key);
             } catch (Exception ex) {
-                log.error("[Cache] set and delete cache fail, key:" + key + " value:" + value, e);
+                logger.error("[Cache] set and delete cache fail, key:" + key + " value:" + value, e);
                 throw e;
             }
         }
@@ -56,11 +60,11 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, new ObjectMapper().writeValueAsString(obj));
         } catch (Exception e) {
-            log.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
+            logger.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
             try {
                 delete(key);
             } catch (Exception ex) {
-                log.error("[Cache] set and delete cache fail, key:" + key + " value:" + obj, e);
+                logger.error("[Cache] set and delete cache fail, key:" + key + " value:" + obj, e);
                 throw e;
             }
         }
@@ -73,7 +77,7 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value,timeout,timeUnit);
         } catch (Exception e) {
-            log.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
+            logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
 
         }
     }
@@ -86,7 +90,7 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, new ObjectMapper().writeValueAsString(obj),timeout,timeUnit);
         } catch (Exception e) {
-            log.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
+            logger.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
 
         }
     }
@@ -112,7 +116,7 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             countNum=valueOperations.increment(key,1);
         } catch (Exception e) {
-            log.error("[Cache] increment fail, key:" + key, e);
+            logger.error("[Cache] increment fail, key:" + key, e);
             throw e;
         }
         return countNum;
@@ -127,7 +131,7 @@ public class RedisUtils {
             BoundValueOperations boundValueOperation = redisTemplate.boundValueOps(cacheKey);
             return boundValueOperation.setIfAbsent(obj);
         } catch (Exception e) {
-            log.error("[Cache] set if absent cache fail, key:" + cacheKey + " value:" + obj, e);
+            logger.error("[Cache] set if absent cache fail, key:" + cacheKey + " value:" + obj, e);
             return false;
         }
     }
@@ -140,7 +144,7 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             return valueOperations.get(key);
         } catch (Exception e) {
-            log.error("[Cache] get cache fail, key:" + key, e);
+            logger.error("[Cache] get cache fail, key:" + key, e);
         }
         return null;
     }
@@ -160,7 +164,7 @@ public class RedisUtils {
                 return object;
             }
         } catch (Exception e) {
-            log.error("[Cache] get object cache fail, key:" + cacheKey, e);
+            logger.error("[Cache] get object cache fail, key:" + cacheKey, e);
         }
         return null;
     }
@@ -173,7 +177,7 @@ public class RedisUtils {
         try {
             return redisTemplate.hasKey(key);
         } catch (Exception e) {
-            log.error("[Cache] check key is exist in cache fail, key:" + key, e);
+            logger.error("[Cache] check key is exist in cache fail, key:" + key, e);
             return false;
         }
     }
@@ -186,7 +190,7 @@ public class RedisUtils {
             BoundHashOperations boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             return boundHashOperations.entries();
         } catch (Exception e) {
-            log.error("[Cache] hGet All cache fail, key:" + cacheKey, e);
+            logger.error("[Cache] hGet All cache fail, key:" + cacheKey, e);
         }
         return null;
     }
@@ -199,11 +203,11 @@ public class RedisUtils {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.putAll(mapData);
         } catch (Exception e) {
-            log.error("[Cache] hPutAll cache fail, cacheKey:" + cacheKey, e);
+            logger.error("[Cache] hPutAll cache fail, cacheKey:" + cacheKey, e);
             try {
                 delete(cacheKey);
             } catch (Exception ex) {
-                log.error("[Cache] hPutAll and delete cache fail, cacheKey:" + cacheKey, e);
+                logger.error("[Cache] hPutAll and delete cache fail, cacheKey:" + cacheKey, e);
                 throw e;
             }
         }
@@ -225,11 +229,11 @@ public class RedisUtils {
             BoundHashOperations<String, String, Object> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.putAll(objectMap);
         } catch (Exception e) {
-            log.error("[Cache] hPutAllObject cache fail, cacheKey:" + cacheKey, e);
+            logger.error("[Cache] hPutAllObject cache fail, cacheKey:" + cacheKey, e);
             try {
                 delete(cacheKey);
             } catch (Exception ex) {
-                log.error("[Cache] hPutAllObject and delete cache fail, cacheKey:" + cacheKey, e);
+                logger.error("[Cache] hPutAllObject and delete cache fail, cacheKey:" + cacheKey, e);
                 throw e;
             }
         }
@@ -247,11 +251,13 @@ public class RedisUtils {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.put(key, value);
         } catch (Exception e) {
-            log.error("[Cache] hPut cache fail, cacheKey:" + cacheKey + " mapKey:" + key + " mapValue:" + value, e);
+            logger.error("[Cache] hPut cache fail, cacheKey:" + cacheKey + " mapKey:" + key
+                      + " mapValue:" + value, e);
             try {
                 delete(cacheKey);
             } catch (Exception ex) {
-                log.error("[Cache] hPut and delete cache fail, cacheKey:" + cacheKey + " mapKey:" + key + " mapValue:" + value, e);
+                logger.error("[Cache] hPut and delete cache fail, cacheKey:" + cacheKey + " mapKey:"
+                          + key + " mapValue:" + value, e);
                 throw e;
             }
         }
@@ -275,7 +281,7 @@ public class RedisUtils {
                 cacheKey);
             return boundHashOperations.get(key);
         } catch (Exception e) {
-            log.error("[Cache] hGet cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
+            logger.error("[Cache] hGet cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
         }
         return null;
     }
@@ -289,7 +295,7 @@ public class RedisUtils {
                 return object;
             }
         } catch (Exception e) {
-            log.error("[Cache] hGet object cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
+            logger.error("[Cache] hGet object cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
         }
         return null;
     }
@@ -305,7 +311,7 @@ public class RedisUtils {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.delete(key);
         } catch (Exception e) {
-            log.error("[Cache] hDelete cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
+            logger.error("[Cache] hDelete cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
         }
     }
 
@@ -322,7 +328,7 @@ public class RedisUtils {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             return boundHashOperations.putIfAbsent(key, value);
         } catch (Exception e) {
-            log.error("[Cache] hPut if absent cache fail, key:" + cacheKey + "value:" + value, e);
+            logger.error("[Cache] hPut if absent cache fail, key:" + cacheKey + "value:" + value, e);
             return false;
         }
     }
@@ -332,7 +338,7 @@ public class RedisUtils {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.increment(key, 1);
         } catch (Exception e) {
-            log.error("[Cache] hIncr num cache fail, key:" + cacheKey + "value:" + key, e);
+            logger.error("[Cache] hIncr num cache fail, key:" + cacheKey + "value:" + key, e);
         }
     }
 
@@ -340,7 +346,7 @@ public class RedisUtils {
         try {
             redisTemplate.expire(cacheKey, timeout, TimeUnit.SECONDS);
         } catch (Exception e) {
-            log.error("[Cache] set cache expire fail, key:" + cacheKey + "timeout:" + timeout, e);
+            logger.error("[Cache] set cache expire fail, key:" + cacheKey + "timeout:" + timeout, e);
         }
     }
 
@@ -391,5 +397,83 @@ public class RedisUtils {
 
     public void setRedisTemplate(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
+    }
+
+    // 将value添加到键key的列表尾部
+    public void rPush(String key, String value) {
+        ListOperations<String, String> valueList = redisTemplate.opsForList();
+        valueList.rightPush(key, value);
+    }
+
+    // 将value添加到键key的列表头部
+    public void lPush(String key, String value) {
+        ListOperations<String, String> valueList = redisTemplate.opsForList();
+        valueList.leftPush(key, value);
+    }
+
+    // 将value添加到键key的列表尾部，超过maxLen则删除头部元素
+    public void rPushWithMaxLen(String key, String value, int maxLen) {
+        ListOperations<String, String> valueList = redisTemplate.opsForList();
+        valueList.rightPush(key, value);
+        if (maxLen <= 0) {
+            return ;
+        }
+        while (valueList.size(key) > maxLen) {
+            valueList.leftPop(key);
+        }
+    }
+
+    // 将value添加到键key的列表头部，超过maxLen则删除尾部元素
+    public void lPushWithMaxLen(String key, String value, int maxLen) {
+        ListOperations<String, String> valueList = redisTemplate.opsForList();
+        valueList.leftPush(key, value);
+        if (maxLen <= 0) {
+            return ;
+        }
+        while (valueList.size(key) > maxLen) {
+            valueList.rightPop(key);
+        }
+    }
+
+    public void lPushObjectWithMaxLen(String key, Object obj, int maxLen) {
+        try {
+            lPushWithMaxLen(key, new ObjectMapper().writeValueAsString(obj), maxLen);
+        } catch (Exception e) {
+            logger.error("[Cache] lpush object key: " + key, e);
+        }
+    }
+
+    // 查询键key的列表
+    public List<String> getList(String key) {
+        ListOperations<String, String> valueList = redisTemplate.opsForList();
+        long len = valueList.size(key);
+        if (len <= 0) {
+            return null;
+        }
+
+        List<String> storeList = valueList.range(key, 0, len - 1);
+        return storeList;
+    }
+
+    public <T> List<T> getList(String key, Class returnClass) {
+        try {
+            List<String> storeList = getList(key);
+            if (storeList == null) {
+                // 不需要检查大小是否为0
+                return null;
+            }
+
+            List<T> resultList = Lists.newLinkedList();
+            Iterator it = storeList.iterator();
+            while (it.hasNext()) {
+                String value = (String) it.next();
+                T object = (T) new ObjectMapper().readValue(value, returnClass);
+                resultList.add(object);
+            }
+            return resultList;
+        } catch (Exception e) {
+            logger.error("[Cache] get list for object key: " + key, e);
+            return null;
+        }
     }
 }

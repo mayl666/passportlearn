@@ -32,40 +32,57 @@
     <div class="inner reg">
         <ul>
             
-            <li ><a href="">首页</a></li>
+            <li ><a href="/">首页</a></li>
             
-            <li ><a href="1">找回密码</a></li>
+            <li class="current"><a href="/web/security">账号安全</a></li>
             
         </ul>
     </div>
     <span class="underline"></span>
 </div>
 
-<div class="main-content one-col">
-    <div class="inner recover" >
-        <div class="title">
-            提示信息
-        </div>
-        <div  class="form">
-            <form method="post" id="" action="">
-                <p class="ptitle">请输入新密码</p>
-                
-                <div class="form-item">
-    <label for="PasswordIpt">新密码：</label>
-    <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
-    </span>
-</div>
-                <div class="form-item">
-    <label for="Password2Ipt">确认新密码：</label>
-    <span class="form-el">
-        <input uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" />
-    </span>
-</div>
-                <div class="form-btn">
-    <button type="submit">确定</button>
-</div>
-            </form>
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li style="border:none;" class="index   ">
+        <a href="/web/security">账号安全</a>
+    </li>
+    
+    <li  class="password   small">
+        <a href="/web/security/password">修改密码</a>
+    </li>
+    
+    <li  class="email   small">
+        <a href="/web/security/email">密保邮箱</a>
+    </li>
+    
+    <li  class="tel   small">
+        <a href="/web/security/mobile">密保手机</a>
+    </li>
+    
+    <li  class="question   small">
+        <a href="/web/security/question">密保问题</a>
+    </li>
+    
+    <li  class="history   small">
+        <a href="/web/security/history">登录记录</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+        <div class="inner safe-form">
+            <div class="title">
+                &nbsp;
+            </div>
+            <div  class="form">
+                <div class="binded">
+                    <p>绑定成功</p>
+                    <a href="/" class="long-btn">返回首页</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -92,8 +109,8 @@ require.config({
 });
 
 
-require(['recover'] , function(module){
-    module.init('reset');
+require(['safe'] , function(module){
+    module.init('emailsuccess');
 });
 
 

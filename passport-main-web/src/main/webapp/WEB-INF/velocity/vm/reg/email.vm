@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=774135" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=689452" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -44,15 +44,15 @@
         
         <ul class="nav">
     
-    <li class="email current  ">
+    <li style="border:none;" class="email current  ">
         <a href="/web/reg/email">邮箱注册</a>
     </li>
     
-    <li class="tel   ">
+    <li  class="tel   ">
         <a href="/web/reg/mobile">手机注册</a>
     </li>
     
-    <li class="nick   ">
+    <li  class="nick   ">
         <a href="/web/reg/nick">个性账号</a>
     </li>
     
@@ -69,13 +69,13 @@
                     <div class="form-item">
     <label for="UsernameIpt">邮箱：</label>
     <span class="form-el">
-        <input uui-type="require email" type="text" name="username" id="UsernameIpt" value="" />
+        <input uui-type="require email" type="text" name="username" id="UsernameIpt" value="" data-desc="" />
     </span>
 </div>
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>
     <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" />
+        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
     </span>
 </div>
                     <div class="form-item form-item-vcode">
