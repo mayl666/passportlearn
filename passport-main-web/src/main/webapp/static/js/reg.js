@@ -1,43 +1,5 @@
 
 /*
- * common module script
- * @author zhengxin
-*/
- 
-
-
-
-define('common',[],function(){
-
-
-    return{
-        showBannerUnderLine: function(){
-            var currentBanner = $('.banner ul li.current');
-            if( currentBanner.length ){
-                $('.banner .underline').css('left' , currentBanner.position().left)
-                    .css('width' , currentBanner.css('width'));
-            }
-        },
-        parseHeader: function(data){
-            $('#Header .username').html(data.username);
-            if( data.username ){
-                $('#Header .logout').show().prev().show();
-                $('#Header .logout a').click(function(){
-                    $.getScript($(this).attr('href') , function(){
-                        if( window['logout_status'] == 'success' ){
-                            location.reload();
-                        }else{
-                            alert('系统错误');
-                        }
-                    });
-                    return false;
-                });
-            }
-        }
-    };
-});
-
-/*
  * form module script
  * @author zhengxin
 */
@@ -74,9 +36,67 @@ define('utils',[], function(){
             iframe.src = url;
             
             document.body.appendChild(iframe);
+        },
+        getScript: function(url , callback){
+            var script = document.createElement("script");
+            var head = document.head;
+            script.async = true;
+            script.src = url;
+            script.onload = script.onreadystatechange = function( _, isAbort ) {
+                if ( isAbort || !script.readyState || /loaded|complete/.test( script.readyState ) ) {
+                    script.onload = script.onreadystatechange = null;
+                    if ( script.parentNode ) {
+                        script.parentNode.removeChild( script );
+                    }
+                    script = null;
+                    if ( !isAbort ) {
+                        callback( );
+                    }
+                };
+            };
+
+            head.insertBefore( script, head.firstChild );
         }
     };
 
+});
+
+/*
+ * common module script
+ * @author zhengxin
+*/
+ 
+
+
+
+define('common',['./utils'],function(utils){
+
+
+    return{
+        showBannerUnderLine: function(){
+            var currentBanner = $('.banner ul li.current');
+            if( currentBanner.length ){
+                $('.banner .underline').css('left' , currentBanner.position().left)
+                    .css('width' , currentBanner.css('width'));
+            }
+        },
+        parseHeader: function(data){
+            $('#Header .username').html(data.username);
+            if( data.username ){
+                $('#Header .logout').show().prev().show();
+                $('#Header .logout a').click(function(){
+                    utils.getScript($(this).attr('href') , function(){
+                        if( window['logout_status'] == 'success' ){
+                            location.reload();
+                        }else{
+                            alert('系统错误');
+                        }
+                    });
+                    return false;
+                });
+            }
+        }
+    };
 });
 
 define('conf',[],function(){
@@ -731,6 +751,8 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
         return $el.parent().parent().find('.' + className);
     };
     var getDesc= function($el){
+        if( $el.attr('data-desc') )
+            return $el.attr('data-desc');
         var types = $el.attr('uui-type');
         types = (types || '').split(' ');
         var type;

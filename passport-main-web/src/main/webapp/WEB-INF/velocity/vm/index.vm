@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=062739" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=536837" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -17,7 +17,7 @@
                 <div class="desc">
                     <img src="/./static/img/index/desc.jpg" class="" alt="" />
                 </div>
-                <div class="login ">
+                <div class="login">
                     <div class="login-inner">
                         <h2>欢迎登录搜狗通行证</h2>
                         <div id="logdiv" style="display:none;"></div>
@@ -48,7 +48,7 @@
                                 &nbsp;
                             </button>
                             <p class="reg">
-                                还没有搜狗通行证？<a href="/web/reg/email">立即注册</a>
+                                还没有搜狗通行证？<a tabindex="-1" href="/web/reg/email">立即注册</a>
                             </p>
                             <p class="error uname-error" ><span class="text"></span><a href="#"></a></p>
                             <p class="error vcode-error"><span class="text"></span><a href="#"></a></p>
@@ -101,7 +101,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=580484"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=940469"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=677547"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';
