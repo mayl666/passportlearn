@@ -2,6 +2,8 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -38,8 +40,22 @@ public class IndexAction extends BaseController {
         if (hostHolder.isLogin()) {
             String userId = hostHolder.getPassportId();
             int clientId = Integer.parseInt(params.getClient_id());
-            Result result = secureManager.queryAccountSecureInfo(userId, clientId, true);
-            result.setDefaultModel("username", userId);
+
+            // 第三方账号不显示安全信息
+            Result result = new APIResultSupport(false);
+            if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
+                result.setDefaultModel("disable", true);
+                result.setSuccess(true);
+            } else {
+                result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+            }
+
+            String nickName = hostHolder.getNickName();
+            if (Strings.isNullOrEmpty(nickName)) {
+                nickName = userId;
+            }
+
+            result.setDefaultModel("username", nickName);
             model.addAttribute("data", result.toString());
             return "ucenter/index";
         }
