@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=079157" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=198687" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -24,9 +24,11 @@
                         <form method="post" id="Login" action="/web/login">
                                 
                             <p class="username">
+                                <span>邮箱/手机号/搜狗账号</span>
                                 <input type="text" name="username" value="" />
                             </p>
                             <p class="password">
+                                <span>请输入密码</span>
                                 <input type="password" name="password" value="" />
                             </p>
                             <p class="vcode">
@@ -43,7 +45,7 @@
                                 <a href="https://passport.sohu.com/web/recoverpwd">找回密码</a>
                             </p>
                             <button type="submit">
-                                <img src="/./static/img/index/loginbtn.png" class="" alt="登录" />
+                                &nbsp;
                             </button>
                             <p class="reg">
                                 还没有搜狗通行证？<a href="/web/reg/email">立即注册</a>
@@ -99,7 +101,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=580484"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=056021"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=281376"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';

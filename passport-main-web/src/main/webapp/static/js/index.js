@@ -171,6 +171,20 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                              + '&ru=' + encodeURIComponent(location.href)
                             );
             });
+            var inputs = $('#Login .password input , #Login .username input');
+            inputs.focus(function(){
+                $(this).prev().hide();
+            }).blur(function(){
+                if( !$.trim($(this).val()) )
+                    $(this).prev().show();
+            });
+            window.onload = function(){
+                inputs.each(function(idx,item){
+                    if( $(item).val() ){
+                        $(item).prev().hide();
+                    }
+                });
+            };
         }
     };
 });
