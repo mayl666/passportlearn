@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -31,6 +32,7 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,8 +71,6 @@ public class SecureManagerImpl implements SecureManager {
     private AccountInfoService accountInfoService;
     @Autowired
     private AccountTokenService accountTokenService;
-    @Autowired
-    private AppConfigService appConfigService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
@@ -822,6 +823,57 @@ public class SecureManagerImpl implements SecureManager {
             return mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
         } catch (ServiceException e) {
             logger.error("check existed mobile code Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    public Result logActionRecord(String userId, int clientId, AccountModuleEnum module, String ip,
+                String note) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            accountSecureService.setActionRecord(userId, clientId, module, ip, note);
+            result.setSuccess(true);
+            result.setMessage("记录" + module.getDescription() + "成功！");
+            return result;
+        } catch (ServiceException e) {
+            logger.error("log action record Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum module) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            List<ActionRecord>
+                    actionRecords = accountSecureService.getActionRecords(userId, clientId, module);
+            result.setDefaultModel("records", actionRecords);
+            result.setSuccess(true);
+            result.setMessage("获取" + module.getDescription() + "记录成功！");
+            return result;
+        } catch (ServiceException e) {
+            logger.error("query action records Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    public Result queryAllActionRecords(String userId, int clientId) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            List<ActionRecord> allRecords = Lists.newLinkedList();
+            for (AccountModuleEnum module : AccountModuleEnum.values()) {
+                List<ActionRecord>
+                        actionRecords = accountSecureService.getActionRecords(userId, clientId, module);
+                allRecords.addAll(actionRecords);
+            }
+            result.setDefaultModel("records", allRecords);
+            result.setSuccess(true);
+            result.setMessage("获取所有记录成功！");
+            return result;
+        } catch (ServiceException e) {
+            logger.error("query all action records Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }

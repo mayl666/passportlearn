@@ -189,4 +189,37 @@ public interface SecureManager {
      */
     public Result checkMobileCodeByPassportId(String passportId, int clientId, String smsCode) throws Exception;
 
+    /**
+     * 记录执行动作
+     *
+     * @param userId
+     * @param clientId
+     * @param action 记录的动作
+     * @param ip
+     * @param note 记录说明
+     * @return
+     * @throws Exception
+     */
+    public Result logActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note) throws Exception;
+
+    /**
+     * 查询某用户某一动作的所有执行记录
+     *
+     * @param userId
+     * @param clientId
+     * @param action 查询的动作
+     * @return
+     * @throws Exception
+     */
+    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum action) throws Exception;
+
+    /**
+     * 查询某用户的所有动作执行记录
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result queryAllActionRecords(String userId, int clientId) throws Exception;
 }
