@@ -66,6 +66,7 @@ a:hover{ text-decoration:underline; }
 .form .desc{ border:1px #e7e7e7 solid;color:#999;background:#f9f9f9 url(/./static/img/desc-arrow.png?t=707808) no-repeat 8px center;  }
 .form .error{  border:1px #e4494a solid; background:#ffe7e8 url(/./static/img/error-arrow.png?t=719407) no-repeat 8px center; color:#e4494a; }
 .form .form-item-vcode .error{ width:153px; }
+.form-tall .error{width:136px;}
 
 .form-btn { padding:10px 0 0 185px; }
 .form-btn button{ border:0;padding:0;margin:0;background:url(/./static/img/btn-long.png?t=902827) no-repeat 0 0;width:182px;height:36px;color:#fff;font-size:16px;}
