@@ -36,7 +36,6 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 		if (log.isInfoEnabled()) {
 			String param = ControllerHelper.getRequests(request);
 			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms, params : "+param);
-			
 		}
 	}
 	
