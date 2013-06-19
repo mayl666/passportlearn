@@ -178,6 +178,9 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                 if( !$.trim($(this).val()) )
                     $(this).prev().show();
             });
+            inputs.parent().click(function(){
+                $(this).find('input').focus();
+            });
             window.onload = function(){
                 inputs.each(function(idx,item){
                     if( $(item).val() ){

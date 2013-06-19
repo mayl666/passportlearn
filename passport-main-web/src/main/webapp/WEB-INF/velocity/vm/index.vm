@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=198687" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=062739" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -101,7 +101,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=580484"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=281376"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=940469"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';
