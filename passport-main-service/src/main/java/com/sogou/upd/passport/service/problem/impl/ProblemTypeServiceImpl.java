@@ -2,16 +2,11 @@ package com.sogou.upd.passport.service.problem.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.dao.problem.ProblemDAO;
 import com.sogou.upd.passport.dao.problem.ProblemTypeDAO;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.model.problem.Problem;
 import com.sogou.upd.passport.model.problem.ProblemType;
-import com.sogou.upd.passport.service.problem.ProblemService;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -19,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 /**
