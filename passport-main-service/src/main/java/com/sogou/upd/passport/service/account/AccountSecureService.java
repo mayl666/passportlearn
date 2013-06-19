@@ -56,7 +56,9 @@ public interface AccountSecureService {
     public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException;
 
-    public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip);
+    public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note);
+
+    public void setActionRecord(ActionRecord actionRecord);
 
     public List<ActionRecord> getActionRecords(String userId, int clientId, AccountModuleEnum action);
 

@@ -828,10 +828,11 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
-    public Result logActionRecord(String userId, int clientId, AccountModuleEnum module, String ip) throws Exception {
+    public Result logActionRecord(String userId, int clientId, AccountModuleEnum module, String ip,
+                String note) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            accountSecureService.setActionRecord(userId, clientId, module, ip);
+            accountSecureService.setActionRecord(userId, clientId, module, ip, note);
             result.setSuccess(true);
             result.setMessage("记录" + module.getDescription() + "成功！");
             return result;
@@ -867,12 +868,15 @@ public class SecureManagerImpl implements SecureManager {
                         actionRecords = accountSecureService.getActionRecords(userId, clientId, module);
                 allRecords.addAll(actionRecords);
             }
+            result.setDefaultModel("records", allRecords);
+            result.setSuccess(true);
+            result.setMessage("获取所有记录成功！");
+            return result;
         } catch (ServiceException e) {
             logger.error("query all action records Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
-        return result;
     }
 
     /*

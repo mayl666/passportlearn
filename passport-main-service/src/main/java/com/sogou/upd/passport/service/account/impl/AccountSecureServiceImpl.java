@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.lang.ObjectUtil;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -58,7 +59,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     @Override
-    public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip) {
+    public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note) {
         ActionRecord actionRecord = new ActionRecord();
 
         actionRecord.setAction(action);
@@ -67,6 +68,18 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         actionRecord.setIp(ip);
         actionRecord.setDate(System.currentTimeMillis());
 
+        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+        storeRecord(cacheKey, actionRecord, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+    }
+
+    @Override
+    public void setActionRecord(ActionRecord actionRecord) {
+        if (actionRecord == null) {
+            return;
+        }
+        String userId = actionRecord.getUserId();
+        int clientId = actionRecord.getClientId();
+        AccountModuleEnum action = actionRecord.getAction();
         String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
         storeRecord(cacheKey, actionRecord, DateAndNumTimesConstant.ACTIONRECORD_NUM);
     }
