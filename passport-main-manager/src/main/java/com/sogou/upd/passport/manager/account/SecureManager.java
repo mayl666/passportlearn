@@ -189,4 +189,9 @@ public interface SecureManager {
      */
     public Result checkMobileCodeByPassportId(String passportId, int clientId, String smsCode) throws Exception;
 
+    public Result logActionRecord(String userId, int clientId, AccountModuleEnum module, String ip) throws Exception;
+
+    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum module) throws Exception;
+
+    public Result queryAllActionRecords(String userId, int clientId) throws Exception;
 }
