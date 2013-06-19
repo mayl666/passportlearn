@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
