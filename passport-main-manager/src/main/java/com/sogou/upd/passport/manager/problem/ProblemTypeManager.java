@@ -31,10 +31,10 @@ public interface ProblemTypeManager {
 
     /**
      * 删除一条反馈
-     * @param id
+     * @param name
      * @return
      * @throws Exception
      */
-    public int  deleteProblemTypeById(long id) throws Exception;
+    public int  deleteProblemTypeByName(String name) throws Exception;
 
 }

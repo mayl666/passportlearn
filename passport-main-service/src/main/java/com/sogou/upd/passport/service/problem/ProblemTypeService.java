@@ -35,9 +35,9 @@ public interface ProblemTypeService {
 
     /**
      * 删除一条反馈类型
-     * @param id
+     * @param name
      * @return
      * @throws ServiceException
      */
-    public int  deleteProblemTypeById(long id) throws ServiceException;
+    public int  deleteProblemTypeByName(String name) throws ServiceException;
 }

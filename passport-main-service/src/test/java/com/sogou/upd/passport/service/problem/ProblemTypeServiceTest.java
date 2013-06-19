@@ -58,7 +58,7 @@ public class ProblemTypeServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testdeleteProblemTypeById() {
         long id = 270;
-        int row = problemTypeService.deleteProblemTypeById(id);
+        int row = problemTypeService.deleteProblemTypeByName("产品");
         if (row  >0) {
             System.out.println("删除成功！");
         } else {

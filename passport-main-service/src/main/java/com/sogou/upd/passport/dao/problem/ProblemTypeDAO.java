@@ -60,6 +60,11 @@ public interface ProblemTypeDAO {
     public int deleteProblemTypeById(@SQLParam("id") long id) throws
             DataAccessException;
 
+    @SQL("delete from" +
+            TABLE_NAME +
+            " where type_name=:typeName")
+    public int deleteProblemTypeByName(@SQLParam("typeName") String typeName) throws
+            DataAccessException;
     /**
      * 根据id获取Problem类型
      */

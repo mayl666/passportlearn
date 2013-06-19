@@ -88,9 +88,9 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
     }
 
     @Override
-    public int  deleteProblemTypeById(long id) throws ServiceException {
+    public int  deleteProblemTypeByName(String name) throws ServiceException {
         try {
-            int row = problemTypeDAO.deleteProblemTypeById(id);
+            int row = problemTypeDAO.deleteProblemTypeByName(name);
             if(row > 0) {
                 String cacheKey = buildProblemTypeListKey(CACHE_PROBLEM_LIST);
                 redisUtils.delete(cacheKey);

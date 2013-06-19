@@ -36,7 +36,7 @@ public class ProblemTypeManagerImpl implements ProblemTypeManager {
     }
 
     @Override
-    public int  deleteProblemTypeById(long id) throws Exception{
-        return  problemTypeService.deleteProblemTypeById(id);
+    public int  deleteProblemTypeByName(String name) throws Exception{
+        return  problemTypeService.deleteProblemTypeByName(name);
     }
 }
