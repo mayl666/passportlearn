@@ -80,7 +80,14 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+        // 第三方账号不显示安全信息
+        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
+            result.setDefaultModel("disable", true);
+            result.setSuccess(true);
+        } else {
+            result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+        }
+
         String nickName = hostHolder.getNickName();
         if (Strings.isNullOrEmpty(nickName)) {
             nickName = userId;
