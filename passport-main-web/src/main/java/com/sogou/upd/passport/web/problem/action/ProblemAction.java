@@ -65,14 +65,14 @@ public class ProblemAction extends BaseController {
         String passportId = hostHolder.getPassportId();
         if(Strings.isNullOrEmpty(passportId)){
             result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
-            return result;
+            return result.toString();
         }
         //参数验证
         String validateResult = ControllerHelper.validateParams(addProblemParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            return result.toString();
         }
 
         addProblemParams.setPassportId(passportId);

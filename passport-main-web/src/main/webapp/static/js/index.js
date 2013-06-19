@@ -138,7 +138,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                         $el.find('input[name="autoLogin"]').val(),
                                         document.getElementById('logdiv'),
                                         function(data){
-                                            if( data.needcaptcha ){
+                                            if( +data.needcaptcha ){
                                                 initVcode();
                                                 showVcodeError('请输入验证码');
                                             }
@@ -171,6 +171,23 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                              + '&ru=' + encodeURIComponent(location.href)
                             );
             });
+            var inputs = $('#Login .password input , #Login .username input');
+            inputs.focus(function(){
+                $(this).prev().hide();
+            }).blur(function(){
+                if( !$.trim($(this).val()) )
+                    $(this).prev().show();
+            });
+            inputs.parent().click(function(){
+                $(this).find('input').focus();
+            });
+            window.onload = function(){
+                inputs.each(function(idx,item){
+                    if( $(item).val() ){
+                        $(item).prev().hide();
+                    }
+                });
+            };
         }
     };
 });
