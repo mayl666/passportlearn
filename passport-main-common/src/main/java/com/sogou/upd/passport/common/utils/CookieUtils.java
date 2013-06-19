@@ -32,10 +32,8 @@ public class CookieUtils {
 
     public static void setCookie(HttpServletResponse response, String key, String value, int maxAge) {
         Cookie cookie = new Cookie(key, value);
-
         cookie.setPath("/");
-
-//        cookie.setDomain(".sogou.com");
+        cookie.setDomain(".sogou.com");
         if (maxAge > 0) {
             cookie.setMaxAge(maxAge);
         }

@@ -24,7 +24,7 @@ public class SchemeInteceptor extends HandlerInterceptorAdapter {
             return true;
         }
         if(request.getMethod().equals(METHOD_GET)){
-            String url= request.getRequestURI();
+            String url= request.getRequestURL().toString();
             url=url.replace("http:","https:");
             response.sendRedirect(url);
         }
