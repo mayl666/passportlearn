@@ -34,7 +34,7 @@ public class ProblemManagerImplTest extends BaseTest {
             webAddProblemParameters.setContent("搜狗通行证很好");
             webAddProblemParameters.setEmail("jiamengchen@126.com");
             webAddProblemParameters.setTitle("标题党");
-            webAddProblemParameters.setTypeId("1");
+            webAddProblemParameters.setTypeId("266");
             Result result = problemManagerImpl.insertProblem(webAddProblemParameters,ip);
             System.out.println("testAccountLogin:"+result.toString());
         } catch (Exception e) {
