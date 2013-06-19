@@ -50,10 +50,6 @@
         </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <bean class="com.sogou.upd.passport.web.inteceptor.SchemeInteceptor"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
