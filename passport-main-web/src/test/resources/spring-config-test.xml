@@ -56,6 +56,10 @@
             <mvc:mapping path="/**"/>
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
         </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/internal/**"/>     <!-- 内部接口code和ct校验 -->
+            <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
+        </mvc:interceptor>
     </mvc:interceptors>
 
     <mvc:default-servlet-handler/>

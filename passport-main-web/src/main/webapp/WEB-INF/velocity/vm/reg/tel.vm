@@ -94,7 +94,7 @@
     <button type="submit">注册</button>
 </div>
                     <div class="form-desc">
-    <label>
+    <label for="ConfirmChb">
         <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan"/>
         <span class="checkbox " id="ConfirmChbSpan" ></span>
         我已阅读并接受

@@ -100,6 +100,8 @@ public class CommonManagerImpl implements CommonManager {
   public Result createCookieUrl(Result result,String passportId,String scheme,int autoLogin) {
     // 种sohu域cookie
 
+    scheme="https";
+
     CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
     //从返回结果中获取passportId,二期待优化
     String passportIdTmp =  passportId;

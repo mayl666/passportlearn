@@ -2,6 +2,7 @@ package com.sogou.upd.passport.oauth2.openresource.http;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -79,7 +80,7 @@ public class HttpClient4 {
             HttpRequestBase req = null;
             String responseBody = "";
 
-            if (!Strings.isNullOrEmpty(requestMethod) && OAuth.HttpMethod.POST.equals(requestMethod)) {
+            if (!Strings.isNullOrEmpty(requestMethod) && HttpConstant.HttpMethod.POST.equals(requestMethod)) {
                 req = new HttpPost(location);
                 HttpEntity entity = new StringEntity(request.getBody());
                 ((HttpPost) req).setEntity(entity);

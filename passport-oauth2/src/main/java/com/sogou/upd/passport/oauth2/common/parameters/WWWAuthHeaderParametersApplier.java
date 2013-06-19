@@ -21,6 +21,7 @@
 
 package com.sogou.upd.passport.oauth2.common.parameters;
 
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
@@ -36,7 +37,7 @@ public class WWWAuthHeaderParametersApplier implements OAuthParametersApplier {
 
     public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
         String header = OAuthUtils.encodeOAuthHeader(params);
-        message.addHeader(OAuth.HeaderType.WWW_AUTHENTICATE, header);
+        message.addHeader(HttpConstant.HeaderType.WWW_AUTHENTICATE, header);
         return message;
     }
 }

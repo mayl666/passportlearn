@@ -6,7 +6,7 @@ package com.sogou.upd.passport.web.annotation;
  * Date: 13-5-14
  * Time: 下午10:46
  */
-public enum LoginRequiredResultType {
+public enum ResponseResultType {
     json(""),    //返回json格式信息
     xml("<?xml version=\"1.0\" ?> " + //返回xml格式的信息
             "<code>-1</code>" +
@@ -17,7 +17,7 @@ public enum LoginRequiredResultType {
 
     private String resultStr;
 
-    private LoginRequiredResultType(String resultStr){
+    private ResponseResultType(String resultStr){
         this.resultStr=resultStr;
     }
 

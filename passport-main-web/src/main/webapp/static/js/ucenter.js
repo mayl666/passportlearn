@@ -38,7 +38,7 @@ define(['./common' , './tpl'] , function(common , ursa ){
             try{
                 data = $.evalJSON(server_data).data;
             }catch(e){window['console'] && console.log(e);}
-            
+
             pagefunc.common(data);
 
             pagefunc[type] && pagefunc[type](data);
