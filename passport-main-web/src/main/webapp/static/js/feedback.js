@@ -10,7 +10,12 @@ define(['./common','./form' , './conf'] , function(common , form , conf){
 
 
     var bindFormEvent = function(){
-        form.render($('.main-content .form form'));
+        form.render($('.main-content .form form') , {
+            onsuccess: function($el){
+                $el.parent().html( $('#Target2').html() );
+                
+            }
+        });
     };
 
     var addFormItem = function(){
@@ -39,6 +44,7 @@ define(['./common','./form' , './conf'] , function(common , form , conf){
             }catch(e){window['console'] && console.log(e);}
 
             addOptions(data);
+
         }
     };
 });
