@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -31,6 +32,7 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.ResetPwdParameters;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -39,6 +41,7 @@ import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.slf4j.Logger;
@@ -46,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,8 +72,6 @@ public class SecureManagerImpl implements SecureManager {
     private AccountInfoService accountInfoService;
     @Autowired
     private AccountTokenService accountTokenService;
-    @Autowired
-    private AppConfigService appConfigService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
@@ -825,6 +827,52 @@ public class SecureManagerImpl implements SecureManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    @Override
+    public Result logActionRecord(String userId, int clientId, AccountModuleEnum module, String ip,
+                String note) {
+        Result result = new APIResultSupport(false);
+        ActionRecord actionRecord = new ActionRecord();
+        actionRecord.setUserId(userId);
+        actionRecord.setClientId(clientId);
+        actionRecord.setAction(module);
+        actionRecord.setIp(ip);
+        actionRecord.setDate(System.currentTimeMillis());
+        actionRecord.setNote(note);
+
+        accountSecureService.setActionRecord(actionRecord);
+        result.setSuccess(true);
+        result.setMessage("记录" + module.getDescription() + "成功！");
+        return result;
+    }
+
+    @Override
+    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum module) {
+        // TODO:修改返回的List<T>中的T，增加归属地
+        Result result = new APIResultSupport(false);
+        List<ActionStoreRecordDO>
+                actionRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
+        result.setDefaultModel("records", actionRecords);
+        result.setSuccess(true);
+        result.setMessage("获取" + module.getDescription() + "记录成功！");
+        return result;
+    }
+
+    @Override
+    public Result queryAllActionRecords(String userId, int clientId) {
+        // TODO:修改返回的List<T>中的T，增加归属地
+        Result result = new APIResultSupport(false);
+        List<ActionStoreRecordDO> allRecords = Lists.newLinkedList();
+        for (AccountModuleEnum module : AccountModuleEnum.values()) {
+            List<ActionStoreRecordDO>
+                    actionRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
+            allRecords.addAll(actionRecords);
+        }
+        result.setDefaultModel("records", allRecords);
+        result.setSuccess(true);
+        result.setMessage("获取所有记录成功！");
+        return result;
     }
 
     /*

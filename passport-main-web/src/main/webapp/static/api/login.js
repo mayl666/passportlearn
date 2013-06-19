@@ -22,6 +22,15 @@
                                  .split("\r").join("\\'")
                                  + "');}return p.join('');");
             return data ? fn( data ) : fn;
+        },
+        uuid: function(){
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };            
+            return s4() + s4()  + s4()  + s4()  +
+                s4() +  s4() + s4() + s4();
         }
     };
 
@@ -38,6 +47,7 @@
         +'<input type="hidden" name="autoLogin" value="<%=isAutoLogin%>">'
         +'<input type="hidden" name="client_id" value="<%=appid%>">'
         +'<input type="hidden" name="xd" value="<%=redirectUrl%>">'
+        +'<input type="hidden" name="token" value="<%=token%>">'
         +'</form>'
         +'<iframe id="_PassportIframe" name="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
 
@@ -81,7 +91,8 @@
             vcode:vcode,
             isAutoLogin: isAutoLogin,
             appid: PassportSC.appid,
-            redirectUrl:PassportSC.redirectUrl
+            redirectUrl:PassportSC.redirectUrl,
+            token: utils.uuid()
         });
         container.getElementsByTagName('form')[0].submit();
     };

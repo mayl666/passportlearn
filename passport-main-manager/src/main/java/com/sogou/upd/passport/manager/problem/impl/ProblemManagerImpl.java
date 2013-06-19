@@ -7,19 +7,15 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.model.problem.Problem;
-import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.problem.ProblemService;
-import com.sogou.upd.passport.service.problem.ProblemTypeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -87,7 +83,7 @@ public class ProblemManagerImpl implements ProblemManager {
             if (!Strings.isNullOrEmpty(addProblemParams.getClientId())){
                 problem.setClientId(Integer.parseInt(addProblemParams.getClientId()));
             }
-            problem.setTitle(addProblemParams.getTitile());
+            problem.setTitle(addProblemParams.getTitle());
             problem.setEmail(addProblemParams.getEmail());
             problem.setContent(addProblemParams.getContent());
             problem.setTypeId(Integer.parseInt(addProblemParams.getTypeId()));

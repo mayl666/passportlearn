@@ -33,7 +33,7 @@ public class ProblemManagerImplTest extends BaseTest {
             webAddProblemParameters.setPassportId("18612532596@sohu.com");
             webAddProblemParameters.setContent("搜狗通行证很好");
             webAddProblemParameters.setEmail("jiamengchen@126.com");
-            webAddProblemParameters.setTitile("标题党");
+            webAddProblemParameters.setTitle("标题党");
             webAddProblemParameters.setTypeId("1");
             Result result = problemManagerImpl.insertProblem(webAddProblemParameters,ip);
             System.out.println("testAccountLogin:"+result.toString());

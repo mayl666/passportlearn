@@ -6,7 +6,7 @@
 
 
 
-define(function(){
+define(['./utils'],function(utils){
 
 
     return{
@@ -22,7 +22,7 @@ define(function(){
             if( data.username ){
                 $('#Header .logout').show().prev().show();
                 $('#Header .logout a').click(function(){
-                    $.getScript($(this).attr('href') , function(){
+                    utils.getScript($(this).attr('href') , function(){
                         if( window['logout_status'] == 'success' ){
                             location.reload();
                         }else{

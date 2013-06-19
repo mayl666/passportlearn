@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=774135" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=689452" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -46,27 +46,27 @@
         
         <ul class="nav">
     
-    <li class="index   ">
+    <li style="border:none;" class="index   ">
         <a href="/web/security">账号安全</a>
     </li>
     
-    <li class="password   small">
+    <li  class="password   small">
         <a href="/web/security/password">修改密码</a>
     </li>
     
-    <li class="email   small">
+    <li  class="email   small">
         <a href="/web/security/email">密保邮箱</a>
     </li>
     
-    <li class="tel   small">
+    <li  class="tel   small">
         <a href="/web/security/mobile">密保手机</a>
     </li>
     
-    <li class="question current  small">
+    <li  class="question current  small">
         <a href="/web/security/question">密保问题</a>
     </li>
     
-    <li class="history   small">
+    <li  class="history   small">
         <a href="/web/security/history">登录记录</a>
     </li>
     
@@ -75,7 +75,7 @@
     <div class="col-r">
         <div class="inner safe-question">
             <div class="title">
-                修改个密码撒
+                &nbsp;
             </div>
             <div  class="form">
                 <script type="text/tpl" id="Target">
@@ -111,19 +111,19 @@
                         <div class="form-item">
     <label for="Question2Ipt">问题：</label>
     <span class="form-el">
-        <input uui-type="require question2" type="text" name="question2" id="Question2Ipt" value="" />
+        <input uui-type="require question2" type="text" name="question2" id="Question2Ipt" value="" data-desc="" />
     </span>
 </div>
                         <div class="form-item">
     <label for="New_answerIpt">新答案：</label>
     <span class="form-el">
-        <input uui-type="require new_answer" type="text" name="new_answer" id="New_answerIpt" value="" />
+        <input uui-type="require new_answer" type="text" name="new_answer" id="New_answerIpt" value="" data-desc="" />
     </span>
 </div>
                         <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
     <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" />
+        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
     </span>
 </div>
                         <div class="form-btn">
