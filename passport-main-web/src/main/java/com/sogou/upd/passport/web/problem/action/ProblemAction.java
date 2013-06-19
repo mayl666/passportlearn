@@ -47,11 +47,19 @@ public class ProblemAction extends BaseController {
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
     public String addProblem(HttpServletRequest request, Model model)
             throws Exception {
+        //检测是否登录
+        if (!hostHolder.isLogin()) {
+            return "redirect:/web/webLogin";
+        }
 
+        Result result = new  APIResultSupport(false);
+        String userId = hostHolder.getPassportId();
+        result.setDefaultModel("userid", userId);
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
         String jsonResult = new ObjectMapper().writeValueAsString(typeList);
-        model.addAttribute("data", jsonResult);
+        result.setDefaultModel("problemTypeList",jsonResult);
+        model.addAttribute("data", result.toString());
 
         return "feedback";
     }

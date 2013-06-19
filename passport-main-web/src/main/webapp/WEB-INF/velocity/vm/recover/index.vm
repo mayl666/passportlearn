@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=488165" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=689452" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -53,7 +53,7 @@
                 <div class="form-item">
     <label for="UsernameIpt">账号名：</label>
     <span class="form-el">
-        <input uui-type="require username" type="text" name="username" id="UsernameIpt" value="" />
+        <input uui-type="require username" type="text" name="username" id="UsernameIpt" value="" data-desc="" />
     </span>
 </div>
                 <div class="form-item form-item-vcode">

@@ -41,6 +41,7 @@ import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.slf4j.Logger;
@@ -828,55 +829,50 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
+    @Override
     public Result logActionRecord(String userId, int clientId, AccountModuleEnum module, String ip,
-                String note) throws Exception {
+                String note) {
         Result result = new APIResultSupport(false);
-        try {
-            accountSecureService.setActionRecord(userId, clientId, module, ip, note);
-            result.setSuccess(true);
-            result.setMessage("记录" + module.getDescription() + "成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("log action record Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
+        ActionRecord actionRecord = new ActionRecord();
+        actionRecord.setUserId(userId);
+        actionRecord.setClientId(clientId);
+        actionRecord.setAction(module);
+        actionRecord.setIp(ip);
+        actionRecord.setDate(System.currentTimeMillis());
+        actionRecord.setNote(note);
+
+        accountSecureService.setActionRecord(actionRecord);
+        result.setSuccess(true);
+        result.setMessage("记录" + module.getDescription() + "成功！");
+        return result;
     }
 
-    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum module) throws Exception {
+    @Override
+    public Result queryActionRecords(String userId, int clientId, AccountModuleEnum module) {
+        // TODO:修改返回的List<T>中的T，增加归属地
         Result result = new APIResultSupport(false);
-        try {
-            List<ActionRecord>
-                    actionRecords = accountSecureService.getActionRecords(userId, clientId, module);
-            result.setDefaultModel("records", actionRecords);
-            result.setSuccess(true);
-            result.setMessage("获取" + module.getDescription() + "记录成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("query action records Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
+        List<ActionStoreRecordDO>
+                actionRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
+        result.setDefaultModel("records", actionRecords);
+        result.setSuccess(true);
+        result.setMessage("获取" + module.getDescription() + "记录成功！");
+        return result;
     }
 
-    public Result queryAllActionRecords(String userId, int clientId) throws Exception {
+    @Override
+    public Result queryAllActionRecords(String userId, int clientId) {
+        // TODO:修改返回的List<T>中的T，增加归属地
         Result result = new APIResultSupport(false);
-        try {
-            List<ActionRecord> allRecords = Lists.newLinkedList();
-            for (AccountModuleEnum module : AccountModuleEnum.values()) {
-                List<ActionRecord>
-                        actionRecords = accountSecureService.getActionRecords(userId, clientId, module);
-                allRecords.addAll(actionRecords);
-            }
-            result.setDefaultModel("records", allRecords);
-            result.setSuccess(true);
-            result.setMessage("获取所有记录成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("query all action records Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
+        List<ActionStoreRecordDO> allRecords = Lists.newLinkedList();
+        for (AccountModuleEnum module : AccountModuleEnum.values()) {
+            List<ActionStoreRecordDO>
+                    actionRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
+            allRecords.addAll(actionRecords);
         }
+        result.setDefaultModel("records", allRecords);
+        result.setSuccess(true);
+        result.setMessage("获取所有记录成功！");
+        return result;
     }
 
     /*
