@@ -26,8 +26,6 @@ public class ConfigureManagerImpl implements ConfigureManager {
 
     private static Logger log = LoggerFactory.getLogger(ConfigureManagerImpl.class);
 
-    private static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
-
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
