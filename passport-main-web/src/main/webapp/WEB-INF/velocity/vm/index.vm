@@ -98,8 +98,8 @@
         
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=706415"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=700548"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=580484"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=056021"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';

@@ -138,7 +138,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                         $el.find('input[name="autoLogin"]').val(),
                                         document.getElementById('logdiv'),
                                         function(data){
-                                            if( data.needcaptcha ){
+                                            if( +data.needcaptcha ){
                                                 initVcode();
                                                 showVcodeError('请输入验证码');
                                             }
