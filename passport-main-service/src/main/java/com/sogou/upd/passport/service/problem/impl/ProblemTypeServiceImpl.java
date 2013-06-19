@@ -72,6 +72,36 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
         return list;
     }
 
+    @Override
+    public int  insertProblemType(ProblemType problemType) throws ServiceException {
+        try {
+            int row = problemTypeDAO.insertProblemType(problemType);
+            if(row > 0) {
+                String cacheKey = buildProblemTypeListKey(CACHE_PROBLEM_LIST);
+                redisUtils.delete(cacheKey);
+            }
+            return row;
+        } catch (Exception e) {
+            throw new ServiceException();
+
+        }
+    }
+
+    @Override
+    public int  deleteProblemTypeById(long id) throws ServiceException {
+        try {
+            int row = problemTypeDAO.deleteProblemTypeById(id);
+            if(row > 0) {
+                String cacheKey = buildProblemTypeListKey(CACHE_PROBLEM_LIST);
+                redisUtils.delete(cacheKey);
+            }
+            return row;
+        } catch (Exception e) {
+            throw new ServiceException();
+
+        }
+    }
+
     private String buildProblemTypeListKey(String id) {
         return CACHE_PREFIX_ID_PROBLEMTYPE + id;
     }

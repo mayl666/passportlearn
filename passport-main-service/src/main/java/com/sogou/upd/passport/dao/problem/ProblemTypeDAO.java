@@ -54,6 +54,12 @@ public interface ProblemTypeDAO {
                     + "values (" + VALUE_FIELD_EXCEPTID + ")")
     public int insertProblemType(@SQLParam("problemType") ProblemType problemType) throws DataAccessException;
 
+    @SQL("delete from" +
+            TABLE_NAME +
+            " where id=:id")
+    public int deleteProblemTypeById(@SQLParam("id") long id) throws
+            DataAccessException;
+
     /**
      * 根据id获取Problem类型
      */

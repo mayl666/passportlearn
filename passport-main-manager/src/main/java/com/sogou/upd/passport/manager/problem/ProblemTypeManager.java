@@ -15,10 +15,26 @@ import java.util.List;
 public interface ProblemTypeManager {
 
     /**
-     *
+     *获取反馈类型列表
      * @return
      * @throws Exception
      */
     public List<ProblemType> getProblemTypeList() throws Exception;
+
+    /**
+     * 插入一条反馈
+     * @param problemType
+     * @return
+     * @throws Exception
+     */
+    public int  insertProblemType(ProblemType problemType) throws Exception;
+
+    /**
+     * 删除一条反馈
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public int  deleteProblemTypeById(long id) throws Exception;
 
 }

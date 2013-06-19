@@ -42,4 +42,27 @@ public class ProblemTypeServiceTest extends AbstractJUnit4SpringContextTests {
             System.out.println("查询失败！");
         }
     }
+
+    @Test
+    public void testInsertProblemType() {
+        ProblemType problemType = new ProblemType();
+        problemType.setTypeName("注册");
+        int row = problemTypeService.insertProblemType(problemType);
+        if (row  >0) {
+            System.out.println("插入成功！");
+        } else {
+            System.out.println("插入失败！");
+        }
+    }
+
+    @Test
+    public void testdeleteProblemTypeById() {
+        long id = 270;
+        int row = problemTypeService.deleteProblemTypeById(id);
+        if (row  >0) {
+            System.out.println("删除成功！");
+        } else {
+            System.out.println("删除失败！");
+        }
+    }
 }
