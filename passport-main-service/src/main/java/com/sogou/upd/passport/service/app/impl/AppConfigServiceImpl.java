@@ -10,13 +10,12 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
-import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Inject;
 
@@ -32,7 +31,7 @@ public class AppConfigServiceImpl implements AppConfigService {
 
     private Logger logger = LoggerFactory.getLogger(AppConfigService.class);
     private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG; //clientId与appConfig映射
-    private static Map<Integer, String> CLIENTNAMES_MAP = Maps.newHashMap();
+    private static ConcurrentMap<Integer, String> CLIENTNAMES_MAP = Maps.newConcurrentMap();
 
     @Autowired
     private AppConfigDAO appConfigDAO;
@@ -84,25 +83,23 @@ public class AppConfigServiceImpl implements AppConfigService {
 
     @Override
     public String queryClientName(int clientId) throws ServiceException {
-        if (MapUtils.isEmpty(CLIENTNAMES_MAP)) {
-            CLIENTNAMES_MAP = Maps.newHashMap();
-        }
         String clientName = CLIENTNAMES_MAP.get(clientId);
         if (Strings.isNullOrEmpty(clientName)) {
-            return queryNameToMap(clientId);
+            clientName = queryNameToMap(clientId);
         }
         return clientName;
-
     }
 
     private String queryNameToMap(int clientId) {
+        String clientName = null;
         AppConfig appConfig = queryAppConfigByClientId(clientId);
         if (appConfig != null) {
-            String clientName = appConfig.getClientName();
-            CLIENTNAMES_MAP.put(clientId, clientName);
-            return clientName;
+            clientName = appConfig.getClientName();
+            if (!Strings.isNullOrEmpty(clientName)) {
+                CLIENTNAMES_MAP.putIfAbsent(clientId, clientName);
+            }
         }
-        return null;
+        return clientName;
     }
 
     private boolean addClientIdMapAppConfigToCache(int clientId, AppConfig appConfig) {
