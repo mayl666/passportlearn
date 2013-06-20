@@ -32,7 +32,9 @@
     <div class="inner reg">
         <ul>
             
-            <li class="current"><a href="/web/reg/mobile">搜狗通行证注册</a></li>
+            <li ><a href="/">登录</a></li>
+            
+            <li class="current"><a href="/web/reg/tel">搜狗通行证注册</a></li>
             
         </ul>
     </div>

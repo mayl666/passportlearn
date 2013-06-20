@@ -62,10 +62,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public long incLoginSuccessTimes(String username, String ip) throws ServiceException {
         try {
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
-            recordTimes(userNameCacheKey,DateAndNumTimesConstant.TIME_ONEHOUR);
+            recordTimes(userNameCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-            String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-            recordTimes(ipCacheKey,DateAndNumTimesConstant.TIME_ONEHOUR);
+            if (!Strings.isNullOrEmpty(ip)) {
+                String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
+            }
+
         } catch (Exception e) {
             logger.error("incLoginSuccessTimes:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
@@ -78,10 +81,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public long incLoginFailedTimes(String username, String ip) throws ServiceException {
         try {
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            recordTimes(userNameCacheKey,DateAndNumTimesConstant.TIME_ONEHOUR);
+            recordTimes(userNameCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-            String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-            recordTimes(ipCacheKey,DateAndNumTimesConstant.TIME_ONEHOUR);
+            if (!Strings.isNullOrEmpty(ip)) {
+                String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
+            }
+
         } catch (Exception e) {
             logger.error("incLoginFailedTimes:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
@@ -93,30 +99,33 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException {
         boolean result = false;
         try {
-            //失败次数
+            //username
             String loginFailedUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
             result = checkTimesByKey(loginFailedUserNameKey, LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT);
             if (result) {
                 return true;
             }
 
-            String loginFailedIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-            result = checkTimesByKey(loginFailedIPKey, LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
-            if (result) {
-                return true;
-            }
-
-            //成功次数
             String loginSuccessUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
             result = checkTimesByKey(loginSuccessUserNameKey, LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
             if (result) {
                 return true;
             }
 
-            String loginSuccessIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-            result = checkTimesByKey(loginSuccessIPKey, LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-            if (result) {
-                return true;
+            //IP
+
+            if(!Strings.isNullOrEmpty(ip)) {
+                String loginFailedIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+                result = checkTimesByKey(loginFailedIPKey, LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
+                if (result) {
+                    return true;
+                }
+
+                String loginSuccessIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+                result = checkTimesByKey(loginSuccessIPKey, LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
+                if (result) {
+                    return true;
+                }
             }
         } catch (Exception e) {
             logger.error("userInBlackList:username" + username + ",ip:" + ip, e);
@@ -202,11 +211,12 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if(result){
                 return true;
             }
-
-            String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-            result = checkTimesByKey(ipCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
-            if(result){
-                return true;
+            if(!Strings.isNullOrEmpty(ip)){
+                String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+                result = checkTimesByKey(ipCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
+                if(result){
+                    return true;
+                }
             }
         } catch (Exception e) {
             logger.error("getAccountLoginFailedCount:username" + username+",ip:"+ip, e);
@@ -221,9 +231,10 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String passportIdCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST + passportId;
             recordTimes(passportIdCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
 
-            String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
-            recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-
+            if(!Strings.isNullOrEmpty(ip)){
+                String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
+                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            }
 
         } catch (Exception e) {
             logger.error("incAddProblemTimes:passportId"+passportId+",ip" + ip, e);
@@ -240,10 +251,12 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if(result){
                 return true;
             }
-            String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
-            result = checkTimesByKey(ipCacheKey, LoginConstant.ADDPROBLEM_IP_LIMITED);
-            if(result){
-                return true;
+            if(!Strings.isNullOrEmpty(ip)){
+                String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
+                result = checkTimesByKey(ipCacheKey, LoginConstant.ADDPROBLEM_IP_LIMITED);
+                if(result){
+                    return true;
+                }
             }
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);

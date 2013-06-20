@@ -1,0 +1,88 @@
+package com.sogou.upd.passport.common.model.useroperationlog;
+
+import org.apache.commons.collections.map.LinkedMap;
+
+import java.util.Map;
+
+/**
+ * 用于记录用户行为的对象
+ * User: ligang201716@sogou-inc.com
+ * Date: 13-6-20
+ * Time: 下午2:04
+ */
+public class UserOperationLog {
+
+    //操作者
+    private String passportId;
+
+    //操作app
+    private String clientId;
+
+    //返回码
+    private String resultCode;
+
+    //用户执行的操作
+    private UserOperationEnum userOperation;
+
+    //其它信息
+    private Map<String,String> otherMessageMap;
+
+    /**
+     * 构造用户行为记录的log
+     * @param passportId  用户id
+     * @param userOperation 用户执行的操作
+     * @param clientId    发起操作的appId
+     * @param resultCode  操作结果，具体参见{@link com.sogou.upd.passport.common.utils.ErrorUtil}
+     */
+    public UserOperationLog(String passportId,UserOperationEnum userOperation,String clientId,String resultCode){
+        this.passportId=passportId;
+        this.userOperation=userOperation;
+        this.clientId=clientId;
+        this.resultCode=resultCode;
+        otherMessageMap=new LinkedMap();
+    }
+
+    public void putOtherMessage(String key,String value){
+        otherMessageMap.put(key,value);
+    }
+
+    public Map<String, String> getOtherMessageMap() {
+        return otherMessageMap;
+    }
+
+    public void setOtherMessageMap(Map<String, String> otherMessageMap) {
+        this.otherMessageMap = otherMessageMap;
+    }
+
+    public String getPassportId() {
+        return passportId;
+    }
+
+    public void setPassportId(String passportId) {
+        this.passportId = passportId;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
+    }
+
+    public UserOperationEnum getUserOperation() {
+        return userOperation;
+    }
+
+    public void setUserOperation(UserOperationEnum userOperation) {
+        this.userOperation = userOperation;
+    }
+}
