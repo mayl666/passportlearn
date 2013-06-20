@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created with IntelliJ IDEA.
+ * 用户类开放平台接口
  * User: shipengzhi
  * Date: 13-4-22
  * Time: 上午12:54
@@ -35,6 +35,13 @@ public class OpenAPIUsersController extends BaseConnectController {
     @Autowired
     private ConfigureManager configureManager;
 
+    /**
+     * 获取第三方开放平台的openid
+     * @param request
+     * @param reqParams
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = {"/internal/connect/users/getopenid", "/connect/users/getopenid"}, method = RequestMethod.GET)
     @ResponseBody
     public Object getopenid(HttpServletRequest request, ConnectObtainParams reqParams) throws Exception {
@@ -63,6 +70,12 @@ public class OpenAPIUsersController extends BaseConnectController {
         return result.toString();
     }
 
+    /**
+     * 获取第三方开放平台的用户信息
+     * @param reqParams
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/connect/users/info", method = RequestMethod.GET)
     @ResponseBody
     public Object obtainConnectInfo(ConnectClientObtainParams reqParams) throws Exception {

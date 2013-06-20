@@ -40,10 +40,10 @@ define(['./common','./form' , './conf'] , function(common , form , conf){
 
             var data ={};
             try{
-                data = $.evalJSON(server_data);
+                data = $.evalJSON(server_data).data;
             }catch(e){window['console'] && console.log(e);}
-
-            addOptions(data);
+            common.parseHeader(data);
+            addOptions(data.problemTypeList);
 
         }
     };

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created with IntelliJ IDEA.
+ * 移动用户登录，客户端调用接口
  * User: shipengzhi
  * Date: 13-3-28
  * Time: 下午8:33
