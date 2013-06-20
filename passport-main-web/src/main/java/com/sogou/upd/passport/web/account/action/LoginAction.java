@@ -111,7 +111,7 @@ public class LoginAction extends BaseController {
 
         String userId=hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog=new UserOperationLog(userId, UserOperationEnum.logout,"0","0");
+        UserOperationLog userOperationLog=new UserOperationLog(userId,request.getRequestURI(),"0","0");
         String referer=request.getHeader("referer");
         userOperationLog.putOtherMessage("referer",referer);
         UserOperationLogUtil.log(userOperationLog);
