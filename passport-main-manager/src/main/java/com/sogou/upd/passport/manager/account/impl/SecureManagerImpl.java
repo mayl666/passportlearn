@@ -887,6 +887,8 @@ public class SecureManagerImpl implements SecureManager {
             if (!CollectionUtils.isEmpty(storeRecords)) {
                 for(ActionStoreRecordDO actionDO : storeRecords){
                     ActionRecordVO actionVO = new ActionRecordVO(actionDO);
+                    int clientIdRes = actionDO.getClientId();
+                    actionVO.setType(appConfigService.queryClientName(clientIdRes));
                     allRecords.add(actionVO);
                 }
             }
