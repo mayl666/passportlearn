@@ -46,25 +46,39 @@
     <mvc:resources mapping="/static/**" location="/static/"/>
 
 
-    <!-- Inteceptor 记录API请求url和执行时间 -->
-    <mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>      <!-- 打印请求响应时间 -->
-            <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>       <!-- 设置登录后的用户信息 -->
-            <bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>    <!-- 检测是否需要登录 -->
-            <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/internal/**"/>     <!-- 内部接口code和ct校验 -->
-            <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
-        </mvc:interceptor>
-    </mvc:interceptors>
+    <!--&lt;!&ndash; Inteceptor 记录API请求url和执行时间 &ndash;&gt;-->
+    <!--<mvc:interceptors>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**"/>      &lt;!&ndash; 打印请求响应时间 &ndash;&gt;-->
+            <!--<bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>-->
+        <!--</mvc:interceptor>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**"/>       &lt;!&ndash; 设置登录后的用户信息 &ndash;&gt;-->
+            <!--<bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**"/>    &lt;!&ndash; 检测是否需要登录 &ndash;&gt;-->
+            <!--<bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/internal/**"/>     &lt;!&ndash; 内部接口code和ct校验 &ndash;&gt;-->
+            <!--<bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>-->
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
+
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
+                <bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>
+                <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
+                <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
+            </list>
+        </property>
+    </bean>
+
+
 
     <mvc:default-servlet-handler/>
 
