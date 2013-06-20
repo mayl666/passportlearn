@@ -24,6 +24,7 @@ import com.sogou.upd.passport.web.account.form.security.WebMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class SecureAction extends BaseController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String querySecureInfo(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -96,7 +97,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/email", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindEmailView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -130,7 +131,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/mobile", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindMobileView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -164,7 +165,7 @@ public class SecureAction extends BaseController {
 
 
     @RequestMapping(value = "/question", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindQuestionView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -197,7 +198,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/password", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String modifyPasswordView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -228,7 +229,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/history", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String showHistoryView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);

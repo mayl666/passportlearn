@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.service.app.impl;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigDAO;
@@ -7,10 +10,13 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -25,7 +31,8 @@ import javax.inject.Inject;
 public class AppConfigServiceImpl implements AppConfigService {
 
     private Logger logger = LoggerFactory.getLogger(AppConfigService.class);
-    private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG; //clientid与appConfig映射
+    private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG; //clientId与appConfig映射
+    private static Map<Integer, String> CLIENTNAMES_MAP = Maps.newHashMap();
 
     @Autowired
     private AppConfigDAO appConfigDAO;
@@ -71,6 +78,29 @@ public class AppConfigServiceImpl implements AppConfigService {
         AppConfig appConfig = queryAppConfigByClientId(clientId);
         if (appConfig != null) {
             return String.format(appConfig.getSmsText(), smsCode);
+        }
+        return null;
+    }
+
+    @Override
+    public String queryClientName(int clientId) throws ServiceException {
+        if (MapUtils.isEmpty(CLIENTNAMES_MAP)) {
+            CLIENTNAMES_MAP = Maps.newHashMap();
+        }
+        String clientName = CLIENTNAMES_MAP.get(clientId);
+        if (Strings.isNullOrEmpty(clientName)) {
+            return queryNameToMap(clientId);
+        }
+        return clientName;
+
+    }
+
+    private String queryNameToMap(int clientId) {
+        AppConfig appConfig = queryAppConfigByClientId(clientId);
+        if (appConfig != null) {
+            String clientName = appConfig.getClientName();
+            CLIENTNAMES_MAP.put(clientId, clientName);
+            return clientName;
         }
         return null;
     }
