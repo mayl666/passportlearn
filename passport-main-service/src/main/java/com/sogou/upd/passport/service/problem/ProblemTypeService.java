@@ -24,4 +24,20 @@ public interface ProblemTypeService {
      * @throws ServiceException
      */
     public List<ProblemType> getProblemTypeList() throws ServiceException;
+
+    /**
+     * 插入一条反馈类型
+     * @param problemType
+     * @return
+     * @throws ServiceException
+     */
+    public int  insertProblemType(ProblemType problemType) throws ServiceException;
+
+    /**
+     * 删除一条反馈类型
+     * @param name
+     * @return
+     * @throws ServiceException
+     */
+    public int  deleteProblemTypeByName(String name) throws ServiceException;
 }
