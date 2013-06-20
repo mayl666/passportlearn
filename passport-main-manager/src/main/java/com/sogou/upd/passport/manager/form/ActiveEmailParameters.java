@@ -16,6 +16,7 @@ public class ActiveEmailParameters {
   private String passport_id;
   @NotBlank(message = "参数错误!")
   private String token;
+  private String ru;
 
   public String getClient_id() {
     return client_id;
@@ -39,5 +40,13 @@ public class ActiveEmailParameters {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  public String getRu() {
+    return ru;
+  }
+
+  public void setRu(String ru) {
+    this.ru = ru;
   }
 }

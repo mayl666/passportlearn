@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 public class RegAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
-  private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com";
+  private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
   @Autowired
   private RegManager regManager;
@@ -142,7 +142,7 @@ public class RegAction extends BaseController {
       //设置来源
       String ru =  regParams.getRu();
       if(Strings.isNullOrEmpty(ru)){
-        ru=TEST_LOGIN_INDEX_URL;
+        ru=LOGIN_INDEX_URL;
       }
       result.setDefaultModel("ru",ru);
     }
