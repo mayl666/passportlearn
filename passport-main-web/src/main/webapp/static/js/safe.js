@@ -31,10 +31,20 @@ define('utils',[], function(){
             }
             return data;
         },
-        addIframe: function(url){
+        addIframe: function(url , callback){
             var iframe = document.createElement('iframe');
             iframe.src = url;
             
+            if (iframe.attachEvent){
+                iframe.attachEvent("onload", function(){
+                    callback && callback();
+                });
+            } else {
+                iframe.onload = function(){
+                    callback && callback();
+                };
+            }
+
             document.body.appendChild(iframe);
         },
         getScript: function(url , callback){
@@ -112,13 +122,9 @@ define('common',['./utils'],function(utils){
             $('#Header .username').html(data.username);
             if( data.username ){
                 $('#Header .logout').show().prev().show();
-                $('#Header .logout a').click(function(){
-                    utils.getScript($(this).attr('href') , function(){
-                        if( window['logout_status'] == 'success' ){
-                            location.reload();
-                        }else{
-                            alert('系统错误');
-                        }
+                $('#Header .logout a').click(function(e){
+                    utils.addIframe($(this).attr('href') , function(){
+                        location.reload();
                     });
                     return false;
                 });

@@ -61,10 +61,20 @@ define('utils',[], function(){
             }
             return data;
         },
-        addIframe: function(url){
+        addIframe: function(url , callback){
             var iframe = document.createElement('iframe');
             iframe.src = url;
             
+            if (iframe.attachEvent){
+                iframe.attachEvent("onload", function(){
+                    callback && callback();
+                });
+            } else {
+                iframe.onload = function(){
+                    callback && callback();
+                };
+            }
+
             document.body.appendChild(iframe);
         },
         getScript: function(url , callback){
@@ -179,6 +189,11 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
 
             ui.checkbox('#RemChb');
 
+            if( $.cookie('fe_uname') ){
+                $('#Login .username input').val($.trim($.cookie('fe_uname')));
+                $('#Login .username span').hide();
+            }
+
             PassportSC.appid = conf.client_id;
             PassportSC.redirectUrl = location.protocol +  '//' + location.hostname + ( location.port ? (':' + location.port) :'' ) + conf.redirectUrl;
             $('#Login').on('submit' , function(){
@@ -225,7 +240,20 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                             }
                                         } ,
                                         function(){
-                                            location.href = "https://" + location.hostname;
+                                            $.cookie('fe_uname' , $('#Login .username input').val() , {
+                                                path:'/',
+                                                expires:365
+                                            });
+
+                                            var data ={};
+                                            try{
+                                                data = $.evalJSON(server_data).data;
+                                            }catch(e){window['console'] && console.log(e);}
+                                            if( data && data.ru ){
+                                                location.href = data.ru;
+                                            }else{
+                                                location.href = "https://" + location.hostname;
+                                            }
                                             return;
                                         }
                                       );
