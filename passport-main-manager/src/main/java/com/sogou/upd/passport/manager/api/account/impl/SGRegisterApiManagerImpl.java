@@ -74,7 +74,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             }
             break;
           case OTHER://外域邮件注册
-            boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip);
+            String ru=params.getRu();
+            boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
             if (isSendSuccess) {
               result.setSuccess(true);
               result.setMessage("感谢注册，请立即激活账户！");
