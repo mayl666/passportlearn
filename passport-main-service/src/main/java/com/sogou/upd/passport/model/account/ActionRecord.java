@@ -15,7 +15,7 @@ public class ActionRecord {
     private String userId;
     private int clientId;
     private String ip;
-    private long date;
+    private long date;  // 记录时间，用毫秒表示
     private String note;
 
     public AccountModuleEnum getAction() {
