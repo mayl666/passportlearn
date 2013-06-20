@@ -80,6 +80,7 @@ public class RegManagerImpl implements RegManager {
       username = regParams.getUsername();
       String password = regParams.getPassword();
       String captcha = regParams.getCaptcha();
+      String ru=regParams.getRu();
 
       //判断是否是个性账号
       if(username.indexOf("@")==-1){
@@ -102,7 +103,7 @@ public class RegManagerImpl implements RegManager {
             return result;
           }
           RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
-                                                                         clientId);
+                                                                         clientId,ru);
           if (ManagerHelper.isInvokeProxyApi(username)) {
             result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
           } else {
@@ -136,8 +137,8 @@ public class RegManagerImpl implements RegManager {
     return result;
   }
 
-  private RegEmailApiParams buildRegMailProxyApiParams(String username,String password,String ip,int clientId){
-    return new RegEmailApiParams(username, password, ip, clientId);
+  private RegEmailApiParams buildRegMailProxyApiParams(String username,String password,String ip,int clientId,String ru){
+    return new RegEmailApiParams(username, password, ip, clientId,ru);
   }
 
 

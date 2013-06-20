@@ -57,7 +57,7 @@ public class LoginAction extends BaseController {
     private HostHolder hostHolder;
 
     /**
-     * 用户注册检查用户名是否存在
+     * 用户登录检查是否显示验证码
      *
      * @param checkParam
      */
@@ -78,6 +78,7 @@ public class LoginAction extends BaseController {
         String username= URLDecoder.decode(checkParam.getUsername(), "utf-8");
         //校验是否需要验证码
         boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(),username,getIp(request));
+
         result.setSuccess(true);
         result.setDefaultModel("needCaptcha",needCaptcha);
         return result.toString();
