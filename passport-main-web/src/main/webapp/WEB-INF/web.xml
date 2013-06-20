@@ -13,6 +13,17 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <!--处理静态文件不需要经过spring，容器直接处理-->
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>default</servlet-name>-->
+        <!--<url-pattern>/static/*</url-pattern>-->
+    <!--</servlet-mapping>-->
+
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>default</servlet-name>-->
+        <!--<url-pattern>/favicon.ico</url-pattern>-->
+    <!--</servlet-mapping>-->
+
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/</url-pattern>
@@ -38,11 +49,11 @@
         <error-code>403</error-code>
         <location>/static/404.html</location>
     </error-page>
-    <!--&lt;!&ndash; 500 服务器内部错误 &ndash;&gt;-->
-    <!--<error-page>-->
-        <!--<error-code>500</error-code>-->
-        <!--<location>/500.jsp</location>-->
-    <!--</error-page>-->
+    <!-- 500 服务器内部错误 -->
+    <error-page>
+        <error-code>500</error-code>
+        <location>/static/500.html</location>
+    </error-page>
 
 
     <listener>

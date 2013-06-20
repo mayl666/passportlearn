@@ -60,11 +60,6 @@
             <artifactId>xstream</artifactId>
             <version>1.4.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.sogou.passport</groupId>
-            <artifactId>iploc</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 
     <build>

@@ -4,12 +4,15 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationEnum;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.UserOperationLogUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
@@ -45,6 +48,10 @@ public class LoginAction extends BaseController {
 
     @Autowired
     private LoginManager loginManager;
+    @Autowired
+    private SecureManager secureManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @Autowired
     private HostHolder hostHolder;
@@ -95,6 +102,15 @@ public class LoginAction extends BaseController {
             return "/login/api";
         }
         result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
+
+        if (result.isSuccess()) {
+            String userName = loginParams.getUsername();
+            String userId = commonManager.getPassportIdByUsername(userName);
+            int clientId = Integer.parseInt(loginParams.getClient_id());
+            String ip = getIp(request);
+            secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+        }
+
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());
         return "/login/api";
