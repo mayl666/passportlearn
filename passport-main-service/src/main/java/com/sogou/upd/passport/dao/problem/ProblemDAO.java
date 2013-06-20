@@ -83,9 +83,7 @@ public interface ProblemDAO {
   /**
    * 根据拼接的字符串获取Problem
    */
-  @SQL("select " +
-       ALL_FIELD +
-       " from " +
+  @SQL("select t.id,t.passport_id,t.client_id,t.sub_time,t.status,t.type_id,t.title,t.content,t.email from ( select id from " +
        TABLE_NAME +
        " where 1=1 "
        + "#if(:status != null){and status = :status }" //根据状态筛选
@@ -96,7 +94,8 @@ public interface ProblemDAO {
        +  "#if(:title != null){AND UPPER(title) LIKE BINARY CONCAT('%',UPPER(:title),'%')}"//根据反馈内容模糊匹配
        +  "#if(:content != null){AND UPPER(content) LIKE BINARY CONCAT('%',UPPER(:content),'%')}"//根据反馈内容模糊匹配
        + " order by sub_time DESC "
-       + " #if((:start != null)&&(:end !=null)){ limit :start,:end }" )
+       + " #if((:start != null)&&(:end !=null)){ limit :start,:end }"
+       +" ) a, "+TABLE_NAME +" t where a.id = t.id")
   public List<Problem> queryProblemList(@SQLParam("status") Integer status,
                                       @SQLParam("client_id") Integer clientId,
                                       @SQLParam("type_id") Integer typeId,
@@ -119,12 +118,14 @@ public interface ProblemDAO {
        +  "#if(:type_id != null){and type_id = :type_id }" //根据反馈类型ID筛选
        +  "#if(:start_date != null){and sub_time >= :start_date }" //根据开始和结束时间筛选
        +  "#if(:end_date != null){and sub_time <= :end_date }" //
+       +  "#if(:title != null){AND UPPER(title) LIKE BINARY CONCAT('%',UPPER(:title),'%')}"//根据反馈内容模糊匹配
        +  "#if(:content != null){AND UPPER(content) LIKE BINARY CONCAT('%',UPPER(:content),'%')}")//根据反馈内容模糊匹配
   public int getProblemCount(@SQLParam("status") Integer status,
                                       @SQLParam("client_id") Integer clientId,
                                       @SQLParam("type_id") Integer typeId,
                                       @SQLParam("start_date") Date startDate,
                                       @SQLParam("end_date") Date endDate,
+                                      @SQLParam("title") String title,
                                       @SQLParam("content") String content)
           throws DataAccessException;
 
