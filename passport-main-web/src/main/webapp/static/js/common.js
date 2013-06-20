@@ -32,6 +32,14 @@ define(['./utils'],function(utils){
                     return false;
                 });
             }
+        },
+        bindJumpEmail: function(){
+            $('#JumpToUrl').click(function(){
+                if( $('#JumpTarget') ){
+                    window.open( utils.getUrlByMail($('#JumpTarget').html()) );
+                }
+                return false;
+            });
         }
     };
 });

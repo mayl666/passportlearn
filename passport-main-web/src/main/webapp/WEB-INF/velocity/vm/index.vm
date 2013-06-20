@@ -105,7 +105,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=001540"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=327590"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=480452"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';
