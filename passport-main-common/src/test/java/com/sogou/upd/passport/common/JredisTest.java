@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -38,8 +39,26 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void test() {
         try {
-            redisUtils.set("aaaaa", "bbbb");
-//        redisUtils.expire("aaaaa",10);
+//            String ip="192.168.1.1";
+//            int i=0;
+//            while (i<20){
+//              String uuidName= UUID.randomUUID().toString().replaceAll("-","");
+//              redisUtils.lPush(ip,uuidName);
+//              redisUtils.set(ip+"_"+uuidName,1);
+//              i++;
+//            }
+//             String uuidName= UUID.randomUUID().toString().replaceAll("-","");
+//             while (i<20){
+//                ip="192.168.1."+i;
+//                redisUtils.lPush(uuidName,ip);
+//                redisUtils.set(uuidName+"_"+ip,1);
+//               i++;
+//             }
+//          System.out.println(redisUtils.getList(ip).size());
+
+
+
+
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
