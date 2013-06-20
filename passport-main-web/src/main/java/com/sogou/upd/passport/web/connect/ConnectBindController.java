@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * SSO-SDK第三方登录授权回调接口
+ * 第三方账号绑定
  * User: shipengzhi
  * Date: 13-3-24
  * Time: 下午12:07
@@ -35,6 +35,14 @@ public class ConnectBindController extends BaseConnectController {
     @Autowired
     private ConfigureManager configureManager;
 
+    /**
+     * 采用SSO-SDK第三方授权方式，绑定账号接口
+     * @param req
+     * @param res
+     * @param providerStr
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/ssobind/{providerStr}", method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOBind(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {

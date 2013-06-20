@@ -71,8 +71,15 @@
         <finalName>passport-main-common</finalName>
         <resources>
             <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <!--filter不能设为true，否则.dat文件会转换，无法验证.dat文件。-->
+            <!--如果需要设为true，则将.dat放进另外文件夹单独设置-->
+            <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
             </resource>
         </resources>
     </build>

@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 移动用户注册登录 User: mayan Date: 13-3-22 Time: 下午3:29 To change this template use File | Settings |
+ * 移动用户注册登录，客户端调用接口
+ * User: mayan
+ * Date: 13-3-22 Time: 下午3:29
  * File Templates.
  */
 @Controller

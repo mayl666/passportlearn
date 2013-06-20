@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created with IntelliJ IDEA.
+ * 第三方账号授权回调接口
  * User: shipengzhi
  * Date: 13-4-26
  * Time: 下午5:52
