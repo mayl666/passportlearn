@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -45,7 +46,6 @@ public class RegAction extends BaseController {
 
   private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
   private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
-  private static final String TEST_LOGIN_INDEX_URL = "http://account.sogou.com";
 
   @Autowired
   private RegManager regManager;
@@ -121,7 +121,8 @@ public class RegAction extends BaseController {
     String passportId=regParams.getUsername();
     //黑白名单
     //校验是否在账户黑名单或者IP黑名单之中
-    if (operateTimesService.checkRegInBlackList(ip, null)){
+    String uuidName= CookieUtils.getCookie(request, "uuidName");
+    if (operateTimesService.checkRegInBlackList(ip, uuidName)){
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
       return result;
     }
@@ -141,7 +142,7 @@ public class RegAction extends BaseController {
       //设置来源
       String ru =  regParams.getRu();
       if(Strings.isNullOrEmpty(ru)){
-        ru=TEST_LOGIN_INDEX_URL;
+        ru=LOGIN_INDEX_URL;
       }
       result.setDefaultModel("ru",ru);
     }

@@ -46,7 +46,7 @@
                                     <span class="checkbox checkbox-checked" id="RemChbSpan" ></span>
                                     记住登录状态
                                 </label>
-                                <a href="https://passport.sohu.com/web/recoverpwd">找回密码</a>
+                                <a href="/web/findpwd">找回密码</a>
                             </p>
                             <button type="submit">
                                 &nbsp;
@@ -105,7 +105,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=001540"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=327590"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=824349"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';

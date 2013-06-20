@@ -42,6 +42,10 @@
 
     <!-- spring mvc setting -->
 
+    <!--配置静态资源-->
+    <mvc:resources mapping="/static/**" location="/static/"/>
+
+
     <!-- Inteceptor 记录API请求url和执行时间 -->
     <mvc:interceptors>
         <mvc:interceptor>
@@ -62,6 +66,8 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
+
+
     <mvc:default-servlet-handler/>
 
     <bean id="stringHttpMessageConverter"
@@ -69,7 +75,6 @@
         <property name="supportedMediaTypes">
             <list>
                 <value>text/plain;charset=UTF-8</value>
-                <!--<value>application/json;charset=UTF-8</value>-->
             </list>
         </property>
     </bean>

@@ -21,17 +21,21 @@ define(['./utils'],function(utils){
             $('#Header .username').html(data.username);
             if( data.username ){
                 $('#Header .logout').show().prev().show();
-                $('#Header .logout a').click(function(){
-                    utils.getScript($(this).attr('href') , function(){
-                        if( window['logout_status'] == 'success' ){
-                            location.reload();
-                        }else{
-                            alert('系统错误');
-                        }
+                $('#Header .logout a').click(function(e){
+                    utils.addIframe($(this).attr('href') , function(){
+                        location.reload();
                     });
                     return false;
                 });
             }
+        },
+        bindJumpEmail: function(){
+            $('#JumpToUrl').click(function(){
+                if( $('#JumpTarget') ){
+                    window.open( utils.getUrlByMail($('#JumpTarget').html()) );
+                }
+                return false;
+            });
         }
     };
 });

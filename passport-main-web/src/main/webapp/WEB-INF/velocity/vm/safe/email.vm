@@ -114,9 +114,9 @@
 <script type="text/tpl" id="Target3">
 
     <div class="binding">
-        <p>验证邮件已发送至您的邮箱：<{sec_email}></p>
+        <p>验证邮件已发送至您的邮箱：<span id="JumpTarget"><{sec_email}></a></p>
         <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
-        <a href="#" class="long-btn">去邮箱验证</a>
+        <a id="JumpToUrl" href="#" class="long-btn">去邮箱验证</a>
     </div>
 
 </script>

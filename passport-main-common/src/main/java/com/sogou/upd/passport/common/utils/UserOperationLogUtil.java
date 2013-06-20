@@ -40,7 +40,7 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, UserOperationEnum operation, String clientId, String resultCode,Map<String,String> otherMessage) {
+    public static void log(String passportId, String operation, String clientId, String resultCode,Map<String,String> otherMessage) {
         try{
             StringBuilder log = new StringBuilder("passportId:");
             log.append(passportId);
