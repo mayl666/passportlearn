@@ -20,6 +20,7 @@ import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,6 +33,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 
     private static Logger logger = LoggerFactory.getLogger(ProxyBindApiManagerImpl.class);
 
+    @Qualifier("redisUtils")
     @Autowired
     private RedisUtils redisUtils;
 
@@ -172,7 +174,19 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         String userid=bindMobileApiParams.getUserid();
         String newMoblie=bindMobileApiParams.getNewMobile();
         String newCaptcha=bindMobileApiParams.getNewCaptcha();
-        return this.bindMobileByCaptcha(userid,newMoblie,newCaptcha);
+        Result result=this.bindMobileByCaptcha(userid,newMoblie,newCaptcha);
+        if(!StringUtil.isBlank(oldMobile)&&!result.isSuccess()){
+            StringBuilder errorLog=new StringBuilder("BindNewMobileField: userid=");
+            errorLog.append(userid);
+            errorLog.append(" , oldMobile=");
+            errorLog.append(oldMobile);
+            errorLog.append(" ,newMoblie=");
+            errorLog.append(newMoblie);
+            errorLog.append(" ,result=");
+            errorLog.append(result.toString());
+            logger.error(errorLog.toString());
+        }
+        return result;
     }
 
     @Override

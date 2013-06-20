@@ -31,7 +31,7 @@ import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
-import com.sogou.upd.passport.manager.form.ResetPwdParameters;
+import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.AccountInfoService;
@@ -406,14 +406,14 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public Result resetWebPassword(ResetPwdParameters resetPwdParameters)
+    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters)
             throws Exception {
         Result result = new APIResultSupport(false);
         String username = null;
         try {
-            username = resetPwdParameters.getPassport_id();
+            username = updatePwdParameters.getPassport_id();
 
-            UpdatePwdApiParams updatePwdApiParams=buildProxyApiParams(resetPwdParameters);
+            UpdatePwdApiParams updatePwdApiParams=buildProxyApiParams(updatePwdParameters);
 
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxySecureApiManager.updatePwd(updatePwdApiParams);
@@ -429,13 +429,13 @@ public class SecureManagerImpl implements SecureManager {
         return result;
     }
 
-    private UpdatePwdApiParams buildProxyApiParams(ResetPwdParameters resetPwdParameters){
+    private UpdatePwdApiParams buildProxyApiParams(UpdatePwdParameters updatePwdParameters){
         UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
-        updatePwdApiParams.setUserid(resetPwdParameters.getPassport_id());
-        updatePwdApiParams.setPassword(resetPwdParameters.getPassword());
-        updatePwdApiParams.setNewpassword(resetPwdParameters.getNewpwd());
-        updatePwdApiParams.setModifyip(resetPwdParameters.getIp());
-        updatePwdApiParams.setClient_id(Integer.parseInt(resetPwdParameters.getClient_id()));
+        updatePwdApiParams.setUserid(updatePwdParameters.getPassport_id());
+        updatePwdApiParams.setPassword(updatePwdParameters.getPassword());
+        updatePwdApiParams.setNewpassword(updatePwdParameters.getNewpwd());
+        updatePwdApiParams.setModifyip(updatePwdParameters.getIp());
+        updatePwdApiParams.setClient_id(Integer.parseInt(updatePwdParameters.getClient_id()));
 
         return updatePwdApiParams;
     }
