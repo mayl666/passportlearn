@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -17,10 +18,13 @@ public class WebAddProblemParameters {
     private String passportId;
     @NotBlank(message = "请选择反馈类型!")
     private String typeId;
+    @Length(min = 1, max = 100, message = "反馈标题长度错误，请重新输入！")
     @NotBlank(message = "反馈标题不允许为空!")
     private String title;
+    @Length(min = 1, max = 300, message = "反馈内容长度错误，请重新输入！")
     @NotBlank(message = "反馈内容不允许为空!")
     private String content;
+    @Length(min = 1, max = 300, message = "邮箱长度错误，请重新输入！")
     @NotBlank(message = "email不允许为空!")
     private String email;
 
