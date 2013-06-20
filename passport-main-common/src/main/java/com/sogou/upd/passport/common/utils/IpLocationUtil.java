@@ -8,10 +8,12 @@ import com.sogou.op.iploc.Ip2location;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
@@ -27,16 +29,13 @@ public class IpLocationUtil {
     private static final Map<String, String> city;
 
     static {
-        String path = ClassLoader.getSystemResource("location.dat").getFile();
-        path = StringUtils.removeStart(path, "/");
-
-        instance = new Ip2location(path);
+        instance = new Ip2location();
         city = Maps.newHashMap();
         try {
-            path = ClassLoader.getSystemResource("cities.dat").getFile();
-            path = StringUtils.removeStart(path, "/");
-            FileInputStream fis = new FileInputStream(path);
-            BufferedReader is = new BufferedReader(new InputStreamReader(fis));
+            InputStream inloc = IpLocationUtil.class.getResourceAsStream("/location.dat");
+            instance.readData(inloc);
+            InputStream incity = IpLocationUtil.class.getResourceAsStream("/cities.dat");
+            BufferedReader is = new BufferedReader(new InputStreamReader(incity));
             String readValue = is.readLine();
             while (readValue != null) {
                 String[] kv = readValue.split("\\|", 2);

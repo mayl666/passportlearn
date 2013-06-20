@@ -55,6 +55,34 @@ define( function(){
             };
 
             head.insertBefore( script, head.firstChild );
+        },
+        getUrlByMail:function(mail){
+            mail = mail.split('@')[1];
+            if( !mail ) return false;
+            var hash = {
+                "139.com":"mail.10086.cn",
+                'gmail.com': 'mail.google.com', 
+                'sina.com': 'mail.sina.com.cn', 
+                'yeah.net': 'www.yeah.net', 
+                'hotmail.com': 'www.hotmail.com', 
+                'live.com': 'www.outlook.com', 
+                'live.cn': 'www.outlook.com', 
+                'live.com.cn': 'www.outlook.com', 
+                'outlook.com': 'www.outlook.com', 
+                'yahoo.com.cn': 'mail.cn.yahoo.com', 
+                'yahoo.cn': 'mail.cn.yahoo.com', 
+                'ymail.com': 'www.ymail.com', 
+                'eyou.com': 'www.eyou.com', 
+                '188.com': 'www.188.com', 
+                'foxmail.com': 'www.foxmail.com' 
+            };
+            var url;
+            if( mail in hash ){
+                url= hash[mail];
+            }else{
+                url= 'mail.' + mail;
+            }
+            return 'http://' + url;
         }
     };
 
