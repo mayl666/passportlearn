@@ -128,7 +128,9 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
 
 
     var refreshVcode = function(){
-        $('#Login').find('.vcode img').attr('src' , "/captcha?token="+ $('#Login').find('.token').val() + '&t=' + +new Date() );
+        if(vcodeInited){
+            $('#Login').find('.vcode img').attr('src' , "/captcha?token="+ PassportSC.getToken() + '&t=' + +new Date() );
+        }
     };
 
     var showVcodeError = function(text){
@@ -141,6 +143,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
 
     return {
         init: function(){
+
             ui.checkbox('#RemChb');
 
             PassportSC.appid = conf.client_id;
@@ -165,16 +168,20 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                                 if(initVcode()) {
                                                     refreshed = true;
                                                 }
-                                                showVcodeError('请输入验证码');
-                                                captchaIpt.focus();
+                                                //showVcodeError('请输入验证码');
+                                                //captchaIpt.focus();
                                             }
                                             if( +data.status == 20221 ){//vcode
                                                 var text = captchaIpt.val() ? '验证码错误':"请输入验证码";
                                                 showVcodeError(text);
                                                 !refreshed && refreshVcode();
                                                 captchaIpt.focus();
+                                            }else if( +data.status == 20230 ){
+                                                showUnameError('未知错误');
+                                                !refreshed && refreshVcode();
                                             }else{
                                                 showUnameError('用户名或密码错，请重新输入');
+                                                !refreshed && refreshVcode();
                                             }
                                         } ,
                                         function(){
@@ -200,10 +207,12 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                              + '&ru=' + encodeURIComponent(location.href)
                             );
             });
-            var inputs = $('#Login .password input , #Login .username input');
+            var inputs = $('#Login .password input , #Login .username input , #Login .vcode input');
             inputs.focus(function(){
                 $(this).prev().hide();
+                $(this).parent().find('b').show();
             }).blur(function(){
+                $(this).parent().find('b').hide();
                 if( !$.trim($(this).val()) )
                     $(this).prev().show();
             });

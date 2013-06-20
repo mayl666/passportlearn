@@ -28,8 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
- * SSO-SDK第三方登录授权回调接口 User: shipengzhi Date: 13-3-24 Time: 下午12:07 To change this template use File
- * | Settings | File Templates.
+ * SSO-SDK第三方授权接口
+ * User: shipengzhi
+ * Date: 13-3-24 Time: 下午12:07
  */
 @Controller
 public class ConnectLoginController extends BaseConnectController {
@@ -71,7 +72,7 @@ public class ConnectLoginController extends BaseConnectController {
     public ModelAndView authorize(HttpServletRequest req, HttpServletResponse res,
                                   ConnectLoginParams connectLoginParams) {
 
-        String url = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        String url;
         int provider = AccountTypeEnum.getProvider(connectLoginParams.getProvider());
         //验证client_id
         int clientId = Integer.parseInt(connectLoginParams.getClient_id());
