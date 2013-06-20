@@ -32,7 +32,7 @@ public class RegisterApiController {
     private RegisterApiManager proxyRegisterApiManager;
 
     /**
-     * 发送手机验证码
+     * 注册手机账号时，发送手机验证码
      *
      * @param request
      * @param params
@@ -80,6 +80,14 @@ public class RegisterApiController {
         return result.toString();
     }
 
+    /**
+     * 检查账号是否存在
+     * 账号类型为：xxx@sogou.com、搜狐域账号、外域邮箱账号、xxx@{provider}.sohu.com
+     * 手机号会返回"userid错误"
+     * @param request
+     * @param params
+     * @return
+     */
     @InterfaceSecurity
     @RequestMapping(value = "/checkuser", method = RequestMethod.POST)
     @ResponseBody

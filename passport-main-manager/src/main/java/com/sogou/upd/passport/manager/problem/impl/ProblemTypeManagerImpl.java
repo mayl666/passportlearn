@@ -25,7 +25,18 @@ public class ProblemTypeManagerImpl implements ProblemTypeManager {
     @Autowired
     private ProblemTypeService problemTypeService;
 
+    @Override
     public List<ProblemType> getProblemTypeList() throws Exception{
          return  problemTypeService.getProblemTypeList();
+    }
+
+    @Override
+    public int  insertProblemType(ProblemType problemType) throws Exception{
+        return  problemTypeService.insertProblemType(problemType);
+    }
+
+    @Override
+    public int  deleteProblemTypeByName(String name) throws Exception{
+        return  problemTypeService.deleteProblemTypeByName(name);
     }
 }

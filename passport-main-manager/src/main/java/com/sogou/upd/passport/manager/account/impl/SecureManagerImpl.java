@@ -17,6 +17,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
+import com.sogou.upd.passport.manager.account.vo.ActionRecordVO;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
@@ -43,11 +44,14 @@ import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -850,9 +854,18 @@ public class SecureManagerImpl implements SecureManager {
     public Result queryActionRecords(String userId, int clientId, AccountModuleEnum module) {
         // TODO:修改返回的List<T>中的T，增加归属地
         Result result = new APIResultSupport(false);
+        List<ActionRecordVO> recordsVO = Lists.newLinkedList();
         List<ActionStoreRecordDO>
-                actionRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
-        result.setDefaultModel("records", actionRecords);
+                storeRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
+        if (!CollectionUtils.isEmpty(storeRecords)) {
+            for(ActionStoreRecordDO actionDO : storeRecords){
+                ActionRecordVO actionVO = new ActionRecordVO(actionDO);
+                recordsVO.add(actionVO);
+            }
+        }
+
+
+        result.setDefaultModel("records", recordsVO);
         result.setSuccess(true);
         result.setMessage("获取" + module.getDescription() + "记录成功！");
         return result;
@@ -862,11 +875,16 @@ public class SecureManagerImpl implements SecureManager {
     public Result queryAllActionRecords(String userId, int clientId) {
         // TODO:修改返回的List<T>中的T，增加归属地
         Result result = new APIResultSupport(false);
-        List<ActionStoreRecordDO> allRecords = Lists.newLinkedList();
+        List<ActionRecordVO> allRecords = Lists.newLinkedList();
         for (AccountModuleEnum module : AccountModuleEnum.values()) {
             List<ActionStoreRecordDO>
-                    actionRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
-            allRecords.addAll(actionRecords);
+                    storeRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
+            if (!CollectionUtils.isEmpty(storeRecords)) {
+                for(ActionStoreRecordDO actionDO : storeRecords){
+                    ActionRecordVO actionVO = new ActionRecordVO(actionDO);
+                    allRecords.add(actionVO);
+                }
+            }
         }
         result.setDefaultModel("records", allRecords);
         result.setSuccess(true);

@@ -40,6 +40,8 @@
     
     var PassportSC = window['PassportSC'] || {};
     
+    PassportSC._token = utils.uuid();
+    
     PassportSC._passhtml = '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
         +'<input type="hidden" name="username" value="<%=username%>">'
         +'<input type="hidden" name="password" value="<%=password%>">'
@@ -59,7 +61,9 @@
         }
     };
 
-    
+    PassportSC.getToken = function(){
+        return PassportSC._token;
+    };
 
     PassportSC.loginHandle = function(username, password , vcode , isAutoLogin , container , onfailure, onsuccess){
         if( arguments.length < 7 ){
@@ -92,7 +96,7 @@
             isAutoLogin: isAutoLogin,
             appid: PassportSC.appid,
             redirectUrl:PassportSC.redirectUrl,
-            token: utils.uuid()
+            token: PassportSC._token
         });
         container.getElementsByTagName('form')[0].submit();
     };
