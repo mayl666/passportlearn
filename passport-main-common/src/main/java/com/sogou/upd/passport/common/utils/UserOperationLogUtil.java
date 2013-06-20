@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class UserOperationLogUtil {
 
-    private static final Logger userOperationLogger = LoggerFactory.getLogger("userOperationLogger");
+    private static final org.apache.log4j.Logger userOperationLogger = org.apache.log4j.Logger.getLogger("userOperationLogger");
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
 
