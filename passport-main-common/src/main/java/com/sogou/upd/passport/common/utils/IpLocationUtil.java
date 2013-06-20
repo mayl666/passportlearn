@@ -5,16 +5,16 @@ import com.google.common.collect.Maps;
 
 import com.sogou.op.iploc.Ip2location;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.BufferedReader;
-import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Date;
-import java.util.HashMap;
+import java.net.URL;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-19 Time: 下午4:14 To change this template use
@@ -27,15 +27,15 @@ public class IpLocationUtil {
     private static final Map<String, String> city;
 
     static {
-/*        instance = new Ip2location();
-        new IpLocationUtil().loadCities();*/
-        System.out.println(IpLocationUtil.class.getResource("").getPath());
-        instance = new Ip2location(IpLocationUtil.class.getClassLoader().getResource("").getPath() + "resources/location.dat");
+        String path = ClassLoader.getSystemResource("location.dat").getFile();
+        path = StringUtils.removeStart(path, "/");
+
+        instance = new Ip2location(path);
         city = Maps.newHashMap();
         try {
-            //String url = ClassLoader.getSystemResource("").getPath() + "cities.dat";
-            String url =  Thread.currentThread().getContextClassLoader() + "cities.dat";
-            FileInputStream fis = new FileInputStream(url);
+            path = ClassLoader.getSystemResource("cities.dat").getFile();
+            path = StringUtils.removeStart(path, "/");
+            FileInputStream fis = new FileInputStream(path);
             BufferedReader is = new BufferedReader(new InputStreamReader(fis));
             String readValue = is.readLine();
             while (readValue != null) {
@@ -48,16 +48,6 @@ public class IpLocationUtil {
         } catch (IOException e) {
             // 无默认数据
         }
-    }
-
-    private void loadCities() {
-        try {
-            System.out.println(this.getClass().getResource("").getPath());
-            instance.readData(this.getClass().getClassLoader().getSystemResource("").getPath() + "location.dat");
-        } catch (Exception e) {
-            System.out.println("Exception");
-        }
-
     }
 
     public static String getCity(String ip) {
