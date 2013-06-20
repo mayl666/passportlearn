@@ -128,7 +128,9 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
 
 
     var refreshVcode = function(){
-        $('#Login').find('.vcode img').attr('src' , "/captcha?token="+ PassportSC.getToken() + '&t=' + +new Date() );
+        if(vcodeInited){
+            $('#Login').find('.vcode img').attr('src' , "/captcha?token="+ PassportSC.getToken() + '&t=' + +new Date() );
+        }
     };
 
     var showVcodeError = function(text){
@@ -176,8 +178,10 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                                 captchaIpt.focus();
                                             }else if( +data.status == 20230 ){
                                                 showUnameError('未知错误');
+                                                !refreshed && refreshVcode();
                                             }else{
                                                 showUnameError('用户名或密码错，请重新输入');
+                                                !refreshed && refreshVcode();
                                             }
                                         } ,
                                         function(){
