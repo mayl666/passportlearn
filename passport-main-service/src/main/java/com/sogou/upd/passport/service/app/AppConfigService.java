@@ -24,4 +24,8 @@ public interface AppConfigService {
      */
     public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException;
 
+    /**
+     * 根据clientId获取clientName
+     */
+    public String queryClientName(int clientId) throws ServiceException;
 }

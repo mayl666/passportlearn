@@ -114,4 +114,9 @@ public class ProblemManagerImpl implements ProblemManager {
         }
         return true;
     }
+
+    @Override
+    public int getProblemCount(Integer status,Integer clientId,Integer typeId,Date startDate,Date endDate,String title,  String content){
+        return problemService.getProblemCount(status,clientId,typeId,startDate,endDate,title,content);
+    }
 }

@@ -31,7 +31,10 @@ public class ProblemServiceImpl implements ProblemService {
         return problemDAO.queryProblemList(status, clientId, typeId, startDate, endDate, title,content, start,
                 end);
     }
-
+    @Override
+    public int getProblemCount(Integer status,Integer clientId,Integer typeId,Date startDate,Date endDate,String title,  String content)throws ServiceException {
+        return problemDAO.getProblemCount(status,clientId,typeId,startDate,endDate,title,content);
+    }
     @Override
     public int updateStatusById(long id, int status) throws ServiceException {
         try {

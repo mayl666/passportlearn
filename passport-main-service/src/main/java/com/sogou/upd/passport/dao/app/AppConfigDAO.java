@@ -22,17 +22,17 @@ public interface AppConfigDAO {
     /**
      * 所有字段列表
      */
-    String ALL_FIELD = " id, client_id, sms_text, access_token_expiresin, refresh_token_expiresin, server_secret, client_secret, create_time ";
+    String ALL_FIELD = " id, client_id, sms_text, access_token_expiresin, refresh_token_expiresin, server_secret, client_secret, create_time, client_name ";
 
     /**
      * 值列表
      */
-    String VALUE_FIELD = " :appConfig.id, :appConfig.clientId, :appConfig.smsText, :appConfig.accessTokenExpiresin, :appConfig.refreshTokenExpiresin, :appConfig.serverSecret, :appConfig.clientSecret, :appConfig.createTime ";
+    String VALUE_FIELD = " :appConfig.id, :appConfig.clientId, :appConfig.smsText, :appConfig.accessTokenExpiresin, :appConfig.refreshTokenExpiresin, :appConfig.serverSecret, :appConfig.clientSecret, :appConfig.createTime, :appConfig.clientName ";
 
     /**
      * 修改字段列表
      */
-    String UPDATE_FIELD = " client_id = :appConfig.clientId, sms_text = :appConfig.smsText, access_token_expiresin = :appConfig.accessTokenExpiresin, refresh_token_expiresin = :appConfig.refreshTokenExpiresin, server_secret = :appConfig.serverSecret, client_secret = :appConfig.clientSecret, create_time = :appConfig.createTime ";
+    String UPDATE_FIELD = " client_id = :appConfig.clientId, sms_text = :appConfig.smsText, access_token_expiresin = :appConfig.accessTokenExpiresin, refresh_token_expiresin = :appConfig.refreshTokenExpiresin, server_secret = :appConfig.serverSecret, client_secret = :appConfig.clientSecret, create_time = :appConfig.createTime, client_name = :appConfig.clientName ";
 
     /**
      * 根据clientId获取AppConfig对象
