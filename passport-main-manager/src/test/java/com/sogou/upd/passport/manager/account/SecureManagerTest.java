@@ -1,5 +1,9 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.IpLocationUtil;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,6 +19,7 @@ public class SecureManagerTest extends AbstractJUnit4SpringContextTests {
     private SecureManager secureManager;
 
     private static final String PASSPORT_ID = "13552848876@sohu.com";
+    private static final int CLIENT_ID = 999;
     private static final String NEW_MOBILE = "13800000000";
     private static final String EMAIL = "Binding123@163.com";
     private static final String NEW_EMAIL = "hujunfei1986@126.com";
@@ -47,6 +52,17 @@ public class SecureManagerTest extends AbstractJUnit4SpringContextTests {
 
     public void testResetPwdByEmail() {
 
+    }
+
+    @Test
+    public void testActionRecord() {
+        for (int i=0; i<15; i++) {
+            secureManager.logActionRecord(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN, "202.106.180." + (i+1), null);
+        }
+
+        Result
+                result = secureManager.queryActionRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN);
+        System.out.println(result.toString());
     }
 
     /* ------------------------------------修改密保End------------------------------------ */
