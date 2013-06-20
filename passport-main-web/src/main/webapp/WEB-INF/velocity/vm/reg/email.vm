@@ -32,6 +32,8 @@
     <div class="inner reg">
         <ul>
             
+            <li ><a href="/">登录</a></li>
+            
             <li class="current"><a href="/web/reg/email">搜狗通行证注册</a></li>
             
         </ul>

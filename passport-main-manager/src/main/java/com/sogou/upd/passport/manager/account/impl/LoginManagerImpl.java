@@ -124,7 +124,7 @@ public class LoginManagerImpl implements LoginManager {
         String password = loginParameters.getPassword();
         String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         String passportId = username;
-        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), passportId, ip);
+        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
         try {
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
             //设置来源
@@ -145,7 +145,7 @@ public class LoginManagerImpl implements LoginManager {
                 if (!this.checkCaptcha(captchaCode, token)) {
                     result.setDefaultModel("needCaptcha", true);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    operateTimesService.incLoginFailedTimes(passportId, ip);
+                    operateTimesService.incLoginFailedTimes(username, ip);
                     return result;
                 }
             }
@@ -176,14 +176,14 @@ public class LoginManagerImpl implements LoginManager {
                 result.setDefaultModel("ru", loginParameters.getRu());
 
             } else {
-                operateTimesService.incLoginFailedTimes(passportId, ip);
+                operateTimesService.incLoginFailedTimes(username, ip);
                 //3次失败需要输入验证码
                 if (needCaptcha) {
                     result.setDefaultModel("needCaptcha", true);
                 }
             }
         } catch (Exception e) {
-            operateTimesService.incLoginFailedTimes(passportId, ip);
+            operateTimesService.incLoginFailedTimes(username, ip);
             logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
             //3次失败需要输入验证码
             if (needCaptcha) {
@@ -195,9 +195,10 @@ public class LoginManagerImpl implements LoginManager {
         return result;
     }
 
-    private boolean needCaptchaCheck(String client_id, String passportId, String ip) {
+    @Override
+    public boolean needCaptchaCheck(String client_id, String username, String ip) {
         if (Integer.parseInt(client_id) == SHPPUrlConstant.APP_ID) {
-            if (operateTimesService.loginFailedTimesNeedCaptcha(passportId, ip)) {
+            if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
                 return true;
             }
         }
@@ -210,19 +211,5 @@ public class LoginManagerImpl implements LoginManager {
             return false;
         }
         return true;
-    }
-
-    /**
-     * 用户在登陆的时候是否需要输入验证码
-     * 目前的策略
-     * 1.连续3次输入密码错误
-     *
-     * @param passportId
-     * @return
-     */
-    @Override
-    public boolean loginNeedCaptcha(String passportId, String ip) {
-        boolean loginFailed = accountService.loginFailedNumNeedCaptcha(passportId, ip);
-        return loginFailed;
     }
 }
