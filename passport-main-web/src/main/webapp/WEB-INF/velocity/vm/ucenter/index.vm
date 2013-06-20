@@ -110,6 +110,12 @@
     </div>
 
 </div>
+<script type="text/tpl" id="TargetDisable">
+    <p class="item my">
+        <span class="label">我的账号</span>
+        <span class="value"><{username}></span>
+    </p> 
+</script>
 
 
         </div>
