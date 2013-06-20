@@ -30,10 +30,20 @@ define( function(){
             }
             return data;
         },
-        addIframe: function(url){
+        addIframe: function(url , callback){
             var iframe = document.createElement('iframe');
             iframe.src = url;
             
+            if (iframe.attachEvent){
+                iframe.attachEvent("onload", function(){
+                    callback && callback();
+                });
+            } else {
+                iframe.onload = function(){
+                    callback && callback();
+                };
+            }
+
             document.body.appendChild(iframe);
         },
         getScript: function(url , callback){

@@ -61,7 +61,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     @Override
     public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note) {
         // 获取实际需要存储的参数类，节省存储空间
-        ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(System.currentTimeMillis(), ip);
+        ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(clientId, System.currentTimeMillis(), ip);
 
         String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
         storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
