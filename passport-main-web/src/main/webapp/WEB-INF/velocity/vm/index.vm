@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=536837" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=779460" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -24,14 +24,18 @@
                         <form method="post" id="Login" action="/web/login">
                                 
                             <p class="username">
+                                <b class="focusbg"></b>
                                 <span>邮箱/手机号/搜狗账号</span>
                                 <input type="text" name="username" value="" />
                             </p>
                             <p class="password">
+                                <b class="focusbg"></b>
                                 <span>请输入密码</span>
                                 <input type="password" name="password" value="" />
                             </p>
                             <p class="vcode">
+                                <b class="focusbg"></b>
+                                <span>验证码</span>
                                 <input type="text" name="captcha" value="" />
                                 <img src="about:blank" class="" alt="" />
                                 <a href="#">看不清，换一张</a>
@@ -100,8 +104,8 @@
         
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=580484"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=677547"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=001540"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=393853"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';
