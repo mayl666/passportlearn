@@ -44,4 +44,5 @@ public interface AppConfigDAO {
             " where client_id=:client_id")
     public AppConfig getAppConfigByClientId(@SQLParam("client_id") int client_id) throws DataAccessException;
 
+    /*----- !!!注意，如果需要更新client_name，则需要同步更新AppConfigServiceImpl中的CLIENTNAMES_MAP!!!-----*/
 }
