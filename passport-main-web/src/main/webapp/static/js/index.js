@@ -166,8 +166,8 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                                 if(initVcode()) {
                                                     refreshed = true;
                                                 }
-                                                showVcodeError('请输入验证码');
-                                                captchaIpt.focus();
+                                                //showVcodeError('请输入验证码');
+                                                //captchaIpt.focus();
                                             }
                                             if( +data.status == 20221 ){//vcode
                                                 var text = captchaIpt.val() ? '验证码错误':"请输入验证码";
