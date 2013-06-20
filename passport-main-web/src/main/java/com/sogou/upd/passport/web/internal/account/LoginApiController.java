@@ -1,12 +1,16 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +29,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/internal")
-public class LoginApiController {
+public class LoginApiController extends BaseController {
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private SecureManager secureManager;
 
     /**
      * web端校验用户名和密码是否正确
@@ -51,6 +57,13 @@ public class LoginApiController {
         }
         // 调用内部接口
         result = proxyLoginApiManager.webAuthUser(params);
+
+        if (result.isSuccess()) {
+            String userId = params.getUserid();
+            int clientId = params.getClient_id();
+            String ip = getIp(request);
+            secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+        }
 
         return result.toString();
     }
