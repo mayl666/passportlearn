@@ -74,15 +74,14 @@ public class LoginAction extends BaseController {
      * web页面退出
      */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ModelAndView logout(HttpServletRequest request, HttpServletResponse response,@RequestParam("clientid")String clientId)
+    public ModelAndView logout(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        String redirectUrl = "";
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
         String userId=hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog=new UserOperationLog(userId, UserOperationEnum.logout,clientId,"0");
+        UserOperationLog userOperationLog=new UserOperationLog(userId, UserOperationEnum.logout,"0","0");
         String referer=request.getHeader("referer");
         userOperationLog.putOtherMessage("referer",referer);
         UserOperationLogUtil.log(userOperationLog);

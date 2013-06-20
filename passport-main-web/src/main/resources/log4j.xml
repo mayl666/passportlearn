@@ -89,19 +89,19 @@
         <param name="Append" value="true"/>
         <param name="File" value="${passport.log.path}/useroperation/useroperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%m%n" />
+            <param name="ConversionPattern" value="%d %m %n" />
         </layout>
     </appender>
 
     <!--异步打印日志，提高效率-->
-    <appender name="AsyncUserOperationAppender" class="org.apache.log4j.AsyncAppender">
-        <param name="BufferSize" value="512"/>
-        <appender-ref ref="userOperationAppender"/>
-    </appender>
+    <!--<appender name="AsyncUserOperationAppender" class="org.apache.log4j.AsyncAppender">-->
+        <!--<param name="BufferSize" value="512"/>-->
+        <!--<appender-ref ref="userOperationAppender"/>-->
+    <!--</appender>-->
 
     <logger name="userOperationLogger" additivity="false">
         <level value="INFO" />
-        <appender-ref ref="AsyncUserOperationAppender" />
+        <appender-ref ref="userOperationAppender" />
     </logger>
     <!--end:userOperationLogger 用户操作行为记录log-->
 

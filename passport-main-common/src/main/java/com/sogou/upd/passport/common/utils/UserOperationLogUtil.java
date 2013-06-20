@@ -17,7 +17,10 @@ import java.util.Map;
  */
 public class UserOperationLogUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger("userOperationLogger");
+    private static final Logger userOperationLogger = LoggerFactory.getLogger("userOperationLogger");
+
+    private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
+
 
     /**
      * 记录用户行为
@@ -38,16 +41,20 @@ public class UserOperationLogUtil {
      * @param otherMessage 其它信息
      */
     public static void log(String passportId, UserOperationEnum operation, String clientId, String resultCode,Map<String,String> otherMessage) {
-        StringBuilder log = new StringBuilder("passportId:");
-        log.append(passportId);
-        log.append(" ,operation:").append(operation);
-        log.append(" ,clientId:").append(clientId);
-        log.append(" ,resultCode:").append(resultCode);
-        if(MapUtils.isNotEmpty(otherMessage)){
-            for(Map.Entry<String,String> entry:otherMessage.entrySet()){
-                log.append(" ,").append(entry.getKey()).append(":").append(entry.getValue());
+        try{
+            StringBuilder log = new StringBuilder("passportId:");
+            log.append(passportId);
+            log.append(" ,operation:").append(operation);
+            log.append(" ,clientId:").append(clientId);
+            log.append(" ,resultCode:").append(resultCode);
+            if(MapUtils.isNotEmpty(otherMessage)){
+                for(Map.Entry<String,String> entry:otherMessage.entrySet()){
+                    log.append(" ,").append(entry.getKey()).append(":").append(entry.getValue());
+                }
             }
+            userOperationLogger.info(log.toString());
+        }catch (Exception e){
+            logger.error("UserOperationLogUtil.log error",e);
         }
-        logger.info(log.toString());
     }
 }
