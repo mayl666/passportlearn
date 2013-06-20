@@ -11,7 +11,7 @@ public class ActionRecordVO {
     private long time;
     private String ip;
     private String loc;
-    private String type;
+    private String type; // 默认null，需要通过Service获取再setType(...)
 
     public ActionRecordVO(ActionStoreRecordDO actionStoreRecordDO) {
         long date = actionStoreRecordDO.getDate();

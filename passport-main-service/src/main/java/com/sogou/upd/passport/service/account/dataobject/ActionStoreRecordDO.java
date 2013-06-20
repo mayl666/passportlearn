@@ -11,13 +11,17 @@ import com.sogou.upd.passport.model.account.ActionRecord;
  *
  */
 public class ActionStoreRecordDO {
+    private int clientId;
     private long date;      // 8字节
     private String ip;      // 15字节
     // private String note;
 
     public ActionStoreRecordDO(ActionRecord actionRecord) {
-        setDate(actionRecord.getDate());
-        setIp(actionRecord.getIp());
+        if (actionRecord != null) {
+            setClientId(actionRecord.getClientId());
+            setDate(actionRecord.getDate());
+            setIp(actionRecord.getIp());
+        }
     }
 
     public ActionStoreRecordDO() {
@@ -27,12 +31,22 @@ public class ActionStoreRecordDO {
     /**
      * 构造函数，必须传入全部参数
      *
+     * @param clientId
      * @param date
      * @param ip
      */
-    public ActionStoreRecordDO(long date, String ip) {
+    public ActionStoreRecordDO(int clientId, long date, String ip) {
+        setClientId(clientId);
         setDate(date);
         setIp(ip);
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
     public long getDate() {

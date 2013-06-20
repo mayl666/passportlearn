@@ -28,6 +28,7 @@ public interface ProblemService {
                                           Date endDate,String title,  String content, Integer start, Integer end) throws
             ServiceException;
 
+    public int getProblemCount(Integer status,Integer clientId,Integer typeId,Date startDate,Date endDate,String title,  String content)throws ServiceException;
     /**
      *
      * @param id

@@ -9,6 +9,7 @@ import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class ResetPwdAction {
     private static final Logger logger = LoggerFactory.getLogger(ResetPwdAction.class);
 
+    private static final String SOHU_FINDPWD_URL = SHPPUrlConstant.SOHU_FINDPWD_URL;
+
     @Autowired
     private CommonManager commonManager;
     @Autowired
@@ -44,6 +47,11 @@ public class ResetPwdAction {
 
     // TODO:不允许SOHU域执行此操作
     // TODO:暂时不用
+
+    @RequestMapping(method = RequestMethod.GET)
+    public String findPwdView() {
+        return "redirect:" + SOHU_FINDPWD_URL;
+    }
 
 /*    @RequestMapping
     public String findPwd(UserCaptchaParams params, Model model) throws Exception {

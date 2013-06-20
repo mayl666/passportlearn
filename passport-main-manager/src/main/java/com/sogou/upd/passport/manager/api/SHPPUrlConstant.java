@@ -89,4 +89,6 @@ public class SHPPUrlConstant {
     public static final String SOHU_BINDMOBILE_URL = "https://passport.sohu.com/web/requestBindMobileAction.action";
     // 修改密保问题
     public static final String SOHU_BINDQUES_URL = "https://passport.sohu.com/web/updateInfo.action?modifyType=question";
+    // 找回密码
+    public static final String SOHU_FINDPWD_URL = "https://passport.sohu.com/web/RecoverPwdInput.action";
 }

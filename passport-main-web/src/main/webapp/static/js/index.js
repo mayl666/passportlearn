@@ -61,10 +61,20 @@ define('utils',[], function(){
             }
             return data;
         },
-        addIframe: function(url){
+        addIframe: function(url , callback){
             var iframe = document.createElement('iframe');
             iframe.src = url;
             
+            if (iframe.attachEvent){
+                iframe.attachEvent("onload", function(){
+                    callback && callback();
+                });
+            } else {
+                iframe.onload = function(){
+                    callback && callback();
+                };
+            }
+
             document.body.appendChild(iframe);
         },
         getScript: function(url , callback){
@@ -147,6 +157,11 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
         return true;
     };
 
+    var hideVcode = function(){
+        var $el = $('#Login');
+        $el.parent().parent().removeClass('login-vcode');
+    };    
+
     var Module_Size = {
         renren:[880,620],
         sina:[780,640],
@@ -174,6 +189,11 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
 
             ui.checkbox('#RemChb');
 
+            if( $.cookie('fe_uname') ){
+                $('#Login .username input').val($.trim($.cookie('fe_uname')));
+                $('#Login .username span').hide();
+            }
+
             PassportSC.appid = conf.client_id;
             PassportSC.redirectUrl = location.protocol +  '//' + location.hostname + ( location.port ? (':' + location.port) :'' ) + conf.redirectUrl;
             $('#Login').on('submit' , function(){
@@ -184,7 +204,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                     return false;;
                 }
 
-                if( vcodeInited && !$.trim( $el.find('input[name="captcha"]').val() ) ){
+                if( $('#Login').parent().parent().hasClass('login-vcode') && !$.trim( $el.find('input[name="captcha"]').val() ) ){
                     showVcodeError('请输入验证码');
                     $el.find('input[name="captcha"]').focus();
                     return false;
@@ -202,6 +222,7 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                                 if(initVcode()) {
                                                     refreshed = true;
                                                 }
+                                                $('#Login').parent().parent().addClass('login-vcode');
                                                 //showVcodeError('请输入验证码');
                                                 //captchaIpt.focus();
                                             }
@@ -219,7 +240,20 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                                             }
                                         } ,
                                         function(){
-                                            location.href = "https://" + location.hostname;
+                                            $.cookie('fe_uname' , $('#Login .username input').val() , {
+                                                path:'/',
+                                                expires:365
+                                            });
+
+                                            var data ={};
+                                            try{
+                                                data = $.evalJSON(server_data).data;
+                                            }catch(e){window['console'] && console.log(e);}
+                                            if( data && data.ru ){
+                                                location.href = data.ru;
+                                            }else{
+                                                location.href = "https://" + location.hostname;
+                                            }
                                             return;
                                         }
                                       );
@@ -241,6 +275,22 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                              + '&ru=' + encodeURIComponent(location.href)
                             );
             });
+            
+            $('#Login .username input').change(function(){
+                if( !$.trim($(this).val()) ) return;
+                $.get('/web/login/checkNeedCaptcha' , {
+                    username:$.trim($(this).val()),
+                    client_id: conf.client_id
+                } , function(data){
+                    data = utils.parseResponse(data);
+                    if( data.data.needCaptcha ){
+                        initVcode();
+                    }else{
+                        hideVcode();
+                    }
+                });
+            });
+            
             var inputs = $('#Login .password input , #Login .username input , #Login .vcode input');
             inputs.focus(function(){
                 $(this).prev().hide();

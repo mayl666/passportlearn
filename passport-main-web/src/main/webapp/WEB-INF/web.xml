@@ -13,17 +13,6 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <!--处理静态文件不需要经过spring，容器直接处理-->
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
-        <url-pattern>/static/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
-        <url-pattern>/favicon.ico</url-pattern>
-    </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/</url-pattern>
