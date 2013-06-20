@@ -27,18 +27,18 @@ public class ProblemDAOTest extends BaseDAOTest {
 
     @Before
     public void init() {
-      Problem problem = new Problem();
-      problem.setPassportId("18612532596@sohu.com");
-      problem.setStatus(0);
-      problem.setClientId(CLIENT_ID);
-      problem.setSubTime(new Date());
-      problem.setTypeId(1);
-        problem.setTitle("标题");
-      problem.setContent("我的幼儿园");
-        problem.setEmail("jiamengchen@126.com");
-       // problem.setQq("1037113048");
-      int row = problemDAO.insertProblem(problem);
-      Assert.assertTrue(row != 0);
+//      Problem problem = new Problem();
+//      problem.setPassportId("18612532596@sohu.com");
+//      problem.setStatus(0);
+//      problem.setClientId(CLIENT_ID);
+//      problem.setSubTime(new Date());
+//      problem.setTypeId(1);
+//        problem.setTitle("标题");
+//      problem.setContent("我的幼儿园");
+//        problem.setEmail("jiamengchen@126.com");
+//       // problem.setQq("1037113048");
+//      int row = problemDAO.insertProblem(problem);
+//      Assert.assertTrue(row != 0);
     }
 
     @After
@@ -60,31 +60,35 @@ public class ProblemDAOTest extends BaseDAOTest {
   @Test
   public void testGetProblemBySqlStr() {
 //    String sqlStr = " status = 0 and sub_time > '2013-06-04' AND sub_time < '2013-06-05' and client_id = 1001 and type_id = 1 and content = '%游戏%'";
-    Integer  status = 0;
-    Integer  clientId = 1001;
-    Integer  typeId = 1;
+    Integer  status = null;
+    Integer  clientId = null;
+    Integer  typeId = null;
     Date startDate = DateUtil.parse("2013-06-03",DateUtil.DATE_FMT_3) ;
-    Date endDate = DateUtil.parse("2013-06-18",DateUtil.DATE_FMT_3) ;
+    Date endDate = DateUtil.parse("2013-06-21",DateUtil.DATE_FMT_3) ;
     String content = null;
       String title ="标题";
-    Integer  start = 1;
+    Integer  start = 0;
     Integer  end = 100;
     List<Problem> list
             = problemDAO.queryProblemList(status,clientId,typeId,startDate,endDate,title,content,start,end);
     System.out.println("list.size():"+list.size());
-    Assert.assertTrue(list.size() >0);
+    for(Problem problem:list){
+        System.out.println("problem:"+problem.getId());
+    }
+      Assert.assertTrue(list.size() >0);
   }
 
   @Test
   public void testGetProblemCount() {
 //    String sqlStr = " status = 0 and sub_time > '2013-06-04' AND sub_time < '2013-06-05' and client_id = 1001 and type_id = 1 and content = '%游戏%'";
-    Integer  status = 1;
-    Integer  clientId = 1001;
-    Integer  typeId = 1;
+    Integer  status = 0;
+    Integer  clientId = null;
+    Integer  typeId = null;
     Date startDate = DateUtil.parse("2013-06-03",DateUtil.DATE_FMT_3) ;
-    Date endDate = DateUtil.parse("2013-06-05",DateUtil.DATE_FMT_3) ;
-    String content = "游戏";
-    int count = problemDAO.getProblemCount(status,clientId,typeId,startDate,endDate,content);
+    Date endDate = DateUtil.parse("2013-06-21",DateUtil.DATE_FMT_3) ;
+      String title = "标题";
+    String content = "幼儿园";
+    int count = problemDAO.getProblemCount(status,clientId,typeId,startDate,endDate,title,content);
     System.out.println("count:"+count);
 //    Assert.assertTrue(list.size() >0);
   }
@@ -94,9 +98,26 @@ public class ProblemDAOTest extends BaseDAOTest {
      */
     @Test
     public void testQueryProblemListByPassportId() {
-        List<Problem> list = problemDAO.queryProblemListByPassportId("18612532596@sohu.com",1,2);
-        System.out.println("size:"+list.size());
+//        List<Problem> list = problemDAO.queryProblemListByPassportId("18612532596@sohu.com",1,2);
+//        System.out.println("size:"+list.size());
+        //      Problem problem = new Problem();
+        for(int i=0;i<20;i++){
+            Problem problem = new Problem();
+            problem.setPassportId("18612532596@sohu.com");
+            problem.setStatus(0);
+            problem.setClientId(1120);
+            problem.setSubTime(new Date());
+            problem.setTypeId(267);
+            problem.setTitle("标题");
+            problem.setContent("我的幼儿园");
+            problem.setEmail("jiamengchen@126.com");
+            // problem.setQq("1037113048");
+            int row = problemDAO.insertProblem(problem);
+        }
+
+      Assert.assertTrue(0 == 0);
     }
+
 
 
 }

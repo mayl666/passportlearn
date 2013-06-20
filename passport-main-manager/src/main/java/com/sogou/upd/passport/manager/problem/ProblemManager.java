@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.problem;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,4 +33,6 @@ public interface ProblemManager {
     public Result closeProblemById(long id) throws Exception;
 
     public Result insertProblem(WebAddProblemParameters addProblemParams,String ip)throws Exception;
+
+    public int getProblemCount(Integer status,Integer clientId,Integer typeId,Date startDate,Date endDate,String title,  String content);
 }

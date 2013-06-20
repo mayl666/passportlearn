@@ -87,10 +87,10 @@
                     </li>
                     <% for item in records %>
                     <li >
-                        <p class="time"><{item.time.year}>-<{item.time.month}>-<{item.time.day}> <{item.time.hour}>:<{item.time.minute}>:<{item.time.second}></p>
-                        <p class="ip"><{item.ip}></p>
-                        <p class="loc"><{item.loc}></p>
-                        <p class="type"><{item.type}></p>
+                        <p class="time"><{item.time.year}>-<{item.time.month}>-<{item.time.day}> <{item.time.hour}>:<{item.time.minute}>:<{item.time.second}>&nbsp;</p>
+                        <p class="ip"><{item.ip}>&nbsp;</p>
+                        <p class="loc"><{item.loc}>&nbsp;</p>
+                        <p class="type"><{item.type}>&nbsp;</p>
                     </li>
                     <% endfor %>
                 </script>
