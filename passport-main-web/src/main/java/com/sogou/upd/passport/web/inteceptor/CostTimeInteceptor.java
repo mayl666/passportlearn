@@ -28,23 +28,9 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		long startTime = System.currentTimeMillis();
-		request.setAttribute("startTime", startTime);
         StopWatch stopWatch = new Log4JStopWatch(prefLogger);
         request.setAttribute("stopWatch", stopWatch);
 		return true;
-	}
-
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception {
-		long startTime = (Long) request.getAttribute("startTime");
-		long endTime = System.currentTimeMillis();
-		long executeTime = endTime - startTime;
-		if (log.isInfoEnabled()) {
-			String param = ControllerHelper.getRequests(request);
-			log.info("[" + request.getRequestURI() + "] executeTime : " + executeTime + "ms, params : "+param);
-		}
 	}
 
     @Override
@@ -66,7 +52,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                 stopWatch.stop(tag, message);
             }
         }catch (Exception e){
-            log.error("CostTimeInteceptor.afterCompletion error",e);
+            log.error("CostTimeInteceptor.afterCompletion error url="+request.getRequestURL(),e);
         }
     }
 

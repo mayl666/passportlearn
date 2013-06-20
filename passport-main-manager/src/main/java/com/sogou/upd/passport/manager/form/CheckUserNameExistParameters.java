@@ -18,6 +18,7 @@ public class CheckUserNameExistParameters {
   @NotBlank(message = "用户名不允许为空!")
   private String username;
 
+  private String client_id;
 
   @AssertTrue(message = "用户账号格式错误")
   private boolean checkAccount() {
@@ -46,5 +47,13 @@ public class CheckUserNameExistParameters {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public String getClient_id() {
+    return client_id;
+  }
+
+  public void setClient_id(String client_id) {
+    this.client_id = client_id;
   }
 }

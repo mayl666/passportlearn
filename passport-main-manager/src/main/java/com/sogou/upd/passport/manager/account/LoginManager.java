@@ -17,12 +17,12 @@ public interface LoginManager {
     public Result accountLogin(WebLoginParameters parameters,String ip,String scheme);
 
     /**
-     * 获取passportId登陆的时候是否需要登陆验证码
+     * 获取username登陆的时候是否需要登陆验证码
      * 目前策略如果连续3次登陆失败就需要输入验证码
      * 或者IP超过一个量就输入验证码
-     * @param passportId
+     * @param username
      * @param ip
      * @return
      */
-    public boolean loginNeedCaptcha(String passportId,String ip);
+    public boolean needCaptchaCheck(String client_id, String username, String ip);
 }
