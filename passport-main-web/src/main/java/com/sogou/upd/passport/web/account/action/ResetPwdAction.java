@@ -43,8 +43,9 @@ public class ResetPwdAction {
     private ResetPwdManager resetPwdManager;
 
     // TODO:不允许SOHU域执行此操作
+    // TODO:暂时不用
 
-    @RequestMapping
+/*    @RequestMapping
     public String findPwd(UserCaptchaParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -58,13 +59,13 @@ public class ResetPwdAction {
         int clientId = Integer.parseInt(params.getClient_id());
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        /*
+        *//*
          * TODO：暂时不测
         if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             model.addAttribute("data", result.toString());
             return "recover/index";
-        }*/
+        }*//*
 
         // TODO:是否允许绑定手机取得密保信息
         String passportId = commonManager.getPassportIdByUsername(username);
@@ -201,5 +202,5 @@ public class ResetPwdAction {
     @RequestMapping(value = "/email", method = RequestMethod.GET)
     public String email() throws Exception {
         return "recover/email";
-    }
+    }*/
 }
