@@ -1576,6 +1576,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
             $el.uuiForm({
                 type:'blur',
                 onfocus: function($el){
+                    $el.parent().addClass('form-el-focus');
                     getSpan($el , 'error').hide();
                     var desc = getDesc($el);
                     if( desc && desc.length ){
@@ -1585,6 +1586,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
                     
                 },
                 onblur: function($el){
+                    $el.parent().removeClass('form-el-focus');
                     getSpan($el , 'desc').hide();
                 },
                 onsinglefail: function($el , name){
