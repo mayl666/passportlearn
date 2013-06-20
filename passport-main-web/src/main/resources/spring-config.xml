@@ -67,18 +67,6 @@
     </mvc:interceptors>
 
 
-    <!--<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">-->
-        <!--<property name="interceptors">-->
-            <!--<list>-->
-                <!--<bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>-->
-                <!--<bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>-->
-                <!--<bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>-->
-                <!--<bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>-->
-            <!--</list>-->
-        <!--</property>-->
-    <!--</bean>-->
-
-
 
     <mvc:default-servlet-handler/>
 
@@ -87,7 +75,6 @@
         <property name="supportedMediaTypes">
             <list>
                 <value>text/plain;charset=UTF-8</value>
-                <!--<value>application/json;charset=UTF-8</value>-->
             </list>
         </property>
     </bean>
