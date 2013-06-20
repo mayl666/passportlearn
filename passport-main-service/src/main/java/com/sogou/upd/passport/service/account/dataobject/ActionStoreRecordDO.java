@@ -20,6 +20,10 @@ public class ActionStoreRecordDO {
         setIp(actionRecord.getIp());
     }
 
+    public ActionStoreRecordDO() {
+        //无动作
+    }
+
     /**
      * 构造函数，必须传入全部参数
      *
