@@ -3,19 +3,12 @@ package com.sogou.upd.passport.common.utils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
-import com.sogou.op.iploc.Ip2location;
-
-import org.apache.commons.lang.StringUtils;
+import com.sogou.upd.passport.common.utils.iploc.Ip2location;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Map;
 
 /**
