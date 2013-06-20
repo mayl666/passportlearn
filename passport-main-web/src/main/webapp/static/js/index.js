@@ -156,6 +156,12 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                     return false;;
                 }
 
+                if( vcodeInited && !$.trim( $el.find('input[name="captcha"]').val() ) ){
+                    showVcodeError('请输入验证码');
+                    $el.find('input[name="captcha"]').focus();
+                    return false;
+                }
+
                 PassportSC.loginHandle( $el.find('input[name="username"]').val() , 
                                         $el.find('input[name="password"]').val() ,
                                         $el.find('input[name="captcha"]').val() , 
