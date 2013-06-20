@@ -73,19 +73,13 @@ public class AccountWeb extends BaseController {
   web登录页跳转
 */
   @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
-  public String login(HttpServletRequest request,Model model)
+  public String login(HttpServletRequest request,@RequestParam(defaultValue = "") String ru,Model model)
       throws Exception {
       if (hostHolder.isLogin()) {
           return "forward:/";
       }
       //连接来源
-      String ru = request.getParameter("ru");
-      if (!Strings.isNullOrEmpty(ru)){
-          Result result = new APIResultSupport(false);
-          result.setDefaultModel("ru",ru);
-          result.setSuccess(true);
-          model.addAttribute("data",result.toString());
-      }
+      ruProcess(ru,model);
     return "index";
   }
     /*
