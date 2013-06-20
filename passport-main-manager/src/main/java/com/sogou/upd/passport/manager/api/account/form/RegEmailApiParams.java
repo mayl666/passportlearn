@@ -21,6 +21,7 @@ public class RegEmailApiParams extends BaseApiParams {
     @NotBlank(message = "注册IP不允许为空")
     private String createip;  //注册IP
     private String send_email; //如果是外域账号，是否发生激活邮件，1为发生激活邮件，否则不发生激活邮件
+    private String ru; //注册成功后需回调到应用的url
 
     public RegEmailApiParams(){}
 
@@ -61,5 +62,13 @@ public class RegEmailApiParams extends BaseApiParams {
 
     public void setSend_email(String send_email) {
         this.send_email = send_email;
+    }
+
+    public String getRu() {
+        return ru;
+    }
+
+    public void setRu(String ru) {
+        this.ru = ru;
     }
 }
