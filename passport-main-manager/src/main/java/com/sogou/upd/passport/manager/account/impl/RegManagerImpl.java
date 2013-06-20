@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -70,8 +71,11 @@ public class RegManagerImpl implements RegManager {
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
+    private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+
+
   @Override
-  public Result webRegister(WebRegisterParameters regParams, String ip, String scheme) throws Exception {
+  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
 
     Result result = new APIResultSupport(false);
     String username =null;
@@ -102,6 +106,10 @@ public class RegManagerImpl implements RegManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result;
           }
+          //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
+          if(Strings.isNullOrEmpty(ru)){
+            ru=EMAIL_REG_VERIFY_URL;
+          }
           RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
                                                                          clientId,ru);
           if (ManagerHelper.isInvokeProxyApi(username)) {
@@ -129,7 +137,7 @@ public class RegManagerImpl implements RegManager {
       Object obj= result.getModels().get("isSetCookie");
       if(obj !=null && (obj instanceof Boolean) && (boolean)obj){
         // 种sohu域cookie
-        result=commonManager.createCookieUrl(result,username,scheme,1) ;
+        result=commonManager.createCookieUrl(result,username,1) ;
       }
     } else {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
