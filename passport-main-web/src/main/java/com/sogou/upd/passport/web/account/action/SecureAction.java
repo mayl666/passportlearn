@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -11,12 +10,10 @@ import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.form.ResetPwdParameters;
+import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.AccountBindEmailParams;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
 import com.sogou.upd.passport.web.account.form.BaseWebParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
@@ -35,7 +32,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -246,16 +242,16 @@ public class SecureAction extends BaseController {
     /**
      * 修改密码
      *
-     * @param resetParams 传入的参数
+     * @param updateParams 传入的参数
      */
-    @RequestMapping(value = "/resetpwd", method = RequestMethod.POST)
+    @RequestMapping(value = "/updatepwd", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
-    public Object resetpwd(HttpServletRequest request, ResetPwdParameters resetParams)
+    public Object updatePwd(HttpServletRequest request, UpdatePwdParameters updateParams)
             throws Exception {
         Result result = new APIResultSupport(false);
 
-        String validateResult = ControllerHelper.validateParams(resetParams);
+        String validateResult = ControllerHelper.validateParams(updateParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
@@ -265,14 +261,16 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_RESETPWD_URL;
+            result.setCode("401");
+            result.setMessage("sohu域账号不支持修改密码");
+            return result.toString();
         }
 
-        resetParams.setPassport_id(userId);
+        updateParams.setPassport_id(userId);
         String modifyIp = getIp(request);
-        resetParams.setIp(modifyIp);
+        updateParams.setIp(modifyIp);
 
-        result = secureManager.resetWebPassword(resetParams);
+        result = secureManager.resetWebPassword(updateParams);
         return result.toString();
     }
 
@@ -294,7 +292,9 @@ public class SecureAction extends BaseController {
         String oldEmail = params.getOld_email();
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDEMAIL_URL;
+            result.setCode("401");
+            result.setMessage("sohu域账号不支持绑定邮箱");
+            return result.toString();
         }
 
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
@@ -393,7 +393,9 @@ public class SecureAction extends BaseController {
         }
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDMOBILE_URL;
+            result.setCode("401");
+            result.setMessage("sohu域账号不支持绑定手机号");
+            return result.toString();
         }
 
         result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
@@ -421,7 +423,9 @@ public class SecureAction extends BaseController {
         }
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDMOBILE_URL;
+            result.setCode("401");
+            result.setMessage("sohu域账号不支持手机绑定");
+            return result.toString();
         }
 
         result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
@@ -452,7 +456,9 @@ public class SecureAction extends BaseController {
         }
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDMOBILE_URL;
+            result.setCode("401");
+            result.setMessage("sohu域账号不支持手机绑定");
+            return result.toString();
         }
 
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
@@ -478,7 +484,9 @@ public class SecureAction extends BaseController {
         String modifyIp = getIp(request);
 
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDQUES_URL;
+            result.setCode("401");
+            result.setMessage("sohu域账号不支持修改密保问题");
+            return result.toString();
         }
 
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);

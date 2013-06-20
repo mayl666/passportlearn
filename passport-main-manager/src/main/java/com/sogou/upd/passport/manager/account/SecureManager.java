@@ -3,7 +3,7 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
-import com.sogou.upd.passport.manager.form.ResetPwdParameters;
+import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 
 /**
  * 账户安全相关 User: mayan Date: 13-4-15 Time: 下午4:30 To change this template use File | Settings | File
@@ -83,7 +83,7 @@ public interface SecureManager {
     /**
      * 重置用户密码（web验证码方式）
      */
-    public Result resetWebPassword(ResetPwdParameters resetPwdParameters) throws Exception;
+    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters) throws Exception;
 
 
     /* ------------------------------------修改密保Begin------------------------------------ */
