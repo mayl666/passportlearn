@@ -95,18 +95,23 @@
             <div class="ucenter-sidebar">
                 
                 
-                <span class="item"><a href="/web/security/password">修改密码</a></span>
+                <span class="item dynamic"><a href="/web/security/password">修改密码</a></span>
                 
                 
-                <span class="item"><a href="/web/security/email">修改密保邮箱</a></span>
+                <span class="item dynamic"><a href="/web/security/email">修改密保邮箱</a></span>
                 
                 <p class="hr"></p>
                 
                 
-                <span class="item"><a href="/web/security/mobile">绑定手机</a></span>
+                <span class="item dynamic"><a href="/web/security/mobile">绑定手机</a></span>
                 
                 
-                <span class="item"><a href="/web/security/question">修改密保问题</a></span>
+                <span class="item dynamic"><a href="/web/security/question">修改密保问题</a></span>
+                
+                <p class="hr"></p>
+                
+                
+                <span class="item persist"><a href="/web/problem/addProblem">意见反馈</a></span>
                 
                 
             </div>
@@ -127,7 +132,7 @@
         
         <div class="footer">
     <div class="inner">
-        Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
     </div>
 </div>
     </body>
