@@ -9,12 +9,15 @@ import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -177,23 +180,31 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     @Override
     public boolean checkRegInBlackList(String ip,String cookieStr) throws ServiceException {
-        boolean result = false;
+        //修改为list模式添加cookie处理 by mayan
         try {
+            //ip与cookie映射
             String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            result = checkTimesByKey(ipCacheKey, LoginConstant.REGISTER_IP_LIMITED);
-            if(result){
-                return true;
+            List<String> listCookieVal= redisUtils.getList(ipCacheKey);
+            if (CollectionUtils.isNotEmpty(listCookieVal)) {
+              int sz = listCookieVal.size();
+              if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
+                 return true;
+              }
             }
-//            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-//            result = checkTimesByKey(cookieCacheKey, LoginConstant.REGISTER_COOKIE_LIMITED);
-//            if(result){
-//                return true;
-//            }
+            //cookie与ip映射
+            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+            List<String> listIpVal= redisUtils.getList(cookieCacheKey);
+            if (CollectionUtils.isNotEmpty(listIpVal)) {
+              int sz = listIpVal.size();
+              if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
+                return true;
+              }
+            }
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
             throw new ServiceException(e);
         }
-        return result;
+        return false;
     }
 
     /**
