@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.web.account.form.security;
 
 import com.sogou.upd.passport.common.validation.constraints.Password;
-import com.sogou.upd.passport.web.account.form.BaseWebParams;
+import com.sogou.upd.passport.web.BaseWebParams;
 
 import org.hibernate.validator.constraints.NotBlank;
 

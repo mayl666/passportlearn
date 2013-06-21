@@ -1,26 +1,14 @@
 package com.sogou.upd.passport.web.account.action;
 
-import com.google.common.base.Strings;
-
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.AccountPwdScodeParams;
-import com.sogou.upd.passport.web.account.form.AccountScodeParams;
-import com.sogou.upd.passport.web.account.form.BaseAccountParams;
-import com.sogou.upd.passport.web.account.form.UserCaptchaParams;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -180,7 +168,7 @@ public class ResetPwdAction {
     }
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
-    public String resetPwd(AccountPwdScodeParams params) throws Exception {
+    public String resetPwd(AccountPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
