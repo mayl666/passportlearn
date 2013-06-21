@@ -72,6 +72,9 @@ public class CommonManagerImpl implements CommonManager {
             } else {
                 // Account account = accountService.queryAccountByPassportId(username);
                 // 不查询account表
+                if (username.indexOf("@") == -1) {
+                    username = username + "@sogou.com";
+                }
                 return username;
             }
         } catch (ServiceException e) {
