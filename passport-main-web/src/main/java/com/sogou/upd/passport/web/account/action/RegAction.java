@@ -118,9 +118,7 @@ public class RegAction extends BaseController {
     }
 
     String ip = getIp(request);
-    String passportId=regParams.getUsername();
-    //黑白名单
-    //校验是否在账户黑名单或者IP黑名单之中
+    //校验用户是否允许注册
     String uuidName= CookieUtils.getCookie(request, "uuidName");
     if (operateTimesService.checkRegInBlackList(ip, uuidName)){
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
