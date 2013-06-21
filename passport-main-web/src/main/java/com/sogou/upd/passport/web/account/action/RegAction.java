@@ -140,7 +140,7 @@ public class RegAction extends BaseController {
       }
       result.setDefaultModel("ru",ru);
     }
-    operateTimesService.incRegTimes(ip, null);
+    operateTimesService.incRegTimes(ip, uuidName);
     return result.toString();
   }
 
