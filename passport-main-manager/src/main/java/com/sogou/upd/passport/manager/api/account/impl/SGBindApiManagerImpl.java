@@ -17,6 +17,8 @@ import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ public class SGBindApiManagerImpl implements BindApiManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     /*
      * 首次绑定手机，需要检测是否已绑定手机
@@ -126,6 +130,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
         result = accountService.verifyUserPwdVaild(userId, password, false);
         result.setDefaultModel(null);
         if (!result.isSuccess()) {
+            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
             result.setCode(ErrorUtil.USERNAME_PWD_ERROR);
             return result;
         }

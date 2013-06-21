@@ -23,6 +23,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_MOBILE_CHECKSMSFAIL = "SP.MOBILE:CHECKSMSFAIL_"; // mobile与smscode错误检测次数映射
     public static final String CACHE_PREFIX_UUID_CAPTCHA = "SP.UUID:CAPTCHA_"; // 注册UUID与验证码映射
     public static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = "SP.PASSPORTID:RESETPWDNUM_"; // passportId与当日修改密码次数映射
+    public static final String CACHE_PREFIX_PASSPORTID_CHECKPWDFAIL = "SP.PASSPORTID:CHECKPWDFAIL_"; // passportId与当日验证密码失败次数映射
     // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM = "SP.PASSPORTID:RESETPWDSENDEMAILNUM_"; // passportId与当日重置密码邮件次数
     public static final String CACHE_PREFIX_USERNAME_LOGINFAILEDNUM = "SP.USERNAME:LOGINFAILEDNUM_"; //username连续登陆失败的次数
     public static final String CACHE_PREFIX_IP_LOGINFAILEDNUM = "SP.IP:LOGINFAILEDNUM_"; //IP连续登陆失败的次数
@@ -36,9 +37,9 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = "SP.PASSPORTID:SENDEMAILNUM_"; // passportId与email发送次数的映射
 
     /*================绑定密保限制相关缓存常量=====================*/
-    public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_";
-    public static final String CACHE_PREFIX_PASSPORTID_BINDMOBILENUM = "SP.PASSPORTID:BINDMOBILENUM_";
-    public static final String CACHE_PREFIX_PASSPORTID_BINDQUESNUM = "SP.PASSPORTID:BINDQUESNUM_";
+    public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_"; // passportId与当日绑定密保邮箱次数
+    public static final String CACHE_PREFIX_PASSPORTID_BINDMOBILENUM = "SP.PASSPORTID:BINDMOBILENUM_"; // passportId与当日绑定密保手机次数
+    public static final String CACHE_PREFIX_PASSPORTID_BINDQUESNUM = "SP.PASSPORTID:BINDQUESNUM_"; // passportId与当日绑定密保问题次数
 
   /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
@@ -55,7 +56,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PROBLEM_IPINBLACKLIST = "SP.IP_ADDPROBLEMTIMES:_"; // IP与提交反馈次数之间的映射
 
     /*==================动作记录相关缓存常量=====================*/
-    public static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = "SP.PASSPORTID:ACTIONRECORD_LIST_";
+    public static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = "SP.PASSPORTID:ACTIONRECORD_LIST_"; // passportId与操作列表的映射
 
     /*==================proxy相关缓存常量=====================*/
     // TODO:迁移后，此常量将删除

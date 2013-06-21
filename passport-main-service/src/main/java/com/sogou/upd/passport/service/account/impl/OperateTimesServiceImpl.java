@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -307,6 +308,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
+            logger.error("incLimitBindEmail:passportId"+userId, e);
             return false;
         }
     }
@@ -319,6 +321,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
+            logger.error("incLimitBindMobile:passportId"+userId, e);
             return false;
         }
     }
@@ -331,36 +334,94 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
+            logger.error("incLimitBindQues:passportId"+userId, e);
             return false;
         }
     }
 
+    @Override
     public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDEMAILNUM + userId +
                               "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
+            logger.error("checkLimitBindEmail:passportId"+userId, e);
             return true;
         }
     }
 
+    @Override
     public boolean checkLimitBindMobile(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDMOBILENUM + userId +
                               "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
+            logger.error("checkLimitBindMobile:passportId"+userId, e);
             return true;
         }
     }
 
+    @Override
     public boolean checkLimitBindQues(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDQUESNUM + userId +
                               "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
+            logger.error("checkLimitBindQues:passportId"+userId, e);
+            return true;
+        }
+    }
+
+    @Override
+    public boolean incLimitResetPwd(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("incLimitResetPwd:passportId"+userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkLimitResetPwd(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.RESETPWD_NUM);
+        } catch (Exception e) {
+            logger.error("checkLimitResetPwd:passportId"+userId, e);
+            return true;
+        }
+    }
+
+
+    @Override
+    public boolean incLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_CHECKPWDFAIL + module + "_" + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("incLimitCheckPwdFail:passportId"+userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_CHECKPWDFAIL + module + "_" + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.CHECKPWD_NUM);
+        } catch (Exception e) {
+            logger.error("checkLimitCheckPwdFail:passportId"+userId, e);
             return true;
         }
     }

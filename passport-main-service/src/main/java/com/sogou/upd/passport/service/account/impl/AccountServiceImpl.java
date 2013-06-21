@@ -200,6 +200,21 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
+    public void setLimitResetPwd(String passportId) throws ServiceException {
+        // 设置密码修改次数限制
+        String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
+                               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+        try {
+            if (redisUtils.checkKeyIsExist(resetCacheKey)) {
+                redisUtils.increment(resetCacheKey);
+            } else {
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+            }
+        } catch (Exception e) {
+            redisUtils.delete(resetCacheKey);// DO NOTHING 不作任何处理？
+        }
+    }
+
     @Override
     public boolean checkLimitResetPwd(String passportId) throws ServiceException {
         try {
@@ -208,7 +223,7 @@ public class AccountServiceImpl implements AccountService {
             String checkNumStr = redisUtils.get(cacheKey);
             if (!Strings.isNullOrEmpty(checkNumStr)) {
                 int checkNum = Integer.parseInt(checkNumStr);
-                if (checkNum > DateAndNumTimesConstant.RESETNUM_LIMITED) {
+                if (checkNum > DateAndNumTimesConstant.RESETPWD_NUM) {
                     // 当日验证码输入错误次数不超过上限
                     return false;
                 }
@@ -231,16 +246,6 @@ public class AccountServiceImpl implements AccountService {
                 account.setPasswd(passwdSign);
                 redisUtils.set(cacheKey, account);
 
-                // 设置密码修改次数限制
-                String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
-                                       DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
-                if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                    redisUtils.increment(resetCacheKey);
-                } else {
-                    redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
-                    /*redisUtils.set(resetCacheKey, "1");
-                    redisUtils.expire(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);*/
-                }
                 return true;
             }
         } catch (Exception e) {

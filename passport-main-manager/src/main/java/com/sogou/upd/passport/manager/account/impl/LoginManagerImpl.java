@@ -127,12 +127,6 @@ public class LoginManagerImpl implements LoginManager {
         boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
         try {
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
-            //设置来源
-            String ru = loginParameters.getRu();
-            if (Strings.isNullOrEmpty(ru)) {
-                loginParameters.setRu(scheme + LOGIN_INDEX_URLSTR);
-            }
-
             //默认是sogou.com
             if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
                 passportId = passportId + "@sogou.com";
@@ -173,8 +167,12 @@ public class LoginManagerImpl implements LoginManager {
                 operateTimesService.incLoginSuccessTimes(passportId, ip);
                 // 种sohu域cookie
                 result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
-                result.setDefaultModel("ru", loginParameters.getRu());
-
+                //设置来源
+                String ru = loginParameters.getRu();
+                if (Strings.isNullOrEmpty(ru)) {
+                    ru =scheme + LOGIN_INDEX_URLSTR;
+                }
+                result.setDefaultModel("ru", ru);
             } else {
                 operateTimesService.incLoginFailedTimes(username, ip);
                 //3次失败需要输入验证码
