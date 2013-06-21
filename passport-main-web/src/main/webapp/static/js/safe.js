@@ -21,6 +21,13 @@ define('utils',[], function(){
                 s4() +  s4() + s4() + s4();
 
         },
+        addZero: function(num,len){
+            num = num.toString();
+            while( num.length < len ){
+                num = '0'+ num;
+            }
+            return num;
+        },
         parseResponse: function(data){
             if( typeof data == 'string' ){
                 try{
@@ -1743,7 +1750,7 @@ define('form',['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,co
 
 
 
-define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , ursa , form , conf ){
+define('safe',['./common' , './tpl' , './form' , './conf' , './utils'] , function(common , ursa , form , conf , utils ){
 
     var pagefunc = {
         common: function(data){
@@ -1837,8 +1844,8 @@ define('safe',['./common' , './tpl' , './form' , './conf'] , function(common , u
                     month: time.getMonth()+1,
                     day: time.getDate(),
                     hour: time.getHours(),
-                    minute: time.getMinutes(),
-                    second:time.getSeconds()
+                    minute: utils.addZero(time.getMinutes(),2),
+                    second:utils.addZero(time.getSeconds(),2)
 
                 };
             });
