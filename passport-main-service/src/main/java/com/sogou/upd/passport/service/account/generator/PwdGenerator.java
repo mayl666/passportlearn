@@ -26,8 +26,8 @@ public class PwdGenerator {
     /**
      * 生成密码
      *
-     * @param pwd   密码
-     * @param needMD5  明文密码为ture，MD5密码为false
+     * @param pwd     密码
+     * @param needMD5 明文密码为ture，MD5密码为false
      * @return 返回存储在数据库里的密码
      */
     public static String generatorStoredPwd(String pwd, boolean needMD5) throws Exception {
@@ -50,17 +50,19 @@ public class PwdGenerator {
 
     /**
      * 校验密码正确性
-     * @param pwd   密码
+     *
+     * @param pwd       密码
      * @param needMD5   密码是否需要MD5，明文密码为ture，MD5密码为false
-     * @param storedPwd   数据库里存储的密码
-     * @return  如果前端传递的密码与数据库里密码匹配，返回true
+     * @param storedPwd 数据库里存储的密码
+     * @return 如果前端传递的密码与数据库里密码匹配，返回true
      * @throws Exception
      */
     public static boolean verify(String pwd, boolean needMD5, String storedPwd) throws Exception {
         try {
             String actualPwd = MD5_SIGN + storedPwd;
             String pwdMD5 = needMD5 ? DigestUtils.md5Hex(pwd.getBytes()) : pwd;
-            return actualPwd.equals(Crypt.crypt(pwdMD5, actualPwd));
+            String validPwd = Crypt.crypt(pwdMD5, actualPwd);
+            return actualPwd.equals(validPwd);
         } catch (Exception e) {
             logger.error("Password verify fail, password:" + pwd + ", storedPwd:" + storedPwd);
             throw e;
@@ -80,7 +82,7 @@ public class PwdGenerator {
 //        String crypt_result = Crypt.crypt(pwd_md5, result);
 //        boolean isRight = result.equals(crypt_result);
 //        System.out.println("[Vertify-result]:" + isRight);
-      System.out.println(PwdGenerator.generatorStoredPwd("111111",true));
+        System.out.println(PwdGenerator.generatorStoredPwd("111111", true));
     }
 
 }
