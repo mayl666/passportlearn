@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -14,19 +13,13 @@ import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
-import com.sogou.upd.passport.web.account.form.BaseWebParams;
-import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
-import com.sogou.upd.passport.web.account.form.security.WebBindMobileParams;
-import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
-import com.sogou.upd.passport.web.account.form.security.WebMobileParams;
-import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
-import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
+import com.sogou.upd.passport.web.account.form.security.*;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
