@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -16,6 +17,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,8 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     private AccountService accountService;
     @Autowired
     private AccountInfoService accountInfoService;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     @Override
     public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
@@ -44,8 +48,10 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String password = updatePwdApiParams.getPassword();
         String newPassword = updatePwdApiParams.getNewpassword();
         String modifyIp = updatePwdApiParams.getModifyip();
+        int clientId = updatePwdApiParams.getClient_id();
         result = accountService.verifyUserPwdVaild(userId, password, false);
         if (!result.isSuccess()) {
+            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.RESETPWD);
             return result;
         }
         Account account = (Account) result.getDefaultModel();
@@ -64,10 +70,12 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String newQues = updateQuesApiParams.getNewquestion();
         String newAnswer = updateQuesApiParams.getNewanswer();
         String modifyIp = updateQuesApiParams.getModifyip();
+        int clientId = updateQuesApiParams.getClient_id();
 
         Result result = accountService.verifyUserPwdVaild(userId, password, false);
         result.setDefaultModel(null);
         if (!result.isSuccess()) {
+            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
             return result;
         }
 

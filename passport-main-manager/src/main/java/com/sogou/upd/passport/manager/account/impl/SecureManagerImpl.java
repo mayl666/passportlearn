@@ -262,7 +262,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            if (!accountService.checkLimitResetPwd(passportId)) {
+            if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
@@ -275,6 +275,7 @@ public class SecureManagerImpl implements SecureManager {
             accountTokenService.asynbatchUpdateAccountToken(passportId, clientId);
             //清除验证码的缓存
             mobileCodeSenderService.deleteSmsCache(mobile, clientId);
+            operateTimesService.incLimitResetPwd(passportId, clientId);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;
@@ -423,12 +424,13 @@ public class SecureManagerImpl implements SecureManager {
 
             username = updatePwdParameters.getPassport_id();
 
-            if (!accountService.checkLimitResetPwd(username)) {
+            UpdatePwdApiParams updatePwdApiParams=buildProxyApiParams(updatePwdParameters);
+            int clientId = updatePwdApiParams.getClient_id();
+
+            if (!operateTimesService.checkLimitResetPwd(username, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
-
-            UpdatePwdApiParams updatePwdApiParams=buildProxyApiParams(updatePwdParameters);
 
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxySecureApiManager.updatePwd(updatePwdApiParams);
@@ -436,6 +438,9 @@ public class SecureManagerImpl implements SecureManager {
                 result = sgSecureApiManager.updatePwd(updatePwdApiParams);
             }
 
+            if (result.isSuccess()) {
+                operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
+            }
         } catch (ServiceException e) {
             logger.error("resetWebPassword Fail username:" + username, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -623,6 +628,7 @@ public class SecureManagerImpl implements SecureManager {
 
                 result = proxyLoginApiManager.webAuthUser(authParams);
                 if (!result.isSuccess()) {
+                    operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                     return result;
                 }
                 result = proxyBindApiManager.bindMobile(bindMobileApiParams);
@@ -630,6 +636,10 @@ public class SecureManagerImpl implements SecureManager {
 
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
                 result = accountService.verifyUserPwdVaild(userId, password, false);
+                if (!result.isSuccess()) {
+                    operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+                    return result;
+                }
                 account = (Account) result.getDefaultModel();
                 // result.setDefaultModel(null);
 

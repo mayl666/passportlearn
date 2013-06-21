@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 
 /**
@@ -93,15 +94,103 @@ public interface OperateTimesService {
      */
     public boolean checkAddProblemInBlackList(String passportId,String ip) throws ServiceException;
 
+    /**
+     * 绑定密保邮箱次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean incLimitBindEmail(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 绑定密保手机次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean incLimitBindMobile(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 绑定密保问题次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean incLimitBindQues(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 检查绑定密保邮箱次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 检查绑定密保手机次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean checkLimitBindMobile(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 检查绑定密保问题次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean checkLimitBindQues(String userId, int clientId) throws ServiceException;
+
+    /**
+     * 修改密码次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean incLimitResetPwd(String userId, int clientId) throws ServiceException;
+
+    /**
+     * 验证密码失败次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean incLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException;
+
+    /**
+     * 检查修改密码次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkLimitResetPwd(String userId, int clientId) throws ServiceException;
+
+    /**
+     * 检查验证密码失败次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException;
 }
