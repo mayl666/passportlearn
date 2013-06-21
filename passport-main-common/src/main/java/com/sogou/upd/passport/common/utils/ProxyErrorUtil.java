@@ -93,7 +93,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.4", ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);//旧绑定邮箱错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.5", SUCCESS);//新的绑定邮箱没有变化
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.6", ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);//系统错误
-        SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.7", ERR_CODE_PHONE_UNBIND_FAILED);//密码错误次数超限
+        SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.7", ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT);//密码错误次数超限
 
         //updatepwd 修改密码
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在

@@ -23,7 +23,8 @@ public class WebRegisterParameters {
   @NotBlank(message = "client_id不允许为空!")
   @Min(0)
   private String client_id;
-  @NotBlank(message = "邮箱不允许为空!")
+
+  @NotBlank(message = "注册账号不允许为空!")
   private String username;
 
   @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")

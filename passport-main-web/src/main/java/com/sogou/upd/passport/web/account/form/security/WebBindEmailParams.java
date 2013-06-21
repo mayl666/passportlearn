@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.form.security;
 
-import com.sogou.upd.passport.web.account.form.BaseWebParams;
-
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -10,7 +9,9 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class WebBindEmailParams extends WebPwdParams {
     @NotBlank(message = "新绑定邮箱不能为空")
+    @Email(message = "邮箱格式不正确")
     private String new_email;
+    @Email(message = "邮箱格式不正确")
     private String old_email;
 
     public String getNew_email() {
