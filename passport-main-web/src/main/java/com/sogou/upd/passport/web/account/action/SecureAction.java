@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -16,10 +17,16 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
-import com.sogou.upd.passport.web.account.form.security.*;
+import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
+import com.sogou.upd.passport.web.account.form.security.WebBindMobileParams;
+import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
+import com.sogou.upd.passport.web.account.form.security.WebMobileParams;
+import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
+import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,17 +53,14 @@ public class SecureAction extends BaseController {
     private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
 
     @Autowired
-    private CommonManager commonManager;
-    @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private CheckManager checkManager;
-    @Autowired
-    private ResetPwdManager resetPwdManager;
     @Autowired
     private HostHolder hostHolder;
 
 
+    /*
+     * 查询安全信息
+     */
     @RequestMapping(method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String querySecureInfo(BaseWebParams params, Model model) throws Exception {
@@ -89,6 +93,9 @@ public class SecureAction extends BaseController {
         return "safe/index";
     }
 
+    /*
+     * 显示绑定邮箱界面
+     */
     @RequestMapping(value = "/email", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindEmailView(BaseWebParams params, Model model) throws Exception {
@@ -123,6 +130,9 @@ public class SecureAction extends BaseController {
         return "safe/email";
     }
 
+    /*
+     * 显示绑定手机界面
+     */
     @RequestMapping(value = "/mobile", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindMobileView(BaseWebParams params, Model model) throws Exception {
@@ -156,7 +166,9 @@ public class SecureAction extends BaseController {
         return "safe/tel";
     }
 
-
+    /*
+     * 显示绑定密保问题界面
+     */
     @RequestMapping(value = "/question", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindQuestionView(BaseWebParams params, Model model) throws Exception {
@@ -190,6 +202,9 @@ public class SecureAction extends BaseController {
         return "safe/question";
     }
 
+    /*
+     * 显示修改密码界面
+     */
     @RequestMapping(value = "/password", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String modifyPasswordView(BaseWebParams params, Model model) throws Exception {
@@ -221,6 +236,9 @@ public class SecureAction extends BaseController {
         return "safe/password";
     }
 
+    /*
+     * 显示登录历史
+     */
     @RequestMapping(value = "/history", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String showHistoryView(BaseWebParams params, Model model) throws Exception {
@@ -285,6 +303,9 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
+    /*
+     * 发送绑定邮箱申请邮件
+     */
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
@@ -316,6 +337,9 @@ public class SecureAction extends BaseController {
     }
 
     // TODO:等数据迁移后需要修改和测试此方法
+    /*
+     * 验证绑定邮件
+     */
     @RequestMapping(value = "checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -346,7 +370,9 @@ public class SecureAction extends BaseController {
         }
     }
 
-
+    /*
+     * 修改绑定手机，发送短信验证码至原绑定手机
+     */
     @RequestMapping(value = "/sendsms", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
@@ -375,6 +401,9 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
+    /*
+     * 绑定和修改密保手机，发送短信验证码至新绑定手机
+     */
     @RequestMapping(value = "/sendsmsnew", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
@@ -405,6 +434,9 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
+    /*
+     * 绑定密保手机
+     */
     @RequestMapping(value = "/bindmobile", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
@@ -439,6 +471,9 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
+    /*
+     * 验证原绑定手机短信验证码
+     */
     @RequestMapping(value = "/checksms", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
@@ -470,6 +505,9 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
+    /*
+     * 修改密保手机
+     */
     @RequestMapping(value = "bindmobilenew", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
@@ -504,6 +542,9 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
+    /*
+     * 绑定密保问题和答案
+     */
     @RequestMapping(value = "/bindques", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
@@ -535,12 +576,12 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
-  /*
-     绑定外域邮箱成功的页面
-   */
-  @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
-  public String emailVerifySuccess(HttpServletRequest request) throws Exception {
-    //状态码参数
-    return "safe/emailsuccess";
-  }
+    /*
+     * 绑定外域邮箱成功的页面
+     */
+    @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
+    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
+        //状态码参数
+        return "safe/emailsuccess";
+    }
 }
