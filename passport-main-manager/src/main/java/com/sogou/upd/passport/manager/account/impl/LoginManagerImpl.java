@@ -136,7 +136,7 @@ public class LoginManagerImpl implements LoginManager {
             if (needCaptcha) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
-                if (!this.checkCaptcha(captchaCode, token)) {
+                if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
                     result.setDefaultModel("needCaptcha", true);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     operateTimesService.incLoginFailedTimes(username, ip);
@@ -201,13 +201,5 @@ public class LoginManagerImpl implements LoginManager {
             }
         }
         return false;
-    }
-
-    private boolean checkCaptcha(String captcha, String token) {
-        //校验验证码
-        if (!accountService.checkCaptchaCodeIsVaild(token, captcha)) {
-            return false;
-        }
-        return true;
     }
 }

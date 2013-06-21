@@ -48,9 +48,9 @@ public class ProblemAction extends BaseController {
     public String addProblem(HttpServletRequest request, Model model)
             throws Exception {
         //检测是否登录
-        if (!hostHolder.isLogin()) {
-            return "redirect:/web/webLogin?ru="+request.getScheme()+"://account.sogou.com/web/problem/addProblem";
-        }
+//        if (!hostHolder.isLogin()) {
+//            return "redirect:/web/webLogin?ru="+request.getScheme()+"://account.sogou.com/web/problem/addProblem";
+//        }
 
         Result result = new  APIResultSupport(false);
         String userId = hostHolder.getPassportId();
@@ -67,13 +67,14 @@ public class ProblemAction extends BaseController {
     @ResponseBody
     public Object saveProblem(HttpServletRequest request, WebAddProblemParameters addProblemParams)
             throws Exception {
+        String passportId = "tinkame731@sohu.com";
         Result result = new APIResultSupport(false);
         // TODO 获取并set passportId
-        String passportId = hostHolder.getPassportId();
-        if(Strings.isNullOrEmpty(passportId)){
-            result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
-            return result.toString();
-        }
+//        String passportId = hostHolder.getPassportId();
+//        if(Strings.isNullOrEmpty(passportId)){
+//            result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
+//            return result.toString();
+//        }
         //参数验证
         String validateResult = ControllerHelper.validateParams(addProblemParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
