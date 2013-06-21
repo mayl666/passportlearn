@@ -150,10 +150,10 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
     
     var vcodeInited = false;
     var initVcode = function(){
-        if( vcodeInited ) return;
-        vcodeInited = true;
         var $el = $('#Login');
         $el.parent().parent().addClass('login-vcode');
+        if( vcodeInited ) return;
+        vcodeInited = true;
 
         $el.find('.vcode img,.vcode a').click(function(){
             refreshVcode();
@@ -206,7 +206,9 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
             $('#Login').on('submit' , function(){
                 var $el = $('#Login');
 
-                if( !$.trim($el.find('input[name="username"]').val()) || !$.trim($el.find('input[name="password"]').val()) ){
+                var passwordVal = $el.find('input[name="password"]').val();
+                if( !$.trim($el.find('input[name="username"]').val()) || !passwordVal ||
+                  passwordVal.length > 16 || passwordVal.length<6  ){
                     showUnameError('请输入用户名密码');
                     return false;;
                 }
