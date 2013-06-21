@@ -172,7 +172,7 @@ public class LoginManagerImpl implements LoginManager {
             if (result.isSuccess()) {
                 operateTimesService.incLoginSuccessTimes(passportId, ip);
                 // 种sohu域cookie
-                result = commonManager.createCookieUrl(result, passportId, scheme, loginParameters.getAutoLogin());
+                result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
                 result.setDefaultModel("ru", loginParameters.getRu());
 
             } else {

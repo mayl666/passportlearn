@@ -206,11 +206,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean loginFailedTimesNeedCaptcha(String username,String ip) throws ServiceException{
         boolean result = false;
         try {
+            // 根据username判断是否需要弹出验证码
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
             result = checkTimesByKey(userNameCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
             if(result){
                 return true;
             }
+            //  根据ip判断是否需要弹出验证码
             if(!Strings.isNullOrEmpty(ip)){
                 String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
                 result = checkTimesByKey(ipCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);

@@ -136,7 +136,7 @@ public class RegAction extends BaseController {
       return result.toString();
     }
 
-    result = regManager.webRegister(regParams, ip, request.getScheme());
+    result = regManager.webRegister(regParams, ip);
 
     if(result.isSuccess()){
       //设置来源
@@ -180,7 +180,7 @@ public class RegAction extends BaseController {
     result = regManager.activeEmail(activeParams, ip);
     if(result.isSuccess()){
       // 种sohu域cookie
-      result=commonManager.createCookieUrl(result,activeParams.getPassport_id(),request.getScheme(),1) ;
+      result=commonManager.createCookieUrl(result,activeParams.getPassport_id(),1) ;
     }
     return result;
   }
@@ -188,9 +188,8 @@ public class RegAction extends BaseController {
    外域邮箱用户激活成功的页面
  */
   @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
-  @ResponseBody
-  public Object emailVerifySuccess(HttpServletRequest request) throws Exception {
+  public String emailVerifySuccess(HttpServletRequest request) throws Exception {
     //状态码参数
-    return "/reg/emailsuccess";
+    return "reg/emailsuccess";
   }
 }

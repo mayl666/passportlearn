@@ -11,7 +11,7 @@ public class ActionRecordVO {
     private long time;
     private String ip;
     private String loc;
-    private String type; // 默认”搜狗通行证“，需要通过Service获取再setType(...)
+    private String type; // 默认null，需要通过Service获取再setType(...)
 
     public ActionRecordVO(ActionStoreRecordDO actionStoreRecordDO) {
         long date = actionStoreRecordDO.getDate();
@@ -19,7 +19,7 @@ public class ActionRecordVO {
         setTime(date);
         setIp(ipDO);
         setLoc(IpLocationUtil.getCity(ipDO));
-        setType("搜狗通行证");
+        setType(null);
     }
 
     public long getTime() {
