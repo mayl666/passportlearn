@@ -414,7 +414,13 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         String username = null;
         try {
+
             username = updatePwdParameters.getPassport_id();
+
+            if (!accountService.checkLimitResetPwd(username)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+                return result;
+            }
 
             UpdatePwdApiParams updatePwdApiParams=buildProxyApiParams(updatePwdParameters);
 
@@ -867,6 +873,31 @@ public class SecureManagerImpl implements SecureManager {
                 actionVO.setType(appConfigService.queryClientName(clientIdRes));
                 recordsVO.add(actionVO);
             }
+        } else {
+            ActionStoreRecordDO actionDO = new ActionStoreRecordDO();
+            actionDO.setClientId(1120);
+            actionDO.setIp("202.114.1.86");
+            actionDO.setDate(System.currentTimeMillis());
+            ActionRecordVO actionVO = new ActionRecordVO(actionDO);
+            int clientIdRes = actionDO.getClientId();
+            actionVO.setType(appConfigService.queryClientName(clientIdRes));
+            recordsVO.add(actionVO);
+
+            actionDO.setClientId(1100);
+            actionDO.setIp("202.116.1.86");
+            actionDO.setDate(System.currentTimeMillis());
+            actionVO = new ActionRecordVO(actionDO);
+            clientIdRes = actionDO.getClientId();
+            actionVO.setType(appConfigService.queryClientName(clientIdRes));
+            recordsVO.add(actionVO);
+
+            actionDO.setClientId(0);
+            actionDO.setIp("292.116.1.86");
+            actionDO.setDate(System.currentTimeMillis());
+            actionVO = new ActionRecordVO(actionDO);
+            clientIdRes = actionDO.getClientId();
+            actionVO.setType(appConfigService.queryClientName(clientIdRes));
+            recordsVO.add(actionVO);
         }
 
 

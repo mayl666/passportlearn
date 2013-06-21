@@ -548,6 +548,6 @@ public class SecureAction extends BaseController {
   @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
   public String emailVerifySuccess(HttpServletRequest request) throws Exception {
     //状态码参数
-    return "/safe/emailsuccess";
+    return "safe/emailsuccess";
   }
 }
