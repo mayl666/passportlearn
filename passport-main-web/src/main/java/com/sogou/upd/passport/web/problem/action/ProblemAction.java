@@ -49,7 +49,7 @@ public class ProblemAction extends BaseController {
             throws Exception {
         //检测是否登录
         if (!hostHolder.isLogin()) {
-            return "redirect:/web/webLogin?ru=https://account.sogou.com/web/problem/addProblem";
+            return "redirect:/web/webLogin?ru=http://account.sogou.com/web/problem/addProblem";
         }
 
         Result result = new  APIResultSupport(false);
