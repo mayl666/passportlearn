@@ -8,24 +8,26 @@ import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
  * File | Settings | File Templates.
  */
 public class ActionRecordVO {
-    private long date;
+    private long time;
     private String ip;
-    private String city;
+    private String loc;
+    private String type; // 默认null，需要通过Service获取再setType(...)
 
     public ActionRecordVO(ActionStoreRecordDO actionStoreRecordDO) {
         long date = actionStoreRecordDO.getDate();
         String ipDO = actionStoreRecordDO.getIp();
-        setDate(date);
+        setTime(date);
         setIp(ipDO);
-        setCity(IpLocationUtil.getCity(ipDO));
+        setLoc(IpLocationUtil.getCity(ipDO));
+        setType(null);
     }
 
-    public long getDate() {
-        return date;
+    public long getTime() {
+        return time;
     }
 
-    public void setDate(long date) {
-        this.date = date;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public String getIp() {
@@ -36,11 +38,19 @@ public class ActionRecordVO {
         this.ip = ip;
     }
 
-    public String getCity() {
-        return city;
+    public String getLoc() {
+        return loc;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setLoc(String loc) {
+        this.loc = loc;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -274,7 +274,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip) throws ServiceException {
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
         boolean flag = true;
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
@@ -283,6 +283,9 @@ public class AccountServiceImpl implements AccountService {
                     PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
+            if(!Strings.isNullOrEmpty(ru)){
+              activeUrl=  activeUrl +"&ru="+ru;
+            }
 
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();

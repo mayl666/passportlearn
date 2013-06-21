@@ -13,7 +13,7 @@ import java.util.Map;
  * File | Settings | File Templates.
  */
 public class IpLocationUtilTest extends TestCase {
-    private static String IP = "202.106.180.10";
+    private static String IP = "202.114.1.68";
 
     @Test
     public void testGetCity() {

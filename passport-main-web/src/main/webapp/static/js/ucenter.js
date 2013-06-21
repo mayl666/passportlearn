@@ -12,6 +12,14 @@ define(['./common' , './tpl'] , function(common , ursa ){
         common: function(data){
             common.parseHeader(data);
         },
+        disable: function(data){
+            var tpl = $('#TargetDisable');
+            var wrapper = $('#Target').parent();
+
+            wrapper.html( ursa.render(tpl.html() , data));
+            $($('.banner li')[1]).hide();
+            $('.sidebar .ucenter-sidebar span').css('visibility' , 'hidden');
+        },
         index: function(data){
             var tpl = $('#Target');
             var wrapper = tpl.parent();
@@ -39,8 +47,13 @@ define(['./common' , './tpl'] , function(common , ursa ){
                 data = $.evalJSON(server_data).data;
             }catch(e){window['console'] && console.log(e);}
 
+
             pagefunc.common(data);
 
+            if( data.disable ){
+                pagefunc.disable(data);
+                return;
+            }
             pagefunc[type] && pagefunc[type](data);
         }
     };

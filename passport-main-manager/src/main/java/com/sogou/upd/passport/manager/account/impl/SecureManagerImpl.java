@@ -43,6 +43,7 @@ import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
+import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
@@ -83,6 +84,8 @@ public class SecureManagerImpl implements SecureManager {
     private AccountSecureService accountSecureService;
     @Autowired
     private OperateTimesService operateTimesService;
+    @Autowired
+    private AppConfigService appConfigService;
 
     // 自动注入Manager
     @Autowired
@@ -411,7 +414,13 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         String username = null;
         try {
+
             username = updatePwdParameters.getPassport_id();
+
+            if (!accountService.checkLimitResetPwd(username)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+                return result;
+            }
 
             UpdatePwdApiParams updatePwdApiParams=buildProxyApiParams(updatePwdParameters);
 
@@ -860,8 +869,35 @@ public class SecureManagerImpl implements SecureManager {
         if (!CollectionUtils.isEmpty(storeRecords)) {
             for(ActionStoreRecordDO actionDO : storeRecords){
                 ActionRecordVO actionVO = new ActionRecordVO(actionDO);
+                int clientIdRes = actionDO.getClientId();
+                actionVO.setType(appConfigService.queryClientName(clientIdRes));
                 recordsVO.add(actionVO);
             }
+        } else {
+            ActionStoreRecordDO actionDO = new ActionStoreRecordDO();
+            actionDO.setClientId(1120);
+            actionDO.setIp("202.114.1.86");
+            actionDO.setDate(System.currentTimeMillis());
+            ActionRecordVO actionVO = new ActionRecordVO(actionDO);
+            int clientIdRes = actionDO.getClientId();
+            actionVO.setType(appConfigService.queryClientName(clientIdRes));
+            recordsVO.add(actionVO);
+
+            actionDO.setClientId(1100);
+            actionDO.setIp("202.116.1.86");
+            actionDO.setDate(System.currentTimeMillis());
+            actionVO = new ActionRecordVO(actionDO);
+            clientIdRes = actionDO.getClientId();
+            actionVO.setType(appConfigService.queryClientName(clientIdRes));
+            recordsVO.add(actionVO);
+
+            actionDO.setClientId(0);
+            actionDO.setIp("292.116.1.86");
+            actionDO.setDate(System.currentTimeMillis());
+            actionVO = new ActionRecordVO(actionDO);
+            clientIdRes = actionDO.getClientId();
+            actionVO.setType(appConfigService.queryClientName(clientIdRes));
+            recordsVO.add(actionVO);
         }
 
 
@@ -882,6 +918,8 @@ public class SecureManagerImpl implements SecureManager {
             if (!CollectionUtils.isEmpty(storeRecords)) {
                 for(ActionStoreRecordDO actionDO : storeRecords){
                     ActionRecordVO actionVO = new ActionRecordVO(actionDO);
+                    int clientIdRes = actionDO.getClientId();
+                    actionVO.setType(appConfigService.queryClientName(clientIdRes));
                     allRecords.add(actionVO);
                 }
             }

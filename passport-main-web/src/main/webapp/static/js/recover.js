@@ -21,6 +21,13 @@ define('utils',[], function(){
                 s4() +  s4() + s4() + s4();
 
         },
+        addZero: function(num,len){
+            num = num.toString();
+            while( num.length < len ){
+                num = '0'+ num;
+            }
+            return num;
+        },
         parseResponse: function(data){
             if( typeof data == 'string' ){
                 try{
@@ -31,10 +38,20 @@ define('utils',[], function(){
             }
             return data;
         },
-        addIframe: function(url){
+        addIframe: function(url , callback){
             var iframe = document.createElement('iframe');
             iframe.src = url;
             
+            if (iframe.attachEvent){
+                iframe.attachEvent("onload", function(){
+                    callback && callback();
+                });
+            } else {
+                iframe.onload = function(){
+                    callback && callback();
+                };
+            }
+
             document.body.appendChild(iframe);
         },
         getScript: function(url , callback){
@@ -56,6 +73,34 @@ define('utils',[], function(){
             };
 
             head.insertBefore( script, head.firstChild );
+        },
+        getUrlByMail:function(mail){
+            mail = mail.split('@')[1];
+            if( !mail ) return false;
+            var hash = {
+                "139.com":"mail.10086.cn",
+                'gmail.com': 'mail.google.com', 
+                'sina.com': 'mail.sina.com.cn', 
+                'yeah.net': 'www.yeah.net', 
+                'hotmail.com': 'www.hotmail.com', 
+                'live.com': 'www.outlook.com', 
+                'live.cn': 'www.outlook.com', 
+                'live.com.cn': 'www.outlook.com', 
+                'outlook.com': 'www.outlook.com', 
+                'yahoo.com.cn': 'mail.cn.yahoo.com', 
+                'yahoo.cn': 'mail.cn.yahoo.com', 
+                'ymail.com': 'www.ymail.com', 
+                'eyou.com': 'www.eyou.com', 
+                '188.com': 'www.188.com', 
+                'foxmail.com': 'www.foxmail.com' 
+            };
+            var url;
+            if( mail in hash ){
+                url= hash[mail];
+            }else{
+                url= 'mail.' + mail;
+            }
+            return 'http://' + url;
         }
     };
 
@@ -84,17 +129,21 @@ define('common',['./utils'],function(utils){
             $('#Header .username').html(data.username);
             if( data.username ){
                 $('#Header .logout').show().prev().show();
-                $('#Header .logout a').click(function(){
-                    utils.getScript($(this).attr('href') , function(){
-                        if( window['logout_status'] == 'success' ){
-                            location.reload();
-                        }else{
-                            alert('系统错误');
-                        }
+                $('#Header .logout a').click(function(e){
+                    utils.addIframe($(this).attr('href') , function(){
+                        location.reload();
                     });
                     return false;
                 });
             }
+        },
+        bindJumpEmail: function(){
+            $('#JumpToUrl').click(function(){
+                if( $('#JumpTarget') ){
+                    window.open( utils.getUrlByMail($('#JumpTarget').html()) );
+                }
+                return false;
+            });
         }
     };
 });

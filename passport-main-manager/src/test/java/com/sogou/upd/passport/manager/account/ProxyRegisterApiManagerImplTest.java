@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProxyRegisterApiManagerImplTest extends BaseTest {
 
     private static final String MOBILE = "18738963584";
-    private static final String USERID = "281168178@qq.com";
+    private static final String USERID = "dfsfs234232@qq.com";
     private static final String PASSWORD = "111111";
 
     @Autowired
@@ -32,6 +32,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
         RegEmailApiParams params = new RegEmailApiParams();
         params.setUserid(USERID);
         params.setPassword(PASSWORD);
+        params.setRu("http://wan.sogou.com");
         params.setCreateip("10.1.164.65");
         Result result = proxyRegisterApiManager.regMailUser(params);
         System.out.println(result);

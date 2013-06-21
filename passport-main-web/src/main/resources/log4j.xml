@@ -28,7 +28,7 @@
     <appender name="FILE-ALL" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="File" value="${passport.log.path}/couponActive.log"/>
+        <param name="File" value="/search/passport/log/couponActive.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
         </layout>
@@ -38,7 +38,7 @@
     <appender name="fileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="File" value="${passport.log.path}/httpclient/perfStats.log" />
+        <param name="File" value="/search/passport/log/httpclient/perfStats.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
         </layout>
@@ -61,7 +61,7 @@
     <appender name="webPerfFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="File" value="${passport.log.path}/webperf/perfStats.log" />
+        <param name="File" value="/search/passport/log/webperf/perfStats.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
         </layout>
@@ -87,7 +87,7 @@
     <appender name="userOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="File" value="${passport.log.path}/useroperation/useroperation.log" />
+        <param name="File" value="/search/passport/log/useroperation/useroperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %m %n" />
         </layout>

@@ -62,10 +62,9 @@ public interface CommonManager {
    *
    * @param result
    * @param passportId
-   * @param scheme
    * @param autoLogin
    * @return
    */
-    public Result createCookieUrl(Result result,String passportId,String scheme,int autoLogin);
+    public Result createCookieUrl(Result result,String passportId,int autoLogin);
 
 }

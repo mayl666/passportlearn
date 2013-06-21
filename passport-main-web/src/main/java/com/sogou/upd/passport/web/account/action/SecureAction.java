@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -23,6 +24,7 @@ import com.sogou.upd.passport.web.account.form.security.WebMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 
 import org.slf4j.Logger;
@@ -63,7 +65,7 @@ public class SecureAction extends BaseController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String querySecureInfo(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -95,7 +97,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/email", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindEmailView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -108,8 +110,12 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDEMAIL_URL;
+
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                return "redirect:" + SOHU_BINDEMAIL_URL;
+            case THIRD:
+                return "redirect:/web/security";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -125,7 +131,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/mobile", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindMobileView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -138,8 +144,11 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDMOBILE_URL;
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                return "redirect:" + SOHU_BINDMOBILE_URL;
+            case THIRD:
+                return "redirect:/web/security";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -156,7 +165,7 @@ public class SecureAction extends BaseController {
 
 
     @RequestMapping(value = "/question", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String bindQuestionView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -169,8 +178,11 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDQUES_URL;
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                return "redirect:" + SOHU_BINDQUES_URL;
+            case THIRD:
+                return "redirect:/web/security";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -186,7 +198,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/password", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String modifyPasswordView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -199,8 +211,11 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_RESETPWD_URL;
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                return "redirect:" + SOHU_RESETPWD_URL;
+            case THIRD:
+                return "redirect:/web/security";
         }
 
         result.setSuccess(true);
@@ -214,7 +229,7 @@ public class SecureAction extends BaseController {
     }
 
     @RequestMapping(value = "/history", method = RequestMethod.GET)
-    @LoginRequired
+    @LoginRequired(resultType = ResponseResultType.redirect)
     public String showHistoryView(BaseWebParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -227,7 +242,7 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
-        // TODO:登录历史
+        result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
         String nickName = hostHolder.getNickName();
@@ -260,10 +275,13 @@ public class SecureAction extends BaseController {
 
         String userId = hostHolder.getPassportId();
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            result.setCode("401");
-            result.setMessage("sohu域账号不支持修改密码");
-            return result.toString();
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
         }
 
         updateParams.setPassport_id(userId);
@@ -291,16 +309,20 @@ public class SecureAction extends BaseController {
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            result.setCode("401");
-            result.setMessage("sohu域账号不支持绑定邮箱");
-            return result.toString();
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
         }
 
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
         return result.toString();
     }
 
+    // TODO:等数据迁移后需要修改和测试此方法
     @RequestMapping(value = "checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -315,8 +337,11 @@ public class SecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            return "redirect:" + SOHU_BINDEMAIL_URL;
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                return "redirect:" + SOHU_BINDEMAIL_URL;
+            case THIRD:
+                return "redirect:/web/security";
         }
 
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
@@ -343,6 +368,15 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
 
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
+        }
+
         // result = secureManager.sendMobileCodeByPassportId(userId, clientId);
         result = secureManager.sendMobileCodeOld(userId, clientId);
         return result.toString();
@@ -363,6 +397,15 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
         String newMobile = params.getNew_mobile();
+
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
+        }
 
         // result = secureManager.sendMobileCode(newMobile, clientId);
         result = secureManager.sendMobileCodeNew(userId, clientId, newMobile);
@@ -387,15 +430,16 @@ public class SecureAction extends BaseController {
         String password = params.getPassword();
         String modifyIp = getIp(request);
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
-            return result.toString();
-        }
-
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            result.setCode("401");
-            result.setMessage("sohu域账号不支持绑定手机号");
-            return result.toString();
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case PHONE:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                return result.toString();
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
         }
 
         result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
@@ -417,15 +461,16 @@ public class SecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
-            return result.toString();
-        }
-
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            result.setCode("401");
-            result.setMessage("sohu域账号不支持手机绑定");
-            return result.toString();
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case PHONE:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                return result.toString();
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
         }
 
         result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
@@ -450,15 +495,16 @@ public class SecureAction extends BaseController {
         String scode = params.getScode();
         String modifyIp = getIp(request);
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.PHONE) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED);
-            return result.toString();
-        }
-
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            result.setCode("401");
-            result.setMessage("sohu域账号不支持手机绑定");
-            return result.toString();
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case PHONE:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                return result.toString();
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
         }
 
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
@@ -483,10 +529,13 @@ public class SecureAction extends BaseController {
         String newAnswer = params.getNew_answer();
         String modifyIp = getIp(request);
 
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.SOHU) {
-            result.setCode("401");
-            result.setMessage("sohu域账号不支持修改密保问题");
-            return result.toString();
+        switch (AccountDomainEnum.getAccountDomain(userId)) {
+            case SOHU:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                return result.toString();
+            case THIRD:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
         }
 
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
@@ -497,9 +546,8 @@ public class SecureAction extends BaseController {
      绑定外域邮箱成功的页面
    */
   @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
-  @ResponseBody
-  public Object emailVerifySuccess(HttpServletRequest request) throws Exception {
+  public String emailVerifySuccess(HttpServletRequest request) throws Exception {
     //状态码参数
-    return "/safe/emailsuccess";
+    return "safe/emailsuccess";
   }
 }

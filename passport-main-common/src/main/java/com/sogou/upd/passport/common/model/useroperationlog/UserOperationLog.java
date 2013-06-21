@@ -22,7 +22,7 @@ public class UserOperationLog {
     private String resultCode;
 
     //用户执行的操作
-    private UserOperationEnum userOperation;
+    private String userOperation;
 
     //其它信息
     private Map<String,String> otherMessageMap;
@@ -34,7 +34,7 @@ public class UserOperationLog {
      * @param clientId    发起操作的appId
      * @param resultCode  操作结果，具体参见{@link com.sogou.upd.passport.common.utils.ErrorUtil}
      */
-    public UserOperationLog(String passportId,UserOperationEnum userOperation,String clientId,String resultCode){
+    public UserOperationLog(String passportId,String userOperation,String clientId,String resultCode){
         this.passportId=passportId;
         this.userOperation=userOperation;
         this.clientId=clientId;
@@ -78,11 +78,11 @@ public class UserOperationLog {
         this.resultCode = resultCode;
     }
 
-    public UserOperationEnum getUserOperation() {
+    public String getUserOperation() {
         return userOperation;
     }
 
-    public void setUserOperation(UserOperationEnum userOperation) {
+    public void setUserOperation(String userOperation) {
         this.userOperation = userOperation;
     }
 }

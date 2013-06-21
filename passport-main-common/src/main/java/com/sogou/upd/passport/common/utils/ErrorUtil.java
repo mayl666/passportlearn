@@ -132,6 +132,12 @@ public class ErrorUtil {
     public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER = "20241";
     //TODO sohu内部接口使用，以后删除，手机app校验第三方登录的token失败
     public static final String ERR_CODE_APPCONNECT_TOKEN_ERROR = "20242";
+    // SOHU域不允许此操作
+    public static final String ERR_CODE_ACCOUNT_SOHU_NOTALLOWED = "20243";
+    // 第三方账号不允许此操作
+    public static final String ERR_CODE_ACCOUNT_THIRD_NOTALLOWED = "20244";
+    // 手机用户不允许此操作
+    public static final String ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED = "20245";
 
 
     /* ============================================================================ */
@@ -183,10 +189,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY = "20293";
     //用户已经存在
     public static final String ERR_CODE_USER_ID_EXIST = "20294";
-    // 手机用户不允许此操作
-    public static final String ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED = "20295";
     // 今日绑定次数已超过10次
-    public static final String ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED = "20296";
+    public static final String ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED = "20295";
 
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
@@ -317,6 +321,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "当日邮件发送次数已达上限");
 
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_NOTALLOWED, "SOHU域用户不允许此操作");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_THIRD_NOTALLOWED, "第三方账号不允许此操作");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
+
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
@@ -342,7 +350,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT, "手机绑定次数超限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT, "修改密码频率过于频繁");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY, "用户5日内登录过");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
 
 
         // profile

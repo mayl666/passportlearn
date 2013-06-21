@@ -97,10 +97,10 @@ public class CommonManagerImpl implements CommonManager {
     }
 
   @Override
-  public Result createCookieUrl(Result result,String passportId,String scheme,int autoLogin) {
+  public Result createCookieUrl(Result result,String passportId,int autoLogin) {
     // 种sohu域cookie
 
-    scheme="https";
+    String scheme="https";
 
     CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
     //从返回结果中获取passportId,二期待优化

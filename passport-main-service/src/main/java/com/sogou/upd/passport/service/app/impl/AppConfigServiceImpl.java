@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.service.app.impl;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigDAO;
@@ -11,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Inject;
 
@@ -25,7 +30,8 @@ import javax.inject.Inject;
 public class AppConfigServiceImpl implements AppConfigService {
 
     private Logger logger = LoggerFactory.getLogger(AppConfigService.class);
-    private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG; //clientid与appConfig映射
+    private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_APPCONFIG; //clientId与appConfig映射
+    private static ConcurrentMap<Integer, String> CLIENTNAMES_MAP = Maps.newConcurrentMap();
 
     @Autowired
     private AppConfigDAO appConfigDAO;
@@ -73,6 +79,27 @@ public class AppConfigServiceImpl implements AppConfigService {
             return String.format(appConfig.getSmsText(), smsCode);
         }
         return null;
+    }
+
+    @Override
+    public String queryClientName(int clientId) throws ServiceException {
+        String clientName = CLIENTNAMES_MAP.get(clientId);
+        if (Strings.isNullOrEmpty(clientName)) {
+            clientName = queryNameToMap(clientId);
+        }
+        return clientName;
+    }
+
+    private String queryNameToMap(int clientId) {
+        String clientName = null;
+        AppConfig appConfig = queryAppConfigByClientId(clientId);
+        if (appConfig != null) {
+            clientName = appConfig.getClientName();
+            if (!Strings.isNullOrEmpty(clientName)) {
+                CLIENTNAMES_MAP.putIfAbsent(clientId, clientName);
+            }
+        }
+        return clientName;
     }
 
     private boolean addClientIdMapAppConfigToCache(int clientId, AppConfig appConfig) {
