@@ -13,7 +13,8 @@ public class AccountSecureInfoVO {
     protected String reg_email;
     protected String sec_ques;
     protected int sec_score;
-    protected long last_login;
+    protected String last_login_loc;
+    protected long last_login_time;
 
     public String getSec_mobile() {
         return sec_mobile;
@@ -55,11 +56,19 @@ public class AccountSecureInfoVO {
         this.sec_score = sec_score;
     }
 
-    public void setLast_login(long last_login) {
-        this.last_login = last_login;
+    public String getLast_login_loc() {
+        return last_login_loc;
     }
 
-    public long getLast_login() {
-        return last_login;
+    public void setLast_login_loc(String last_login_loc) {
+        this.last_login_loc = last_login_loc;
+    }
+
+    public long getLast_login_time() {
+        return last_login_time;
+    }
+
+    public void setLast_login_time(long last_login_time) {
+        this.last_login_time = last_login_time;
     }
 }
