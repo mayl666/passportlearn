@@ -19,6 +19,7 @@ public class AppConfig {
     private String serverSecret;
     private String clientSecret;
     private Date createTime;
+    private String clientName;
 
     public long getId() {
         return id;
@@ -84,4 +85,11 @@ public class AppConfig {
         this.createTime = createTime;
     }
 
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
 }

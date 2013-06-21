@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -70,8 +71,11 @@ public class RegManagerImpl implements RegManager {
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
+    private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+
+
   @Override
-  public Result webRegister(WebRegisterParameters regParams, String ip, String scheme) throws Exception {
+  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
 
     Result result = new APIResultSupport(false);
     String username =null;
@@ -80,6 +84,7 @@ public class RegManagerImpl implements RegManager {
       username = regParams.getUsername();
       String password = regParams.getPassword();
       String captcha = regParams.getCaptcha();
+      String ru=regParams.getRu();
 
       //判断是否是个性账号
       if(username.indexOf("@")==-1){
@@ -101,8 +106,12 @@ public class RegManagerImpl implements RegManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result;
           }
+          //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
+          if(Strings.isNullOrEmpty(ru)){
+            ru=EMAIL_REG_VERIFY_URL;
+          }
           RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
-                                                                         clientId);
+                                                                         clientId,ru);
           if (ManagerHelper.isInvokeProxyApi(username)) {
             result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
           } else {
@@ -128,7 +137,7 @@ public class RegManagerImpl implements RegManager {
       Object obj= result.getModels().get("isSetCookie");
       if(obj !=null && (obj instanceof Boolean) && (boolean)obj){
         // 种sohu域cookie
-        result=commonManager.createCookieUrl(result,username,scheme,1) ;
+        result=commonManager.createCookieUrl(result,username,1) ;
       }
     } else {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -136,8 +145,8 @@ public class RegManagerImpl implements RegManager {
     return result;
   }
 
-  private RegEmailApiParams buildRegMailProxyApiParams(String username,String password,String ip,int clientId){
-    return new RegEmailApiParams(username, password, ip, clientId);
+  private RegEmailApiParams buildRegMailProxyApiParams(String username,String password,String ip,int clientId,String ru){
+    return new RegEmailApiParams(username, password, ip, clientId,ru);
   }
 
 

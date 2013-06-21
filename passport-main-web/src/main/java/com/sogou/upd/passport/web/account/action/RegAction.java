@@ -136,7 +136,7 @@ public class RegAction extends BaseController {
       return result.toString();
     }
 
-    result = regManager.webRegister(regParams, ip, request.getScheme());
+    result = regManager.webRegister(regParams, ip);
 
     if(result.isSuccess()){
       //设置来源
@@ -180,7 +180,7 @@ public class RegAction extends BaseController {
     result = regManager.activeEmail(activeParams, ip);
     if(result.isSuccess()){
       // 种sohu域cookie
-      result=commonManager.createCookieUrl(result,activeParams.getPassport_id(),request.getScheme(),1) ;
+      result=commonManager.createCookieUrl(result,activeParams.getPassport_id(),1) ;
     }
     return result;
   }

@@ -25,11 +25,12 @@ public class RegEmailApiParams extends BaseApiParams {
 
     public RegEmailApiParams(){}
 
-    public RegEmailApiParams(String userid, String password, String createip, int client_id) {
+    public RegEmailApiParams(String userid, String password, String createip, int client_id,String ru) {
         this.userid = userid;
         this.password = password;
         this.createip = createip;
         setClient_id(client_id);
+        this.ru=ru;
     }
 
     public String getUserid() {

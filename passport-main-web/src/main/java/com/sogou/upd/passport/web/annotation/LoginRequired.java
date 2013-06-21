@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.annotation;
 
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -26,7 +28,7 @@ public @interface LoginRequired {
     boolean value() default true;
 
     //返回给前端的信息
-    String message() default "请先登录！";
+    String message() default "账号未登录，请先登录!";
 
     //返回前端信息时采用的格式
     ResponseResultType resultType() default ResponseResultType.json;
