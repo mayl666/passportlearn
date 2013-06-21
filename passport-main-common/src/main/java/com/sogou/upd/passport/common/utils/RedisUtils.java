@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -440,6 +441,27 @@ public class RedisUtils {
             lPushWithMaxLen(key, new ObjectMapper().writeValueAsString(obj), maxLen);
         } catch (Exception e) {
             logger.error("[Cache] lpush object key: " + key, e);
+        }
+    }
+
+    public <T> T lTop(String key, Class<T> returnClass) {
+        try {
+            ListOperations<String, String> valueList = redisTemplate.opsForList();
+            long len = valueList.size(key);
+            if (len <= 0) {
+                return null;
+            }
+
+            List<String> storeList = valueList.range(key, 0, 0);
+            if (CollectionUtils.isNotEmpty(storeList)) {
+                String value = storeList.get(0);
+                T object = new ObjectMapper().readValue(value, returnClass);
+                return object;
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("[Cache] get top value for object key: " + key, e);
+            return null;
         }
     }
 

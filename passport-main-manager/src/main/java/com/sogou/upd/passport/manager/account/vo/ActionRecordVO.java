@@ -14,12 +14,14 @@ public class ActionRecordVO {
     private String type; // 默认null，需要通过Service获取再setType(...)
 
     public ActionRecordVO(ActionStoreRecordDO actionStoreRecordDO) {
-        long date = actionStoreRecordDO.getDate();
-        String ipDO = actionStoreRecordDO.getIp();
-        setTime(date);
-        setIp(ipDO);
-        setLoc(IpLocationUtil.getCity(ipDO));
-        setType(null);
+        if (actionStoreRecordDO != null) {
+            long date = actionStoreRecordDO.getDate();
+            String ipDO = actionStoreRecordDO.getIp();
+            setTime(date);
+            setIp(ipDO);
+            setLoc(IpLocationUtil.getCity(ipDO));
+            // setType(null);
+        }
     }
 
     public long getTime() {
