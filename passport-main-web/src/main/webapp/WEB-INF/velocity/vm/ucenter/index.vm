@@ -61,8 +61,8 @@
                         </span>
                     </p>
                     <p>
-                        <span class="label">最近一次登录时间：</span>
-                        <span class="value"><{time.year}>年<{time.month}>月<{time.day}>日</span>
+                        <span class="label">最近一次登录：</span>
+                        <span class="value"><{time.year}>年<{time.month}>月<{time.day}>日&nbsp;&nbsp;</span>
                         <a href="/web/security/history" class="btn medium-btn">查看记录</a>
                     </p>
                     <p>
@@ -74,6 +74,11 @@
                         <span class="label">绑定手机：</span>
                         <span class="value"><{sec_mobile?sec_mobile:'未绑定'}></span>
                         <a href="/web/security/mobile" class="btn medium-btn"><{sec_mobile?'修改':'绑定'}></a>
+                    </p>
+                    <p>
+                        <span class="label">密保问题：</span>
+                        <span class="value"><{sec_ques?'已设置':'未设置'}></span>
+                        <a href="/web/security/question" class="btn medium-btn"><{sec_ques?'修改':'设置'}></a>
                     </p>
                 </script>
                 
