@@ -112,6 +112,6 @@ body{ background:#f9f9f9; }
 .question .items a:hover{ text-decoration:underline; }
 
 
-.footer{ font-size:12px; text-align:center; height:40px; line-height:40px;font-family:arial,helvetica,sans-serif;}
+.footer{ font-size:12px; text-align:center; height:40px; line-height:40px;font-family:arial,helvetica,sans-serif;color:#b3b2b2;}
 .footer a{text-decoration:none; color:#b3b2b2;}
 .footer a:hover{ text-decoration:underline; }

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=779460" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=316436" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -99,12 +99,12 @@
         </div>
 
         <div class="footer">
-            &copy;2013 sogou.com <a href="#">京备</a>
+        Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
         </div>
         
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=001540"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=934158"></script>
     <script type="text/javascript" src="/./static/js/index.js?t=569957"></script>
     <script type="text/javascript">
         
