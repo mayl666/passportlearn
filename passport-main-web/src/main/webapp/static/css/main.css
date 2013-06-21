@@ -123,6 +123,7 @@ a:hover{ text-decoration:underline; }
 .form-success span{ border:1px #6da700 solid;color:#6da700;background:#dbff97 url(/./static/img/desc-arrow.png?t=707808) no-repeat 8px center;  }
 .form-error span{  border:1px #e4494a solid; background:#ffe7e8 url(/./static/img/error-arrow.png?t=719407) no-repeat 8px center; color:#e4494a; }
 .footer{ width:980px;margin:0 auto;line-height:36px;color:#b2b2b2;text-align:center; }
+.footer a{ color:#b2b2b2; }
 .short-btn,
 a.short-btn{ width:69px; height:27px; background:url(/./static/img/btn-short.png?t=624000) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; text-align:center; color:#fff;text-decoration:none;line-height:27px; }
 .long-btn,

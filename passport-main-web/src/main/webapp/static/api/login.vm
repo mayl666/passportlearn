@@ -26,7 +26,7 @@
         <p>
             <button id="Submit">提交</button>
         </p>
-        
+        <p><a href="#" id="Logout">退出</a></p>
         <div id="Target">
             
         </div> 
@@ -44,6 +44,12 @@ document.getElementById('Submit').onclick = function(){
     }
         
     PassportSC.loginHandle(username.value , password.value , autologin , document.getElementById('Target') , function(){} , function(){});
+};
+
+document.getElementById('Logout').onclick = function(){
+    PassportSC.logoutHandle(document.getElementById('Target') , function(){}, function(){
+        alert('成功退出');
+    });
 };
 
     </script>

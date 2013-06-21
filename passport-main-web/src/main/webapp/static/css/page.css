@@ -84,6 +84,7 @@ a:hover{ text-decoration:underline; }
 
 
 .footer{ width:980px;margin:0 auto;line-height:36px;color:#b2b2b2;text-align:center; }
+.footer a{ color:#b2b2b2; }
 
 
 .short-btn,

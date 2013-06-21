@@ -84,6 +84,14 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     @Override
+    public ActionStoreRecordDO getLastActionStoreRecord(String userid, int clientId, AccountModuleEnum action) {
+        String cacheKey = buildCacheKeyForActionRecord(userid, clientId, action);
+        ActionStoreRecordDO record = queryLastRecord(cacheKey, ActionStoreRecordDO.class);
+
+        return record;
+    }
+
+    @Override
     public List<ActionStoreRecordDO> getActionStoreRecords(String userId, int clientId, AccountModuleEnum action) {
         String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
         List<ActionStoreRecordDO> records = queryRecords(cacheKey, ActionStoreRecordDO.class);
@@ -130,6 +138,10 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     // 方便以后修改存储方式
     private <T> List<T> queryRecords(String key, Class<T> clazz) {
         return redisUtils.getList(key, clazz);
+    }
+
+    private <T> T queryLastRecord(String key, Class<T> clazz) {
+        return redisUtils.lTop(key, clazz);
     }
 
     private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {

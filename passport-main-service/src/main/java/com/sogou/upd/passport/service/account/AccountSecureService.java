@@ -57,10 +57,43 @@ public interface AccountSecureService {
     public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException;
 
+    /**
+     * 设置动作记录
+     *
+     * @param userId
+     * @param clientId
+     * @param action
+     * @param ip
+     * @param note
+     */
     public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note);
 
+    /**
+     * 通过ActionRecord设置动作记录
+     *
+     * @param actionRecord
+     */
     public void setActionRecord(ActionRecord actionRecord);
 
+    /**
+     * 获取动作记录List
+     *
+     * @param userId
+     * @param clientId
+     * @param action
+     * @return
+     */
     public List<ActionStoreRecordDO> getActionStoreRecords(String userId, int clientId, AccountModuleEnum action);
+
+    /**
+     * 获取最近一次动作记录
+     *
+     * @param userid
+     * @param clientId
+     * @param action
+     * @return
+     */
+    public ActionStoreRecordDO getLastActionStoreRecord(String userid, int clientId,
+                                                        AccountModuleEnum action);
 
 }

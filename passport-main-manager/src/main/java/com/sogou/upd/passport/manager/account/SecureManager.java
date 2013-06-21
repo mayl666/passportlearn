@@ -214,6 +214,16 @@ public interface SecureManager {
     public Result queryActionRecords(String userId, int clientId, AccountModuleEnum action);
 
     /**
+     * 查询某用户的最近一次动作执行记录
+     *
+     * @param userId
+     * @param clientId
+     * @param module
+     * @return
+     */
+    public Result queryLastActionRecord(String userId, int clientId, AccountModuleEnum module);
+
+    /**
      * 查询某用户的所有动作执行记录
      *
      * @param userId

@@ -355,7 +355,6 @@ public class SecureManagerImpl implements SecureManager {
                 }
             }
             accountSecureInfoVO.setSec_score(score);
-            accountSecureInfoVO.setLast_login(System.currentTimeMillis()); // TODO:修改
 
             /*Account account = accountService.queryNormalAccount(userId);
             if (account == null) {
@@ -396,6 +395,13 @@ public class SecureManagerImpl implements SecureManager {
                     accountSecureInfoVO.setReg_email(userId);
                 }
             }*/
+
+            ActionRecordVO record = queryLastActionRecordPrivate(userId, clientId, AccountModuleEnum.LOGIN);
+            if (record != null) {
+                accountSecureInfoVO.setLast_login_time(record.getTime());
+                accountSecureInfoVO.setLast_login_loc(record.getLoc());
+            }
+
 
             result.setSuccess(true);
             result.setMessage("查询成功");
@@ -860,8 +866,18 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
+    public Result queryLastActionRecord(String userId, int clientId, AccountModuleEnum module) {
+        Result result = new APIResultSupport(false);
+        ActionStoreRecordDO actionDO = accountSecureService.getLastActionStoreRecord(userId, clientId, module);
+        ActionRecordVO record = new ActionRecordVO(actionDO);
+        int clientIdRes = actionDO.getClientId();
+        record.setType(appConfigService.queryClientName(clientIdRes));
+        result.setDefaultModel("record", record);
+        return result;
+    }
+
+    @Override
     public Result queryActionRecords(String userId, int clientId, AccountModuleEnum module) {
-        // TODO:修改返回的List<T>中的T，增加归属地
         Result result = new APIResultSupport(false);
         List<ActionRecordVO> recordsVO = Lists.newLinkedList();
         List<ActionStoreRecordDO>
@@ -869,37 +885,13 @@ public class SecureManagerImpl implements SecureManager {
         if (!CollectionUtils.isEmpty(storeRecords)) {
             for(ActionStoreRecordDO actionDO : storeRecords){
                 ActionRecordVO actionVO = new ActionRecordVO(actionDO);
-                int clientIdRes = actionDO.getClientId();
-                actionVO.setType(appConfigService.queryClientName(clientIdRes));
+                if (actionDO != null) {
+                    int clientIdRes = actionDO.getClientId();
+                    actionVO.setType(appConfigService.queryClientName(clientIdRes));
+                }
                 recordsVO.add(actionVO);
             }
-        } else {
-            ActionStoreRecordDO actionDO = new ActionStoreRecordDO();
-            actionDO.setClientId(1120);
-            actionDO.setIp("202.114.1.86");
-            actionDO.setDate(System.currentTimeMillis());
-            ActionRecordVO actionVO = new ActionRecordVO(actionDO);
-            int clientIdRes = actionDO.getClientId();
-            actionVO.setType(appConfigService.queryClientName(clientIdRes));
-            recordsVO.add(actionVO);
-
-            actionDO.setClientId(1100);
-            actionDO.setIp("202.116.1.86");
-            actionDO.setDate(System.currentTimeMillis());
-            actionVO = new ActionRecordVO(actionDO);
-            clientIdRes = actionDO.getClientId();
-            actionVO.setType(appConfigService.queryClientName(clientIdRes));
-            recordsVO.add(actionVO);
-
-            actionDO.setClientId(0);
-            actionDO.setIp("292.116.1.86");
-            actionDO.setDate(System.currentTimeMillis());
-            actionVO = new ActionRecordVO(actionDO);
-            clientIdRes = actionDO.getClientId();
-            actionVO.setType(appConfigService.queryClientName(clientIdRes));
-            recordsVO.add(actionVO);
         }
-
 
         result.setDefaultModel("records", recordsVO);
         result.setSuccess(true);
@@ -918,8 +910,10 @@ public class SecureManagerImpl implements SecureManager {
             if (!CollectionUtils.isEmpty(storeRecords)) {
                 for(ActionStoreRecordDO actionDO : storeRecords){
                     ActionRecordVO actionVO = new ActionRecordVO(actionDO);
-                    int clientIdRes = actionDO.getClientId();
-                    actionVO.setType(appConfigService.queryClientName(clientIdRes));
+                    if (actionDO != null) {
+                        int clientIdRes = actionDO.getClientId();
+                        actionVO.setType(appConfigService.queryClientName(clientIdRes));
+                    }
                     allRecords.add(actionVO);
                 }
             }
@@ -956,5 +950,18 @@ public class SecureManagerImpl implements SecureManager {
             return result;
         }
 
+    }
+
+    /*
+     * 查询安全信息时需要
+     */
+    private ActionRecordVO queryLastActionRecordPrivate(String userId, int clientId, AccountModuleEnum module) {
+        ActionStoreRecordDO actionDO = accountSecureService.getLastActionStoreRecord(userId, clientId, module);
+        ActionRecordVO record = new ActionRecordVO(actionDO);
+        if (actionDO != null) {
+            int clientIdRes = actionDO.getClientId();
+            record.setType(appConfigService.queryClientName(clientIdRes));
+        }
+        return record;
     }
 }

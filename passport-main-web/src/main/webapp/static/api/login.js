@@ -23,6 +23,26 @@
                                  + "');}return p.join('');");
             return data ? fn( data ) : fn;
         },
+        addIframe: function(container ,url,callback){
+            var iframe = document.createElement('iframe');
+            iframe.style.height = '1px';
+            iframe.style.width = '1px';
+            iframe.style.visibility = 'hidden';
+            iframe.src = url;
+            
+            if (iframe.attachEvent){
+                iframe.attachEvent("onload", function(){
+                    callback && callback();
+                });
+            } else {
+                iframe.onload = function(){
+                    callback && callback();
+                };
+            }
+
+            container.appendChild(iframe);
+            
+        },
         uuid: function(){
             function s4() {
                 return Math.floor((1 + Math.random()) * 0x10000)
@@ -42,7 +62,7 @@
     
     PassportSC._token = utils.uuid();
     
-    PassportSC._passhtml = '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
+    PassportSC._passhtml = '<form method="post" action="http://account.sogou.com/web/login" target="_PassportIframe">'
         +'<input type="hidden" name="username" value="<%=username%>">'
         +'<input type="hidden" name="password" value="<%=password%>">'
         +'<input type="hidden" name="captcha" value="<%=vcode%>">'
@@ -101,6 +121,15 @@
         container.getElementsByTagName('form')[0].submit();
     };
 
+    PassportSC.logoutHandle = function( container , onfailure, onsuccess){
+        if(!container)
+            return;
+        
+        var url = 'https://account.sogou.com/web/logout';
+        utils.addIframe(container , url , function(){
+            onsuccess && onsuccess();
+        });
+    };
 
 
 

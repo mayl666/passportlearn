@@ -18,7 +18,8 @@ define(['./common' , './tpl'] , function(common , ursa ){
 
             wrapper.html( ursa.render(tpl.html() , data));
             $($('.banner li')[1]).hide();
-            $('.sidebar .ucenter-sidebar span').css('visibility' , 'hidden');
+            $('.sidebar .ucenter-sidebar span.dynamic').hide();
+            $('.sidebar .ucenter-sidebar .hr').hide();
         },
         index: function(data){
             var tpl = $('#Target');

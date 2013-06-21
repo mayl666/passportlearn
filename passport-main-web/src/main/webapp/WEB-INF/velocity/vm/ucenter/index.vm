@@ -3,12 +3,12 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=080267" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=629402" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
     <div class="inner">
-        <h1><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></h1>
+        <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
         <ul class="info">
             <li>欢迎您&nbsp;<span class="username"></span></li>
             <li class="sep">|</li>
@@ -61,8 +61,8 @@
                         </span>
                     </p>
                     <p>
-                        <span class="label">最近一次登录时间：</span>
-                        <span class="value"><{time.year}>年<{time.month}>月<{time.day}>日</span>
+                        <span class="label">最近一次登录：</span>
+                        <span class="value"><{time.year}>年<{time.month}>月<{time.day}>日&nbsp;&nbsp;</span>
                         <a href="/web/security/history" class="btn medium-btn">查看记录</a>
                     </p>
                     <p>
@@ -74,6 +74,11 @@
                         <span class="label">绑定手机：</span>
                         <span class="value"><{sec_mobile?sec_mobile:'未绑定'}></span>
                         <a href="/web/security/mobile" class="btn medium-btn"><{sec_mobile?'修改':'绑定'}></a>
+                    </p>
+                    <p>
+                        <span class="label">密保问题：</span>
+                        <span class="value"><{sec_ques?'已设置':'未设置'}></span>
+                        <a href="/web/security/question" class="btn medium-btn"><{sec_ques?'修改':'设置'}></a>
                     </p>
                 </script>
                 
@@ -90,18 +95,23 @@
             <div class="ucenter-sidebar">
                 
                 
-                <span class="item"><a href="/web/security/password">修改密码</a></span>
+                <span class="item dynamic"><a href="/web/security/password">修改密码</a></span>
                 
                 
-                <span class="item"><a href="/web/security/email">修改密保邮箱</a></span>
+                <span class="item dynamic"><a href="/web/security/email">修改密保邮箱</a></span>
                 
                 <p class="hr"></p>
                 
                 
-                <span class="item"><a href="/web/security/mobile">绑定手机</a></span>
+                <span class="item dynamic"><a href="/web/security/mobile">绑定手机</a></span>
                 
                 
-                <span class="item"><a href="/web/security/question">修改密保问题</a></span>
+                <span class="item dynamic"><a href="/web/security/question">修改密保问题</a></span>
+                
+                <p class="hr"></p>
+                
+                
+                <span class="item persist"><a href="/web/problem/addProblem">意见反馈</a></span>
                 
                 
             </div>
@@ -122,7 +132,7 @@
         
         <div class="footer">
     <div class="inner">
-        &copy;2013 sogou.com
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
     </div>
 </div>
     </body>
