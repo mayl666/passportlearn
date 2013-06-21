@@ -191,6 +191,6 @@ public class RegAction extends BaseController {
   @ResponseBody
   public Object emailVerifySuccess(HttpServletRequest request) throws Exception {
     //状态码参数
-    return "/reg/emailsuccess";
+    return "reg/emailsuccess";
   }
 }
