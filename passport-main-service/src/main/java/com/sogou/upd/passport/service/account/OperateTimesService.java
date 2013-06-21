@@ -59,7 +59,7 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public long incRegTimes(String ip,String cookieStr) throws ServiceException;
+    public void incRegTimes(String ip,String cookieStr) throws ServiceException;
 
     /**
      *   检查一天内某ip注册次数

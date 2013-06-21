@@ -161,19 +161,33 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public long incRegTimes(String ip,String cookieStr) throws ServiceException {
+    public void incRegTimes(String ip,String cookieStr) throws ServiceException {
+      //修改为list模式添加cookie处理 by mayan
         try {
-            String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+          //ip与cookie列表映射
+          String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+          if (redisUtils.checkKeyIsExist(ipCacheKey)) {
+            redisUtils.lPush(ipCacheKey, cookieStr);
+          } else {
+            redisUtils.lPush(ipCacheKey, cookieStr);
+            redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+          }
+          //ip与cookie映射
+          String ipCookieKey= CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" +cookieStr;
+          recordTimes(ipCookieKey,DateAndNumTimesConstant.TIME_ONEDAY);
 
-//            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-//            recordTimes(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-
+          //cookie与ip列表映射
+          String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+          if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
+            redisUtils.lPush(cookieCacheKey, ip);
+          } else {
+            redisUtils.lPush(cookieCacheKey, ip);
+            redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+          }
         } catch (Exception e) {
             logger.error("incRegIPTimes:ip" + ip, e);
             throw new ServiceException(e);
         }
-        return 1;
 
     }
 
@@ -181,7 +195,22 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkRegInBlackList(String ip,String cookieStr) throws ServiceException {
         //修改为list模式添加cookie处理 by mayan
         try {
-            //ip与cookie映射
+          //cookie与ip映射
+          String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+          List<String> listIpVal= redisUtils.getList(cookieCacheKey);
+          if (CollectionUtils.isNotEmpty(listIpVal)) {
+            int sz = listIpVal.size();
+            if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
+              return true;
+            }
+          }
+          //通过ip+cookie限制注册次数
+          String ipCookieKey= CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" +cookieStr;
+          if(checkTimesByKey(ipCookieKey,LoginConstant.REGISTER_IP_COOKIE_LIMITED)){
+               return true;
+          }
+
+          //ip与cookie映射
             String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
             List<String> listCookieVal= redisUtils.getList(ipCacheKey);
             if (CollectionUtils.isNotEmpty(listCookieVal)) {
@@ -190,15 +219,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                  return true;
               }
             }
-            //cookie与ip映射
-            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-            List<String> listIpVal= redisUtils.getList(cookieCacheKey);
-            if (CollectionUtils.isNotEmpty(listIpVal)) {
-              int sz = listIpVal.size();
-              if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
-                return true;
-              }
-            }
+
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
             throw new ServiceException(e);
