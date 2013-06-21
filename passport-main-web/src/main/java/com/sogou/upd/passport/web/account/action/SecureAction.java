@@ -546,9 +546,8 @@ public class SecureAction extends BaseController {
      绑定外域邮箱成功的页面
    */
   @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
-  @ResponseBody
-  public Object emailVerifySuccess(HttpServletRequest request) throws Exception {
+  public String emailVerifySuccess(HttpServletRequest request) throws Exception {
     //状态码参数
-    return "/safe/emailsuccess";
+    return "safe/emailsuccess";
   }
 }

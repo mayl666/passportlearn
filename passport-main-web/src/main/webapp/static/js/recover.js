@@ -21,6 +21,13 @@ define('utils',[], function(){
                 s4() +  s4() + s4() + s4();
 
         },
+        addZero: function(num,len){
+            num = num.toString();
+            while( num.length < len ){
+                num = '0'+ num;
+            }
+            return num;
+        },
         parseResponse: function(data){
             if( typeof data == 'string' ){
                 try{
