@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-9
  * Time: 下午2:08
  */
-public class SGRegisterApiManagerImplTest extends BaseTest {
+public class ProxyRegisterApiManagerImplTest extends BaseTest {
 
     private static final String MOBILE = "18738963584";
     private static final String USERID = "281168178@qq.com";
