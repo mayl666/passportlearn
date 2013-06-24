@@ -14,8 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -109,6 +108,33 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
             sub_value = redisUtils.hGet(TEST_KEY, TEST_SUB_KEY);
             Assert.assertTrue(sub_value != null && "1".equals(value));
 
+        } catch (Exception e) {
+            Assert.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testMultiGetSet() throws Exception {
+        try {
+            Map<String, String> map = Maps.newHashMap();
+            map.put("key1", "value1");
+            map.put("key2", "value2");
+            redisUtils.multiSet(map);
+
+//            Collection<String> keyCollec = map.keySet();
+            Collection<String> keyCollec= new ArrayList<String>();
+            keyCollec.add("key2");
+            keyCollec.add("key1");
+            List<String> valueList =redisUtils.multiGet(keyCollec);
+
+            for(String value:valueList){
+                System.out.println("value:"+value);
+            }
+            System.out.println("map.toString():"+map.toString());
+            System.out.println("keyCollec.toString():"+keyCollec.toString());
+//            System.out.println(map.get("key1"));
+//            System.out.println(map.get("key2"));
+//            System.out.println(map.get("key4"));
         } catch (Exception e) {
             Assert.assertTrue(false);
         }
