@@ -65,14 +65,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     @Override
     public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException {
-        if (keyList == null || maxList == null) {
+        if (CollectionUtils.isEmpty(keyList) || CollectionUtils.isEmpty(maxList)) {
             return false;
         }
         try {
             List<String> valueList = redisUtils.multiGet(keyList);
             if (valueList != null) {
-                int num = 0;
-                for (int i = 0; i < valueList.size() && i < maxList.size(); i++) {
+                int num = 0, valueSize = valueList.size(), maxSize = maxList.size();
+                for (int i = 0; i < valueSize && i < maxSize; i++) {
                     String value = valueList.get(i);
                     if (!Strings.isNullOrEmpty(value)) {
                         num = Integer.valueOf(value);
@@ -82,7 +82,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     }
                 }
             }
-
         } catch (Exception e) {
             logger.error("checkNumByKey:" + keyList.toString() + ",maxList:" + maxList.toString(), e);
             throw new ServiceException(e);
