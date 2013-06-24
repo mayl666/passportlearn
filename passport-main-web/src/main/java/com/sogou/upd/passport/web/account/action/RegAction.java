@@ -76,52 +76,10 @@ public class RegAction extends BaseController {
 
     result=checkAccountNotExists(username);
 
-    //校验是否是搜狐域内用户
-
-//    if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
-//      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-//      return result.toString();
-//    }
-//
-//    //判断是否是个性账号
-//    if(username.indexOf("@")==-1){
-//      //判断是否是手机号注册
-//      if(PhoneUtil.verifyPhoneNumberFormat(username)){
-//        result= regManager.isAccountNotExists(username, true);
-//      } else {
-//        username=username+"@sogou.com";
-//        result= regManager.isAccountNotExists(username, false);
-//      }
-//    }else {
-//      result= regManager.isAccountNotExists(username, false);
-//    }
     return result.toString();
   }
 
-  //
-   private Result checkAccountNotExists(String username) throws Exception {
-     Result result = new APIResultSupport(false);
-     //校验是否是搜狐域内用户
 
-     if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
-       result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-       return result;
-     }
-
-     //判断是否是个性账号
-     if(username.indexOf("@")==-1){
-       //判断是否是手机号注册
-       if(PhoneUtil.verifyPhoneNumberFormat(username)){
-         result= regManager.isAccountNotExists(username, true);
-       } else {
-         username=username+"@sogou.com";
-         result= regManager.isAccountNotExists(username, false);
-       }
-     }else {
-       result= regManager.isAccountNotExists(username, false);
-     }
-     return result;
-   }
   /**
    * web页面注册
    *
@@ -208,6 +166,31 @@ public class RegAction extends BaseController {
     if(result.isSuccess()){
       // 种sohu域cookie
       result=commonManager.createCookieUrl(result,activeParams.getPassport_id(),1) ;
+    }
+    return result;
+  }
+
+  //检查用户是否存在
+  private Result checkAccountNotExists(String username) throws Exception {
+    Result result = new APIResultSupport(false);
+    //校验是否是搜狐域内用户
+
+    if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
+      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+      return result;
+    }
+
+    //判断是否是个性账号
+    if(username.indexOf("@")==-1){
+      //判断是否是手机号注册
+      if(PhoneUtil.verifyPhoneNumberFormat(username)){
+        result= regManager.isAccountNotExists(username, true);
+      } else {
+        username=username+"@sogou.com";
+        result= regManager.isAccountNotExists(username, false);
+      }
+    }else {
+      result= regManager.isAccountNotExists(username, false);
     }
     return result;
   }
