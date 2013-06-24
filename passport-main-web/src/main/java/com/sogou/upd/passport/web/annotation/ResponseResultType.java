@@ -14,8 +14,8 @@ public enum ResponseResultType {
             "<code>"+ ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED+"</code>" +
             "<statusText>%s</statusText>"),
     txt("%s"),                        //返回字符串
-    redirect("/web/login"),                     //302到登陆页面
-    forward("/web/login");                      //后台forward到登陆页面
+    redirect("/web/webLogin"),                     //302到登陆页面
+    forward("/web/webLogin");                      //后台forward到登陆页面
 
     private String resultStr;
 
