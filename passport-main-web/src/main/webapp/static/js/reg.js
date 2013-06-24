@@ -1799,13 +1799,13 @@ define('reg',['./common','./form' , './conf' , './utils','./tpl','./ui'] , funct
             return;
         }
         if( !ipt.val().length ){
-            cb && cb(0);
+            cb && cb(-1);
             return;
         }
         var errSpan = getSpan(ipt,'error');
-        console.log(errSpan)
+
         if( errSpan && errSpan.length && errSpan.css('display') != 'none' ){
-            cb && cb(0);
+            cb && cb(-1);
             return;
         }        
         $.get('/web/account/checkusername' , {
