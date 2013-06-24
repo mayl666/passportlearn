@@ -34,13 +34,12 @@ public interface OperateTimesService {
     public long incLoginFailedTimes(String username,String ip)throws ServiceException;
 
     /**
-     * 检查username和ip是否满足登陆成功或者失败操作次数限制
+     * 检查username是否在黑名单中
      * @param username
-     * @param ip
      * @return
      * @throws ServiceException
      */
-    public boolean checkLoginUserInBlackList(String username,String ip) throws ServiceException;
+    public boolean checkLoginUserInBlackList(String username) throws ServiceException;
 
     /**
      * 记录一天内修改密码的次数

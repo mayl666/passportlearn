@@ -128,7 +128,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException {
+    public boolean checkLoginUserInBlackList(String username) throws ServiceException {
         boolean result = false;
         try {
             List<String> keyList = new ArrayList<String>();
@@ -142,20 +142,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             keyList.add(loginSuccessUserNameKey);
             maxList.add(LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
 
-            //IP
-            if(!Strings.isNullOrEmpty(ip)) {
-                String loginFailedIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                keyList.add(loginFailedIPKey);
-                maxList.add(LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
-
-                String loginSuccessIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                keyList.add(loginSuccessIPKey);
-                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-
-            }
             return checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {
-            logger.error("userInBlackList:username" + username + ",ip:" + ip, e);
+            logger.error("userInBlackList:username" + username, e);
             throw new ServiceException(e);
         }
     }
@@ -267,9 +256,15 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
             //  根据ip判断是否需要弹出验证码
             if(!Strings.isNullOrEmpty(ip)){
-                String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                keyList.add(ipCacheKey);
+                //一小时内ip登陆失败20次出验证码
+                String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+                keyList.add(ipFailedCacheKey);
                 maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
+
+                //一小时内ip登陆成功100次出验证码
+                String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+                keyList.add(ipSuccessCacheKey);
+                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
             }
             return  checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {
