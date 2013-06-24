@@ -18,9 +18,6 @@ define(['./common','./form' , './conf'] , function(common , form , conf){
         });
     };
 
-    var addFormItem = function(){
-        $('.main-content .form form').append('<input name="client_id" value="'+ conf.client_id +'" type="hidden"/>');
-    };
 
     var addOptions = function(data){
         if( !data || !data.length )return;
@@ -36,7 +33,6 @@ define(['./common','./form' , './conf'] , function(common , form , conf){
             common.showBannerUnderLine();
 
             bindFormEvent();
-            addFormItem();
 
             var data ={};
             try{
