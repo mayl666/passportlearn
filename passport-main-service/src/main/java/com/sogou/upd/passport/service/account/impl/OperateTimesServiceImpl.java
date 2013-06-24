@@ -220,7 +220,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                  return true;
               }
             }
-
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
             throw new ServiceException(e);

@@ -73,28 +73,55 @@ public class RegAction extends BaseController {
     }
 
     String username= URLDecoder.decode(checkParam.getUsername(), "utf-8");
+
+    result=checkAccountNotExists(username);
+
     //校验是否是搜狐域内用户
 
-    if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
-      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-      return result.toString();
-    }
-
-    //判断是否是个性账号
-    if(username.indexOf("@")==-1){
-      //判断是否是手机号注册
-      if(PhoneUtil.verifyPhoneNumberFormat(username)){
-        result= regManager.isAccountNotExists(username, true);
-      } else {
-        username=username+"@sogou.com";
-        result= regManager.isAccountNotExists(username, false);
-      }
-    }else {
-      result= regManager.isAccountNotExists(username, false);
-    }
+//    if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
+//      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+//      return result.toString();
+//    }
+//
+//    //判断是否是个性账号
+//    if(username.indexOf("@")==-1){
+//      //判断是否是手机号注册
+//      if(PhoneUtil.verifyPhoneNumberFormat(username)){
+//        result= regManager.isAccountNotExists(username, true);
+//      } else {
+//        username=username+"@sogou.com";
+//        result= regManager.isAccountNotExists(username, false);
+//      }
+//    }else {
+//      result= regManager.isAccountNotExists(username, false);
+//    }
     return result.toString();
   }
 
+  //
+   private Result checkAccountNotExists(String username) throws Exception {
+     Result result = new APIResultSupport(false);
+     //校验是否是搜狐域内用户
+
+     if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
+       result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+       return result;
+     }
+
+     //判断是否是个性账号
+     if(username.indexOf("@")==-1){
+       //判断是否是手机号注册
+       if(PhoneUtil.verifyPhoneNumberFormat(username)){
+         result= regManager.isAccountNotExists(username, true);
+       } else {
+         username=username+"@sogou.com";
+         result= regManager.isAccountNotExists(username, false);
+       }
+     }else {
+       result= regManager.isAccountNotExists(username, false);
+     }
+     return result;
+   }
   /**
    * web页面注册
    *
@@ -121,6 +148,13 @@ public class RegAction extends BaseController {
       return result;
     }
 
+    //检验用户名是否存在
+    String username = regParams.getUsername();
+    result = checkAccountNotExists(username);
+    if (!result.isSuccess()) {
+      return result.toString();
+    }
+
     //验证client_id
     int clientId = Integer.parseInt(regParams.getClient_id());
 
@@ -131,7 +165,6 @@ public class RegAction extends BaseController {
     }
 
     result = regManager.webRegister(regParams, ip);
-
     if(result.isSuccess()){
       //设置来源
       String ru =  regParams.getRu();
