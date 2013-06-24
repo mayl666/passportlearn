@@ -11,6 +11,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -65,14 +67,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     @Override
     public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException {
-        if (keyList == null || maxList == null) {
+        if (CollectionUtils.isEmpty(keyList) || CollectionUtils.isEmpty(maxList)) {
             return false;
         }
         try {
             List<String> valueList = redisUtils.multiGet(keyList);
             if (valueList != null) {
-                int num = 0;
-                for (int i = 0; i < valueList.size() && i < maxList.size(); i++) {
+                int num = 0, valueSize = valueList.size(), maxSize = maxList.size();
+                for (int i = 0; i < valueSize && i < maxSize; i++) {
                     String value = valueList.get(i);
                     if (!Strings.isNullOrEmpty(value)) {
                         num = Integer.valueOf(value);
@@ -82,7 +84,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     }
                 }
             }
-
         } catch (Exception e) {
             logger.error("checkNumByKey:" + keyList.toString() + ",maxList:" + maxList.toString(), e);
             throw new ServiceException(e);
@@ -128,7 +129,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException {
+    public boolean checkLoginUserInBlackList(String username) throws ServiceException {
         boolean result = false;
         try {
             List<String> keyList = new ArrayList<String>();
@@ -142,20 +143,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             keyList.add(loginSuccessUserNameKey);
             maxList.add(LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
 
-            //IP
-            if(!Strings.isNullOrEmpty(ip)) {
-                String loginFailedIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                keyList.add(loginFailedIPKey);
-                maxList.add(LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
-
-                String loginSuccessIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                keyList.add(loginSuccessIPKey);
-                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-
-            }
             return checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {
-            logger.error("userInBlackList:username" + username + ",ip:" + ip, e);
+            logger.error("userInBlackList:username" + username, e);
             throw new ServiceException(e);
         }
     }
@@ -190,9 +180,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
           //ip与cookie列表映射
           String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
           if (redisUtils.checkKeyIsExist(ipCacheKey)) {
-            redisUtils.lPush(ipCacheKey, cookieStr);
+            redisUtils.sadd(ipCacheKey, cookieStr);
           } else {
-            redisUtils.lPush(ipCacheKey, cookieStr);
+            redisUtils.sadd(ipCacheKey, cookieStr);
             redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
           }
           //ip与cookie映射
@@ -202,9 +192,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
           //cookie与ip列表映射
           String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
           if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
-            redisUtils.lPush(cookieCacheKey, ip);
+            redisUtils.sadd(cookieCacheKey, ip);
           } else {
-            redisUtils.lPush(cookieCacheKey, ip);
+            redisUtils.sadd(cookieCacheKey, ip);
             redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
           }
         } catch (Exception e) {
@@ -220,9 +210,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         try {
           //cookie与ip映射
           String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-          List<String> listIpVal= redisUtils.getList(cookieCacheKey);
-          if (CollectionUtils.isNotEmpty(listIpVal)) {
-            int sz = listIpVal.size();
+          Set<String> setIpVal= redisUtils.smember(cookieCacheKey);
+          if (CollectionUtils.isNotEmpty(setIpVal)) {
+            int sz = setIpVal.size();
             if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
               return true;
             }
@@ -235,9 +225,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
           //ip与cookie映射
             String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            List<String> listCookieVal= redisUtils.getList(ipCacheKey);
-            if (CollectionUtils.isNotEmpty(listCookieVal)) {
-              int sz = listCookieVal.size();
+            Set<String> setCookieVal= redisUtils.smember(ipCacheKey);
+            if (CollectionUtils.isNotEmpty(setCookieVal)) {
+              int sz = setCookieVal.size();
               if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
                  return true;
               }
@@ -267,9 +257,15 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
             //  根据ip判断是否需要弹出验证码
             if(!Strings.isNullOrEmpty(ip)){
-                String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                keyList.add(ipCacheKey);
+                //一小时内ip登陆失败20次出验证码
+                String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+                keyList.add(ipFailedCacheKey);
                 maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
+
+                //一小时内ip登陆成功100次出验证码
+                String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+                keyList.add(ipSuccessCacheKey);
+                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
             }
             return  checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {

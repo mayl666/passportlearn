@@ -9,9 +9,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -450,6 +452,17 @@ public class RedisUtils {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         valueList.leftPush(key, value);
     }
+
+  // set add
+  public void sadd(String key, String value) {
+    SetOperations operations=redisTemplate.opsForSet();
+    operations.add(key,value);
+  }
+
+  public Set<String> smember(String key) {
+    SetOperations operations=redisTemplate.opsForSet();
+    return operations.members(key);
+  }
 
     // 将value添加到键key的列表尾部，超过maxLen则删除头部元素
     public void rPushWithMaxLen(String key, String value, int maxLen) {

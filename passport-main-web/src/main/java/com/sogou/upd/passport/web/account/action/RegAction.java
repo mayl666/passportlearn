@@ -103,7 +103,7 @@ public class RegAction extends BaseController {
     String uuidName= CookieUtils.getCookie(request, "uuidName");
     if (operateTimesService.checkRegInBlackList(ip, uuidName)){
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-      return result;
+      return result.toString();
     }
 
     //检验用户名是否存在
