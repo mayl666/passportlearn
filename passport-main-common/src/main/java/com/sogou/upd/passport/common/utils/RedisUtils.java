@@ -16,10 +16,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -109,6 +106,32 @@ public class RedisUtils {
     }
 
     /*
+     * 设置缓存内容
+    */
+    public <T> void multiSet(Map<String, T> mapData) throws Exception {
+        try {
+            Map<String, String> objectMap = Maps.newHashMap();
+            Set<String> keySet = mapData.keySet();
+            for (String key : keySet) {
+                T obj = mapData.get(key);
+                if (obj != null) {
+                    objectMap.put(key, new ObjectMapper().writeValueAsString(obj));
+                }
+            }
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.multiSet(objectMap);
+        } catch (Exception e) {
+            logger.error("[Cache] set cache fail, key:" + mapData.toString(), e);
+            try {
+                multiDelete(mapData.keySet());
+            } catch (Exception ex) {
+                logger.error("[Cache] set and delete cache fail, key:" + mapData.toString(), e);
+                throw e;
+            }
+        }
+    }
+
+    /*
       * 设置缓存内容
       */
     public long increment(String key) throws Exception {
@@ -146,6 +169,19 @@ public class RedisUtils {
             return valueOperations.get(key);
         } catch (Exception e) {
             logger.error("[Cache] get cache fail, key:" + key, e);
+        }
+        return null;
+    }
+
+    /*
+     * 根据key取缓存内容
+    */
+    public List<String> multiGet(Collection<String> keyCollec) {
+        try {
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            return valueOperations.multiGet(keyCollec);
+        } catch (Exception e) {
+            logger.error("[Cache] get cache fail, keyCollec:" + keyCollec.toString(), e);
         }
         return null;
     }
@@ -355,6 +391,9 @@ public class RedisUtils {
         redisTemplate.delete(cacheKey);
     }
 
+    public void multiDelete(Collection cacheKeyList) {
+        redisTemplate.delete(cacheKeyList);
+    }
     /**
      * Map<String,String>转换成Map<String,Object>
      *
