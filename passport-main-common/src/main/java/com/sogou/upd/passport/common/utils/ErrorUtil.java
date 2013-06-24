@@ -351,6 +351,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT, "修改密码频率过于频繁");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY, "用户5日内登录过");
 
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED, "今日绑定次数超限，请明日再试");
+
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
