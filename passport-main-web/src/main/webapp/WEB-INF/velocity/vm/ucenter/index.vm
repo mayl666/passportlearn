@@ -62,7 +62,13 @@
                     </p>
                     <p>
                         <span class="label">最近一次登录：</span>
-                        <span class="value"><{time.year}>年<{time.month}>月<{time.day}>日&nbsp;&nbsp;在&nbsp;<{last_login_loc}></span>
+                        <span class="value">
+                            <% if +last_login_time %>
+                            <{time.year}>年<{time.month}>月<{time.day}>日&nbsp;&nbsp;在&nbsp;<{last_login_loc}>
+                            <% else %>
+                            未知
+                            <% endif %>
+                        </span>
                         <a href="/web/security/history" class="btn medium-btn">查看记录</a>
                     </p>
                     <p>
