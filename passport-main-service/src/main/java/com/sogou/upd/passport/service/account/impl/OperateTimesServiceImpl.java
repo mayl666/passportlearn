@@ -179,7 +179,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
           //ip与cookie列表映射
           String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
           if (redisUtils.checkKeyIsExist(ipCacheKey)) {
-            redisUtils.lPush(ipCacheKey, cookieStr);
+            redisUtils.lPushX(ipCacheKey, cookieStr);
           } else {
             redisUtils.lPush(ipCacheKey, cookieStr);
             redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
@@ -191,7 +191,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
           //cookie与ip列表映射
           String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
           if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
-            redisUtils.lPush(cookieCacheKey, ip);
+            redisUtils.lPushX(cookieCacheKey, ip);
           } else {
             redisUtils.lPush(cookieCacheKey, ip);
             redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);

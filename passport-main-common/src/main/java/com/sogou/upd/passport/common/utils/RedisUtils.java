@@ -451,6 +451,12 @@ public class RedisUtils {
         valueList.leftPush(key, value);
     }
 
+  // 将value添加到键key的列表头部 ,存在则不放入
+  public void lPushX(String key, String value) {
+    ListOperations<String, String> valueList = redisTemplate.opsForList();
+    valueList.leftPushIfPresent(key, value);
+  }
+
     // 将value添加到键key的列表尾部，超过maxLen则删除头部元素
     public void rPushWithMaxLen(String key, String value, int maxLen) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
