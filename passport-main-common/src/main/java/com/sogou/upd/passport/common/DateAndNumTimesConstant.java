@@ -11,7 +11,7 @@ public class DateAndNumTimesConstant {
     public static final long IP_LIMITED = 20; // ip一天限制次数
     public static final int RESETPWD_NUM = 10; // 密码修改一天限制次数
     public static final int CHECKPWD_NUM = 10; // 密码检测一天限制次数
-    public static final long CAPTCHA_INTERVAL = 60; // 注册验证码1分钟，单位s
+    public static final long CAPTCHA_INTERVAL = 120; // 注册验证码1分钟，单位s
     public static final long SECURECODE_VALID = 15 * 60;
     public static final long TIME_ONEHOUR = 60 * 60; // 时间 一小时,单位s
     public static final int BIND_LIMIT = 10;   // 每日绑定限制次数
