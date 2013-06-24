@@ -473,6 +473,10 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
+            if (!operateTimesService.checkLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE))  {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT);
+                return result;
+            }
             if (!emailSenderService.checkLimitForSendEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
@@ -572,7 +576,7 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -612,11 +616,14 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account;
 
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
-
+            if (!operateTimesService.checkLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE))  {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT);
+                return result;
+            }
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
                 AuthUserApiParams authParams = new AuthUserApiParams();
@@ -696,7 +703,7 @@ public class SecureManagerImpl implements SecureManager {
                                            String smsCode, String scode, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -782,8 +789,12 @@ public class SecureManagerImpl implements SecureManager {
                                          String newQues, String newAnswer, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (!operateTimesService.checkLimitBindQues(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
+                return result;
+            }
+            if (!operateTimesService.checkLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE))  {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT);
                 return result;
             }
             // 检验账号密码，判断是否正常用户
