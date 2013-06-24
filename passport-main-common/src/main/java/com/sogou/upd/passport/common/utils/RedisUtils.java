@@ -459,7 +459,7 @@ public class RedisUtils {
     operations.add(key,value);
   }
 
-  public Set smember(String key) {
+  public Set<String> smember(String key) {
     SetOperations operations=redisTemplate.opsForSet();
     return operations.members(key);
   }
