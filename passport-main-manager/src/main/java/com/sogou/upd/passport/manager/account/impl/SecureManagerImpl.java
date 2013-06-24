@@ -865,9 +865,12 @@ public class SecureManagerImpl implements SecureManager {
         actionRecord.setUserId(userId);
         actionRecord.setClientId(clientId);
         actionRecord.setAction(module);
-        actionRecord.setIp(ip);
         actionRecord.setDate(System.currentTimeMillis());
         actionRecord.setNote(note);
+        if ("127.0.0.1".equals(ip)) {
+            ip = "";
+        }
+        actionRecord.setIp(ip);
 
         accountSecureService.setActionRecord(actionRecord);
         result.setSuccess(true);
