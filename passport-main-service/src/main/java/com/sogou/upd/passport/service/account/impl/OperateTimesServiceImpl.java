@@ -11,6 +11,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -190,9 +192,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
           //ip与cookie列表映射
           String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
           if (redisUtils.checkKeyIsExist(ipCacheKey)) {
-            redisUtils.lPushX(ipCacheKey, cookieStr);
+            redisUtils.sadd(ipCacheKey, cookieStr);
           } else {
-            redisUtils.lPush(ipCacheKey, cookieStr);
+            redisUtils.sadd(ipCacheKey, cookieStr);
             redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
           }
           //ip与cookie映射
@@ -202,9 +204,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
           //cookie与ip列表映射
           String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
           if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
-            redisUtils.lPushX(cookieCacheKey, ip);
+            redisUtils.sadd(cookieCacheKey, ip);
           } else {
-            redisUtils.lPush(cookieCacheKey, ip);
+            redisUtils.sadd(cookieCacheKey, ip);
             redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
           }
         } catch (Exception e) {
@@ -220,9 +222,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         try {
           //cookie与ip映射
           String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-          List<String> listIpVal= redisUtils.getList(cookieCacheKey);
-          if (CollectionUtils.isNotEmpty(listIpVal)) {
-            int sz = listIpVal.size();
+          Set<String> setIpVal= redisUtils.smember(cookieCacheKey);
+          if (CollectionUtils.isNotEmpty(setIpVal)) {
+            int sz = setIpVal.size();
             if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
               return true;
             }
@@ -235,9 +237,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
           //ip与cookie映射
             String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            List<String> listCookieVal= redisUtils.getList(ipCacheKey);
-            if (CollectionUtils.isNotEmpty(listCookieVal)) {
-              int sz = listCookieVal.size();
+            Set<String> setCookieVal= redisUtils.smember(ipCacheKey);
+            if (CollectionUtils.isNotEmpty(setCookieVal)) {
+              int sz = setCookieVal.size();
               if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
                  return true;
               }
