@@ -58,7 +58,7 @@ body{ background:#f9f9f9; }
 .header .inner{ width:960px;margin:0 auto; height:88px; }
 .header h1{ padding-top:26px; }
 
-.wrapper{ height:412px; background:url(/./static/img/index/bg.png?t=964137) repeat-x 0 0;  }
+.wrapper{ height:412px; background:url(/./static/img/index/bg.png?t=964137) repeat-x 0 0; min-width:980px; }
 .wrapper .inner{ width:960px; margin:0 auto; position:relative;}
 .wrapper .desc{ padding-top:30px; }
 
