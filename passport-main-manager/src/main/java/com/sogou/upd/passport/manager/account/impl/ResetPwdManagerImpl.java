@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     private EmailSenderService emailSenderService;
     @Autowired
     private AccountSecureService accountSecureService;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     // Manager
     @Autowired
@@ -101,6 +104,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
                 return result;
             }
+            operateTimesService.incLimitResetPwd(passportId, clientId);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;
@@ -148,6 +152,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             }
             //清除验证码的缓存
             mobileCodeSenderService.deleteSmsCache(mobile, clientId);
+            operateTimesService.incLimitResetPwd(passportId, clientId);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;
@@ -249,6 +254,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             }
             // 删除邮件链接token缓存
             emailSenderService.deleteScodeCacheForEmail(passportId, clientId, module);
+            operateTimesService.incLimitResetPwd(passportId, clientId);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;
@@ -337,6 +343,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
                 return result;
             }
+            operateTimesService.incLimitResetPwd(passportId, clientId);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;
@@ -366,6 +373,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
                 return result;
             }
+            operateTimesService.incLimitResetPwd(passportId, clientId);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;

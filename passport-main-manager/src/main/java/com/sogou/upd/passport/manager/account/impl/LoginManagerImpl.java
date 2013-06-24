@@ -126,23 +126,11 @@ public class LoginManagerImpl implements LoginManager {
         String passportId = username;
         boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
         try {
-            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
-            //设置来源
-            String ru = loginParameters.getRu();
-            if (Strings.isNullOrEmpty(ru)) {
-                loginParameters.setRu(scheme + LOGIN_INDEX_URLSTR);
-            }
-
-            //默认是sogou.com
-            if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
-                passportId = passportId + "@sogou.com";
-            }
-
             //校验验证码
             if (needCaptcha) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
-                if (!this.checkCaptcha(captchaCode, token)) {
+                if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
                     result.setDefaultModel("needCaptcha", true);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     operateTimesService.incLoginFailedTimes(username, ip);
@@ -150,8 +138,14 @@ public class LoginManagerImpl implements LoginManager {
                 }
             }
 
+            //默认是sogou.com
+            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
+            if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
+                passportId = passportId + "@sogou.com";
+            }
+
             //校验是否在账户黑名单或者IP黑名单之中
-            if (operateTimesService.checkLoginUserInBlackList(passportId, ip)) {
+            if (operateTimesService.checkLoginUserInBlackList(username, ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -170,11 +164,15 @@ public class LoginManagerImpl implements LoginManager {
 
             //记录返回结果
             if (result.isSuccess()) {
-                operateTimesService.incLoginSuccessTimes(passportId, ip);
+                operateTimesService.incLoginSuccessTimes(username, ip);
                 // 种sohu域cookie
                 result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
-                result.setDefaultModel("ru", loginParameters.getRu());
-
+                //设置来源
+                String ru = loginParameters.getRu();
+                if (Strings.isNullOrEmpty(ru)) {
+                    ru =scheme + LOGIN_INDEX_URLSTR;
+                }
+                result.setDefaultModel("ru", ru);
             } else {
                 operateTimesService.incLoginFailedTimes(username, ip);
                 //3次失败需要输入验证码
@@ -184,7 +182,7 @@ public class LoginManagerImpl implements LoginManager {
             }
         } catch (Exception e) {
             operateTimesService.incLoginFailedTimes(username, ip);
-            logger.error("accountLogin fail,passportId:" + loginParameters.getUsername(), e);
+            logger.error("accountLogin fail,passportId:" + passportId, e);
             //3次失败需要输入验证码
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
@@ -203,13 +201,5 @@ public class LoginManagerImpl implements LoginManager {
             }
         }
         return false;
-    }
-
-    private boolean checkCaptcha(String captcha, String token) {
-        //校验验证码
-        if (!accountService.checkCaptchaCodeIsVaild(token, captcha)) {
-            return false;
-        }
-        return true;
     }
 }

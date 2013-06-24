@@ -43,7 +43,8 @@ public class IpLocationUtil {
     }
 
     public static String getCity(String ip) {
-        String cityName = "IP归属地未知";
+        // String cityName = "IP归属地未知";
+        String cityName = "区域未知";
         try {
             if (Strings.isNullOrEmpty(ip)) {
                 return cityName;

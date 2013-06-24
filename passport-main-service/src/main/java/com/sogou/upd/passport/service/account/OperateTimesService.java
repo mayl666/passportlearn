@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: chenjiameng Date: 13-6-8 Time: 下午5:38 To change this template use
@@ -12,6 +15,7 @@ public interface OperateTimesService {
 
     public boolean checkTimesByKey(String cacheKey, final int max)throws ServiceException;
 
+    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException;
     /**
      *记录一小时内登陆成功次数
      * @param username
@@ -59,7 +63,7 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public long incRegTimes(String ip,String cookieStr) throws ServiceException;
+    public void incRegTimes(String ip,String cookieStr) throws ServiceException;
 
     /**
      *   检查一天内某ip注册次数
@@ -93,15 +97,103 @@ public interface OperateTimesService {
      */
     public boolean checkAddProblemInBlackList(String passportId,String ip) throws ServiceException;
 
+    /**
+     * 绑定密保邮箱次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean incLimitBindEmail(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 绑定密保手机次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean incLimitBindMobile(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 绑定密保问题次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean incLimitBindQues(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 检查绑定密保邮箱次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 检查绑定密保手机次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean checkLimitBindMobile(String userId, int clientId) throws ServiceException;
 
+    /**
+     * 检查绑定密保问题次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     public boolean checkLimitBindQues(String userId, int clientId) throws ServiceException;
+
+    /**
+     * 修改密码次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean incLimitResetPwd(String userId, int clientId) throws ServiceException;
+
+    /**
+     * 验证密码失败次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean incLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException;
+
+    /**
+     * 检查修改密码次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkLimitResetPwd(String userId, int clientId) throws ServiceException;
+
+    /**
+     * 检查验证密码失败次数
+     *
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException;
 }

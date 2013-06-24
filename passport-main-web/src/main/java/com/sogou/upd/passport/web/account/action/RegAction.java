@@ -2,8 +2,6 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
-import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -14,10 +12,9 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
-import com.sogou.upd.passport.manager.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 
@@ -28,7 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLDecoder;
@@ -77,27 +73,12 @@ public class RegAction extends BaseController {
     }
 
     String username= URLDecoder.decode(checkParam.getUsername(), "utf-8");
-    //校验是否是搜狐域内用户
 
-    if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
-      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-      return result.toString();
-    }
+    result=checkAccountNotExists(username);
 
-    //判断是否是个性账号
-    if(username.indexOf("@")==-1){
-      //判断是否是手机号注册
-      if(PhoneUtil.verifyPhoneNumberFormat(username)){
-        result= regManager.isAccountNotExists(username, true);
-      } else {
-        username=username+"@sogou.com";
-        result= regManager.isAccountNotExists(username, false);
-      }
-    }else {
-      result= regManager.isAccountNotExists(username, false);
-    }
     return result.toString();
   }
+
 
   /**
    * web页面注册
@@ -118,13 +99,18 @@ public class RegAction extends BaseController {
     }
 
     String ip = getIp(request);
-    String passportId=regParams.getUsername();
-    //黑白名单
-    //校验是否在账户黑名单或者IP黑名单之中
+    //校验用户是否允许注册
     String uuidName= CookieUtils.getCookie(request, "uuidName");
     if (operateTimesService.checkRegInBlackList(ip, uuidName)){
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
       return result;
+    }
+
+    //检验用户名是否存在
+    String username = regParams.getUsername();
+    result = checkAccountNotExists(username);
+    if (!result.isSuccess()) {
+      return result.toString();
     }
 
     //验证client_id
@@ -137,7 +123,6 @@ public class RegAction extends BaseController {
     }
 
     result = regManager.webRegister(regParams, ip);
-
     if(result.isSuccess()){
       //设置来源
       String ru =  regParams.getRu();
@@ -146,7 +131,7 @@ public class RegAction extends BaseController {
       }
       result.setDefaultModel("ru",ru);
     }
-    operateTimesService.incRegTimes(ip, null);
+    operateTimesService.incRegTimes(ip, uuidName);
     return result.toString();
   }
 
@@ -181,6 +166,31 @@ public class RegAction extends BaseController {
     if(result.isSuccess()){
       // 种sohu域cookie
       result=commonManager.createCookieUrl(result,activeParams.getPassport_id(),1) ;
+    }
+    return result;
+  }
+
+  //检查用户是否存在
+  private Result checkAccountNotExists(String username) throws Exception {
+    Result result = new APIResultSupport(false);
+    //校验是否是搜狐域内用户
+
+    if(AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))){
+      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+      return result;
+    }
+
+    //判断是否是个性账号
+    if(username.indexOf("@")==-1){
+      //判断是否是手机号注册
+      if(PhoneUtil.verifyPhoneNumberFormat(username)){
+        result= regManager.isAccountNotExists(username, true);
+      } else {
+        username=username+"@sogou.com";
+        result= regManager.isAccountNotExists(username, false);
+      }
+    }else {
+      result= regManager.isAccountNotExists(username, false);
     }
     return result;
   }

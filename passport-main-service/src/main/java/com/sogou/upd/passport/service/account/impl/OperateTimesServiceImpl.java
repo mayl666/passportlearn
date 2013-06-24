@@ -4,16 +4,21 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -53,6 +58,33 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             }
         } catch (Exception e) {
             logger.error("checkNumByKey:" + cacheKey + ",max:" + max, e);
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException {
+        if (keyList == null || maxList == null) {
+            return false;
+        }
+        try {
+            List<String> valueList = redisUtils.multiGet(keyList);
+            if (valueList != null) {
+                int num = 0;
+                for (int i = 0; i < valueList.size() && i < maxList.size(); i++) {
+                    String value = valueList.get(i);
+                    if (!Strings.isNullOrEmpty(value)) {
+                        num = Integer.valueOf(value);
+                        if (num >= maxList.get(i)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("checkNumByKey:" + keyList.toString() + ",maxList:" + maxList.toString(), e);
             throw new ServiceException(e);
         }
         return false;
@@ -99,39 +131,33 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException {
         boolean result = false;
         try {
+            List<String> keyList = new ArrayList<String>();
+            List<Integer> maxList = new ArrayList<Integer>();
             //username
             String loginFailedUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            result = checkTimesByKey(loginFailedUserNameKey, LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT);
-            if (result) {
-                return true;
-            }
+            keyList.add(loginFailedUserNameKey);
+            maxList.add(LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT);
 
             String loginSuccessUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
-            result = checkTimesByKey(loginSuccessUserNameKey, LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-            if (result) {
-                return true;
-            }
+            keyList.add(loginSuccessUserNameKey);
+            maxList.add(LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
 
             //IP
-
             if(!Strings.isNullOrEmpty(ip)) {
                 String loginFailedIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                result = checkTimesByKey(loginFailedIPKey, LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
-                if (result) {
-                    return true;
-                }
+                keyList.add(loginFailedIPKey);
+                maxList.add(LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
 
                 String loginSuccessIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                result = checkTimesByKey(loginSuccessIPKey, LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-                if (result) {
-                    return true;
-                }
+                keyList.add(loginSuccessIPKey);
+                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
+
             }
+            return checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {
             logger.error("userInBlackList:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
         }
-        return false;
     }
 
     @Override
@@ -158,41 +184,69 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public long incRegTimes(String ip,String cookieStr) throws ServiceException {
+    public void incRegTimes(String ip,String cookieStr) throws ServiceException {
+      //修改为list模式添加cookie处理 by mayan
         try {
-            String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+          //ip与cookie列表映射
+          String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+          if (redisUtils.checkKeyIsExist(ipCacheKey)) {
+            redisUtils.lPush(ipCacheKey, cookieStr);
+          } else {
+            redisUtils.lPush(ipCacheKey, cookieStr);
+            redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+          }
+          //ip与cookie映射
+          String ipCookieKey= CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" +cookieStr;
+          recordTimes(ipCookieKey,DateAndNumTimesConstant.TIME_ONEDAY);
 
-//            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-//            recordTimes(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-
+          //cookie与ip列表映射
+          String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+          if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
+            redisUtils.lPush(cookieCacheKey, ip);
+          } else {
+            redisUtils.lPush(cookieCacheKey, ip);
+            redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+          }
         } catch (Exception e) {
             logger.error("incRegIPTimes:ip" + ip, e);
             throw new ServiceException(e);
         }
-        return 1;
 
     }
 
     @Override
     public boolean checkRegInBlackList(String ip,String cookieStr) throws ServiceException {
-        boolean result = false;
+        //修改为list模式添加cookie处理 by mayan
         try {
-            String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            result = checkTimesByKey(ipCacheKey, LoginConstant.REGISTER_IP_LIMITED);
-            if(result){
-                return true;
+          //cookie与ip映射
+          String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+          List<String> listIpVal= redisUtils.getList(cookieCacheKey);
+          if (CollectionUtils.isNotEmpty(listIpVal)) {
+            int sz = listIpVal.size();
+            if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
+              return true;
             }
-//            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-//            result = checkTimesByKey(cookieCacheKey, LoginConstant.REGISTER_COOKIE_LIMITED);
-//            if(result){
-//                return true;
-//            }
+          }
+          //通过ip+cookie限制注册次数
+          String ipCookieKey= CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" +cookieStr;
+          if(checkTimesByKey(ipCookieKey,LoginConstant.REGISTER_IP_COOKIE_LIMITED)){
+               return true;
+          }
+
+          //ip与cookie映射
+            String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+            List<String> listCookieVal= redisUtils.getList(ipCacheKey);
+            if (CollectionUtils.isNotEmpty(listCookieVal)) {
+              int sz = listCookieVal.size();
+              if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
+                 return true;
+              }
+            }
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
             throw new ServiceException(e);
         }
-        return result;
+        return false;
     }
 
     /**
@@ -204,27 +258,24 @@ public class OperateTimesServiceImpl implements OperateTimesService {
      */
     @Override
     public boolean loginFailedTimesNeedCaptcha(String username,String ip) throws ServiceException{
-        boolean result = false;
         try {
+            List<String> keyList = new ArrayList<String>();
+            List<Integer> maxList = new ArrayList<Integer>();
             // 根据username判断是否需要弹出验证码
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            result = checkTimesByKey(userNameCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
-            if(result){
-                return true;
-            }
+            keyList.add(userNameCacheKey);
+            maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
             //  根据ip判断是否需要弹出验证码
             if(!Strings.isNullOrEmpty(ip)){
                 String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                result = checkTimesByKey(ipCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
-                if(result){
-                    return true;
-                }
+                keyList.add(ipCacheKey);
+                maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
             }
+            return  checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {
             logger.error("getAccountLoginFailedCount:username" + username+",ip:"+ip, e);
             throw new ServiceException(e);
         }
-        return false;
     }
 
     @Override
@@ -275,6 +326,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
+            logger.error("incLimitBindEmail:passportId"+userId, e);
             return false;
         }
     }
@@ -287,6 +339,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
+            logger.error("incLimitBindMobile:passportId"+userId, e);
             return false;
         }
     }
@@ -299,36 +352,94 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
+            logger.error("incLimitBindQues:passportId"+userId, e);
             return false;
         }
     }
 
+    @Override
     public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDEMAILNUM + userId +
                               "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
+            logger.error("checkLimitBindEmail:passportId"+userId, e);
             return true;
         }
     }
 
+    @Override
     public boolean checkLimitBindMobile(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDMOBILENUM + userId +
                               "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
+            logger.error("checkLimitBindMobile:passportId"+userId, e);
             return true;
         }
     }
 
+    @Override
     public boolean checkLimitBindQues(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDQUESNUM + userId +
                               "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
+            logger.error("checkLimitBindQues:passportId"+userId, e);
+            return true;
+        }
+    }
+
+    @Override
+    public boolean incLimitResetPwd(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("incLimitResetPwd:passportId"+userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkLimitResetPwd(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.RESETPWD_NUM);
+        } catch (Exception e) {
+            logger.error("checkLimitResetPwd:passportId"+userId, e);
+            return true;
+        }
+    }
+
+
+    @Override
+    public boolean incLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_CHECKPWDFAIL + module + "_" + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("incLimitCheckPwdFail:passportId"+userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_CHECKPWDFAIL + module + "_" + userId +
+                              "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.CHECKPWD_NUM);
+        } catch (Exception e) {
+            logger.error("checkLimitCheckPwdFail:passportId"+userId, e);
             return true;
         }
     }
