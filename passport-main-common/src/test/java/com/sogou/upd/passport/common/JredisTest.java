@@ -54,9 +54,15 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
 //               i++;
 //             }
 //          System.out.println(redisUtils.getList(ip).size());
-
-
-
+//          System.out.println("fdfd");
+//            redisUtils.lPush("aa","bb");
+//            redisUtils.lPush("aa","cc");
+//            redisUtils.lPushX("aa","aa");
+          System.out.println(redisUtils.smember("aa"));
+//            System.out.println(redisUtils.getList("aa1").size());
+//
+//          redisUtils.set("qqqq","wwwww");
+//          System.out.println(redisUtils.get("qqqq"));
 
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -131,8 +137,8 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
             for(String value:valueList){
                 System.out.println("value:"+value);
             }
-            System.out.println("map.toString():"+map.toString());
-            System.out.println("keyCollec.toString():"+keyCollec.toString());
+            System.out.println("map.toString():" + map.toString());
+            System.out.println("keyCollec.toString():" + keyCollec.toString());
 //            System.out.println(map.get("key1"));
 //            System.out.println(map.get("key2"));
 //            System.out.println(map.get("key4"));
