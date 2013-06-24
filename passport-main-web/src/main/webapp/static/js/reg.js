@@ -1802,6 +1802,12 @@ define('reg',['./common','./form' , './conf' , './utils','./tpl','./ui'] , funct
             cb && cb(0);
             return;
         }
+        var errSpan = getSpan(ipt,'error');
+        console.log(errSpan)
+        if( errSpan && errSpan.length && errSpan.css('display') != 'none' ){
+            cb && cb(0);
+            return;
+        }        
         $.get('/web/account/checkusername' , {
             username: ipt.val()
         } , function(data){
@@ -1837,6 +1843,10 @@ define('reg',['./common','./form' , './conf' , './utils','./tpl','./ui'] , funct
                             if( !+data.status ){
                                 formsuccess[type] && formsuccess[type]($el,data);
                             }else{
+                                if( +data.status == 20221 ){
+                                    var token = $el.find('.token').val();
+                                    $el.find('.vpic img').attr('src' , "/captcha?token="+ token + '&t=' + (+new Date()));
+                                }
                                 form.showFormError(data.statusText);
                             }
                         });
@@ -1850,7 +1860,9 @@ define('reg',['./common','./form' , './conf' , './utils','./tpl','./ui'] , funct
         $el.find('input[name=username]').change(function(){
             var errorspan = $(this).parent().parent().find('.error');
             if( !errorspan || !errorspan.length || errorspan.css('display') == 'none' ){
-                checkUsername($el );
+                setTimeout(function(){
+                    checkUsername($el );
+                },100);
             }
         });
 
