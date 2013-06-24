@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title></title>
+        <title>搜狗通行证</title>
         <link rel="stylesheet" href="/./static/css/main.css?t=629402" type="text/css" />
     </head>
     <body >
@@ -93,7 +93,13 @@
                     <ul class="status">
                         <li>
                             <p class="stitle">最近一次登录时间：</p>
-                            <p class="desc"><{time.year}>年<{time.month}>月<{time.day}>日</p>
+                            <p class="desc">
+                                <% if +last_login_time %>
+                                <{time.year}>年<{time.month}>月<{time.day}>日&nbsp;&nbsp;在&nbsp;<{last_login_loc}>
+                                <% else %>
+                                未知
+                                <% endif %>
+                            </p>
                         </li>
                         <li>
                             <p class="stitle">密保邮箱：</p>

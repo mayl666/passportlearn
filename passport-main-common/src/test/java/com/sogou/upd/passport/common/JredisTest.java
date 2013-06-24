@@ -122,9 +122,10 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
             redisUtils.multiSet(map);
 
 //            Collection<String> keyCollec = map.keySet();
-            Collection<String> keyCollec= new ArrayList<String>();
-            keyCollec.add("key2");
+            List<String> keyCollec= new ArrayList<String>();
             keyCollec.add("key1");
+            keyCollec.add("key2");
+
             List<String> valueList =redisUtils.multiGet(keyCollec);
 
             for(String value:valueList){

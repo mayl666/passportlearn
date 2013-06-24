@@ -62,7 +62,7 @@
     
     PassportSC._token = utils.uuid();
     
-    PassportSC._passhtml = '<form method="post" action="http://account.sogou.com/web/login" target="_PassportIframe">'
+    PassportSC._passhtml = '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
         +'<input type="hidden" name="username" value="<%=username%>">'
         +'<input type="hidden" name="password" value="<%=password%>">'
         +'<input type="hidden" name="captcha" value="<%=vcode%>">'

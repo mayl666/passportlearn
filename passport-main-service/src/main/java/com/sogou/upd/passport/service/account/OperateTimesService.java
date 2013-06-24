@@ -3,6 +3,8 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA. User: chenjiameng Date: 13-6-8 Time: 下午5:38 To change this template use
  * File | Settings | File Templates.
@@ -13,6 +15,7 @@ public interface OperateTimesService {
 
     public boolean checkTimesByKey(String cacheKey, final int max)throws ServiceException;
 
+    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException;
     /**
      *记录一小时内登陆成功次数
      * @param username
