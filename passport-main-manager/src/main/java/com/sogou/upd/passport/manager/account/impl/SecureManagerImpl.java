@@ -612,6 +612,11 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account;
 
+            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
+                return result;
+            }
+
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
                 AuthUserApiParams authParams = new AuthUserApiParams();
