@@ -176,12 +176,12 @@ public class RedisUtils {
     /*
      * 根据key取缓存内容
     */
-    public List<String> multiGet(Collection<String> keyCollec) {
+    public List<String> multiGet(List<String> keyList) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            return valueOperations.multiGet(keyCollec);
+            return valueOperations.multiGet(keyList);
         } catch (Exception e) {
-            logger.error("[Cache] get cache fail, keyCollec:" + keyCollec.toString(), e);
+            logger.error("[Cache] get cache fail, keyCollec:" + keyList.toString(), e);
         }
         return null;
     }

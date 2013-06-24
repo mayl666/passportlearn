@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -63,6 +64,33 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException {
+        if (keyList == null || maxList == null) {
+            return false;
+        }
+        try {
+            List<String> valueList = redisUtils.multiGet(keyList);
+            if (valueList != null) {
+                int num = 0;
+                for (int i = 0; i < valueList.size() && i < maxList.size(); i++) {
+                    String value = valueList.get(i);
+                    if (!Strings.isNullOrEmpty(value)) {
+                        num = Integer.valueOf(value);
+                        if (num >= maxList.get(i)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("checkNumByKey:" + keyList.toString() + ",maxList:" + maxList.toString(), e);
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
     public long incLoginSuccessTimes(String username, String ip) throws ServiceException {
         try {
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
@@ -103,39 +131,33 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException {
         boolean result = false;
         try {
+            List<String> keyList = new ArrayList<String>();
+            List<Integer> maxList = new ArrayList<Integer>();
             //username
             String loginFailedUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            result = checkTimesByKey(loginFailedUserNameKey, LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT);
-            if (result) {
-                return true;
-            }
+            keyList.add(loginFailedUserNameKey);
+            maxList.add(LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT);
 
             String loginSuccessUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
-            result = checkTimesByKey(loginSuccessUserNameKey, LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-            if (result) {
-                return true;
-            }
+            keyList.add(loginSuccessUserNameKey);
+            maxList.add(LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
 
             //IP
-
             if(!Strings.isNullOrEmpty(ip)) {
                 String loginFailedIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                result = checkTimesByKey(loginFailedIPKey, LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
-                if (result) {
-                    return true;
-                }
+                keyList.add(loginFailedIPKey);
+                maxList.add(LoginConstant.LOGIN_IP_FAILED_EXCEED_MAX_LIMIT_COUNT);
 
                 String loginSuccessIPKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                result = checkTimesByKey(loginSuccessIPKey, LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-                if (result) {
-                    return true;
-                }
+                keyList.add(loginSuccessIPKey);
+                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
+
             }
+            return checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {
             logger.error("userInBlackList:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
         }
-        return false;
     }
 
     @Override
@@ -236,27 +258,24 @@ public class OperateTimesServiceImpl implements OperateTimesService {
      */
     @Override
     public boolean loginFailedTimesNeedCaptcha(String username,String ip) throws ServiceException{
-        boolean result = false;
         try {
+            List<String> keyList = new ArrayList<String>();
+            List<Integer> maxList = new ArrayList<Integer>();
             // 根据username判断是否需要弹出验证码
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            result = checkTimesByKey(userNameCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
-            if(result){
-                return true;
-            }
+            keyList.add(userNameCacheKey);
+            maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
             //  根据ip判断是否需要弹出验证码
             if(!Strings.isNullOrEmpty(ip)){
                 String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                result = checkTimesByKey(ipCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
-                if(result){
-                    return true;
-                }
+                keyList.add(ipCacheKey);
+                maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
             }
+            return  checkTimesByKeyList(keyList,maxList);
         } catch (Exception e) {
             logger.error("getAccountLoginFailedCount:username" + username+",ip:"+ip, e);
             throw new ServiceException(e);
         }
-        return false;
     }
 
     @Override

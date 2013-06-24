@@ -1759,7 +1759,7 @@ define('safe',['./common' , './tpl' , './form' , './conf' , './utils'] , functio
         index: function(data){
             var tpl = $('#Target');
             var wrapper = tpl.parent();
-            var last_login_time = new Date(+data.last_login);
+            var last_login_time = new Date(+data.last_login_time);
             data.time = {
                 year: last_login_time.getFullYear(),
                 month: last_login_time.getMonth()+1,
@@ -1873,6 +1873,11 @@ define('safe',['./common' , './tpl' , './form' , './conf' , './utils'] , functio
     };
 
     var formsuccess = {
+        common: function(){
+            setTimeout(function(){
+                location.reload();
+            }, 1000);
+        },
         email: function($el){
             var mailIpt = $el.find('input[name="new_email"]');
             $el.parent().html( ursa.render($('#Target3').html() , {
@@ -1926,7 +1931,7 @@ define('safe',['./common' , './tpl' , './form' , './conf' , './utils'] , functio
                     return true;
                 },
                 onsuccess: function(el){
-                    formsuccess[type] && formsuccess[type](el);
+                    formsuccess[type] ? formsuccess[type](el) : formsuccess.common(el);
                 }
             });
 
