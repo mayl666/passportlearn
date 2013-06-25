@@ -82,10 +82,10 @@ public class ProblemAction extends BaseController {
             return result.toString();
         }
 
-        String cleanTitle = Jsoup.clean(addProblemParams.getTitle(), Whitelist.none());
-        addProblemParams.setTitle(cleanTitle);
-        String cleanContent = Jsoup.clean(addProblemParams.getContent(), Whitelist.none());
-        addProblemParams.setContent(cleanContent);
+//        String cleanTitle = Jsoup.clean(addProblemParams.getTitle(), Whitelist.none());
+//        addProblemParams.setTitle(cleanTitle);
+//        String cleanContent = Jsoup.clean(addProblemParams.getContent(), Whitelist.none());
+//        addProblemParams.setContent(cleanContent);
 
         addProblemParams.setPassportId(passportId);
         result = problemManager.insertProblem(addProblemParams,getIp(request));
