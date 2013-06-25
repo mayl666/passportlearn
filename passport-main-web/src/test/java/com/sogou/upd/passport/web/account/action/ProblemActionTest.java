@@ -7,8 +7,6 @@ package com.sogou.upd.passport.web.account.action;
  * Time: 下午1:11
  * To change this template use File | Settings | File Templates.
  */
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 
 public class ProblemActionTest {
     public static void main(String args[]){
@@ -20,7 +18,7 @@ public class ProblemActionTest {
                 "<script>alert(1);</script>" +
                 "</p>";
 //        String safe = Jsoup.clean(unsafe, Whitelist.relaxed());
-        String safe = Jsoup.clean(unsafe, Whitelist.none());
-        System.out.println("safe: " + safe);
+//        String safe = Jsoup.clean(unsafe, Whitelist.none());
+//        System.out.println("safe: " + safe);
     }
 }
