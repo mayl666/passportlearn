@@ -61,7 +61,7 @@ public class LoginAction extends BaseController {
      */
     @RequestMapping(value = "/login/checkNeedCaptcha", method = RequestMethod.GET)
     @ResponseBody
-    public String checkNeedCaptcha(HttpServletRequest request,CheckUserNameExistParameters checkParam)
+    public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
 
         Result result = new APIResultSupport(false);
@@ -73,12 +73,12 @@ public class LoginAction extends BaseController {
             return result.toString();
         }
 
-        String username= URLDecoder.decode(checkParam.getUsername(), "utf-8");
+        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
         //校验是否需要验证码
-        boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(),username,getIp(request));
+        boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
 
         result.setSuccess(true);
-        result.setDefaultModel("needCaptcha",needCaptcha);
+        result.setDefaultModel("needCaptcha", needCaptcha);
         return result.toString();
     }
 
@@ -93,21 +93,18 @@ public class LoginAction extends BaseController {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
+        if (Strings.isNullOrEmpty(validateResult)) {
+            result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
+            if (result.isSuccess()) {
+                String userName = loginParams.getUsername();
+                String userId = commonManager.getPassportIdByUsername(userName);
+                int clientId = Integer.parseInt(loginParams.getClient_id());
+                String ip = getIp(request);
+                secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+            }
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            result.setDefaultModel("xd", loginParams.getXd());
-            model.addAttribute("data", result.toString());
-            return "/login/api";
-        }
-        result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
-
-        if (result.isSuccess()) {
-            String userName = loginParams.getUsername();
-            String userId = commonManager.getPassportIdByUsername(userName);
-            int clientId = Integer.parseInt(loginParams.getClient_id());
-            String ip = getIp(request);
-            secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
         }
 
         result.setDefaultModel("xd", loginParams.getXd());
@@ -124,11 +121,11 @@ public class LoginAction extends BaseController {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
-        String userId=hostHolder.getPassportId();
+        String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog=new UserOperationLog(userId,request.getRequestURI(),"0","0");
-        String referer=request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer",referer);
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
