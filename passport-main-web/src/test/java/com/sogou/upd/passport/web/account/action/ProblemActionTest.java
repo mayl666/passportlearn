@@ -14,7 +14,7 @@ public class ProblemActionTest {
     public static void main(String args[]){
         //HTML clean
         String unsafe = "<table><tr><td>1</td></tr></table>" +
-                "<img src='' alt='' />" +
+                "<img src='' alt='' />" +  "我，搜狗同学 你好！！！"+
                 "<p><a href='http://example.com/' onclick='stealCookies()'>Link</a>" +
                 "<object></object>" +
                 "<script>alert(1);</script>" +

@@ -103,28 +103,6 @@ public interface AccountService {
    */
   public boolean checkCaptchaCodeIsVaild(String token, String captchaCode);
 
-  /**
-    * 根据用户连续登陆失败次数确定用户登陆时是否需要输入验证码
-    * @param username
-    * @return
-    */
-  public boolean loginFailedNumNeedCaptcha(String username, String ip);
-
-    /**
-     * 用户登陆失败一次，增加一次
-     * @param username
-     * @param ip
-     * @return
-     */
-  public long incLoginFailedNum(String username,String ip);
-
-    /**
-     *用户登陆成功，将失败次数清零
-     * @param passportId
-     * @return
-     */
-  public boolean clearLoginFailedNum(String passportId);
-
     /**
      * 修改绑定手机
      *
@@ -146,21 +124,6 @@ public interface AccountService {
 
   public boolean updateState(Account account, int newState) throws ServiceException;
 
-  /**
-   *
-   * @param username
-   * @param ip
-   * @return
-   */
-  public long incLoginSuccessNum(String username,String ip);
-
-    /**判断用户是否在黑名单中,只要username或者ip有一个在黑名单中，即返回true
-     *
-     * @param username
-     * @param ip
-     * @return
-     */
-  public boolean checkUserInBlackList(String username,String ip);
   /*
    *检查验证码
    */

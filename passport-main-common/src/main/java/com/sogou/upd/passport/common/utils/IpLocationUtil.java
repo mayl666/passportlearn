@@ -49,6 +49,10 @@ public class IpLocationUtil {
             if (Strings.isNullOrEmpty(ip)) {
                 return cityName;
             }
+
+            if (ip.indexOf("10.") == 0 || ip.indexOf("192.168.") == 0) {
+                return "搜狗内网";
+            }
             String location = instance.getLocation(ip);
             if (location != null && !location.equals("") && location.length() >= 6) {
                 String key = location.substring(0, 6);

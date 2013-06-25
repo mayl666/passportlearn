@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.web.problem.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
@@ -11,7 +13,8 @@ import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +71,6 @@ public class ProblemAction extends BaseController {
     public Object saveProblem(HttpServletRequest request, WebAddProblemParameters addProblemParams)
             throws Exception {
         Result result = new APIResultSupport(false);
-        // TODO 获取并set passportId
         String passportId = hostHolder.getPassportId();
         if(Strings.isNullOrEmpty(passportId)){
             result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
@@ -81,9 +83,37 @@ public class ProblemAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        String srcTitle = addProblemParams.getTitle();
+        String cleanTitle = Jsoup.clean(srcTitle, Whitelist.none());
+
+        String srcContent = addProblemParams.getContent();
+        String cleanContent = Jsoup.clean(srcContent, Whitelist.none());
+
+        if((!srcTitle.equals(cleanTitle)) ||(!(srcContent.equals(cleanContent)))){
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage("输入标题或内容中包含非法字符，请重新输入！");
+            return result.toString();
+        }
 
         addProblemParams.setPassportId(passportId);
         result = problemManager.insertProblem(addProblemParams,getIp(request));
+
+        //log
+        if(result.isSuccess()){
+            //用户提交成功log
+            UserOperationLog userOperationLog=new UserOperationLog(passportId,request.getRequestURI(),addProblemParams.getClientId(),result.getCode());
+            String referer=request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer",referer);
+            userOperationLog.putOtherMessage("saveProblem","Success!");
+            UserOperationLogUtil.log(userOperationLog);
+        }else {
+            //用户提交失败log
+            UserOperationLog userOperationLog=new UserOperationLog(passportId,request.getRequestURI(),addProblemParams.getClientId(),result.getCode());
+            String referer=request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer",referer);
+            userOperationLog.putOtherMessage("saveProblem","Failed!");
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 }

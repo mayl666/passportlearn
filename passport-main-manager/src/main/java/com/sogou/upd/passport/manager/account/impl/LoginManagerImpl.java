@@ -144,8 +144,8 @@ public class LoginManagerImpl implements LoginManager {
                 passportId = passportId + "@sogou.com";
             }
 
-            //校验是否在账户黑名单或者IP黑名单之中
-            if (operateTimesService.checkLoginUserInBlackList(username, ip)) {
+            //校验username是否在账户黑名单中
+            if (operateTimesService.checkLoginUserInBlackList(username)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
