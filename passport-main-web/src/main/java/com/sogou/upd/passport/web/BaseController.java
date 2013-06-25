@@ -62,10 +62,8 @@ public class BaseController {
 
     protected static String getIp(HttpServletRequest request) {
         String sff = request.getHeader("X-Forwarded-For");// 根据nginx的配置，获取相应的ip
-        Enumeration headers = request.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String header = (String) headers.nextElement();
-            logger.debug("获取IP信息：" + header + ":" + request.getHeader(header));
+        if (Strings.isNullOrEmpty(sff)) {
+            sff = request.getHeader("X-Real-IP");
         }
         if (Strings.isNullOrEmpty(sff)) {
             return Strings.isNullOrEmpty(request.getRemoteAddr()) ? "" : request.getRemoteAddr();
