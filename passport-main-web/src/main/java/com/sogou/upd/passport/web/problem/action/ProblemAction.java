@@ -11,7 +11,8 @@ import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,11 @@ public class ProblemAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+
+        String cleanTitle = Jsoup.clean(addProblemParams.getTitle(), Whitelist.none());
+        addProblemParams.setTitle(cleanTitle);
+        String cleanContent = Jsoup.clean(addProblemParams.getContent(), Whitelist.none());
+        addProblemParams.setContent(cleanContent);
 
         addProblemParams.setPassportId(passportId);
         result = problemManager.insertProblem(addProblemParams,getIp(request));
