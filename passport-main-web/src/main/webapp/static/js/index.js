@@ -207,9 +207,13 @@ define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
                 var $el = $('#Login');
 
                 var passwordVal = $el.find('input[name="password"]').val();
-                if( !$.trim($el.find('input[name="username"]').val()) || !passwordVal ||
-                  passwordVal.length > 16 || passwordVal.length<6  ){
+                if( !$.trim($el.find('input[name="username"]').val()) || !passwordVal  ){
                     showUnameError('请输入用户名密码');
+                    return false;;
+                }
+
+                if( passwordVal.length > 16 || passwordVal.length<6 ){
+                    showUnameError('用户名密码输入错误');
                     return false;;
                 }
 
