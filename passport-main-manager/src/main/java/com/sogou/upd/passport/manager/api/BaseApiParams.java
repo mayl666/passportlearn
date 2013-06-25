@@ -11,7 +11,6 @@ import javax.validation.constraints.Min;
  * Time: 上午10:22
  */
 public class BaseApiParams {
-    @NotBlank(message = "client_id不允许为空")
     @Min(0)
     private int client_id; //应用id
     @NotBlank(message = "code不允许为空")
