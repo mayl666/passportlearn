@@ -39,6 +39,7 @@ public class KvUtils {
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
+            userOperationLogger.info("未出现Set错误!!!"+COUNT);
         } catch (Exception e) {
             // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             System.out.println(e.getMessage());
@@ -58,6 +59,7 @@ public class KvUtils {
         String storeKey = KEY_PREFIX_TEST + key;
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
+            userOperationLogger.info("未出现Set错误!!!"+COUNT);
             return valueOperations.get(storeKey);
         } catch (Exception e) {
             COUNT++;
