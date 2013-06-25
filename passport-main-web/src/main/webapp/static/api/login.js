@@ -125,7 +125,7 @@
         if(!container)
             return;
         
-        var url = 'https://account.sogou.com/web/logout';
+        var url = 'https://account.sogou.com/web/logout?client_id=' + PassportSC.appid;
         utils.addIframe(container , url , function(){
             onsuccess && onsuccess();
         });

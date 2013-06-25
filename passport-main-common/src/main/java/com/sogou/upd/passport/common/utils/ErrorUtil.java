@@ -78,6 +78,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 今日验证码校验错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
+    // 密码验证失败次数超过上限
+    public static final String ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT = "20210";
 
     // 手机验证码发送失败
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
@@ -294,6 +296,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_ERROR, "用户名或密码不正确");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日验证码校验错误次数已超过上限");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT, "今日密码验证失败次数超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "创建用户失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
