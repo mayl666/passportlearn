@@ -30,6 +30,8 @@ public class KvUtils {
     private static int COUNT = 0;
 
     private static RedisTemplate kvTemplate;
+    private static final org.apache.log4j.Logger userOperationLogger = org.apache.log4j.Logger.getLogger("userOperationLogger");
+
 
 
     public void setTest(String key, String value) {
@@ -41,6 +43,7 @@ public class KvUtils {
             // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             System.out.println(e.getMessage());
             COUNT++;
+            userOperationLogger.info("出现Set错误!!!"+COUNT);
             System.out.println("出现Set错误!!!"+COUNT);
             try {
                 delete(key);
@@ -58,6 +61,7 @@ public class KvUtils {
             return valueOperations.get(storeKey);
         } catch (Exception e) {
             COUNT++;
+            userOperationLogger.info("出现Set错误!!!"+COUNT);
             System.out.println("出现Set错误!!!"+COUNT);
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
