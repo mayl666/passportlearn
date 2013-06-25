@@ -80,21 +80,19 @@ public interface OperateTimesService {
 
     /**
      * 记录提及反馈次数
-     * @param passportId
      * @param ip
      * @return
      * @throws ServiceException
      */
-    public long incAddProblemTimes(String passportId,String ip) throws ServiceException;
+    public long incAddProblemTimes(String ip) throws ServiceException;
 
     /**
      * 检查提及反馈次数是否超限
-     * @param passportId
      * @param ip
      * @return
      * @throws ServiceException
      */
-    public boolean checkAddProblemInBlackList(String passportId,String ip) throws ServiceException;
+    public boolean checkAddProblemInBlackList(String ip) throws ServiceException;
 
     /**
      * 绑定密保邮箱次数
