@@ -81,11 +81,17 @@ public class ProblemAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        String srcTitle = addProblemParams.getTitle();
+        String cleanTitle = Jsoup.clean(srcTitle, Whitelist.none());
 
-        String cleanTitle = Jsoup.clean(addProblemParams.getTitle(), Whitelist.none());
-        addProblemParams.setTitle(cleanTitle);
-        String cleanContent = Jsoup.clean(addProblemParams.getContent(), Whitelist.none());
-        addProblemParams.setContent(cleanContent);
+        String srcContent = addProblemParams.getContent();
+        String cleanContent = Jsoup.clean(srcContent, Whitelist.none());
+
+        if((!srcTitle.equals(cleanTitle)) ||(!(srcContent.equals(cleanContent)))){
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage("输入标题或内容中包含非法字符，请重新输入！");
+            return result.toString();
+        }
 
         addProblemParams.setPassportId(passportId);
         result = problemManager.insertProblem(addProblemParams,getIp(request));
