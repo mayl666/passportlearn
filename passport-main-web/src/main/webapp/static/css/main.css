@@ -131,6 +131,9 @@ a.long-btn{ width:182px; height:36px; background:url(/./static/img/btn-long.png?
 a.long-btn:hover{ background-position:0 -44px; }
 .medium-btn,
 a.medium-btn{ width:83px; height:27px; background:url(/./static/img/btn-medium.png?t=475411) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; text-align:center; color:#fff;text-decoration:none;line-height:27px; }
+.sys-error{ text-align:center; }
+.sys-error .desc{ width:406px;height:80px;padding-bottom:20px;border-bottom:1px #333 dotted;margin:0 auto;color:#000;font-size:16px;font-weight:700;line-height:80px; }
+.sys-error img{ margin:40px auto; }
 .two-col-r .col-r .reg-email{padding:14px 12px 20px;}
 .reg-email .step{ border-bottom:1px #f3f3f3 solid;padding-bottom:20px;}
 .reg-email .step span{display:block;width:686px;height:102px;background:url(/./static/img/email-step.jpg?t=524315) no-repeat 0 0; }
