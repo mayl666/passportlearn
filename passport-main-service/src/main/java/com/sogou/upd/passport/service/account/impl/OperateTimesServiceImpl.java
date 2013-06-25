@@ -275,43 +275,31 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public long incAddProblemTimes(String passportId,String ip) throws ServiceException {
+    public long incAddProblemTimes(String ip) throws ServiceException {
         try {
-            String passportIdCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST + passportId;
-            recordTimes(passportIdCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-
-            if(!Strings.isNullOrEmpty(ip)){
-                String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
-                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            if (Strings.isNullOrEmpty(ip)) {
+                return 0;
             }
-
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
+            return recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
         } catch (Exception e) {
-            logger.error("incAddProblemTimes:passportId"+passportId+",ip" + ip, e);
+            logger.error("incAddProblemTimes:ip" + ip, e);
             throw new ServiceException(e);
         }
-        return 1;
     }
+
     @Override
-    public boolean checkAddProblemInBlackList(String passportId,String ip) throws ServiceException {
-        boolean result = false;
+    public boolean checkAddProblemInBlackList(String ip) throws ServiceException {
         try {
-            String passportIdCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST + passportId;
-            result = checkTimesByKey(passportIdCacheKey, LoginConstant.ADDPROBLEM_PASSPORTID_LIMITED);
-            if(result){
-                return true;
+            if (Strings.isNullOrEmpty(ip)) {
+                return false;
             }
-            if(!Strings.isNullOrEmpty(ip)){
-                String ipCacheKey =  CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
-                result = checkTimesByKey(ipCacheKey, LoginConstant.ADDPROBLEM_IP_LIMITED);
-                if(result){
-                    return true;
-                }
-            }
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_PROBLEM_IPINBLACKLIST + ip;
+            return checkTimesByKey(ipCacheKey, LoginConstant.ADDPROBLEM_IP_LIMITED);
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
             throw new ServiceException(e);
         }
-        return result;
     }
 
     @Override

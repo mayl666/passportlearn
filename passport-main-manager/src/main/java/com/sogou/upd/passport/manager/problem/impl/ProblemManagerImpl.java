@@ -74,7 +74,7 @@ public class ProblemManagerImpl implements ProblemManager {
                 return result;
             }
             //提交反馈次数检查
-            if(operateTimesService.checkAddProblemInBlackList(addProblemParams.getPassportId(),ip)){
+            if(operateTimesService.checkAddProblemInBlackList(ip)){
                 result.setCode(ErrorUtil.ERR_CODE_PROBLEM_ADDTIMES_LIMITED);
                 return result;
             }
@@ -96,10 +96,10 @@ public class ProblemManagerImpl implements ProblemManager {
                 result.setCode(ErrorUtil.ERR_CODE_PROBLEM_INSERT_FAILED);
             }
             //记录提交反馈次数，包括成功和失败
-            operateTimesService.incAddProblemTimes(addProblemParams.getPassportId(),ip);
+            operateTimesService.incAddProblemTimes(ip);
         } catch (Exception e) {
             //记录提交反馈次数，包括成功和失败
-            operateTimesService.incAddProblemTimes(addProblemParams.getPassportId(),ip);
+            operateTimesService.incAddProblemTimes(ip);
             logger.error("insertProblem fail,passportId:" + addProblemParams.getPassportId(), e);
             result.setCode(ErrorUtil.ERR_CODE_PROBLEM_INSERT_FAILED);
             return result;

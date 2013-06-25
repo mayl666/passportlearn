@@ -48,8 +48,6 @@ public class LoginAction extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private CommonManager commonManager;
 
     @Autowired
     private HostHolder hostHolder;
@@ -103,8 +101,7 @@ public class LoginAction extends BaseController {
         result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 
         if (result.isSuccess()) {
-            String userName = loginParams.getUsername();
-            String userId = commonManager.getPassportIdByUsername(userName);
+            String userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
             String ip = getIp(request);
             secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);

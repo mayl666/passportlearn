@@ -50,14 +50,7 @@ public class ProblemAction extends BaseController {
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
     public String addProblem(HttpServletRequest request, Model model)
             throws Exception {
-        //检测是否登录
-        if (!hostHolder.isLogin()) {
-            return "redirect:/web/webLogin?ru="+request.getScheme()+"://account.sogou.com/web/problem/addProblem";
-        }
-
         Result result = new  APIResultSupport(false);
-        String userId = hostHolder.getPassportId();
-        result.setDefaultModel("userid", userId);
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
         result.setDefaultModel("problemTypeList",typeList);
@@ -71,11 +64,6 @@ public class ProblemAction extends BaseController {
     public Object saveProblem(HttpServletRequest request, WebAddProblemParameters addProblemParams)
             throws Exception {
         Result result = new APIResultSupport(false);
-        String passportId = hostHolder.getPassportId();
-        if(Strings.isNullOrEmpty(passportId)){
-            result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
-            return result.toString();
-        }
         //参数验证
         String validateResult = ControllerHelper.validateParams(addProblemParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -85,35 +73,19 @@ public class ProblemAction extends BaseController {
         }
         String srcTitle = addProblemParams.getTitle();
         String cleanTitle = Jsoup.clean(srcTitle, Whitelist.none());
-
         String srcContent = addProblemParams.getContent();
         String cleanContent = Jsoup.clean(srcContent, Whitelist.none());
-
         if((!srcTitle.equals(cleanTitle)) ||(!(srcContent.equals(cleanContent)))){
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage("输入标题或内容中包含非法字符，请重新输入！");
             return result.toString();
         }
 
-        addProblemParams.setPassportId(passportId);
-        result = problemManager.insertProblem(addProblemParams,getIp(request));
-
-        //log
-        if(result.isSuccess()){
-            //用户提交成功log
-            UserOperationLog userOperationLog=new UserOperationLog(passportId,request.getRequestURI(),addProblemParams.getClientId(),result.getCode());
-            String referer=request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer",referer);
-            userOperationLog.putOtherMessage("saveProblem","Success!");
-            UserOperationLogUtil.log(userOperationLog);
-        }else {
-            //用户提交失败log
-            UserOperationLog userOperationLog=new UserOperationLog(passportId,request.getRequestURI(),addProblemParams.getClientId(),result.getCode());
-            String referer=request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer",referer);
-            userOperationLog.putOtherMessage("saveProblem","Failed!");
-            UserOperationLogUtil.log(userOperationLog);
+        String passportId = hostHolder.getPassportId();
+        if(!Strings.isNullOrEmpty(passportId)){
+            addProblemParams.setPassportId(passportId);
         }
+        result = problemManager.insertProblem(addProblemParams,getIp(request));
         return result.toString();
     }
 }
