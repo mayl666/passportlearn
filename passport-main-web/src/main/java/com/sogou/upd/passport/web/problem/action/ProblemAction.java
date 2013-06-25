@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.web.problem.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
@@ -95,6 +97,23 @@ public class ProblemAction extends BaseController {
 
         addProblemParams.setPassportId(passportId);
         result = problemManager.insertProblem(addProblemParams,getIp(request));
+
+        //log
+        if(result.isSuccess()){
+            //用户提交成功log
+            UserOperationLog userOperationLog=new UserOperationLog(passportId,request.getRequestURI(),addProblemParams.getClientId(),result.getCode());
+            String referer=request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer",referer);
+            userOperationLog.putOtherMessage("saveProblem","Success!");
+            UserOperationLogUtil.log(userOperationLog);
+        }else {
+            //用户提交失败log
+            UserOperationLog userOperationLog=new UserOperationLog(passportId,request.getRequestURI(),addProblemParams.getClientId(),result.getCode());
+            String referer=request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer",referer);
+            userOperationLog.putOtherMessage("saveProblem","Failed!");
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 }
