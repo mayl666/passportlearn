@@ -127,6 +127,12 @@
     <form method="post" id="RebindStep1" action="/web/security/checksms" class="form2">
         
         <div class="form-item">
+    <label for="Ipt">当前手机号：</label>
+    <span class="form-text">
+        <{sec_mobile}>
+    </span>
+</div>
+        <div class="form-item">
     <label >&nbsp;</label>
     <span class="form-el form-el-none">
         <span class="tel-valid-btn" action="/web/security/sendsms" >免费获取短信验证码</span>
