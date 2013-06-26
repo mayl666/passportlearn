@@ -113,16 +113,12 @@ public class BaseActionTest extends TestCase {
         try {
             HttpClient client = new DefaultHttpClient();
             String sendUrlWithParams = new String(sendUrl);
-            if (!params.isEmpty()) {
-                sendUrlWithParams += "?";
-                for (Map.Entry<String, String> entry : params.entrySet()) {
-                    String sch = entry.getKey() + "=" + entry.getValue();
-                    sendUrlWithParams += sch + "&";
-                }
-                sendUrlWithParams = sendUrlWithParams.substring(0, sendUrlWithParams.length()-1);
+            sendUrlWithParams += "?";
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                String sch = entry.getKey() + "=" + entry.getValue();
+                sendUrlWithParams += sch;
             }
-
-            HttpGet method = new HttpGet(sendUrlWithParams);
+            HttpGet method = new HttpGet(sendUrl);
 
             HttpResponse response = client.execute(method);
 
