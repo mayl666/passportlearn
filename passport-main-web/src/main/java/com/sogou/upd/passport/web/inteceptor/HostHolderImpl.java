@@ -60,6 +60,6 @@ public class HostHolderImpl implements HostHolder {
         if(value!=null){
             return value.toString();
         }
-        return "13520069535@sohu.com";
+        return null;
     }
 }
