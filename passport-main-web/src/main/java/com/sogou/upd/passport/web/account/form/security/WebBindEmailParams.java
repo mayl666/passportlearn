@@ -17,7 +17,7 @@ public class WebBindEmailParams extends WebPwdParams {
     private String old_email;
 
     @AssertTrue(message = "新密保邮箱不能与原密保邮箱相同")
-    private boolean checkNewIsOld() {
+    public boolean isCheckNewIsOld() {
         if (new_email.equals(old_email)) { // NotBlank已经校验过了，无需再校验
             return false;
         }
