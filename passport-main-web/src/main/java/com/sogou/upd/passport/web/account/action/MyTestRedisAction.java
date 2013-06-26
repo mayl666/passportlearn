@@ -70,6 +70,9 @@ public class MyTestRedisAction {
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
+        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+        redisUtils.setWithinSeconds(ipSuccessCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
+
         return "success";
     }
 
@@ -102,6 +105,9 @@ public class MyTestRedisAction {
         String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         objectMap.put(ipFailedCacheKey,1);
+
+        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+        objectMap.put(ipSuccessCacheKey,1);
 
         redisUtils.multiSet(objectMap);
         return "success";
