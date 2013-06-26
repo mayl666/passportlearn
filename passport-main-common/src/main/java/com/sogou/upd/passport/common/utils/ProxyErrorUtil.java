@@ -43,7 +43,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         //sendmobileregcaptcha获取手机号注册的验证码
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.3", ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.4", ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
-        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.5", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
+        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.5", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.6", SYSTEM_UNKNOWN_EXCEPTION);  //系统级错误
 
         //web端email注册接口
