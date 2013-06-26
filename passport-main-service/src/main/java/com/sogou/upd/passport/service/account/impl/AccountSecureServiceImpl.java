@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.ActionRecord;
@@ -35,6 +36,8 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private KvUtils kvUtils;
 
     @Override
     public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException {
@@ -130,18 +133,22 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         }
     }
 
+    /*-------------------------------采用K-V系统-------------------------------*/
     // 方便以后修改存储方式
     private <T> void storeRecord(String key, T record, int maxLen) {
-        redisUtils.lPushObjectWithMaxLen(key, record, maxLen);
+        // redisUtils.lPushObjectWithMaxLen(key, record, maxLen);
+        kvUtils.pushObjectWithMaxLen(key, record, maxLen);
     }
 
     // 方便以后修改存储方式
     private <T> List<T> queryRecords(String key, Class<T> clazz) {
-        return redisUtils.getList(key, clazz);
+        // return redisUtils.getList(key, clazz);
+        return kvUtils.getList(key, clazz);
     }
 
     private <T> T queryLastRecord(String key, Class<T> clazz) {
-        return redisUtils.lTop(key, clazz);
+        // return redisUtils.lTop(key, clazz);
+        return kvUtils.top(key, clazz);
     }
 
     private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {

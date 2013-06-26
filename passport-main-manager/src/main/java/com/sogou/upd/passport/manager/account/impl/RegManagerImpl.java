@@ -72,6 +72,7 @@ public class RegManagerImpl implements RegManager {
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
     private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
 
   @Override
@@ -86,11 +87,13 @@ public class RegManagerImpl implements RegManager {
       String captcha = regParams.getCaptcha();
       String ru=regParams.getRu();
 
+      boolean isSogou=false;//外域还是个性账号
       //判断是否是个性账号
       if(username.indexOf("@")==-1){
         //判断是否是手机号注册
         if(!PhoneUtil.verifyPhoneNumberFormat(username)){
           username=username+"@sogou.com";
+          isSogou=true;
         }
       }
       //判断注册账号类型，sogou用户还是手机用户
@@ -108,7 +111,11 @@ public class RegManagerImpl implements RegManager {
           }
           //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
           if(Strings.isNullOrEmpty(ru)){
-            ru=EMAIL_REG_VERIFY_URL;
+            if(isSogou){
+              ru=LOGIN_INDEX_URL;
+            }else {
+              ru=EMAIL_REG_VERIFY_URL;
+            }
           }
           RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
                                                                          clientId,ru);

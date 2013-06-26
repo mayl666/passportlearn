@@ -7,9 +7,6 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.CheckManager;
-import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
@@ -394,6 +391,9 @@ public class SecureAction extends BaseController {
             case THIRD:
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
+            case PHONE:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                return result.toString();
         }
 
         // result = secureManager.sendMobileCodeByPassportId(userId, clientId);
@@ -426,6 +426,9 @@ public class SecureAction extends BaseController {
                 return result.toString();
             case THIRD:
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
+            case PHONE:
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                 return result.toString();
         }
 

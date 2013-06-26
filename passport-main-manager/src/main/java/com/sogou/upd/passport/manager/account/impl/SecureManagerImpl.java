@@ -403,7 +403,6 @@ public class SecureManagerImpl implements SecureManager {
                 accountSecureInfoVO.setLast_login_loc(record.getLoc());
             }
 
-
             result.setSuccess(true);
             result.setMessage("查询成功");
             result.setDefaultModel(accountSecureInfoVO);
@@ -719,6 +718,7 @@ public class SecureManagerImpl implements SecureManager {
 
                 String captcha = proxyBindApiManager.getOldCaptcha(mobile, clientId);
                 if (Strings.isNullOrEmpty(captcha)) {
+                    result = new APIResultSupport(false); // 修改getUserInfo成功造成此处成功的Bug
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
                     return result;
                 }
