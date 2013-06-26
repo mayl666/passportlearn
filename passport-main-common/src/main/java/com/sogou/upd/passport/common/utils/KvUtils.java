@@ -38,13 +38,11 @@ public class KvUtils {
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
-            logger.info("未出现Set错误!!!"+COUNT);
         } catch (Exception e) {
             // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             System.out.println(e.getMessage());
             COUNT++;
             logger.info("出现Set错误!!!"+COUNT);
-            System.out.println("出现Set错误!!!"+COUNT);
             try {
                 delete(key);
             } catch (Exception ex) {
@@ -58,17 +56,20 @@ public class KvUtils {
         String storeKey = KEY_PREFIX_TEST + key;
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
-            logger.info("未出现Set错误!!!"+COUNT);
             return valueOperations.get(storeKey);
         } catch (Exception e) {
             COUNT++;
             logger.info("出现Set错误!!!"+COUNT);
-            System.out.println("出现Set错误!!!"+COUNT);
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
         return null;
     }
 
+
+    public void deleteTest(String key) {
+        String storeKey = KEY_PREFIX_TEST + key;
+        kvTemplate.delete(storeKey);
+    }
 
     public void set(String key, String value) {
         String storeKey = KEY_PREFIX + key;

@@ -118,7 +118,7 @@ public class BaseActionTest extends TestCase {
                 String sch = entry.getKey() + "=" + entry.getValue();
                 sendUrlWithParams += sch;
             }
-            HttpGet method = new HttpGet(sendUrlWithParams);
+            HttpGet method = new HttpGet(sendUrl);
 
             HttpResponse response = client.execute(method);
 
