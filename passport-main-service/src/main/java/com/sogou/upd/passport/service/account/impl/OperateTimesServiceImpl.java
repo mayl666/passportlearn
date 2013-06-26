@@ -177,26 +177,29 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public void incRegTimes(String ip,String cookieStr) throws ServiceException {
       //修改为list模式添加cookie处理 by mayan
         try {
-          //ip与cookie列表映射
-          String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-          if (redisUtils.checkKeyIsExist(ipCacheKey)) {
-            redisUtils.sadd(ipCacheKey, cookieStr);
-          } else {
-            redisUtils.sadd(ipCacheKey, cookieStr);
-            redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+          if(!Strings.isNullOrEmpty(cookieStr)){
+            //ip与cookie列表映射
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+            if (redisUtils.checkKeyIsExist(ipCacheKey)) {
+              redisUtils.sadd(ipCacheKey, cookieStr);
+            } else {
+              redisUtils.sadd(ipCacheKey, cookieStr);
+              redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            }
+
+            //cookie与ip列表映射
+            String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+            if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
+              redisUtils.sadd(cookieCacheKey, ip);
+            } else {
+              redisUtils.sadd(cookieCacheKey, ip);
+              redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            }
           }
+
           //ip与cookie映射
           String ipCookieKey= CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" +cookieStr;
           recordTimes(ipCookieKey,DateAndNumTimesConstant.TIME_ONEDAY);
-
-          //cookie与ip列表映射
-          String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-          if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
-            redisUtils.sadd(cookieCacheKey, ip);
-          } else {
-            redisUtils.sadd(cookieCacheKey, ip);
-            redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-          }
         } catch (Exception e) {
             logger.error("incRegIPTimes:ip" + ip, e);
             throw new ServiceException(e);
