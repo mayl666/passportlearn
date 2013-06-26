@@ -30,7 +30,6 @@ public class KvUtils {
     private static int COUNT = 0;
 
     private static RedisTemplate kvTemplate;
-    private static final org.apache.log4j.Logger userOperationLogger = org.apache.log4j.Logger.getLogger("userOperationLogger");
 
 
 
@@ -39,12 +38,12 @@ public class KvUtils {
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
-            userOperationLogger.info("未出现Set错误!!!"+COUNT);
+            logger.info("未出现Set错误!!!"+COUNT);
         } catch (Exception e) {
             // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             System.out.println(e.getMessage());
             COUNT++;
-            userOperationLogger.info("出现Set错误!!!"+COUNT);
+            logger.info("出现Set错误!!!"+COUNT);
             System.out.println("出现Set错误!!!"+COUNT);
             try {
                 delete(key);
@@ -59,11 +58,11 @@ public class KvUtils {
         String storeKey = KEY_PREFIX_TEST + key;
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
-            userOperationLogger.info("未出现Set错误!!!"+COUNT);
+            logger.info("未出现Set错误!!!"+COUNT);
             return valueOperations.get(storeKey);
         } catch (Exception e) {
             COUNT++;
-            userOperationLogger.info("出现Set错误!!!"+COUNT);
+            logger.info("出现Set错误!!!"+COUNT);
             System.out.println("出现Set错误!!!"+COUNT);
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
@@ -140,6 +139,9 @@ public class KvUtils {
     public <T> T top(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
+            if (Strings.isNullOrEmpty(strValue)) {
+                return null;
+            }
             LinkedList<String> list = new ObjectMapper().readValue(strValue, LinkedList.class);
             if (CollectionUtils.isEmpty(list)) {
                 return null;
@@ -158,6 +160,9 @@ public class KvUtils {
     public LinkedList<String> getList(String key) {
         try {
             String strValue = get(key);
+            if (Strings.isNullOrEmpty(strValue)) {
+                return null;
+            }
             LinkedList<String> list = new ObjectMapper().readValue(strValue, LinkedList.class);
 
             return list;
@@ -171,6 +176,9 @@ public class KvUtils {
         try {
             LinkedList<T> listObj = new LinkedList<>();
             LinkedList<String> list = getList(key);
+            if (CollectionUtils.isEmpty(list)) {
+                return null;
+            }
             Iterator<String> it = list.iterator();
             while (it.hasNext()) {
                 String value = it.next();
