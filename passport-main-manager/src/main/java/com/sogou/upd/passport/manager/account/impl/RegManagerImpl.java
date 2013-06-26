@@ -85,7 +85,7 @@ public class RegManagerImpl implements RegManager {
     String username =null;
     try {
       int clientId = Integer.parseInt(regParams.getClient_id());
-      username = regParams.getUsername();
+      username = regParams.getUsername().trim();
       String password = regParams.getPassword();
       String captcha = regParams.getCaptcha();
       String ru=regParams.getRu();
@@ -98,6 +98,9 @@ public class RegManagerImpl implements RegManager {
           username=username+"@sogou.com";
           isSogou=true;
         }
+      }  else{
+         int index=username.indexOf("@");
+         username=username.substring(0,index)+username.substring(index,username.length()).toLowerCase() ;
       }
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
