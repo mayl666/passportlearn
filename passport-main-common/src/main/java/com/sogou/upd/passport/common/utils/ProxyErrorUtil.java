@@ -81,6 +81,12 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.4", ERR_CODE_PHONE_UNBIND_FAILED);//,该用户是手机邮箱用户，不能进行解除绑定
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.5", SYSTEM_UNKNOWN_EXCEPTION);//系统错误
 
+        // bindmobile 绑定手机号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("bindmobile.1", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
+
+        // unbindmobile 解绑手机号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("unbindmobile.1", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
+
         //sendcaptcha 发送手机验证码
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.3", ERR_CODE_ACCOUNT_CANTSENTSMS);//发送短信验证码次数超限
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.5", ERR_CODE_ACCOUNT_PHONE_BINDED);//手机号已经绑定了其他账号
