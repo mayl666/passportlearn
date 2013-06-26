@@ -111,7 +111,7 @@
 
     <category name="java.sql" additivity="false">
         <priority value="${passport.log.level}"/>
-        <appender-ref ref="CONSOLE-ERROR"/>
+        <appender-ref ref="FILE-ALL"/>
     </category>
 
     <root>
