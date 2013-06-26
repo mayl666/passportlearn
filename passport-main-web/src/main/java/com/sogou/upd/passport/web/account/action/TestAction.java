@@ -28,6 +28,13 @@ public class TestAction {
     private static int count = 0;
     private static boolean flag = false;
 
+    @RequestMapping(value = "reset", method = RequestMethod.GET)
+    @ResponseBody
+    public Object testReset() throws Exception {
+        count = 0;
+        return "重置COUNT为："+count;
+    }
+
     @RequestMapping(value = "set", method = RequestMethod.GET)
     @ResponseBody
     public Object testSet() throws Exception {
@@ -40,26 +47,7 @@ public class TestAction {
             list.add(new ObjectMapper().writeValueAsString(action));
         }
         kvUtils.setTest("TEST" + new Random().nextInt()%100000, new ObjectMapper().writeValueAsString(list));
-        /*kvUtils.set("TEST" + new Random().nextInt()%100000, String.valueOf(System.currentTimeMillis()) +
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis())+
-                                                       String.valueOf(System.currentTimeMillis()));*/
+
         return "success";
     }
 
@@ -73,7 +61,7 @@ public class TestAction {
     @RequestMapping(value = "del", method = RequestMethod.GET)
     @ResponseBody
     public Object testDelete() {
-        kvUtils.delete("TEST" + new Random().nextInt() % 5);
+        kvUtils.deleteTest("TEST" + new Random().nextInt() % 5);
         return "success";
     }
 }
