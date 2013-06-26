@@ -38,6 +38,18 @@ public interface EmailSenderService {
     public String checkScodeForEmail(String passportId, int clientId, AccountModuleEnum module, String scode, boolean saveEmail)
             throws ServiceException;
 
+    /**
+     * 计数邮件发送次数
+     *
+     * @param userId
+     * @param clientId
+     * @param module
+     * @param email
+     * @return
+     * @throws ServiceException
+     */
+    public boolean incLimitForSendEmail(String userId, int clientId, AccountModuleEnum module, String email)
+            throws ServiceException;
 
     /**
      * 检查邮件发送限制次数

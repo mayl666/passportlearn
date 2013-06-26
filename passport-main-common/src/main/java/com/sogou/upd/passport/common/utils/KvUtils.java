@@ -59,7 +59,7 @@ public class KvUtils {
             return valueOperations.get(storeKey);
         } catch (Exception e) {
             COUNT++;
-            logger.info("出现Set错误!!!"+COUNT);
+            logger.info("出现Get错误!!!"+COUNT);
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
         return null;
