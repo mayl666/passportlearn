@@ -83,6 +83,11 @@ public class MyTestRedisAction {
         String ip = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         redisUtils.get(ipFailedCacheKey);
+
+        //一小时内ip登陆成功100次出验证码
+        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+        redisUtils.get(ipSuccessCacheKey);
+
         return "success";
     }
 
@@ -114,6 +119,9 @@ public class MyTestRedisAction {
         String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         keyList.add(ipFailedCacheKey);
+
+        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+        keyList.add(ipSuccessCacheKey);
 
         redisUtils.multiGet(keyList);
         return "success";
