@@ -69,7 +69,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
                     result.setCode(ErrorUtil.INVALID_CLIENTID);
                 }
             } else {
-                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             }
         } catch (Exception e) {
             log.error("InterfaceSecurityInteceptor verify code or ct error!", e);

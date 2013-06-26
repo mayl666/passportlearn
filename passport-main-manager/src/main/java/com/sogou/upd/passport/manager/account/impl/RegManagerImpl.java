@@ -32,6 +32,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,8 @@ public class RegManagerImpl implements RegManager {
     private BindApiManager sgBindApiManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -82,7 +85,7 @@ public class RegManagerImpl implements RegManager {
     String username =null;
     try {
       int clientId = Integer.parseInt(regParams.getClient_id());
-      username = regParams.getUsername();
+      username = regParams.getUsername().trim();
       String password = regParams.getPassword();
       String captcha = regParams.getCaptcha();
       String ru=regParams.getRu();
@@ -95,6 +98,9 @@ public class RegManagerImpl implements RegManager {
           username=username+"@sogou.com";
           isSogou=true;
         }
+      }  else{
+         int index=username.indexOf("@");
+         username=username.substring(0,index)+username.substring(index,username.length()).toLowerCase() ;
       }
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
@@ -326,6 +332,33 @@ public class RegManagerImpl implements RegManager {
       throw new Exception(e);
     }
     return result;
+  }
+
+  @Override
+  public Result checkRegInBlackList(String ip, String cookieStr) throws Exception {
+
+    Result result = new APIResultSupport(false);
+    try {
+      if (operateTimesService.checkRegInBlackList(ip, cookieStr)){
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        return result;
+      }
+    }catch (ServiceException e){
+      logger.error("register checkRegInBlackList Exception", e);
+      throw new Exception(e);
+    }
+    result.setSuccess(true);
+    return result;
+  }
+
+  @Override
+  public void incRegTimes(String ip, String cookieStr) throws Exception {
+    try {
+      operateTimesService.incRegTimes(ip, cookieStr);
+    }catch (ServiceException e){
+      logger.error("register incRegTimes Exception", e);
+      throw new Exception(e);
+    }
   }
 
   private CheckUserApiParams buildProxyApiParams(String username){

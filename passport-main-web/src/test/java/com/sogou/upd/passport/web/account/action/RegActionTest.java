@@ -29,5 +29,12 @@ public class RegActionTest extends BaseActionTest {
     }
 
 
-
+  @Test
+  public void testCheckusername() throws IOException {
+    Map<String, String> params = new HashMap<>();
+    params.put("username", "fsdf3ffds");
+//    params.put("client_id", "1100");
+    String result  = sendGet("http://account.sogou.com/web/account/checkusername", params);
+    System.out.println(result);
+  }
 }

@@ -131,7 +131,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
         result.setDefaultModel(null);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
-            result.setCode(ErrorUtil.USERNAME_PWD_ERROR);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
             return result;
         }
 

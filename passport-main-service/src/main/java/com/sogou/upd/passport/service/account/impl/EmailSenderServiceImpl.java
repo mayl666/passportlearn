@@ -87,13 +87,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                 redisUtils.setWithinSeconds(cacheKey, scode, DateAndNumTimesConstant.TIME_TWODAY);
             }
 
-            // 设置邮件发送次数限制
-            String cacheKeySendEmail = buildCacheKeyForEmailLimited(passportId, clientId, module, address);
-            if (redisUtils.checkKeyIsExist(cacheKeySendEmail)) {
-                redisUtils.increment(cacheKeySendEmail);
-            } else {
-                redisUtils.setWithinSeconds(cacheKeySendEmail, "1", DateAndNumTimesConstant.TIME_ONEDAY);
-            }
+            // 设置邮件发送次数限制---放在Manager里做检测
+
             return true;
         } catch(MailException me) {
             return false;
@@ -126,6 +121,24 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             // throw new ServiceException(e);
             logger.error("[Email] service method checkScodeForEmail error.", e);
             return null;
+        }
+    }
+
+    @Override
+    public boolean incLimitForSendEmail(String userId, int clientId, AccountModuleEnum module, String email)
+            throws ServiceException {
+        String cacheKey = buildCacheKeyForEmailLimited(userId, clientId, module, email);
+        try {
+            // 设置邮件发送次数限制
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                redisUtils.increment(cacheKey);
+            } else {
+                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("[Email] service method inc limit for send email error.", e);
+            return false;
         }
     }
 
@@ -163,11 +176,11 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
 
     private String buildCacheKeyForScode(String passportId, int clientId, AccountModuleEnum module) {
-        return CACHE_PREFIX_PASSPORTID_EMAILSCODE + module + "_" + passportId;
+        return CACHE_PREFIX_PASSPORTID_EMAILSCODE + module + "_" + clientId + "_" + passportId;
     }
 
     private String buildCacheKeyForEmailLimited(String passportId, int clientId, AccountModuleEnum module, String email) {
-        return CACHE_PREFIX_PASSPORTID_SENDEMAILNUM + module + "_" + email + "_"
+        return CACHE_PREFIX_PASSPORTID_SENDEMAILNUM + module + "_" + clientId + "_" + email + "_"
                + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 
