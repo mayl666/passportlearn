@@ -6,6 +6,8 @@ import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,8 @@ public class TestAction {
     @Autowired
     private KvUtils kvUtils;
 
+    private static Logger logger = LoggerFactory.getLogger(TestAction.class);
+
     private static int count = 0;
     private static boolean flag = false;
 
@@ -33,6 +37,12 @@ public class TestAction {
     public Object testReset() throws Exception {
         count = 0;
         return "重置COUNT为："+count;
+    }
+
+    @RequestMapping(value = "info", method = RequestMethod.GET)
+    @ResponseBody
+    public Object testInfo() throws Exception {
+        return "count:" + count;
     }
 
     @RequestMapping(value = "set", method = RequestMethod.GET)
@@ -46,8 +56,11 @@ public class TestAction {
             action.setIp("202.101.112.212");
             list.add(new ObjectMapper().writeValueAsString(action));
         }
-        kvUtils.setTest("TEST" + new Random().nextInt()%100000, new ObjectMapper().writeValueAsString(list));
-
+        kvUtils.setTest("TEST" + new Random().nextInt() % 100000,
+                        new ObjectMapper().writeValueAsString(list));
+        if (count % 10000 == 0) {
+            logger.info("SET COUNT: " + count);
+        }
         return "success";
     }
 
@@ -55,13 +68,19 @@ public class TestAction {
     @ResponseBody
     public Object testGet() {
         kvUtils.getTest("TEST" + new Random().nextInt() % 100000);
+        if (count % 10000 == 0) {
+            logger.info("GET COUNT: " + count);
+        }
         return "success";
     }
 
     @RequestMapping(value = "del", method = RequestMethod.GET)
     @ResponseBody
     public Object testDelete() {
-        kvUtils.deleteTest("TEST" + new Random().nextInt() % 5);
+        kvUtils.deleteTest("TEST" + new Random().nextInt() % 100000);
+        if (count % 10000 == 0) {
+            logger.info("DELETE COUNT: " + count);
+        }
         return "success";
     }
 }

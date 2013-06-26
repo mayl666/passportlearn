@@ -42,7 +42,7 @@ public class KvUtils {
             // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             System.out.println(e.getMessage());
             COUNT++;
-            logger.info("出现Set错误!!!"+COUNT);
+            logger.info("出现SetKV错误!!!"+COUNT);
             try {
                 delete(key);
             } catch (Exception ex) {
@@ -59,7 +59,7 @@ public class KvUtils {
             return valueOperations.get(storeKey);
         } catch (Exception e) {
             COUNT++;
-            logger.info("出现Set错误!!!"+COUNT);
+            logger.info("出现GetKV错误!!!"+COUNT);
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
         return null;
