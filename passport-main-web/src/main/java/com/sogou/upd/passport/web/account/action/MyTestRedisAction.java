@@ -31,18 +31,17 @@ public class MyTestRedisAction {
     @Autowired
     private AccountService accountService;
 
-    private static int count = 0;
-    private static boolean flag = false;
+    private static final int MAX = 1000000;
 
     //redis set
     @RequestMapping(value = "/testSet", method = RequestMethod.GET)
     @ResponseBody
     public Object testSet() throws Exception {
-        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         redisUtils.setWithinSeconds(userNameCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-        String ip = "127.0.0.1"+ new Random().nextInt()%100000;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
@@ -52,11 +51,11 @@ public class MyTestRedisAction {
     @RequestMapping(value = "/testGet", method = RequestMethod.GET)
     @ResponseBody
     public Object testGet() throws Exception {
-        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         redisUtils.get(userNameCacheKey);
 
-        String ip = "shipengzhi1986@sogou.com" + new Random().nextInt()%100000;
+        String ip = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         redisUtils.get(ipFailedCacheKey);
         return "success";
@@ -66,11 +65,11 @@ public class MyTestRedisAction {
     @ResponseBody
     public Object testMultiSet() throws Exception {
         Map<String, Object> objectMap = Maps.newHashMap();
-        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         objectMap.put(userNameCacheKey,1);
 
-        String ip = "127.0.0.1"+ new Random().nextInt()%100000;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         objectMap.put(ipFailedCacheKey,1);
 
@@ -83,11 +82,11 @@ public class MyTestRedisAction {
     public Object testMultiGet() throws Exception {
         List<String> keyList = new ArrayList<String>();
 
-        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         keyList.add(userNameCacheKey);
 
-        String ip = "127.0.0.1"+ new Random().nextInt()%100000;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
         String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
         keyList.add(ipFailedCacheKey);
 
@@ -100,8 +99,8 @@ public class MyTestRedisAction {
     @RequestMapping(value = "/testIncLoginSuccessTimes", method = RequestMethod.GET)
     @ResponseBody
     public Object testIncLoginSuccessTimes() throws Exception {
-        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%100000;
-        String ip = "127.0.0.1"+ new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
         operateTimesService.incLoginSuccessTimes(username,ip);
         return "success";
     }
@@ -109,8 +108,8 @@ public class MyTestRedisAction {
     @RequestMapping(value = "/testLoginFailedTimesNeedCaptcha", method = RequestMethod.GET)
     @ResponseBody
     public Object testLoginFailedTimesNeedCaptcha() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%100000;
-        String ip = "127.0.0.1"+ new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
         operateTimesService.loginFailedTimesNeedCaptcha(username,ip);
         return "success";
     }
@@ -118,7 +117,7 @@ public class MyTestRedisAction {
     @RequestMapping(value = "/testCheckLoginUserInBlackList", method = RequestMethod.GET)
     @ResponseBody
     public Object testCheckLoginUserInBlackList() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
         operateTimesService.checkLoginUserInBlackList(username);
         return "success";
     }
@@ -135,7 +134,7 @@ public class MyTestRedisAction {
     @RequestMapping(value = "/del", method = RequestMethod.GET)
     @ResponseBody
     public Object testCheckTimesByKey() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%100000;
+        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
         operateTimesService.checkTimesByKey(username,20);
         return "success";
     }
