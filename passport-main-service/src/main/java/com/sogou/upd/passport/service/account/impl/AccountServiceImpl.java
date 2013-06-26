@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -168,7 +167,7 @@ public class AccountServiceImpl implements AccountService {
                 result.setDefaultModel(userAccount);
                 return result;
             } else {
-                result.setCode(ErrorUtil.USERNAME_PWD_ERROR);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 return result;
             }
         } catch (Exception e) {

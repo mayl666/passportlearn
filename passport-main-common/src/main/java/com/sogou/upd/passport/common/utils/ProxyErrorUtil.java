@@ -28,13 +28,13 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("2", INTERNAL_REQUEST_INVALID);
 
         //authuser 登录接口
-        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.3", USERNAME_PWD_ERROR);//用户名或密码不正确
+        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.3", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//用户名或密码不正确
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.4", ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);//外域用户未激活
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.5", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定（wap专用）
-        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.6", USERNAME_PWD_ERROR);//校验失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.6", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//校验失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.7", ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);//手机注册的sohu域账号未激活
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.8", ERR_CODE_ACCOUNT_KILLED);// 账号已被锁定
-        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.9", USERNAME_PWD_ERROR);//登陆保护用户的stoken错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.9", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//登陆保护用户的stoken错误
 
         //手机app校验第三方登录的token
         SHPPERRCODE_SGPPERRCODE_MAP.put("auth.-1", ERR_CODE_APPCONNECT_TOKEN_ERROR);//token校验失败
@@ -95,7 +95,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.9", ERR_CODE_PHONE_UNBIND_FAILED);//解除绑定手机失败
 
         //bindemail 绑定邮箱
-        SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.3", USERNAME_PWD_ERROR);//用户不存在或者密码错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.3", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//用户不存在或者密码错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.4", ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);//旧绑定邮箱错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.5", SUCCESS);//新的绑定邮箱没有变化
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.6", ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);//系统错误
@@ -103,8 +103,10 @@ public class ProxyErrorUtil extends ErrorUtil {
 
         //updatepwd 修改密码
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.4", USERNAME_PWD_ERROR);//原密码校验失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.5", ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);//新的绑定邮箱没有变化
+        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.4", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//原密码校验失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.5", ERR_CODE_ACCOUNT_BIND_NOTEXIST);//手机号绑定的账号不存在
+        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.6", ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);//修改密码失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.7", ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT);//原密码错误次数超限
 
         //wapgetuserid 查询手机号绑定的账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapgetuserid.3", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定用户
