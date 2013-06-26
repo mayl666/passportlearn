@@ -34,17 +34,17 @@ public class RedisUtils {
 
     private static RedisTemplate redisTemplate;
 
-    private static int setWrongCount =0;
-    private static int setRightCount =0;
+    public static int setWrongCount =0;
+    public static int setRightCount =0;
 
-    private static int getWrongCount =0;
-    private static int getRightCount =0;
+    public static int getWrongCount =0;
+    public static int getRightCount =0;
 
-    private static int multiSetWrongCount =0;
-    private static int multiSetRightCount =0;
+    public static int multiSetWrongCount =0;
+    public static int multiSetRightCount =0;
 
-    private static int multiGetWrongCount =0;
-    private static int multiGetRightCount =0;
+    public static int multiGetWrongCount =0;
+    public static int multiGetRightCount =0;
     /*
     * 设置缓存内容
     */
