@@ -73,14 +73,15 @@ public class ErrorUtil {
     // 帐号不存在
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
     // 用户名密码不正确
-    public static final String USERNAME_PWD_ERROR = "20206";
+    public static final String ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR = "20206";
+    //手机绑定的账号不存在
+    public static final String ERR_CODE_ACCOUNT_BIND_NOTEXIST = "20207";
     // 验证码错误或已过期
     public static final String ERR_CODE_ACCOUNT_SMSCODE = "20208";
     // 今日验证码校验错误次数已超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
     // 密码验证失败次数超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT = "20210";
-
     // 手机验证码发送失败
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
     //创建用户失败
@@ -121,7 +122,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
     //TODO 手机绑定次数超限
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT = "20236";
-
     //TODO 手机解除绑定失败
     public static final String ERR_CODE_PHONE_UNBIND_FAILED = "20237";
     //TODO 密码输入错误次数过多
@@ -274,7 +274,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "内部接口code签名错误或请求超时");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
-        ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT,"接口调用频次超限");
+        ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
 
@@ -293,7 +293,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
-        ERR_CODE_MSG_MAP.put(USERNAME_PWD_ERROR, "用户名或密码不正确");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR, "用户名或密码不正确");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_BIND_NOTEXIST, "手机号绑定的账号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日验证码校验错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT, "今日密码验证失败次数超过上限");
