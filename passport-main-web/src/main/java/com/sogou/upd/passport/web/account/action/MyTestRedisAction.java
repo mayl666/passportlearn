@@ -47,7 +47,7 @@ public class MyTestRedisAction {
         int multiSetRightCount =RedisUtils.multiSetRightCount;
 
         int multiGetWrongCount =RedisUtils.multiGetWrongCount;
-        int multiGetRightCount =RedisUtils.multiSetRightCount;
+        int multiGetRightCount =RedisUtils.multiGetRightCount;
         return "setWrongCount:"+setWrongCount+"  \n" +
                 "setRightCount:"+setRightCount+"  \n" +
                 "getWrongCount:"+getWrongCount+"  \n" +
