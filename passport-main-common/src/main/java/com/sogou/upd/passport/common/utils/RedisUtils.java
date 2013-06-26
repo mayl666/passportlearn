@@ -101,10 +101,10 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, new ObjectMapper().writeValueAsString(obj),timeout,timeUnit);
             setRightCount++;
-            logger.info("redis Set正确!num="+setRightCount);
+            logger.info("redis Set right,num="+setRightCount);
         } catch (Exception e) {
             setWrongCount++;
-            logger.info("redis Set错误!num="+setWrongCount);
+            logger.info("redis Set wrong,num="+setWrongCount);
             logger.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
 
         }
@@ -138,10 +138,10 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.multiSet(objectMap);
             multiSetRightCount++;
-            logger.info("multiset 正确：num="+multiSetRightCount);
+            logger.info("multiset right：num="+multiSetRightCount);
         } catch (Exception e) {
             multiSetWrongCount++;
-            logger.info("multiset 错误：num="+multiSetWrongCount);
+            logger.info("multiset wrong：num="+multiSetWrongCount);
             logger.error("[Cache] set cache fail, key:" + mapData.toString(), e);
             try {
                 multiDelete(mapData.keySet());
@@ -189,11 +189,11 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             String res =  valueOperations.get(key);
             getRightCount ++;
-            logger.info("get 正确:num="+getRightCount);
+            logger.info("get right:num="+getRightCount);
             return    res;
         } catch (Exception e) {
             getWrongCount ++;
-            logger.info("get 错误:num="+getWrongCount);
+            logger.info("get wrong:num="+getWrongCount);
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
         return null;
@@ -207,11 +207,11 @@ public class RedisUtils {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             List<String> res =  valueOperations.multiGet(keyList);
             multiGetRightCount++;
-            logger.info("multiget 正确：num="+multiGetRightCount);
+            logger.info("multiget right：num="+multiGetRightCount);
             return res;
         } catch (Exception e) {
-            multiGetRightCount++;
-            logger.info("multiget 错误：num="+multiGetRightCount);
+            multiGetWrongCount++;
+            logger.info("multiget wrong：num="+multiGetWrongCount);
             logger.error("[Cache] get cache fail, keyCollec:" + keyList.toString(), e);
         }
         return null;
