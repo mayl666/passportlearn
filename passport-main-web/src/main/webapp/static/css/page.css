@@ -72,7 +72,7 @@ a:hover{ text-decoration:underline; }
 .form-btn { padding:10px 0 0 185px; }
 .form-btn button{ border:0;padding:0;margin:0;background:url(/./static/img/btn-long.png?t=928174) no-repeat 0 0;width:182px;height:36px;color:#fff;font-size:16px;}
 .form-btn button:hover{background-position:0 -44px;}
-.form-desc{ padding:5px 0 0 185px; }
+.form-desc{ padding:5px 0 0 185px;position:relative; }
 .form .vpic{ float:left; padding:0 9px; position:relative; top:10px;}
 .form .vpic img{ width:80px; height:28px; }
 .form .change-vpic{ float:left; line-height:48px;color:#333;text-decoration:underline;}
