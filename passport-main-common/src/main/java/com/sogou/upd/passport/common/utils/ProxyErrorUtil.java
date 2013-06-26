@@ -43,7 +43,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         //sendmobileregcaptcha获取手机号注册的验证码
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.3", ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.4", ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
-        SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.5", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
+        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.5", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.6", SYSTEM_UNKNOWN_EXCEPTION);  //系统级错误
 
         //web端email注册接口
@@ -80,6 +80,12 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.3", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定帐号
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.4", ERR_CODE_PHONE_UNBIND_FAILED);//,该用户是手机邮箱用户，不能进行解除绑定
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapunbindmobile.5", SYSTEM_UNKNOWN_EXCEPTION);//系统错误
+
+        // bindmobile 绑定手机号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("bindmobile.1", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
+
+        // unbindmobile 解绑手机号
+        SHPPERRCODE_SGPPERRCODE_MAP.put("unbindmobile.1", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
 
         //sendcaptcha 发送手机验证码
         SHPPERRCODE_SGPPERRCODE_MAP.put("sendcaptcha.3", ERR_CODE_ACCOUNT_CANTSENTSMS);//发送短信验证码次数超限

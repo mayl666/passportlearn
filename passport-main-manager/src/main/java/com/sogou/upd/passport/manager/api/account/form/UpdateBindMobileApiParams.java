@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Phone;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -12,9 +13,11 @@ import org.hibernate.validator.constraints.NotBlank;
 public class UpdateBindMobileApiParams extends BaseUserApiParams {
 
     @NotBlank(message = "旧手机号不能为空")
+    @Phone
     private String oldMobile;
 
     @NotBlank(message = "新绑定手机号不能为空")
+    @Phone
     private String newMobile;
 
     public String getOldMobile() {
