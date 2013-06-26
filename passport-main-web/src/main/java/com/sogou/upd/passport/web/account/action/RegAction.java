@@ -40,7 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web")
 public class RegAction extends BaseController {
 
-  private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
+//  private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
+  private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
   private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
   @Autowired
