@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParameters;
@@ -48,4 +49,16 @@ public interface RegManager {
    * @return 验证码
    */
   public Result isAccountNotExists(String username,boolean type) throws Exception;
+  /**
+   *   检查一天内某ip注册次数
+   */
+  public Result checkRegInBlackList(String ip,String cookieStr) throws Exception;
+  /**
+   * 记录一天内某ip注册次数
+   * @param ip
+   * @return
+   * @throws ServiceException
+   */
+  public void incRegTimes(String ip,String cookieStr) throws Exception;
+
 }

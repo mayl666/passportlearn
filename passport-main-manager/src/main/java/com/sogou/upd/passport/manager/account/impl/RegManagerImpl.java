@@ -32,6 +32,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,10 +69,13 @@ public class RegManagerImpl implements RegManager {
     private BindApiManager sgBindApiManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
     private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
 
   @Override
@@ -86,11 +90,13 @@ public class RegManagerImpl implements RegManager {
       String captcha = regParams.getCaptcha();
       String ru=regParams.getRu();
 
+      boolean isSogou=false;//外域还是个性账号
       //判断是否是个性账号
       if(username.indexOf("@")==-1){
         //判断是否是手机号注册
         if(!PhoneUtil.verifyPhoneNumberFormat(username)){
           username=username+"@sogou.com";
+          isSogou=true;
         }
       }
       //判断注册账号类型，sogou用户还是手机用户
@@ -108,7 +114,11 @@ public class RegManagerImpl implements RegManager {
           }
           //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
           if(Strings.isNullOrEmpty(ru)){
-            ru=EMAIL_REG_VERIFY_URL;
+            if(isSogou){
+              ru=LOGIN_INDEX_URL;
+            }else {
+              ru=EMAIL_REG_VERIFY_URL;
+            }
           }
           RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
                                                                          clientId,ru);
@@ -319,6 +329,33 @@ public class RegManagerImpl implements RegManager {
       throw new Exception(e);
     }
     return result;
+  }
+
+  @Override
+  public Result checkRegInBlackList(String ip, String cookieStr) throws Exception {
+
+    Result result = new APIResultSupport(false);
+    try {
+      if (operateTimesService.checkRegInBlackList(ip, cookieStr)){
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        return result;
+      }
+    }catch (ServiceException e){
+      logger.error("register checkRegInBlackList Exception", e);
+      throw new Exception(e);
+    }
+    result.setSuccess(true);
+    return result;
+  }
+
+  @Override
+  public void incRegTimes(String ip, String cookieStr) throws Exception {
+    try {
+      operateTimesService.incRegTimes(ip, cookieStr);
+    }catch (ServiceException e){
+      logger.error("register incRegTimes Exception", e);
+      throw new Exception(e);
+    }
   }
 
   private CheckUserApiParams buildProxyApiParams(String username){

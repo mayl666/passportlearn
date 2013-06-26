@@ -495,6 +495,7 @@ public class SecureManagerImpl implements SecureManager {
                 result = sgBindApiManager.bindEmail(params);
             }
             if (result.isSuccess()) {
+                emailSenderService.incLimitForSendEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail);
                 result.setMessage("发送绑定邮箱申请邮件成功！");
             }
             return result;

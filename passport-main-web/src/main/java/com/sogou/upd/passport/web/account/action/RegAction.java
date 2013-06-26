@@ -40,7 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web")
 public class RegAction extends BaseController {
 
-  private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
+//  private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
+  private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
   private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
   @Autowired
@@ -101,8 +102,8 @@ public class RegAction extends BaseController {
     String ip = getIp(request);
     //校验用户是否允许注册
     String uuidName= CookieUtils.getCookie(request, "uuidName");
-    if (operateTimesService.checkRegInBlackList(ip, uuidName)){
-      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+    result=regManager.checkRegInBlackList(ip,uuidName);
+    if(!result.isSuccess()) {
       return result.toString();
     }
 
@@ -112,15 +113,15 @@ public class RegAction extends BaseController {
     if (!result.isSuccess()) {
       return result.toString();
     }
-
-    //验证client_id
-    int clientId = Integer.parseInt(regParams.getClient_id());
-
-    //检查client_id格式以及client_id是否存在
-    if (!configureManager.checkAppIsExist(clientId)) {
-      result.setCode(ErrorUtil.INVALID_CLIENTID);
-      return result.toString();
-    }
+    //todo切换到sogou打开注释
+//    //验证client_id
+//    int clientId = Integer.parseInt(regParams.getClient_id());
+//
+//    //检查client_id格式以及client_id是否存在
+//    if (!configureManager.checkAppIsExist(clientId)) {
+//      result.setCode(ErrorUtil.INVALID_CLIENTID);
+//      return result.toString();
+//    }
 
     result = regManager.webRegister(regParams, ip);
     if(result.isSuccess()){
@@ -131,7 +132,7 @@ public class RegAction extends BaseController {
       }
       result.setDefaultModel("ru",ru);
     }
-    operateTimesService.incRegTimes(ip, uuidName);
+    regManager.incRegTimes(ip, uuidName);
     return result.toString();
   }
 

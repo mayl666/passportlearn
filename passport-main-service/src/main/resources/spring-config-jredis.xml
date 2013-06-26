@@ -29,8 +29,8 @@
 
     <bean id="kvConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="${passport.redis.url}"/>
-        <property name="port" value="${passport.redis.port}"/>
+        <property name="hostName" value="${passport.kv.url}"/>
+        <property name="port" value="${passport.kv.port}"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
