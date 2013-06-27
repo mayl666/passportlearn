@@ -122,6 +122,9 @@ public class LoginAction extends BaseController {
         }
 
         result.setDefaultModel("xd", loginParams.getXd());
+        if (ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
+            result.setMessage("用户名或密码错误");
+        }
         model.addAttribute("data", result.toString());
         return "/login/api";
     }
