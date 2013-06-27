@@ -130,7 +130,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     @Override
     public boolean checkLoginUserInBlackList(String username) throws ServiceException {
-        boolean result = false;
         try {
             List<String> keyList = new ArrayList<String>();
             List<Integer> maxList = new ArrayList<Integer>();
