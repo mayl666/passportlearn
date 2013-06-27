@@ -37,25 +37,7 @@ public class MyTestRedisAction {
     @RequestMapping(value = "/getcount", method = RequestMethod.GET)
     @ResponseBody
     public Object getcount() throws Exception {
-        int setWrongCount =RedisUtils.setWrongCount;
-        int setRightCount =RedisUtils.setRightCount;
-
-        int getWrongCount =RedisUtils.getWrongCount;
-        int getRightCount =RedisUtils.getRightCount;
-
-        int multiSetWrongCount =RedisUtils.multiSetWrongCount;
-        int multiSetRightCount =RedisUtils.multiSetRightCount;
-
-        int multiGetWrongCount =RedisUtils.multiGetWrongCount;
-        int multiGetRightCount =RedisUtils.multiGetRightCount;
-        return "setWrongCount:"+setWrongCount+"  \n" +
-                "setRightCount:"+setRightCount+"  \n" +
-                "getWrongCount:"+getWrongCount+"  \n" +
-                "getRightCount:"+getRightCount+"  \n" +
-                "multiSetWrongCount:"+multiSetWrongCount+"  \n" +
-                "multiSetRightCount:"+multiSetRightCount+"  \n" +
-                "multiGetWrongCount:"+multiGetWrongCount+"  \n" +
-                "multiGetRightCount:"+multiGetRightCount+"  \n" ;
+        return "success";
     }
 
     //redis set
