@@ -30,19 +30,24 @@ public class KvUtils {
     private static int COUNT = 0;
 
     private static RedisTemplate kvTemplate;
+    private static org.apache.log4j.Logger testOperationLogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
 
 
 
     public void setTest(String key, String value) {
         String storeKey = KEY_PREFIX_TEST + key;
         try {
+            long begin = System.currentTimeMillis();
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
+            long end = System.currentTimeMillis();
+            long operTime = end - begin;
+            testOperationLogger.info(operTime);
         } catch (Exception e) {
             // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             System.out.println(e.getMessage());
             COUNT++;
-            logger.info("出现SetKV错误!!!"+COUNT);
+            // logger.info("出现SetKV错误!!!"+COUNT);
             try {
                 delete(key);
             } catch (Exception ex) {
@@ -55,11 +60,15 @@ public class KvUtils {
     public String getTest(String key) {
         String storeKey = KEY_PREFIX_TEST + key;
         try {
+            long begin = System.currentTimeMillis();
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
+            long end = System.currentTimeMillis();
+            long operTime = end - begin;
+            testOperationLogger.info(operTime);
             return valueOperations.get(storeKey);
         } catch (Exception e) {
             COUNT++;
-            logger.info("出现GetKV错误!!!"+COUNT);
+            // logger.info("出现GetKV错误!!!"+COUNT);
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
         return null;

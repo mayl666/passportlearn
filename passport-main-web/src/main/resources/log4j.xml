@@ -93,6 +93,16 @@
         </layout>
     </appender>
 
+    <!-- Test Appender -->
+    <appender name="testOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="true"/>
+        <param name="File" value="/search/passport/log/useroperation/testoperation.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %m %n" />
+        </layout>
+    </appender>
+
     <!--异步打印日志，提高效率-->
     <!--<appender name="AsyncUserOperationAppender" class="org.apache.log4j.AsyncAppender">-->
         <!--<param name="BufferSize" value="512"/>-->
@@ -105,7 +115,10 @@
     </logger>
     <!--end:userOperationLogger 用户操作行为记录log-->
 
-
+    <logger name="testOperationLogger" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="testOperationAppender" />
+    </logger>
 
 
 
