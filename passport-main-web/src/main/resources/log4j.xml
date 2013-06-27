@@ -99,7 +99,7 @@
         <param name="Append" value="true"/>
         <param name="File" value="/search/passport/log/useroperation/testoperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d %m %n|" /> <!--%d %m %n-->
+            <param name="ConversionPattern" value="%d %m %n" />
         </layout>
     </appender>
 
