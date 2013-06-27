@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.collect.Lists;
 
 import com.sogou.upd.passport.common.utils.KvUtils;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -26,6 +27,8 @@ import java.util.Random;
 public class TestAction {
     @Autowired
     private KvUtils kvUtils;
+    @Autowired
+    private RedisUtils redisUtils;
 
     private static Logger logger = LoggerFactory.getLogger(TestAction.class);
 
@@ -44,6 +47,8 @@ public class TestAction {
     public Object testInfo() throws Exception {
         return "count:" + count;
     }
+
+
 
     @RequestMapping(value = "set", method = RequestMethod.GET)
     @ResponseBody
@@ -80,6 +85,37 @@ public class TestAction {
         kvUtils.deleteTest("TEST" + new Random().nextInt() % 100000);
         if (count % 10000 == 0) {
             logger.info("DELETE COUNT: " + count);
+        }
+        return "success";
+    }
+
+
+    ////---------------------------------------------------------------
+    @RequestMapping(value = "setr", method = RequestMethod.GET)
+    @ResponseBody
+    public Object testSetRedis() throws Exception {
+        List<String> list = Lists.newLinkedList();
+        ActionStoreRecordDO action = new ActionStoreRecordDO();
+        for (int i=0; i<10; i++) {
+            action.setClientId(1120);
+            action.setDate(System.currentTimeMillis());
+            action.setIp("202.101.112.212");
+            list.add(new ObjectMapper().writeValueAsString(action));
+        }
+        redisUtils.setTest("TEST" + new Random().nextInt() % 100000,
+                        new ObjectMapper().writeValueAsString(list));
+        if (count % 10000 == 0) {
+            logger.info("SET COUNT: " + count);
+        }
+        return "success";
+    }
+
+    @RequestMapping(value = "getr", method = RequestMethod.GET)
+    @ResponseBody
+    public Object testGetRedis() {
+        redisUtils.getTest("TEST" + new Random().nextInt() % 100000);
+        if (count % 10000 == 0) {
+            logger.info("GET COUNT: " + count);
         }
         return "success";
     }
