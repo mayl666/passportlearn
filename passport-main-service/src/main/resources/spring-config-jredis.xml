@@ -15,7 +15,7 @@
 
     <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="${passport.redis.url}"/>
+        <property name="hostName" value="10.12.139.205"/>
         <property name="port" value="${passport.redis.port}"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
