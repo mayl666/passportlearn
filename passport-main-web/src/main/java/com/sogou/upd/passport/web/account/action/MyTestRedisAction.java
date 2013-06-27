@@ -66,9 +66,12 @@ public class MyTestRedisAction {
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         redisUtils.setWithinSeconds(userNameCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
+//        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+//        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+//        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
+//
+//        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+//        redisUtils.setWithinSeconds(ipSuccessCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
         return "success";
     }
@@ -80,13 +83,13 @@ public class MyTestRedisAction {
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         redisUtils.get(userNameCacheKey);
 
-        String ip = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
-        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-        redisUtils.get(ipFailedCacheKey);
-
-        //一小时内ip登陆成功100次出验证码
-        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-        redisUtils.get(ipSuccessCacheKey);
+//        String ip = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
+//        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+//        redisUtils.get(ipFailedCacheKey);
+//
+//        //一小时内ip登陆成功100次出验证码
+//        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+//        redisUtils.get(ipSuccessCacheKey);
 
         return "success";
     }
@@ -99,9 +102,12 @@ public class MyTestRedisAction {
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         objectMap.put(userNameCacheKey,1);
 
-        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-        objectMap.put(ipFailedCacheKey,1);
+//        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+//        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+//        objectMap.put(ipFailedCacheKey,1);
+//
+//        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+//        objectMap.put(ipSuccessCacheKey,1);
 
         redisUtils.multiSet(objectMap);
         return "success";
@@ -116,12 +122,12 @@ public class MyTestRedisAction {
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         keyList.add(userNameCacheKey);
 
-        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-        keyList.add(ipFailedCacheKey);
-
-        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-        keyList.add(ipSuccessCacheKey);
+//        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+//        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+//        keyList.add(ipFailedCacheKey);
+//
+//        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+//        keyList.add(ipSuccessCacheKey);
 
         redisUtils.multiGet(keyList);
         return "success";
