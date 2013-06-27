@@ -29,9 +29,9 @@ import java.util.Map;
 public class BaseProxyManager {
 
     @Autowired
-    private static MetricRegistry metrics;
+    private  MetricRegistry metrics;
 
-    private static final String HTTP_CLIENT_TIMEER="HTTP_CLIENT_TIMEER";
+    private static final String SHPP_TIMER ="SHPP_TIMER";
 
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
@@ -50,7 +50,7 @@ public class BaseProxyManager {
         Result result = new APIResultSupport(false);
         try {
             //监控代码
-            Timer timer=metrics.timer(HTTP_CLIENT_TIMEER);
+            Timer timer=metrics.timer(SHPP_TIMER);
             Timer.Context shppTimer=timer.time();
             Map<String, Object> map = this.execute(requestModel, signVariableStr);
             if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
