@@ -26,10 +26,10 @@ public class ProblemTypeDAOTest extends BaseDAOTest {
 
     @Before
     public void init() {
-      ProblemType problemType = new ProblemType();
-      problemType.setTypeName("注册问题");
-      int row = problemTypeDAO.insertProblemType(problemType);
-      Assert.assertTrue(row != 0);
+//      ProblemType problemType = new ProblemType();
+//      problemType.setTypeName("注册问题");
+//      int row = problemTypeDAO.insertProblemType(problemType);
+//      Assert.assertTrue(row != 0);
     }
 
     @After
@@ -44,6 +44,13 @@ public class ProblemTypeDAOTest extends BaseDAOTest {
 //      String problemType = problemTypeDAO.getProblemTypeById(262l);
 //      System.out.println("problemType:"+problemType);
 //      Assert.assertTrue(problemType != null);
+    }
+
+    @Test
+    public void testDeleteProblemTypeByName() {
+        String typeName = "注册问题';drop table problem_type";
+        int count = problemTypeDAO.deleteProblemTypeByName(typeName);
+        System.out.println("count:"+count);
     }
 
 }
