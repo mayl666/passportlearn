@@ -94,7 +94,7 @@ public class ConnectLoginController extends BaseConnectController {
         String uuid = UUID.randomUUID().toString();
         try {
             url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-            writeOAuthStateCookie(res, uuid, provider);
+//            writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
             return new ModelAndView(new RedirectView(url));
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(connectLoginParams.getType(), e.getError(), e.getDescription());
