@@ -275,20 +275,6 @@
              <version>3.4.0</version>
          </dependency>-->
 
-        <!--监控框架metrics-->
-        <dependency>
-            <groupId>com.codahale.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>3.0.0-RC1-SNAPSHOT</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.codahale.metrics</groupId>
-            <artifactId>metrics-jvm</artifactId>
-            <version>3.0.0-RC1-SNAPSHOT</version>
-            <type>pom</type>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -328,7 +314,7 @@
                     <stopPort>19993</stopPort>
                     <connectors>
                         <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>8080</port>
+                            <port>80</port>
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>
