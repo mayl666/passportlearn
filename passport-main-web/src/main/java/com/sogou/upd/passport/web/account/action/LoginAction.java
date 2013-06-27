@@ -48,8 +48,6 @@ public class LoginAction extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private CommonManager commonManager;
 
     @Autowired
     private HostHolder hostHolder;
@@ -103,11 +101,24 @@ public class LoginAction extends BaseController {
         result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 
         if (result.isSuccess()) {
-            String userName = loginParams.getUsername();
-            String userId = commonManager.getPassportIdByUsername(userName);
+            String userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
             String ip = getIp(request);
             secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+
+            //用户登录成功log
+            UserOperationLog userOperationLog=new UserOperationLog(userId,request.getRequestURI(),"0","0");
+            String referer=request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer",referer);
+            userOperationLog.putOtherMessage("login","Success!");
+            UserOperationLogUtil.log(userOperationLog);
+        }else {
+            //用户登录失败log
+            UserOperationLog userOperationLog=new UserOperationLog(loginParams.getUsername(),request.getRequestURI(),"0","0");
+            String referer=request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer",referer);
+            userOperationLog.putOtherMessage("login","failed!");
+            UserOperationLogUtil.log(userOperationLog);
         }
 
         result.setDefaultModel("xd", loginParams.getXd());

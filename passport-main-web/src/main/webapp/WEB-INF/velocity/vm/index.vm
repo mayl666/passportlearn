@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=589480" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=566964" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -41,9 +41,9 @@
                                 <a href="#">看不清，换一张</a>
                             </p>
                             <p class="func">
+                                <span class="checkbox checkbox-checked" id="RemChbSpan" ></span>
+                                <input type="checkbox" name="autoLogin" value="1" id="RemChb" checked data-target="RemChbSpan"/>
                                 <label for="RemChb">
-                                    <input type="checkbox" name="autoLogin" value="1" id="RemChb" checked data-target="RemChbSpan"/>
-                                    <span class="checkbox checkbox-checked" id="RemChbSpan" ></span>
                                     记住登录状态
                                 </label>
                                 <a href="/web/findpwd">找回密码</a>
@@ -104,8 +104,8 @@
         
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=934158"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=850896"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=775616"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=038403"></script>
     <script type="text/javascript">
         
 var server_data = '${data}';

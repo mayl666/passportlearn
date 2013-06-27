@@ -181,7 +181,7 @@ public class RedisUtils {
     public List<String> multiGet(List<String> keyList) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            return valueOperations.multiGet(keyList);
+            return  valueOperations.multiGet(keyList);
         } catch (Exception e) {
             logger.error("[Cache] get cache fail, keyCollec:" + keyList.toString(), e);
         }

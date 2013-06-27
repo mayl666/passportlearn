@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.account.form.security;
 
+import com.sogou.upd.passport.common.validation.constraints.SafeInput;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -8,8 +10,10 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class WebBindQuesParams extends WebPwdParams {
     @NotBlank(message = "密保问题不允许为空")
+    @SafeInput(message = "输入内容中包含非法字符，请重新输入！")
     protected String new_ques;
     @NotBlank(message = "密保答案不允许为空")
+    @SafeInput(message = "输入内容中包含非法字符，请重新输入！")
     protected String new_answer;
 
     public String getNew_ques() {

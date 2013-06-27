@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Phone;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -11,12 +12,14 @@ import org.hibernate.validator.constraints.NotBlank;
 public class BindMobileApiParams extends BaseUserApiParams {
 
     //原来绑定的手机号
+    @Phone
     private String oldMobile;
 
     //老手机的验证码
     private String oldCaptcha;
 
     //新手机号
+    @Phone
     private String newMobile;
 
     //新绑定手机号的验证码

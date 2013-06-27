@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=864126" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=111384" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -17,7 +17,7 @@
             </li>
             <li class="sep" style="display:none;">|</li>
             <li class="logout" style="display:none;">
-                <a href="https://account.sogou.com/web/logout">退出</a>
+                <a href="https://account.sogou.com/web/logout?client_id=1120">退出</a>
             </li>
         </ul>
     </div>
@@ -148,7 +148,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/main.js?t=922709"></script>
+    <script type="text/javascript" src="/./static/js/safe.js?t="></script>
     
     <script type="text/javascript">
 

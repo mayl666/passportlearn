@@ -78,10 +78,22 @@
         </dependency>
 
         <!-- Spring Bean Validation by shipengzhi -->
+        <!--过滤脚步等非法字符-->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.6.1</version>
+        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>4.3.0.Final</version>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.jsoup</groupId>-->
+                    <!--<artifactId>jsoup</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
@@ -255,13 +267,6 @@
             <groupId>org.jodd</groupId>
             <artifactId>jodd-props</artifactId>
             <version>3.4.0</version>
-        </dependency>
-
-        <!--过滤脚步等非法字符-->
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.7.2</version>
         </dependency>
 
         <!-- <dependency>

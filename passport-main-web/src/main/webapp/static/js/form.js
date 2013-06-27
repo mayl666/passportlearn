@@ -47,14 +47,14 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             return '输入字符请少于' + max + '个字';
         },
         nick: function(){
-            return '非纯数字的字母数字下划线组合';
+            return '小写字母开头非纯数字的数字字母下划线或组合';
         }
     };
 
     var NormalDesc = {
         email:"请输入您作为账号的邮箱名",
         password:"6-16位，字母(区分大小写)、数字、符号",
-        nick: "非纯数字的字母数字下划线组合"
+        nick: "小写字母开头非纯数字的数字字母下划线或组合"
     };
 
     var createSpan= function($el , className){
@@ -128,6 +128,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                         getSpan($el , 'error').show().html(desc);
                     }
                 },
+                onsinglesuccess: function($el,name){
+                    getSpan($el,'error').hide();
+                },
                 onformsuccess: function($el){
                     if( !config.onbeforesubmit || config.onbeforesubmit($el) ){
                         $.post($el.attr('action'), $el.serialize() , function(data){
@@ -142,6 +145,10 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                             }
                         });
                     }
+                    return false;
+                },
+                onformfail: function($el){
+                    $el.find('.desc').hide();
                     return false;
                 }
             });
@@ -190,7 +197,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 } , function(data){
                     data = utils.parseResponse(data);
                     if( +data.status ){
-                        $('.main-content .form form').find('.tel-valid-error').show().html(data.statusText? data.statusText : '系统错误');;
+                        if( +data.status != 20201 ){
+                            $('.main-content .form form').find('.tel-valid-error').show().html(data.statusText? data.statusText : '系统错误');;
+                        }
                         resetBtn();
                     }
                         

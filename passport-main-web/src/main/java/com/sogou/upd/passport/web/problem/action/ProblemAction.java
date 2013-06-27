@@ -11,7 +11,8 @@ import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +48,7 @@ public class ProblemAction extends BaseController {
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
     public String addProblem(HttpServletRequest request, Model model)
             throws Exception {
-        //检测是否登录
-        if (!hostHolder.isLogin()) {
-            return "redirect:/web/webLogin?ru="+request.getScheme()+"://account.sogou.com/web/problem/addProblem";
-        }
-
         Result result = new  APIResultSupport(false);
-        String userId = hostHolder.getPassportId();
-        result.setDefaultModel("userid", userId);
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
         result.setDefaultModel("problemTypeList",typeList);
@@ -68,12 +62,6 @@ public class ProblemAction extends BaseController {
     public Object saveProblem(HttpServletRequest request, WebAddProblemParameters addProblemParams)
             throws Exception {
         Result result = new APIResultSupport(false);
-        // TODO 获取并set passportId
-        String passportId = hostHolder.getPassportId();
-        if(Strings.isNullOrEmpty(passportId)){
-            result.setCode(ErrorUtil.ERR_CODE_PROBLEM_NOT_LOGIN);
-            return result.toString();
-        }
         //参数验证
         String validateResult = ControllerHelper.validateParams(addProblemParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -82,7 +70,10 @@ public class ProblemAction extends BaseController {
             return result.toString();
         }
 
-        addProblemParams.setPassportId(passportId);
+        String passportId = hostHolder.getPassportId();
+        if(!Strings.isNullOrEmpty(passportId)){
+            addProblemParams.setPassportId(passportId);
+        }
         result = problemManager.insertProblem(addProblemParams,getIp(request));
         return result.toString();
     }
