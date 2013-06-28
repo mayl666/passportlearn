@@ -46,8 +46,6 @@ public class LoginAction extends BaseController {
 
     @Autowired
     private LoginManager loginManager;
-    @Autowired
-    private SecureManager secureManager;
 
     @Autowired
     private HostHolder hostHolder;

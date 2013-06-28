@@ -62,8 +62,6 @@ public class LoginManagerImpl implements LoginManager {
     private CommonManager commonManager;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private TaskExecutor loginAfterTaskExecutor;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -209,27 +207,16 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public void doAfterLoginSuccess(final String username,final String ip,final String passportId,final int clientId){
-        loginAfterTaskExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                //记录登陆成功次数
-                operateTimesService.incLoginSuccessTimes(username, ip);
-                //登陆记录
-                secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
-
-            }
-        });
+    public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
+        //记录登陆次数
+        operateTimesService.incLoginSuccessTimes(username, ip);
+        //用户登陆记录
+        secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
     }
 
     @Override
     public void doAfterLoginFailed(final String username,final String ip){
-        loginAfterTaskExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                operateTimesService.incLoginFailedTimes(username, ip);
-            }
-        });
+        operateTimesService.incLoginFailedTimes(username, ip);
     }
 }
 
