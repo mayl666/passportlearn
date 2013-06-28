@@ -3,20 +3,17 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.UserOperationLogUtil;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +54,7 @@ public class LoginAction extends BaseController {
      */
     @RequestMapping(value = "/login/checkNeedCaptcha", method = RequestMethod.GET)
     @ResponseBody
-    public String checkNeedCaptcha(HttpServletRequest request,CheckUserNameExistParameters checkParam)
+    public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
 
         Result result = new APIResultSupport(false);
@@ -69,12 +66,12 @@ public class LoginAction extends BaseController {
             return result.toString();
         }
 
-        String username= URLDecoder.decode(checkParam.getUsername(), "utf-8");
+        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
         //校验是否需要验证码
-        boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(),username,getIp(request));
+        boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
 
         result.setSuccess(true);
-        result.setDefaultModel("needCaptcha",needCaptcha);
+        result.setDefaultModel("needCaptcha", needCaptcha);
         return result.toString();
     }
 
@@ -102,21 +99,21 @@ public class LoginAction extends BaseController {
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
-            loginManager.doAfterLoginSuccess(loginParams.getUsername(),ip,userId,clientId);
+            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
 
             //用户登录成功log
-            UserOperationLog userOperationLog=new UserOperationLog(userId,request.getRequestURI(),loginParams.getClient_id(),result.getCode());
-            String referer=request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer",referer);
-            userOperationLog.putOtherMessage("login","Success!");
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("login", "Success!");
             UserOperationLogUtil.log(userOperationLog);
-        }else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(),ip);
+        } else {
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
             //用户登录失败log
-            UserOperationLog userOperationLog=new UserOperationLog(loginParams.getUsername(),request.getRequestURI(),loginParams.getClient_id(),result.getCode());
-            String referer=request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer",referer);
-            userOperationLog.putOtherMessage("login","failed!");
+            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("login", "failed!");
             UserOperationLogUtil.log(userOperationLog);
         }
 
@@ -134,11 +131,11 @@ public class LoginAction extends BaseController {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
-        String userId=hostHolder.getPassportId();
+        String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog=new UserOperationLog(userId,request.getRequestURI(),"0","0");
-        String referer=request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer",referer);
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
