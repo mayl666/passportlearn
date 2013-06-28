@@ -38,14 +38,14 @@ public class TestAction {
     @RequestMapping(value = "reset", method = RequestMethod.GET)
     @ResponseBody
     public Object testReset() throws Exception {
-        count = 0;
-        return "重置COUNT为："+count;
+        kvUtils.COUNT = 0;
+        return "重置COUNT为："+kvUtils.COUNT;
     }
 
     @RequestMapping(value = "info", method = RequestMethod.GET)
     @ResponseBody
     public Object testInfo() throws Exception {
-        return "count:" + count;
+        return "count:" + kvUtils.COUNT;
     }
 
 
@@ -63,9 +63,6 @@ public class TestAction {
         }
         kvUtils.setTest("TEST" + new Random().nextInt() % 100000,
                         new ObjectMapper().writeValueAsString(list));
-        if (count % 10000 == 0) {
-            logger.info("SET COUNT: " + count);
-        }
         return "success";
     }
 
@@ -73,9 +70,6 @@ public class TestAction {
     @ResponseBody
     public Object testGet() {
         kvUtils.getTest("TEST" + new Random().nextInt() % 100000);
-        if (count % 10000 == 0) {
-            logger.info("GET COUNT: " + count);
-        }
         return "success";
     }
 
@@ -83,9 +77,6 @@ public class TestAction {
     @ResponseBody
     public Object testDelete() {
         kvUtils.deleteTest("TEST" + new Random().nextInt() % 100000);
-        if (count % 10000 == 0) {
-            logger.info("DELETE COUNT: " + count);
-        }
         return "success";
     }
 
