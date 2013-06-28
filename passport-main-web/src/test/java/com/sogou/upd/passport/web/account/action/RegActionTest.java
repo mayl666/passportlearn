@@ -24,7 +24,7 @@ public class RegActionTest extends BaseActionTest {
         params.put("username", "dasdasdasdasdasd1");
         params.put("password", "asasasa");
 //        params.put("captcha", "GVD2X");
-        String result  = sendPost("http://account.sogou.com/web/reguser", params);
+        String result  = sendPost("http://account.sogou.com/web/login", params);
         System.out.println(result);
     }
 

@@ -81,7 +81,8 @@ public class LoginAction extends BaseController {
      * @param loginParams 传入的参数
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, Model model, WebLoginParameters loginParams)
+    @ResponseBody
+    public Object login(HttpServletRequest request, Model model, WebLoginParameters loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -97,7 +98,7 @@ public class LoginAction extends BaseController {
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
         if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
+            String userId = loginParams.getUsername();
             int clientId = Integer.parseInt(loginParams.getClient_id());
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
 
@@ -116,10 +117,11 @@ public class LoginAction extends BaseController {
             userOperationLog.putOtherMessage("login", "failed!");
             UserOperationLogUtil.log(userOperationLog);
         }
+//
+//        result.setDefaultModel("xd", loginParams.getXd());
+//        model.addAttribute("data", result.toString());
 
-        result.setDefaultModel("xd", loginParams.getXd());
-        model.addAttribute("data", result.toString());
-        return "/login/api";
+        return result.toString();
     }
 
     /**
