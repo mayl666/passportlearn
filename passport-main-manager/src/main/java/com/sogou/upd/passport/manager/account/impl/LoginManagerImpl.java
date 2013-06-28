@@ -167,7 +167,8 @@ public class LoginManagerImpl implements LoginManager {
 //            } else {
 //                result = sgLoginApiManager.webAuthUser(authUserApiParams);
 //            }
-
+             result.setSuccess(true);
+             result.setMessage("登录成功");
             //记录返回结果
             if (result.isSuccess()) {
                 result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
@@ -178,6 +179,7 @@ public class LoginManagerImpl implements LoginManager {
                 }
                 result.setDefaultModel("ru", ru);
             } else {
+              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
                 //3次失败需要输入验证码
 //                if (needCaptcha) {
 //                    result.setDefaultModel("needCaptcha", true);
@@ -192,7 +194,6 @@ public class LoginManagerImpl implements LoginManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
         }
-      result.setSuccess(true);
         return result;
     }
 

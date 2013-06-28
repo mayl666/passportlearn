@@ -130,6 +130,7 @@ public class RegManagerImpl implements RegManager {
 //          } else {
 //            result = sgRegisterApiManager.regMailUser(regEmailApiParams);
 //          }
+
           break;
         case PHONE://手机号
           RegMobileCaptchaApiParams regMobileCaptchaApiParams=buildProxyApiParams(username,password,captcha,clientId,ip);
@@ -140,6 +141,8 @@ public class RegManagerImpl implements RegManager {
 //          }
           break;
       }
+      result.setSuccess(true);
+      result.setMessage("注册成功");
     } catch (ServiceException e) {
       logger.error("webRegister fail,passportId:" + regParams.getUsername(), e);
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -155,7 +158,6 @@ public class RegManagerImpl implements RegManager {
     } else {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     }
-    result.setSuccess(true);
     return result;
   }
 

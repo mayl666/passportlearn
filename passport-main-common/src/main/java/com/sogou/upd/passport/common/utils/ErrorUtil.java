@@ -140,6 +140,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_THIRD_NOTALLOWED = "20244";
     // 手机用户不允许此操作
     public static final String ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED = "20245";
+  // 密码修改错误
+  public static final String ERR_CODE_ACCOUNT_UPDATEPWD_ERROR = "20246";
 
 
     /* ============================================================================ */
@@ -313,6 +315,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "验证码验证失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已绑定其他账号");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_UPDATEPWD_ERROR, "修改密码失败");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");

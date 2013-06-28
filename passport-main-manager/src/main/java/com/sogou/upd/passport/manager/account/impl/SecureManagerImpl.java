@@ -436,16 +436,19 @@ public class SecureManagerImpl implements SecureManager {
 //            } else {
 //                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
 //            }
+             result.setSuccess(true);
+             result.setMessage("修改密码成功");
 
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
+            }else {
+              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_UPDATEPWD_ERROR);
             }
         } catch (ServiceException e) {
             logger.error("resetWebPassword Fail username:" + username, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
-      result.setSuccess(true);
         return result;
     }
 

@@ -305,7 +305,7 @@ public class SecureAction extends BaseController {
             return result;
         }
 
-        String userId = "dsadasdasd@sina.com";
+        String userId = updateParams.getPassport_id();
 
         switch (AccountDomainEnum.getAccountDomain(userId)) {
             case SOHU:
