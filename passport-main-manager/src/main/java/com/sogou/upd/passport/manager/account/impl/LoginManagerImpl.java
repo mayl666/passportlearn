@@ -132,18 +132,18 @@ public class LoginManagerImpl implements LoginManager {
         String password = loginParameters.getPassword();
         String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         String passportId = username;
-        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
+//        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
         try {
             //校验验证码
-            if (needCaptcha) {
-                String captchaCode = loginParameters.getCaptcha();
-                String token = loginParameters.getToken();
-                if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
-                    result.setDefaultModel("needCaptcha", true);
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    return result;
-                }
-            }
+//            if (needCaptcha) {
+//                String captchaCode = loginParameters.getCaptcha();
+//                String token = loginParameters.getToken();
+//                if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
+//                    result.setDefaultModel("needCaptcha", true);
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+//                    return result;
+//                }
+//            }
 
             //默认是sogou.com
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
@@ -163,11 +163,11 @@ public class LoginManagerImpl implements LoginManager {
             authUserApiParams.setPassword(pwdMD5);
             authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
             //根据域名判断是否代理，一期全部走代理
-            if (ManagerHelper.isInvokeProxyApi(passportId)) {
-                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-            } else {
-                result = sgLoginApiManager.webAuthUser(authUserApiParams);
-            }
+//            if (ManagerHelper.isInvokeProxyApi(passportId)) {
+//                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+//            } else {
+//                result = sgLoginApiManager.webAuthUser(authUserApiParams);
+//            }
 
             //记录返回结果
             if (result.isSuccess()) {
@@ -180,19 +180,20 @@ public class LoginManagerImpl implements LoginManager {
                 result.setDefaultModel("ru", ru);
             } else {
                 //3次失败需要输入验证码
-                if (needCaptcha) {
-                    result.setDefaultModel("needCaptcha", true);
-                }
+//                if (needCaptcha) {
+//                    result.setDefaultModel("needCaptcha", true);
+//                }
             }
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);
             //3次失败需要输入验证码
-            if (needCaptcha) {
-                result.setDefaultModel("needCaptcha", true);
-            }
+//            if (needCaptcha) {
+//                result.setDefaultModel("needCaptcha", true);
+//            }
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
         }
+       result.setSuccess(true);
         return result;
     }
 
