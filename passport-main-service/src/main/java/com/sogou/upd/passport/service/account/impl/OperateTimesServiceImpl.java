@@ -29,6 +29,7 @@ import java.util.Set;
 public class OperateTimesServiceImpl implements OperateTimesService {
 
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
+    private static final Logger loggerBlackList = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
     @Autowired
     private RedisUtils redisUtils;
 
