@@ -25,4 +25,8 @@ public interface LoginManager {
      * @return
      */
     public boolean needCaptchaCheck(String client_id, String username, String ip);
+
+    public void doAfterLoginSuccess(final String username,final String ip,final String passportId,final int clientId);
+
+    public void doAfterLoginFailed(final String username,final String ip);
 }

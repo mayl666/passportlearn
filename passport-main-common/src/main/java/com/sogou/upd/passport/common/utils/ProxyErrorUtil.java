@@ -83,6 +83,7 @@ public class ProxyErrorUtil extends ErrorUtil {
 
         // bindmobile 绑定手机号
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindmobile.1", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("bindmobile.7", ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT);//手机号操作太过频繁
 
         // unbindmobile 解绑手机号
         SHPPERRCODE_SGPPERRCODE_MAP.put("unbindmobile.1", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误

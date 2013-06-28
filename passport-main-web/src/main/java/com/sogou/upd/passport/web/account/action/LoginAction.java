@@ -89,6 +89,7 @@ public class LoginAction extends BaseController {
     public String login(HttpServletRequest request, Model model, WebLoginParameters loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
+        String ip = getIp(request);
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -98,23 +99,23 @@ public class LoginAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/login/api";
         }
-        result = loginManager.accountLogin(loginParams, getIp(request), request.getScheme());
+        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
-            String ip = getIp(request);
-            secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+            loginManager.doAfterLoginSuccess(loginParams.getUsername(),ip,userId,clientId);
 
             //用户登录成功log
-            UserOperationLog userOperationLog=new UserOperationLog(userId,request.getRequestURI(),"0","0");
+            UserOperationLog userOperationLog=new UserOperationLog(userId,request.getRequestURI(),loginParams.getClient_id(),result.getCode());
             String referer=request.getHeader("referer");
             userOperationLog.putOtherMessage("referer",referer);
             userOperationLog.putOtherMessage("login","Success!");
             UserOperationLogUtil.log(userOperationLog);
         }else {
+            loginManager.doAfterLoginFailed(loginParams.getUsername(),ip);
             //用户登录失败log
-            UserOperationLog userOperationLog=new UserOperationLog(loginParams.getUsername(),request.getRequestURI(),"0","0");
+            UserOperationLog userOperationLog=new UserOperationLog(loginParams.getUsername(),request.getRequestURI(),loginParams.getClient_id(),result.getCode());
             String referer=request.getHeader("referer");
             userOperationLog.putOtherMessage("referer",referer);
             userOperationLog.putOtherMessage("login","failed!");
@@ -122,9 +123,6 @@ public class LoginAction extends BaseController {
         }
 
         result.setDefaultModel("xd", loginParams.getXd());
-        if (ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
-            result.setMessage("用户名或密码错误");
-        }
         model.addAttribute("data", result.toString());
         return "/login/api";
     }
