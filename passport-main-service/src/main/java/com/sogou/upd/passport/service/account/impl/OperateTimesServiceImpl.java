@@ -29,7 +29,8 @@ import java.util.Set;
 public class OperateTimesServiceImpl implements OperateTimesService {
 
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
-    private static final Logger loggerBlackList = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
+    private static final org.apache.log4j.Logger regBlackListLogger = org.apache.log4j.Logger.getLogger("com.sogou.upd.passport.blackListFileAppender");
+    private static final org.apache.log4j.Logger loginBlackListLogger = org.apache.log4j.Logger.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
     @Autowired
     private RedisUtils redisUtils;
 
@@ -142,8 +143,12 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String loginSuccessUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
             keyList.add(loginSuccessUserNameKey);
             maxList.add(LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
+            boolean result = checkTimesByKeyList(keyList,maxList);
 
-            return checkTimesByKeyList(keyList,maxList);
+            if(result){
+                loginBlackListLogger.info("checkLoginUserInBlackList:username="+username);
+            }
+            return result;
         } catch (Exception e) {
             logger.error("userInBlackList:username" + username, e);
             throw new ServiceException(e);
@@ -208,32 +213,35 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkRegInBlackList(String ip,String cookieStr) throws ServiceException {
+    public boolean checkRegInBlackList(String ip, String cookieStr) throws ServiceException {
         //修改为list模式添加cookie处理 by mayan
         try {
-          //cookie与ip映射
-          String cookieCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-          Set<String> setIpVal= redisUtils.smember(cookieCacheKey);
-          if (CollectionUtils.isNotEmpty(setIpVal)) {
-            int sz = setIpVal.size();
-            if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
-              return true;
+            //cookie与ip映射
+            String cookieCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+            Set<String> setIpVal = redisUtils.smember(cookieCacheKey);
+            if (CollectionUtils.isNotEmpty(setIpVal)) {
+                int sz = setIpVal.size();
+                if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
+                    regBlackListLogger.info("checkRegInBlackList:ip=" + ip+",cookieStr="+cookieStr);
+                    return true;
+                }
             }
-          }
-          //通过ip+cookie限制注册次数
-          String ipCookieKey= CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" +cookieStr;
-          if(checkTimesByKey(ipCookieKey,LoginConstant.REGISTER_IP_COOKIE_LIMITED)){
-               return true;
-          }
+            //通过ip+cookie限制注册次数
+            String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" + cookieStr;
+            if (checkTimesByKey(ipCookieKey, LoginConstant.REGISTER_IP_COOKIE_LIMITED)) {
+                regBlackListLogger.info("checkRegInBlackList:ip=" + ip+",cookieStr="+cookieStr);
+                return true;
+            }
 
-          //ip与cookie映射
-            String ipCacheKey =  CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            Set<String> setCookieVal= redisUtils.smember(ipCacheKey);
+            //ip与cookie映射
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+            Set<String> setCookieVal = redisUtils.smember(ipCacheKey);
             if (CollectionUtils.isNotEmpty(setCookieVal)) {
-              int sz = setCookieVal.size();
-              if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
-                 return true;
-              }
+                int sz = setCookieVal.size();
+                if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
+                    regBlackListLogger.info("checkRegInBlackList:ip=" + ip+",cookieStr="+cookieStr);
+                    return true;
+                }
             }
         } catch (Exception e) {
             logger.error("checkRegIPInBlackList:ip" + ip, e);
@@ -270,7 +278,12 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 keyList.add(ipSuccessCacheKey);
                 maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
             }
-            return  checkTimesByKeyList(keyList,maxList);
+
+            boolean result = checkTimesByKeyList(keyList,maxList);
+            if(result){
+                loginBlackListLogger.info("loginFailedTimesNeedCaptcha:username="+username+",ip="+ip);
+            }
+            return result;
         } catch (Exception e) {
             logger.error("getAccountLoginFailedCount:username" + username+",ip:"+ip, e);
             throw new ServiceException(e);
