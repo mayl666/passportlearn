@@ -189,6 +189,9 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
             errorLog.append(result.toString());
             logger.error(errorLog.toString());
         }
+        if (ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE.equals(result.getCode())) {
+            result.setMessage("新手机验证码错误或已过期");
+        }
         return result;
     }
 
