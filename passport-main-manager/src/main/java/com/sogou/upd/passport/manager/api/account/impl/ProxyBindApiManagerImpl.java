@@ -168,6 +168,9 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         if(!StringUtil.isBlank(oldMobile)&&!StringUtil.isBlank(oldCaptcha)){
              Result result= this.unbindMobileByCaptcha(oldMobile,oldCaptcha);
             if(!result.isSuccess()){
+                if (ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE.equals(result.getCode())) {
+                    result.setMessage("原绑定手机验证码错误或已过期");
+                }
                return result;
             }
         }
