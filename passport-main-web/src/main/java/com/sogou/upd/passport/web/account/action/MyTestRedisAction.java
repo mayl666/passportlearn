@@ -34,14 +34,11 @@ public class MyTestRedisAction {
 
     private static final int MAX = 1000000;
 
-    @Autowired
-    private TaskExecutor loginAfterTaskExecutor;
-
     @RequestMapping(value = "/printMessages", method = RequestMethod.GET)
     @ResponseBody
     public Object printMessages() {
         for(int i = 0; i < 100; i++) {
-            loginAfterTaskExecutor.execute(new MessagePrinterTask("Message" + i));
+            // loginAfterTaskExecutor.execute(new MessagePrinterTask("Message" + i));
         }
         return "success";
     }
