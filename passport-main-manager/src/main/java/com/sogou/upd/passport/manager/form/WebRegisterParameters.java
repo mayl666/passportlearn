@@ -30,7 +30,6 @@ public class WebRegisterParameters {
   @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
   @NotBlank(message = "请输入密码!")
   private String password;
-  @NotBlank(message = "验证码不允许为空!")
   private String captcha;//验证码
 //  @NotBlank(message = "标识码不允许为空!")
   private String token;//标识码
