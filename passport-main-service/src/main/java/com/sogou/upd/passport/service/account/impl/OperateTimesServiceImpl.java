@@ -11,7 +11,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.SetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     private RedisUtils redisUtils;
     @Autowired
     private TaskExecutor loginAfterTaskExecutor;
+    @Autowired
+    private TaskExecutor regAfterTaskExecutor;
 
     @Override
     public long recordTimes(String cacheKey,long timeout) throws ServiceException {
@@ -225,36 +226,41 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public void incRegTimes(String ip, String cookieStr) throws ServiceException {
-        //修改为list模式添加cookie处理 by mayan
-        try {
-            if (!Strings.isNullOrEmpty(cookieStr)) {
-                //ip与cookie列表映射
-                String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-                if (redisUtils.checkKeyIsExist(ipCacheKey)) {
-                    redisUtils.sadd(ipCacheKey, cookieStr);
-                } else {
-                    redisUtils.sadd(ipCacheKey, cookieStr);
-                    redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
-                }
+    public void incRegTimes(final String ip,final String cookieStr) throws ServiceException {
+        regAfterTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                //修改为list模式添加cookie处理 by mayan
+                try {
+                    if (!Strings.isNullOrEmpty(cookieStr)) {
+                        //ip与cookie列表映射
+                        String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+                        if (redisUtils.checkKeyIsExist(ipCacheKey)) {
+                            redisUtils.sadd(ipCacheKey, cookieStr);
+                        } else {
+                            redisUtils.sadd(ipCacheKey, cookieStr);
+                            redisUtils.expire(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                        }
 
-                //cookie与ip列表映射
-                String cookieCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-                if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
-                    redisUtils.sadd(cookieCacheKey, ip);
-                } else {
-                    redisUtils.sadd(cookieCacheKey, ip);
-                    redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                        //cookie与ip列表映射
+                        String cookieCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+                        if (redisUtils.checkKeyIsExist(cookieCacheKey)) {
+                            redisUtils.sadd(cookieCacheKey, ip);
+                        } else {
+                            redisUtils.sadd(cookieCacheKey, ip);
+                            redisUtils.expire(cookieCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                        }
+                    }
+                    //ip与cookie映射
+                    String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" + cookieStr;
+                    recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                } catch (Exception e) {
+                    logger.error("incRegIPTimes:ip" + ip, e);
+                    throw new ServiceException(e);
                 }
             }
+        });
 
-            //ip与cookie映射
-            String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" + cookieStr;
-            recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEDAY);
-        } catch (Exception e) {
-            logger.error("incRegIPTimes:ip" + ip, e);
-            throw new ServiceException(e);
-        }
 
     }
 
