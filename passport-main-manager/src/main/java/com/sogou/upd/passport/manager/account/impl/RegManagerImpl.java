@@ -110,11 +110,11 @@ public class RegManagerImpl implements RegManager {
         case OTHER://外域邮件注册
         case UNKNOWN:
           String token=regParams.getToken();
-          //判断验证码
-          if(!accountService.checkCaptchaCode(token,captcha)){
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-            return result;
-          }
+//          //判断验证码
+//          if(!accountService.checkCaptchaCode(token,captcha)){
+//            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+//            return result;
+//          }
           //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
           if(Strings.isNullOrEmpty(ru)){
             if(isSogou){
@@ -125,19 +125,19 @@ public class RegManagerImpl implements RegManager {
           }
           RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
                                                                          clientId,ru);
-          if (ManagerHelper.isInvokeProxyApi(username)) {
-            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-          } else {
-            result = sgRegisterApiManager.regMailUser(regEmailApiParams);
-          }
+//          if (ManagerHelper.isInvokeProxyApi(username)) {
+//            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//          } else {
+//            result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+//          }
           break;
         case PHONE://手机号
           RegMobileCaptchaApiParams regMobileCaptchaApiParams=buildProxyApiParams(username,password,captcha,clientId,ip);
-          if (ManagerHelper.isInvokeProxyApi(username)) {
-            result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-          } else {
-            result=sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-          }
+//          if (ManagerHelper.isInvokeProxyApi(username)) {
+//            result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+//          } else {
+//            result=sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+//          }
           break;
       }
     } catch (ServiceException e) {
@@ -155,6 +155,7 @@ public class RegManagerImpl implements RegManager {
     } else {
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
     }
+    result.setSuccess(true);
     return result;
   }
 

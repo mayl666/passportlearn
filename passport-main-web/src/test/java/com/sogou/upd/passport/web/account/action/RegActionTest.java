@@ -23,7 +23,7 @@ public class RegActionTest extends BaseActionTest {
         params.put("client_id", "1100");
         params.put("username", "dasdasdasdasdasd1");
         params.put("password", "asasasa");
-        params.put("captcha", "GVD2X");
+//        params.put("captcha", "GVD2X");
         String result  = sendPost("http://account.sogou.com/web/reguser", params);
         System.out.println(result);
     }
