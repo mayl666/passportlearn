@@ -157,6 +157,8 @@ public class SecureAction extends BaseController {
                 return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
                 return "redirect:/web/security";
+            case PHONE:
+                return "redirect:/web/security";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -579,7 +581,8 @@ public class SecureAction extends BaseController {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
+            int sep = validateResult.indexOf("|");
+            result.setMessage(sep == -1 ? validateResult : validateResult.substring(0, sep));
             return result.toString();
         }
         String userId = hostHolder.getPassportId();
