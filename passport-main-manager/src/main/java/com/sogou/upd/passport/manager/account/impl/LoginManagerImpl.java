@@ -2,16 +2,20 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.UserOperationLogUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -58,6 +62,8 @@ public class LoginManagerImpl implements LoginManager {
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private SecureManager secureManager;
     @Autowired
     private TaskExecutor loginAfterTaskExecutor;
 
@@ -139,13 +145,6 @@ public class LoginManagerImpl implements LoginManager {
                 if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
                     result.setDefaultModel("needCaptcha", true);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    loginAfterTaskExecutor.execute(new LoginFailedTask(username,ip));
-//                    taskExecutor.execute(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            //To change body of implemented methods use File | Settings | File Templates.
-//                        }
-//                    });
                     return result;
                 }
             }
@@ -176,8 +175,6 @@ public class LoginManagerImpl implements LoginManager {
 
             //记录返回结果
             if (result.isSuccess()) {
-                operateTimesService.incLoginSuccessTimes(username, ip);
-                // 种sohu域cookie
                 result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
                 //设置来源
                 String ru = loginParameters.getRu();
@@ -186,15 +183,12 @@ public class LoginManagerImpl implements LoginManager {
                 }
                 result.setDefaultModel("ru", ru);
             } else {
-//                operateTimesService.incLoginFailedTimes(username, ip);
-                loginAfterTaskExecutor.execute(new LoginFailedTask(username,ip));
                 //3次失败需要输入验证码
                 if (needCaptcha) {
                     result.setDefaultModel("needCaptcha", true);
                 }
             }
         } catch (Exception e) {
-            operateTimesService.incLoginFailedTimes(username, ip);
             logger.error("accountLogin fail,passportId:" + passportId, e);
             //3次失败需要输入验证码
             if (needCaptcha) {
@@ -216,22 +210,28 @@ public class LoginManagerImpl implements LoginManager {
         return false;
     }
 
+    @Override
+    public void doAfterLoginSuccess(final String username,final String ip,final String passportId,final int clientId){
+        loginAfterTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                //记录登陆成功次数
+                operateTimesService.incLoginSuccessTimes(username, ip);
+                //登陆记录
+                secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
 
-    class LoginFailedTask implements Runnable{
-        private String username;
-        private String ip;
+            }
+        });
+    }
 
-        @Autowired
-        private OperateTimesService operateTimesService;
-
-        public LoginFailedTask(String username,String ip) {
-            this.username = username;
-            this.ip = ip;
-        }
-
-        public void run() {
-            operateTimesService.incLoginFailedTimes(username, ip);
-        }
+    @Override
+    public void doAfterLoginFailed(final String username,final String ip){
+        loginAfterTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                operateTimesService.incLoginFailedTimes(username, ip);
+            }
+        });
     }
 }
 
