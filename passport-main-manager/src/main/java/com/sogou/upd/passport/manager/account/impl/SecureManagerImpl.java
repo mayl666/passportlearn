@@ -537,6 +537,7 @@ public class SecureManagerImpl implements SecureManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+      return result;
     }
 
     /*
