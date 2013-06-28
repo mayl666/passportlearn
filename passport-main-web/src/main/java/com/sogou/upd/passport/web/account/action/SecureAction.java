@@ -157,6 +157,8 @@ public class SecureAction extends BaseController {
                 return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
                 return "redirect:/web/security";
+            case PHONE:
+                return "redirect:/web/security";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
