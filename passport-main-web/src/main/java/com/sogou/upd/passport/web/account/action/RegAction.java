@@ -108,10 +108,10 @@ public class RegAction extends BaseController {
 
         //检验用户名是否存在
         String username = regParams.getUsername();
-        result = checkAccountNotExists(username);
-        if (!result.isSuccess()) {
-            return result.toString();
-        }
+//        result = checkAccountNotExists(username);
+//        if (!result.isSuccess()) {
+//            return result.toString();
+//        }
 
         result = regManager.webRegister(regParams, ip);
         if (result.isSuccess()) {
