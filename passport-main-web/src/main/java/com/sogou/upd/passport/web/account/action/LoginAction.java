@@ -120,7 +120,7 @@ public class LoginAction extends BaseController {
 //
 //        result.setDefaultModel("xd", loginParams.getXd());
 //        model.addAttribute("data", result.toString());
-
+          result.setSuccess(true);
         return result.toString();
     }
 
