@@ -168,6 +168,9 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         if(!StringUtil.isBlank(oldMobile)&&!StringUtil.isBlank(oldCaptcha)){
              Result result= this.unbindMobileByCaptcha(oldMobile,oldCaptcha);
             if(!result.isSuccess()){
+                if (ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE.equals(result.getCode())) {
+                    result.setMessage("原密保手机验证码错误或已过期");
+                }
                return result;
             }
         }
@@ -185,6 +188,9 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
             errorLog.append(" ,result=");
             errorLog.append(result.toString());
             logger.error(errorLog.toString());
+        }
+        if (ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE.equals(result.getCode())) {
+            result.setMessage("新手机验证码错误或已过期");
         }
         return result;
     }

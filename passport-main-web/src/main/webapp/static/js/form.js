@@ -140,7 +140,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                             data = utils.parseResponse(data);
                             
                             if( !+data.status ){
-                                $el.find('.form-success').show().find('span').html('提交成功');
+                                $el.find('.form-success').show().find('span').html( data.statusText? data.statusText: '提交成功');
                                 config.onsuccess && config.onsuccess($el , data);
                             }else{
                                 $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');

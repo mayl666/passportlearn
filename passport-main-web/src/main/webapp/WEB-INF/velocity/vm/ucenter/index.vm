@@ -76,11 +76,13 @@
                         <span class="value"><{sec_email?sec_email:'未绑定'}></span>
                         <a href="/web/security/email" class="btn medium-btn"><{sec_email?'修改':'绑定'}></a>
                     </p>
+                    <% if actype != 'phone' %>
                     <p>
-                        <span class="label">绑定手机：</span>
+                        <span class="label">密保手机：</span>
                         <span class="value"><{sec_mobile?sec_mobile:'未绑定'}></span>
                         <a href="/web/security/mobile" class="btn medium-btn"><{sec_mobile?'修改':'绑定'}></a>
                     </p>
+                    <% endif %>
                     <p>
                         <span class="label">密保问题：</span>
                         <span class="value"><{sec_ques?'已设置':'未设置'}></span>
@@ -109,7 +111,7 @@
                 <p class="hr"></p>
                 
                 
-                <span class="item dynamic"><a href="/web/security/mobile">绑定手机</a></span>
+                <span class="item dynamic"><a href="/web/security/mobile">修改密保手机</a></span>
                 
                 
                 <span class="item dynamic"><a href="/web/security/question">修改密保问题</a></span>

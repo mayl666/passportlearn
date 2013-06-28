@@ -105,10 +105,12 @@
                             <p class="stitle">密保邮箱：</p>
                             <p class="desc"><{sec_email?sec_email:'未绑定'}></p>
                         </li>
+                        <% if actype != 'phone' %>
                         <li>
-                            <p class="stitle">绑定手机：</p>
+                            <p class="stitle">密保手机：</p>
                             <p class="desc"><{sec_mobile?sec_mobile:'未绑定'}></p>
                         </li>
+                        <% endif %>
                         <li>
                             <p class="stitle">密保问题：</p>
                             <p class="desc"><{sec_ques?'已设置':'未设置'}></p>
