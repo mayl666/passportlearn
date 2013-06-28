@@ -27,7 +27,7 @@ public class KvUtils {
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
     private static String KEY_PREFIX = "20002/action_records/";
     private static String KEY_PREFIX_TEST = "0/0/";
-    private static int COUNT = 0;
+    public static int COUNT = 0;
 
     private static RedisTemplate kvTemplate;
     private static org.apache.log4j.Logger testOperationLogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
@@ -62,10 +62,11 @@ public class KvUtils {
         try {
             long begin = System.currentTimeMillis();
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
+            String res = valueOperations.get(storeKey);
             long end = System.currentTimeMillis();
             long operTime = end - begin;
             testOperationLogger.info(operTime);
-            return valueOperations.get(storeKey);
+            return res;
         } catch (Exception e) {
             COUNT++;
             // logger.info("出现GetKV错误!!!"+COUNT);

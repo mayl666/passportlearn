@@ -63,6 +63,8 @@ public class LoginApiController extends BaseController {
             int clientId = params.getClient_id();
             String ip = getIp(request);
             secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+        } else if (ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
+            result.setMessage("用户名或密码错误");
         }
 
         return result.toString();

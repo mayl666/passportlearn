@@ -60,6 +60,19 @@
             <artifactId>xstream</artifactId>
             <version>1.4.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>3.0.0-RC1-SNAPSHOT</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-jvm</artifactId>
+            <version>3.0.0-RC1-SNAPSHOT</version>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     <build>

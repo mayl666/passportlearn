@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.api;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -12,6 +14,7 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -25,9 +28,14 @@ import java.util.Map;
 @Component
 public class BaseProxyManager {
 
+    @Autowired
+    private  MetricRegistry metrics;
+
+    private static final String SHPP_TIMER ="SHPP_TIMER";
+
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
-    public  Result executeResult(final RequestModel requestModel){
+    protected  Result executeResult(final RequestModel requestModel){
         return executeResult(requestModel, null);
     }
 
@@ -38,9 +46,12 @@ public class BaseProxyManager {
      * @param signVariableStr 计算code时第一个参数值，如果为null默认是userid
      * @return
      */
-    public Result executeResult(final RequestModel requestModel, String signVariableStr) {
+    protected Result executeResult(final RequestModel requestModel, String signVariableStr) {
         Result result = new APIResultSupport(false);
         try {
+            //监控代码
+            Timer timer=metrics.timer(SHPP_TIMER);
+            Timer.Context shppTimer=timer.time();
             Map<String, Object> map = this.execute(requestModel, signVariableStr);
             if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
                 String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
@@ -53,6 +64,8 @@ public class BaseProxyManager {
                 this.handSHPPMap(map);   //搜狐Passport接口返回的无用信息删除掉
                 result.setModels(map);
             }
+            //监控代码
+            shppTimer.stop();
         } catch (Exception e) {
             log.error(requestModel.getUrl() + " execute error ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -62,10 +75,12 @@ public class BaseProxyManager {
 
     }
 
-    protected Map<String, Object> execute(final RequestModel requestModel, String signVariableStr) {
+    private Map<String, Object> execute(final RequestModel requestModel, String signVariableStr) {
         if (requestModel == null) {
             throw new IllegalArgumentException("requestModel may not be null");
         }
+
+
 
         //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
         this.paramNameAdapter(requestModel);
@@ -74,6 +89,8 @@ public class BaseProxyManager {
         this.setDefaultParam(requestModel, signVariableStr);
 
         return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
+
+
     }
 
     /**
@@ -83,7 +100,7 @@ public class BaseProxyManager {
      * @param requestModel
      */
 
-    protected void setDefaultParam(final RequestModel requestModel, String signVariableStr) {
+    private void setDefaultParam(final RequestModel requestModel, String signVariableStr) {
         //计算默认的codeserverSecret
         if (Strings.isNullOrEmpty(signVariableStr)) {
             signVariableStr = requestModel.getParam("userid").toString();

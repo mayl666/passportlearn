@@ -149,7 +149,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             String cacheKey = buildCacheKeyForEmailLimited(passportId, clientId, module, email);
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 int checkNum = Integer.parseInt(redisUtils.get(cacheKey));
-                if (checkNum > MailUtils.MAX_EMAIL_COUNT_ONEDAY) {
+                if (checkNum >= MailUtils.MAX_EMAIL_COUNT_ONEDAY) {
                     // 当日邮件发送次数不超过上限
                     return false;
                 }
