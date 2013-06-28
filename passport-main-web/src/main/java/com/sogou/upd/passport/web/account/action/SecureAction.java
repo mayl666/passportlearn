@@ -71,7 +71,7 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
-
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
         // 第三方账号不显示安全信息
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
             result.setDefaultModel("disable", true);
@@ -85,6 +85,10 @@ public class SecureAction extends BaseController {
             nickName = userId;
         }
         result.setDefaultModel("username", nickName);
+        if (domain == AccountDomainEnum.PHONE) {
+            result.setDefaultModel("actype", "phone");
+        }
+
         model.addAttribute("data", result.toString());
 
         return "safe/index";
@@ -106,9 +110,9 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
-
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
+        switch (domain) {
             case SOHU:
                 return "redirect:" + SOHU_BINDEMAIL_URL;
             case THIRD:
@@ -123,6 +127,9 @@ public class SecureAction extends BaseController {
             nickName = userId;
         }
         result.setDefaultModel("username", nickName);
+        if (domain == AccountDomainEnum.PHONE) {
+            result.setDefaultModel("actype", "phone");
+        }
         model.addAttribute("data", result.toString());
         return "safe/email";
     }
@@ -143,11 +150,14 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
+        switch (domain) {
             case SOHU:
                 return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
+                return "redirect:/web/security";
+            case PHONE:
                 return "redirect:/web/security";
         }
 
@@ -159,6 +169,9 @@ public class SecureAction extends BaseController {
             nickName = userId;
         }
         result.setDefaultModel("username", nickName);
+        if (domain == AccountDomainEnum.PHONE) {
+            result.setDefaultModel("actype", "phone");
+        }
         model.addAttribute("data", result.toString());
         return "safe/tel";
     }
@@ -179,8 +192,9 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
+        switch (domain) {
             case SOHU:
                 return "redirect:" + SOHU_BINDQUES_URL;
             case THIRD:
@@ -195,6 +209,9 @@ public class SecureAction extends BaseController {
             nickName = userId;
         }
         result.setDefaultModel("username", nickName);
+        if (domain == AccountDomainEnum.PHONE) {
+            result.setDefaultModel("actype", "phone");
+        }
         model.addAttribute("data", result.toString());
         return "safe/question";
     }
@@ -215,8 +232,9 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
+        switch (domain) {
             case SOHU:
                 return "redirect:" + SOHU_RESETPWD_URL;
             case THIRD:
@@ -229,6 +247,9 @@ public class SecureAction extends BaseController {
             nickName = userId;
         }
         result.setDefaultModel("username", nickName);
+        if (domain == AccountDomainEnum.PHONE) {
+            result.setDefaultModel("actype", "phone");
+        }
         model.addAttribute("data", result.toString());
         return "safe/password";
     }
@@ -249,6 +270,7 @@ public class SecureAction extends BaseController {
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
@@ -258,6 +280,9 @@ public class SecureAction extends BaseController {
             nickName = userId;
         }
         result.setDefaultModel("username", nickName);
+        if (domain == AccountDomainEnum.PHONE) {
+            result.setDefaultModel("actype", "phone");
+        }
         model.addAttribute("data", result.toString());
         return "safe/history";
     }
@@ -556,7 +581,8 @@ public class SecureAction extends BaseController {
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
+            int sep = validateResult.indexOf("|");
+            result.setMessage(sep == -1 ? validateResult : validateResult.substring(0, sep));
             return result.toString();
         }
         String userId = hostHolder.getPassportId();

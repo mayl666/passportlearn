@@ -46,13 +46,16 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         max: function($el , max){
             return '输入字符请少于' + max + '个字';
         },
-        nick: function(){
+        nick: function($el){
+            if( $el.val().length <3 || $el.val().length>16 ){
+                return '个性帐号长度为6-16位';
+            }
             return '小写字母开头非纯数字的数字字母下划线或组合';
         }
     };
 
     var NormalDesc = {
-        email:"请输入您作为账号的邮箱名",
+        email:"请输入您作为帐号的邮箱名",
         password:"6-16位，字母(区分大小写)、数字、符号",
         nick: "小写字母开头非纯数字的数字字母下划线或组合"
     };
@@ -137,7 +140,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                             data = utils.parseResponse(data);
                             
                             if( !+data.status ){
-                                $el.find('.form-success').show().find('span').html('提交成功');
+                                $el.find('.form-success').show().find('span').html( data.statusText? data.statusText: '提交成功');
                                 config.onsuccess && config.onsuccess($el , data);
                             }else{
                                 $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
@@ -149,6 +152,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 },
                 onformfail: function($el){
                     $el.find('.desc').hide();
+                    config.onformfail && config.onformfail();
                     return false;
                 }
             });
@@ -193,7 +197,8 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 $.get(url , {
                     mobile: usernameIpt.val(),
                     new_mobile: usernameIpt.val(),
-                    client_id: conf.client_id
+                    client_id: conf.client_id,
+                    t: +new Date()
                 } , function(data){
                     data = utils.parseResponse(data);
                     if( +data.status ){

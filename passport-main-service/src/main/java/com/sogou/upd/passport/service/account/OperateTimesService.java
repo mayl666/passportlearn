@@ -16,6 +16,15 @@ public interface OperateTimesService {
     public boolean checkTimesByKey(String cacheKey, final int max)throws ServiceException;
 
     public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException;
+
+    /**
+     * 是否等于受限制次数的一半，用于记录日志
+     * @param cacheKey
+     * @param max
+     * @return
+     * @throws ServiceException
+     */
+    public boolean isHalfTimes(String cacheKey, final int max) throws ServiceException;
     /**
      *记录一小时内登陆成功次数
      * @param username

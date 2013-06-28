@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +33,18 @@ public class MyTestRedisAction {
     private AccountService accountService;
 
     private static final int MAX = 1000000;
+
+//    @Autowired
+//    private TaskExecutor loginAfterTaskExecutor;
+
+    @RequestMapping(value = "/printMessages", method = RequestMethod.GET)
+    @ResponseBody
+    public Object printMessages() {
+//        for(int i = 0; i < 100; i++) {
+//            loginAfterTaskExecutor.execute(new MessagePrinterTask("Message" + i));
+//        }
+        return "success";
+    }
 
     //redis set
     @RequestMapping(value = "/getcount", method = RequestMethod.GET)

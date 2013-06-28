@@ -16,6 +16,7 @@ import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +39,8 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private RedisUtils redisUtils;
     @Autowired
     private KvUtils kvUtils;
+    @Autowired
+    private TaskExecutor batchOperateExecutor;
 
     @Override
     public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException {
@@ -62,28 +65,40 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     @Override
-    public void setActionRecord(String userId, int clientId, AccountModuleEnum action, String ip, String note) {
-        // 获取实际需要存储的参数类，节省存储空间
-        ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(clientId, System.currentTimeMillis(), ip);
+    public void setActionRecord(final String userId, final int clientId, final AccountModuleEnum action,
+            final String ip, final String note) {
+        batchOperateExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                // 获取实际需要存储的参数类，节省存储空间
+                ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(clientId, System.currentTimeMillis(), ip);
 
-        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-        storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+            }
+        });
+
     }
 
     @Override
-    public void setActionRecord(ActionRecord actionRecord) {
-        if (actionRecord == null) {
-            return;
-        }
-        String userId = actionRecord.getUserId();
-        int clientId = actionRecord.getClientId();
-        AccountModuleEnum action = actionRecord.getAction();
+    public void setActionRecord(final ActionRecord actionRecord) {
+        batchOperateExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (actionRecord == null) {
+                    return;
+                }
+                String userId = actionRecord.getUserId();
+                int clientId = actionRecord.getClientId();
+                AccountModuleEnum action = actionRecord.getAction();
 
-        // 获取实际需要存储的参数类，节省存储空间
-        ActionStoreRecordDO storeRecordDO = actionRecord.obtainStoreRecord();
+                // 获取实际需要存储的参数类，节省存储空间
+                ActionStoreRecordDO storeRecordDO = actionRecord.obtainStoreRecord();
 
-        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-        storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+            }
+        });
     }
 
     @Override

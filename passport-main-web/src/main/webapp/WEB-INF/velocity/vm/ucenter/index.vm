@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=111384" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=334325" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -34,7 +34,7 @@
             
             <li class="current"><a href="/">首页</a></li>
             
-            <li ><a href="/web/security">账号安全</a></li>
+            <li ><a href="/web/security">帐号安全</a></li>
             
         </ul>
     </div>
@@ -49,7 +49,7 @@
             <div class="table">
                 <script type="text/tpl"  id="Target">
                     <p class="item my">
-                        <span class="label">我的账号</span>
+                        <span class="label">我的帐号</span>
                         <span class="value"><{username}></span>
                         <a href="/web/security/password" class="btn medium-btn">修改密码</a>
                     </p>
@@ -76,11 +76,13 @@
                         <span class="value"><{sec_email?sec_email:'未绑定'}></span>
                         <a href="/web/security/email" class="btn medium-btn"><{sec_email?'修改':'绑定'}></a>
                     </p>
+                    <% if actype != 'phone' %>
                     <p>
-                        <span class="label">绑定手机：</span>
+                        <span class="label">密保手机：</span>
                         <span class="value"><{sec_mobile?sec_mobile:'未绑定'}></span>
                         <a href="/web/security/mobile" class="btn medium-btn"><{sec_mobile?'修改':'绑定'}></a>
                     </p>
+                    <% endif %>
                     <p>
                         <span class="label">密保问题：</span>
                         <span class="value"><{sec_ques?'已设置':'未设置'}></span>
@@ -109,7 +111,7 @@
                 <p class="hr"></p>
                 
                 
-                <span class="item dynamic"><a href="/web/security/mobile">绑定手机</a></span>
+                <span class="item dynamic"><a href="/web/security/mobile">修改密保手机</a></span>
                 
                 
                 <span class="item dynamic"><a href="/web/security/question">修改密保问题</a></span>
@@ -128,7 +130,7 @@
 </div>
 <script type="text/tpl" id="TargetDisable">
     <p class="item my">
-        <span class="label">我的账号</span>
+        <span class="label">我的帐号</span>
         <span class="value"><{username}></span>
     </p> 
 </script>
