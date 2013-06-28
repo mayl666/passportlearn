@@ -491,18 +491,19 @@ public class SecureManagerImpl implements SecureManager {
             params.setNewbindemail(newEmail);
             params.setOldbindemail(oldEmail);
 
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口,SOHU接口需要传MD5加密后的密码
-                params.setPassword(Coder.encryptMD5(password));
-                result = proxyBindApiManager.bindEmail(params);
-            } else {
-                result = sgBindApiManager.bindEmail(params);
-            }
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // 代理接口,SOHU接口需要传MD5加密后的密码
+//                params.setPassword(Coder.encryptMD5(password));
+//                result = proxyBindApiManager.bindEmail(params);
+//            } else {
+//                result = sgBindApiManager.bindEmail(params);
+//            }
+            result.setSuccess(true);
             if (result.isSuccess()) {
                 emailSenderService.incLimitForSendEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail);
                 result.setMessage("发送绑定邮箱申请邮件成功！");
+                return result;
             }
-            return result;
 
 /*            boolean saveEmail = true;
             AccountModuleEnum module = AccountModuleEnum.SECURE;
