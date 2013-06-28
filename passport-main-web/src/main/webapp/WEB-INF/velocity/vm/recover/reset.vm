@@ -53,13 +53,13 @@
                 <div class="form-item">
     <label for="PasswordIpt">新密码：</label>
     <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
     </span>
 </div>
                 <div class="form-item">
     <label for="Password2Ipt">确认新密码：</label>
     <span class="form-el">
-        <input uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" value=""/>
     </span>
 </div>
                 <div class="form-btn">

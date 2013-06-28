@@ -83,6 +83,12 @@
                         <input type="hidden" name="new_ques" value="" id="NewQues" />
                         
                         <div class="form-item">
+    <label for="PasswordIpt">登录密码：</label>
+    <span class="form-el">
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
+    </span>
+</div>
+                        <div class="form-item">
     <label for="QuesitonIpt">新密保问题：</label>
     <span class="form-select">
         <select name="quesiton">
@@ -111,19 +117,13 @@
                         <div class="form-item">
     <label for="Question2Ipt">问题：</label>
     <span class="form-el">
-        <input uui-type="require question2" type="text" name="question2" id="Question2Ipt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require question2" type="text" name="question2" id="Question2Ipt" value="" data-desc="" value=""/>
     </span>
 </div>
                         <div class="form-item">
     <label for="New_answerIpt">新答案：</label>
     <span class="form-el">
-        <input uui-type="require new_answer" type="text" name="new_answer" id="New_answerIpt" value="" data-desc="" />
-    </span>
-</div>
-                        <div class="form-item">
-    <label for="PasswordIpt">登录密码：</label>
-    <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require new_answer" type="text" name="new_answer" id="New_answerIpt" value="" data-desc="" value=""/>
     </span>
 </div>
                         <div class="form-btn">
