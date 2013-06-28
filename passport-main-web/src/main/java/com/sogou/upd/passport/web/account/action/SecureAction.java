@@ -294,7 +294,6 @@ public class SecureAction extends BaseController {
      */
     @RequestMapping(value = "/updatepwd", method = RequestMethod.POST)
     @ResponseBody
-    @LoginRequired
     public Object updatePwd(HttpServletRequest request, UpdatePwdParameters updateParams)
             throws Exception {
         Result result = new APIResultSupport(false);
@@ -306,7 +305,7 @@ public class SecureAction extends BaseController {
             return result;
         }
 
-        String userId = hostHolder.getPassportId();
+        String userId = "dsadasdasd@sina.com";
 
         switch (AccountDomainEnum.getAccountDomain(userId)) {
             case SOHU:
