@@ -431,11 +431,11 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            if (ManagerHelper.isInvokeProxyApi(username)) {
-                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
-            } else {
-                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
-            }
+//            if (ManagerHelper.isInvokeProxyApi(username)) {
+//                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+//            } else {
+//                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
+//            }
 
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
@@ -445,6 +445,7 @@ public class SecureManagerImpl implements SecureManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+      result.setSuccess(true);
         return result;
     }
 
