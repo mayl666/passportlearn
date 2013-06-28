@@ -20,9 +20,9 @@ import java.util.Map;
 public class SGHttpClientTest {
 
 
-    private static final String appId = "1100";
+    private static final String appId = "1120";
 
-    private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+    private static final String key = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
 
     private static final String userId = "upd_test@sogou.com";
 
@@ -43,6 +43,18 @@ public class SGHttpClientTest {
         url += "&code=" + code;
         System.out.println(url);
     }
+
+    @Test
+    public void testCreateCode() throws Exception {
+        String userId = "upd_test1111@sogou.com";
+        long ct = System.currentTimeMillis();
+        String code = userId + appId + key + ct;
+        code = Coder.encryptMD5(code);
+        System.out.println("userId:"+userId);
+        System.out.println("ct:"+ct);
+        System.out.println("code:"+code);
+    }
+
 
     @Test
     public void testUpdatePwd() throws Exception {
