@@ -22,10 +22,14 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.task.LoginFailedTask;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -54,6 +58,8 @@ public class LoginManagerImpl implements LoginManager {
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private TaskExecutor loginAfterTaskExecutor;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -133,7 +139,13 @@ public class LoginManagerImpl implements LoginManager {
                 if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
                     result.setDefaultModel("needCaptcha", true);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    operateTimesService.incLoginFailedTimes(username, ip);
+                    loginAfterTaskExecutor.execute(new LoginFailedTask(username,ip));
+//                    taskExecutor.execute(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            //To change body of implemented methods use File | Settings | File Templates.
+//                        }
+//                    });
                     return result;
                 }
             }
@@ -174,7 +186,8 @@ public class LoginManagerImpl implements LoginManager {
                 }
                 result.setDefaultModel("ru", ru);
             } else {
-                operateTimesService.incLoginFailedTimes(username, ip);
+//                operateTimesService.incLoginFailedTimes(username, ip);
+                loginAfterTaskExecutor.execute(new LoginFailedTask(username,ip));
                 //3次失败需要输入验证码
                 if (needCaptcha) {
                     result.setDefaultModel("needCaptcha", true);
@@ -202,4 +215,24 @@ public class LoginManagerImpl implements LoginManager {
         }
         return false;
     }
+
+
+    class LoginFailedTask implements Runnable{
+        private String username;
+        private String ip;
+
+        @Autowired
+        private OperateTimesService operateTimesService;
+
+        public LoginFailedTask(String username,String ip) {
+            this.username = username;
+            this.ip = ip;
+        }
+
+        public void run() {
+            operateTimesService.incLoginFailedTimes(username, ip);
+        }
+    }
 }
+
+
