@@ -22,21 +22,21 @@ public class AccountDAOTest extends BaseDAOTest {
 
     @Before
     public void init() {
-        Account account = new Account();
-        account.setPassportId(PASSPORT_ID);
-        account.setMobile(MOBILE);
-        try {
-            account.setPasswd(PwdGenerator.generatorStoredPwd(PASSWORD,true));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        account.setAccountType(ACCOUNT_TYPE);
-        account.setRegIp(IP);
-        account.setRegTime(new Date());
-        account.setStatus(STATUS);
-        account.setVersion(VERSION);
-        int row = accountDAO.insertAccount(account.getPassportId(), account);
-        Assert.assertTrue(row != 0);
+//        Account account = new Account();
+//        account.setPassportId(PASSPORT_ID);
+//        account.setMobile(MOBILE);
+//        try {
+//            account.setPasswd(PwdGenerator.generatorStoredPwd(PASSWORD,true));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        account.setAccountType(ACCOUNT_TYPE);
+//        account.setRegIp(IP);
+//        account.setRegTime(new Date());
+//        account.setStatus(STATUS);
+//        account.setVersion(VERSION);
+//        int row = accountDAO.insertAccount(account.getPassportId(), account);
+//        Assert.assertTrue(row != 0);
     }
 
     @After
@@ -50,7 +50,10 @@ public class AccountDAOTest extends BaseDAOTest {
      */
     @Test
     public void testGetAccountByPassportId() {
-        Account account = accountDAO.getAccountByPassportId(PASSPORT_ID);
+//        Account account = accountDAO.getAccountByPassportId(PASSPORT_ID);
+//        Assert.assertTrue(account != null);
+        String passportid = "abc'; drop table account";
+        Account account = accountDAO.getAccountByPassportId(passportid);
         Assert.assertTrue(account != null);
     }
 
@@ -59,6 +62,8 @@ public class AccountDAOTest extends BaseDAOTest {
      */
     @Test
     public void testModifyPassword() {
+        String NEW_PASSWORD="11111";
+        String PASSPORT_ID = "dsdsdsds@sogou.com ';drop table account";
         int row = accountDAO.updatePassword(NEW_PASSWORD, PASSPORT_ID);
         Assert.assertTrue(row == 1);
     }

@@ -2,30 +2,36 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.AccountTokenService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -54,6 +60,10 @@ public class LoginManagerImpl implements LoginManager {
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private SecureManager secureManager;
+    @Autowired
+    private TaskExecutor loginAfterTaskExecutor;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -133,7 +143,6 @@ public class LoginManagerImpl implements LoginManager {
                 if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
                     result.setDefaultModel("needCaptcha", true);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    operateTimesService.incLoginFailedTimes(username, ip);
                     return result;
                 }
             }
@@ -164,8 +173,6 @@ public class LoginManagerImpl implements LoginManager {
 
             //记录返回结果
             if (result.isSuccess()) {
-                operateTimesService.incLoginSuccessTimes(username, ip);
-                // 种sohu域cookie
                 result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
                 //设置来源
                 String ru = loginParameters.getRu();
@@ -174,14 +181,12 @@ public class LoginManagerImpl implements LoginManager {
                 }
                 result.setDefaultModel("ru", ru);
             } else {
-                operateTimesService.incLoginFailedTimes(username, ip);
                 //3次失败需要输入验证码
                 if (needCaptcha) {
                     result.setDefaultModel("needCaptcha", true);
                 }
             }
         } catch (Exception e) {
-            operateTimesService.incLoginFailedTimes(username, ip);
             logger.error("accountLogin fail,passportId:" + passportId, e);
             //3次失败需要输入验证码
             if (needCaptcha) {
@@ -202,4 +207,30 @@ public class LoginManagerImpl implements LoginManager {
         }
         return false;
     }
+
+    @Override
+    public void doAfterLoginSuccess(final String username,final String ip,final String passportId,final int clientId){
+        loginAfterTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                //记录登陆成功次数
+                operateTimesService.incLoginSuccessTimes(username, ip);
+                //登陆记录
+                secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
+
+            }
+        });
+    }
+
+    @Override
+    public void doAfterLoginFailed(final String username,final String ip){
+        loginAfterTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                operateTimesService.incLoginFailedTimes(username, ip);
+            }
+        });
+    }
 }
+
+

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=566964" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=265772" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -25,7 +25,7 @@
                                 
                             <p class="username">
                                 <b class="focusbg"></b>
-                                <span>邮箱/手机号/搜狗账号</span>
+                                <span>邮箱/手机号/搜狗帐号</span>
                                 <input type="text" name="username" value="" />
                             </p>
                             <p class="password">
@@ -58,7 +58,7 @@
                             <p class="error vcode-error"><span class="text"></span><a href="#"></a></p>
                         </form>
                         <div class="third-login">
-                            <span >使用其他账号登录</span>
+                            <span >使用其他帐号登录</span>
                             <a href="#">sina</a>
                             <a href="#">qq</a>
                             <a href="#">taobao</a>
@@ -104,7 +104,7 @@
         
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=775616"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=455412"></script>
     <script type="text/javascript" src="/./static/js/index.js?t=038403"></script>
     <script type="text/javascript">
         

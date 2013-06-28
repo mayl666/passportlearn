@@ -42,7 +42,8 @@ public class IndexAction extends BaseController {
 
             // 第三方账号不显示安全信息
             Result result = new APIResultSupport(false);
-            if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            if (domain == AccountDomainEnum.THIRD) {
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {
@@ -55,6 +56,10 @@ public class IndexAction extends BaseController {
             }
 
             result.setDefaultModel("username", nickName);
+            if (domain == AccountDomainEnum.PHONE) {
+                result.setDefaultModel("actype", "phone");
+            }
+
             model.addAttribute("data", result.toString());
             return "ucenter/index";
         }
