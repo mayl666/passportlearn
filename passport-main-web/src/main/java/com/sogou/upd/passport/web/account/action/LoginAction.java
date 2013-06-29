@@ -39,105 +39,106 @@ import java.net.URLDecoder;
 @RequestMapping("/web")
 public class LoginAction extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
+  private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
 
-    @Autowired
-    private LoginManager loginManager;
+  @Autowired
+  private LoginManager loginManager;
 
-    @Autowired
-    private HostHolder hostHolder;
+  @Autowired
+  private HostHolder hostHolder;
 
-    /**
-     * 用户登录检查是否显示验证码
-     *
-     * @param checkParam
-     */
-    @RequestMapping(value = "/login/checkNeedCaptcha", method = RequestMethod.GET)
-    @ResponseBody
-    public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
-            throws Exception {
+  /**
+   * 用户登录检查是否显示验证码
+   *
+   * @param checkParam
+   */
+  @RequestMapping(value = "/login/checkNeedCaptcha", method = RequestMethod.GET)
+  @ResponseBody
+  public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
+      throws Exception {
 
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkParam);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-
-        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        //校验是否需要验证码
-        boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
-
-        result.setSuccess(true);
-        result.setDefaultModel("needCaptcha", needCaptcha);
-        return result.toString();
+    Result result = new APIResultSupport(false);
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(checkParam);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result.toString();
     }
 
-    /**
-     * web页面登录
-     *
-     * @param loginParams 传入的参数
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    @ResponseBody
-    public Object login(HttpServletRequest request, Model model, WebLoginParameters loginParams)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        String ip = getIp(request);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(loginParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-          return result.toString();
-        }
-        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
+    String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+    //校验是否需要验证码
+    boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
 
-        if (result.isSuccess()) {
-            String userId = loginParams.getUsername();
-            int clientId = Integer.parseInt(loginParams.getClient_id());
-            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+    result.setSuccess(true);
+    result.setDefaultModel("needCaptcha", needCaptcha);
+    return result.toString();
+  }
 
-            //用户登录成功log
-            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode());
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Success!");
-            UserOperationLogUtil.log(userOperationLog);
-        } else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
-            //用户登录失败log
-            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode());
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "failed!");
-            UserOperationLogUtil.log(userOperationLog);
-        }
-//
-//        result.setDefaultModel("xd", loginParams.getXd());
-//        model.addAttribute("data", result.toString());
-        return result.toString();
+  /**
+   * web页面登录
+   *
+   * @param loginParams 传入的参数
+   */
+  @RequestMapping(value = "/login", method = RequestMethod.POST)
+  public String login(HttpServletRequest request, Model model, WebLoginParameters loginParams)
+      throws Exception {
+    Result result = new APIResultSupport(false);
+    String ip = getIp(request);
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(loginParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      result.setDefaultModel("xd", loginParams.getXd());
+      model.addAttribute("data", result.toString());
+      return "/login/api";
+    }
+    result = loginManager.accountLogin(loginParams, ip, request.getScheme());
+
+    if (result.isSuccess()) {
+      String userId = result.getModels().get("userid").toString();
+      int clientId = Integer.parseInt(loginParams.getClient_id());
+      loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+
+      //用户登录成功log
+      UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+      String referer = request.getHeader("referer");
+      userOperationLog.putOtherMessage("referer", referer);
+      userOperationLog.putOtherMessage("login", "Success!");
+      UserOperationLogUtil.log(userOperationLog);
+    } else {
+      loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
+      //用户登录失败log
+      UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+      String referer = request.getHeader("referer");
+      userOperationLog.putOtherMessage("referer", referer);
+      userOperationLog.putOtherMessage("login", "failed!");
+      UserOperationLogUtil.log(userOperationLog);
     }
 
-    /**
-     * web页面退出
-     */
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ModelAndView logout(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+    result.setDefaultModel("xd", loginParams.getXd());
+    model.addAttribute("data", result.toString());
+    return "/login/api";
+  }
 
-        String userId = hostHolder.getPassportId();
-        //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
-        UserOperationLogUtil.log(userOperationLog);
+  /**
+   * web页面退出
+   */
+  @RequestMapping(value = "/logout", method = RequestMethod.GET)
+  public ModelAndView logout(HttpServletRequest request, HttpServletResponse response)
+      throws Exception {
+    CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
+    CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
-        return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
-    }
+    String userId = hostHolder.getPassportId();
+    //用于记录log
+    UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+    String referer = request.getHeader("referer");
+    userOperationLog.putOtherMessage("referer", referer);
+    UserOperationLogUtil.log(userOperationLog);
+
+    return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
+  }
 
 }
