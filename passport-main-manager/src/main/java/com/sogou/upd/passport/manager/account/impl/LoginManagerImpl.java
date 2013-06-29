@@ -42,183 +42,182 @@ import java.util.Map;
 @Component
 public class LoginManagerImpl implements LoginManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
-    private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
+  private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
+  private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
 
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private AccountTokenService accountTokenService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
-    private OperateTimesService operateTimesService;
+  @Autowired
+  private AccountService accountService;
+  @Autowired
+  private AccountTokenService accountTokenService;
+  @Autowired
+  private MobilePassportMappingService mobilePassportMappingService;
+  @Autowired
+  private OperateTimesService operateTimesService;
 
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
-    @Autowired
-    private CommonManager commonManager;
-    @Autowired
-    private SecureManager secureManager;
+  @Autowired
+  private LoginApiManager proxyLoginApiManager;
+  @Autowired
+  private LoginApiManager sgLoginApiManager;
+  @Autowired
+  private CommonManager commonManager;
+  @Autowired
+  private SecureManager secureManager;
 
-    @Override
-    public Result authorize(OAuthTokenASRequest oauthRequest) {
-        Result result = new APIResultSupport(false);
-        int clientId = oauthRequest.getClientId();
-        String instanceId = oauthRequest.getInstanceId();
+  @Override
+  public Result authorize(OAuthTokenASRequest oauthRequest) {
+    Result result = new APIResultSupport(false);
+    int clientId = oauthRequest.getClientId();
+    String instanceId = oauthRequest.getInstanceId();
 
-        try {
-            // 檢查不同的grant types是否正確
-            // TODO 消除if-else
-            AccountToken renewAccountToken;
-            if (GrantTypeEnum.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
-                String passportId = mobilePassportMappingService.queryPassportIdByUsername(oauthRequest.getUsername());
-                if (Strings.isNullOrEmpty(passportId)) {
-                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                    return result;
-                }
-                int pwdType = oauthRequest.getPwdType();
-                boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
-                result = accountService
-                        .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
-                if (!result.isSuccess()) {
-                    return result;
-                } else {
-                    Account account =  (Account) result.getDefaultModel();
-                    result.setDefaultModel(null);
-                            // 为了安全每次登录生成新的token
-                    renewAccountToken = accountTokenService.updateOrInsertAccountToken(account.getPassportId(), clientId, instanceId);
-                }
-            } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
-                String refreshToken = oauthRequest.getRefreshToken();
-                AccountToken accountToken = accountTokenService.verifyRefreshToken(refreshToken, clientId, instanceId);
-                if (accountToken == null) {
-                    result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
-                    return result;
-                } else {
-                    String passportId = accountToken.getPassportId();
-                    renewAccountToken = accountTokenService.updateOrInsertAccountToken(passportId, clientId, instanceId);
-                }
-            } else {
-                result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
-                return result;
-            }
-
-            if (renewAccountToken != null) { // 登录成功
-                Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put("access_token", renewAccountToken.getAccessToken());
-                mapResult.put("expires_time", renewAccountToken.getAccessValidTime());
-                mapResult.put("refresh_token", renewAccountToken.getRefreshToken());
-                result.setSuccess(true);
-                result.setModels(mapResult);
-                return result;
-            } else { // 登录失败，更新AccountToken表发生异常
-                result.setCode(ErrorUtil.AUTHORIZE_FAIL);
-                return result;
-            }
-        } catch (ServiceException e) {
-            logger.error("OAuth Authorize Fail:", e);
-            return result;
+    try {
+      // 檢查不同的grant types是否正確
+      // TODO 消除if-else
+      AccountToken renewAccountToken;
+      if (GrantTypeEnum.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
+        String passportId = mobilePassportMappingService.queryPassportIdByUsername(oauthRequest.getUsername());
+        if (Strings.isNullOrEmpty(passportId)) {
+          result.setCode(ErrorUtil.INVALID_ACCOUNT);
+          return result;
         }
-    }
-
-    @Override
-    public Result accountLogin(WebLoginParameters loginParameters, String ip, String scheme) {
-        Result result = new APIResultSupport(false);
-        String username = loginParameters.getUsername();
-        String password = loginParameters.getPassword();
-        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
-        String passportId = username;
-//        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
-        try {
-            //校验验证码
-//            if (needCaptcha) {
-//                String captchaCode = loginParameters.getCaptcha();
-//                String token = loginParameters.getToken();
-//                if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
-//                    result.setDefaultModel("needCaptcha", true);
-//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-//                    return result;
-//                }
-//            }
-
-            //默认是sogou.com
-            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
-                passportId = passportId + "@sogou.com";
-            }
-
-            //校验username是否在账户黑名单中
-            if (operateTimesService.checkLoginUserInBlackList(username)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result;
-            }
-
-            //封装参数
-            AuthUserApiParams authUserApiParams = new AuthUserApiParams();
-            authUserApiParams.setUserid(passportId);
-            authUserApiParams.setPassword(pwdMD5);
-            authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-            //根据域名判断是否代理，一期全部走代理
-//            if (ManagerHelper.isInvokeProxyApi(passportId)) {
-//                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-//            } else {
-//                result = sgLoginApiManager.webAuthUser(authUserApiParams);
-//            }
-             result.setSuccess(true);
-             result.setMessage("登录成功");
-            //记录返回结果
-            if (result.isSuccess()) {
-                result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
-                //设置来源
-                String ru = loginParameters.getRu();
-                if (Strings.isNullOrEmpty(ru)) {
-                    ru =scheme + LOGIN_INDEX_URLSTR;
-                }
-                result.setDefaultModel("ru", ru);
-            } else {
-              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-                //3次失败需要输入验证码
-//                if (needCaptcha) {
-//                    result.setDefaultModel("needCaptcha", true);
-//                }
-            }
-        } catch (Exception e) {
-            logger.error("accountLogin fail,passportId:" + passportId, e);
-            //3次失败需要输入验证码
-//            if (needCaptcha) {
-//                result.setDefaultModel("needCaptcha", true);
-//            }
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-            return result;
+        int pwdType = oauthRequest.getPwdType();
+        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
+        result = accountService
+            .verifyUserPwdVaild(passportId, oauthRequest.getPassword(), needMD5);
+        if (!result.isSuccess()) {
+          return result;
+        } else {
+          Account account =  (Account) result.getDefaultModel();
+          result.setDefaultModel(null);
+          // 为了安全每次登录生成新的token
+          renewAccountToken = accountTokenService.updateOrInsertAccountToken(account.getPassportId(), clientId, instanceId);
         }
+      } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
+        String refreshToken = oauthRequest.getRefreshToken();
+        AccountToken accountToken = accountTokenService.verifyRefreshToken(refreshToken, clientId, instanceId);
+        if (accountToken == null) {
+          result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
+          return result;
+        } else {
+          String passportId = accountToken.getPassportId();
+          renewAccountToken = accountTokenService.updateOrInsertAccountToken(passportId, clientId, instanceId);
+        }
+      } else {
+        result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
         return result;
-    }
+      }
 
-    @Override
-    public boolean needCaptchaCheck(String client_id, String username, String ip) {
-        if (Integer.parseInt(client_id) == SHPPUrlConstant.APP_ID) {
-            if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
-                return true;
-            }
+      if (renewAccountToken != null) { // 登录成功
+        Map<String, Object> mapResult = Maps.newHashMap();
+        mapResult.put("access_token", renewAccountToken.getAccessToken());
+        mapResult.put("expires_time", renewAccountToken.getAccessValidTime());
+        mapResult.put("refresh_token", renewAccountToken.getRefreshToken());
+        result.setSuccess(true);
+        result.setModels(mapResult);
+        return result;
+      } else { // 登录失败，更新AccountToken表发生异常
+        result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+        return result;
+      }
+    } catch (ServiceException e) {
+      logger.error("OAuth Authorize Fail:", e);
+      result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+      return result;
+    }
+  }
+
+  @Override
+  public Result accountLogin(WebLoginParameters loginParameters, String ip, String scheme) {
+    Result result = new APIResultSupport(false);
+    String username = loginParameters.getUsername();
+    String password = loginParameters.getPassword();
+    String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+    String passportId = username;
+    boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
+    try {
+      //校验验证码
+      if (needCaptcha) {
+        String captchaCode = loginParameters.getCaptcha();
+        String token = loginParameters.getToken();
+        if(!accountService.checkCaptchaCodeIsVaild(token, captchaCode)){
+          result.setDefaultModel("needCaptcha", true);
+          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+          return result;
         }
-        return false;
-    }
+      }
 
-    @Override
-    public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
-        //记录登陆次数
-        operateTimesService.incLoginSuccessTimes(username, ip);
-        //用户登陆记录
-        secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
-    }
+      //默认是sogou.com
+      AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
+      if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
+        passportId = passportId + "@sogou.com";
+      }
 
-    @Override
-    public void doAfterLoginFailed(final String username,final String ip){
-        operateTimesService.incLoginFailedTimes(username, ip);
+      //校验username是否在账户黑名单中
+      if (operateTimesService.checkLoginUserInBlackList(username)) {
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        return result;
+      }
+
+      //封装参数
+      AuthUserApiParams authUserApiParams = new AuthUserApiParams();
+      authUserApiParams.setUserid(passportId);
+      authUserApiParams.setPassword(pwdMD5);
+      authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
+      //根据域名判断是否代理，一期全部走代理
+      if (ManagerHelper.isInvokeProxyApi(passportId)) {
+        result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+      } else {
+        result = sgLoginApiManager.webAuthUser(authUserApiParams);
+      }
+
+      //记录返回结果
+      if (result.isSuccess()) {
+        result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
+        //设置来源
+        String ru = loginParameters.getRu();
+        if (Strings.isNullOrEmpty(ru)) {
+          ru =scheme + LOGIN_INDEX_URLSTR;
+        }
+        result.setDefaultModel("ru", ru);
+      } else {
+        //3次失败需要输入验证码
+        if (needCaptcha) {
+          result.setDefaultModel("needCaptcha", true);
+        }
+      }
+    } catch (Exception e) {
+      logger.error("accountLogin fail,passportId:" + passportId, e);
+      //3次失败需要输入验证码
+      if (needCaptcha) {
+        result.setDefaultModel("needCaptcha", true);
+      }
+      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+      return result;
     }
+    return result;
+  }
+
+  @Override
+  public boolean needCaptchaCheck(String client_id, String username, String ip) {
+    if (Integer.parseInt(client_id) == SHPPUrlConstant.APP_ID) {
+      if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
+    //记录登陆次数
+    operateTimesService.incLoginSuccessTimes(username, ip);
+    //用户登陆记录
+    secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
+  }
+
+  @Override
+  public void doAfterLoginFailed(final String username,final String ip){
+    operateTimesService.incLoginFailedTimes(username, ip);
+  }
 }
 
 

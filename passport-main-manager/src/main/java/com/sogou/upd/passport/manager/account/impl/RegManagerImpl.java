@@ -49,33 +49,33 @@ import java.util.Map;
 @Component
 public class RegManagerImpl implements RegManager {
 
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private MobileCodeSenderService mobileCodeSenderService;
-    @Autowired
-    private AccountTokenService accountTokenService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
-    private RegisterApiManager sgRegisterApiManager;
-    @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
-    private BindApiManager sgBindApiManager;
-    @Autowired
-    private CommonManager commonManager;
-    @Autowired
-    private OperateTimesService operateTimesService;
+  @Autowired
+  private AccountService accountService;
+  @Autowired
+  private MobileCodeSenderService mobileCodeSenderService;
+  @Autowired
+  private AccountTokenService accountTokenService;
+  @Autowired
+  private MobilePassportMappingService mobilePassportMappingService;
+  @Autowired
+  private RegisterApiManager sgRegisterApiManager;
+  @Autowired
+  private RegisterApiManager proxyRegisterApiManager;
+  @Autowired
+  private LoginApiManager proxyLoginApiManager;
+  @Autowired
+  private BindApiManager proxyBindApiManager;
+  @Autowired
+  private BindApiManager sgBindApiManager;
+  @Autowired
+  private CommonManager commonManager;
+  @Autowired
+  private OperateTimesService operateTimesService;
 
-    private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
-    private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+  private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+  private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
 
   @Override
@@ -99,8 +99,8 @@ public class RegManagerImpl implements RegManager {
           isSogou=true;
         }
       }  else{
-         int index=username.indexOf("@");
-         username=username.substring(0,index)+username.substring(index,username.length()).toLowerCase() ;
+        int index=username.indexOf("@");
+        username=username.substring(0,index)+username.substring(index,username.length()).toLowerCase() ;
       }
       //判断注册账号类型，sogou用户还是手机用户
       AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
@@ -110,11 +110,11 @@ public class RegManagerImpl implements RegManager {
         case OTHER://外域邮件注册
         case UNKNOWN:
           String token=regParams.getToken();
-//          //判断验证码
-//          if(!accountService.checkCaptchaCode(token,captcha)){
-//            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-//            return result;
-//          }
+          //判断验证码
+          if(!accountService.checkCaptchaCode(token,captcha)){
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+            return result;
+          }
           //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
           if(Strings.isNullOrEmpty(ru)){
             if(isSogou){
@@ -125,24 +125,21 @@ public class RegManagerImpl implements RegManager {
           }
           RegEmailApiParams regEmailApiParams=buildRegMailProxyApiParams(username, password, ip,
                                                                          clientId,ru);
-//          if (ManagerHelper.isInvokeProxyApi(username)) {
-//            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-//          } else {
-//            result = sgRegisterApiManager.regMailUser(regEmailApiParams);
-//          }
-
+          if (ManagerHelper.isInvokeProxyApi(username)) {
+            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+          } else {
+            result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+          }
           break;
         case PHONE://手机号
           RegMobileCaptchaApiParams regMobileCaptchaApiParams=buildProxyApiParams(username,password,captcha,clientId,ip);
-//          if (ManagerHelper.isInvokeProxyApi(username)) {
-//            result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-//          } else {
-//            result=sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-//          }
+          if (ManagerHelper.isInvokeProxyApi(username)) {
+            result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+          } else {
+            result=sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+          }
           break;
       }
-      result.setSuccess(true);
-      result.setMessage("注册成功");
     } catch (ServiceException e) {
       logger.error("webRegister fail,passportId:" + regParams.getUsername(), e);
       result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -177,115 +174,115 @@ public class RegManagerImpl implements RegManager {
     return regMobileCaptchaApiParams;
   }
 
-    @Override
-    public Result mobileRegister(MobileRegParams regParams, String ip) {
-        String mobile = regParams.getMobile();
-        String smsCode = regParams.getSmscode();
-        String password = regParams.getPassword();
-        int clientId = Integer.parseInt(regParams.getClient_id());
-        String instanceId = regParams.getInstance_id();
-        int pwdType = regParams.getPwd_type();
-        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
+  @Override
+  public Result mobileRegister(MobileRegParams regParams, String ip) {
+    String mobile = regParams.getMobile();
+    String smsCode = regParams.getSmscode();
+    String password = regParams.getPassword();
+    int clientId = Integer.parseInt(regParams.getClient_id());
+    String instanceId = regParams.getInstance_id();
+    int pwdType = regParams.getPwd_type();
+    boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
 
-        Result result = new APIResultSupport(false);
-        //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo =
-                mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.REGISTER, smsCode);
-        if (!checkSmsInfo) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-            return result;
-        }
-        Account account =
-                accountService.initialAccount(mobile, password, needMD5, ip, AccountTypeEnum.PHONE.getValue());
-        if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
-            boolean
-                    isInitialMobilePassportMapping =
-                    mobilePassportMappingService
-                            .initialMobilePassportMapping(mobile, account.getPassportId());
-            if (!isInitialMobilePassportMapping) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                return result;
-            }
-            //生成token并向account_auth表里插一条用户状态记录
-            AccountToken accountToken = accountTokenService.initialAccountToken(account.getPassportId(),
-                    clientId, instanceId);
-            if (accountToken != null) {   //如果用户授权信息表插入也成功，则说明注册成功
-                //清除验证码的缓存
-                mobileCodeSenderService.deleteSmsCache(mobile, clientId);
-                String accessToken = accountToken.getAccessToken();
-                long accessValidTime = accountToken.getAccessValidTime();
-                String refreshToken = accountToken.getRefreshToken();
-                Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put("access_token", accessToken);
-                mapResult.put("expires_time", accessValidTime);
-                mapResult.put("refresh_token", refreshToken);
+    Result result = new APIResultSupport(false);
+    //验证手机号码与验证码是否匹配
+    boolean checkSmsInfo =
+        mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.REGISTER, smsCode);
+    if (!checkSmsInfo) {
+      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+      return result;
+    }
+    Account account =
+        accountService.initialAccount(mobile, password, needMD5, ip, AccountTypeEnum.PHONE.getValue());
+    if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
+      boolean
+          isInitialMobilePassportMapping =
+          mobilePassportMappingService
+              .initialMobilePassportMapping(mobile, account.getPassportId());
+      if (!isInitialMobilePassportMapping) {
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        return result;
+      }
+      //生成token并向account_auth表里插一条用户状态记录
+      AccountToken accountToken = accountTokenService.initialAccountToken(account.getPassportId(),
+                                                                          clientId, instanceId);
+      if (accountToken != null) {   //如果用户授权信息表插入也成功，则说明注册成功
+        //清除验证码的缓存
+        mobileCodeSenderService.deleteSmsCache(mobile, clientId);
+        String accessToken = accountToken.getAccessToken();
+        long accessValidTime = accountToken.getAccessValidTime();
+        String refreshToken = accountToken.getRefreshToken();
+        Map<String, Object> mapResult = Maps.newHashMap();
+        mapResult.put("access_token", accessToken);
+        mapResult.put("expires_time", accessValidTime);
+        mapResult.put("refresh_token", refreshToken);
 
-                result.setSuccess(true);
-                result.setMessage("注册成功！");
-                result.setModels(mapResult);
-                return result;
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                return result;
-            }
+        result.setSuccess(true);
+        result.setMessage("注册成功！");
+        result.setModels(mapResult);
+        return result;
+      } else {
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        return result;
+      }
+    } else {
+      result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+      return result;
+    }
+  }
+
+
+  @Override
+  public Result activeEmail(ActiveEmailParameters activeParams, String ip) throws Exception {
+    Result result = new APIResultSupport(false);
+    try {
+      String username = activeParams.getPassport_id();
+      String token = activeParams.getToken();
+      int clientId = Integer.parseInt(activeParams.getClient_id());
+      //激活邮件
+      boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
+
+      if (isSuccessActive) {
+        //激活成功
+        Account account = accountService.initialWebAccount(username, ip);
+        if (account != null) {
+          //更新缓存
+          result.setSuccess(true);
+          result.setMessage("激活成功！");
+          return result;
         } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-            return result;
+          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+          return result;
         }
-    }
-
-
-    @Override
-    public Result activeEmail(ActiveEmailParameters activeParams, String ip) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            String username = activeParams.getPassport_id();
-            String token = activeParams.getToken();
-            int clientId = Integer.parseInt(activeParams.getClient_id());
-            //激活邮件
-            boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
-
-            if (isSuccessActive) {
-                //激活成功
-                Account account = accountService.initialWebAccount(username, ip);
-                if (account != null) {
-                    //更新缓存
-                    result.setSuccess(true);
-                    result.setMessage("激活成功！");
-                    return result;
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                    return result;
-                }
-            } else {
-                //激活失败
-                Account account = accountService.queryAccountByPassportId(username);
-                if (account != null) {
-                    if (account.getStatus() == AccountStatusEnum.REGULAR.getValue()) {
-                        //已经激活，无需再次激活
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
-                        return result;
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED);
-                        return result;
-                    }
-                } else {
-                    //无此账号
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                    return result;
-                }
-            }
-        } catch (ServiceException e) {
-            logger.error("activeEmail fail, passportId:" + activeParams.getPassport_id() + " clientId:" + activeParams.getClient_id(), e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+      } else {
+        //激活失败
+        Account account = accountService.queryAccountByPassportId(username);
+        if (account != null) {
+          if (account.getStatus() == AccountStatusEnum.REGULAR.getValue()) {
+            //已经激活，无需再次激活
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
             return result;
+          } else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED);
+            return result;
+          }
+        } else {
+          //无此账号
+          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+          return result;
         }
+      }
+    } catch (ServiceException e) {
+      logger.error("activeEmail fail, passportId:" + activeParams.getPassport_id() + " clientId:" + activeParams.getClient_id(), e);
+      result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+      return result;
     }
+  }
 
-    @Override
-    public Map<String, Object> getCaptchaCode(String code) {
-        return accountService.getCaptchaCode(code);
-    }
+  @Override
+  public Map<String, Object> getCaptchaCode(String code) {
+    return accountService.getCaptchaCode(code);
+  }
 
   @Override
   public Result isAccountNotExists(String username,boolean type) throws Exception {
@@ -298,15 +295,15 @@ public class RegManagerImpl implements RegManager {
           BaseMoblieApiParams params=new BaseMoblieApiParams();
           params.setMobile(username);
           result = proxyBindApiManager.getPassportIdByMobile(params);
-            if(result.isSuccess()) {
-              result= new APIResultSupport(false);
-              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-              return result;
-            } else{
-              result= new APIResultSupport(false);
-              result.setSuccess(true);
-              result.setMessage("账户未被占用，可以注册");
-            }
+          if(result.isSuccess()) {
+            result= new APIResultSupport(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            return result;
+          } else{
+            result= new APIResultSupport(false);
+            result.setSuccess(true);
+            result.setMessage("账户未被占用，可以注册");
+          }
         }else {
           result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         }
