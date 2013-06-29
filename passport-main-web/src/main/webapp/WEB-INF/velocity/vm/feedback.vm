@@ -53,7 +53,7 @@
                 <div class="form-item">
     <label for="EmailIpt">邮箱：</label>
     <span class="form-el">
-        <input uui-type="require email" type="text" name="email" id="EmailIpt" value="" data-desc="请输入您的邮箱地址" />
+        <input autocomplete="off" uui-type="require email" type="text" name="email" id="EmailIpt" value="" data-desc="请输入您的邮箱地址" value=""/>
     </span>
 </div>
                 <div class="form-item">
@@ -67,7 +67,7 @@
                 <div class="form-item">
     <label for="TitleIpt">标题：</label>
     <span class="form-el">
-        <input uui-type="require max(20)" type="text" name="title" id="TitleIpt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require max(20)" type="text" name="title" id="TitleIpt" value="" data-desc="" value=""/>
     </span>
 </div>
                 <div class="form-item form-tall">

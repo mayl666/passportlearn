@@ -71,13 +71,13 @@
                     <div class="form-item">
     <label for="UsernameIpt">邮箱：</label>
     <span class="form-el">
-        <input uui-type="require email" type="text" name="username" id="UsernameIpt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require email" type="text" name="username" id="UsernameIpt" value="" data-desc="" value=""/>
     </span>
 </div>
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>
     <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
     </span>
 </div>
                     <div class="form-item form-item-vcode">

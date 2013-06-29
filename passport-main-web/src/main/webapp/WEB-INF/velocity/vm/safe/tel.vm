@@ -90,9 +90,15 @@
                         <form method="post" id="" action="/web/security/bindmobile" class="form2">
                             
                             <div class="form-item">
+    <label for="PasswordIpt">登录密码：</label>
+    <span class="form-el">
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
+    </span>
+</div>
+                            <div class="form-item">
     <label for="New_mobileIpt">手机号：</label>
     <span class="form-el">
-        <input uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的手机号码" />
+        <input autocomplete="off" uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的手机号码" value=""/>
     </span>
 </div>
                             <div class="form-item">
@@ -105,13 +111,7 @@
 </div>
                             <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
-</div>
-                            <div class="form-item">
-    <label for="PasswordIpt">登录密码：</label>
-    <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
-    </span>
+    <span class="form-el"><input  autocomplete="off" type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
                             <div class="form-btn">
     <button type="submit">确定</button>
@@ -142,7 +142,7 @@
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input  autocomplete="off" type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">下一步</button>
@@ -156,7 +156,7 @@
         <div class="form-item">
     <label for="New_mobileIpt">新手机号：</label>
     <span class="form-el">
-        <input uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的新手机号码" />
+        <input autocomplete="off" uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的新手机号码" value=""/>
     </span>
 </div>
         <div class="form-item">
@@ -169,7 +169,7 @@
 </div>
         <div class="form-item">
     <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
+    <span class="form-el"><input  autocomplete="off" type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
 </div>
         <div class="form-btn">
     <button type="submit">确定</button>
