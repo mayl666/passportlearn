@@ -46,7 +46,7 @@ public class SGHttpClientTest {
 
     @Test
     public void testCreateCode() throws Exception {
-        String userId = "upd_test1111@sogou.com";
+        String userId = "18612987312";
         long ct = System.currentTimeMillis();
         String code = userId + appId + key + ct;
         code = Coder.encryptMD5(code);

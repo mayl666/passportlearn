@@ -44,7 +44,7 @@ public class UserInfoApiControllerTest extends JUnitActionBase {
 
         request.setRequestURI("/internal/account/userinfo");
         request.addParameter("fields", "usertype,createip,birthday,gender,createip,createtime,personalid,personalidflag,sec_mobile,sec_email,province,city,createtime,sec_ques,avatarurl,regappid");
-        request.addParameter("userid", passportId);
+        request.addParameter("userid", "18612987312");
         request.setMethod("POST");
 
         // 执行URI对应的action
