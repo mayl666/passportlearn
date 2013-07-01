@@ -65,24 +65,22 @@ public class KvUtils {
 
     public void pushWithMaxLen(String key, String value, int maxLen) {
         try {
-            synchronized (kvTemplate) {
-                LinkedList<String> list;
-                String strValue = get(key);
-                if (Strings.isNullOrEmpty(strValue)) {
+            LinkedList<String> list;
+            String strValue = get(key);
+            if (Strings.isNullOrEmpty(strValue)) {
+                list = Lists.newLinkedList();
+            } else {
+                list = new ObjectMapper().readValue(strValue, LinkedList.class);
+                if (CollectionUtils.isEmpty(list)) {
                     list = Lists.newLinkedList();
-                } else {
-                    list = new ObjectMapper().readValue(strValue, LinkedList.class);
-                    if (CollectionUtils.isEmpty(list)) {
-                        list = Lists.newLinkedList();
-                    }
                 }
-
-                list.addFirst(value);
-                while (list.size() > 10) {
-                    list.pollLast();
-                }
-                set(key, new ObjectMapper().writeValueAsString(list));
             }
+
+            list.addFirst(value);
+            while (list.size() > 10) {
+                list.pollLast();
+            }
+            set(key, new ObjectMapper().writeValueAsString(list));
         } catch (Exception e) {
             logger.error("[Cache] lPush with maxLen fail, key:" + key, e);
         }
