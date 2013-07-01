@@ -88,15 +88,15 @@
                     <form method="post" id="" action="/web/security/sendemail" class="form2">
                         
                         <div class="form-item">
-    <label for="New_emailIpt">密保邮箱：</label>
+    <label for="PasswordIpt">登录密码：</label>
     <span class="form-el">
-        <input uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入您的密保邮箱" />
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" value=""/>
     </span>
 </div>
                         <div class="form-item">
-    <label for="PasswordIpt">登录密码：</label>
+    <label for="New_emailIpt">密保邮箱：</label>
     <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" />
+        <input autocomplete="off" uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入您的密保邮箱" value=""/>
     </span>
 </div>
                         <div class="form-btn">
@@ -125,21 +125,21 @@
     <form method="post" id="" action="/web/security/sendemail" class="form2">
         
         <div class="form-item">
+    <label for="PasswordIpt">登录密码：</label>
+    <span class="form-el">
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" value=""/>
+    </span>
+</div>
+        <div class="form-item">
     <label for="Old_emailIpt">当前密保邮箱：</label>
     <span class="form-el">
-        <input uui-type="require email" type="text" name="old_email" id="Old_emailIpt" value="" data-desc="请输入您当前密保邮箱" />
+        <input autocomplete="off" uui-type="require email" type="text" name="old_email" id="Old_emailIpt" value="" data-desc="请输入您当前密保邮箱" value=""/>
     </span>
 </div>
         <div class="form-item">
     <label for="New_emailIpt">新密保邮箱：</label>
     <span class="form-el">
-        <input uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入新密保邮箱" />
-    </span>
-</div>
-        <div class="form-item">
-    <label for="PasswordIpt">登录密码：</label>
-    <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" />
+        <input autocomplete="off" uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入新密保邮箱" value=""/>
     </span>
 </div>
         <div class="form-btn">
