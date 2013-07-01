@@ -80,6 +80,31 @@
     </logger>
     <!--end:web服务器性能log-->
 
+
+
+    <!--start:redies请求log-->
+    <appender name="rediesPerfFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="true"/>
+        <param name="File" value="/search/passport/log/redies/rediesPerfStats.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%m%n" />
+        </layout>
+    </appender>
+    <appender name="rediesCoalescingStatistics"
+              class="org.perf4j.log4j.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000" />
+        <appender-ref ref="rediesPerfFileAppender" />
+    </appender>
+
+    <logger name="rediesTimingLogger" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="rediesCoalescingStatistics" />
+    </logger>
+    <!--end:web服务器性能log-->
+
+
     <!--注册黑名单-->
     <appender name="regBlackListFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
