@@ -17,7 +17,7 @@
                 <div class="desc">
                     <img src="/./static/img/index/desc.jpg" class="" alt="" />
                 </div>
-                <div class="login login-vcode">
+                <div class="login">
                     <div class="login-inner">
                         <h2>欢迎登录搜狗通行证</h2>
                         <div id="logdiv" style="display:none;"></div>

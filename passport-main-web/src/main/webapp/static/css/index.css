@@ -63,8 +63,8 @@ body{ background:#f9f9f9; }
 .wrapper .desc{ padding-top:30px; }
 
 
-.login{ position:absolute; right:40px;top:30px;width:319px;height:289px; background:url(/./static/img/index/login.png?t=050313) no-repeat bottom center; }
-.login-inner{ height:167px;background:url(/./static/img/index/login.png?t=050313) no-repeat top center;_overflow:hidden; }
+.login{ position:absolute; right:40px;top:30px;width:319px;height:289px; background:url(/./static/img/index/login.png?t=891534) no-repeat bottom center; }
+.login-inner{ height:167px;background:url(/./static/img/index/login.png?t=891534) no-repeat top center;_overflow:hidden; }
 .login-vcode{ height:338px; }
 .login a{color:#1777d1;}
 .login h2{ display:none; }
