@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,7 +25,7 @@ import java.util.Random;
  * File | Settings | File Templates.
  */
 @Controller
-@RequestMapping(value = "/thread/poolSize")
+@RequestMapping(value = "/internal/threadPoolSize")
 public class ThreadPoolSizeAction {
     @Autowired
     private ThreadPoolTaskExecutor loginAfterTaskExecutor;
@@ -33,7 +34,15 @@ public class ThreadPoolSizeAction {
     @Autowired
     private ThreadPoolTaskExecutor batchOperateExecutor;
 
-    @RequestMapping(value = "/loginAfterTaskExecutor", method = RequestMethod.GET)
+    @RequestMapping()
+    public String indexPage(Model model) throws Exception {
+        model.addAttribute("batchOperateExecutor",batchOperateExecutor);
+        model.addAttribute("loginAfterTaskExecutor",loginAfterTaskExecutor);
+        model.addAttribute("regAfterTaskExecutor",regAfterTaskExecutor);
+        return "threadpool";
+    }
+
+    @RequestMapping(value = "/loginAfterTaskExecutor", method = RequestMethod.POST)
     @ResponseBody
     public Object loginAfterTaskExecutor(ThreadPoolSizeParameters threadPoolSizeParameters) {
         if (threadPoolSizeParameters.getCorePoolSize() > threadPoolSizeParameters.getMaxPoolSize()) {
@@ -50,7 +59,7 @@ public class ThreadPoolSizeAction {
                 loginAfterTaskExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getKeepAliveSeconds());
             }
             if (threadPoolSizeParameters.getQueueCapacity() > 0) {
-                loginAfterTaskExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getQueueCapacity());
+                loginAfterTaskExecutor.setQueueCapacity(threadPoolSizeParameters.getQueueCapacity());
             }
         } catch (Exception e) {
             return "failed,exception occur" + e.getMessage();
@@ -59,7 +68,7 @@ public class ThreadPoolSizeAction {
     }
 
     //redis set
-    @RequestMapping(value = "/regAfterTaskExecutor", method = RequestMethod.GET)
+    @RequestMapping(value = "/regAfterTaskExecutor", method = RequestMethod.POST)
     @ResponseBody
     public Object regAfterTaskExecutor(ThreadPoolSizeParameters threadPoolSizeParameters) throws Exception {
         if (threadPoolSizeParameters.getCorePoolSize() > threadPoolSizeParameters.getMaxPoolSize()) {
@@ -76,7 +85,7 @@ public class ThreadPoolSizeAction {
                 regAfterTaskExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getKeepAliveSeconds());
             }
             if (threadPoolSizeParameters.getQueueCapacity() > 0) {
-                regAfterTaskExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getQueueCapacity());
+                regAfterTaskExecutor.setQueueCapacity(threadPoolSizeParameters.getQueueCapacity());
             }
         } catch (Exception e) {
             return "failed,exception occur" + e.getMessage();
@@ -84,7 +93,7 @@ public class ThreadPoolSizeAction {
         return "success";
     }
 
-    @RequestMapping(value = "/batchOperateExecutor", method = RequestMethod.GET)
+    @RequestMapping(value = "/batchOperateExecutor", method = RequestMethod.POST)
     @ResponseBody
     public Object batchOperateExecutor(ThreadPoolSizeParameters threadPoolSizeParameters) throws Exception {
         if (threadPoolSizeParameters.getCorePoolSize() > threadPoolSizeParameters.getMaxPoolSize()) {
@@ -101,7 +110,7 @@ public class ThreadPoolSizeAction {
                 batchOperateExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getKeepAliveSeconds());
             }
             if (threadPoolSizeParameters.getQueueCapacity() > 0) {
-                batchOperateExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getQueueCapacity());
+                batchOperateExecutor.setQueueCapacity(threadPoolSizeParameters.getQueueCapacity());
             }
         } catch (Exception e) {
             return "failed,exception occur" + e.getMessage();
