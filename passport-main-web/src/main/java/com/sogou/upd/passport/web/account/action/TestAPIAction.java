@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.web.BaseController;
 
@@ -45,17 +46,17 @@ public class TestAPIAction extends BaseController {
       List<Long> list=new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(5);
       for (int i=0;i<5;i++){
-        String userid="dfsadasd14"+i;
-        executor.execute(new T(latch,list,userid,proxySecureApiManager));
+        String userid="dfsadasd18"+i;
+        executor.execute(new T(latch,list,userid,proxyRegisterApiManager));
       }
 
       latch.await();
       long avg=0;
       for (int i=0;i<list.size();i++){
         avg= (long)list.get(i) +avg;
-        logger.info("reg:"+(long)list.get(i));
+        logger.info("reg:" + (long) list.get(i));
       }
-      logger.info("reg avg:"+avg/5);
+      logger.info("reg avg:" + avg / 5);
     }catch (Exception e){}
     finally {
       executor.shutdown();
@@ -85,16 +86,16 @@ public class TestAPIAction extends BaseController {
       CountDownLatch latch = new CountDownLatch(5);
       for (int i=0;i<5;i++){
         String userid="dfsadasd13"+i;
-        executor.execute(new T(latch,list,userid,proxySecureApiManager));
+        executor.execute(new T(latch,list,userid,null));
       }
 
       latch.await();
       long avg=0;
       for (int i=0;i<list.size();i++){
         avg= (long)list.get(i) +avg;
-        logger.info(":"+(long)list.get(i));
+        logger.info(":" + (long) list.get(i));
       }
-      logger.info("update avg:"+avg/5);
+      logger.info("update avg:" + avg / 5);
     }catch (Exception e){}
     finally {
       executor.shutdown();
@@ -106,9 +107,11 @@ class T implements Runnable{
   List<Long> list;
   SecureApiManager proxySecureApiManager;
   String userid;
+  RegisterApiManager proxyRegisterApiManager;
+  LoginApiManager proxyLoginApiManager;
 
-  T(CountDownLatch latch,List<Long> list,String userid,SecureApiManager proxySecureApiManager) {
-    this.proxySecureApiManager=proxySecureApiManager;
+  T(CountDownLatch latch,List<Long> list,String userid,RegisterApiManager proxyRegisterApiManager) {
+    this.proxyRegisterApiManager=proxyRegisterApiManager;
     this.userid=userid;
     this.list=list;
     this.latch = latch;
@@ -118,12 +121,12 @@ class T implements Runnable{
   public void run() {
     try {
       long startTime=System.currentTimeMillis();
-      UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
-      updatePwdApiParams.setUserid(userid+"@sogou.com");
-      updatePwdApiParams.setModifyip("192.168.1.1");
-      updatePwdApiParams.setPassword("111111");
-      updatePwdApiParams.setNewpassword("111111");
-      Result result= proxySecureApiManager.updatePwd(updatePwdApiParams);
+      RegEmailApiParams params = new RegEmailApiParams();
+      params.setUserid(userid);
+      params.setPassword("111111");
+      params.setRu("http://wan.sogou.com");
+      params.setCreateip("10.1.164.65");
+      Result result = proxyRegisterApiManager.regMailUser(params);
       System.out.println(result.toString());
       long endTime=System.currentTimeMillis()-startTime;
       list.add(endTime);
