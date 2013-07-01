@@ -76,7 +76,7 @@ public class RegAction extends BaseController {
     }
     String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
     result = checkAccountNotExists(username);
-      if (ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
+      if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
           result.setMessage("此手机号已注册或已绑定，请直接登录");
       }
     return result.toString();
