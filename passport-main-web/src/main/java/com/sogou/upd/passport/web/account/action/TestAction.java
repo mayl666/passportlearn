@@ -39,13 +39,14 @@ public class TestAction {
     @ResponseBody
     public Object testReset() throws Exception {
         kvUtils.COUNT = 0;
-        return "重置COUNT为："+kvUtils.COUNT;
+        redisUtils.COUNT = 0;
+        return "重置COUNT为："+kvUtils.COUNT + "\n " + redisUtils.COUNT;
     }
 
     @RequestMapping(value = "info", method = RequestMethod.GET)
     @ResponseBody
     public Object testInfo() throws Exception {
-        return "count:" + kvUtils.COUNT;
+        return "count:" + kvUtils.COUNT + "\n " + redisUtils.COUNT;
     }
 
 

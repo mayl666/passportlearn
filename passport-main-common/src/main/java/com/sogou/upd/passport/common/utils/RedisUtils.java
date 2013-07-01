@@ -35,6 +35,8 @@ public class RedisUtils {
     private static RedisTemplate redisTemplate;
     private static org.apache.log4j.Logger testOperationLogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
 
+    public static int COUNT = 0;
+
 
     public void setTest(String key, String value) {
         try {
@@ -46,6 +48,7 @@ public class RedisUtils {
             testOperationLogger.info(operTime);
         } catch (Exception e) {
             //
+            COUNT++;
         }
     }
 
@@ -60,6 +63,7 @@ public class RedisUtils {
             return value;
         } catch (Exception e) {
             logger.error("[Cache] get cache fail, key:" + key, e);
+            COUNT++;
         }
         return null;
     }
