@@ -27,59 +27,8 @@ public class KvUtils {
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
     private static String KEY_PREFIX = "20002/action_records/";
     private static String KEY_PREFIX_TEST = "0/0/";
-    public static int COUNT = 0;
 
     private static RedisTemplate kvTemplate;
-    private static org.apache.log4j.Logger testOperationLogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
-
-
-
-    public void setTest(String key, String value) {
-        String storeKey = KEY_PREFIX_TEST + key;
-        try {
-            long begin = System.currentTimeMillis();
-            ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
-            valueOperations.set(storeKey, value);
-            long end = System.currentTimeMillis();
-            long operTime = end - begin;
-            testOperationLogger.info(operTime);
-        } catch (Exception e) {
-            // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
-            System.out.println(e.getMessage());
-            COUNT++;
-            // logger.info("出现SetKV错误!!!"+COUNT);
-            try {
-                delete(key);
-            } catch (Exception ex) {
-                logger.error("[Cache] set and delete cache fail, key:" + key + " value:" + value, e);
-                throw e;
-            }
-        }
-    }
-
-    public String getTest(String key) {
-        String storeKey = KEY_PREFIX_TEST + key;
-        try {
-            long begin = System.currentTimeMillis();
-            ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
-            String res = valueOperations.get(storeKey);
-            long end = System.currentTimeMillis();
-            long operTime = end - begin;
-            testOperationLogger.info(operTime);
-            return res;
-        } catch (Exception e) {
-            COUNT++;
-            // logger.info("出现GetKV错误!!!"+COUNT);
-            logger.error("[Cache] get cache fail, key:" + key, e);
-        }
-        return null;
-    }
-
-
-    public void deleteTest(String key) {
-        String storeKey = KEY_PREFIX_TEST + key;
-        kvTemplate.delete(storeKey);
-    }
 
     public void set(String key, String value) {
         String storeKey = KEY_PREFIX + key;

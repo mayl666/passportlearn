@@ -71,19 +71,19 @@
                     <div class="form-item">
     <label for="UsernameIpt">通行证：</label>
     <span class="form-el">
-        <input uui-type="require nick" type="text" name="username" id="UsernameIpt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require nick" type="text" name="username" id="UsernameIpt" value="" data-desc="" value=""/>
     </span>
 </div>
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>
     <span class="form-el">
-        <input uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
     </span>
 </div>
                     <div class="form-item">
     <label for="Password2Ipt">确认密码：</label>
     <span class="form-el">
-        <input uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" />
+        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" value=""/>
     </span>
 </div>
                     <div class="form-item form-item-vcode">

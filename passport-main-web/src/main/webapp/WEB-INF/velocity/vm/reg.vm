@@ -1,0 +1,24 @@
+<html>
+<title>hello！</title>
+<head>
+    <script type="text/javascript" src="/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/js/uuid.js"/></script>
+
+    <script type="text/javascript">
+        $(function(){
+           var id=new UUID();
+           $("#token").val(id);
+           $("img").attr("src","http://localhost/captcha?token="+$("#token").val());
+        });
+
+        function refresh(){
+            $("img").attr("src","http://localhost/captcha?token="+$("#token").val());
+        }
+    </script>
+</head>
+<body>
+
+<input id="token" type="hidden" value=""/>
+<img src="" onclick="javascript:refresh(this);"/>
+</body>
+</html>
