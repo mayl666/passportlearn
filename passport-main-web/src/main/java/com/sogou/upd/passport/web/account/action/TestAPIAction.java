@@ -67,6 +67,20 @@ public class TestAPIAction extends BaseController {
   @ResponseBody
   public String testPwd(){
     try {
+
+      long startTime=System.currentTimeMillis();
+      UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
+      updatePwdApiParams.setUserid("dfsadasd130@sogou.com");
+      updatePwdApiParams.setModifyip("192.168.1.1");
+      updatePwdApiParams.setPassword("111111");
+      updatePwdApiParams.setNewpassword("111111");
+      Result result= proxySecureApiManager.updatePwd(updatePwdApiParams);
+      System.out.println(result.toString());
+      long endTime=System.currentTimeMillis()-startTime;
+      logger.info("#########:"+endTime);
+
+
+
       List<Long> list=new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(5);
       for (int i=0;i<5;i++){
@@ -80,7 +94,7 @@ public class TestAPIAction extends BaseController {
         avg= (long)list.get(i) +avg;
         logger.info(":"+(long)list.get(i));
       }
-      logger.info("reg avg:"+avg/5);
+      logger.info("update avg:"+avg/5);
     }catch (Exception e){}
     finally {
       executor.shutdown();
