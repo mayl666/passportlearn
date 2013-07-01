@@ -85,7 +85,7 @@
         <!-- Possible GraphTypes are Mean, Min, Max, StdDev, Count and TPS -->
         <param name="GraphType" value="Mean"/>
         <!-- The tags of the timed execution blocks to graph are specified here -->
-        <param name="TagNamesToGraph" value="/web/login,/web/logout"/>
+        <!--<param name="TagNamesToGraph" value="/web/login,/web/logout"/>-->
         <appender-ref ref="graphsFileAppender"/>
     </appender>
 
@@ -96,7 +96,7 @@
     <appender name="graphExecutionTPS"
               class="org.perf4j.log4j.GraphingStatisticsAppender">
         <param name="GraphType" value="TPS"/>
-        <param name="TagNamesToGraph" value="/web/login,/web/logout"/>
+        <!--<param name="TagNamesToGraph" value="/web/login,/web/logout"/>-->
         <appender-ref ref="graphsFileAppender"/>
     </appender>
 
