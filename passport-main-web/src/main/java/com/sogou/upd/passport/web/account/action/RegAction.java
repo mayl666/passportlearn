@@ -42,170 +42,170 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web")
 public class RegAction extends BaseController {
 
-    //  private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
-    private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+  //  private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
+  private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
+  private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
-    @Autowired
-    private RegManager regManager;
-    @Autowired
-    private CommonManager commonManager;
-    @Autowired
-    private ConfigureManager configureManager;
+  @Autowired
+  private RegManager regManager;
+  @Autowired
+  private CommonManager commonManager;
+  @Autowired
+  private ConfigureManager configureManager;
 
-    @Autowired
-    private OperateTimesService operateTimesService;
+  @Autowired
+  private OperateTimesService operateTimesService;
 
-    /**
-     * 用户注册检查用户名是否存在
-     *
-     * @param checkParam
-     */
-    @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
-    @ResponseBody
-    public String checkusername(CheckUserNameExistParameters checkParam)
-            throws Exception {
-
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkParam);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        result = checkAccountNotExists(username);
-        return result.toString();
-    }
-
-
-    /**
-     * web页面注册
-     *
-     * @param regParams 传入的参数
-     */
-    @RequestMapping(value = "/reguser", method = RequestMethod.POST)
-    @ResponseBody
-    public Object reguser(HttpServletRequest request, WebRegisterParameters regParams, Model model)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(regParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-
-        String ip = getIp(request);
-        //校验用户是否允许注册
-        String uuidName = CookieUtils.getCookie(request, "uuidName");
-        result = regManager.checkRegInBlackList(ip, uuidName);
-        if (!result.isSuccess()) {
-            return result.toString();
-        }
-
-        //检验用户名是否存在
-        String username = regParams.getUsername();
-//        result = checkAccountNotExists(username);
-//        if (!result.isSuccess()) {
-//            return result.toString();
-//        }
-
-        result = regManager.webRegister(regParams, ip);
-        if (result.isSuccess()) {
-            //设置来源
-            String ru = regParams.getRu();
-            if (Strings.isNullOrEmpty(ru)) {
-                ru = LOGIN_INDEX_URL;
-            }
-            result.setDefaultModel("ru", ru);
-
-            //用户注册成功log
-            UserOperationLog userOperationLog=new UserOperationLog(username,request.getRequestURI(),regParams.getClient_id(),result.getCode());
-            String referer=request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer",referer);
-            userOperationLog.putOtherMessage("register","Success!");
-            UserOperationLogUtil.log(userOperationLog);
-        }else{
-            //用户注册失败log
-            UserOperationLog userOperationLog=new UserOperationLog(username,request.getRequestURI(),regParams.getClient_id(),result.getCode());
-            String referer=request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer",referer);
-            userOperationLog.putOtherMessage("register","Failed!");
-            UserOperationLogUtil.log(userOperationLog);
-        }
-        regManager.incRegTimes(ip, uuidName);
-        return result.toString();
-    }
-
-    /**
-     * 邮件激活
-     *
-     * @param activeParams 传入的参数
-     */
-    @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-    @ResponseBody
-    public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(activeParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result;
-        }
-        //验证client_id
-        int clientId = Integer.parseInt(activeParams.getClient_id());
-
-        //检查client_id是否存在
-        if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
-        }
-        String ip = getIp(request);
-        //邮件激活
-        result = regManager.activeEmail(activeParams, ip);
-        if (result.isSuccess()) {
-            // 种sohu域cookie
-            result = commonManager.createCookieUrl(result, activeParams.getPassport_id(), 1);
-        }
-        return result;
-    }
-
-    //检查用户是否存在
-    private Result checkAccountNotExists(String username) throws Exception {
-        Result result = new APIResultSupport(false);
-        //校验是否是搜狐域内用户
-
-        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-            return result;
-        }
-
-        //判断是否是个性账号
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true);
-            } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false);
-            }
-        } else {
-            result = regManager.isAccountNotExists(username, false);
-        }
-        return result;
-    }
-
-    /*
-     外域邮箱用户激活成功的页面
+  /**
+   * 用户注册检查用户名是否存在
+   *
+   * @param checkParam
    */
-    @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
-        //状态码参数
-        return "reg/emailsuccess";
+  @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
+  @ResponseBody
+  public String checkusername(CheckUserNameExistParameters checkParam)
+      throws Exception {
+
+    Result result = new APIResultSupport(false);
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(checkParam);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result.toString();
     }
+    String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+    result = checkAccountNotExists(username);
+    return result.toString();
+  }
+
+
+  /**
+   * web页面注册
+   *
+   * @param regParams 传入的参数
+   */
+  @RequestMapping(value = "/reguser", method = RequestMethod.POST)
+  @ResponseBody
+  public Object reguser(HttpServletRequest request, WebRegisterParameters regParams, Model model)
+      throws Exception {
+    Result result = new APIResultSupport(false);
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(regParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result.toString();
+    }
+
+    String ip = getIp(request);
+    //校验用户是否允许注册
+    String uuidName = CookieUtils.getCookie(request, "uuidName");
+    result = regManager.checkRegInBlackList(ip, uuidName);
+    if (!result.isSuccess()) {
+      return result.toString();
+    }
+
+    //检验用户名是否存在
+    String username = regParams.getUsername();
+    result = checkAccountNotExists(username);
+    if (!result.isSuccess()) {
+      return result.toString();
+    }
+
+    result = regManager.webRegister(regParams, ip);
+    if (result.isSuccess()) {
+      //设置来源
+      String ru = regParams.getRu();
+      if (Strings.isNullOrEmpty(ru)) {
+        ru = LOGIN_INDEX_URL;
+      }
+      result.setDefaultModel("ru", ru);
+
+      //用户注册成功log
+      UserOperationLog userOperationLog=new UserOperationLog(username,request.getRequestURI(),regParams.getClient_id(),result.getCode());
+      String referer=request.getHeader("referer");
+      userOperationLog.putOtherMessage("referer",referer);
+      userOperationLog.putOtherMessage("register","Success!");
+      UserOperationLogUtil.log(userOperationLog);
+    }else{
+      //用户注册失败log
+      UserOperationLog userOperationLog=new UserOperationLog(username,request.getRequestURI(),regParams.getClient_id(),result.getCode());
+      String referer=request.getHeader("referer");
+      userOperationLog.putOtherMessage("referer",referer);
+      userOperationLog.putOtherMessage("register","Failed!");
+      UserOperationLogUtil.log(userOperationLog);
+    }
+    regManager.incRegTimes(ip, uuidName);
+    return result.toString();
+  }
+
+  /**
+   * 邮件激活
+   *
+   * @param activeParams 传入的参数
+   */
+  @RequestMapping(value = "/activemail", method = RequestMethod.GET)
+  @ResponseBody
+  public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
+      throws Exception {
+    Result result = new APIResultSupport(false);
+    //参数验证
+    String validateResult = ControllerHelper.validateParams(activeParams);
+    if (!Strings.isNullOrEmpty(validateResult)) {
+      result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+      result.setMessage(validateResult);
+      return result;
+    }
+    //验证client_id
+    int clientId = Integer.parseInt(activeParams.getClient_id());
+
+    //检查client_id是否存在
+    if (!configureManager.checkAppIsExist(clientId)) {
+      result.setCode(ErrorUtil.INVALID_CLIENTID);
+      return result;
+    }
+    String ip = getIp(request);
+    //邮件激活
+    result = regManager.activeEmail(activeParams, ip);
+    if (result.isSuccess()) {
+      // 种sohu域cookie
+      result = commonManager.createCookieUrl(result, activeParams.getPassport_id(), 1);
+    }
+    return result;
+  }
+
+  //检查用户是否存在
+  private Result checkAccountNotExists(String username) throws Exception {
+    Result result = new APIResultSupport(false);
+    //校验是否是搜狐域内用户
+
+    if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
+      result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+      return result;
+    }
+
+    //判断是否是个性账号
+    if (username.indexOf("@") == -1) {
+      //判断是否是手机号注册
+      if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+        result = regManager.isAccountNotExists(username, true);
+      } else {
+        username = username + "@sogou.com";
+        result = regManager.isAccountNotExists(username, false);
+      }
+    } else {
+      result = regManager.isAccountNotExists(username, false);
+    }
+    return result;
+  }
+
+  /*
+   外域邮箱用户激活成功的页面
+ */
+  @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
+  public String emailVerifySuccess(HttpServletRequest request) throws Exception {
+    //状态码参数
+    return "reg/emailsuccess";
+  }
 }
