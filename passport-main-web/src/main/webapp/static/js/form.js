@@ -143,7 +143,8 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                                 $el.find('.form-success').show().find('span').html( data.statusText? data.statusText: '提交成功');
                                 config.onsuccess && config.onsuccess($el , data);
                             }else{
-                                $el.find('.form-error').show().find('span').html(data.statusText? data.statusText : '未知错误');
+                                var errorText = data.statusText ? data.statusText.split('|')[0]: '未知错误';
+                                $el.find('.form-error').show().find('span').html(errorText);
                                 config.onfailure && config.onfailure($el);
                             }
                         });

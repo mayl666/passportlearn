@@ -9,12 +9,11 @@ import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,9 +33,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
-    private TaskExecutor loginAfterTaskExecutor;
+    private ThreadPoolTaskExecutor loginAfterTaskExecutor;
     @Autowired
-    private TaskExecutor regAfterTaskExecutor;
+    private ThreadPoolTaskExecutor regAfterTaskExecutor;
 
     @Override
     public long recordTimes(String cacheKey,long timeout) throws ServiceException {
