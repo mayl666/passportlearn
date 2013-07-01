@@ -82,15 +82,6 @@ public class AccountWeb extends BaseController {
       ruProcess(ru,model);
     return "index";
   }
-    /*
-   web修改密码页跳转
-*/
-  @RequestMapping(value = "/resetpwd", method = RequestMethod.GET)
-  public String resetpwd(HttpServletRequest request, HttpServletResponse response)
-      throws Exception {
-
-    return "resetpwd";
-  }
 
   /*
   ru跳转

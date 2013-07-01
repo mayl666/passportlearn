@@ -38,6 +38,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
     private final static int SLOW_TIME = 500;
 
+
     @Autowired
     private MetricRegistry metrics;
 
