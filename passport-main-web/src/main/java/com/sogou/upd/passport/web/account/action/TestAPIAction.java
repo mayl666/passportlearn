@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.web.account.action;
 
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.web.BaseController;
 
@@ -34,28 +37,36 @@ public class TestAPIAction extends BaseController {
   @Autowired
   private SecureApiManager proxySecureApiManager;
   private static ExecutorService executor = Executors.newFixedThreadPool(5);
-  private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
-
+//  private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
+  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
 
 
   @RequestMapping(value = "/test/reg", method = RequestMethod.GET)
   @ResponseBody
   public String testReg(){
     try {
+
+      AuthUserApiParams authUserParameters = new AuthUserApiParams();
+      authUserParameters.setUserid("dfsadasd202@sogou.com");
+      authUserParameters.setClient_id(1100);
+      authUserParameters.setPassword(Coder.encryptMD5("111111"));
+      Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
+
+
       List<Long> list=new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(5);
       for (int i=0;i<5;i++){
-        String userid="dfsadasd14"+i;
-        executor.execute(new T(latch,list,userid,proxySecureApiManager));
+        String userid="dfsadasd202"+i;
+        executor.execute(new T(latch,list,userid,proxyLoginApiManager));
       }
 
       latch.await();
       long avg=0;
       for (int i=0;i<list.size();i++){
         avg= (long)list.get(i) +avg;
-        logger.info("reg:"+(long)list.get(i));
+        logger.info("login:" + (long) list.get(i));
       }
-      logger.info("reg avg:"+avg/5);
+      logger.info("login avg:" + avg / 5);
     }catch (Exception e){}
     finally {
       executor.shutdown();
@@ -67,20 +78,34 @@ public class TestAPIAction extends BaseController {
   @ResponseBody
   public String testPwd(){
     try {
+
+      long startTime=System.currentTimeMillis();
+      UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
+      updatePwdApiParams.setUserid("dfsadasd130@sogou.com");
+      updatePwdApiParams.setModifyip("192.168.1.1");
+      updatePwdApiParams.setPassword("111111");
+      updatePwdApiParams.setNewpassword("111111");
+      Result result= proxySecureApiManager.updatePwd(updatePwdApiParams);
+      System.out.println(result.toString());
+      long endTime=System.currentTimeMillis()-startTime;
+      logger.info("#########:"+endTime);
+
+
+
       List<Long> list=new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(5);
       for (int i=0;i<5;i++){
         String userid="dfsadasd13"+i;
-        executor.execute(new T(latch,list,userid,proxySecureApiManager));
+        executor.execute(new T(latch,list,userid,null));
       }
 
       latch.await();
       long avg=0;
       for (int i=0;i<list.size();i++){
         avg= (long)list.get(i) +avg;
-        logger.info(":"+(long)list.get(i));
+        logger.info(":" + (long) list.get(i));
       }
-      logger.info("reg avg:"+avg/5);
+      logger.info("update avg:" + avg / 5);
     }catch (Exception e){}
     finally {
       executor.shutdown();
@@ -92,9 +117,11 @@ class T implements Runnable{
   List<Long> list;
   SecureApiManager proxySecureApiManager;
   String userid;
+  RegisterApiManager proxyRegisterApiManager;
+  LoginApiManager proxyLoginApiManager;
 
-  T(CountDownLatch latch,List<Long> list,String userid,SecureApiManager proxySecureApiManager) {
-    this.proxySecureApiManager=proxySecureApiManager;
+  T(CountDownLatch latch,List<Long> list,String userid,LoginApiManager proxyLoginApiManager) {
+    this.proxyLoginApiManager=proxyLoginApiManager;
     this.userid=userid;
     this.list=list;
     this.latch = latch;
@@ -104,13 +131,12 @@ class T implements Runnable{
   public void run() {
     try {
       long startTime=System.currentTimeMillis();
-      UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
-      updatePwdApiParams.setUserid(userid+"@sogou.com");
-      updatePwdApiParams.setModifyip("192.168.1.1");
-      updatePwdApiParams.setPassword("111111");
-      updatePwdApiParams.setNewpassword("111111");
-      Result result= proxySecureApiManager.updatePwd(updatePwdApiParams);
-      System.out.println(result.toString());
+      AuthUserApiParams authUserParameters = new AuthUserApiParams();
+      authUserParameters.setUserid(userid+"@sogou.com");
+      authUserParameters.setClient_id(1100);
+      authUserParameters.setPassword(Coder.encryptMD5("111111"));
+      Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
+      logger.info(result.toString());
       long endTime=System.currentTimeMillis()-startTime;
       list.add(endTime);
 

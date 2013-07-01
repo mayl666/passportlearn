@@ -85,7 +85,7 @@ public class RegManagerImpl implements RegManager {
     String username =null;
     try {
       int clientId = Integer.parseInt(regParams.getClient_id());
-      username = regParams.getUsername().trim();
+      username = regParams.getUsername().trim().toLowerCase();
       String password = regParams.getPassword();
       String captcha = regParams.getCaptcha();
       String ru=regParams.getRu();

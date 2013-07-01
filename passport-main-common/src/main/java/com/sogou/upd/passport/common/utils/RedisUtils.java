@@ -33,41 +33,6 @@ public class RedisUtils {
     private static Logger logger = LoggerFactory.getLogger(RedisUtils.class);
 
     private static RedisTemplate redisTemplate;
-    private static org.apache.log4j.Logger testOperationLogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
-
-    public static int COUNT = 0;
-
-
-    public void setTest(String key, String value) {
-        try {
-            long begin = System.currentTimeMillis();
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.set(key, value);
-            long end = System.currentTimeMillis();
-            long operTime = end - begin;
-            testOperationLogger.info(operTime);
-        } catch (Exception e) {
-            //
-            COUNT++;
-        }
-    }
-
-    public String getTest(String key) {
-        try {
-            long begin = System.currentTimeMillis();
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            String value = valueOperations.get(key);
-            long end = System.currentTimeMillis();
-            long operTime = end - begin;
-            testOperationLogger.info(operTime);
-            return value;
-        } catch (Exception e) {
-            logger.error("[Cache] get cache fail, key:" + key, e);
-            COUNT++;
-        }
-        return null;
-    }
-
 
     /*
     * 设置缓存内容

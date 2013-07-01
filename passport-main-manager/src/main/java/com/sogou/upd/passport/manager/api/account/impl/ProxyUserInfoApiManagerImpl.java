@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.BeanUtil;
 import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -40,6 +41,11 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
+        if(PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())){
+           String userid=getUserInfoApiparams.getUserid();
+           userid+="@sohu.com";
+           getUserInfoApiparams.setUserid(userid);
+        }
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         String fields = getUserInfoApiparams.getFields();
         String[] fieldList = fields.split(",");
@@ -124,6 +130,11 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams updateUserInfoApiParams) {
+        if(PhoneUtil.verifyPhoneNumberFormat(updateUserInfoApiParams.getUserid())){
+            String userid=updateUserInfoApiParams.getUserid();
+            userid+="@sohu.com";
+            updateUserInfoApiParams.setUserid(userid);
+        }
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "register");
         Map<String, Object> fields = BeanUtil.beanDescribe(updateUserInfoApiParams);
         for (Map.Entry<String, Object> entry : fields.entrySet()) {
