@@ -46,7 +46,7 @@ public class TestAPIAction extends BaseController {
       List<Long> list=new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(5);
       for (int i=0;i<5;i++){
-        String userid="dfsadasd18"+i;
+        String userid="dfsadasd202"+i;
         executor.execute(new T(latch,list,userid,proxyRegisterApiManager));
       }
 
