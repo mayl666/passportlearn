@@ -43,6 +43,16 @@ public class TestAPIAction extends BaseController {
   @ResponseBody
   public String testReg(){
     try {
+
+      RegEmailApiParams params = new RegEmailApiParams();
+      params.setUserid("dfsadasd202@sohh.com");
+      params.setPassword("111111");
+      params.setRu("http://wan.sogou.com");
+      params.setCreateip("10.1.164.65");
+      Result result = proxyRegisterApiManager.regMailUser(params);
+      logger.info(result.toString());
+
+
       List<Long> list=new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(5);
       for (int i=0;i<5;i++){
@@ -122,7 +132,7 @@ class T implements Runnable{
     try {
       long startTime=System.currentTimeMillis();
       RegEmailApiParams params = new RegEmailApiParams();
-      params.setUserid(userid);
+      params.setUserid(userid+"@sogou.com");
       params.setPassword("111111");
       params.setRu("http://wan.sogou.com");
       params.setCreateip("10.1.164.65");
