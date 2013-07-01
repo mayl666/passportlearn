@@ -70,6 +70,7 @@ public class MobileAccountController extends BaseController {
         try {
             if (commonManager.isAccountExists(mobile)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                result.setMessage("此手机号已注册或已绑定，请直接登录");
                 return result.toString();
             }
         } catch (Exception e) {
