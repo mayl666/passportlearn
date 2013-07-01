@@ -127,7 +127,7 @@ class T implements Runnable{
       params.setRu("http://wan.sogou.com");
       params.setCreateip("10.1.164.65");
       Result result = proxyRegisterApiManager.regMailUser(params);
-      System.out.println(result.toString());
+      logger.info(result.toString());
       long endTime=System.currentTimeMillis()-startTime;
       list.add(endTime);
 
