@@ -34,7 +34,7 @@ public class TestAPIAction extends BaseController {
   @Autowired
   private SecureApiManager proxySecureApiManager;
   private static ExecutorService executor = Executors.newFixedThreadPool(5);
-  private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
+  private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
 
 
 
