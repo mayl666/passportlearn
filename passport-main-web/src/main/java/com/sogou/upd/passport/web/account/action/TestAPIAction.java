@@ -46,13 +46,11 @@ public class TestAPIAction extends BaseController {
   public String testReg(){
     try {
 
-//      RegEmailApiParams params = new RegEmailApiParams();
-//      params.setUserid("dfsadasd202@sohh.com");
-//      params.setPassword("111111");
-//      params.setRu("http://wan.sogou.com");
-//      params.setCreateip("10.1.164.65");
-//      Result result = proxyRegisterApiManager.regMailUser(params);
-//      logger.info(result.toString());
+      AuthUserApiParams authUserParameters = new AuthUserApiParams();
+      authUserParameters.setUserid("dfsadasd202@sogou.com");
+      authUserParameters.setClient_id(1100);
+      authUserParameters.setPassword(Coder.encryptMD5("111111"));
+      Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
 
 
       List<Long> list=new CopyOnWriteArrayList<>();
