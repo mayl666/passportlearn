@@ -28,21 +28,18 @@ import java.util.Random;
 @RequestMapping(value = "/internal/threadPoolSize")
 public class ThreadPoolSizeAction {
     @Autowired
-    private ThreadPoolTaskExecutor loginAfterTaskExecutor;
-    @Autowired
-    private ThreadPoolTaskExecutor regAfterTaskExecutor;
+    private ThreadPoolTaskExecutor discardTaskExecutor;
     @Autowired
     private ThreadPoolTaskExecutor batchOperateExecutor;
 
     @RequestMapping()
     public String indexPage(Model model) throws Exception {
         model.addAttribute("batchOperateExecutor",batchOperateExecutor);
-        model.addAttribute("loginAfterTaskExecutor",loginAfterTaskExecutor);
-        model.addAttribute("regAfterTaskExecutor",regAfterTaskExecutor);
+        model.addAttribute("discardTaskExecutor",discardTaskExecutor);
         return "threadpool";
     }
 
-    @RequestMapping(value = "/loginAfterTaskExecutor", method = RequestMethod.POST)
+    @RequestMapping(value = "/discardTaskExecutor", method = RequestMethod.POST)
     @ResponseBody
     public Object loginAfterTaskExecutor(ThreadPoolSizeParameters threadPoolSizeParameters) {
         if (threadPoolSizeParameters.getCorePoolSize() > threadPoolSizeParameters.getMaxPoolSize()) {
@@ -50,42 +47,16 @@ public class ThreadPoolSizeAction {
         }
         try {
             if (threadPoolSizeParameters.getCorePoolSize() > 0) {
-                loginAfterTaskExecutor.setCorePoolSize(threadPoolSizeParameters.getCorePoolSize());
+                discardTaskExecutor.setCorePoolSize(threadPoolSizeParameters.getCorePoolSize());
             }
             if (threadPoolSizeParameters.getMaxPoolSize() > 0) {
-                loginAfterTaskExecutor.setMaxPoolSize(threadPoolSizeParameters.getMaxPoolSize());
+                discardTaskExecutor.setMaxPoolSize(threadPoolSizeParameters.getMaxPoolSize());
             }
             if (threadPoolSizeParameters.getKeepAliveSeconds() > 0) {
-                loginAfterTaskExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getKeepAliveSeconds());
+                discardTaskExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getKeepAliveSeconds());
             }
             if (threadPoolSizeParameters.getQueueCapacity() > 0) {
-                loginAfterTaskExecutor.setQueueCapacity(threadPoolSizeParameters.getQueueCapacity());
-            }
-        } catch (Exception e) {
-            return "failed,exception occur" + e.getMessage();
-        }
-        return "success";
-    }
-
-    //redis set
-    @RequestMapping(value = "/regAfterTaskExecutor", method = RequestMethod.POST)
-    @ResponseBody
-    public Object regAfterTaskExecutor(ThreadPoolSizeParameters threadPoolSizeParameters) throws Exception {
-        if (threadPoolSizeParameters.getCorePoolSize() > threadPoolSizeParameters.getMaxPoolSize()) {
-            return "failed,corePoolSize cannot greater than  maxPoolSize";
-        }
-        try {
-            if (threadPoolSizeParameters.getCorePoolSize() > 0) {
-                regAfterTaskExecutor.setCorePoolSize(threadPoolSizeParameters.getCorePoolSize());
-            }
-            if (threadPoolSizeParameters.getMaxPoolSize() > 0) {
-                regAfterTaskExecutor.setMaxPoolSize(threadPoolSizeParameters.getMaxPoolSize());
-            }
-            if (threadPoolSizeParameters.getKeepAliveSeconds() > 0) {
-                regAfterTaskExecutor.setKeepAliveSeconds(threadPoolSizeParameters.getKeepAliveSeconds());
-            }
-            if (threadPoolSizeParameters.getQueueCapacity() > 0) {
-                regAfterTaskExecutor.setQueueCapacity(threadPoolSizeParameters.getQueueCapacity());
+                discardTaskExecutor.setQueueCapacity(threadPoolSizeParameters.getQueueCapacity());
             }
         } catch (Exception e) {
             return "failed,exception occur" + e.getMessage();

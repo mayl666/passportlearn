@@ -33,9 +33,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
-    private ThreadPoolTaskExecutor loginAfterTaskExecutor;
-    @Autowired
-    private ThreadPoolTaskExecutor regAfterTaskExecutor;
+    private ThreadPoolTaskExecutor discardTaskExecutor;
 
     @Override
     public long recordTimes(String cacheKey,long timeout) throws ServiceException {
@@ -117,7 +115,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public long incLoginSuccessTimes(final String username,final String ip) throws ServiceException {
         try {
-            loginAfterTaskExecutor.execute(new Runnable() {
+            discardTaskExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
@@ -150,7 +148,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public long incLoginFailedTimes(final String username,final String ip) throws ServiceException {
         try {
-            loginAfterTaskExecutor.execute(new Runnable() {
+            discardTaskExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
@@ -226,7 +224,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     @Override
     public void incRegTimes(final String ip,final String cookieStr) throws ServiceException {
-        regAfterTaskExecutor.execute(new Runnable() {
+        discardTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 //修改为list模式添加cookie处理 by mayan
