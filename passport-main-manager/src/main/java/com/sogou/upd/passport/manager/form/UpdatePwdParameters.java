@@ -14,9 +14,7 @@ public class UpdatePwdParameters {
     @NotBlank(message = "client_id不允许为空！")
     @Min(0)
     private String client_id = String.valueOf(SHPPUrlConstant.APP_ID);
-    @NotBlank(message = "原密码不允许为空!")
     private String password;
-    @NotBlank(message = "新密码不允许为空!")
     private String newpwd;
     // @NotBlank(message = "passport_id不允许为空!")
     private String passport_id;

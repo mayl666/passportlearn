@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>搜狗通行证--线程池大小设置</title>
+        <link rel="stylesheet" href="/./static/css/main.css?t=334325" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
+        <ul class="info">
+            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li class="sep">|</li>
+            <li>
+                <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+            <li class="sep" style="display:none;">|</li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+
+            <div class="banner">
+                <div class="inner reg">
+                    <ul>
+                        <li ><a href="/">线程池运行状况</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="main-content one-col">
+                 <h2>线程池:loginAfterTaskExecutor</h2>
+                 #if($loginAfterTaskExecutor)
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="$loginAfterTaskExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
+                                </td>
+                                <td><input type="text" value="$loginAfterTaskExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
+                                </td>
+                                <td><input type="text" value="$loginAfterTaskExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                  #end
+
+                <h2>线程池:regAfterTaskExecutor</h2>
+                #if($loginAfterTaskExecutor)
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="$regAfterTaskExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="$regAfterTaskExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="$regAfterTaskExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                #end
+
+                <h2>线程池:batchOperateExecutor</h2>
+                #if($loginAfterTaskExecutor)
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                #end
+
+                <h2>参数解释</h2>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="池中的当前线程数" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="曾经池中的最大线程数" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="计划执行的近似任务总数" disabled="false"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+             </div>
+
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li ><a href="/">线程池配置</a></li>
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content one-col">
+    <h2>线程池:loginAfterTaskExecutor</h2>
+    <form id="loginAfterTaskForm" action="/internal/threadPoolSize/loginAfterTaskExecutor" method="post">
+        #if($loginAfterTaskExecutor)
+        <table>
+        <tbody>
+        <tr>
+            <td>corePoolSize</td><td>maxPoolSize</td><td>keepAliveSeconds</td>
+        </tr>
+        <tr>
+           <td><input type="text" id="login_oldCorePoolSize" value="$loginAfterTaskExecutor.corePoolSize" disabled="false"/>
+               <input type="text" id="login_newCorePoolSize" name="corePoolSize" value="$loginAfterTaskExecutor.corePoolSize" style="display: none" />
+           </td>
+           <td><input type="text" id="login_oldMaxPoolSize" value="$loginAfterTaskExecutor.maxPoolSize" disabled="false"/>
+               <input type="text" id="login_newMaxPoolSize" name="maxPoolSize" value="$loginAfterTaskExecutor.maxPoolSize" style="display: none" />
+           </td>
+           <td><input type="text" id="login_oldKeepAliveSeconds" value="$loginAfterTaskExecutor.keepAliveSeconds" disabled="false"/>
+                <input type="text" id="login_newKeepAliveSeconds" name="keepAliveSeconds" value="$loginAfterTaskExecutor.keepAliveSeconds"  style="display: none" />
+           </td>
+           <td><input id="login_oldPoolSizeBtn" type="button" value="重置" onclick="login_resetPoolSize()"/>
+                 <input id="login_newPoolSizeBtn" type="button" value="保存" onclick="login_savePoolsize()" style="display: none"/>
+           </td>
+        </tr>
+        </tbody>
+       </table>
+        #end
+     </form>
+
+    <h2>线程池:regAfterTaskExecutor</h2>
+    <form id="regAfterTaskForm" action="/internal/threadPoolSize/regAfterTaskExecutor" method="post">
+        #if($regAfterTaskExecutor)
+            <table>
+                <tbody>
+                <tr>
+                    <td>corePoolSize</td><td>maxPoolSize</td><td>keepAliveSeconds</td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="reg_oldCorePoolSize" value="$regAfterTaskExecutor.corePoolSize" disabled="false"/>
+                        <input type="text" id="reg_newCorePoolSize" name="corePoolSize"  value="$regAfterTaskExecutor.corePoolSize" style="display: none" />
+                    </td>
+                    <td><input type="text" id="reg_oldMaxPoolSize" value="$regAfterTaskExecutor.maxPoolSize" disabled="false"/>
+                        <input type="text" id="reg_newMaxPoolSize" name="maxPoolSize" value="$regAfterTaskExecutor.maxPoolSize" style="display: none" />
+                    </td>
+                    <td><input type="text" id="reg_oldKeepAliveSeconds" value="$regAfterTaskExecutor.keepAliveSeconds" disabled="false"/>
+                        <input type="text" id="reg_newKeepAliveSeconds" name="keepAliveSeconds" value="$regAfterTaskExecutor.keepAliveSeconds" style="display: none" />
+                    </td>
+                    <td><input id="reg_oldPoolSizeBtn" type="button" value="重置" onclick="reg_resetPoolSize()"/>
+                        <input id="reg_newPoolSizeBtn" type="button" value="保存" onclick="reg_savePoolsize()" style="display: none"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        #end
+    </form>
+
+    <h2>线程池:batchOperateExecutor</h2>
+    <form id="batchOperateForm" action="/internal/threadPoolSize/batchOperateExecutor" method="post">
+        #if($batchOperateExecutor)
+            <table>
+                <tbody>
+                <tr>
+                    <td>corePoolSize</td><td>maxPoolSize</td><td>keepAliveSeconds</td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="batch_oldCorePoolSize" value="$batchOperateExecutor.corePoolSize" disabled="false"/>
+                        <input type="text" id="batch_newCorePoolSize" name="corePoolSize" value="$batchOperateExecutor.corePoolSize" style="display: none" />
+                    </td>
+                    <td><input type="text" id="batch_oldMaxPoolSize" value="$batchOperateExecutor.maxPoolSize" disabled="false"/>
+                        <input type="text" id="batch_newMaxPoolSize" name="maxPoolSize" value="$batchOperateExecutor.maxPoolSize"  style="display: none" />
+                    </td>
+                    <td><input type="text" id="batch_oldKeepAliveSeconds" value="$batchOperateExecutor.keepAliveSeconds" disabled="false"/>
+                        <input type="text" id="batch_newKeepAliveSeconds" name="keepAliveSeconds" value="$batchOperateExecutor.keepAliveSeconds" style="display: none" />
+                    </td>
+                    <td><input id="batch_oldPoolSizeBtn" type="button" value="重置" onclick="batch_resetPoolSize()"/>
+                        <input id="batch_newPoolSizeBtn" type="button" value="保存" onclick="batch_savePoolsize()" style="display: none"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        #end
+    </form>
+</div>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
+    <script type="text/javascript" src="/./static/js/404.js?t="></script>
+    
+    <script type="text/javascript">
+        function login_resetPoolSize() {
+            document.getElementById('login_oldCorePoolSize').style.display = "none";
+            document.getElementById('login_newCorePoolSize').style.display = "block";
+
+            document.getElementById('login_oldMaxPoolSize').style.display = "none";
+            document.getElementById('login_newMaxPoolSize').style.display = "block";
+
+            document.getElementById('login_oldKeepAliveSeconds').style.display = "none";
+            document.getElementById('login_newKeepAliveSeconds').style.display = "block";
+
+            document.getElementById('login_oldPoolSizeBtn').style.display = "none";
+            document.getElementById('login_newPoolSizeBtn').style.display = "block";
+        }
+
+        function login_savePoolsize() {
+            document.getElementById('loginAfterTaskForm').submit();
+        }
+
+        function reg_resetPoolSize() {
+            document.getElementById('reg_oldCorePoolSize').style.display = "none";
+            document.getElementById('reg_newCorePoolSize').style.display = "block";
+
+            document.getElementById('reg_oldMaxPoolSize').style.display = "none";
+            document.getElementById('reg_newMaxPoolSize').style.display = "block";
+
+            document.getElementById('reg_oldKeepAliveSeconds').style.display = "none";
+            document.getElementById('reg_newKeepAliveSeconds').style.display = "block";
+
+            document.getElementById('reg_oldPoolSizeBtn').style.display = "none";
+            document.getElementById('reg_newPoolSizeBtn').style.display = "block";
+        }
+
+        function reg_savePoolsize() {
+            document.getElementById('regAfterTaskForm').submit();
+        }
+
+        function batch_resetPoolSize() {
+            document.getElementById('batch_oldCorePoolSize').style.display = "none";
+            document.getElementById('batch_newCorePoolSize').style.display = "block";
+
+            document.getElementById('batch_oldMaxPoolSize').style.display = "none";
+            document.getElementById('batch_newMaxPoolSize').style.display = "block";
+
+            document.getElementById('batch_oldKeepAliveSeconds').style.display = "none";
+            document.getElementById('batch_newKeepAliveSeconds').style.display = "block";
+
+            document.getElementById('batch_oldPoolSizeBtn').style.display = "none";
+            document.getElementById('batch_newPoolSizeBtn').style.display = "block";
+        }
+
+        function batch_savePoolsize() {
+            document.getElementById('batchOperateForm').submit();
+        }
+    </script>
+</html>

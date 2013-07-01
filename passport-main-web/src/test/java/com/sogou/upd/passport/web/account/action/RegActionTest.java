@@ -24,9 +24,20 @@ public class RegActionTest extends BaseActionTest {
         params.put("username", "dasdasdasdasdasd1");
         params.put("password", "asasasa");
 //        params.put("captcha", "GVD2X");
-        String result  = sendPost("http://account.sogou.com/web/reguser", params);
+        String result  = sendPost("http://account.sogou.com/web/login", params);
         System.out.println(result);
     }
+  @Test
+  public void testUpdatePWD() throws IOException {
+    String localUrl = "/web/reguser/";
+    Map<String, String> params = new HashMap<>();
+    params.put("client_id", "1100");
+    params.put("passport_id", "dasdasdasdasdasd1");
+    params.put("newpwd", "asasasa");
+//        params.put("captcha", "GVD2X");
+    String result  = sendPost("http://account.sogou.com/web/security/updatepwd", params);
+    System.out.println(result);
+  }
 
 
   @Test

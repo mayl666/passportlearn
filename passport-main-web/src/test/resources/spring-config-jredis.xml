@@ -7,7 +7,7 @@
 
 
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="50"/>
+        <property name="maxActive" value="100"/>
         <property name="maxIdle" value="10"/>
         <property name="maxWait" value="1000"/>
         <property name="testOnBorrow" value="true"/>
