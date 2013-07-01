@@ -31,46 +31,28 @@
             </div>
 
             <div class="main-content one-col">
-                 <h2>线程池:loginAfterTaskExecutor</h2>
-                 #if($loginAfterTaskExecutor)
+                 <h2>线程池:discardTaskExecutor</h2>
+                 #if($discardTaskExecutor)
                         <table>
                             <tbody>
                             <tr>
                                 <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
                             </tr>
                             <tr>
-                                <td><input type="text" value="$loginAfterTaskExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
+                                <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
                                 </td>
-                                <td><input type="text" value="$loginAfterTaskExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
+                                <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
                                 </td>
-                                <td><input type="text" value="$loginAfterTaskExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
+                                <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                   #end
 
-                <h2>线程池:regAfterTaskExecutor</h2>
-                #if($loginAfterTaskExecutor)
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" value="$regAfterTaskExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
-                            </td>
-                            <td><input type="text" value="$regAfterTaskExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
-                            </td>
-                            <td><input type="text" value="$regAfterTaskExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                #end
 
                 <h2>线程池:batchOperateExecutor</h2>
-                #if($loginAfterTaskExecutor)
+                #if($batchOperateExecutor)
                     <table>
                         <tbody>
                         <tr>
@@ -120,23 +102,23 @@
 </div>
 
 <div class="main-content one-col">
-    <h2>线程池:loginAfterTaskExecutor</h2>
-    <form id="loginAfterTaskForm" action="/internal/threadPoolSize/loginAfterTaskExecutor" method="post">
-        #if($loginAfterTaskExecutor)
+    <h2>线程池:discardTaskExecutor</h2>
+    <form id="loginAfterTaskForm" action="/internal/threadPoolSize/discardTaskExecutor" method="post">
+        #if($discardTaskExecutor)
         <table>
         <tbody>
         <tr>
             <td>corePoolSize</td><td>maxPoolSize</td><td>keepAliveSeconds</td>
         </tr>
         <tr>
-           <td><input type="text" id="login_oldCorePoolSize" value="$loginAfterTaskExecutor.corePoolSize" disabled="false"/>
-               <input type="text" id="login_newCorePoolSize" name="corePoolSize" value="$loginAfterTaskExecutor.corePoolSize" style="display: none" />
+           <td><input type="text" id="login_oldCorePoolSize" value="$discardTaskExecutor.corePoolSize" disabled="false"/>
+               <input type="text" id="login_newCorePoolSize" name="corePoolSize" value="$discardTaskExecutor.corePoolSize" style="display: none" />
            </td>
-           <td><input type="text" id="login_oldMaxPoolSize" value="$loginAfterTaskExecutor.maxPoolSize" disabled="false"/>
-               <input type="text" id="login_newMaxPoolSize" name="maxPoolSize" value="$loginAfterTaskExecutor.maxPoolSize" style="display: none" />
+           <td><input type="text" id="login_oldMaxPoolSize" value="$discardTaskExecutor.maxPoolSize" disabled="false"/>
+               <input type="text" id="login_newMaxPoolSize" name="maxPoolSize" value="$discardTaskExecutor.maxPoolSize" style="display: none" />
            </td>
-           <td><input type="text" id="login_oldKeepAliveSeconds" value="$loginAfterTaskExecutor.keepAliveSeconds" disabled="false"/>
-                <input type="text" id="login_newKeepAliveSeconds" name="keepAliveSeconds" value="$loginAfterTaskExecutor.keepAliveSeconds"  style="display: none" />
+           <td><input type="text" id="login_oldKeepAliveSeconds" value="$discardTaskExecutor.keepAliveSeconds" disabled="false"/>
+                <input type="text" id="login_newKeepAliveSeconds" name="keepAliveSeconds" value="$discardTaskExecutor.keepAliveSeconds"  style="display: none" />
            </td>
            <td><input id="login_oldPoolSizeBtn" type="button" value="重置" onclick="login_resetPoolSize()"/>
                  <input id="login_newPoolSizeBtn" type="button" value="保存" onclick="login_savePoolsize()" style="display: none"/>
@@ -146,33 +128,6 @@
        </table>
         #end
      </form>
-
-    <h2>线程池:regAfterTaskExecutor</h2>
-    <form id="regAfterTaskForm" action="/internal/threadPoolSize/regAfterTaskExecutor" method="post">
-        #if($regAfterTaskExecutor)
-            <table>
-                <tbody>
-                <tr>
-                    <td>corePoolSize</td><td>maxPoolSize</td><td>keepAliveSeconds</td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="reg_oldCorePoolSize" value="$regAfterTaskExecutor.corePoolSize" disabled="false"/>
-                        <input type="text" id="reg_newCorePoolSize" name="corePoolSize"  value="$regAfterTaskExecutor.corePoolSize" style="display: none" />
-                    </td>
-                    <td><input type="text" id="reg_oldMaxPoolSize" value="$regAfterTaskExecutor.maxPoolSize" disabled="false"/>
-                        <input type="text" id="reg_newMaxPoolSize" name="maxPoolSize" value="$regAfterTaskExecutor.maxPoolSize" style="display: none" />
-                    </td>
-                    <td><input type="text" id="reg_oldKeepAliveSeconds" value="$regAfterTaskExecutor.keepAliveSeconds" disabled="false"/>
-                        <input type="text" id="reg_newKeepAliveSeconds" name="keepAliveSeconds" value="$regAfterTaskExecutor.keepAliveSeconds" style="display: none" />
-                    </td>
-                    <td><input id="reg_oldPoolSizeBtn" type="button" value="重置" onclick="reg_resetPoolSize()"/>
-                        <input id="reg_newPoolSizeBtn" type="button" value="保存" onclick="reg_savePoolsize()" style="display: none"/>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        #end
-    </form>
 
     <h2>线程池:batchOperateExecutor</h2>
     <form id="batchOperateForm" action="/internal/threadPoolSize/batchOperateExecutor" method="post">
@@ -212,8 +167,6 @@
     </div>
 </div>
     </body>
-    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/404.js?t="></script>
     
     <script type="text/javascript">
         function login_resetPoolSize() {
@@ -232,24 +185,6 @@
 
         function login_savePoolsize() {
             document.getElementById('loginAfterTaskForm').submit();
-        }
-
-        function reg_resetPoolSize() {
-            document.getElementById('reg_oldCorePoolSize').style.display = "none";
-            document.getElementById('reg_newCorePoolSize').style.display = "block";
-
-            document.getElementById('reg_oldMaxPoolSize').style.display = "none";
-            document.getElementById('reg_newMaxPoolSize').style.display = "block";
-
-            document.getElementById('reg_oldKeepAliveSeconds').style.display = "none";
-            document.getElementById('reg_newKeepAliveSeconds').style.display = "block";
-
-            document.getElementById('reg_oldPoolSizeBtn').style.display = "none";
-            document.getElementById('reg_newPoolSizeBtn').style.display = "block";
-        }
-
-        function reg_savePoolsize() {
-            document.getElementById('regAfterTaskForm').submit();
         }
 
         function batch_resetPoolSize() {
