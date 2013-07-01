@@ -7,6 +7,8 @@ import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.web.BaseController;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,8 @@ public class TestAPIAction extends BaseController {
   @Autowired
   private SecureApiManager proxySecureApiManager;
   private static ExecutorService executor = Executors.newFixedThreadPool(5);
+  private static final Logger logger = LoggerFactory.getLogger(LoginAction.class);
+
 
 
   @RequestMapping(value = "/test/reg", method = RequestMethod.GET)
@@ -49,9 +53,9 @@ public class TestAPIAction extends BaseController {
       long avg=0;
       for (int i=0;i<list.size();i++){
         avg= (long)list.get(i) +avg;
-        System.out.println("reg:"+(long)list.get(i));
+        logger.info("reg:"+(long)list.get(i));
       }
-      System.out.println("reg avg:"+avg/5);
+      logger.info("reg avg:"+avg/5);
     }catch (Exception e){}
     finally {
       executor.shutdown();
@@ -74,9 +78,9 @@ public class TestAPIAction extends BaseController {
       long avg=0;
       for (int i=0;i<list.size();i++){
         avg= (long)list.get(i) +avg;
-        System.out.println((long)list.get(i));
+        logger.info(":"+(long)list.get(i));
       }
-      System.out.println("avg:"+avg/5);
+      logger.info("reg avg:"+avg/5);
     }catch (Exception e){}
     finally {
       executor.shutdown();
