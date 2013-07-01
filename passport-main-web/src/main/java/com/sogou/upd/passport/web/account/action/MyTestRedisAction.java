@@ -6,6 +6,8 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
@@ -33,16 +35,21 @@ public class MyTestRedisAction {
     private AccountService accountService;
 
     private static final int MAX = 1000000;
-
+    private static Logger slf4jLlogger = LoggerFactory.getLogger(MyTestRedisAction.class);
+    private static final org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(MyTestRedisAction.class);
 //    @Autowired
 //    private TaskExecutor loginAfterTaskExecutor;
 
     @RequestMapping(value = "/printMessages", method = RequestMethod.GET)
     @ResponseBody
     public Object printMessages() {
-//        for(int i = 0; i < 100; i++) {
-//            loginAfterTaskExecutor.execute(new MessagePrinterTask("Message" + i));
-//        }
+        slf4jLlogger.error("this is error");
+        slf4jLlogger.info("this is info");
+        slf4jLlogger.debug("this is debug");
+
+        log4jLogger.error("log4j_this is error");
+        log4jLogger.info("log4j_this is info");
+        log4jLogger.debug("log4j_this is debug");
         return "success";
     }
 
