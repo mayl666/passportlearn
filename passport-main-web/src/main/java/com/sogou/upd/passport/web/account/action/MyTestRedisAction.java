@@ -45,6 +45,7 @@ public class MyTestRedisAction {
     //redis set
     @RequestMapping(value = "/testThreadPool", method = RequestMethod.GET)
     @ResponseBody
+    @Profiled
     public Object testThreadPool() throws Exception {
         String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
@@ -79,6 +80,7 @@ public class MyTestRedisAction {
     //redis set
     @RequestMapping(value = "/testSet", method = RequestMethod.GET)
     @ResponseBody
+    @Profiled
     public Object testSet() throws Exception {
         String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
@@ -96,6 +98,7 @@ public class MyTestRedisAction {
 
     @RequestMapping(value = "/testGet", method = RequestMethod.GET)
     @ResponseBody
+    @Profiled
     public Object testGet() throws Exception {
         String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;

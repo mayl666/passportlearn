@@ -10,23 +10,20 @@
     http://www.springframework.org/schema/mvc
     http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
     ">
-
-
-
     <!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
     <!--&lt;!&ndash; 自定义AOP &ndash;&gt;-->
     <!--<aop:aspectj-autoproxy proxy-target-class="true">-->
         <!--<aop:include name="controllerAspect"/>-->
     <!--</aop:aspectj-autoproxy>-->
 
+    <!--perf4j性能监控AOP-->
+    <bean id="timingAspect" class="org.perf4j.slf4j.aop.TimingAspect"/>
+
     <aop:aspectj-autoproxy proxy-target-class="true">
         <aop:include name="timingAspect"/>
     </aop:aspectj-autoproxy>
     <!-- 自动发现bean，包括@Component@Service@Controller等 -->
     <context:component-scan base-package="com.sogou.upd.passport.**"/>
-
-    <!--perf4j性能监控-->
-    <bean id="timingAspect" class="org.perf4j.slf4j.aop.TimingAspect"/>
 
     <!-- import the dataSource definition -->
     <import resource="classpath:spring-config-dao.xml"/>
