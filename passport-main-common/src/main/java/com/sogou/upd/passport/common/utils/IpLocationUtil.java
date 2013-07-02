@@ -44,14 +44,14 @@ public class IpLocationUtil {
 
     public static String getCity(String ip) {
         // String cityName = "IP归属地未知";
-        String cityName = "区域未知";
+        String cityName = "IP归属地未知";
         try {
             if (Strings.isNullOrEmpty(ip)) {
                 return cityName;
             }
 
             if (ip.indexOf("10.") == 0 || ip.indexOf("192.168.") == 0) {
-                return "搜狗内网";
+                return "局域网";
             }
             String location = instance.getLocation(ip);
             if (location != null && !location.equals("") && location.length() >= 6) {
