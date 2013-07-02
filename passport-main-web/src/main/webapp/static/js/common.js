@@ -11,6 +11,7 @@ define(['./utils'],function(utils){
 
     return{
         showBannerUnderLine: function(){
+            $('.banner ul').show();
             var currentBanner = $('.banner ul li.current');
             if( currentBanner.length ){
                 $('.banner .underline').css('left' , currentBanner.position().left)

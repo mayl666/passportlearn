@@ -49,6 +49,15 @@ public class ProblemAction extends BaseController {
     public String addProblem(HttpServletRequest request, Model model)
             throws Exception {
         Result result = new  APIResultSupport(false);
+        //检测是否登录
+        if (hostHolder.isLogin()) {
+            String userId = hostHolder.getPassportId();
+            String nickName = hostHolder.getNickName();
+            if (Strings.isNullOrEmpty(nickName)) {
+                nickName = userId;
+            }
+            result.setDefaultModel("username", nickName);
+        }
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
         result.setDefaultModel("problemTypeList",typeList);
