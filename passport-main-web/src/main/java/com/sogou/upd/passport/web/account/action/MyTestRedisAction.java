@@ -83,9 +83,9 @@ public class MyTestRedisAction {
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         redisUtils.setWithinSeconds(userNameCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-//        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-//        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-//        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 //
 //        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
 //        redisUtils.setWithinSeconds(ipSuccessCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
