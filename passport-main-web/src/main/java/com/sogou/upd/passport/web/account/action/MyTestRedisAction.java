@@ -6,6 +6,8 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
@@ -33,16 +35,36 @@ public class MyTestRedisAction {
     private AccountService accountService;
 
     private static final int MAX = 1000000;
-
+    private static Logger slf4jLlogger = LoggerFactory.getLogger(MyTestRedisAction.class);
+    private static final org.apache.log4j.Logger oplogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
+    private static final org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(MyTestRedisAction.class);
 //    @Autowired
 //    private TaskExecutor loginAfterTaskExecutor;
+
+    //redis set
+    @RequestMapping(value = "/testThreadPool", method = RequestMethod.GET)
+    @ResponseBody
+    public Object testThreadPool() throws Exception {
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+        operateTimesService.incLoginSuccessTimes(username,ip);
+        return "success";
+    }
 
     @RequestMapping(value = "/printMessages", method = RequestMethod.GET)
     @ResponseBody
     public Object printMessages() {
-//        for(int i = 0; i < 100; i++) {
-//            loginAfterTaskExecutor.execute(new MessagePrinterTask("Message" + i));
-//        }
+        oplogger.error("op_this is error");
+        oplogger.info("op_this is info");
+        oplogger.debug("op_this is debug");
+
+        slf4jLlogger.error("this is error");
+        slf4jLlogger.info("this is info");
+        slf4jLlogger.debug("this is debug");
+
+        log4jLogger.error("log4j_this is error");
+        log4jLogger.info("log4j_this is info");
+        log4jLogger.debug("log4j_this is debug");
         return "success";
     }
 
@@ -61,9 +83,9 @@ public class MyTestRedisAction {
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         redisUtils.setWithinSeconds(userNameCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-//        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-//        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-//        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 //
 //        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
 //        redisUtils.setWithinSeconds(ipSuccessCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
