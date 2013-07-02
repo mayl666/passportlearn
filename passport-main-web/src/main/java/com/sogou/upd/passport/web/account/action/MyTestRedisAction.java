@@ -25,7 +25,7 @@ import java.util.Random;
  * File | Settings | File Templates.
  */
 @Controller
-@RequestMapping(value = "/web/redisTest")
+@RequestMapping(value = "/internal/redisTest")
 public class MyTestRedisAction {
     @Autowired
     private RedisUtils redisUtils;
@@ -150,48 +150,4 @@ public class MyTestRedisAction {
         return "success";
     }
 
-
-    //
-    @RequestMapping(value = "/testIncLoginSuccessTimes", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testIncLoginSuccessTimes() throws Exception {
-        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
-        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-        operateTimesService.incLoginSuccessTimes(username,ip);
-        return "success";
-    }
-
-    @RequestMapping(value = "/testLoginFailedTimesNeedCaptcha", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testLoginFailedTimesNeedCaptcha() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
-        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-        operateTimesService.loginFailedTimesNeedCaptcha(username,ip);
-        return "success";
-    }
-
-    @RequestMapping(value = "/testCheckLoginUserInBlackList", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testCheckLoginUserInBlackList() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
-        operateTimesService.checkLoginUserInBlackList(username);
-        return "success";
-    }
-
-    @RequestMapping(value = "/testCheckCaptchaCodeIsVaild", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testCheckCaptchaCodeIsVaild() {
-        String token ="fc5709c27f80aa3efdd04b4919fd9bf2&t=1372227596101";
-        String captchaCode="LEW7A";
-        accountService.checkCaptchaCodeIsVaild(token,captchaCode);
-        return "success";
-    }
-
-    @RequestMapping(value = "/del", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testCheckTimesByKey() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
-        operateTimesService.checkTimesByKey(username,20);
-        return "success";
-    }
 }
