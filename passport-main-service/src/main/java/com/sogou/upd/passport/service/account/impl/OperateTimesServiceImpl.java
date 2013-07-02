@@ -121,18 +121,18 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
                     recordTimes(userNameCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-                    if(isHalfTimes(userNameCacheKey,LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT)){
-                        loginBlackListLogger.info(new Date()+",incLoginSuccessTimes,userNameCacheKey="+userNameCacheKey
-                                +",userNameLoginSuccessTimes="+LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT/2+",ip="+ip);
-                    }
+//                    if(isHalfTimes(userNameCacheKey,LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT)){
+//                        loginBlackListLogger.info(new Date()+",incLoginSuccessTimes,userNameCacheKey="+userNameCacheKey
+//                                +",userNameLoginSuccessTimes="+LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT/2+",ip="+ip);
+//                    }
 
                     if (!Strings.isNullOrEmpty(ip)) {
                         String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
                         recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
-                        if(isHalfTimes(ipCacheKey,LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT)){
-                            loginBlackListLogger.info(new Date()+",incLoginSuccessTimes,ipCacheKey="+ipCacheKey
-                                    +",ipLoginSuccessTimes="+LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT/2+",username="+username);
-                        }
+//                        if(isHalfTimes(ipCacheKey,LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT)){
+//                            loginBlackListLogger.info(new Date()+",incLoginSuccessTimes,ipCacheKey="+ipCacheKey
+//                                    +",ipLoginSuccessTimes="+LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT/2+",username="+username);
+//                        }
                     }
 
                 }
@@ -153,17 +153,17 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 public void run() {
                     String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
                     recordTimes(userNameCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
-                    if(isHalfTimes(userNameCacheKey,LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT)){
-                        loginBlackListLogger.info(new Date()+",incLoginFailedTimes,userNameCacheKey="+userNameCacheKey
-                                +",userNameLoginFailedTimes="+LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT/2+",ip="+ip);
-                    }
+//                    if(isHalfTimes(userNameCacheKey,LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT)){
+//                        loginBlackListLogger.info(new Date()+",incLoginFailedTimes,userNameCacheKey="+userNameCacheKey
+//                                +",userNameLoginFailedTimes="+LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT/2+",ip="+ip);
+//                    }
                     if (!Strings.isNullOrEmpty(ip)) {
                         String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
                         recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
-                        if(isHalfTimes(ipCacheKey,LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT)){
-                            loginBlackListLogger.info(new Date()+",incLoginFailedTimes,ipCacheKey="+ipCacheKey
-                                    +",ipLoginFailedTimes="+LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT/2+",username="+username);
-                        }
+//                        if(isHalfTimes(ipCacheKey,LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT)){
+//                            loginBlackListLogger.info(new Date()+",incLoginFailedTimes,ipCacheKey="+ipCacheKey
+//                                    +",ipLoginFailedTimes="+LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT/2+",username="+username);
+//                        }
                     }
                 }
             });
