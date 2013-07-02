@@ -40,7 +40,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     @Autowired
     private KvUtils kvUtils;
     @Autowired
-    private TaskExecutor batchOperateExecutor;
+    private TaskExecutor discardTaskExecutor;
 
     @Override
     public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException {
@@ -67,7 +67,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     @Override
     public void setActionRecord(final String userId, final int clientId, final AccountModuleEnum action,
             final String ip, final String note) {
-        batchOperateExecutor.execute(new Runnable() {
+        discardTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 // 获取实际需要存储的参数类，节省存储空间
@@ -82,7 +82,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Override
     public void setActionRecord(final ActionRecord actionRecord) {
-        batchOperateExecutor.execute(new Runnable() {
+        discardTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 if (actionRecord == null) {
