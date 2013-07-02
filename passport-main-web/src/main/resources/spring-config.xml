@@ -11,14 +11,17 @@
     http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
     ">
 
-    <!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
-    <!-- 自定义AOP -->
-    <aop:aspectj-autoproxy proxy-target-class="true">
-        <aop:include name="controllerAspect"/>
-    </aop:aspectj-autoproxy>
 
+
+    <!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
+    <!--&lt;!&ndash; 自定义AOP &ndash;&gt;-->
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
     <!-- 自动发现bean，包括@Component@Service@Controller等 -->
     <context:component-scan base-package="com.sogou.upd.passport.**"/>
+
+    <!--perf4j性能监控拦截器配置-->
+    <bean id="timingAspect" class="org.perf4j.slf4j.aop.TimingAspect"/>
 
     <!-- import the dataSource definition -->
     <import resource="classpath:spring-config-dao.xml"/>
@@ -103,9 +106,7 @@
     <mvc:annotation-driven/>
 
 
-    <!--perf4j性能监控-->
-    <aop:aspectj-autoproxy/>
-    <bean id="timingAspect" class="org.perf4j.slf4j.aop.TimingAspect"/>
+
 
 
     <!-- 配置Velocity视图解析器 -->
