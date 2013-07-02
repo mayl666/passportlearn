@@ -19,5 +19,5 @@
 
 .checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(/./static/img/checkbox.png?t=582595) no-repeat 0 -14px; position:absolute;left:187px;*left:184px;_left:0px; top:6px; margin-right:2px;overflow:hidden;z-index:1; }
 .checkbox-checked{ background-position:0 0; }
-#ConfirmChb{width:auto;height:auto;width:7px;height:7px;position:relative;top:-3px;visibility:hidden;visibility:visible;\9}
+#ConfirmChb{width:auto;height:auto;width:7px;height:7px;position:relative;top:-3px;visibility:hidden;visibility:visible\9;}
 .form-desc label{padding-left:4px;}

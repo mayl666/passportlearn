@@ -3,14 +3,14 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=507984" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=006807" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
     <div class="inner">
         <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
         <ul class="info">
-            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
             <li class="sep">|</li>
             <li>
                 <a href="http://www.sogou.com">搜狗首页</a>
@@ -114,7 +114,7 @@
 <script type="text/tpl" id="Target3">
 
     <div class="binding">
-        <p>验证邮件已发送至您的邮箱：<span id="JumpTarget"><{sec_email}></a></p>
+        <p>验证邮件已发送至您的邮箱：<span id="JumpTarget"><{sec_email}></span></p>
         <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
         <a id="JumpToUrl" href="#" class="long-btn">去邮箱验证</a>
     </div>

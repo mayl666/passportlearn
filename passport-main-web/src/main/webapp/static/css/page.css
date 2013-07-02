@@ -9,7 +9,7 @@ a:hover{ text-decoration:underline; }
 .header .info li{ float:left;}
 .header .info li.sep{ padding:0 4px; }
 .header a{ color:#333; }
-.header h1{position:relative;top:26px;}
+.header h1{position:relative;top:26px;padding-left:10px;}
 
 
 
