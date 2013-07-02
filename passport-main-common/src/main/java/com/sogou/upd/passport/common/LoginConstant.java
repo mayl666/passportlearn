@@ -61,6 +61,6 @@ public class LoginConstant {
   /**
    * 一天内某一个ip提及反馈次数限制
    */
-  public static final int ADDPROBLEM_IP_LIMITED = 100; // ip一天限制次数
+  public static final int ADDPROBLEM_IP_LIMITED = 10; // ip一天限制次数
 
 }
