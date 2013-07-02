@@ -36,13 +36,28 @@ public class MyTestRedisAction {
 
     private static final int MAX = 1000000;
     private static Logger slf4jLlogger = LoggerFactory.getLogger(MyTestRedisAction.class);
+    private static final org.apache.log4j.Logger oplogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
     private static final org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(MyTestRedisAction.class);
 //    @Autowired
 //    private TaskExecutor loginAfterTaskExecutor;
 
+    //redis set
+    @RequestMapping(value = "/testThreadPool", method = RequestMethod.GET)
+    @ResponseBody
+    public Object testThreadPool() throws Exception {
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+        operateTimesService.incLoginSuccessTimes(username,ip);
+        return "success";
+    }
+
     @RequestMapping(value = "/printMessages", method = RequestMethod.GET)
     @ResponseBody
     public Object printMessages() {
+        oplogger.error("op_this is error");
+        oplogger.info("op_this is info");
+        oplogger.debug("op_this is debug");
+
         slf4jLlogger.error("this is error");
         slf4jLlogger.info("this is info");
         slf4jLlogger.debug("this is debug");
