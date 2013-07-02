@@ -16,11 +16,12 @@ a:hover{ text-decoration:underline; }
 
 .wrapper{ width:980px;margin:0 auto; padding:14px 0 16px;}
 .banner{ height:44px;line-height:44px;margin-bottom:13px;border:1px #cdcdcd solid; border-radius:2px; padding-left:30px;background-position:0 -90px; position:relative;}
-.banner ul{overflow:hidden;zoom:1;}
+.banner ul{overflow:hidden;zoom:1;display:none;}
 .banner li{ font-size:18px; font-family:"Microsoft Yahei", sans-serif;color:#333;float:left;margin-right:40px; }
 .banner a{ color:#333;text-decoration:none; }
 .banner .underline{ height:3px;background:#6da700;position:absolute;bottom:-1px;left:0; font-size: 0;}
 .nav,.sidebar{ border:1px #cdcdcd solid; border-radius:2px; overflow:hidden;}
+.nav{display:none;}
 .nav .current{ background:#fbffeb url(/./static/img/nav-arrow.png?t=447357) no-repeat 195px center; }
 .nav li{ height:45px; line-height:45px;border-top:1px #cdcdcd solid;  font-size:18px; font-family:'Microsoft Yahei', sans-serif; }
 .nav li.small{font-size:16px;}
