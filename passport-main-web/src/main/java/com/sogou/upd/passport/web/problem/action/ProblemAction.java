@@ -52,7 +52,11 @@ public class ProblemAction extends BaseController {
         //检测是否登录
         if (hostHolder.isLogin()) {
             String userId = hostHolder.getPassportId();
-            result.setDefaultModel("userid", userId);
+            String nickName = hostHolder.getNickName();
+            if (Strings.isNullOrEmpty(nickName)) {
+                nickName = userId;
+            }
+            result.setDefaultModel("username", nickName);
         }
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();
