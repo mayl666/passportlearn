@@ -25,7 +25,7 @@ import java.util.Random;
  * File | Settings | File Templates.
  */
 @Controller
-@RequestMapping(value = "/web/redisTest")
+@RequestMapping(value = "/internal/redisTest")
 public class MyTestRedisAction {
     @Autowired
     private RedisUtils redisUtils;
@@ -36,13 +36,28 @@ public class MyTestRedisAction {
 
     private static final int MAX = 1000000;
     private static Logger slf4jLlogger = LoggerFactory.getLogger(MyTestRedisAction.class);
+    private static final org.apache.log4j.Logger oplogger = org.apache.log4j.Logger.getLogger("testOperationLogger");
     private static final org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(MyTestRedisAction.class);
 //    @Autowired
 //    private TaskExecutor loginAfterTaskExecutor;
 
+    //redis set
+    @RequestMapping(value = "/testThreadPool", method = RequestMethod.GET)
+    @ResponseBody
+    public Object testThreadPool() throws Exception {
+        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+        operateTimesService.incLoginSuccessTimes(username,ip);
+        return "success";
+    }
+
     @RequestMapping(value = "/printMessages", method = RequestMethod.GET)
     @ResponseBody
     public Object printMessages() {
+        oplogger.error("op_this is error");
+        oplogger.info("op_this is info");
+        oplogger.debug("op_this is debug");
+
         slf4jLlogger.error("this is error");
         slf4jLlogger.info("this is info");
         slf4jLlogger.debug("this is debug");
@@ -68,9 +83,9 @@ public class MyTestRedisAction {
         String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
         redisUtils.setWithinSeconds(userNameCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 
-//        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-//        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-//        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
+        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
+        String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+        redisUtils.setWithinSeconds(ipFailedCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
 //
 //        String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
 //        redisUtils.setWithinSeconds(ipSuccessCacheKey, 1, DateAndNumTimesConstant.TIME_ONEHOUR);
@@ -135,48 +150,4 @@ public class MyTestRedisAction {
         return "success";
     }
 
-
-    //
-    @RequestMapping(value = "/testIncLoginSuccessTimes", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testIncLoginSuccessTimes() throws Exception {
-        String username = "shipengzhi1986@sogou.com" + new Random().nextInt()%MAX;
-        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-        operateTimesService.incLoginSuccessTimes(username,ip);
-        return "success";
-    }
-
-    @RequestMapping(value = "/testLoginFailedTimesNeedCaptcha", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testLoginFailedTimesNeedCaptcha() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
-        String ip = "127.0.0.1"+ new Random().nextInt()%MAX;
-        operateTimesService.loginFailedTimesNeedCaptcha(username,ip);
-        return "success";
-    }
-
-    @RequestMapping(value = "/testCheckLoginUserInBlackList", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testCheckLoginUserInBlackList() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
-        operateTimesService.checkLoginUserInBlackList(username);
-        return "success";
-    }
-
-    @RequestMapping(value = "/testCheckCaptchaCodeIsVaild", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testCheckCaptchaCodeIsVaild() {
-        String token ="fc5709c27f80aa3efdd04b4919fd9bf2&t=1372227596101";
-        String captchaCode="LEW7A";
-        accountService.checkCaptchaCodeIsVaild(token,captchaCode);
-        return "success";
-    }
-
-    @RequestMapping(value = "/del", method = RequestMethod.GET)
-    @ResponseBody
-    public Object testCheckTimesByKey() {
-        String username = "shipengzhi1986@sogou.com"+ new Random().nextInt()%MAX;
-        operateTimesService.checkTimesByKey(username,20);
-        return "success";
-    }
 }
