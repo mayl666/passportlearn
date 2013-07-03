@@ -20,16 +20,16 @@ public class WebAddProblemParameters {
     @NotBlank(message = "请选择反馈类型!")
     private String typeId;
 
-    @SafeInput
-    @Length(min = 1, max = 100, message = "反馈标题长度错误，请重新输入！")
+    @SafeInput(message = "输入标题包含非法字符")
+    @Length(min = 1, max = 100, message = "反馈标题长度错误，请重新输入")
     @NotBlank(message = "反馈标题不允许为空!")
     private String title;
 
-    @SafeInput
-    @Length(min = 1, max = 300, message = "反馈内容长度错误，请重新输入！")
+    @SafeInput(message = "输入内容包含非法字符")
+    @Length(min = 1, max = 300, message = "反馈内容长度错误，请重新输入")
     @NotBlank(message = "反馈内容不允许为空!")
     private String content;
-    @Length(min = 1, max = 300, message = "邮箱长度错误，请重新输入！")
+    @Length(min = 1, max = 300, message = "邮箱长度错误，请重新输入")
     @NotBlank(message = "email不允许为空!")
     private String email;
 
