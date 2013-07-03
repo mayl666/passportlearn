@@ -306,7 +306,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     regBlackListLogger.info(new Date()+",checkRegInBlackList,ipCacheKey=" + ipCacheKey
                             +",setCookieVal="+sz+",setCookieVal="+setCookieVal.toArray().toString());
                 }
-                if (sz >= 4) {
+                if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
                     regBlackListLogger.info(new Date()+",checkRegInBlackList,ipCacheKey=" + ipCacheKey
                             +",setCookieVal="+sz+",setCookieVal="+setCookieVal.toArray().toString());
                     return true;

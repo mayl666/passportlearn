@@ -340,7 +340,7 @@ public class RegManagerImpl implements RegManager {
     Result result = new APIResultSupport(false);
     try {
       if (operateTimesService.checkRegInBlackList(ip, cookieStr)){
-        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_IP_INBLACKLIST);
         return result;
       }
     }catch (ServiceException e){
