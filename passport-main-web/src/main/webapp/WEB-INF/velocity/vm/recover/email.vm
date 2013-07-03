@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=006807" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=497375" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -67,6 +67,19 @@
     <script type="text/javascript" src="/./static/js/recover.js?t="></script>
     
     <script type="text/javascript">
+
+var spb_vars = {
+    productid:"passport",
+    ptype:"web",
+    pcode:"recover_email".split('/').join('_')
+};
+
+(function() {
+    var pb = document.createElement('script'); pb.type = 'text/javascript'; pb.async = true;
+    pb.src = '/static/js/pb.580599.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
+})();
+
 
 var server_data = '${data}';
         
