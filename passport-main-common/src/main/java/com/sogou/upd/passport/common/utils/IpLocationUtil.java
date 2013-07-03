@@ -28,7 +28,7 @@ public class IpLocationUtil {
             InputStream inloc = IpLocationUtil.class.getResourceAsStream("/location.dat");
             instance.readData(inloc);
             InputStream incity = IpLocationUtil.class.getResourceAsStream("/cities.dat");
-            BufferedReader is = new BufferedReader(new InputStreamReader(incity, "GBK"));
+            BufferedReader is = new BufferedReader(new InputStreamReader(incity, "UTF-8"));
             String readValue = is.readLine();
             while (readValue != null) {
                 String[] kv = readValue.split("\\|", 2);
