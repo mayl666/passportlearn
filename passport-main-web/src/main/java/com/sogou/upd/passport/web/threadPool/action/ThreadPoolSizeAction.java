@@ -1,24 +1,12 @@
 package com.sogou.upd.passport.web.threadPool.action;
 
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.OperateTimesService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-25 Time: 下午6:39 To change this template use
