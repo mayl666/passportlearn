@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -344,6 +345,10 @@ public class SecureAction extends BaseController {
         String password = params.getPassword();
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
+        String ru = params.getRu();
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
 
         switch (AccountDomainEnum.getAccountDomain(userId)) {
             case SOHU:
@@ -354,7 +359,7 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
+        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, ru);
         return result.toString();
     }
 

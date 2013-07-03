@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.action;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
@@ -38,7 +39,7 @@ public class ResetPwdAction {
 
     @RequestMapping(method = RequestMethod.GET)
     public String findPwdView() {
-        return "redirect:" + SOHU_FINDPWD_URL;
+        return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
     }
 
 /*    @RequestMapping

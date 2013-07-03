@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
@@ -80,7 +81,8 @@ public class BaseProxyManager {
             throw new IllegalArgumentException("requestModel may not be null");
         }
 
-
+        //SHPP必须将请求的head中 CONTENT_TYPE 设为 xml
+        requestModel.addHeader(HttpConstant.HeaderType.CONTENT_TYPE, HttpConstant.ContentType.XML_TEXT);
 
         //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
         this.paramNameAdapter(requestModel);
