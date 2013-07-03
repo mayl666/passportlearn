@@ -30,6 +30,11 @@ define(function(){
             el.click( function(){
                 doCheck();
             });
+            el.on('focus',function(){
+                if( this.blur && window.attachEvent ){
+                    this.blur();
+                }
+            });
             target.click(function(){
                 doCheck(1);
             });
