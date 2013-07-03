@@ -80,7 +80,7 @@ public class BaseProxyManager {
             throw new IllegalArgumentException("requestModel may not be null");
         }
 
-
+//        requestModel.addHeader("","");
 
         //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
         this.paramNameAdapter(requestModel);
