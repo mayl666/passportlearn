@@ -47,7 +47,7 @@ public class LoginConstant {
   /**
    * 一天内某一个ip注册次数限制
    */
-  public static final int REGISTER_IP_LIMITED = 100; // ip一天限制次数
+  public static final int REGISTER_IP_LIMITED = 4; // ip一天限制次数
   /**
    * 一天内某一个cookie注册次数限制
    */
