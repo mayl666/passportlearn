@@ -140,6 +140,11 @@ public class ErrorUtil {
   public static final String ERR_CODE_ACCOUNT_THIRD_NOTALLOWED = "20244";
   // 手机用户不允许此操作
   public static final String ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED = "20245";
+  // 当前账号、IP或手机校验次数已达上限
+  public static final String ERR_CODE_ACCOUNT_REGISTER_IP_INBLACKLIST = "20246";
+
+
+
 
 
     /* ============================================================================ */
@@ -305,6 +310,7 @@ public class ErrorUtil {
     ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
     ERR_CODE_MSG_MAP.put(ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT, "当日密码输入错误次数过多");
     ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP操作存在异常");
+    ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_IP_INBLACKLIST, "当前账号、IP存在异常或短信验证码错误次数超限");
 
     ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
     ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机账号不存在或手机号未被绑定");
