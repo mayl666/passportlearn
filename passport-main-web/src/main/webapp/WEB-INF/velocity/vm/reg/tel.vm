@@ -123,6 +123,19 @@
     
     <script type="text/javascript">
 
+var spb_vars = {
+    productid:"passport",
+    ptype:"web",
+    pcode:"reg_tel".split('/').join('_')
+};
+
+(function() {
+    var pb = document.createElement('script'); pb.type = 'text/javascript'; pb.async = true;
+    pb.src = '/static/js/pb.580599.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
+})();
+
+
 var server_data = '${data}';
         
 require.config({
