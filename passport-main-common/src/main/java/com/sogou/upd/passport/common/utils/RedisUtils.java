@@ -41,7 +41,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set")
     public void set(String key, String value) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -60,7 +60,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set")
     public void set(String key, Object obj) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -78,7 +78,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set")
     public void set(String key, String value,long timeout,TimeUnit timeUnit) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -92,7 +92,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set")
     public void set(String key, Object obj,long timeout,TimeUnit timeUnit) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -107,13 +107,13 @@ public class RedisUtils {
      * 设置缓存内容及有效期，单位为秒
      * TODO:是否抛出异常及如何处理
      */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set")
     public void setWithinSeconds(String key, String value, long timeout) throws Exception {
         set(key, value, timeout, TimeUnit.SECONDS);
 
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_set")
     public void setWithinSeconds(String key, Object obj, long timeout) throws Exception {
         set(key, obj, timeout, TimeUnit.SECONDS);
     }
@@ -148,7 +148,7 @@ public class RedisUtils {
     /*
       * 设置缓存内容
       */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_increment:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_increment")
     public long increment(String key) throws Exception {
         long countNum=0;
         try {
@@ -165,7 +165,7 @@ public class RedisUtils {
     * 设置缓存内容
     * 冲突不覆盖
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_setNx:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_setNx")
     public boolean setNx(String cacheKey, Object obj) {
         try {
             BoundValueOperations boundValueOperation = redisTemplate.boundValueOps(cacheKey);
@@ -179,7 +179,7 @@ public class RedisUtils {
     /*
    * 根据key取缓存内容
    */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_get:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_get")
     public String get(String key) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -211,7 +211,7 @@ public class RedisUtils {
      * @param returnClass
      * @return
      */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_getObject:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_getObject")
     public <T> T getObject(String cacheKey, Class returnClass) {
         try {
             String cacheStr = get(cacheKey);
@@ -229,7 +229,7 @@ public class RedisUtils {
     /*
    * 判断key是否存在
    */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_checkKeyIsExist:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_checkKeyIsExist")
     public boolean checkKeyIsExist(String key) {
         try {
             return redisTemplate.hasKey(key);
@@ -242,7 +242,7 @@ public class RedisUtils {
     /*
    * 获取hash中所有的映射关系
    */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hGetAll:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hGetAll")
     public Map<String, String> hGetAll(String cacheKey) {
         try {
             BoundHashOperations boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -256,7 +256,7 @@ public class RedisUtils {
     /*
     * 设置hash映射关系
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hPutAll:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hPutAll")
     public void hPutAll(String cacheKey, Map<String, String> mapData) throws Exception {
         try {
 
@@ -276,7 +276,7 @@ public class RedisUtils {
     /*
     * 设置hash映射关系
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_cacheKey:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_cacheKey")
     public <T> void hPutAllObject(String cacheKey, Map<String, T> mapData) throws Exception {
         try {
             Map<String, String> objectMap = Maps.newHashMap();
@@ -307,7 +307,7 @@ public class RedisUtils {
      * @param key
      * @param value
      */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hPut:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hPut")
     public void hPut(String cacheKey, String key, String value) throws Exception {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -325,7 +325,7 @@ public class RedisUtils {
         }
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hPut:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hPut")
     public void hPut(String cacheKey, String key, Object obj) throws Exception {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
         boundHashOperations.put(key, new ObjectMapper().writeValueAsString(obj));
@@ -338,7 +338,7 @@ public class RedisUtils {
      * @param key
      * @return
      */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hGet:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hGet")
     public String hGet(String cacheKey, String key)  {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(
@@ -350,7 +350,7 @@ public class RedisUtils {
         return null;
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hGetObject:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hGetObject")
     public  <T> T hGetObject(String cacheKey, String key, Class returnClass) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -371,7 +371,7 @@ public class RedisUtils {
      * @param cacheKey
      * @param key
      */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hDelete:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hDelete")
     public void hDelete(String cacheKey, String key) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -399,7 +399,7 @@ public class RedisUtils {
         }
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hIncrBy:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_hIncrBy")
     public void hIncrBy(String cacheKey, String key) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -409,7 +409,7 @@ public class RedisUtils {
         }
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_expire:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_expire")
     public void expire(String cacheKey, long timeout) {
         try {
             redisTemplate.expire(cacheKey, timeout, TimeUnit.SECONDS);
@@ -418,12 +418,12 @@ public class RedisUtils {
         }
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_delete:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_delete")
     public void delete(String cacheKey) {
         redisTemplate.delete(cacheKey);
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_multiDelete:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_multiDelete")
     public void multiDelete(Collection cacheKeyList) {
         redisTemplate.delete(cacheKeyList);
     }
@@ -549,7 +549,7 @@ public class RedisUtils {
     }
 
     // 查询键key的列表
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "getList:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "getList")
     public List<String> getList(String key) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         long len = valueList.size(key);
@@ -561,7 +561,7 @@ public class RedisUtils {
         return storeList;
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "getList:{$0}")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "getList")
     public <T> List<T> getList(String key, Class returnClass) {
         try {
             List<String> storeList = getList(key);
