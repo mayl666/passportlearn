@@ -107,6 +107,18 @@
     <script type="text/javascript" src="/./static/api/login.js?t=140561"></script>
     <script type="text/javascript" src="/./static/js/index.js?t=032782"></script>
     <script type="text/javascript">
+
+var spb_vars = {
+    productid:"passport",
+    ptype:"web",
+    pcode:"index"
+};
+
+(function() {
+    var pb = document.createElement('script'); pb.type = 'text/javascript'; pb.async = true;
+    pb.src = '/static/js/pb.580599.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
+})();
         
 var server_data = '${data}';
 
