@@ -87,6 +87,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
             if (Strings.isNullOrEmpty(value) || !value.equals(flag)) {
                 return false;
             }
+            redisUtils.delete(cacheKey);
             return true;
         } catch (Exception e) {
             return false;
