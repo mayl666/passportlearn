@@ -643,6 +643,8 @@ public class SecureAction extends BaseController {
             result.setSuccess(true);
             result.setMessage("绑定密保邮箱成功！");
         }
+        result.setDefaultModel("status", result.getCode());
+        result.setDefaultModel("statusText", result.getMessage());
 
         model.addAttribute("data", result.toString());
 
