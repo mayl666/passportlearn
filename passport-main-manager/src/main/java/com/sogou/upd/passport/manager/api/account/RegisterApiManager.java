@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 
 /**
@@ -49,4 +50,11 @@ public interface RegisterApiManager {
      */
     public Result checkUser(CheckUserApiParams checkUserApiParams);
 
+    /**
+     * 手机号直接注册，不经验证码——地图专用接口
+     *
+     * @param regMobileApiParams
+     * @return
+     */
+    public Result regMobileUser(RegMobileApiParams regMobileApiParams);
 }
