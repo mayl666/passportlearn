@@ -68,7 +68,8 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Override
     public String getSecureCodeRandom(String flag) throws ServiceException {
-        String cacheKey = CACHE_PREFIX_SECURECODE + UUID.randomUUID().toString().replaceAll("-", "") + flag;
+        String scode = UUID.randomUUID().toString().replaceAll("-", "") + flag;
+        String cacheKey = CACHE_PREFIX_SECURECODE + scode;
         try {
             redisUtils.setWithinSeconds(cacheKey, flag, DateAndNumTimesConstant.TIME_TWODAY);
             return cacheKey;
@@ -81,7 +82,8 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     @Override
     public boolean checkSecureCodeRandom(String scode, String flag) throws ServiceException {
         try {
-            String value = redisUtils.get(scode);
+            String cacheKey = CACHE_PREFIX_SECURECODE + scode;
+            String value = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(value) || !value.equals(flag)) {
                 return false;
             }
