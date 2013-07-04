@@ -72,7 +72,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         String cacheKey = CACHE_PREFIX_SECURECODE + scode;
         try {
             redisUtils.setWithinSeconds(cacheKey, flag, DateAndNumTimesConstant.TIME_TWODAY);
-            return cacheKey;
+            return scode;
         } catch (Exception e) {
             redisUtils.delete(cacheKey);
             throw new ServiceException(e);
