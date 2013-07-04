@@ -30,5 +30,6 @@ public class HttpConstant {
         public static final String UPLOAD_FILE = "multipart/form-data";
         public static final String JSON = "application/json";
         public static final String HTML_TEXT = "text/html";
+        public static final String XML_TEXT = "text/xml";
     }
 }

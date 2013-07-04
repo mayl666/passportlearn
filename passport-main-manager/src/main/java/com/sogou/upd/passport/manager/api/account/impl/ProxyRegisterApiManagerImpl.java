@@ -10,6 +10,7 @@ import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.slf4j.Logger;
@@ -83,6 +84,20 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
         Result result = executeResult(requestModelXml);
         if (!result.isSuccess()) {
             result.setDefaultModel("userid", checkUserApiParams.getUserid());
+        }
+        return result;
+    }
+
+    @Override
+    public Result regMobileUser(RegMobileApiParams regMobileApiParams) {
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.REG_MOBILE_NOCAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(regMobileApiParams);
+        Result result = executeResult(requestModelXml, regMobileApiParams.getMobile());
+        if (result.isSuccess()) {
+            result.setMessage("注册成功");
+            String passportId = PassportIDGenerator.generator(regMobileApiParams.getMobile(), AccountTypeEnum.PHONE.getValue());
+            result.setDefaultModel("userid", passportId);
+            result.setDefaultModel("isSetCookie",false);
         }
         return result;
     }

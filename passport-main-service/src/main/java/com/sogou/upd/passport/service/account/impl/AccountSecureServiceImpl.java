@@ -20,6 +20,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-21 Time: 上午11:52 To change this template
@@ -32,6 +33,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private static final String CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE;
 
     private static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIONRECORD;
+    private static final String CACHE_PREFIX_SECURECODE = CacheConstant.CACHE_PREFIX_SECURECODE;
 
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureServiceImpl.class);
 
@@ -62,6 +64,34 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException {
         return checkSecureCode(passportId, clientId, secureCode, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
+    }
+
+    @Override
+    public String getSecureCodeRandom(String flag) throws ServiceException {
+        String scode = UUID.randomUUID().toString().replaceAll("-", "") + flag;
+        String cacheKey = CACHE_PREFIX_SECURECODE + scode;
+        try {
+            redisUtils.setWithinSeconds(cacheKey, flag, DateAndNumTimesConstant.TIME_TWODAY);
+            return scode;
+        } catch (Exception e) {
+            redisUtils.delete(cacheKey);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean checkSecureCodeRandom(String scode, String flag) throws ServiceException {
+        try {
+            String cacheKey = CACHE_PREFIX_SECURECODE + scode;
+            String value = redisUtils.get(cacheKey);
+            if (Strings.isNullOrEmpty(value) || !value.equals(flag)) {
+                return false;
+            }
+            redisUtils.delete(cacheKey);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
