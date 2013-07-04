@@ -6,6 +6,7 @@ import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -73,5 +74,12 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
         System.out.println("result4:" + result.toString());
     }
 
-
+    @Test
+    public void testRegMobileUser() {
+        RegMobileApiParams regMobileCaptchaApiParams = new RegMobileApiParams();
+        regMobileCaptchaApiParams.setMobile("13621009174");
+        regMobileCaptchaApiParams.setPassword(PASSWORD);
+        Result result = proxyRegisterApiManager.regMobileUser(regMobileCaptchaApiParams);
+        System.out.println(result);
+    }
 }

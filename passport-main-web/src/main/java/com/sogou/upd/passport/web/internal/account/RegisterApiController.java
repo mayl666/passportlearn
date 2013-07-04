@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
@@ -77,6 +78,32 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+        return result.toString();
+    }
+
+    /**
+     * 注册手机号@sohu.com的账号，前提是手机号既没有注册过帐号，也没有绑定过任何账号
+     * 不需要验证码——供SOGOU地图使用
+     * TODO:使用量少时删除此接口，不安全
+     *
+     * @param request
+     * @param params
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/regmobile", method = RequestMethod.POST)
+    @ResponseBody
+    public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        // 调用内部接口
+        result = proxyRegisterApiManager.regMobileUser(params);
         return result.toString();
     }
 
