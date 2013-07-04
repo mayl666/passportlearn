@@ -97,7 +97,7 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
             result.setMessage("注册成功");
             String passportId = PassportIDGenerator.generator(regMobileApiParams.getMobile(), AccountTypeEnum.PHONE.getValue());
             result.setDefaultModel("userid", passportId);
-            result.setDefaultModel("isSetCookie",true);
+            result.setDefaultModel("isSetCookie",false);
         }
         return result;
     }

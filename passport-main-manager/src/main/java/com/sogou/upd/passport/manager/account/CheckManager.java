@@ -66,4 +66,14 @@ public interface CheckManager {
      * @throws Exception
      */
     public boolean checkScodeResetPwd(String passportId, int clientId, String scode) throws Exception;
+
+    /**
+     * 检查token
+     *
+     * @param scode
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public boolean checkScode(String scode, String id) throws Exception;
 }
