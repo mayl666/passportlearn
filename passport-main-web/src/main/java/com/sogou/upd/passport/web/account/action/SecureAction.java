@@ -626,25 +626,7 @@ public class SecureAction extends BaseController {
      */
     @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
     public String emailVerifySuccess(String token, String id, HttpServletRequest request, Model model) throws Exception {
-        // TODO:状态码参数或token
-        Result result = new APIResultSupport(false);
-        String username = hostHolder.getNickName();
-        if (!Strings.isNullOrEmpty(username)) {
-            result.setDefaultModel("username", username);
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
-            if (domain == AccountDomainEnum.PHONE) {
-                result.setDefaultModel("actype", "phone");
-            }
-        }
 
-        if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
-        } else {
-            result.setSuccess(true);
-            result.setMessage("绑定密保邮箱成功！");
-        }
-
-        model.addAttribute("data", result.toString());
 
         return "safe/emailsuccess";
     }
