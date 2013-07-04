@@ -486,7 +486,9 @@ public class SecureManagerImpl implements SecureManager {
             params.setPassword(password);
             params.setNewbindemail(newEmail);
             params.setOldbindemail(oldEmail);
-            params.setRu(ru);
+
+            String flag = String.valueOf(System.currentTimeMillis());
+            params.setRu(ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag);
 
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口,SOHU接口需要传MD5加密后的密码

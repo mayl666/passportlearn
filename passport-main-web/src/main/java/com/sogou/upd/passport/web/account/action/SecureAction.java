@@ -3,11 +3,13 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
@@ -54,6 +56,8 @@ public class SecureAction extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private CheckManager checkManager;
 
 
     /*
@@ -621,8 +625,12 @@ public class SecureAction extends BaseController {
      * 绑定外域邮箱成功的页面
      */
     @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
+    public String emailVerifySuccess(String token, String id, HttpServletRequest request) throws Exception {
         // TODO:状态码参数或token
+        if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
+            return "redirect:/";
+        }
+
         return "safe/emailsuccess";
     }
 }
