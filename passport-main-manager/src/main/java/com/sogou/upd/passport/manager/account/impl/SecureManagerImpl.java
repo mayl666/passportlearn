@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -465,7 +466,7 @@ public class SecureManagerImpl implements SecureManager {
      */
     @Override
     public Result sendEmailForBinding(String userId, int clientId, String password,
-                                      String newEmail, String oldEmail) throws Exception {
+                                      String newEmail, String oldEmail, String ru) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
@@ -486,6 +487,11 @@ public class SecureManagerImpl implements SecureManager {
             params.setPassword(password);
             params.setNewbindemail(newEmail);
             params.setOldbindemail(oldEmail);
+
+            String flag = String.valueOf(System.currentTimeMillis());
+            ru = ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag;
+            ru = URLEncoder.encode(ru, "UTF-8");
+            params.setRu(ru);
 
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口,SOHU接口需要传MD5加密后的密码

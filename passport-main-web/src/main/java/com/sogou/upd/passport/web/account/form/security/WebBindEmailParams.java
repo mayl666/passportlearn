@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.account.form.security;
 
+import com.sogou.upd.passport.common.CommonConstant;
+
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -16,12 +18,22 @@ public class WebBindEmailParams extends WebPwdParams {
     @Email(message = "邮箱格式不正确")
     private String old_email;
 
+    private String ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL + "/web/security/emailverify";  // TODO:以后增加判断是否SOGOU域
+
     @AssertTrue(message = "新密保邮箱不能与原密保邮箱相同")
     public boolean isCheckNewIsOld() {
         if (new_email.equals(old_email)) { // NotBlank已经校验过了，无需再校验
             return false;
         }
         return true;
+    }
+
+    public String getRu() {
+        return ru;
+    }
+
+    public void setRu(String ru) {
+        this.ru = ru;
     }
 
     public String getNew_email() {

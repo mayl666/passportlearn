@@ -27,6 +27,16 @@ public class BindEmailApiParams extends BaseUserApiParams {
     @Min(0)
     private int pwdtype=1; //密码类型，1为md5后的口令，缺省为明文密码
 
+    private String ru;
+
+    public String getRu() {
+        return ru;
+    }
+
+    public void setRu(String ru) {
+        this.ru = ru;
+    }
+
     public String getPassword() {
         return password;
     }

@@ -175,7 +175,7 @@
 
     <!--start:userOperationLogger 用户操作行为记录log-->
     <appender name="userOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
         <param name="Append" value="true"/>
         <param name="File" value="/search/passport/log/useroperation/useroperation.log" />
         <layout class="org.apache.log4j.PatternLayout">

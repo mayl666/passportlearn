@@ -58,6 +58,25 @@ public interface AccountSecureService {
             throws ServiceException;
 
     /**
+     * 通过flag获取scode，同时将scode当作key存入缓存，value为flag
+     *
+     * @param flag
+     * @return
+     * @throws ServiceException
+     */
+    public String getSecureCodeRandom(String flag) throws ServiceException;
+
+    /**
+     * 检查缓存，scode为key，flag为value
+     *
+     * @param scode
+     * @param flag
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkSecureCodeRandom(String scode, String flag) throws ServiceException;
+
+    /**
      * 设置动作记录
      *
      * @param userId
