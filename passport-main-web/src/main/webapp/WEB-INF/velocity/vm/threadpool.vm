@@ -36,14 +36,20 @@
                         <table>
                             <tbody>
                             <tr>
-                                <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
+                                <td>poolSize</td><td>largestPoolSize</td><td>QueueSize</td><td>CompletedTaskCount</td><td>taskCount</td><td>ActiveCount</td>
                             </tr>
                             <tr>
                                 <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
                                 </td>
                                 <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
                                 </td>
+                                <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getQueue().size()" disabled="false"/>
+                                </td>
+                                <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getCompletedTaskCount()" disabled="false"/>
+                                </td>
                                 <td><input type="text" value="$discardTaskExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
+                                </td>
+                                <td><input type="text" value="$discardTaskExecutor.getActiveCount()" disabled="false"/>
                                 </td>
                             </tr>
                             </tbody>
@@ -56,14 +62,20 @@
                     <table>
                         <tbody>
                         <tr>
-                            <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
+                            <td>poolSize</td><td>largestPoolSize</td><td>QueueSize</td><td>CompletedTaskCount</td><td>taskCount</td><td>ActiveCount</td>
                         </tr>
                         <tr>
                             <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getPoolSize()" disabled="false"/>
                             </td>
                             <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getLargestPoolSize()" disabled="false"/>
                             </td>
+                            <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getQueue().size()" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getCompletedTaskCount()" disabled="false"/>
+                            </td>
                             <td><input type="text" value="$batchOperateExecutor.getThreadPoolExecutor().getTaskCount()" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="$batchOperateExecutor.getActiveCount()" disabled="false"/>
                             </td>
                         </tr>
                         </tbody>
@@ -74,14 +86,20 @@
                     <table>
                         <tbody>
                         <tr>
-                            <td>poolSize</td><td>largestPoolSize</td><td>taskCount</td>
+                            <td>poolSize</td><td>largestPoolSize</td><td>QueueSize</td><td>CompletedTaskCount</td><td>taskCount</td><td>ActiveCount</td>
                         </tr>
                         <tr>
                             <td><input type="text" value="池中的当前线程数" disabled="false"/>
                             </td>
                             <td><input type="text" value="曾经池中的最大线程数" disabled="false"/>
                             </td>
+                            <td><input type="text" value="队列规模" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="已完成的任务数" disabled="false"/>
+                            </td>
                             <td><input type="text" value="计划执行的近似任务总数" disabled="false"/>
+                            </td>
+                            <td><input type="text" value="主动执行任务的近似线程数" disabled="false"/>
                             </td>
                         </tr>
                         </tbody>
