@@ -58,7 +58,7 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
 //            redisUtils.lPush("aa","bb");
 //            redisUtils.lPush("aa","cc");
 //            redisUtils.lPushX("aa","aa");
-          System.out.println(redisUtils.smember("aa"));
+          redisUtils.set("djaskljds","dasds");
 //            System.out.println(redisUtils.getList("aa1").size());
 //
 //          redisUtils.set("qqqq","wwwww");

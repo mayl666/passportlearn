@@ -72,7 +72,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             // model.addAttribute("data", result.toString());
-            return "redirect:/web/webLogin"; // TODO:返回错误页面
+            return "redirect:/"; // TODO:返回错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -111,7 +111,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return "safe/email"; // TODO:错误页面
+            return "redirect:/"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -151,7 +151,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return "safe/tel"; // TODO:错误页面
+            return "redirect:/"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -193,7 +193,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return "safe/question"; // TODO:错误页面
+            return "redirect:/"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -233,7 +233,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return "safe/password"; // TODO:错误页面
+            return "redirect:/"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -271,7 +271,7 @@ public class SecureAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             model.addAttribute("data", result.toString());
-            return "safe/history"; // TODO:错误页面
+            return "redirect:/"; // TODO:错误页面
         }
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
@@ -371,7 +371,7 @@ public class SecureAction extends BaseController {
     /*
      * 验证绑定邮件
      */
-    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
+/*    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -399,7 +399,7 @@ public class SecureAction extends BaseController {
         } else {
             return ""; // TODO:错误页面
         }
-    }
+    }   */
 
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机
@@ -639,6 +639,7 @@ public class SecureAction extends BaseController {
 
         if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
+            result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
         } else {
             result.setSuccess(true);
             result.setMessage("绑定密保邮箱成功！");
