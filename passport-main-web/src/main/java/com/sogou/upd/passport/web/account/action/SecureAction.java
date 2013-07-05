@@ -639,6 +639,7 @@ public class SecureAction extends BaseController {
 
         if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
+            result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
         } else {
             result.setSuccess(true);
             result.setMessage("绑定密保邮箱成功！");
