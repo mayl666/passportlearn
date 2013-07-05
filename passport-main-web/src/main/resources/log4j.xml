@@ -147,7 +147,7 @@
     <appender name="regBlackListFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="bufferedIO" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/blackList/regBlackList.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
@@ -162,7 +162,7 @@
     <appender name="loginBlackListFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="bufferedIO" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/blackList/loginBlackList.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
@@ -177,6 +177,7 @@
     <appender name="userOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
         <param name="Append" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/useroperation/useroperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %m %n" />
@@ -187,6 +188,7 @@
     <appender name="testOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/useroperation/testoperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %m %n" />
