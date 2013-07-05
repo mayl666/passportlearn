@@ -4,7 +4,7 @@
 
     <groupId>sogou-passport</groupId>
     <artifactId>sogou-passport</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <modules>
         <module>passport-main-service</module>
         <module>passport-main-web</module>
