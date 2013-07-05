@@ -2,11 +2,14 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
@@ -53,6 +56,8 @@ public class SecureAction extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private CheckManager checkManager;
 
 
     /*
@@ -344,6 +349,10 @@ public class SecureAction extends BaseController {
         String password = params.getPassword();
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
+        String ru = params.getRu();
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
 
         switch (AccountDomainEnum.getAccountDomain(userId)) {
             case SOHU:
@@ -354,7 +363,7 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail);
+        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, ru);
         return result.toString();
     }
 
@@ -616,8 +625,30 @@ public class SecureAction extends BaseController {
      * 绑定外域邮箱成功的页面
      */
     @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
-        //状态码参数
+    public String emailVerifySuccess(String token, String id, HttpServletRequest request, Model model) throws Exception {
+        // TODO:状态码参数或token
+        Result result = new APIResultSupport(false);
+        String username = hostHolder.getNickName();
+        if (!Strings.isNullOrEmpty(username)) {
+            result.setDefaultModel("username", username);
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+            if (domain == AccountDomainEnum.PHONE) {
+                result.setDefaultModel("actype", "phone");
+            }
+        }
+
+        if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
+            result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
+        } else {
+            result.setSuccess(true);
+            result.setMessage("绑定密保邮箱成功！");
+        }
+        result.setDefaultModel("status", result.getCode());
+        result.setDefaultModel("statusText", result.getMessage());
+
+        model.addAttribute("data", result.toString());
+
         return "safe/emailsuccess";
     }
 }

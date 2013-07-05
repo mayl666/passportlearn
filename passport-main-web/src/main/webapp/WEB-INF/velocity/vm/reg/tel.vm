@@ -9,14 +9,10 @@
         <div class="header" id="Header">
     <div class="inner">
         <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
-        <ul class="info">
+        <ul class="info" style="display:none;">
             <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
-            <li class="sep">|</li>
-            <li>
-                <a href="http://www.sogou.com">搜狗首页</a>
-            </li>
-            <li class="sep" style="display:none;">|</li>
-            <li class="logout" style="display:none;">
+            <li class="sep" >|</li>
+            <li class="logout" >
                 <a href="https://account.sogou.com/web/logout?client_id=1120">退出</a>
             </li>
         </ul>
@@ -122,6 +118,19 @@
     <script type="text/javascript" src="/./static/js/reg.js?t="></script>
     
     <script type="text/javascript">
+
+var spb_vars = {
+    productid:"passport",
+    ptype:"web",
+    pcode:"reg_tel".split('/').join('_')
+};
+
+(function() {
+    var pb = document.createElement('script'); pb.type = 'text/javascript'; pb.async = true;
+    pb.src = '/static/js/pb.580599.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
+})();
+
 
 var server_data = '${data}';
         

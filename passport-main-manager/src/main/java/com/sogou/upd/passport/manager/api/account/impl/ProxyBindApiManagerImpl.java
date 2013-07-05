@@ -144,6 +144,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BIND_EMAIL, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         bindEmailApiParams.setPwdtype(1);
         requestModelXml.addParams(bindEmailApiParams);
+        requestModelXml.addHeader("Accept-Language", "zh-CN");
         return this.executeResult(requestModelXml);
     }
 

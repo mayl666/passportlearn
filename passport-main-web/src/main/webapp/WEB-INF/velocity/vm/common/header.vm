@@ -1,14 +1,10 @@
 <div class="header" id="Header">
     <div class="inner">
         <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
-        <ul class="info">
+        <ul class="info" style="display:none;">
             <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
-            <li class="sep">|</li>
-            <li>
-                <a href="http://www.sogou.com">搜狗首页</a>
-            </li>
-            <li class="sep" style="display:none;">|</li>
-            <li class="logout" style="display:none;">
+            <li class="sep" >|</li>
+            <li class="logout" >
                 <a href="https://account.sogou.com/web/logout?client_id=1120">退出</a>
             </li>
         </ul>

@@ -21,7 +21,7 @@ define(['./utils'],function(utils){
         parseHeader: function(data){
             $('#Header .username').html(data.username);
             if( data.username ){
-                $('#Header .logout').show().prev().show();
+                $('#Header .info').show();
                 $('#Header .logout a').click(function(e){
                     utils.addIframe($(this).attr('href') , function(){
                         location.reload();

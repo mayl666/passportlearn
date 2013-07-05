@@ -15,6 +15,7 @@ import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -167,5 +168,11 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         e.printStackTrace();
       }
       return result;
+    }
+
+    @Override
+    public Result regMobileUser(RegMobileApiParams regMobileApiParams) {
+
+        return null;
     }
 }

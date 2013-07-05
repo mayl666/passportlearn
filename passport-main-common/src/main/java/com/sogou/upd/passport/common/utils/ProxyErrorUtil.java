@@ -67,6 +67,11 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.7", ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT); //今日验证码校验错误次数已超过上限
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.8", ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
 
+        // regmobile 手机号直接注册接口
+        SHPPERRCODE_SGPPERRCODE_MAP.put("regmobiled.4", ERR_CODE_ACCOUNT_REGED);
+        SHPPERRCODE_SGPPERRCODE_MAP.put("regmobiled.5", ERR_CODE_ACCOUNT_PHONE_BINDED);
+        SHPPERRCODE_SGPPERRCODE_MAP.put("regmobiled.3", ERR_CODE_ACCOUNT_REGISTER_FAILED);
+
         //wapbindmobile 绑定手机号
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.2", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapbindmobile.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户不存在
@@ -150,6 +155,10 @@ public class ProxyErrorUtil extends ErrorUtil {
     }
 
     private static String getCode(String url, String status) {
+        int idx = status.indexOf("|");
+        if (idx != -1) {
+            status = status.substring(0, idx);
+        }
         if (StringUtil.isBlank(status)) {
             return SYSTEM_UNKNOWN_EXCEPTION;
         }

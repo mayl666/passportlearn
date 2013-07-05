@@ -58,6 +58,9 @@ public class CacheConstant {
     /*==================动作记录相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = "SP.PASSPORTID:ACTIONRECORD_LIST_"; // passportId与操作列表的映射
 
+    /*==================token缓存常量=====================*/
+    public static final String CACHE_PREFIX_SECURECODE = "SP.SECURECODE:SCODE_";
+
     /*==================proxy相关缓存常量=====================*/
     // TODO:迁移后，此常量将删除
     public static final String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = "SP.MOBILE:PROXY_SMSCODE_";

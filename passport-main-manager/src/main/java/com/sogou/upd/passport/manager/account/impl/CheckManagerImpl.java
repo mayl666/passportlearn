@@ -83,4 +83,8 @@ public class CheckManagerImpl implements CheckManager {
         }
     }
 
+    @Override
+    public boolean checkScode(String scode, String id) throws Exception {
+        return accountSecureService.checkSecureCodeRandom(scode, id);
+    }
 }

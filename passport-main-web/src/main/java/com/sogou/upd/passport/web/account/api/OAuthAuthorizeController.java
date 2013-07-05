@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/oauth2")
 public class OAuthAuthorizeController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuthAuthorizeController.class);
@@ -37,7 +36,7 @@ public class OAuthAuthorizeController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = "/token", method = RequestMethod.POST)
+    @RequestMapping(value = {"/mobile/mobilelogin", "/oauth2/token"})
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenASRequest oauthRequest;
