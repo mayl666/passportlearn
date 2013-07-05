@@ -9,14 +9,10 @@
         <div class="header" id="Header">
     <div class="inner">
         <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
-        <ul class="info">
+        <ul class="info" style="display:none;">
             <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
-            <li class="sep">|</li>
-            <li>
-                <a href="http://www.sogou.com">搜狗首页</a>
-            </li>
-            <li class="sep" style="display:none;">|</li>
-            <li class="logout" style="display:none;">
+            <li class="sep" >|</li>
+            <li class="logout" >
                 <a href="https://account.sogou.com/web/logout?client_id=1120">退出</a>
             </li>
         </ul>
@@ -54,7 +50,7 @@
         <a href="/web/security/password">修改密码</a>
     </li>
     
-    <li  class="email   small">
+    <li  class="email current  small">
         <a href="/web/security/email">密保邮箱</a>
     </li>
     
@@ -79,8 +75,18 @@
             </div>
             <div  class="form">
                 <div class="binded">
-                    <p>绑定成功</p>
+                    <p>绑定邮箱成功</p>
+                    <p style="font-size:12px;color:#999"><span id="time">5</span>秒后返回首页</p>
                     <a href="/" class="long-btn">返回首页</a>
+                    <script type="text/javascript">
+                        setInterval(function(){
+                            var el = document.getElementById('time');
+                            if( +el.innerHTML <= 1 ){
+                                location.href= '/';
+                            }
+                            el.innerHTML = el.innerHTML - 1;
+                        },1000);
+                    </script>
                 </div>
             </div>
         </div>
