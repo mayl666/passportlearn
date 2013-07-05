@@ -625,11 +625,29 @@ public class SecureAction extends BaseController {
      * 绑定外域邮箱成功的页面
      */
     @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(String token, String id, HttpServletRequest request) throws Exception {
+    public String emailVerifySuccess(String token, String id, HttpServletRequest request, Model model) throws Exception {
         // TODO:状态码参数或token
-        if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
-            return "redirect:/";
+        Result result = new APIResultSupport(false);
+        String username = hostHolder.getNickName();
+        if (!Strings.isNullOrEmpty(username)) {
+            result.setDefaultModel("username", username);
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+            if (domain == AccountDomainEnum.PHONE) {
+                result.setDefaultModel("actype", "phone");
+            }
         }
+
+        if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
+            result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
+        } else {
+            result.setSuccess(true);
+            result.setMessage("绑定密保邮箱成功！");
+        }
+        result.setDefaultModel("status", result.getCode());
+        result.setDefaultModel("statusText", result.getMessage());
+
+        model.addAttribute("data", result.toString());
 
         return "safe/emailsuccess";
     }
