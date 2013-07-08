@@ -107,3 +107,4 @@ a.medium-btn{ width:83px; height:27px; background:url(/./static/img/btn-medium.p
 .agreement p{ text-indent:2em;margin:3px 0; }
 .agreement h4{ padding:10px 0 5px;font-weight:700;font-size:16px; }
 .agreement h3{ font-size:18px;font-weight:700;text-align:center;padding:20px 0; }
+.agreelink{ color:#00f;text-decoration:underline; }
