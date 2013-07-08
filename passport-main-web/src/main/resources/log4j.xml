@@ -209,12 +209,12 @@
 
 
     <category name="com." additivity="false">
-        <priority value="${passport.log.level}"/>
+        <priority value="INFO"/>
         <appender-ref ref="CONSOLE-INFO"/>
     </category>
 
     <root>
-        <priority value="${passport.log.level}"/>
+        <priority value="INFO"/>
         <appender-ref ref="CONSOLE-INFO"/>
     </root>
 
