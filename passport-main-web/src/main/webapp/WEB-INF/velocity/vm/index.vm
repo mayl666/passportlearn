@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        <div class="question">
+        <div class="question" style="display:none;">
             <div class="title">
                 <h3>常见问题</h3>
             </div>

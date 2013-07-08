@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
     <appender name="CONSOLE-ERROR" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
@@ -73,6 +73,43 @@
         <!--每分钟分析一次log，做出性能测试-->
         <param name="TimeSlice" value="60000" />
         <appender-ref ref="webPerfFileAppender" />
+        <appender-ref ref="graphExecutionTimes"/>
+        <appender-ref ref="graphExecutionTPS"/>
+    </appender>
+
+    <!--
+        This first GraphingStatisticsAppender graphs Mean execution times for the
+        firstBlock and secondBlock tags
+    -->
+    <appender name="graphExecutionTimes"
+              class="org.perf4j.log4j.GraphingStatisticsAppender">
+        <!-- Possible GraphTypes are Mean, Min, Max, StdDev, Count and TPS -->
+        <param name="GraphType" value="Mean"/>
+        <!-- The tags of the timed execution blocks to graph are specified here -->
+        <param name="TagNamesToGraph" value="/web/login,/web/logout,/web/webLogin"/>
+        <appender-ref ref="graphsFileAppender"/>
+    </appender>
+
+    <!--
+        This second GraphingStatisticsAppender graphs transactions per second
+        for the firstBlock and secondBlock tags
+    -->
+    <appender name="graphExecutionTPS"
+              class="org.perf4j.log4j.GraphingStatisticsAppender">
+        <param name="GraphType" value="TPS"/>
+        <param name="TagNamesToGraph" value="/web/login,/web/logout,/web/webLogin"/>
+        <appender-ref ref="graphsFileAppender"/>
+    </appender>
+
+    <!--
+        This file appender is used to output the graph URLs generated
+        by the GraphingStatisticsAppenders
+    -->
+    <appender name="graphsFileAppender" class="org.apache.log4j.FileAppender">
+        <param name="File" value="/search/passport/log/webperf/perfGraphs.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%m%n"/>
+        </layout>
     </appender>
 
     <logger name="webTimingLogger" additivity="false">
@@ -80,6 +117,8 @@
         <appender-ref ref="webCoalescingStatistics" />
     </logger>
     <!--end:web服务器性能log-->
+
+
 
     <!--start:redies请求log-->
     <appender name="rediesPerfFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
@@ -108,7 +147,7 @@
     <appender name="regBlackListFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="bufferedIO" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/blackList/regBlackList.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
@@ -123,7 +162,7 @@
     <appender name="loginBlackListFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="bufferedIO" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/blackList/loginBlackList.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
@@ -138,7 +177,19 @@
     <appender name="userOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
         <param name="Append" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/useroperation/useroperation.log" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %m %n" />
+        </layout>
+    </appender>
+
+    <!-- Test Appender -->
+    <appender name="testOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="true"/>
+        <param name="BufferedIO" value="true"/>
+        <param name="File" value="/search/passport/log/useroperation/testoperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %m %n" />
         </layout>
@@ -150,14 +201,20 @@
     </logger>
     <!--end:userOperationLogger 用户操作行为记录log-->
 
+    <logger name="testOperationLogger" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="testOperationAppender" />
+    </logger>
 
-    <category name="java.sql" additivity="false">
-        <priority value="${passport.log.level}"/>
-        <appender-ref ref="CONSOLE-ERROR"/>
+
+
+    <category name="com." additivity="false">
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE-INFO"/>
     </category>
 
     <root>
-        <priority value="${passport.log.level}"/>
+        <priority value="INFO"/>
         <appender-ref ref="CONSOLE-INFO"/>
     </root>
 
