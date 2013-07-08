@@ -89,7 +89,7 @@
         <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan"/>
         <span class="checkbox " id="ConfirmChbSpan" ></span>
         <label for="ConfirmChb">
-            我已阅读并接受<a class="agreelink" href="/static/agreement.html">搜狗服务协议</a>
+            我已阅读并接受<a class="agreelink" target="_blank" href="/static/agreement.html">搜狗服务协议</a>
         </label>
 </div>
                 </form>
