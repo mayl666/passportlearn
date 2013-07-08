@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+<log4j:configuration  xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
     <appender name="CONSOLE-ERROR" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
-            <param name="LevelMin" value="ERROR"/>
+            <param name="levelMin" value="ERROR"/>
         </filter>
     </appender>
     <appender name="CONSOLE-DEBUG" class="org.apache.log4j.ConsoleAppender">
@@ -14,7 +14,7 @@
             <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
-            <param name="LevelMin" value="DEBUG"/>
+            <param name="levelMin" value="DEBUG"/>
         </filter>
     </appender>
     <appender name="CONSOLE-INFO" class="org.apache.log4j.ConsoleAppender">
@@ -22,7 +22,7 @@
             <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
-            <param name="LevelMin" value="INFO"/>
+            <param name="levelMin" value="INFO"/>
         </filter>
     </appender>
     <appender name="FILE-ALL" class="org.apache.log4j.DailyRollingFileAppender">
@@ -215,6 +215,7 @@
 
     <root>
         <priority value="INFO"/>
+        <level value="info"></level>
         <appender-ref ref="CONSOLE-INFO"/>
     </root>
 
