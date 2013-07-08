@@ -114,7 +114,6 @@ public class LoginAction extends BaseController {
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             //用户登录失败log
             UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode());
             String referer = request.getHeader("referer");
