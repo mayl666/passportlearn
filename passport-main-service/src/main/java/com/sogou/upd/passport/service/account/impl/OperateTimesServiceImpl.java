@@ -75,7 +75,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
         try {
             List<String> valueList = redisUtils.multiGet(keyList);
-            if (valueList != null) {
+            if (!CollectionUtils.isEmpty(keyList)) {
                 int num = 0, valueSize = valueList.size(), maxSize = maxList.size();
                 for (int i = 0; i < valueSize && i < maxSize; i++) {
                     String value = valueList.get(i);
