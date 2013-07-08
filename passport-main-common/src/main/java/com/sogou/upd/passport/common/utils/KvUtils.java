@@ -26,7 +26,7 @@ public class KvUtils {
 
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
     private static String KEY_PREFIX = "20002/action_records/";
-    private static String KEY_PREFIX_TEST = "0/0/";
+    // private static String KEY_PREFIX_TEST = "0/0/";
 
     private static RedisTemplate kvTemplate;
 
