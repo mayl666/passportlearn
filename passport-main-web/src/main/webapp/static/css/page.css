@@ -101,3 +101,9 @@ a.medium-btn{ width:83px; height:27px; background:url(/./static/img/btn-medium.p
 .sys-error{ text-align:center; }
 .sys-error .desc{ width:406px;height:80px;padding-bottom:20px;border-bottom:1px #333 dotted;margin:0 auto;color:#000;font-size:16px;font-weight:700;line-height:80px; }
 .sys-error img{ margin:40px auto; }
+
+
+.agreement{ font-size:14px;line-height:1.5; }
+.agreement p{ text-indent:2em;margin:3px 0; }
+.agreement h4{ padding:10px 0 5px;font-weight:700;font-size:16px; }
+.agreement h3{ font-size:18px;font-weight:700;text-align:center;padding:20px 0; }

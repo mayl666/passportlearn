@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=497375" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=540004" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -89,7 +89,7 @@
         <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan"/>
         <span class="checkbox " id="ConfirmChbSpan" ></span>
         <label for="ConfirmChb">
-            我已阅读并接受
+            我已阅读并接受<a href="/static/agreement.html">搜狗服务协议</a>
         </label>
 </div>
                 </form>
