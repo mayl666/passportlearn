@@ -113,6 +113,8 @@ body{ background:#f9f9f9; }
 .question .items a:hover{ text-decoration:underline; }
 
 
-.footer{ font-size:12px; text-align:center; height:40px; line-height:40px;font-family:arial,helvetica,sans-serif;color:#b3b2b2;}
+.footer{ font-size:12px; text-align:center;  line-height:20px;font-family:arial,helvetica,sans-serif;color:#b3b2b2;}
+.footer .links{ padding:20px 0 5px; }
+.footer .links a{color:#1777d1;}
 .footer a{text-decoration:none; color:#b3b2b2;}
 .footer a:hover{ text-decoration:underline; }
