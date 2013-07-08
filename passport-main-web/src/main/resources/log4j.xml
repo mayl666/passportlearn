@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
     <appender name="CONSOLE-ERROR" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
@@ -12,7 +12,7 @@
     <appender name="CONSOLE-DEBUG" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
-        </layout>
+        :Q</layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="DEBUG"/>
         </filter>
@@ -147,7 +147,7 @@
     <appender name="regBlackListFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="bufferedIO" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/blackList/regBlackList.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
@@ -162,7 +162,7 @@
     <appender name="loginBlackListFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
-        <param name="bufferedIO" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/blackList/loginBlackList.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n" />
@@ -177,6 +177,7 @@
     <appender name="userOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
         <param name="Append" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/useroperation/useroperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %m %n" />
@@ -187,6 +188,7 @@
     <appender name="testOperationAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
+        <param name="BufferedIO" value="true"/>
         <param name="File" value="/search/passport/log/useroperation/testoperation.log" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %m %n" />
@@ -206,13 +208,13 @@
 
 
 
-    <category name="java.sql" additivity="false">
-        <priority value="${passport.log.level}"/>
-        <appender-ref ref="CONSOLE-ERROR"/>
+    <category name="com." additivity="false">
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE-INFO"/>
     </category>
 
     <root>
-        <priority value="${passport.log.level}"/>
+        <priority value="INFO"/>
         <appender-ref ref="CONSOLE-INFO"/>
     </root>
 

@@ -4,14 +4,14 @@
 
     <groupId>sogou-passport</groupId>
     <artifactId>sogou-passport</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <modules>
-        <module>passport-main-service</module>
-        <module>passport-main-web</module>
-        <module>passport-oauth2</module>
-        <module>passport-main-manager</module>
         <module>passport-main-common</module>
+        <module>passport-main-service</module>
+        <module>passport-main-manager</module>
+        <module>passport-oauth2</module>
         <module>passport-result</module>
+        <module>passport-main-web</module>
     </modules>
     <packaging>pom</packaging>
 

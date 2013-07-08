@@ -40,6 +40,12 @@ define( function(){
         addIframe: function(url , callback){
             var iframe = document.createElement('iframe');
             iframe.src = url;
+
+            iframe.style.position = 'absolute';
+            iframe.style.top = '1px';
+            iframe.style.left = '1px';
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
             
             if (iframe.attachEvent){
                 iframe.attachEvent("onload", function(){
