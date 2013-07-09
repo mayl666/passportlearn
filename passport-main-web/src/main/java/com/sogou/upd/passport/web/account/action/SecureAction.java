@@ -637,15 +637,20 @@ public class SecureAction extends BaseController {
             }
         }
 
-        if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
+        // TODO:由于SOHU接口只在成功时返回，因此只需要返回成功页面即可
+        /*if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
             result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
         } else {
             result.setSuccess(true);
+            result.setCode(ErrorUtil.SUCCESS);
             result.setMessage("绑定密保邮箱成功！");
         }
         result.setDefaultModel("status", result.getCode());
-        result.setDefaultModel("statusText", result.getMessage());
+        result.setDefaultModel("statusText", result.getMessage());*/
+
+        result.setDefaultModel("status", ErrorUtil.SUCCESS);
+        result.setDefaultModel("statusText", "绑定密保邮箱成功！");
 
         model.addAttribute("data", result.toString());
 
