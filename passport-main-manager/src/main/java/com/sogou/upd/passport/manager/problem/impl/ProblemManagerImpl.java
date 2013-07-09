@@ -37,33 +37,6 @@ public class ProblemManagerImpl implements ProblemManager {
     @Autowired
     private AccountService accountService;
 
-    @Override
-    public Result updateStatusById(long id, int status) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-             int row =problemService.updateStatusById(id, status);
-             if(row >0){
-                 result.setSuccess(true);
-                 result.setMessage("更新问题状态成功");
-             }else{
-                 result.setCode(ErrorUtil.ERR_CODE_PROBLEM_CLOSE_FAILED);
-             }
-        }catch (Exception e) {
-            logger.error("insertProblem fail,id:" + id, e);
-            result.setCode(ErrorUtil.ERR_CODE_PROBLEM_CLOSE_FAILED);
-            return result;
-        }
-        return result;
-    }
-
-    @Override
-    public Result closeProblemById(long id) throws Exception{
-        Result result = updateStatusById(id,PROBLEM_CLOSE_STATE);
-        if(result.isSuccess()){
-            result.setMessage("关闭问题成功");
-        }
-        return result;
-    }
 
     @Override
     public Result insertProblem(WebAddProblemParameters addProblemParams, String ip) throws Exception {
@@ -113,10 +86,5 @@ public class ProblemManagerImpl implements ProblemManager {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public int getProblemCount(Integer status,Integer clientId,Integer typeId,Date startDate,Date endDate,String title,  String content){
-        return problemService.getProblemCount(status,clientId,typeId,startDate,endDate,title,content);
     }
 }

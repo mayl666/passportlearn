@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.net.URLEncoder;
 
 /**
  * User: mayan
@@ -38,8 +42,12 @@ public class ResetPwdAction {
     // TODO:暂时不用
 
     @RequestMapping(method = RequestMethod.GET)
-    public String findPwdView() {
-        return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+    public String findPwdView(String ru) throws Exception {
+        if (Strings.isNullOrEmpty(ru)) {
+            return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        } else {
+            return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + URLEncoder.encode(ru, "UTF-8");
+        }
     }
 
 /*    @RequestMapping
