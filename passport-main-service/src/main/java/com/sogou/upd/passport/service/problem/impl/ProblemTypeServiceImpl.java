@@ -34,21 +34,19 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     public ProblemType getProblemTypeById(long id) throws ServiceException {
-        ProblemType problemType = null;
         try {
-            String cacheKey = buildProblemTypeListKey(String.valueOf(id));
-
-            problemType = redisUtils.getObject(cacheKey, ProblemType.class);
-            if (problemType == null) {
-                problemType = problemTypeDAO.getProblemTypeById(id);
-                if (problemType != null) {
-                    redisUtils.set(cacheKey, problemType);
+            List<ProblemType> list =  getProblemTypeList();
+            if (!CollectionUtils.isEmpty(list)) {
+                for(ProblemType problemType:list){
+                    if(problemType.getId() == id){
+                        return problemType;
+                    }
                 }
             }
+            return null;
         } catch (Exception e) {
             throw new ServiceException();
         }
-        return problemType;
     }
 
     @Override
