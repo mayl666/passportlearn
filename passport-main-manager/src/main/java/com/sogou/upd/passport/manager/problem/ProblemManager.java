@@ -15,24 +15,6 @@ import java.util.List;
  */
 public interface ProblemManager {
 
-    /** 通过用户反馈id，来更新反馈状态
-     *
-     * @param id
-     * @param status
-     * @return
-     * @throws Exception
-     */
-    public Result updateStatusById(long id, int status) throws Exception;
-
-    /**
-     * 关闭反馈
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    public Result closeProblemById(long id) throws Exception;
 
     public Result insertProblem(WebAddProblemParameters addProblemParams,String ip)throws Exception;
-
-    public int getProblemCount(Integer status,Integer clientId,Integer typeId,Date startDate,Date endDate,String title,  String content);
 }

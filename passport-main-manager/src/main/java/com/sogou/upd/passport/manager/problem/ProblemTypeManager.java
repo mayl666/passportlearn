@@ -20,21 +20,4 @@ public interface ProblemTypeManager {
      * @throws Exception
      */
     public List<ProblemType> getProblemTypeList() throws Exception;
-
-    /**
-     * 插入一条反馈
-     * @param problemType
-     * @return
-     * @throws Exception
-     */
-    public int  insertProblemType(ProblemType problemType) throws Exception;
-
-    /**
-     * 删除一条反馈
-     * @param name
-     * @return
-     * @throws Exception
-     */
-    public int  deleteProblemTypeByName(String name) throws Exception;
-
 }
