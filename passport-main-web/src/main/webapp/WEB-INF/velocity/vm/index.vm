@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=864324" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=226544" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -59,10 +59,7 @@
                         </form>
                         <div class="third-login">
                             <span >使用其他帐号登录</span>
-                            <a href="#">sina</a>
-                            <a href="#">qq</a>
-                            <a href="#">taobao</a>
-                            <a href="#">renren</a>
+                            <a href="#">sina</a><a href="#">qq</a><a href="#">taobao</a><a href="#">renren</a>
                         </div>
                     </div>
                 </div>
@@ -107,7 +104,7 @@
         
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/api/login.js?t=754848"></script>
+    <script type="text/javascript" src="/./static/api/login.js?t=343963"></script>
     <script type="text/javascript" src="/./static/js/index.js?t=971252"></script>
     <script type="text/javascript">
 
