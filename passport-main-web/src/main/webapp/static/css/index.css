@@ -101,7 +101,7 @@ body{ background:#f9f9f9; }
 .login .error a:hover{ background-position:-261px -45px; }
 .login .third-login{position:absolute;bottom:-33px;padding-left:15px;font-size:12px;color:#649608;background:url(/./static/img/index/third.png?t=088104) no-repeat right center;height:28px;line-height:28px;width:270px;}
 .login .third-login span{ display:inline-block;*display:inline; *zoom:1;height:24px;position:absolute;top:0;left:30px; }
-.login .third-login a{ display:inline-block;*display:inline; *zoom:1; width:29px;height:0;padding-top:28px;overflow:hidden;margin-right:4px;position:relative;left:133px; }
+.login .third-login a{ display:inline-block;*display:inline; *zoom:1; width:29px;height:0;padding-top:28px;overflow:hidden;margin-right:7px;position:relative;left:133px; }
 
 
 .question{ width:960px; margin:0 auto;padding-top:14px; }
