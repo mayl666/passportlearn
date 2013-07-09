@@ -87,7 +87,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
     var initToken = function($el){
         var token = utils.uuid();
         $el.find('.token').val(token);
-        $el.find('.vpic img').attr('src' , "/captcha?token="+ token);
+        $el.find('.vpic img').attr('src' , "/captcha?token="+ token + '&t=' + +new Date());
     };
 
 
