@@ -27,6 +27,7 @@
             <button id="Submit">提交</button>
         </p>
         <p><a href="#" id="Logout">退出</a></p>
+        <p><a href="#" id="Renren">人人登录</a></p>
         <div id="Target">
             
         </div> 
@@ -34,8 +35,8 @@
 
     <script type="text/javascript">
 var PassportSC = {};        
-PassportSC.redirectUrl = 'http://ufo.sogou-inc.com/~zhengxin/passport/static/api/jump.htm';
-PassportSC.appid = 12345;
+PassportSC.redirectUrl = 'http://demix.sogou.com/~zhengxin/passport/static/api/jump.htm';
+PassportSC.appid = 1120;
 document.getElementById('Submit').onclick = function(){
     var username = document.getElementById('Username');
     var password = document.getElementById('Password');
@@ -53,7 +54,13 @@ document.getElementById('Logout').onclick = function(){
         alert('成功退出');
     });
 };
-PassportSC.onApiLoaded = function(){alert(1)}
+
+document.getElementById('Renren').onclick = function(){
+    PassportSC.authHandle('renren' ,'page' , null , 'http://www.sogou.com');
+};
+
+
+PassportSC.onApiLoaded = function(){}
 var scr = document.createElement('script');
 scr.src="./passport_cb.js";
 document.body.appendChild(scr);

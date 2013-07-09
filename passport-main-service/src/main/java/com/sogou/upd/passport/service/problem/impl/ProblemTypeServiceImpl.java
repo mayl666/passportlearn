@@ -7,6 +7,7 @@ import com.sogou.upd.passport.dao.problem.ProblemTypeDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -33,21 +34,19 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
 
     @Override
     public ProblemType getProblemTypeById(long id) throws ServiceException {
-        ProblemType problemType = null;
         try {
-            String cacheKey = buildProblemTypeListKey(String.valueOf(id));
-
-            problemType = redisUtils.getObject(cacheKey, ProblemType.class);
-            if (problemType == null) {
-                problemType = problemTypeDAO.getProblemTypeById(id);
-                if (problemType != null) {
-                    redisUtils.set(cacheKey, problemType);
+            List<ProblemType> list =  getProblemTypeList();
+            if (!CollectionUtils.isEmpty(list)) {
+                for(ProblemType problemType:list){
+                    if(problemType.getId() == id){
+                        return problemType;
+                    }
                 }
             }
+            return null;
         } catch (Exception e) {
             throw new ServiceException();
         }
-        return problemType;
     }
 
     @Override
@@ -58,7 +57,7 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
             String listStr = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(listStr)) {
                 list = problemTypeDAO.getProblemTypeList();
-                if (list != null) {
+                if(!CollectionUtils.isEmpty(list)) {
                     String jsonResult = new ObjectMapper().writeValueAsString(list);
                     redisUtils.set(cacheKey, jsonResult);
                 }
