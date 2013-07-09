@@ -4,7 +4,10 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
@@ -31,6 +34,9 @@ public class RegisterApiController {
 
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
+
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     /**
      * 注册手机账号时，发送手机验证码
@@ -111,6 +117,7 @@ public class RegisterApiController {
      * 检查账号是否存在
      * 账号类型为：xxx@sogou.com、搜狐域账号、外域邮箱账号、xxx@{provider}.sohu.com
      * 手机号会返回"userid错误"
+     *
      * @param request
      * @param params
      * @return
@@ -128,16 +135,27 @@ public class RegisterApiController {
             return result.toString();
         }
         // 调用内部接口
-        result = proxyRegisterApiManager.checkUser(params);
-//这里到底是检测用户名是否存在还是是否可注册，需要再做考虑
-//        String userID=params.getUserid().trim();
-//        String[] split=userID.split("@");
-//        String domain=split[split.length-1];
-//        if(!userID.endsWith("@sogou.com")){
-//            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-//            result.setMessage(validateResult);
-//            return result.toString();
-//        }
+        String userid = params.getUserid();
+        if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+            baseMoblieApiParams.setMobile(userid);
+            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            //如果手机号已经被注册或被绑定其它账号，返回错误信息
+            if(result.isSuccess()){
+                result.setSuccess(false);
+                result.setDefaultModel("flag","1");
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
+            }else if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND)) {
+                //如果手机号没有被注册或绑定其它账号，返回正确
+                result = new APIResultSupport(true);
+            }
+        } else {
+            result = proxyRegisterApiManager.checkUser(params);
+        }
+
         return result.toString();
     }
+
+
 }
