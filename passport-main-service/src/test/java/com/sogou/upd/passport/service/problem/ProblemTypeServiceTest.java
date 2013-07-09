@@ -65,4 +65,15 @@ public class ProblemTypeServiceTest extends AbstractJUnit4SpringContextTests {
             System.out.println("删除失败！");
         }
     }
+
+    @Test
+    public void testgetProblemTypeById() {
+        long id = 270;
+        problemTypeService.getProblemTypeById(1);
+//        if (row  >0) {
+//            System.out.println("删除成功！");
+//        } else {
+//            System.out.println("删除失败！");
+//        }
+    }
 }
