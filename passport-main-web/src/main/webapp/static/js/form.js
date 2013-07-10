@@ -50,7 +50,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             if( $el.val().length <3 || $el.val().length>16 ){
                 return '个性帐号长度为6-16位';
             }
-            return '小写字母开头的数字字母下划线或组合';
+            return '小写字母开头的数字、字母、下划线或组合';
         }
     };
 
