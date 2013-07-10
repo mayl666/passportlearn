@@ -46,7 +46,7 @@ document.getElementById('Submit').onclick = function(){
         return;
     }
         
-    PassportSC.loginHandle(username.value , password.value , autologin , document.getElementById('Target') , function(){alert('fail')} , function(){alert('success')});
+    PassportSC.loginHandle(username.value , password.value  , autologin , document.getElementById('Target') , function(){alert('fail')} , function(){alert('success')});
 };
 
 document.getElementById('Logout').onclick = function(){
