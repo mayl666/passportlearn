@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common.parameter;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import java.util.ArrayList;
@@ -54,6 +56,9 @@ public enum AccountDomainEnum {
      * @return
      */
     public static AccountDomainEnum getAccountDomain(String username) {
+        if (Strings.isNullOrEmpty(username)) {
+            return AccountDomainEnum.UNKNOWN;
+        }
 
         // 验证纯手机号
         if (PhoneUtil.verifyPhoneNumberFormat(username)) {
