@@ -13,7 +13,7 @@
             <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
             <li class="sep" >|</li>
             <li class="logout" >
-                <a href="https://account.sogou.com/web/logout?client_id=1120">退出</a>
+                <a href="https://account.sogou.com/web/logout_redirect?client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2F">退出</a>
             </li>
         </ul>
     </div>
