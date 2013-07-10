@@ -4,7 +4,7 @@ import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 
 /**
- * Created with IntelliJ IDEA.
+ * 第三方授权
  * User: shipengzhi
  * Date: 13-6-18
  * Time: 上午12:20

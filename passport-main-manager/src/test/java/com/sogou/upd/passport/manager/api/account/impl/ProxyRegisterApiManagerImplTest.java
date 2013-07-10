@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
@@ -29,7 +30,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testRegMailUser() {
         RegEmailApiParams params = new RegEmailApiParams();
-        params.setUserid(USERID);
+        params.setUserid("23dsafasdf@qq.com");
         params.setPassword(PASSWORD);
         params.setCreateip("10.1.164.65");
         Result result = proxyRegisterApiManager.regMailUser(params);
@@ -45,11 +46,11 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testRegMobileCaptchaUser() {
+    public void testRegMobileCaptchaUser() throws Exception {
         RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
-        regMobileCaptchaApiParams.setMobile(MOBILE);
-        regMobileCaptchaApiParams.setPassword(PASSWORD);
-        regMobileCaptchaApiParams.setCaptcha("1540");
+        regMobileCaptchaApiParams.setMobile("13521134303");
+        regMobileCaptchaApiParams.setPassword(Coder.encryptMD5("111111"));
+        regMobileCaptchaApiParams.setCaptcha("7808");
         Result result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
         System.out.println(result);
     }
@@ -65,7 +66,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
         result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         System.out.println("result2:" + result.toString());
         checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("13621009174");
+        checkUserApiParams.setUserid("13590341234@sohu.com");
         result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         System.out.println("result3:" + result.toString());
         checkUserApiParams = new CheckUserApiParams();

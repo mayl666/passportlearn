@@ -21,7 +21,7 @@ public class ProxySecureApiManagerImplTest  extends BaseTest {
     @Test
     public void testUpdatePwd() throws Exception {
         UpdatePwdApiParams updatePwdApiParams=new UpdatePwdApiParams();
-        updatePwdApiParams.setUserid(userid);
+        updatePwdApiParams.setUserid("sogou_test_1@sogou.com");
         updatePwdApiParams.setModifyip(modifyIp);
         updatePwdApiParams.setPassword("111111");
         updatePwdApiParams.setNewpassword("111111");
