@@ -92,7 +92,7 @@ public enum AccountDomainEnum {
         } else{
 //            return  AccountDomainEnum.INDIVIDUATION;
         }
-        return AccountDomainEnum.UNKNOWN;
+        return AccountDomainEnum.SOGOU;
     }
 
 }
