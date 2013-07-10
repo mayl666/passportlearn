@@ -379,11 +379,9 @@ public class AccountServiceImpl implements AccountService {
                 redisUtils.delete(cacheKey);
                 return true;
             }
-            logger.warn("captchaCode wrong warn:token="+token+", captchaCode="+captchaCode);
             return false;
         } catch (Exception e) {
             // throw new ServiceException(e);
-            logger.error("captchaCode exception error:token="+token+", captchaCode="+captchaCode);
             return false;
         }
     }
