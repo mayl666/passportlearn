@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common.model.httpclient;
 
+import com.sogou.upd.passport.common.HttpConstant;
+import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.codehaus.jackson.JsonGenerationException;
@@ -20,8 +22,16 @@ public class RequestModelJSON extends RequestModel {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestModelJSON.class);
 
+    /**
+     * RequestModelJSON
+     * 默认为POST请求
+     *
+     * @param url 要请求的参数
+     */
     public RequestModelJSON(String url) {
         super(url);
+        this.addHeader(HttpConstant.HeaderType.CONTENT_TYPE, HttpConstant.ContentType.JSON);
+        this.setHttpMethodEnum(HttpMethodEnum.POST);
     }
 
     /**
@@ -33,7 +43,7 @@ public class RequestModelJSON extends RequestModel {
     public HttpEntity getRequestEntity() {
         try {
             String json = new ObjectMapper().writeValueAsString(params);
-            return new StringEntity(json, "text/xml",
+            return new StringEntity(json, HttpConstant.ContentType.JSON,
                     DEFAULT_ENCODE);
         } catch (UnsupportedEncodingException e) {
             logger.error("http param url encode error ", e);

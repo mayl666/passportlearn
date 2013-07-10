@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.parameter;
 
 
+import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -60,6 +61,9 @@ public enum AccountTypeEnum {
     }
 
     public static boolean isEmail(String account, int provider) {
+        if (Strings.isNullOrEmpty(account)) {
+            return false;
+        }
         if (account.contains("@")) {
             if (provider == EMAIL.getValue() || provider == UNKNOW.getValue()) {
                 return true;

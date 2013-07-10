@@ -132,6 +132,9 @@ public class ErrorUtil {
   public static final String ERR_CODE_CREATE_COOKIE_FAILED = "20240";
   //暂时不支持sohu域内邮箱注册
   public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER = "20241";
+
+
+
   //TODO sohu内部接口使用，以后删除，手机app校验第三方登录的token失败
   public static final String ERR_CODE_APPCONNECT_TOKEN_ERROR = "20242";
   // SOHU域不允许此操作
@@ -142,6 +145,8 @@ public class ErrorUtil {
   public static final String ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED = "20245";
   // 当前账号、IP或手机校验次数已达上限
   public static final String ERR_CODE_ACCOUNT_REGISTER_IP_INBLACKLIST = "20246";
+    //暂时不支持sogou邮箱注册
+    public static final String ERR_CODE_NOTSUPPORT_SOGOU_REGISTER = "20247";
 
 
 
@@ -324,6 +329,8 @@ public class ErrorUtil {
     ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
     ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "账号已封杀");
     ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱注册");
+    ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOGOU_REGISTER, "暂时不支持搜狗邮箱注册");
+
     ERR_CODE_MSG_MAP.put(ERR_CODE_APPCONNECT_TOKEN_ERROR, "手机app校验第三方登录的token失败");
 
     ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_COOKIE_FAILED, "生成cookie失败");

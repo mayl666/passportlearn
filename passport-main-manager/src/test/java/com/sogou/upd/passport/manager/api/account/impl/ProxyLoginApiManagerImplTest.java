@@ -7,6 +7,7 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,9 +28,9 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid(userid);
+            authUserParameters.setUserid("shipengzhi1986@sogou.com");
             authUserParameters.setClient_id(clientId);
-            authUserParameters.setPassword(Coder.encryptMD5("testtest"));
+            authUserParameters.setPassword(Coder.encryptMD5("spz1986411"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
             System.out.println(result);
         } catch (Exception e) {
