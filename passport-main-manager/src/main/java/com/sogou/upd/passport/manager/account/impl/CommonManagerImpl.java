@@ -8,7 +8,9 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -38,6 +40,8 @@ public class CommonManagerImpl implements CommonManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
 
     @Override
@@ -59,29 +63,6 @@ public class CommonManagerImpl implements CommonManager {
             throw new Exception(e);
         }
         return false;
-    }
-
-    @Override
-    public String getPassportIdByUsername(String username) throws Exception {
-        try {
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    return passportId;
-                }
-            } else {
-                // Account account = accountService.queryAccountByPassportId(username);
-                // 不查询account表
-                if (username.indexOf("@") == -1) {
-                    username = username + "@sogou.com";
-                }
-                return username;
-            }
-        } catch (ServiceException e) {
-            log.error("Username doesn't exist Exception, username:" + username, e);
-            throw new Exception(e);
-        }
-        return null;
     }
 
     @Override

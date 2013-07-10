@@ -43,9 +43,9 @@ public class CaptchaController {
         //生成验证码
         Map<String, Object> map = regManager.getCaptchaCode(token);
         if (map != null && map.size() > 0) {
-            ImageIO.write((BufferedImage) map.get("image"), "JPEG", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
+            ImageIO.write((BufferedImage) map.get("image"), "png", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
 
-            response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
+            response.setContentType("image/png");//设置相应类型,告诉浏览器输出的内容为图片
             response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
             response.setHeader("Cache-Control", "no-cache");
             response.setDateHeader("Expire", 0);

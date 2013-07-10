@@ -57,7 +57,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
     var NormalDesc = {
         email:"请输入您作为帐号的邮箱名",
         password:"6-16位，字母(区分大小写)、数字、符号",
-        nick: "小写字母开头的数字字母下划线或组合"
+        nick: "小写字母开头的数字、字母、下划线或组合"
     };
 
     var createSpan= function($el , className){

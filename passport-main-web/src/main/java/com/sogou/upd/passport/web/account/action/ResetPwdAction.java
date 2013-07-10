@@ -79,6 +79,8 @@ public class ResetPwdAction {
             model.addAttribute("data", result.toString());
         }
 
+        // TODO:如果getPassportIdByUsername不检测是否存在，则需要检测用户是否存在
+
         // TODO:已修改为代理接口
         result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         model.addAttribute("data", result.toString());

@@ -140,8 +140,8 @@ public class RegAction extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
         regManager.incRegTimes(ip, uuidName);
-        String userId = commonManager.getPassportIdByUsername(username);
-        if (AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
+        String userId = (String) result.getModels().get("userid");
+        if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
             if (result.isSuccess()) {
                 // 非外域邮箱用户不用验证，直接注册成功后记录登录记录
                 int clientId = Integer.parseInt(regParams.getClient_id());

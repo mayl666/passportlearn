@@ -10,6 +10,7 @@ import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -84,6 +85,30 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+        return result.toString();
+    }
+
+    /**
+     * 注册账号为外域邮箱、个性域名、搜狗邮箱
+     *
+     * @param request
+     * @param params
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/reguser", method = RequestMethod.POST)
+    @ResponseBody
+    public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        // 调用内部接口
+        result = proxyRegisterApiManager.regMailUser(params);
         return result.toString();
     }
 
