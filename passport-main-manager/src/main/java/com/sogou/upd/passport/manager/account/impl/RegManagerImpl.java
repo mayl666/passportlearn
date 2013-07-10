@@ -112,7 +112,7 @@ public class RegManagerImpl implements RegManager {
           String token=regParams.getToken();
           //判断验证码
           if(!accountService.checkCaptchaCode(token,captcha)){
-            logger.warn("webRegister captchaCode wrong warn:username="+username+", ip="+ip+",token="+token+", captchaCode="+captcha);
+            logger.warn("[webRegister captchaCode wrong warn]:username="+username+", ip="+ip+", token="+token+", captchaCode="+captcha);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result;
           }
