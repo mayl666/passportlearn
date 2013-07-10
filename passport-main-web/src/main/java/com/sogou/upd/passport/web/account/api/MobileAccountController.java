@@ -1,12 +1,16 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
@@ -44,6 +48,36 @@ public class MobileAccountController extends BaseController {
     private ConfigureManager configureManager;
 
     /**
+     * 手机账号注册时发送的验证码
+     *
+     * @param reqParams 传入的参数
+     */
+    @RequestMapping(value = {"/mobile/sendsms"}, method = RequestMethod.GET)
+    @ResponseBody
+    public Object sendMobileCode(MoblieCodeParams reqParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        //验证client_id
+        int clientId = Integer.parseInt(reqParams.getClient_id());
+
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result.toString();
+        }
+        String mobile = reqParams.getMobile();
+        result = secureManager.sendMobileCode(mobile, clientId, AccountModuleEnum.REGISTER);
+        return result.toString();
+    }
+
+    /**
      * 手机账号正式注册调用
      */
     @RequestMapping(value = {"/v2/mobile/reg", "/mobile/regmobileuser"}, method = RequestMethod.POST)
@@ -58,7 +92,7 @@ public class MobileAccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        int clientId=Integer.parseInt(regParams.getClient_id());
+        int clientId = Integer.parseInt(regParams.getClient_id());
 
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
@@ -97,7 +131,7 @@ public class MobileAccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        int clientId=Integer.parseInt(reqParams.getClient_id());
+        int clientId = Integer.parseInt(reqParams.getClient_id());
 
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
@@ -143,6 +177,5 @@ public class MobileAccountController extends BaseController {
         result = secureManager.resetPassword(regParams);
         return result.toString();
     }
-
 
 }
