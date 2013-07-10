@@ -34,8 +34,6 @@ public class RedisUtils {
 
     private static RedisTemplate redisTemplate;
 
-    private static final org.apache.log4j.Logger prefLogger = org.apache.log4j.Logger.getLogger("rediesTimingLogger");
-
     private static final String ALL_REQUEST_TIMER="REDIES_ALL_REQUEST";
 
     /*

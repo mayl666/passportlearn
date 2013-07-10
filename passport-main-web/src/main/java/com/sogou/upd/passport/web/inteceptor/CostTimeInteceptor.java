@@ -10,7 +10,7 @@ import com.codahale.metrics.Timer;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.web.ControllerHelper;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger log = LoggerFactory.getLogger(CostTimeInteceptor.class);
 
-    private static final org.apache.log4j.Logger prefLogger = org.apache.log4j.Logger.getLogger("webTimingLogger");
+    private static final Logger prefLogger =LoggerFactory.getLogger("webTimingLogger");
 
     private static final String ALL_REQUEST_TIMER="ALL_REQUEST_TIMER";
 
@@ -44,7 +44,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        StopWatch stopWatch = new Log4JStopWatch(prefLogger);
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         request.setAttribute(STOPWATCH, stopWatch);
 
         String tag= request.getRequestURI();
