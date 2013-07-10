@@ -33,11 +33,14 @@ public class SHPPUrlConstant {
     /*================================登录相关=======================================*/
     public static final String AUTH_USER = BASE_INTERNAL_URL + "authuser"; //检查用户名密码是否正确
     public static final String MOBILE_AUTH_TOKEN = BASE_INTERNAL_URL + "token/auth"; //检查用户名密码是否正确
-    //    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
-    public static final String GET_COOKIE_VALUE = "http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
-    public static final String SET_COOKIE = "https://passport.sohu.com/act/setcookie";//用于前端设置cookie
-    public static final String CLEAN_COOKIE = "https://passport.sohu.com/act/logout";
-    public static final String CHECK_USER = BASE_INTERNAL_URL + "checkuser";//查询用户名是否注册过
+//    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
+    public static final String GET_COOKIE_VALUE="http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
+    public static final String SET_COOKIE="https://passport.sohu.com/act/setcookie";//用于前端设置cookie
+    public static final String CLEAN_COOKIE="https://passport.sohu.com/act/logout";
+
+    public static final String CLEAN_COOKIE_REDIRECT="https://passport.sohu.com/sso/logout_js.jsp?ru=";
+
+    public static final String CHECK_USER=BASE_INTERNAL_URL+"checkuser";//查询用户名是否注册过
 
     /*================================注册相关=======================================*/
     public static final String SEND_MOBILE_REG_CAPTCHA = BASE_INTERNAL_URL + "sendmobileregcaptcha"; //获取注册的手机验证码

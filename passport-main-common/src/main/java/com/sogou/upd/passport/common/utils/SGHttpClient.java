@@ -23,9 +23,9 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.util.EntityUtils;
 
-import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -75,7 +75,7 @@ public class SGHttpClient {
      */
     private final static int SLOW_TIME = 500;
 
-    private static final Logger prefLogger = Logger.getLogger("httpClientTimingLogger");
+    private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SGHttpClient.class);
 
@@ -140,7 +140,7 @@ public class SGHttpClient {
      */
     public static HttpEntity execute(RequestModel requestModel) {
         //性能分析
-        StopWatch stopWatch = new Log4JStopWatch(prefLogger);
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         try {
             HttpEntity httpEntity = executePrivate(requestModel);
             stopWatch(stopWatch, requestModel.getUrl(), "success");

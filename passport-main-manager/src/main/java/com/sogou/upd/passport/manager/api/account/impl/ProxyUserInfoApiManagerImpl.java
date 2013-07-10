@@ -41,11 +41,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
-        if(PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())){
-           String userid=getUserInfoApiparams.getUserid();
-           userid+="@sohu.com";
-           getUserInfoApiparams.setUserid(userid);
-        }
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         String fields = getUserInfoApiparams.getFields();
         String[] fieldList = fields.split(",");
@@ -55,6 +50,9 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             }
         }
         requestModelXml.addParams(getUserInfoApiparams);
+        if(PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())){
+            requestModelXml.addParam("usertype",1);
+        }
         requestModelXml.deleteParams("fields");
         requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
         Result result= this.executeResult(requestModelXml);
