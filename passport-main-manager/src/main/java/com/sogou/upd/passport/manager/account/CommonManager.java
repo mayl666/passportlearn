@@ -23,8 +23,8 @@ public interface CommonManager {
     /**
      * 注意，返回值有以下几种情况，返回时需要检查是否为null
      *      <p><strong>username为手机号：</strong></p>
-     *       1.返回passportId
-     *       2.返回null，代表未绑定或未注册手机号username；
+     *       返回passportId
+     *       ，不代表已经注册；
      *      <p><strong>username不是手机号：</strong></p>
      *       返回username，但账户不一定存在，因为未查account表（减少数据库查询操作）
      *

@@ -65,10 +65,11 @@ public class CommonManagerImpl implements CommonManager {
     public String getPassportIdByUsername(String username) throws Exception {
         try {
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                /*String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
                 if (!Strings.isNullOrEmpty(passportId)) {
                     return passportId;
-                }
+                }*/
+                return username + "@sohu.com";
             } else {
                 // Account account = accountService.queryAccountByPassportId(username);
                 // 不查询account表
@@ -81,7 +82,6 @@ public class CommonManagerImpl implements CommonManager {
             log.error("Username doesn't exist Exception, username:" + username, e);
             throw new Exception(e);
         }
-        return null;
     }
 
     @Override
