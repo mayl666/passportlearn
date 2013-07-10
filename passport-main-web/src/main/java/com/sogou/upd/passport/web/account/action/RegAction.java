@@ -195,6 +195,11 @@ public class RegAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
             return result;
         }
+        //校验是否是搜狗用户
+        if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(username))) {
+            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
+            return result;
+        }
 
         //判断是否是个性账号
         if (username.indexOf("@") == -1) {

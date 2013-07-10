@@ -6,6 +6,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -82,17 +83,18 @@ public class BaseProxyManager {
         }
 
         //SHPP必须将请求的head中 CONTENT_TYPE 设为 xml
-        requestModel.addHeader(HttpConstant.HeaderType.CONTENT_TYPE, HttpConstant.ContentType.XML_TEXT);
+//        requestModel.addHeader(HttpConstant.HeaderType.CONTENT_TYPE, HttpConstant.ContentType.XML_TEXT);
 
         //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
         this.paramNameAdapter(requestModel);
 
         //设置默认参数同时计算参数的签名
         this.setDefaultParam(requestModel, signVariableStr);
-
+        if(requestModel instanceof RequestModelXml){
         return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
-
-
+        }else{
+            return SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+        }
     }
 
     /**
@@ -114,8 +116,8 @@ public class BaseProxyManager {
         //计算默认的code
         String code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
         requestModel.addParam("code", code);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+        requestModel.addParam("ct", String.valueOf(ct));
+        requestModel.addParam("appid", String.valueOf(SHPPUrlConstant.APP_ID));
     }
 
     /**

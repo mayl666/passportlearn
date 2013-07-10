@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -29,6 +32,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * User: mayan
@@ -129,9 +133,10 @@ public class LoginAction extends BaseController {
 
     /**
      * web页面退出
+     * 通过js调用，返回结果
      */
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ModelAndView logout(HttpServletRequest request, HttpServletResponse response)
+    @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
+    public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
@@ -146,4 +151,32 @@ public class LoginAction extends BaseController {
         return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
     }
 
+    /**
+     * web页面退出
+     * 页面直接跳转，回跳到之前的地址
+     */
+    @RequestMapping(value = "/logout_redirect", method = RequestMethod.GET)
+    public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="ru",required=false) String ru)
+            throws Exception {
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+
+        String userId = hostHolder.getPassportId();
+        //用于记录log
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("referer", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
+        if(StringUtil.isBlank(ru)){
+            if(StringUtil.isBlank(referer)){
+                referer=CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            }
+            ru= URLEncoder.encode(referer, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        }
+        StringBuilder url=new StringBuilder(SHPPUrlConstant.CLEAN_COOKIE_REDIRECT);
+        url.append(ru);
+
+        return new ModelAndView(new RedirectView(url.toString()));
+    }
 }

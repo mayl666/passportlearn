@@ -50,14 +50,14 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             if( $el.val().length <3 || $el.val().length>16 ){
                 return '个性帐号长度为6-16位';
             }
-            return '小写字母开头的数字字母下划线或组合';
+            return '小写字母开头的数字、字母、下划线或组合';
         }
     };
 
     var NormalDesc = {
         email:"请输入您作为帐号的邮箱名",
         password:"6-16位，字母(区分大小写)、数字、符号",
-        nick: "小写字母开头的数字字母下划线或组合"
+        nick: "小写字母开头的数字、字母、下划线或组合"
     };
 
     var createSpan= function($el , className){

@@ -22,12 +22,6 @@ define(['./utils'],function(utils){
             $('#Header .username').html(data.username);
             if( data.username ){
                 $('#Header .info').show();
-                $('#Header .logout a').click(function(e){
-                    utils.addIframe($(this).attr('href') , function(){
-                        location.reload();
-                    });
-                    return false;
-                });
             }
         },
         bindJumpEmail: function(){

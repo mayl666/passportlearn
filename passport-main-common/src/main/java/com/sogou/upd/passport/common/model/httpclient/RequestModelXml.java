@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.model.httpclient;
 
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.XMLUtil;
@@ -36,12 +37,13 @@ public class RequestModelXml extends RequestModel {
 
     /**
      * 初始化RequestModelXml
-     *
+     * 默认为POST请求
      * @param url          要请求的参数
      * @param rootNodeName xml中Root节点的名称
      */
     public RequestModelXml(String url, String rootNodeName) {
         super(url);
+        this.addHeader(HttpConstant.HeaderType.CONTENT_TYPE, HttpConstant.ContentType.XML_TEXT);
         this.setRootNodeName(rootNodeName);
         this.setHttpMethodEnum(HttpMethodEnum.POST);
     }
@@ -55,7 +57,7 @@ public class RequestModelXml extends RequestModel {
     public HttpEntity getRequestEntity() {
         String xmlStr = XMLUtil.mapToXmlString(this.getRootNodeName(), this.params);
         try {
-            return new StringEntity(xmlStr, "text/xml",
+            return new StringEntity(xmlStr, HttpConstant.ContentType.XML_TEXT,
                     DEFAULT_ENCODE);
         } catch (UnsupportedEncodingException e) {
             logger.error("http param url encode error ", e);
