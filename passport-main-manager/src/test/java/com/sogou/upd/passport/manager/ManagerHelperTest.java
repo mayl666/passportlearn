@@ -17,7 +17,7 @@ public class ManagerHelperTest extends BaseTest {
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode("aaa", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCode("1666643531@sina.sohu.com", 1110, "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr", ct);
         System.out.println("code:" + code);
 
         try {
