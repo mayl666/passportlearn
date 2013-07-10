@@ -28,8 +28,8 @@ import java.util.Set;
 public class OperateTimesServiceImpl implements OperateTimesService {
 
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
-    private static final org.apache.log4j.Logger regBlackListLogger = org.apache.log4j.Logger.getLogger("com.sogou.upd.passport.blackListFileAppender");
-    private static final org.apache.log4j.Logger loginBlackListLogger = org.apache.log4j.Logger.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
+    private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
+    private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
