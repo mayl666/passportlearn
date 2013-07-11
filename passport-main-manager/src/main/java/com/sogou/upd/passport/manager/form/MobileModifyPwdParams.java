@@ -24,7 +24,6 @@ public class MobileModifyPwdParams {
     @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
 
-    @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     @NotBlank(message = "请输入密码!")
     private String password;
 
