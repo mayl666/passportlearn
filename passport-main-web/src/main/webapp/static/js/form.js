@@ -194,7 +194,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 el.html(timeout + text);
                 el.addClass('tel-valid-btn-disable');
 
-                var url = el.attr('action') || '/mobile/sendsms';
+                var url = el.attr('action') || '/web/sendsms';
                 $.get(url , {
                     mobile: usernameIpt.val(),
                     new_mobile: usernameIpt.val(),
