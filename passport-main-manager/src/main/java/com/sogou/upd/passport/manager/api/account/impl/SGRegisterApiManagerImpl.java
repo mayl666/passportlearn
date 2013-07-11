@@ -61,7 +61,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
             switch (emailType) {
                 case SOGOU://个性账号直接注册
-                case UNKNOWN:
+                case INDIVID:
                     Account account = accountService.initialAccount(username, password, false, ip, AccountTypeEnum
                             .EMAIL.getValue());
                     if (account != null) {

@@ -147,7 +147,7 @@ public class LoginManagerImpl implements LoginManager {
 
             //默认是sogou.com
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
+            if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
                 passportId = passportId + "@sogou.com";
             }
 
