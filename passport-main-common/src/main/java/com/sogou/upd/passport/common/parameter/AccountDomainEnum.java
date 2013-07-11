@@ -19,7 +19,7 @@ public enum AccountDomainEnum {
     PHONE(3), // 手机
     OTHER(4), // 外域
     THIRD(5), // 第三方
-    INDIVIDUATION(6); // 个性化
+    INDIVID(6); // 个性化
 
     // 域数字与字符串映射字典表
     private static List<String> SOHU_DOMAIN = new ArrayList<>();
@@ -90,9 +90,9 @@ public enum AccountDomainEnum {
         } else if (username.contains("@")) {
             return AccountDomainEnum.OTHER;
         } else{
-//            return  AccountDomainEnum.INDIVIDUATION;
+            return AccountDomainEnum.INDIVID;
         }
-        return AccountDomainEnum.SOGOU;
+
     }
 
 }

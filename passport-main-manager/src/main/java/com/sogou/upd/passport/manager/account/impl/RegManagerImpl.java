@@ -108,7 +108,7 @@ public class RegManagerImpl implements RegManager {
       switch (emailType) {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
-        case UNKNOWN:
+        case INDIVID:
           String token=regParams.getToken();
           //判断验证码
           if(!accountService.checkCaptchaCode(token,captcha)){
