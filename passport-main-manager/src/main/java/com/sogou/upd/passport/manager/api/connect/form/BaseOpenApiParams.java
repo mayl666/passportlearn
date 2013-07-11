@@ -17,7 +17,7 @@ public class BaseOpenApiParams extends BaseApiParams{
     @NotBlank(message = "openid不允许为空")
     protected String openid; //通行证账号，***@provider.sohu.com
 
-    protected String params = "{}";
+    protected String params = "";
 
     public String getUserid() {
         return userid;
