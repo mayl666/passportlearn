@@ -350,7 +350,7 @@ public class AccountServiceImpl implements AccountService {
             }
             String cacheKey = CACHE_PREFIX_UUID_CAPTCHA + token;
             //生成验证码
-            map = captchaUtils.getRandcode();
+            map = captchaUtils.getRandCode();
 
             if (map != null && map.size() > 0) {
 
