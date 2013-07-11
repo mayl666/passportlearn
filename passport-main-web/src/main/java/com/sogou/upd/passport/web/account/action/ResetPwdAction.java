@@ -8,6 +8,8 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.web.BaseController;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ import java.net.URLEncoder;
  */
 @Controller
 @RequestMapping(value = "/web/findpwd")
-public class ResetPwdAction {
+public class ResetPwdAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(ResetPwdAction.class);
 
     private static final String SOHU_FINDPWD_URL = SHPPUrlConstant.SOHU_FINDPWD_URL;
