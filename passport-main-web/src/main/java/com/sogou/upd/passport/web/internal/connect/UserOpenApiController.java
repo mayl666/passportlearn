@@ -34,7 +34,7 @@ public class UserOpenApiController {
      * @return
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/info", method = RequestMethod.POST)
     @ResponseBody
     public Object getUserInfo(UserOpenApiParams params) {
         Result result = new APIResultSupport(false);
