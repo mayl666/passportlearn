@@ -76,9 +76,6 @@
     </mvc:interceptors>
 
 
-
-
-
     <bean id="stringHttpMessageConverter"
           class="org.springframework.http.converter.StringHttpMessageConverter">
         <property name="supportedMediaTypes">
@@ -107,10 +104,6 @@
 
     <!-- 将其放在RequestMappingHandlerAdapter之后用于解决@ResponseBody乱码问题 -->
     <mvc:annotation-driven/>
-
-
-
-
 
     <!-- 配置Velocity视图解析器 -->
     <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
