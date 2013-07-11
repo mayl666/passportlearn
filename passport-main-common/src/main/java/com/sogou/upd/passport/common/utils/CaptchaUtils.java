@@ -35,7 +35,7 @@ public class CaptchaUtils {
     private static List<String> fontList = Lists.newLinkedList();
 
     private static ConfigurableCaptchaService captchaService = new ConfigurableCaptchaService();
-    private static DefaultRandomWordFactory wordFactory = new DefaultRandomWordFactory("123456789ABCDEFGHIJKLMNPQRSTUVWXYZ", 5);
+    private static DefaultRandomWordFactory wordFactory = new DefaultRandomWordFactory("123456789ABCDEFGHJKLMNPQRSTUVWXYZ", 5);
     private static DefaultRippleFilterFactory filterFactory = new DefaultRippleFilterFactory();
     private static BestFitTextRenderer textRenderer = new BestFitTextRenderer();
     private static RandomFontFactory fontFactory = new RandomFontFactory();
