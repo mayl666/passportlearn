@@ -10,6 +10,7 @@ import org.patchca.filter.predefined.DefaultRippleFilterFactory;
 import org.patchca.font.RandomFontFactory;
 import org.patchca.service.Captcha;
 import org.patchca.service.ConfigurableCaptchaService;
+import org.patchca.text.renderer.BestFitTextRenderer;
 import org.patchca.text.renderer.RandomYBestFitTextRenderer;
 import org.patchca.word.DefaultRandomWordFactory;
 
@@ -36,7 +37,7 @@ public class CaptchaUtils {
     private static ConfigurableCaptchaService captchaService = new ConfigurableCaptchaService();
     private static DefaultRandomWordFactory wordFactory = new DefaultRandomWordFactory("123456789ABCDEFGHIJKLMNPQRSTUVWXYZ", 5);
     private static DefaultRippleFilterFactory filterFactory = new DefaultRippleFilterFactory();
-    private static RandomYBestFitTextRenderer textRenderer = new RandomYBestFitTextRenderer();
+    private static BestFitTextRenderer textRenderer = new BestFitTextRenderer();
     private static RandomFontFactory fontFactory = new RandomFontFactory();
     private static SingleColorBackgroundFactory backgroundFactory = new SingleColorBackgroundFactory();
     private static DefaultColorFactory colorFactory = new DefaultColorFactory();
