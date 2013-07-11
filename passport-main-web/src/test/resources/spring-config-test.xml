@@ -115,4 +115,7 @@
         </property>
         -->
     </bean>
+
+    <!--metrics监控初始化-->
+    <bean id="metrics" class="com.codahale.metrics.MetricRegistry"/>
 </beans>

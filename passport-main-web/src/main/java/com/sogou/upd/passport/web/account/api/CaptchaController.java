@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
@@ -26,15 +25,12 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**
- * 手机验证码和 web注册时页面展示的验证码
+ * web注册时页面展示的验证码
  * User: mayan
  * Date: 13-5-7 Time: 下午6:22
  */
 @Controller
 public class CaptchaController {
-
-    @Autowired
-    private RedisUtils redisUtils;
 
     @Autowired
     private RegManager regManager;
@@ -63,9 +59,9 @@ public class CaptchaController {
         //生成验证码
         Map<String, Object> map = regManager.getCaptchaCode(token);
         if (map != null && map.size() > 0) {
-            ImageIO.write((BufferedImage) map.get("image"), "JPEG", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
+            ImageIO.write((BufferedImage) map.get("image"), "png", response.getOutputStream());//将内存中的图片通过流动形式输出到客户端
 
-            response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
+            response.setContentType("image/png");//设置相应类型,告诉浏览器输出的内容为图片
             response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
             response.setHeader("Cache-Control", "no-cache");
             response.setDateHeader("Expire", 0);
@@ -78,7 +74,7 @@ public class CaptchaController {
      *
      * @param reqParams 传入的参数
      */
-    @RequestMapping(value = {"/mobile/sendsms"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/web/sendsms"}, method = RequestMethod.GET)
     @ResponseBody
     public Object sendMobileCode(MoblieCodeParams reqParams)
             throws Exception {
@@ -116,5 +112,7 @@ public class CaptchaController {
         baseMoblieApiParams.setClient_id(clientId);
         return baseMoblieApiParams;
     }
+
+
 }
 

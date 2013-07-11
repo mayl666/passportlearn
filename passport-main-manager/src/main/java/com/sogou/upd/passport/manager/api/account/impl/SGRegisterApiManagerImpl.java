@@ -50,48 +50,48 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
-      Result result = new APIResultSupport(false);
-      try {
-        String username=params.getUserid();
-        String password=params.getPassword();
-        String ip=params.getCreateip();
-        int clientId=params.getClient_id();
+        Result result = new APIResultSupport(false);
+        try {
+            String username = params.getUserid();
+            String password = params.getPassword();
+            String ip = params.getCreateip();
+            int clientId = params.getClient_id();
 
-        //判断注册账号类型，外域用户还是个性用户
-        AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
-        switch (emailType) {
-          case SOGOU://个性账号直接注册
-          case UNKNOWN:
-            Account account = accountService.initialAccount(username,password , false, ip, AccountTypeEnum
-                .EMAIL.getValue());
-            if (account != null) {
-              result.setSuccess(true);
-              result.setDefaultModel("userid", account.getPassportId());
-              result.setMessage("注册成功！");
-              result.setDefaultModel("isSetCookie",true);
-              result.setDefaultModel(account);
-            } else {
-              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+            //判断注册账号类型，外域用户还是个性用户
+            AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
+            switch (emailType) {
+                case SOGOU://个性账号直接注册
+                case INDIVID:
+                    Account account = accountService.initialAccount(username, password, false, ip, AccountTypeEnum
+                            .EMAIL.getValue());
+                    if (account != null) {
+                        result.setSuccess(true);
+                        result.setDefaultModel("userid", account.getPassportId());
+                        result.setMessage("注册成功！");
+                        result.setDefaultModel("isSetCookie", true);
+                        result.setDefaultModel(account);
+                    } else {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    }
+                    break;
+                case OTHER://外域邮件注册
+                    String ru = params.getRu();
+                    boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
+                    if (isSendSuccess) {
+                        result.setSuccess(true);
+                        result.setMessage("感谢注册，请立即激活账户！");
+                        result.setDefaultModel("isSetCookie", false);
+                    } else {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    }
+                    break;
             }
-            break;
-          case OTHER://外域邮件注册
-            String ru=params.getRu();
-            boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
-            if (isSendSuccess) {
-              result.setSuccess(true);
-              result.setMessage("感谢注册，请立即激活账户！");
-              result.setDefaultModel("isSetCookie",false);
-            } else {
-              result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-            }
-            break;
+            return result;
+        } catch (Exception e) {
+            logger.error("mail register account Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
-      } catch (Exception e) {
-        logger.error("mail register account Fail:", e);
-        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-      }
-      return result;
     }
 
 
@@ -101,30 +101,30 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         Result result = new APIResultSupport(false);
         try {
 
-          int clientId =regParams.getClient_id();
-          String mobile = regParams.getMobile();
-          String password = regParams.getPassword();
-          String ip=regParams.getIp();
+            int clientId = regParams.getClient_id();
+            String mobile = regParams.getMobile();
+            String password = regParams.getPassword();
+            String ip = regParams.getIp();
 
-          String captcha = regParams.getCaptcha();
-          //验证手机号码与验证码是否匹配
-          result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
-          if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-            return result;
-          }
+            String captcha = regParams.getCaptcha();
+            //验证手机号码与验证码是否匹配
+            result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                return result;
+            }
 
-          Account account = accountService.initialAccount(mobile,password , false, ip, AccountTypeEnum
-              .PHONE.getValue());
-          if (account != null) {
-            result.setSuccess(true);
-            result.setDefaultModel("userid", account.getPassportId());
-            result.setMessage("注册成功！");
-            result.setDefaultModel("isSetCookie",true);
-            result.setDefaultModel(account);
-          } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-          }
+            Account account = accountService.initialAccount(mobile, password, false, ip, AccountTypeEnum
+                    .PHONE.getValue());
+            if (account != null) {
+                result.setSuccess(true);
+                result.setDefaultModel("userid", account.getPassportId());
+                result.setMessage("注册成功！");
+                result.setDefaultModel("isSetCookie", true);
+                result.setDefaultModel(account);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+            }
         } catch (Exception e) {
             logger.error("mobile register phone account Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -132,42 +132,43 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         return result;
     }
 
-  @Override
-  public Result checkUser(CheckUserApiParams checkUserApiParams) {
-    Result result = new APIResultSupport(false);
-    String username = null;
-    try {
-      username = checkUserApiParams.getUserid();
-      if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-        String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-        if (!Strings.isNullOrEmpty(passportId)) {
-          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-          return result;
+    @Override
+    public Result checkUser(CheckUserApiParams checkUserApiParams) {
+        Result result = new APIResultSupport(false);
+        String username = null;
+        try {
+            username = checkUserApiParams.getUserid();
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                }
+            } else {
+                Account account = accountService.queryAccountByPassportId(username);
+                if (account != null) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                }
+            }
+        } catch (ServiceException e) {
+            logger.error("Check account is exists Exception, username:" + username, e);
         }
-      } else {
-        Account account = accountService.queryAccountByPassportId(username);
-        if (account != null) {
-          result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-          return result;
-        }
-      }
-    } catch (ServiceException e) {
-      logger.error("Check account is exists Exception, username:" + username, e);
+        result.setSuccess(true);
+        result.setMessage("账户未被占用，可以注册");
+        return result;
     }
-    result.setSuccess(true);
-    result.setMessage("账户未被占用，可以注册");
-    return result;
-  }
 
     @Override
     public Result sendMobileRegCaptcha(BaseMoblieApiParams params) {
-      Result result = new APIResultSupport(false);
-      try {
-        result=secureManager.sendMobileCode(params.getMobile(),params.getClient_id(), AccountModuleEnum.REGISTER);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      return result;
+        Result result = new APIResultSupport(false);
+        String mobile = params.getMobile();
+        try {
+            result = secureManager.sendMobileCode(params.getMobile(), params.getClient_id(), AccountModuleEnum.REGISTER);
+        } catch (Exception e) {
+            logger.error("send mobile code Fail, mobile:" + mobile, e);
+        }
+        return result;
     }
 
     @Override

@@ -108,11 +108,11 @@ public class RegManagerImpl implements RegManager {
       switch (emailType) {
         case SOGOU://个性账号直接注册
         case OTHER://外域邮件注册
-        case UNKNOWN:
+        case INDIVID:
           String token=regParams.getToken();
           //判断验证码
           if(!accountService.checkCaptchaCode(token,captcha)){
-            logger.warn("webRegister captchaCode wrong warn:username="+username+", ip="+ip+",token="+token+", captchaCode="+captcha);
+            logger.warn("[webRegister captchaCode wrong warn]:username="+username+", ip="+ip+", token="+token+", captchaCode="+captcha);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
             return result;
           }

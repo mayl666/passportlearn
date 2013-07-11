@@ -139,7 +139,7 @@ public class LoginManagerImpl implements LoginManager {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
                 if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-                    logger.warn("accountLogin captchaCode wrong warn:username="+username+", ip="+ip+",token="+token+", captchaCode="+captchaCode);
+                    logger.warn("[accountLogin captchaCode wrong warn]:username="+username+", ip="+ip+", token="+token+", captchaCode="+captchaCode);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     return result;
                 }
@@ -147,7 +147,7 @@ public class LoginManagerImpl implements LoginManager {
 
             //默认是sogou.com
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.UNKNOWN.equals(accountDomainEnum)) {
+            if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
                 passportId = passportId + "@sogou.com";
             }
 
