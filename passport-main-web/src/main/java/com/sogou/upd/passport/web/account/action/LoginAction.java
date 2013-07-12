@@ -122,7 +122,7 @@ public class LoginAction extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode());
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "failed!");
+            userOperationLog.putOtherMessage("login", "Failed!");
             UserOperationLogUtil.log(userOperationLog);
         }
 
