@@ -27,7 +27,7 @@ public class UserOperationLogUtil {
      * @param userOperationLog
      */
     public static void log(UserOperationLog userOperationLog){
-        log(userOperationLog.getPassportId(),userOperationLog.getUserOperation(),userOperationLog.getClientId(),userOperationLog.getResultCode(),userOperationLog.getOtherMessageMap());
+        log(userOperationLog.getPassportId(),userOperationLog.getUserOperation(),userOperationLog.getClientId(),userOperationLog.getIp(), userOperationLog.getResultCode(),userOperationLog.getOtherMessageMap());
     }
 
 
@@ -40,12 +40,13 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, String operation, String clientId, String resultCode,Map<String,String> otherMessage) {
+    public static void log(String passportId, String operation, String clientId, String ip, String resultCode,Map<String,String> otherMessage) {
         try{
             StringBuilder log = new StringBuilder("passportId:");
             log.append(passportId);
             log.append(" ,operation:").append(operation);
             log.append(" ,clientId:").append(clientId);
+            log.append(" ,ip:").append(ip);
             log.append(" ,resultCode:").append(resultCode);
             if(MapUtils.isNotEmpty(otherMessage)){
                 for(Map.Entry<String,String> entry:otherMessage.entrySet()){

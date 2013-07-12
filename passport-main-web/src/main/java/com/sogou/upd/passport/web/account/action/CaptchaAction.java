@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.api;
+package com.sogou.upd.passport.web.account.action;
 
 import com.sogou.upd.passport.manager.account.RegManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.Map;
  * Date: 13-5-7 Time: 下午6:22
  */
 @Controller
-public class CaptchaController {
+public class CaptchaAction {
 
     @Autowired
     private RegManager regManager;
@@ -52,6 +52,8 @@ public class CaptchaController {
         }
         return null;
     }
+
+
 
 
 }
