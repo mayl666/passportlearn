@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web.account.screen;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -34,11 +38,19 @@ public class AccountWeb extends BaseController {
    */
     @RequestMapping(value = "/reg/email", method = RequestMethod.GET)
     public String regEmail(HttpServletRequest request, HttpServletResponse response,
-                           @RequestParam(defaultValue = "") String ru, Model model)
+                           @RequestParam(defaultValue = "") String ru,
+                           @RequestParam(defaultValue = "") String client_id,
+                           Model model)
             throws Exception {
         webCookieProcess(request, response);
-        //跳转ru
-        ruProcess(ru, model);
+
+        Result result = new APIResultSupport(false);
+        //跳转ru client_id
+        result=paramProcess(result,ru,client_id);
+
+        if(result.isSuccess()){
+            model.addAttribute("data", result.toString());
+        }
 
         return "/reg/email";
     }
@@ -48,11 +60,19 @@ public class AccountWeb extends BaseController {
    */
     @RequestMapping(value = "/reg/mobile", method = RequestMethod.GET)
     public String regMobile(HttpServletRequest request, HttpServletResponse response,
-                            @RequestParam(defaultValue = "") String ru, Model model)
+                            @RequestParam(defaultValue = "") String ru,
+                            @RequestParam(defaultValue = "") String client_id,
+                            Model model)
             throws Exception {
         webCookieProcess(request, response);
-        //跳转ru
-        ruProcess(ru, model);
+
+        Result result = new APIResultSupport(false);
+        //跳转ru client_id
+        result=paramProcess(result,ru,client_id);
+
+        if(result.isSuccess()){
+            model.addAttribute("data", result.toString());
+        }
         return "/reg/tel";
     }
 
@@ -61,11 +81,19 @@ public class AccountWeb extends BaseController {
    */
     @RequestMapping(value = "/reg/nick", method = RequestMethod.GET)
     public String register(HttpServletRequest request, HttpServletResponse response,
-                           @RequestParam(defaultValue = "") String ru, Model model)
+                           @RequestParam(defaultValue = "") String ru,
+                           @RequestParam(defaultValue = "") String client_id,
+                           Model model)
             throws Exception {
         webCookieProcess(request, response);
-        //跳转ru
-        ruProcess(ru, model);
+
+        Result result = new APIResultSupport(false);
+        //跳转ru client_id
+        result=paramProcess(result,ru,client_id);
+
+        if(result.isSuccess()){
+            model.addAttribute("data", result.toString());
+        }
         return "/reg/nick";
     }
 
@@ -73,27 +101,39 @@ public class AccountWeb extends BaseController {
     web登录页跳转
   */
     @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
-    public String login(HttpServletRequest request, @RequestParam(defaultValue = "") String ru, Model model)
+    public String login(HttpServletRequest request,
+                        @RequestParam(defaultValue = "") String ru,
+                        @RequestParam(defaultValue = "") String client_id,
+                        Model model)
             throws Exception {
         if (hostHolder.isLogin()) {
             return "forward:/";
         }
-        //连接来源
-        ruProcess(ru, model);
+        Result result = new APIResultSupport(false);
+        //跳转ru client_id
+        result=paramProcess(result,ru,client_id);
+
+        if(result.isSuccess()){
+            model.addAttribute("data", result.toString());
+        }
         return "index";
     }
 
     /*
     ru跳转
      */
-    private void ruProcess(String ru, Model model) {
-        Result result = null;
+    private Result paramProcess(Result result,String ru,String client_id) {
+        Map<String,String> map= Maps.newHashMap();
         if (!Strings.isNullOrEmpty(ru)) {
-            result = new APIResultSupport(false);
             result.setSuccess(true);
-            result.setDefaultModel("ru", ru);
-            model.addAttribute("data", result.toString());
+            map.put("ru",ru);
         }
+        if (!Strings.isNullOrEmpty(client_id)) {
+            result.setSuccess(true);
+            map.put("client_id", client_id);
+        }
+        result.setModels(map);
+        return result;
     }
 
     /*
