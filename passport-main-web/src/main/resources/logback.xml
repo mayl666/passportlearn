@@ -4,8 +4,8 @@
     <property name="log.path" value="/search/passport/log" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d %5p [%t] %caller{1}%msg %n</pattern>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern> %5p [%t] %logger{36} %L %m %n</pattern>
         </encoder>
     </appender>
 
@@ -37,7 +37,7 @@
 
     <appender name="userOperationAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd-HH}</fileNamePattern>
+            <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd}</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>%d %msg %n</pattern>
