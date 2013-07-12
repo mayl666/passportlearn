@@ -106,7 +106,7 @@ public class LoginAction extends BaseController {
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
 
             //用户登录成功log
-            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
             userOperationLog.putOtherMessage("login", "Success!");
@@ -119,7 +119,7 @@ public class LoginAction extends BaseController {
                 result.setDefaultModel("needCaptcha", true);
             }
             //用户登录失败log
-            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
             userOperationLog.putOtherMessage("login", "failed!");
@@ -143,7 +143,7 @@ public class LoginAction extends BaseController {
 
         String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);
@@ -163,7 +163,7 @@ public class LoginAction extends BaseController {
 
         String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);
