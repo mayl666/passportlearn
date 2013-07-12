@@ -23,12 +23,12 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams getUserInfoApiparams=new GetUserInfoApiparams();
-        getUserInfoApiparams.setUserid("13621009174");
-//        getUserInfoApiparams.setFields("usertype,createip,birthday,gender,createip,createtime,"
-//                +
-//                "personalid,personalidflag,sec_mobile,sec_email,province," +
-//                "city,createtime,sec_ques,avatarurl,regappid");
-        getUserInfoApiparams.setFields("gender");
+        getUserInfoApiparams.setUserid("13600001111@sohu.com");
+        getUserInfoApiparams.setFields("usertype,createip,birthday,gender,createip,createtime,"
+                +
+                "personalid,personalidflag,sec_mobile,sec_email,province," +
+                "city,createtime,sec_ques,avatarurl,regappid");
+//        getUserInfoApiparams.setFields("gender");
         Result result= proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
         System.out.println(result);
     }

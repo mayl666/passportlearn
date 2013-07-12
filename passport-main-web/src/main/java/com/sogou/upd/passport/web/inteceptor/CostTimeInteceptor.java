@@ -39,22 +39,13 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     private final static int SLOW_TIME = 500;
 
 
-    @Autowired
-    private MetricRegistry metrics;
+//    @Autowired
+//    private MetricRegistry metrics;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         request.setAttribute(STOPWATCH, stopWatch);
-
-        String tag= request.getRequestURI();
-        Timer requestTimer= metrics.timer(tag);
-        Timer.Context requestContext= requestTimer.time();
-        request.setAttribute(SINGLE_REQUEST_TIMER, requestContext);
-
-        Timer allTimer= metrics.timer(ALL_REQUEST_TIMER);
-        Timer.Context allTimerContext= allTimer.time();
-        request.setAttribute(ALL_REQUEST_TIMER, allTimerContext);
 
 		return true;
 	}
@@ -67,26 +58,33 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Object stopWatchObject=request.getAttribute(STOPWATCH);
             if(stopWatchObject!=null){
                 StopWatch stopWatch= (StopWatch) stopWatchObject;
-                String tag= request.getRequestURI();
-                if(stopWatch.getElapsedTime() >= SLOW_TIME){
-                    tag+="(slow)";
-                }
-                String message="success";
-                if(ex!=null){
-                    message="failed";
-                }
-                stopWatch.stop(tag, message);
-                String cleintId = request.getParameter(CLIENT_ID_PARAM);
-                if(!StringUtil.isBlank(cleintId)&&request.getMethod().toUpperCase().equals("POST")){
-                    stopWatch.stop(tag+"-"+cleintId);
-                }
-            }
 
-            //使用metrics来监控
-            Timer.Context requestContext= (Timer.Context) request.getAttribute(SINGLE_REQUEST_TIMER);
-            requestContext.stop();
-            Timer.Context allTimerContext= (Timer.Context) request.getAttribute(ALL_REQUEST_TIMER);
-            allTimerContext.stop();
+                StringBuilder tagBuilder=new StringBuilder(request.getRequestURI());
+
+//                //添加客户端
+//                tagBuilder.append("-");
+//                String cleintId=null;
+//                try{
+//                    cleintId= request.getParameter(CLIENT_ID_PARAM);
+//                }catch (Exception e){
+//                    log.error("CostTimeInteceptor.afterCompletion request.getParameter(CLIENT_ID_PARAM) error url="+request.getRequestURL(),e);
+//                }
+//                tagBuilder.append(cleintId);
+//
+//                //检测是否成功
+//                String message="-success";
+//                if(ex!=null){
+//                    message="-failed";
+//                }
+//                tagBuilder.append(message);
+
+                //检测是否慢请求
+                if(stopWatch.getElapsedTime() >= SLOW_TIME){
+                    tagBuilder.append("-slow");
+                }
+
+                stopWatch.stop(tagBuilder.toString());
+            }
         }catch (Exception e){
             log.error("CostTimeInteceptor.afterCompletion error url="+request.getRequestURL(),e);
         }
