@@ -135,14 +135,14 @@ public class RegAction extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Success!");
+            userOperationLog.putOtherMessage("register", "Success");
             UserOperationLogUtil.log(userOperationLog);
         } else {
             //用户注册失败log
             UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Failed!");
+            userOperationLog.putOtherMessage("register", "Failed");
             UserOperationLogUtil.log(userOperationLog);
         }
         regManager.incRegTimes(ip, uuidName);
