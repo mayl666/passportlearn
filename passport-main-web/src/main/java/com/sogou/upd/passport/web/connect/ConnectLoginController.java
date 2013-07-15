@@ -97,7 +97,7 @@ public class ConnectLoginController extends BaseConnectController {
             url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
 
-            //用户登陆log
+            //用户登陆log--二期迁移到callback中记录log
             UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
             String referer = req.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
