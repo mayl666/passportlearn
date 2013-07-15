@@ -87,7 +87,7 @@ public class UserInfoApiController {
         }
         // 调用内部接口
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
-        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),request.getRequestURI(),String.valueOf(params.getClient_id()),params.getCode(),params.getModifyip());
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),params.getCode(),params.getModifyip());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }

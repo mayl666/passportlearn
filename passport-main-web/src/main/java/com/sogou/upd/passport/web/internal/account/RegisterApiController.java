@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -13,8 +14,10 @@ import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import com.sogou.upd.passport.web.util.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/internal/account")
-public class RegisterApiController {
+public class RegisterApiController extends BaseController{
 
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
@@ -60,6 +63,7 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
+
         return result.toString();
     }
 
@@ -85,6 +89,10 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog(params.getMobile(),String.valueOf(params.getClient_id()),params.getCode(),getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -109,6 +117,12 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMailUser(params);
+
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),params.getCode(),getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
@@ -135,6 +149,11 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileUser(params);
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog(params.getMobile(),String.valueOf(params.getClient_id()),params.getCode(),getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 

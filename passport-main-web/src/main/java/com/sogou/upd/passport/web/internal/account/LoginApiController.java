@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -13,6 +14,7 @@ import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import com.sogou.upd.passport.web.util.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +69,8 @@ public class LoginApiController extends BaseController {
             result.setMessage("用户名或密码错误");
         }
 
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),params.getCode(),getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -91,6 +95,11 @@ public class LoginApiController extends BaseController {
         }
         // 调用内部接口
         result = proxyLoginApiManager.appAuthToken(params);
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog("",String.valueOf(params.getClient_id()),params.getCode(),getIp(request));
+        userOperationLog.putOtherMessage("token",params.getToken());
+        UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
     }
