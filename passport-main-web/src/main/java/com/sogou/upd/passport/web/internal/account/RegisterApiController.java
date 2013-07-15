@@ -92,17 +92,9 @@ public class RegisterApiController extends BaseController{
 
 
         //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
-        if(result.isSuccess()){
-            //用户注册成功log
-            userOperationLog.putOtherMessage("register", "Success");
-        }else {
-            //用户注册失败log
-            userOperationLog.putOtherMessage("register", "Failed");
-        }
+        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
@@ -129,9 +121,7 @@ public class RegisterApiController extends BaseController{
         result = proxyRegisterApiManager.regMailUser(params);
 
         //记录log
-        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),params.getCode(),getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -162,7 +152,7 @@ public class RegisterApiController extends BaseController{
         result = proxyRegisterApiManager.regMobileUser(params);
 
         //记录log
-        UserOperationLog userOperationLog=new UserOperationLog(params.getMobile(),String.valueOf(params.getClient_id()),params.getCode(),getIp(request));
+        UserOperationLog userOperationLog=new UserOperationLog(params.getMobile(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);
