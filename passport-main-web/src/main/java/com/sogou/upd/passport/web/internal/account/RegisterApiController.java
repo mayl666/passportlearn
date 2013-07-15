@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import com.sogou.upd.passport.web.util.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,6 +87,21 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+        if(result.isSuccess()){
+            //用户注册成功log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("register", "Success");
+            UserOperationLogUtil.log(userOperationLog);
+        }else {
+            //用户注册失败log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("register", "Failed");
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 
@@ -109,6 +126,21 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMailUser(params);
+        if(result.isSuccess()){
+            //用户注册成功log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("register", "Success");
+            UserOperationLogUtil.log(userOperationLog);
+        } else{
+            //用户注册失败log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("register", "Failed");
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 
@@ -135,6 +167,21 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileUser(params);
+        if(result.isSuccess()){
+            //用户注册成功log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getIp());
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("register", "Success");
+            UserOperationLogUtil.log(userOperationLog);
+        }else {
+            //用户注册失败log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getIp());
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("register", "Failed");
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 
