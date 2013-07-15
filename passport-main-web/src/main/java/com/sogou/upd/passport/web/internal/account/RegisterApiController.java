@@ -14,6 +14,7 @@ import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.util.UserOperationLogUtil;
@@ -33,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/internal/account")
-public class RegisterApiController {
+public class RegisterApiController extends BaseController{
 
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
@@ -62,6 +63,7 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
+
         return result.toString();
     }
 
@@ -87,21 +89,12 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
-        if(result.isSuccess()){
-            //用户注册成功log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Success");
-            UserOperationLogUtil.log(userOperationLog);
-        }else {
-            //用户注册失败log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
-        }
+
+
+        //记录log
+        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
@@ -126,21 +119,11 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMailUser(params);
-        if(result.isSuccess()){
-            //用户注册成功log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Success");
-            UserOperationLogUtil.log(userOperationLog);
-        } else{
-            //用户注册失败log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "0");
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
-        }
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
@@ -167,21 +150,13 @@ public class RegisterApiController {
         }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileUser(params);
-        if(result.isSuccess()){
-            //用户注册成功log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getIp());
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Success");
-            UserOperationLogUtil.log(userOperationLog);
-        }else {
-            //用户注册失败log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getIp());
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
-        }
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog(params.getMobile(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("referer", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
