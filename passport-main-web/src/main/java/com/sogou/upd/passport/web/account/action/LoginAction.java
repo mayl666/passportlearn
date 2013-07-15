@@ -9,7 +9,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.UserOperationLogUtil;
+import com.sogou.upd.passport.web.util.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
@@ -106,10 +106,10 @@ public class LoginAction extends BaseController {
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
 
             //用户登录成功log
-            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Success!");
+            userOperationLog.putOtherMessage("login", "Success");
             UserOperationLogUtil.log(userOperationLog);
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
@@ -119,10 +119,10 @@ public class LoginAction extends BaseController {
                 result.setDefaultModel("needCaptcha", true);
             }
             //用户登录失败log
-            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode());
+            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "failed!");
+            userOperationLog.putOtherMessage("login", "Failed");
             UserOperationLogUtil.log(userOperationLog);
         }
 
@@ -143,7 +143,7 @@ public class LoginAction extends BaseController {
 
         String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);
@@ -163,7 +163,7 @@ public class LoginAction extends BaseController {
 
         String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0");
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);

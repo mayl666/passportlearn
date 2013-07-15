@@ -96,7 +96,7 @@ public class ErrorUtil {
   public static final String ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED = "20219";
   //激活链接已失效
   public static final String ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED = "20220";
-  //注册验证码失效
+  //验证码失效
   public static final String ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED = "20221";
   // 当日密码修改次数已达上限
   public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20222";

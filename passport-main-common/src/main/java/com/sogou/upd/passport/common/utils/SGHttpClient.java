@@ -45,9 +45,6 @@ public class SGHttpClient {
 
 
     private static final HttpClient httpClient;
-
-
-
     /**
      * 最大连接数
      */
@@ -219,13 +216,6 @@ public class SGHttpClient {
      * @param message
      */
     private static void stopWatch(StopWatch stopWatch, String tag, String message) {
-//        if (logger.isInfoEnabled()) {
-//            stopWatch.stop(tag, message);
-//        } else {
-//            if ("failed".equals(message + "") || stopWatch.getElapsedTime() >= SLOW_TIME) {
-//                stopWatch.stop(tag, message);
-//            }
-//        }
         //无论什么情况都记录下所有的请求数据
         if(stopWatch.getElapsedTime() >= SLOW_TIME){
             tag+="(slow)";

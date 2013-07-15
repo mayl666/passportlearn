@@ -30,11 +30,6 @@ import java.util.Map;
 @Component
 public class BaseProxyManager {
 
-    @Autowired
-    private  MetricRegistry metrics;
-
-    private static final String SHPP_TIMER ="SHPP_TIMER";
-
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
     protected  Result executeResult(final RequestModel requestModel){
@@ -51,9 +46,6 @@ public class BaseProxyManager {
     protected Result executeResult(final RequestModel requestModel, String signVariableStr) {
         Result result = new APIResultSupport(false);
         try {
-            //监控代码
-            Timer timer=metrics.timer(SHPP_TIMER);
-            Timer.Context shppTimer=timer.time();
             Map<String, Object> map = this.execute(requestModel, signVariableStr);
             if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
                 String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
@@ -66,8 +58,6 @@ public class BaseProxyManager {
                 this.handSHPPMap(map);   //搜狐Passport接口返回的无用信息删除掉
                 result.setModels(map);
             }
-            //监控代码
-            shppTimer.stop();
         } catch (Exception e) {
             log.error(requestModel.getUrl() + " execute error ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

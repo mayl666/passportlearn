@@ -72,6 +72,11 @@
             <version>3.0.0-RC1-SNAPSHOT</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.patchca</groupId>
+            <artifactId>patchca</artifactId>
+            <version>0.6.0</version>
+        </dependency>
 
     </dependencies>
 

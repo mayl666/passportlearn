@@ -10,10 +10,13 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.UserOperationLogUtil;
+import com.sogou.upd.passport.web.util.UserOperationLogUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
@@ -22,6 +25,7 @@ import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 
+import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +58,10 @@ public class RegAction extends BaseController {
     private ConfigureManager configureManager;
     @Autowired
     private SecureManager secureManager;
-
+    @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private OperateTimesService operateTimesService;
 
@@ -81,7 +88,6 @@ public class RegAction extends BaseController {
         }
         return result.toString();
     }
-
 
     /**
      * web页面注册
@@ -126,17 +132,17 @@ public class RegAction extends BaseController {
             result.setDefaultModel("ru", ru);
 
             //用户注册成功log
-            UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode());
+            UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Success!");
+            userOperationLog.putOtherMessage("register", "Success");
             UserOperationLogUtil.log(userOperationLog);
         } else {
             //用户注册失败log
-            UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode());
+            UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Failed!");
+            userOperationLog.putOtherMessage("register", "Failed");
             UserOperationLogUtil.log(userOperationLog);
         }
         regManager.incRegTimes(ip, uuidName);
@@ -184,6 +190,50 @@ public class RegAction extends BaseController {
             result = commonManager.createCookieUrl(result, activeParams.getPassport_id(), 1);
         }
         return result;
+    }
+
+    /**
+     * web页面手机账号注册时发送的验证码
+     *
+     * @param reqParams 传入的参数
+     */
+    @RequestMapping(value = {"/sendsms"}, method = RequestMethod.GET)
+    @ResponseBody
+    public Object sendMobileCode(MoblieCodeParams reqParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        //验证client_id
+        int clientId = Integer.parseInt(reqParams.getClient_id());
+
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result.toString();
+        }
+        String mobile = reqParams.getMobile();
+        //为了数据迁移三个阶段，这里需要转换下参数类
+        BaseMoblieApiParams baseMoblieApiParams = buildProxyApiParams(clientId, mobile);
+        if (ManagerHelper.isInvokeProxyApi(mobile)) {
+            result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+        } else {
+            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+        }
+        return result.toString();
+
+    }
+
+    private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {
+        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+        baseMoblieApiParams.setMobile(mobile);
+        baseMoblieApiParams.setClient_id(clientId);
+        return baseMoblieApiParams;
     }
 
     //检查用户是否存在

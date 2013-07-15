@@ -97,7 +97,7 @@ public class SHPPUrlConstant {
 
     /*================================第三方开放平台相关url=======================================*/
     // 第三方授权通用接口
-    public static final String CONNECT_LOGIN_ULR = BASE_OPEN_API_URL + "request.action";
+    public static final String CONNECT_LOGIN_ULR = "http://passport.sohu.com/openlogin/request.action";
     //获取第三方用户信息
     public static final String GET_OPEN_USER_INFO = BASE_OPEN_API_URL + "api/user/info";
 }
