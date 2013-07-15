@@ -29,7 +29,7 @@ public class SGHttpClientTest {
     @Test
     public void testSetCookie() throws Exception {
         String ru = "http%3a%2f%2fie.sogou.com";
-        String userId = "upd_test@sogou.com";
+        String userId = "aad@qqq.com";
         String domain = "sogou.com";
         long ct = System.currentTimeMillis();
         String code = userId + appId + key + ct;
