@@ -1,11 +1,12 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.web.util.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
@@ -95,9 +96,25 @@ public class ConnectLoginController extends BaseConnectController {
         try {
             url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
+
+            //用户登陆log
+            UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
+            String referer = req.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("login", "Success");
+            UserOperationLogUtil.log(userOperationLog);
+
             return new ModelAndView(new RedirectView(url));
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(connectLoginParams.getType(), e.getError(), e.getDescription());
+
+            //用户登录log
+            UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
+            String referer = req.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("login", "Failed");
+            UserOperationLogUtil.log(userOperationLog);
+
             return new ModelAndView(new RedirectView(url));
         }
     }

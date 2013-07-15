@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -13,6 +14,7 @@ import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import com.sogou.upd.passport.web.util.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,8 +65,21 @@ public class LoginApiController extends BaseController {
             int clientId = params.getClient_id();
             String ip = getIp(request);
             secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+            //用户登录成功log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("login", "Success");
+            UserOperationLogUtil.log(userOperationLog);
         } else if (ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
             result.setMessage("用户名或密码错误");
+
+            //用户登录失败log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("login", "Failed");
+            UserOperationLogUtil.log(userOperationLog);
         }
 
         return result.toString();

@@ -18,6 +18,9 @@ public class UserOperationLog {
     //操作app
     private String clientId;
 
+    // 操作IP
+    private String ip;
+
     //返回码
     private String resultCode;
 
@@ -27,6 +30,22 @@ public class UserOperationLog {
     //其它信息
     private Map<String,String> otherMessageMap;
 
+
+    /**
+     * 用户操作行为记录
+     * @param passportId
+     * @param clientId
+     * @param resultCode
+     * @param ip
+     */
+   public UserOperationLog(String passportId,String clientId,String resultCode, String ip){
+       this.passportId=passportId;
+       this.clientId=clientId;
+       this.ip = ip;
+       this.resultCode=resultCode;
+       otherMessageMap=new LinkedMap();
+   }
+
     /**
      * 构造用户行为记录的log
      * @param passportId  用户id
@@ -34,10 +53,11 @@ public class UserOperationLog {
      * @param clientId    发起操作的appId
      * @param resultCode  操作结果，具体参见{@link com.sogou.upd.passport.common.utils.ErrorUtil}
      */
-    public UserOperationLog(String passportId,String userOperation,String clientId,String resultCode){
+    public UserOperationLog(String passportId,String userOperation,String clientId,String resultCode, String ip){
         this.passportId=passportId;
         this.userOperation=userOperation;
         this.clientId=clientId;
+        this.ip = ip;
         this.resultCode=resultCode;
         otherMessageMap=new LinkedMap();
     }
@@ -84,5 +104,13 @@ public class UserOperationLog {
 
     public void setUserOperation(String userOperation) {
         this.userOperation = userOperation;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }
