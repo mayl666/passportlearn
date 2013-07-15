@@ -1,20 +1,14 @@
 package com.sogou.upd.passport.web.inteceptor;
 
-import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.common.CommonConstant;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
@@ -24,17 +18,13 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
-    private static final String STOPWATCH= "stopWatch";
+    private static final String STOPWATCH= CommonConstant.STOPWATCH;
 
-    private static final String CLIENT_ID_PARAM="client_id";
+//    private static final String CLIENT_ID_PARAM="client_id";
 
 	private static final Logger log = LoggerFactory.getLogger(CostTimeInteceptor.class);
 
     private static final Logger prefLogger =LoggerFactory.getLogger("webTimingLogger");
-
-    private static final String ALL_REQUEST_TIMER="ALL_REQUEST_TIMER";
-
-    private static final String SINGLE_REQUEST_TIMER="SINGLE_REQUEST_TIMER";
 
     private final static int SLOW_TIME = 500;
 
@@ -60,23 +50,6 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                 StopWatch stopWatch= (StopWatch) stopWatchObject;
 
                 StringBuilder tagBuilder=new StringBuilder(request.getRequestURI());
-
-//                //添加客户端
-//                tagBuilder.append("-");
-//                String cleintId=null;
-//                try{
-//                    cleintId= request.getParameter(CLIENT_ID_PARAM);
-//                }catch (Exception e){
-//                    log.error("CostTimeInteceptor.afterCompletion request.getParameter(CLIENT_ID_PARAM) error url="+request.getRequestURL(),e);
-//                }
-//                tagBuilder.append(cleintId);
-//
-//                //检测是否成功
-//                String message="-success";
-//                if(ex!=null){
-//                    message="-failed";
-//                }
-//                tagBuilder.append(message);
 
                 //检测是否慢请求
                 if(stopWatch.getElapsedTime() >= SLOW_TIME){

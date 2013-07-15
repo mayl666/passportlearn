@@ -30,6 +30,22 @@ public class UserOperationLog {
     //其它信息
     private Map<String,String> otherMessageMap;
 
+
+    /**
+     * 用户操作行为记录
+     * @param passportId
+     * @param clientId
+     * @param resultCode
+     * @param ip
+     */
+   public UserOperationLog(String passportId,String clientId,String resultCode, String ip){
+       this.passportId=passportId;
+       this.clientId=clientId;
+       this.ip = ip;
+       this.resultCode=resultCode;
+       otherMessageMap=new LinkedMap();
+   }
+
     /**
      * 构造用户行为记录的log
      * @param passportId  用户id

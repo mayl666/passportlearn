@@ -33,6 +33,9 @@ public class CommonConstant {
     public static final int PASSPORT_USERSTATUE_TIMEOUT = 0; // 不过期吧，为了性能
     public static final int CONNECT_AUTHORIZE_STATE_TIMEOUT = 60 * 30;  // 第三方登录授权的statue缓存有效期
 
+    //在request attribut中存在的用于及时的StopWatch的name
+    public static final String STOPWATCH= "stopWatch";
+
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList(); // passport支持的第三方列表
 
     static {
