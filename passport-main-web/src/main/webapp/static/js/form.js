@@ -158,7 +158,14 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 }
             });
             $el.append('<input type="hidden" name="token" value="" class="token"/>');
-            $el.append('<input name="client_id" value="'+ conf.client_id +'" type="hidden"/>');
+
+            var data = {};
+            try{
+                data = $.evalJSON(server_data).data || {};
+            }catch(e){window['console'] && console.log(e);}
+            
+
+            $el.append('<input name="client_id" value="'+ ( data.client_id? data.client_id : conf.client_id) +'" type="hidden"/>');
             
             $el.find('.form-btn').before('<div class="form-error"><span></span></div>');
             $el.find('.form-btn').before('<div class="form-success"><span></span></div>');

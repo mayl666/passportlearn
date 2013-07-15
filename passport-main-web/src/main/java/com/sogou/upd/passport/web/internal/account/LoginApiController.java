@@ -65,22 +65,12 @@ public class LoginApiController extends BaseController {
             int clientId = params.getClient_id();
             String ip = getIp(request);
             secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
-            //用户登录成功log
-            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Success");
-            UserOperationLogUtil.log(userOperationLog);
         } else if (ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
             result.setMessage("用户名或密码错误");
-
-            //用户登录失败log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
         }
+
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
     }
@@ -106,6 +96,11 @@ public class LoginApiController extends BaseController {
         }
         // 调用内部接口
         result = proxyLoginApiManager.appAuthToken(params);
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog("",String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        userOperationLog.putOtherMessage("token",params.getToken());
+        UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
     }
