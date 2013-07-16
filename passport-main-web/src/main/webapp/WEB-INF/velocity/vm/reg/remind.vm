@@ -30,7 +30,7 @@
             
             <li ><a href="/">登录</a></li>
             
-            <li class="current"><a href="/web/reg/nick">搜狗通行证注册</a></li>
+            <li class="current"><a href="/web/reg/email">搜狗通行证注册</a></li>
             
         </ul>
     </div>
@@ -42,7 +42,7 @@
         
         <ul class="nav">
     
-    <li style="border:none;" class="email   ">
+    <li style="border:none;" class="email current  ">
         <a href="/web/reg/email">邮箱注册</a>
     </li>
     
@@ -50,55 +50,23 @@
         <a href="/web/reg/mobile">手机注册</a>
     </li>
     
-    <li  class="nick current  ">
+    <li  class="nick   ">
         <a href="/web/reg/nick">个性帐号</a>
     </li>
     
 </ul>
     </div>
     <div class="col-r">
-        <div class="inner reg-nick">
-            <div class="title">
-                注册个性帐号
+        <div class="inner reg-email">
+            <div class="step step2">
+                <span ></span>
             </div>
             <div  class="form">
-                <form method="post" id="" action="/web/reguser">
-                    
-                    <div class="form-item">
-    <label for="UsernameIpt">通行证：</label>
-    <span class="form-el">
-        <input autocomplete="off" uui-type="require nick" type="text" name="username" id="UsernameIpt" value="" data-desc="" value=""/>
-    </span>
-</div>
-                    <div class="form-item">
-    <label for="PasswordIpt">密码：</label>
-    <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
-    </span>
-</div>
-                    <div class="form-item">
-    <label for="Password2Ipt">确认密码：</label>
-    <span class="form-el">
-        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" value=""/>
-    </span>
-</div>
-                    <div class="form-item form-item-vcode">
-    <label for="ValidIpt">验证码：</label>
-    <span class="form-el form-el-s"><input type="text" name="captcha" id="ValidIpt" value="" uui-type="require" /></span>
-    <span class="vpic"><img src="about:blank" class="" alt="" /></span>
-    <a href="#" class="change-vpic">看不清，换一张</a>
-</div>
-                    <div class="form-btn">
-    <button type="submit">注册</button>
-</div>
-                    <div class="form-desc">
-        <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan" checked/>
-        <span class="checkbox checkbox-checked" id="ConfirmChbSpan" ></span>
-        <label for="ConfirmChb">
-            我已阅读并接受<a class="agreelink" target="_blank" href="/static/agreement.html">搜狗服务协议</a>
-        </label>
-</div>
-                </form>
+                <div class="binding">
+                    <p>验证邮件已发送至您的邮箱：<span id="JumpTarget"></p>
+                    <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
+                    <a id="JumpToUrl" href="#" class="long-btn">去邮箱验证</a>
+                </div>
             </div>
         </div>
     </div>
@@ -122,7 +90,7 @@
 var spb_vars = {
     productid:"passport",
     ptype:"web",
-    pcode:"reg_nick".split('/').join('_')
+    pcode:"reg_remind".split('/').join('_')
 };
 
 (function() {
@@ -140,7 +108,7 @@ require.config({
 
 
 require(['reg'] , function(module){
-    module.init('nick');
+    module.init('remind');
 });
 
 

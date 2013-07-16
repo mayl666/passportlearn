@@ -86,8 +86,8 @@
     <button type="submit">注册</button>
 </div>
                     <div class="form-desc">
-        <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan"/>
-        <span class="checkbox " id="ConfirmChbSpan" ></span>
+        <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan" checked/>
+        <span class="checkbox checkbox-checked" id="ConfirmChbSpan" ></span>
         <label for="ConfirmChb">
             我已阅读并接受<a class="agreelink" target="_blank" href="/static/agreement.html">搜狗服务协议</a>
         </label>
@@ -119,7 +119,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2013071505"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2013071628"></script>
     
     <script type="text/javascript">
 
@@ -150,3 +150,4 @@ require(['reg'] , function(module){
 
     </script>
 </html>
+<!--zly-->
