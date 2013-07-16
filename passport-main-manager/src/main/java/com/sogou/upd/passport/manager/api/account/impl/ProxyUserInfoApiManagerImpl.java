@@ -29,7 +29,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
     private static Set<String> SUPPORT_FIELDS_MAP=null;
 
     static{
-        SUPPORT_FIELDS_MAP=new HashSet<>(7);
+        SUPPORT_FIELDS_MAP=new HashSet<>(8);
         SUPPORT_FIELDS_MAP.add("birthday");
         SUPPORT_FIELDS_MAP.add("gender");
         SUPPORT_FIELDS_MAP.add("sec_mobile");
@@ -37,6 +37,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("sec_ques");
         SUPPORT_FIELDS_MAP.add("province");
         SUPPORT_FIELDS_MAP.add("city");
+        SUPPORT_FIELDS_MAP.add("personalid");
     }
 
     @Override
