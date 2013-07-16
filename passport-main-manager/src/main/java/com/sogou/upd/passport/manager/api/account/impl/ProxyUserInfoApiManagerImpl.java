@@ -30,14 +30,15 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     static{
         SUPPORT_FIELDS_MAP=new HashSet<>(8);
-        SUPPORT_FIELDS_MAP.add("birthday");
-        SUPPORT_FIELDS_MAP.add("gender");
-        SUPPORT_FIELDS_MAP.add("sec_mobile");
-        SUPPORT_FIELDS_MAP.add("sec_email");
-        SUPPORT_FIELDS_MAP.add("sec_ques");
-        SUPPORT_FIELDS_MAP.add("province");
-        SUPPORT_FIELDS_MAP.add("city");
-        SUPPORT_FIELDS_MAP.add("personalid");
+        SUPPORT_FIELDS_MAP.add("birthday");//生日
+        SUPPORT_FIELDS_MAP.add("gender");//性别
+        SUPPORT_FIELDS_MAP.add("sec_mobile");//密保手机
+        SUPPORT_FIELDS_MAP.add("sec_email");//密保邮箱
+        SUPPORT_FIELDS_MAP.add("sec_ques");//密保问题
+        SUPPORT_FIELDS_MAP.add("province");//身份
+        SUPPORT_FIELDS_MAP.add("city");//城市
+        SUPPORT_FIELDS_MAP.add("personalid");//身份证号
+        SUPPORT_FIELDS_MAP.add("username"); //用户真实姓名
     }
 
     @Override
