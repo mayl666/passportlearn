@@ -63,9 +63,9 @@
             </div>
             <div  class="form">
                 <div class="binding">
-                    <p>验证邮件已发送至您的邮箱：<span id="JumpTarget"></p>
-                    <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
-                    <a id="JumpToUrl" href="#" class="long-btn">去邮箱验证</a>
+                    <p>您的搜狗通行证还没有被激活<span id="JumpTarget" style="display:none;"></p>
+                    <p class="warn">请登录您的邮箱进行激活操作</p>
+                    <a id="JumpToUrl" href="#" class="long-btn">去邮箱激活</a>
                 </div>
             </div>
         </div>
@@ -83,7 +83,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2013071628"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2013071759"></script>
     
     <script type="text/javascript">
 
