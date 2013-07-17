@@ -136,14 +136,14 @@ public class LoginAction extends BaseController {
      * 通过js调用，返回结果
      */
     @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
-    public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="client_id",required=false) String client_id)
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
         String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0", getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("referer", referer);
         UserOperationLogUtil.log(userOperationLog);
@@ -156,16 +156,17 @@ public class LoginAction extends BaseController {
      * 页面直接跳转，回跳到之前的地址
      */
     @RequestMapping(value = "/logout_redirect", method = RequestMethod.GET)
-    public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="ru",required=false) String ru)
+    public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="ru",required=false) String ru,@RequestParam(value="client_id",required=false) String client_id)
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
         String userId = hostHolder.getPassportId();
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), "0", "0", getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ru", ru);
         UserOperationLogUtil.log(userOperationLog);
 
         if(StringUtil.isBlank(ru)){
