@@ -94,6 +94,8 @@ public class SecureAction extends BaseController {
             result.setDefaultModel("actype", "phone");
         }
 
+        ControllerHelper.process(result, clientId, null);
+
         model.addAttribute("data", result.toString());
 
         return "safe/index";
@@ -135,6 +137,9 @@ public class SecureAction extends BaseController {
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
+
+        ControllerHelper.process(result, clientId, null);
+
         model.addAttribute("data", result.toString());
         return "safe/email";
     }
@@ -177,6 +182,9 @@ public class SecureAction extends BaseController {
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
+
+        ControllerHelper.process(result, clientId, null);
+
         model.addAttribute("data", result.toString());
         return "safe/tel";
     }
@@ -217,6 +225,9 @@ public class SecureAction extends BaseController {
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
+
+        ControllerHelper.process(result, clientId, null);
+
         model.addAttribute("data", result.toString());
         return "safe/question";
     }
@@ -255,6 +266,9 @@ public class SecureAction extends BaseController {
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
+
+        ControllerHelper.process(result, clientId, null);
+
         model.addAttribute("data", result.toString());
         return "safe/password";
     }
@@ -288,6 +302,9 @@ public class SecureAction extends BaseController {
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
+
+        ControllerHelper.process(result, clientId, null);
+
         model.addAttribute("data", result.toString());
         return "safe/history";
     }
