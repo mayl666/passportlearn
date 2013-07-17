@@ -98,6 +98,17 @@ public class AccountWeb extends BaseController {
     }
 
     /*
+
+    */
+    @RequestMapping(value = "/remindActivate", method = RequestMethod.GET)
+    private String remind_activate(String email,Model model){
+        Result result = new APIResultSupport(true);
+        result.setDefaultModel("email",email);
+        model.addAttribute("data", result.toString());
+        return "/reg/remind";
+    }
+
+    /*
     web登录页跳转
   */
     @RequestMapping(value = "/webLogin", method = RequestMethod.GET)
@@ -135,6 +146,8 @@ public class AccountWeb extends BaseController {
         result.setModels(map);
         return result;
     }
+
+
 
     /*
     注册种cookie防止恶意注册，黑白名单
