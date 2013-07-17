@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtils {
 
     private static Logger logger = LoggerFactory.getLogger(RedisUtils.class);
+    private static final Logger redisMissLogger = LoggerFactory.getLogger("redisMissLogger");
 
     private static RedisTemplate redisTemplate;
 
@@ -181,7 +183,11 @@ public class RedisUtils {
     public String get(String key) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            return valueOperations.get(key);
+            String res =  valueOperations.get(key);
+            if(Strings.isNullOrEmpty(res)){
+                redisMissLogger.info("get cache miss, key:" + key);
+            }
+            return res;
         } catch (Exception e) {
             logger.error("[Cache] get cache fail, key:" + key, e);
         }
@@ -195,7 +201,11 @@ public class RedisUtils {
     public List<String> multiGet(List<String> keyList) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            return  valueOperations.multiGet(keyList);
+            List<String> resList =  valueOperations.multiGet(keyList);
+            if(CollectionUtils.isEmpty(resList)){
+                redisMissLogger.info("multiGet cache miss, key:" + keyList.toString());
+            }
+            return resList;
         } catch (Exception e) {
             logger.error("[Cache] get cache fail, keyCollec:" + keyList.toString(), e);
         }
@@ -217,6 +227,7 @@ public class RedisUtils {
               T object = (T) new ObjectMapper().readValue(cacheStr, returnClass);
                 return object;
             }
+            redisMissLogger.info("getObject cache miss, key:" + cacheKey);
         } catch (Exception e) {
             logger.error("[Cache] get object cache fail, key:" + cacheKey, e);
         }
@@ -230,7 +241,11 @@ public class RedisUtils {
     @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_checkKeyIsExist")
     public boolean checkKeyIsExist(String key) {
         try {
-            return redisTemplate.hasKey(key);
+            boolean res =  redisTemplate.hasKey(key);
+            if(!res){
+                redisMissLogger.info("checkKeyIsExist cache miss, key:" + key);
+            }
+            return res;
         } catch (Exception e) {
             logger.error("[Cache] check key is exist in cache fail, key:" + key, e);
             return false;
@@ -244,7 +259,11 @@ public class RedisUtils {
     public Map<String, String> hGetAll(String cacheKey) {
         try {
             BoundHashOperations boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-            return boundHashOperations.entries();
+            Map<String, String> res = boundHashOperations.entries();
+            if(MapUtils.isEmpty(res)){
+                redisMissLogger.info("hGetAll cache miss, key:" + cacheKey);
+            }
+            return  res;
         } catch (Exception e) {
             logger.error("[Cache] hGet All cache fail, key:" + cacheKey, e);
         }
@@ -341,7 +360,11 @@ public class RedisUtils {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(
                 cacheKey);
-            return boundHashOperations.get(key);
+            String res =  boundHashOperations.get(key);
+            if(Strings.isNullOrEmpty(res)){
+                redisMissLogger.info("hGet cache miss, key:" + cacheKey);
+            }
+            return res;
         } catch (Exception e) {
             logger.error("[Cache] hGet cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
         }
@@ -357,6 +380,7 @@ public class RedisUtils {
               T object = (T) new ObjectMapper().readValue(cacheStr, returnClass);
                 return object;
             }
+            redisMissLogger.info("hGetObject cache miss, key:" + cacheKey);
         } catch (Exception e) {
             logger.error("[Cache] hGet object cache fail, cacheKey:" + cacheKey + " mapKey:" + key, e);
         }
@@ -488,10 +512,14 @@ public class RedisUtils {
     operations.add(key,value);
   }
 
-  public Set<String> smember(String key) {
-    SetOperations operations=redisTemplate.opsForSet();
-    return operations.members(key);
-  }
+    public Set<String> smember(String key) {
+        SetOperations operations = redisTemplate.opsForSet();
+        Set<String> resSet = operations.members(key);
+        if (CollectionUtils.isEmpty(resSet)) {
+            redisMissLogger.info("smember cache miss, key:" + key);
+        }
+        return resSet;
+    }
 
     // 将value添加到键key的列表尾部，超过maxLen则删除头部元素
     public void rPushWithMaxLen(String key, String value, int maxLen) {
@@ -552,6 +580,7 @@ public class RedisUtils {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         long len = valueList.size(key);
         if (len <= 0) {
+            redisMissLogger.info("getList cache miss, key:" + key);
             return null;
         }
 
@@ -563,7 +592,7 @@ public class RedisUtils {
     public <T> List<T> getList(String key, Class returnClass) {
         try {
             List<String> storeList = getList(key);
-            if (storeList == null) {
+            if (CollectionUtils.isEmpty(storeList)) {
                 // 不需要检查大小是否为0
                 return null;
             }
