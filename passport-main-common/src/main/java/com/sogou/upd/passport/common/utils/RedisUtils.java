@@ -197,7 +197,7 @@ public class RedisUtils {
     /*
      * 根据key取缓存内容
     */
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "multiGet")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_multiGet")
     public List<String> multiGet(List<String> keyList) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -575,7 +575,7 @@ public class RedisUtils {
     }
 
     // 查询键key的列表
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "getList")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_getList")
     public List<String> getList(String key) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         long len = valueList.size(key);
@@ -588,7 +588,7 @@ public class RedisUtils {
         return storeList;
     }
 
-    @Profiled(el = true,logger = "rediesTimingLogger",tag = "getList")
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_getList")
     public <T> List<T> getList(String key, Class returnClass) {
         try {
             List<String> storeList = getList(key);
