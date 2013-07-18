@@ -20,17 +20,11 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
     private static final String STOPWATCH= CommonConstant.STOPWATCH;
 
-//    private static final String CLIENT_ID_PARAM="client_id";
-
 	private static final Logger log = LoggerFactory.getLogger(CostTimeInteceptor.class);
 
     private static final Logger prefLogger =LoggerFactory.getLogger("webTimingLogger");
 
     private final static int SLOW_TIME = 500;
-
-
-//    @Autowired
-//    private MetricRegistry metrics;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
