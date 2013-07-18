@@ -28,10 +28,11 @@ public class UserOperationLogUtil {
 
     /**
      * 记录用户行为
+     *
      * @param userOperationLog
      */
-    public static void log(UserOperationLog userOperationLog){
-        log(userOperationLog.getPassportId(),userOperationLog.getUserOperation(),userOperationLog.getClientId(),userOperationLog.getIp(), userOperationLog.getResultCode(),userOperationLog.getOtherMessageMap());
+    public static void log(UserOperationLog userOperationLog) {
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap());
     }
 
 
@@ -44,12 +45,12 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, String operation, String clientId, String ip, String resultCode,Map<String,String> otherMessage) {
-        try{
-            HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
-            if(StringUtil.isBlank(operation)){
-                operation=request.getRequestURI();
+            if (StringUtil.isBlank(operation)) {
+                operation = request.getRequestURI();
             }
             StringBuilder log = new StringBuilder("passportId:");
             log.append(passportId);
@@ -59,21 +60,21 @@ public class UserOperationLogUtil {
             log.append(" ,resultCode:").append(resultCode);
 
 
-            Object stopWatchObject=request.getAttribute( CommonConstant.STOPWATCH);
-            if(stopWatchObject!=null&&stopWatchObject instanceof StopWatch){
-                StopWatch stopWatch= (StopWatch) stopWatchObject;
-                stopWatch.stop(request.getRequestURI());
-                long costTime= stopWatch.getElapsedTime();
+            Object stopWatchObject = request.getAttribute(CommonConstant.STOPWATCH);
+            if (stopWatchObject != null && stopWatchObject instanceof StopWatch) {
+                StopWatch stopWatch = (StopWatch) stopWatchObject;
+                long startTime = stopWatch.getStartTime();
+                long costTime = System.currentTimeMillis() - startTime;
                 log.append(" ,costTime:").append(costTime);
             }
-            if(MapUtils.isNotEmpty(otherMessage)){
-                for(Map.Entry<String,String> entry:otherMessage.entrySet()){
+            if (MapUtils.isNotEmpty(otherMessage)) {
+                for (Map.Entry<String, String> entry : otherMessage.entrySet()) {
                     log.append(" ,").append(entry.getKey()).append(":").append(entry.getValue());
                 }
             }
             userOperationLogger.info(log.toString());
-        }catch (Exception e){
-            logger.error("UserOperationLogUtil.log error",e);
+        } catch (Exception e) {
+            logger.error("UserOperationLogUtil.log error", e);
         }
     }
 }
