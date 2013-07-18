@@ -30,7 +30,6 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         request.setAttribute(STOPWATCH, stopWatch);
-
 		return true;
 	}
 
