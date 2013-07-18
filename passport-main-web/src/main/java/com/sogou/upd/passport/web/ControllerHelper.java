@@ -70,4 +70,17 @@ public class ControllerHelper {
         result.setSuccess(true);
         return result;
     }
+
+    public static Result process(Result result, int client_id, String ru) {
+        if (result == null) {
+            result = new APIResultSupport(true);
+        }
+
+        result.setDefaultModel("client_id", client_id);
+
+        if (!Strings.isNullOrEmpty(ru)) {
+            result.setDefaultModel("ru", ru);
+        }
+        return result;
+    }
 }
