@@ -197,7 +197,7 @@ public class RedisUtils {
     /*
      * 根据key取缓存内容
     */
-    @Profiled
+    @Profiled(el = true,logger = "rediesTimingLogger",tag = "multiGet")
     public List<String> multiGet(List<String> keyList) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
