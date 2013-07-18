@@ -130,21 +130,14 @@ public class RegAction extends BaseController {
                 ru = LOGIN_INDEX_URL;
             }
             result.setDefaultModel("ru", ru);
-
-            //用户注册成功log
-            UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Success");
-            UserOperationLogUtil.log(userOperationLog);
-        } else {
-            //用户注册失败log
-            UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("register", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
         }
+
+        //用户注册log
+        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("referer", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
         regManager.incRegTimes(ip, uuidName);
         String userId = (String) result.getModels().get("userid");
         if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {

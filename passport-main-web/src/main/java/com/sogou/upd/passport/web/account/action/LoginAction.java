@@ -104,13 +104,6 @@ public class LoginAction extends BaseController {
             String userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
-
-            //用户登录成功log
-            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Success");
-            UserOperationLogUtil.log(userOperationLog);
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
             //校验是否需要验证码
@@ -118,13 +111,13 @@ public class LoginAction extends BaseController {
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
-            //用户登录失败log
-            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
         }
+
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("referer", referer);
+        UserOperationLogUtil.log(userOperationLog);
 
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());
