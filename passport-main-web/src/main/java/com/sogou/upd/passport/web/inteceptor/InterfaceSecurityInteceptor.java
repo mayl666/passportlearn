@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 拦截所有内部接口带有@InterfaceSecurity注解，
@@ -72,7 +74,27 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             }
         } catch (Exception e) {
-            log.error("InterfaceSecurityInteceptor verify code or ct error!", e);
+            StringBuilder requestInfo = new StringBuilder();
+            try {
+                requestInfo.append(" uri:");
+                requestInfo.append(request.getRequestURI());
+                requestInfo.append(" ip:");
+                requestInfo.append(IpLocationUtil.getIp(request));
+                requestInfo.append("     requestInfo: { ");
+                Map map = request.getParameterMap();
+                for (Object key : map.keySet().toArray()) {
+                    requestInfo.append(key.toString());
+                    requestInfo.append(":");
+                    requestInfo.append(request.getParameter(key.toString()));
+                    requestInfo.append(",");
+                }
+
+            } catch (Exception ex) {
+                log.error("get requestInfo error ", ex);
+            }
+            requestInfo.append("}");
+
+            log.error("InterfaceSecurityInteceptor verify code or ct error! "+requestInfo.toString(), e);
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
         }
 
