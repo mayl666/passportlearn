@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -77,6 +78,8 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
             try {
                 requestInfo.append(" uri:");
                 requestInfo.append(request.getRequestURI());
+                requestInfo.append(" ip:");
+                requestInfo.append(IpLocationUtil.getIp(request));
                 requestInfo.append("     requestInfo: { ");
                 Map map = request.getParameterMap();
                 for (Object key : map.keySet().toArray()) {
@@ -85,6 +88,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
                     requestInfo.append(request.getParameter(key.toString()));
                     requestInfo.append(",");
                 }
+
             } catch (Exception ex) {
                 log.error("get requestInfo error ", ex);
             }

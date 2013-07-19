@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,10 @@ public class ExceptionHandler implements HandlerExceptionResolver {
         try {
             requestInfo.append(" uri:");
             requestInfo.append(request.getRequestURI());
+
+            requestInfo.append(" ip:");
+            requestInfo.append(IpLocationUtil.getIp(request));
+
             requestInfo.append("     requestInfo: { ");
             Map map = request.getParameterMap();
             for (Object key : map.keySet().toArray()) {
