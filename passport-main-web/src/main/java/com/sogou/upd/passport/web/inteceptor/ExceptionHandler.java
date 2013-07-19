@@ -28,21 +28,24 @@ public class ExceptionHandler implements HandlerExceptionResolver {
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        StringBuilder param = new StringBuilder("param: { ");
+        StringBuilder requestInfo = new StringBuilder();
         try {
+            requestInfo.append(" uri:");
+            requestInfo.append(request.getRequestURI());
+            requestInfo.append("     requestInfo: { ");
             Map map = request.getParameterMap();
             for (Object key : map.keySet().toArray()) {
-                param.append(key.toString());
-                param.append(":");
-                param.append(request.getParameter(key.toString()));
-                param.append(",");
+                requestInfo.append(key.toString());
+                requestInfo.append(":");
+                requestInfo.append(request.getParameter(key.toString()));
+                requestInfo.append(",");
             }
         } catch (Exception e) {
-            logger.error("get param error ", ex);
+            logger.error("get requestInfo error ", ex);
         }
-        param.append("}");
+        requestInfo.append("}");
 
-        logger.error("ExceptionHandler " + param, ex);
+        logger.error("ExceptionHandler " + requestInfo, ex);
         //post请求返回json
         if (request.getMethod().toUpperCase().equals(HttpConstant.HttpMethod.POST)) {
             Result result = new APIResultSupport(false);
