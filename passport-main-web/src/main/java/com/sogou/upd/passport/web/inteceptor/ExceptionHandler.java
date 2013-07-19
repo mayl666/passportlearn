@@ -27,7 +27,14 @@ public class ExceptionHandler implements HandlerExceptionResolver {
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        logger.error("ExceptionHandler ",ex);
+        String param=null;
+        try{
+            param=request.getParameterMap().toString();
+        }catch (Exception e){
+            logger.error("get param error ",ex);
+        }
+
+        logger.error("ExceptionHandler param: "+param,ex);
         //post请求返回json
         if(request.getMethod().toUpperCase().equals(HttpConstant.HttpMethod.POST)){
             Result result=new APIResultSupport(false);
