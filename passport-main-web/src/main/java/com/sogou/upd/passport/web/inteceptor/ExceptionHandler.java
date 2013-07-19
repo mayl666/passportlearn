@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 用于对异常的统一处理
@@ -27,21 +28,28 @@ public class ExceptionHandler implements HandlerExceptionResolver {
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        String param=null;
-        try{
-            param=request.getParameterMap().toString();
-        }catch (Exception e){
-            logger.error("get param error ",ex);
+        StringBuilder param = new StringBuilder("param: { ");
+        try {
+            Map map = request.getParameterMap();
+            for (Object key : map.keySet().toArray()) {
+                param.append(key.toString());
+                param.append(":");
+                param.append(request.getParameter(key.toString()));
+                param.append(",");
+            }
+        } catch (Exception e) {
+            logger.error("get param error ", ex);
         }
+        param.append("}");
 
-        logger.error("ExceptionHandler param: "+param,ex);
+        logger.error("ExceptionHandler " + param, ex);
         //post请求返回json
-        if(request.getMethod().toUpperCase().equals(HttpConstant.HttpMethod.POST)){
-            Result result=new APIResultSupport(false);
+        if (request.getMethod().toUpperCase().equals(HttpConstant.HttpMethod.POST)) {
+            Result result = new APIResultSupport(false);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            ModelAndView modelAndView=new ModelAndView("/exception");
-            modelAndView.addObject("result",result);
-            return  modelAndView;
+            ModelAndView modelAndView = new ModelAndView("/exception");
+            modelAndView.addObject("result", result);
+            return modelAndView;
         }
         //非post请求返回错误页面
         return new ModelAndView("/500");
