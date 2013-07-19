@@ -45,7 +45,7 @@ public class ExceptionHandler implements HandlerExceptionResolver {
         }
         requestInfo.append("}");
 
-        logger.error("ExceptionHandler " + requestInfo, ex);
+        logger.error("ExceptionHandler " + requestInfo.toString(), ex);
         //post请求返回json
         if (request.getMethod().toUpperCase().equals(HttpConstant.HttpMethod.POST)) {
             Result result = new APIResultSupport(false);
