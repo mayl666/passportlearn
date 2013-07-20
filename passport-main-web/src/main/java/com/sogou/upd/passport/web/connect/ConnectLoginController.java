@@ -101,6 +101,7 @@ public class ConnectLoginController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
             String referer = req.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("ru", connectLoginParams.getRu());
             userOperationLog.putOtherMessage("login", "Success");
             UserOperationLogUtil.log(userOperationLog);
 
@@ -112,6 +113,7 @@ public class ConnectLoginController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
             String referer = req.getHeader("referer");
             userOperationLog.putOtherMessage("referer", referer);
+            userOperationLog.putOtherMessage("ru", connectLoginParams.getRu());
             userOperationLog.putOtherMessage("login", "Failed");
             UserOperationLogUtil.log(userOperationLog);
 
