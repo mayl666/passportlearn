@@ -13,7 +13,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
  */
 public enum AccountTypeEnum {
 
-    UNKNOW(0), //未知
+    UNKNOWN(0), //未知
     EMAIL(1), // 邮箱
     PHONE(2), // 手机号码
     QQ(3), // QQ
@@ -25,6 +25,7 @@ public enum AccountTypeEnum {
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
 
     static {
+        PROVIDER_MAPPING_DICT.put("unknown", UNKNOWN.getValue());
         PROVIDER_MAPPING_DICT.put("email", EMAIL.getValue());
         PROVIDER_MAPPING_DICT.put("phone", PHONE.getValue());
         PROVIDER_MAPPING_DICT.put("qq", QQ.getValue());
@@ -53,7 +54,7 @@ public enum AccountTypeEnum {
 
     public static boolean isPhone(String account, int provider) {
         if (PhoneUtil.verifyPhoneNumberFormat(account)) {
-            if (provider == PHONE.getValue() || provider == UNKNOW.getValue()) {
+            if (provider == PHONE.getValue() || provider == UNKNOWN.getValue()) {
                 return true;
             }
         }
@@ -65,7 +66,7 @@ public enum AccountTypeEnum {
             return false;
         }
         if (account.contains("@")) {
-            if (provider == EMAIL.getValue() || provider == UNKNOW.getValue()) {
+            if (provider == EMAIL.getValue() || provider == UNKNOWN.getValue()) {
                 return true;
             }
         }
@@ -78,6 +79,32 @@ public enum AccountTypeEnum {
         } else {
             return false;
         }
+    }
+
+    // TODO:以后需要与AccountDomainEnum整合，或者将此Enum只针对第三方，但是需要考虑到所有以provider为参数的地方
+    // 该方法只针对第三方账号，返回值只有第三方类型或UNKNOWN
+    public static AccountTypeEnum getAccountType(String username) {
+        if (Strings.isNullOrEmpty(username)) {
+            return UNKNOWN;
+        }
+
+        if (username.endsWith("@qq.sohu.com")) {
+            return QQ;
+        }
+
+        if (username.endsWith("@sina.sohu.com")) {
+            return SINA;
+        }
+
+        if (username.endsWith("@renren.sohu.com")) {
+            return RENREN;
+        }
+
+        if (username.endsWith("@taobao.sohu.com")) {
+            return TAOBAO;
+        }
+
+        return UNKNOWN;
     }
 
     @Override

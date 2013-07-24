@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 
 import junit.framework.Assert;
@@ -27,5 +28,17 @@ public class AccountEnumTest extends TestCase {
         // 测试是否能直接与字符串作连接操作
         String joinStr = module + " can join strings";
         System.out.println(joinStr);
+    }
+
+    @Test
+    public void testAccountDomain() {
+        AccountDomainEnum domain = AccountDomainEnum.INDIVID;
+        System.out.println(domain.toString());
+        System.out.println(domain);
+        System.out.println(AccountDomainEnum.INDIVID);
+        assertTrue(domain == AccountDomainEnum.INDIVID);
+        assertTrue(domain.equals(AccountDomainEnum.INDIVID));
+        assertTrue(domain != AccountDomainEnum.SOGOU);
+        assertTrue(!domain.equals(AccountDomainEnum.SOGOU));
     }
 }

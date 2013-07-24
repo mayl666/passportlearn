@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.threadPool.action;
+package com.sogou.upd.passport.web.internal.debug;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
