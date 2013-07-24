@@ -120,10 +120,6 @@ public class UserInfoApiController extends BaseController{
         }
         //调用检查昵称是否唯一的内部接口
         result = proxyUserInfoApiManagerImpl.checkUniqName(params);
-
-        //记录log
-        UserOperationLog userOperationLog=new UserOperationLog("",String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
-        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
