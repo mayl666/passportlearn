@@ -83,6 +83,9 @@ public class SHPPUrlConstant {
     //更新用户信息
     public static final String UPDATE_USER_INFO = BASE_INTERNAL_URL + "updateuser";
 
+    //修改用户昵称
+    public static final String UPDATE_USER_UNIQNAME = BASE_INTERNAL_URL + "checkuniqname";
+
     /*================================安全中心操作URL=======================================*/
     // 修改密码
     public static final String SOHU_RESETPWD_URL = "https://passport.sohu.com/web/updateInfo.action?modifyType=password";

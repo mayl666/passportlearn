@@ -17,15 +17,24 @@ public class ManagerHelperTest extends BaseTest {
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode("1666643531@sina.sohu.com", 1110, "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr", ct);
+        String code = ManagerHelper.generatorCode(uniqname, clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
-        try {
-            String pwdMD5 = Coder.encryptMD5("111111");
+        /*try {
+            String pwdMD5 = Coder.encryptMD5(code);
             System.out.println("pwdMD5:" + pwdMD5);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
+    }
+
+    @Test
+    public void testCheck() {
+        String str = "232_4e3e_";
+        //只含有汉字、数字、字母、下划线，且不能以下划线开头和结尾
+        System.out.println(str.matches("^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$"));
+        //限制输入含有特定字符的
+        //System.out.println(str.matches("^(?!.*搜狗)(?!.*sogou)(?!.*sougou).*$"));
     }
 }
