@@ -346,10 +346,14 @@ public class SecureAction extends BaseController {
         updateParams.setIp(modifyIp);
 
         result = secureManager.resetWebPassword(updateParams);
+        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
 
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -530,13 +534,15 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result =
-                secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password,
-                                                     modifyIp);
+        result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
+        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
 
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -611,10 +617,14 @@ public class SecureAction extends BaseController {
         }
 
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
+        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
 
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -652,13 +662,15 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result =
-                secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer,
-                                                     modifyIp);
+        result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
+        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
 
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

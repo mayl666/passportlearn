@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -90,9 +91,10 @@ public class RegisterApiController extends BaseController{
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
 
+        String domainStr = AccountDomainEnum.PHONE.toString();
 
         //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request), domainStr);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -120,8 +122,13 @@ public class RegisterApiController extends BaseController{
         // 调用内部接口
         result = proxyRegisterApiManager.regMailUser(params);
 
+        String domainStr = AccountDomainEnum.getAccountDomain(params.getUserid()).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
+
         //记录log
-        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request), domainStr);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -151,10 +158,12 @@ public class RegisterApiController extends BaseController{
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileUser(params);
 
+        String domainStr = AccountDomainEnum.PHONE.toString();
+
         //记录log
-        UserOperationLog userOperationLog=new UserOperationLog(params.getMobile(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        UserOperationLog userOperationLog=new UserOperationLog(params.getMobile(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

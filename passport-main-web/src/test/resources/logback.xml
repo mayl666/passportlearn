@@ -38,7 +38,7 @@
             <fileNamePattern>/search/passport/log/useroperation/useroperation.log.%d{yyyy-MM-dd-HH}</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>%d %msg %n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>
         </encoder>
     </appender>
     <logger name="userOperationLogger" level="info" additivity="false">

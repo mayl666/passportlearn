@@ -132,10 +132,15 @@ public class RegAction extends BaseController {
             result.setDefaultModel("ru", ru);
         }
 
+        String domainStr = AccountDomainEnum.getAccountDomain(username).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
+
         //用户注册log
-        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         regManager.incRegTimes(ip, uuidName);

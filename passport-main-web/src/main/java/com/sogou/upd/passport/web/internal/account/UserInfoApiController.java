@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -61,8 +62,6 @@ public class UserInfoApiController {
         }
         // 调用内部接口
         result = proxyUserInfoApiManagerImpl.getUserInfo(params);
-        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),request.getRequestURI(),String.valueOf(params.getClient_id()),result.getCode(),"");
-        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -87,7 +86,13 @@ public class UserInfoApiController {
         }
         // 调用内部接口
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
-        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),params.getModifyip());
+
+        String domainStr = AccountDomainEnum.getAccountDomain(params.getUserid()).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
+
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),params.getModifyip(), domainStr);
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }

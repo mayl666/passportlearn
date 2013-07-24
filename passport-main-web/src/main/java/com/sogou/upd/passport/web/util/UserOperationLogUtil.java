@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.web.util;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import org.apache.commons.collections.MapUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +35,13 @@ public class UserOperationLogUtil {
      * @param userOperationLog
      */
     public static void log(UserOperationLog userOperationLog) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap());
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getDomain(), userOperationLog.getOtherMessageMap());
     }
 
 
     /**
      * 用于记录log代码
+     * 日志格式：日期+时间  用户ID  用户域  用户操作  应用ID  IP地址  结果代码  响应时间  referer  附加信息
      *
      * @param passportId   用户id
      * @param operation    用户执行的操作
@@ -45,19 +49,20 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
+    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, String domain, Map<String, String> otherMessage) {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
             if (StringUtil.isBlank(operation)) {
                 operation = request.getRequestURI();
             }
-            StringBuilder log = new StringBuilder("passportId:");
-            log.append(passportId);
-            log.append(" ,operation:").append(operation);
-            log.append(" ,clientId:").append(clientId);
-            log.append(" ,ip:").append(ip);
-            log.append(" ,resultCode:").append(resultCode);
+            StringBuilder log = new StringBuilder();
+            log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(domain, "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(operation, "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(clientId, "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(ip, "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(resultCode, "-"));
 
 
             Object stopWatchObject = request.getAttribute(CommonConstant.STOPWATCH);
@@ -65,16 +70,22 @@ public class UserOperationLogUtil {
                 StopWatch stopWatch = (StopWatch) stopWatchObject;
                 long startTime = stopWatch.getStartTime();
                 long costTime = System.currentTimeMillis() - startTime;
-                log.append(" ,costTime:").append(costTime);
+                log.append("\t").append(costTime);
+            } else {
+                log.append("\t-");
             }
-            if (MapUtils.isNotEmpty(otherMessage)) {
-                for (Map.Entry<String, String> entry : otherMessage.entrySet()) {
-                    log.append(" ,").append(entry.getKey()).append(":").append(entry.getValue());
-                }
-            }
+
+            String referer = otherMessage.remove("ref");
+            log.append("\t").append(StringUtil.defaultIfEmpty(referer, "-"));
+
+            String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
+            log.append("\t").append(otherMsgJson);
+
             userOperationLogger.info(log.toString());
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
+
+
     }
 }

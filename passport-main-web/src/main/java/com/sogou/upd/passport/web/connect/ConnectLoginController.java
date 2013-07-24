@@ -97,27 +97,20 @@ public class ConnectLoginController extends BaseConnectController {
             url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
 
-            //用户登陆log--二期迁移到callback中记录log
-            UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
-            String referer = req.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Success");
-            UserOperationLogUtil.log(userOperationLog);
-
-            return new ModelAndView(new RedirectView(url));
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(connectLoginParams.getType(), e.getError(), e.getDescription());
 
-            //用户登录log
-            UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
-            String referer = req.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("login", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
-
-            return new ModelAndView(new RedirectView(url));
         }
-    }
 
+        // String domainStr = AccountTypeEnum.getProvider()
+
+        //用户登陆log--二期迁移到callback中记录log
+        UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req), AccountTypeEnum.getProviderStr(provider));
+        String referer = req.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
+        return new ModelAndView(new RedirectView(url));
+    }
 
 }
