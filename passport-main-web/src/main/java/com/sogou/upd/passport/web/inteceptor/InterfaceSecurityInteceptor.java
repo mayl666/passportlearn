@@ -61,7 +61,6 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
                     String secret = appConfig.getServerSecret();
                     String code = ManagerHelper.generatorCode(firstStr.toString(), clientId, secret, ct);
                     long currentTime = System.currentTimeMillis();
-                    long t = currentTime - API_REQUEST_VAILD_TERM;
                     if (code.equalsIgnoreCase(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
                         return true;
                     } else {

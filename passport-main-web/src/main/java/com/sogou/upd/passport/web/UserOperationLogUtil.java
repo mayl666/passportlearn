@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.util;
+package com.sogou.upd.passport.web;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;

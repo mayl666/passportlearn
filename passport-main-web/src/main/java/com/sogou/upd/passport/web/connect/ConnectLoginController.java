@@ -6,7 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.web.util.UserOperationLogUtil;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
@@ -43,7 +43,7 @@ public class ConnectLoginController extends BaseConnectController {
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = {"/v2/connect/ssologin/{providerStr}", "/connect/ssologin/{providerStr}"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/connect/ssologin/{providerStr}", method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
         Result result = new APIResultSupport(false);
