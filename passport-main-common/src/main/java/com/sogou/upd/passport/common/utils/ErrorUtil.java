@@ -133,11 +133,11 @@ public class ErrorUtil {
     //暂时不支持sohu域内邮箱注册
     public static final String ERR_CODE_NOTSUPPORT_SOHU_REGISTER = "20241";
     //用户昵称已经被使用
-    public static final String ERR_CODE_UNIQNAME_ALREADY_EXISTS = "20242";
+    public static final String ERR_CODE_UNIQNAME_ALREADY_EXISTS = "30605";
     //昵称包含限制词
-    public static final String ERR_CODE_UNIQNAME_FORBID = "20243";
+    public static final String ERR_CODE_UNIQNAME_FORBID = "30606";
     //系统错误
-    public static final String ERR_CODE_SYSTEM_ERROR = "20244";
+    public static final String ERR_CODE_SYSTEM_ERROR = "30607";
 
 
     //TODO sohu内部接口使用，以后删除，手机app校验第三方登录的token失败
