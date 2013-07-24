@@ -161,7 +161,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         if (updateUserUniqnameApiParams.getUniqname() == null || "".equals(updateUserUniqnameApiParams.getUniqname())) {
             throw new IllegalArgumentException("用户昵称不能为空");
         }
-        //TODO 等sohu那边给出相应错误码后，需要去ErrorUtil和ProxyErrorUtil里分别添加（犹如checkuniqname.3）错误码信息，
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "checkuniqname");
         requestModelXml.addParams(updateUserUniqnameApiParams);
         return this.executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
