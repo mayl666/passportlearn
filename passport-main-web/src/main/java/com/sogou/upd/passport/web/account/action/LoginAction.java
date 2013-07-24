@@ -11,7 +11,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.web.util.UserOperationLogUtil;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;

@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.threadPool.action;
+package com.sogou.upd.passport.web.internal.debug;
 
 /**
  * Created with IntelliJ IDEA.
