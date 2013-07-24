@@ -6,6 +6,7 @@ import com.google.common.collect.Queues;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.ListOperations;
@@ -28,8 +29,12 @@ public class KvUtils {
     private static String KEY_PREFIX = "20002/action_records/";
     // private static String KEY_PREFIX_TEST = "0/0/";
 
+    private final static String KV_PERF4J_LOGGER="rediesTimingLogger";
+
+
     private static RedisTemplate kvTemplate;
 
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
     public void set(String key, String value) {
         String storeKey = KEY_PREFIX + key;
         try {
@@ -47,6 +52,7 @@ public class KvUtils {
         }
     }
 
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
     public String get(String key) {
         String storeKey = KEY_PREFIX + key;
         try {
@@ -58,10 +64,12 @@ public class KvUtils {
         return null;
     }
 
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete")
     public void delete(String key) {
         String storeKey = KEY_PREFIX + key;
         kvTemplate.delete(storeKey);
     }
+
 
     public void pushWithMaxLen(String key, String value, int maxLen) {
         try {
