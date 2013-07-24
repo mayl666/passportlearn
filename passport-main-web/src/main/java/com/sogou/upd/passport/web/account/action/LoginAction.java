@@ -5,11 +5,13 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.web.util.UserOperationLogUtil;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.WebLoginParameters;
@@ -100,8 +102,9 @@ public class LoginAction extends BaseController {
         }
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
+        String userId = loginParams.getUsername();
         if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
+            userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
         } else {
@@ -113,10 +116,15 @@ public class LoginAction extends BaseController {
             }
         }
 
+        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
+
         //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         result.setDefaultModel("xd", loginParams.getXd());
@@ -135,10 +143,16 @@ public class LoginAction extends BaseController {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
         String userId = hostHolder.getPassportId();
+
+        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        }
+
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
@@ -155,10 +169,21 @@ public class LoginAction extends BaseController {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
 
         String userId = hostHolder.getPassportId();
+
+        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
+        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
+            domainStr = AccountDomainEnum.SOGOU.toString();
+        } else if (domainStr.equals(AccountDomainEnum.THIRD.toString())) {
+            AccountTypeEnum accountTypeEnum = AccountTypeEnum.getAccountType(userId);
+            if (accountTypeEnum != AccountTypeEnum.UNKNOWN) {
+                domainStr = accountTypeEnum.toString();
+            }
+        }
+
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request), domainStr);
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         userOperationLog.putOtherMessage("ru", ru);
         UserOperationLogUtil.log(userOperationLog);
 

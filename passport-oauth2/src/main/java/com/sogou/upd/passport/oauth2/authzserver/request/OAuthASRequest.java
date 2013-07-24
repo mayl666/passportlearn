@@ -47,7 +47,7 @@ public abstract class OAuthASRequest {
                 }
             } catch (Exception ex) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Cannot read redirect_url from the request: {}", new String[]{ex.getMessage()});
+                    log.debug("Cannot read redirect_url from the request: {}", new Object[]{ex.getMessage()});
                 }
             }
 

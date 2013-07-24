@@ -34,11 +34,6 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <artifactId>passport-result</artifactId>
-            <groupId>sogou-passport</groupId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.2</version>
