@@ -5,6 +5,9 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+
 import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
@@ -35,7 +38,7 @@ public class UserOperationLogUtil {
      * @param userOperationLog
      */
     public static void log(UserOperationLog userOperationLog) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getDomain(), userOperationLog.getOtherMessageMap());
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap());
     }
 
 
@@ -49,7 +52,7 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, String domain, Map<String, String> otherMessage) {
+    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
@@ -58,7 +61,23 @@ public class UserOperationLogUtil {
             }
             StringBuilder log = new StringBuilder();
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
-            log.append("\t").append(StringUtil.defaultIfEmpty(domain, "-"));
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            String domainStr = domain.toString();
+            if (domain == AccountDomainEnum.THIRD) {
+                AccountTypeEnum accountTypeEnum = AccountTypeEnum.getAccountType(passportId);
+                if (accountTypeEnum != AccountTypeEnum.UNKNOWN) {
+                    domainStr = accountTypeEnum.toString();
+                }
+            } else if (domain == AccountDomainEnum.INDIVID) {
+                if (operation.indexOf("connect") != -1) {
+                    domainStr = passportId;
+                } else {
+                    domainStr = AccountDomainEnum.SOGOU.toString();
+                }
+            }
+
+            log.append("\t").append(StringUtil.defaultIfEmpty(domainStr, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(operation, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(clientId, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(ip, "-"));

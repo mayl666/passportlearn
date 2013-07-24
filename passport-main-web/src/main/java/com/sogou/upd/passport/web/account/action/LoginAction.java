@@ -116,13 +116,8 @@ public class LoginAction extends BaseController {
             }
         }
 
-        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
-        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
-            domainStr = AccountDomainEnum.SOGOU.toString();
-        }
-
         //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request), domainStr);
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
@@ -144,13 +139,8 @@ public class LoginAction extends BaseController {
 
         String userId = hostHolder.getPassportId();
 
-        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
-        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
-            domainStr = AccountDomainEnum.SOGOU.toString();
-        }
-
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request), domainStr);
+        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
@@ -170,18 +160,8 @@ public class LoginAction extends BaseController {
 
         String userId = hostHolder.getPassportId();
 
-        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
-        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
-            domainStr = AccountDomainEnum.SOGOU.toString();
-        } else if (domainStr.equals(AccountDomainEnum.THIRD.toString())) {
-            AccountTypeEnum accountTypeEnum = AccountTypeEnum.getAccountType(userId);
-            if (accountTypeEnum != AccountTypeEnum.UNKNOWN) {
-                domainStr = accountTypeEnum.toString();
-            }
-        }
-
         //用于记录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request), domainStr);
+        UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         userOperationLog.putOtherMessage("ru", ru);

@@ -89,12 +89,7 @@ public class UserInfoApiController extends BaseController{
         // 调用内部接口
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
 
-        String domainStr = AccountDomainEnum.getAccountDomain(params.getUserid()).toString();
-        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
-            domainStr = AccountDomainEnum.SOGOU.toString();
-        }
-
-        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),params.getModifyip(), domainStr);
+        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),params.getModifyip());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
