@@ -73,12 +73,8 @@ public class LoginApiController extends BaseController {
 
         // 获取记录UserOperationLog的数据
         String userId = params.getUserid();
-        String domainStr = AccountDomainEnum.getAccountDomain(userId).toString();
-        if (domainStr.equals(AccountDomainEnum.INDIVID.toString())) {
-            domainStr = AccountDomainEnum.SOGOU.toString();
-        }
 
-        UserOperationLog userOperationLog=new UserOperationLog(userId,String.valueOf(params.getClient_id()),result.getCode(),getIp(request), domainStr);
+        UserOperationLog userOperationLog=new UserOperationLog(userId,String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

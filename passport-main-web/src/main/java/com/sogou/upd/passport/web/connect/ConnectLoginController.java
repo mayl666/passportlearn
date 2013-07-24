@@ -105,10 +105,8 @@ public class ConnectLoginController extends BaseConnectController {
 
         }
 
-        // String domainStr = AccountTypeEnum.getProvider()
-
         //用户登陆log--二期迁移到callback中记录log
-        UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req), AccountTypeEnum.getProviderStr(provider));
+        UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
         String referer = req.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);

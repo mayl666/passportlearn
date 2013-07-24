@@ -15,9 +15,6 @@ public class UserOperationLog {
     //操作者
     private String passportId;
 
-    // 用户域
-    private String domain;
-
     //操作app
     private String clientId;
 
@@ -41,12 +38,11 @@ public class UserOperationLog {
      * @param resultCode
      * @param ip
      */
-   public UserOperationLog(String passportId,String clientId,String resultCode, String ip, String domain){
+   public UserOperationLog(String passportId,String clientId,String resultCode, String ip){
        this.passportId=passportId;
        this.clientId=clientId;
        this.ip = ip;
        this.resultCode=resultCode;
-       this.domain = domain;
        otherMessageMap=new LinkedMap();
    }
 
@@ -57,13 +53,12 @@ public class UserOperationLog {
      * @param clientId    发起操作的appId
      * @param resultCode  操作结果，具体参见{@link com.sogou.upd.passport.common.utils.ErrorUtil}
      */
-    public UserOperationLog(String passportId,String userOperation,String clientId,String resultCode, String ip, String domain){
+    public UserOperationLog(String passportId,String userOperation,String clientId,String resultCode, String ip){
         this.passportId=passportId;
         this.userOperation=userOperation;
         this.clientId=clientId;
         this.ip = ip;
         this.resultCode=resultCode;
-        this.domain = domain;
         otherMessageMap=new LinkedMap();
     }
 
@@ -119,11 +114,4 @@ public class UserOperationLog {
         this.ip = ip;
     }
 
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
 }
