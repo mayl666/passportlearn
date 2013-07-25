@@ -17,6 +17,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -60,6 +63,10 @@ public class UserOperationLogUtil {
                 operation = request.getRequestURI();
             }
             StringBuilder log = new StringBuilder();
+            Date date = new Date();
+            String timestamp = String.valueOf(date.getTime()).substring(0, 10);
+            log.append(timestamp);
+            log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);

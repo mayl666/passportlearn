@@ -40,12 +40,13 @@
             <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd}</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
+            <pattern>%msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="userOperationLogger" level="info" additivity="false">
+<!--    <logger name="userOperationLogger" level="info" additivity="false">
         <appender-ref ref="userOperationAppender" />
-    </logger>
+    </logger>-->
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
