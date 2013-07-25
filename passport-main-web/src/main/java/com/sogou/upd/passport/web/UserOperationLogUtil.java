@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.ApiGroupUtil;
 
 import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -86,6 +87,7 @@ public class UserOperationLogUtil {
 
             log.append("\t").append(StringUtil.defaultIfEmpty(domainStr, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(operation, "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(ApiGroupUtil.getApiGroup(operation), "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(clientId, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(ip, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(resultCode, "-"));
@@ -111,7 +113,6 @@ public class UserOperationLogUtil {
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
-
 
     }
 }
