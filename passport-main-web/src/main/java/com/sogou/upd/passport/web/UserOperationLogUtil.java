@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ApiGroupUtil;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.thrift.TException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
@@ -19,9 +20,15 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 
 /**
  * 用于记录用户行为的log
@@ -34,6 +41,22 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLogger = LoggerFactory.getLogger("userOperationLogger");
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
+
+    static {
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(lc);
+        StatusPrinter.printInCaseOfErrorsOrWarnings(lc);
+
+        InputStream in = UserOperationLogUtil.class.getClassLoader().getResourceAsStream("scribe-logback.xml");
+
+        try {
+            configurator.doConfigure(in);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
 
     /**
