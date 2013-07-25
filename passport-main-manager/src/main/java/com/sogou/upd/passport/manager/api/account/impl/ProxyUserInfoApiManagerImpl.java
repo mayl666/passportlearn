@@ -163,6 +163,10 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         }
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "checkuniqname");
         requestModelXml.addParams(updateUserUniqnameApiParams);
-        return this.executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
+        Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
+        if(result.isSuccess()){
+            result.setMessage("昵称未被占用");
+        }
+        return result;
     }
 }
