@@ -57,7 +57,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(uniqname);
         Result result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
-        System.out.println("result输出结果为:" + result);
+        System.out.println("result输出结果为:" + result.toString());
     }
 
 }

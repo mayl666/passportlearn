@@ -19,7 +19,7 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
 
     protected static final String password = "testtest1";
 
-    protected static final String uniqname = "wendatest01";
+    protected static final String uniqname = "yuedutest11";
 
     protected static final int clientId = 1110;
 
