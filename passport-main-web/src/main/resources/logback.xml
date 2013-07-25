@@ -50,7 +50,7 @@
     </logger>
 
     <appender name="scribeAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
-        <hostname>localhost</hostname>
+        <!--<hostname>localhost</hostname>-->
         <scribeHost>127.0.0.1</scribeHost>
         <scribePort>1463</scribePort>
         <layout>
