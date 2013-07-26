@@ -51,7 +51,7 @@
         <scribeHost>127.0.0.1</scribeHost>
         <scribePort>1463</scribePort>
         <layout>
-            <pattern>%msg%n</pattern>
+            <pattern>%msg</pattern>
         </layout>
         <scribeCategory>passport</scribeCategory>
     </appender>
