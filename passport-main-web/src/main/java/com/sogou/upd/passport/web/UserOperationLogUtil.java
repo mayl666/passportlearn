@@ -76,10 +76,7 @@ public class UserOperationLogUtil {
             log.append(timestamp);
             log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
 
-            Enumeration<String> keys = request.getHeaderNames();
-            while (keys.hasMoreElements()) {
-                System.out.println(request.getHeader(keys.nextElement()));
-            }
+            System.out.println(request.getLocalAddr()+ ":"+request.getLocalName());
 
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
 
