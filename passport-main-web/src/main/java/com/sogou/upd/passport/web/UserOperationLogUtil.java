@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Map;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -41,23 +42,6 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLogger = LoggerFactory.getLogger("userOperationLogger");
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
-
-/*    static {
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        JoranConfigurator configurator = new JoranConfigurator();
-        configurator.setContext(lc);
-        StatusPrinter.printInCaseOfErrorsOrWarnings(lc);
-
-        InputStream in = UserOperationLogUtil.class.getClassLoader().getResourceAsStream("scribe-logback.xml");
-
-        try {
-            configurator.doConfigure(in);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }*/
-
 
     /**
      * 记录用户行为
@@ -91,6 +75,12 @@ public class UserOperationLogUtil {
             String timestamp = String.valueOf(date.getTime()).substring(0, 10);
             log.append(timestamp);
             log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+
+            Enumeration<String> keys = request.getHeaderNames();
+            while (keys.hasMoreElements()) {
+                System.out.println(request.getHeader(keys.nextElement()));
+            }
+
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
