@@ -80,7 +80,7 @@ public class UserOperationLogUtil {
             log.append(timestamp);
             log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
 
-            log.append("\t").append(StringUtil.defaultIfEmpty(InetAddress.getLocalHost().getHostAddress(), "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
 
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
 
@@ -130,24 +130,13 @@ public class UserOperationLogUtil {
 
     }
 
-    private static String getLocalIp(HttpServletRequest request) throws Exception {
-        if (Strings.isNullOrEmpty(LOCALIP)) {
-            Enumeration netInterfaces= NetworkInterface.getNetworkInterfaces();
-            InetAddress ip = null;
-            while(netInterfaces.hasMoreElements()) {
-                NetworkInterface ni = (NetworkInterface)netInterfaces.nextElement();
-                System.out.println(ni.getName());
-                ip=(InetAddress) ni.getInetAddresses().nextElement();
-                if( !ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":")==-1) {
-                    LOCALIP = ip.getHostAddress();
-                    break;
-                } else {
-                    ip = null;
-                }
-            }
+    private static String getLocalIp(HttpServletRequest request) {
+        try {
             if (Strings.isNullOrEmpty(LOCALIP)) {
-                LOCALIP = request.getLocalAddr();
+                LOCALIP = InetAddress.getLocalHost().getHostAddress();
             }
+        } catch (Exception e) {
+            LOCALIP = request.getLocalAddr();
         }
 
         return LOCALIP;
