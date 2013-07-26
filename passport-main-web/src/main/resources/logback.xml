@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Reference Manual http://logback.qos.ch/manual/index.html -->
 <configuration>
-    <include resource="scribe-logback.xml"/>
-
     <property name="log.path" value="/search/passport/log" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
@@ -46,20 +44,20 @@
             <pattern>%msg%n</pattern>
         </encoder>
     </appender>
- <!--   <logger name="userOperationLogger" level="info" additivity="false">
-        &lt;!&ndash;<appender-ref ref="userOperationAppender" />&ndash;&gt;
+    <logger name="userOperationLogger" level="info" additivity="false">
+        <!--<appender-ref ref="userOperationAppender" />-->
         <appender-ref ref="scribeAppender" />
     </logger>
 
     <appender name="scribeAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
-        &lt;!&ndash;<hostname>localhost</hostname>&ndash;&gt;
+        <!--<hostname>localhost</hostname>-->
         <scribeHost>127.0.0.1</scribeHost>
         <scribePort>1463</scribePort>
         <layout>
             <pattern>%msg%n</pattern>
         </layout>
         <scribeCategory>passport</scribeCategory>
-    </appender>-->
+    </appender>
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
