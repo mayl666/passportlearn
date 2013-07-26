@@ -21,6 +21,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -42,6 +44,8 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLogger = LoggerFactory.getLogger("userOperationLogger");
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
+
+    private static String LOCALIP = null;
 
     /**
      * 记录用户行为
@@ -76,7 +80,7 @@ public class UserOperationLogUtil {
             log.append(timestamp);
             log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
 
-            System.out.println(request.getLocalAddr()+ ":"+request.getLocalName());
+            log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
 
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
 
@@ -124,5 +128,28 @@ public class UserOperationLogUtil {
             logger.error("UserOperationLogUtil.log error", e);
         }
 
+    }
+
+    private static String getLocalIp(HttpServletRequest request) throws Exception {
+        if (Strings.isNullOrEmpty(LOCALIP)) {
+            Enumeration netInterfaces= NetworkInterface.getNetworkInterfaces();
+            InetAddress ip = null;
+            while(netInterfaces.hasMoreElements()) {
+                NetworkInterface ni = (NetworkInterface)netInterfaces.nextElement();
+                System.out.println(ni.getName());
+                ip=(InetAddress) ni.getInetAddresses().nextElement();
+                if( !ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":")==-1) {
+                    LOCALIP = ip.getHostAddress();
+                    break;
+                } else {
+                    ip = null;
+                }
+            }
+            if (Strings.isNullOrEmpty(LOCALIP)) {
+                LOCALIP = request.getLocalAddr();
+            }
+        }
+
+        return LOCALIP;
     }
 }
