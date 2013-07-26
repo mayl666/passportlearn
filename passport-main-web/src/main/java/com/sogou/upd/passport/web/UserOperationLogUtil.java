@@ -80,7 +80,7 @@ public class UserOperationLogUtil {
             log.append(timestamp);
             log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
 
-            log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(InetAddress.getLocalHost().getHostAddress(), "-"));
 
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
 
