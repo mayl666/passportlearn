@@ -42,7 +42,7 @@ public class UserOperationLogUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
 
-    static {
+/*    static {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(lc);
@@ -56,7 +56,7 @@ public class UserOperationLogUtil {
             throw new RuntimeException(e);
         }
 
-    }
+    }*/
 
 
     /**
