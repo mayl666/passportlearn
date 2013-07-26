@@ -189,6 +189,7 @@ public class SGHttpClient {
         switch (method) {
             case GET:
                 httpRequest = new HttpGet(requestModel.getUrl());
+                httpRequest.setParams(requestModel.getHttpPatams());
                 break;
             case POST:
                 HttpPost httpPost = new HttpPost(requestModel.getUrl());
