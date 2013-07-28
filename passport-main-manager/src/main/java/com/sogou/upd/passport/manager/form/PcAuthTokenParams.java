@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 下午11:21
  * To change this template use File | Settings | File Templates.
  */
-public class AuthPcTokenParams {
+public class PcAuthTokenParams {
 
     @NotBlank(message = "userid不允许为空")
     private String userid;   //登录账号

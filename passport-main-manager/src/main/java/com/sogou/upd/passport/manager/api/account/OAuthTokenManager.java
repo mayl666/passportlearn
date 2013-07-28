@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.api.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.AuthPcTokenParams;
 import com.sogou.upd.passport.manager.form.RefreshPcTokenParams;
 
 /**

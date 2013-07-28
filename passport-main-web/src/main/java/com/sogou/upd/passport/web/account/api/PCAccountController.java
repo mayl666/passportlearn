@@ -7,10 +7,9 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.form.AuthPcTokenParams;
+import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken",method = RequestMethod.GET)
-    public String authToken(HttpServletRequest request,AuthPcTokenParams authPcTokenParams) throws Exception {
+    public String authToken(HttpServletRequest request,PcAuthTokenParams authPcTokenParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);

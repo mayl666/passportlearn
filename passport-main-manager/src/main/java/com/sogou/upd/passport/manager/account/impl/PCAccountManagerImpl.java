@@ -4,7 +4,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
-import com.sogou.upd.passport.manager.form.AuthPcTokenParams;
+import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.service.account.PCAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class PCAccountManagerImpl implements PCAccountManager{
     private PCAccountService pcAccountService;
 
     @Override
-    public Result authToken(AuthPcTokenParams authPcTokenParams) {
+    public Result authToken(PcAuthTokenParams authPcTokenParams) {
         Result result = new APIResultSupport(false);
         try {
             //验证accessToken
