@@ -103,4 +103,7 @@ public class SHPPUrlConstant {
     public static final String CONNECT_LOGIN_ULR = "http://passport.sohu.com/openlogin/request.action";
     //获取第三方用户信息
     public static final String GET_OPEN_USER_INFO = BASE_OPEN_API_URL + "api/user/info";
+
+    /*================================Token验证相关url=======================================*/
+    public static final String SOHU_REFRESHTOKEN_URL = "http://passport.sohu.com/act/refreshtoken";
 }
