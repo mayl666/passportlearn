@@ -1,13 +1,8 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
-import com.sogou.upd.passport.manager.form.WebLoginParameters;
-import junit.framework.Assert;
-import org.apache.commons.codec.digest.DigestUtils;
+import com.sogou.upd.passport.manager.form.WebLoginParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +27,7 @@ public class LoginManagerImplTest extends BaseTest {
     @Test
     public void testAccountLogin() {
         try {
-            AtomicReference<WebLoginParameters> webLoginParameters = new AtomicReference<WebLoginParameters>(new WebLoginParameters());
+            AtomicReference<WebLoginParams> webLoginParameters = new AtomicReference<WebLoginParams>(new WebLoginParams());
             webLoginParameters.get().setUsername(username);
 //            String pwdMD5 = needMD5 ? DigestUtils.md5Hex(pwd.getBytes()) : pwd;
 //            webLoginParameters.get().setPassword(Coder.encryptMD5("123456"));

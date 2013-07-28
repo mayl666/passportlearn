@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
  * User: mayan Date: 13-4-15 Time: 下午5:15 To change this template use File | Settings | File
  * Templates.
  */
-public class ActiveEmailParameters {
+public class ActiveEmailParams {
   @NotBlank(message = "参数错误!")
   @Min(0)
   private String client_id;

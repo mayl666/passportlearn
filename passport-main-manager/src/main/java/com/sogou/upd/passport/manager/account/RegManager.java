@@ -2,9 +2,9 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
+import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
-import com.sogou.upd.passport.manager.form.WebRegisterParameters;
+import com.sogou.upd.passport.manager.form.WebRegisterParams;
 
 import java.util.Map;
 
@@ -29,14 +29,14 @@ public interface RegManager {
    * @param regParams 参数封装的对象
    * @return Result格式的返回值，提示注册成功信息
    */
-  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception;
+  public Result webRegister(WebRegisterParams regParams, String ip) throws Exception;
 
   /**
    * 激活验证邮件
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-  public Result activeEmail(ActiveEmailParameters activeParams,String ip) throws Exception;
+  public Result activeEmail(ActiveEmailParams activeParams,String ip) throws Exception;
   /**
    * 获取验证码
    *

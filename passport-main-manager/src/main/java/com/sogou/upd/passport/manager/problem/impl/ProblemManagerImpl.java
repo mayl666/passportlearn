@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
+import com.sogou.upd.passport.manager.form.WebAddProblemParams;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.model.problem.Problem;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -39,7 +39,7 @@ public class ProblemManagerImpl implements ProblemManager {
 
 
     @Override
-    public Result insertProblem(WebAddProblemParameters addProblemParams, String ip) throws Exception {
+    public Result insertProblem(WebAddProblemParams addProblemParams, String ip) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             if(!checkCaptcha(addProblemParams.getCaptcha(),addProblemParams.getToken())){

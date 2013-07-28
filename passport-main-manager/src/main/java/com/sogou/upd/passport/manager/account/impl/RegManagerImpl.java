@@ -23,9 +23,9 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
-import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
+import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.MobileRegParams;
-import com.sogou.upd.passport.manager.form.WebRegisterParameters;
+import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -79,7 +79,7 @@ public class RegManagerImpl implements RegManager {
 
 
   @Override
-  public Result webRegister(WebRegisterParameters regParams, String ip) throws Exception {
+  public Result webRegister(WebRegisterParams regParams, String ip) throws Exception {
 
     Result result = new APIResultSupport(false);
     String username =null;
@@ -234,7 +234,7 @@ public class RegManagerImpl implements RegManager {
 
 
   @Override
-  public Result activeEmail(ActiveEmailParameters activeParams, String ip) throws Exception {
+  public Result activeEmail(ActiveEmailParams activeParams, String ip) throws Exception {
     Result result = new APIResultSupport(false);
     try {
       String username = activeParams.getPassport_id();
