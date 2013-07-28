@@ -1,32 +1,15 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.AuthPcTokenParams;
-import com.sogou.upd.passport.manager.form.WebLoginParameters;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
-import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
-import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.PCAccountService;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
