@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletRequest;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-public class PCAccountController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(PCAccountController.class);
+public class PcAccountController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(PcAccountController.class);
 
     @Autowired
     private PcAccountManager pcAccountManager;
@@ -72,6 +72,7 @@ public class PCAccountController extends BaseController {
             return result.toString();
         }
 
+        result = pcAccountManager.authRefreshToken(reqParams);
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
         }
