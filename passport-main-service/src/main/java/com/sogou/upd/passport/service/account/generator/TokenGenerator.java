@@ -1,10 +1,11 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class TokenGenerator {
 
     /**
      * 生成access_token 构成格式 passportID|clientId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数|instanceId
+     * 采用非对称加密算法RSA
      */
     public static String generatorAccessToken(String passportId, int clientId, int expiresIn, String instanceId)
             throws Exception {
@@ -50,7 +52,7 @@ public class TokenGenerator {
         // 4位随机数
         String random = RandomStringUtils.randomAlphanumeric(4);
 
-        AccessTokenCipherDO accessTokenCipherData = new AccessTokenCipherDO(passportId, clientId, vaildTime, random, instanceId);
+        TokenCipherDO accessTokenCipherData = new TokenCipherDO(passportId, clientId, vaildTime, random, instanceId);
         String accessTokenContent = accessTokenCipherData.structureEncryptString();
 
         String encBase64Str;
@@ -83,6 +85,34 @@ public class TokenGenerator {
             throw e;
         }
         return encrypt;
+    }
+
+    /**
+     * 生成Pc端登录流程使用的token 构成格式 passportID|clientId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数|instanceId
+     * 采用HmacSHA1
+     */
+    public static String generatorPcToken(String passportId, int clientId, int expiresIn, String instanceId, String clientSecret)
+            throws Exception {
+
+        // 过期时间点
+        long vaildTime = generatorVaildTime(expiresIn);
+
+        // 4位随机数
+        String random = RandomStringUtils.randomAlphanumeric(4);
+
+        TokenCipherDO tokenCipherData = new TokenCipherDO(passportId, clientId, vaildTime, random, instanceId);
+        String tokenContent = tokenCipherData.structureEncryptString();
+
+        String token;
+        try {
+            token = Coder.encryptBASE64(Coder.encryptHMAC(tokenContent, clientSecret.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
+        } catch (Exception e) {
+            logger.error(
+                    "Pc Token generator fail, passportId:" + passportId + " clientId:" + clientId + " instanceId:"
+                            + instanceId);
+            throw e;
+        }
+        return token;
     }
 
     /**

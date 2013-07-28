@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
  * Date: 13-4-23
  * Time: 上午1:58
  */
-public class AccessTokenCipherDO {
+public class TokenCipherDO {
 
-    private static Logger logger = LoggerFactory.getLogger(AccessTokenCipherDO.class);
+    private static Logger logger = LoggerFactory.getLogger(TokenCipherDO.class);
     public static final String SEPARATOR = "|";
 
     public static final int ACCESS_PASSPORT_ID = 0;
@@ -26,10 +26,10 @@ public class AccessTokenCipherDO {
     private String random;
     private String instanceId;
 
-    public AccessTokenCipherDO() {
+    public TokenCipherDO() {
     }
 
-    public AccessTokenCipherDO(String passportId, int clientId, long vaildTime, String random, String instanceId) {
+    public TokenCipherDO(String passportId, int clientId, long vaildTime, String random, String instanceId) {
         this.passportId = passportId;
         this.clientId = clientId;
         this.vaildTime = vaildTime;
@@ -87,13 +87,13 @@ public class AccessTokenCipherDO {
         return sb.toString();
     }
 
-    public static AccessTokenCipherDO parseEncryptString(String decryTokenStr) throws Exception {
+    public static TokenCipherDO parseEncryptString(String decryTokenStr) throws Exception {
         String[] tokenArray = decryTokenStr.split("\\|");
         if (tokenArray.length != 5) {
             logger.error("AccessToken Decry String format error! str:{}", decryTokenStr);
             throw new IllegalArgumentException();
         }
-        AccessTokenCipherDO accessTokenCipherDO = new AccessTokenCipherDO();
+        TokenCipherDO accessTokenCipherDO = new TokenCipherDO();
         accessTokenCipherDO.setPassportId(tokenArray[ACCESS_PASSPORT_ID]);
         accessTokenCipherDO.setClientId(Integer.parseInt(tokenArray[ACCESS_CLIENT_ID]));
         accessTokenCipherDO.setVaildTime(Long.parseLong(tokenArray[ACCESS_VAILD_TIME]));

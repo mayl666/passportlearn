@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Date: 13-6-7
  * Time: 下午2:02
  */
-public class LoginManagerImplTest extends BaseTest {
+public class LoginManagerTest extends BaseTest {
 
     @Autowired
     private LoginManager LoginManagerImpl;
