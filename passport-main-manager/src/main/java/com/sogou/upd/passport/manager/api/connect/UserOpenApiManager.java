@@ -1,7 +1,8 @@
 package com.sogou.upd.passport.manager.api.connect;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.connect.form.UserOpenApiParams;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
+import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 
 /**
  * 用户类第三方开放平台接口代理

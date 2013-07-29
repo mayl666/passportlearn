@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.BeanUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,12 @@ public class BeanUtil {
         } catch (NoSuchMethodException e) {
             logger.error("Get BeanDesc NoSuchMethodException! BeanName:" + object, e);
         }
+        return map;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String,Object> objectToMap(Object object){
+        Map<String,Object> map = new ObjectMapper().convertValue(object,Map.class);
         return map;
     }
 }
