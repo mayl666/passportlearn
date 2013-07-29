@@ -88,11 +88,13 @@ public class KvUtils {
     }
 
     /**
+     * 将value添加到值列表中
+     * key：{value1、value2...}
      * @param key
      * @param value
-     * @param maxLen 如果maxLen为-1，则不限制条数
+     * @param maxLen 如果maxLen为-1，则不限制列表长度
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToList")
     public void pushWithMaxLen(String key, String value, int maxLen) {
         try {
             LinkedList<String> list;
@@ -108,7 +110,7 @@ public class KvUtils {
 
             list.addFirst(value);
             if (maxLen > 0) {
-                while (list.size() > 10) {
+                while (list.size() > maxLen) {
                     list.pollLast();
                 }
             }
@@ -118,6 +120,7 @@ public class KvUtils {
         }
     }
 
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList")
     public void pushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
             pushWithMaxLen(key, new ObjectMapper().writeValueAsString(obj), maxLen);
@@ -155,7 +158,7 @@ public class KvUtils {
     }
 
     // 查询键key的列表
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>")
     public LinkedList<String> getList(String key) {
         try {
             String strValue = get(key);
