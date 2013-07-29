@@ -85,7 +85,7 @@ public class PcAccountServiceImpl implements PcAccountTokenService {
             long tokenValidTime = accountToken.getAccessValidTime();
             return accessToken.equals(actualAccessToken) && isValidToken(tokenValidTime);
         }
-        return true;
+        return false;
     }
 
     @Override
