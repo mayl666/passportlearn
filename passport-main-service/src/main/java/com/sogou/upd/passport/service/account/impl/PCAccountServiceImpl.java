@@ -1,22 +1,17 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.google.common.collect.Lists;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PcAccountTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +27,7 @@ public class PcAccountServiceImpl implements PcAccountTokenService {
     @Autowired
     private KvUtils kvUtils;
     @Autowired
-    private TaskExecutor batchOperateExecutor;
+    private ThreadPoolTaskExecutor batchOperateExecutor;
 
     @Override
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
