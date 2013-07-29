@@ -1,10 +1,8 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Min;
 
 /**
  * sohu桌面应用token登录流程的参数类
@@ -14,7 +12,7 @@ import javax.validation.constraints.Min;
  * Time: 下午11:21
  * To change this template use File | Settings | File Templates.
  */
-public class PcPairTokenParams extends PcBaseParams{
+public class PCPairTokenParams extends PCBaseParams {
 
     private String password;  //密码的md5
     private String timestamp; //用于sig的时间戳

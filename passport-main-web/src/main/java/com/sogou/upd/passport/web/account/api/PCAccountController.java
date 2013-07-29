@@ -4,12 +4,12 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.PcAccountManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PCAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PCPairTokenParams;
+import com.sogou.upd.passport.manager.form.PCRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -31,17 +31,17 @@ import javax.servlet.http.HttpServletRequest;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-public class PcAccountController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(PcAccountController.class);
+public class PCAccountController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(PCAccountController.class);
 
     @Autowired
-    private PcAccountManager pcAccountManager;
+    private PCAccountManager pcAccountManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
     @RequestMapping(value = "/act/getpairtoken")
     @ResponseBody
-    public Object getPairToken(PcPairTokenParams reqParams) throws Exception {
+    public Object getPairToken(PCPairTokenParams reqParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
@@ -62,7 +62,7 @@ public class PcAccountController extends BaseController {
 
     @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
-    public Object refreshToken(PcRefreshTokenParams reqParams) throws Exception {
+    public Object refreshToken(PCRefreshTokenParams reqParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
@@ -82,7 +82,7 @@ public class PcAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
-    public String authToken(HttpServletRequest request, PcAuthTokenParams authPcTokenParams) throws Exception {
+    public String authToken(HttpServletRequest request, PCAuthTokenParams authPcTokenParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);

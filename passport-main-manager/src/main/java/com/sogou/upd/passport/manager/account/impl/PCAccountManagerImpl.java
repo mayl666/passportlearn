@@ -5,15 +5,15 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.PcAccountManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PCAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PCPairTokenParams;
+import com.sogou.upd.passport.manager.form.PCRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.account.PcAccountTokenService;
+import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,17 +28,17 @@ import org.springframework.stereotype.Component;
  * To change this template use File | Settings | File Templates.
  */
 @Component
-public class PcAccountManagerImpl implements PcAccountManager {
-    private static final Logger logger = LoggerFactory.getLogger(PcAccountManagerImpl.class);
+public class PCAccountManagerImpl implements PCAccountManager {
+    private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
-    private PcAccountTokenService pcAccountService;
+    private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
 
     @Override
-    public Result createPairToken(PcPairTokenParams pcTokenParams) {
+    public Result createPairToken(PCPairTokenParams pcTokenParams) {
         Result finalResult = new APIResultSupport(false);
         try {
             int clientId = Integer.parseInt(pcTokenParams.getAppid());
@@ -81,7 +81,7 @@ public class PcAccountManagerImpl implements PcAccountManager {
     }
 
     @Override
-    public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
+    public Result authRefreshToken(PCRefreshTokenParams pcRefreshTokenParams) {
 
         Result result = new APIResultSupport(false);
         int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
@@ -115,7 +115,7 @@ public class PcAccountManagerImpl implements PcAccountManager {
     }
 
     @Override
-    public Result authToken(PcAuthTokenParams authPcTokenParams) {
+    public Result authToken(PCAuthTokenParams authPcTokenParams) {
         Result result = new APIResultSupport(false);
         try {
             //验证accessToken

@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PCAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PCPairTokenParams;
+import com.sogou.upd.passport.manager.form.PCRefreshTokenParams;
 
 /**
  * 桌面端登录流程Manager
@@ -12,7 +12,7 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
  * Time: 上午11:48
  * To change this template use File | Settings | File Templates.
  */
-public interface PcAccountManager {
+public interface PCAccountManager {
 
     /**
      * 此接口处理两种情况下的生成pairToken：
@@ -22,14 +22,14 @@ public interface PcAccountManager {
      * @param pcTokenParams
      * @return
      */
-    public Result createPairToken(PcPairTokenParams pcTokenParams);
+    public Result createPairToken(PCPairTokenParams pcTokenParams);
 
     /**
      * 根据refreshtoken换一个token用来延长登陆
      * @param pcRefreshTokenParams
      * @return
      */
-    public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams);
+    public Result authRefreshToken(PCRefreshTokenParams pcRefreshTokenParams);
 
     /**
      * 验证token并根据token换取cookie
@@ -37,5 +37,5 @@ public interface PcAccountManager {
      * @param authPcTokenParams
      * @return
      */
-    public Result authToken(PcAuthTokenParams authPcTokenParams);
+    public Result authToken(PCAuthTokenParams authPcTokenParams);
 }
