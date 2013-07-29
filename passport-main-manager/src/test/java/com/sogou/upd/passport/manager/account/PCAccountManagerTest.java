@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 上午12:11
  * To change this template use File | Settings | File Templates.
  */
-public class PcAccountManagerTest extends BaseTest {
+public class PCAccountManagerTest extends BaseTest {
 
     @Autowired
-    private PcAccountManager pcAccountManager;
+    private PCAccountManager pcAccountManager;
 
     public void testVerifySig(){
 

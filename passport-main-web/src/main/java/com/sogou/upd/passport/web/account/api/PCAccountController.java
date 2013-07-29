@@ -4,12 +4,13 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.PcAccountManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -31,11 +32,11 @@ import javax.servlet.http.HttpServletRequest;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-public class PcAccountController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(PcAccountController.class);
+public class PCAccountController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(PCAccountController.class);
 
     @Autowired
-    private PcAccountManager pcAccountManager;
+    private PCAccountManager pcAccountManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
@@ -89,7 +90,7 @@ public class PcAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return "redirect:" + authPcTokenParams.getRu()+"?status=1";
         }
         result = pcAccountManager.authToken(authPcTokenParams);
         //重定向生成cookie
@@ -106,6 +107,7 @@ public class PcAccountController extends BaseController {
                 logger.error("authToken:createCookieUrl error");
             }
         }
-        return "";
+        //token验证失败
+        return "redirect:" + authPcTokenParams.getRu()+"?status=6";
     }
 }
