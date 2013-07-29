@@ -3,18 +3,9 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
-import com.sogou.upd.passport.manager.api.connect.form.relation.FriendsOpenApiParams;
-import com.sogou.upd.passport.manager.api.connect.form.info.InfoOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
