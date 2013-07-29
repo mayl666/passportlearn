@@ -83,24 +83,14 @@ public class PcAccountServiceImpl implements PcAccountTokenService {
 
 
     @Override
-    public boolean verifyAccessToken(String passportId, int clientId, String instanceId, String token) throws ServiceException {
-        String key = buildKeyStr(passportId, clientId, instanceId);
-        // TODO token和key的校验应该在controller做过了
-        // TODO 检查是否超过有效期
-        if (StringUtils.isEmpty(key) || StringUtils.isEmpty(token)) {
-            return false;
+    public boolean verifyAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
+        AccountToken accountToken = queryAccountToken(passportId, clientId, instanceId);
+        if (accountToken != null) {
+            String actualAccessToken = accountToken.getAccessToken();
+            long tokenValidTime = accountToken.getAccessValidTime();
+            return accessToken.equals(actualAccessToken) && isValidToken(tokenValidTime);
         }
-        boolean result = false;
-        try {
-            String storeToken = kvUtils.get(key);
-            if (token.equals(storeToken)) {
-                result = true;
-            }
-        } catch (Exception e) {
-            logger.error("recordNum:cacheKey" + key, e);
-            throw new ServiceException(e);
-        }
-        return result;
+        return true;
     }
 
     @Override
