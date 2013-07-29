@@ -17,7 +17,7 @@ public class ManagerHelperTest extends BaseTest {
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode(uniqname, clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCode(userid_renren, clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {
@@ -36,5 +36,11 @@ public class ManagerHelperTest extends BaseTest {
         System.out.println(str.matches("^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$"));
         //限制输入含有特定字符的
         //System.out.println(str.matches("^(?!.*搜狗)(?!.*sogou)(?!.*sougou).*$"));
+    }
+
+    @Test
+    public void testHttp() {
+        String url = "http://account.sogou.com";
+        System.out.println(url.matches("^(http)\\://"));
     }
 }

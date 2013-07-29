@@ -1,13 +1,14 @@
-package com.sogou.upd.passport.web.internal.connect;
+package com.sogou.upd.passport.web.internal.connect.relation;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
+import com.sogou.upd.passport.manager.api.connect.FriendsOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
-import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
+import com.sogou.upd.passport.manager.api.connect.form.relation.FriendsOpenApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.OpenApiParams;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +21,28 @@ import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
- * User: shipengzhi
- * Date: 13-7-10
- * Time: 下午12:40
+ * User: liuling
+ * Date: 13-7-29
+ * Time: 下午12:30
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/internal/connect/users")
-public class UserOpenApiController {
+@RequestMapping("/internal/connect/friends")
+public class FriendsOpenApiController {
 
     @Autowired
-    private UserOpenApiManager proxyUserOpenApiManager;
+    private FriendsOpenApiManager proxyFriendsOpenApiManager;
 
     /**
-     * 获取第三方账号的个人资料
+     * 获取第三方平台的用户好友列表和互相关注的列表
      *
      * @param params
      * @return
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/info", method = RequestMethod.POST)
+    @RequestMapping(value = "/friendship/friends", method = RequestMethod.POST)
     @ResponseBody
-    public Object getUserInfo(UserOpenApiParams params) {
+    public Object getUserFriendship(FriendsOpenApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -50,8 +51,8 @@ public class UserOpenApiController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        // 调用内部接口
-        result = proxyUserOpenApiManager.getUserInfo(params);
+        BaseOpenApiParams baseOpenApiParams = new OpenApiParams().createBaseForm(params);
+        result = proxyFriendsOpenApiManager.getUserFriends(baseOpenApiParams);
         return result.toString();
     }
 

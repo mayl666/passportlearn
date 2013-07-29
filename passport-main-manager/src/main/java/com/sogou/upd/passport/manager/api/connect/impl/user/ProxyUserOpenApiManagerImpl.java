@@ -1,12 +1,12 @@
-package com.sogou.upd.passport.manager.api.connect.impl;
+package com.sogou.upd.passport.manager.api.connect.impl.user;
 
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.api.BaseApiParams;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.UserOpenApiParams;
+import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,4 +25,5 @@ public class ProxyUserOpenApiManagerImpl extends BaseProxyManager implements Use
         requestModelJSON.addParams(userOpenApiParams);
         return executeResult(requestModelJSON);
     }
+
 }

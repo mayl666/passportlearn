@@ -25,7 +25,7 @@ import java.util.*;
  */
 public class RequestModel {
 
-    static final String DEFAULT_ENCODE= "UTF-8";
+    static final String DEFAULT_ENCODE = "UTF-8";
 
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
@@ -113,11 +113,10 @@ public class RequestModel {
     }
 
     /**
-     *
      * @param key
      * @return
      */
-    public Object getParam(String key){
+    public Object getParam(String key) {
         return this.params.get(key);
     }
 
@@ -140,6 +139,19 @@ public class RequestModel {
      */
     public void addParams(Object object) {
         Map<String, Object> param = BeanUtil.beanDescribe(object);
+        if (param == null || param.isEmpty()) {
+            return;
+        }
+        this.params.putAll(param);
+    }
+
+    /**
+     * 使用jackson将java对象转换成map
+     *
+     * @param object
+     */
+    public void convertObjectToMap(Object object) {
+        Map<String, Object> param = BeanUtil.objectToMap(object);
         if (param == null || param.isEmpty()) {
             return;
         }
