@@ -96,7 +96,7 @@ public class PcAccountController extends BaseController {
         if (result.isSuccess()) {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(authPcTokenParams.getUserid());
-            createCookieUrlApiParams.setRu("http://profile.ie.sogou.com/?status=0");
+            createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
             Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
             if (createCookieResult.isSuccess()) {
                 String setcookieUrl = createCookieResult.getModels().get("url").toString();
