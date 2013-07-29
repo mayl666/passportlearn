@@ -8,9 +8,10 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.form.PCAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PCPairTokenParams;
-import com.sogou.upd.passport.manager.form.PCRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcPairTokenParams;
+import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
@@ -38,7 +39,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private AppConfigService appConfigService;
 
     @Override
-    public Result createPairToken(PCPairTokenParams pcTokenParams) {
+    public Result createPairToken(PcPairTokenParams pcTokenParams) {
         Result finalResult = new APIResultSupport(false);
         try {
             int clientId = Integer.parseInt(pcTokenParams.getAppid());
@@ -81,7 +82,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public Result authRefreshToken(PCRefreshTokenParams pcRefreshTokenParams) {
+    public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
 
         Result result = new APIResultSupport(false);
         int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
@@ -115,7 +116,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public Result authToken(PCAuthTokenParams authPcTokenParams) {
+    public Result authToken(PcAuthTokenParams authPcTokenParams) {
         Result result = new APIResultSupport(false);
         try {
             //验证accessToken

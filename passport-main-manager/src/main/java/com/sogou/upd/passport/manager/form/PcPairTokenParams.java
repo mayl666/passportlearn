@@ -12,7 +12,7 @@ import javax.validation.constraints.AssertTrue;
  * Time: 下午11:21
  * To change this template use File | Settings | File Templates.
  */
-public class PCPairTokenParams extends PCBaseParams {
+public class PcPairTokenParams extends PcBaseParams {
 
     private String password;  //密码的md5
     private String timestamp; //用于sig的时间戳

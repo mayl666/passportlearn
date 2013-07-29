@@ -11,7 +11,7 @@ import javax.validation.constraints.Min;
  * Time: 上午12:53
  * To change this template use File | Settings | File Templates.
  */
-public class PCBaseParams {
+public class PcBaseParams {
 
     @NotBlank(message = "userid不允许为空")
     private String userid;   //登录账号

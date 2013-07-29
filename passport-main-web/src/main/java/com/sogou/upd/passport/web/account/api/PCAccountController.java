@@ -7,9 +7,10 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.form.PCAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PCPairTokenParams;
-import com.sogou.upd.passport.manager.form.PCRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcPairTokenParams;
+import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -41,7 +42,7 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/getpairtoken")
     @ResponseBody
-    public Object getPairToken(PCPairTokenParams reqParams) throws Exception {
+    public Object getPairToken(PcPairTokenParams reqParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
@@ -62,7 +63,7 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
-    public Object refreshToken(PCRefreshTokenParams reqParams) throws Exception {
+    public Object refreshToken(PcRefreshTokenParams reqParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
@@ -82,7 +83,7 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
-    public String authToken(HttpServletRequest request, PCAuthTokenParams authPcTokenParams) throws Exception {
+    public String authToken(HttpServletRequest request, PcAuthTokenParams authPcTokenParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);

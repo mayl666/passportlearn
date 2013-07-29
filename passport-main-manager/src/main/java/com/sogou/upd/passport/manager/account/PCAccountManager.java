@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.PCAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PCPairTokenParams;
-import com.sogou.upd.passport.manager.form.PCRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcPairTokenParams;
+import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 
 /**
  * 桌面端登录流程Manager
@@ -22,14 +22,14 @@ public interface PCAccountManager {
      * @param pcTokenParams
      * @return
      */
-    public Result createPairToken(PCPairTokenParams pcTokenParams);
+    public Result createPairToken(PcPairTokenParams pcTokenParams);
 
     /**
      * 根据refreshtoken换一个token用来延长登陆
      * @param pcRefreshTokenParams
      * @return
      */
-    public Result authRefreshToken(PCRefreshTokenParams pcRefreshTokenParams);
+    public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams);
 
     /**
      * 验证token并根据token换取cookie
@@ -37,5 +37,5 @@ public interface PCAccountManager {
      * @param authPcTokenParams
      * @return
      */
-    public Result authToken(PCAuthTokenParams authPcTokenParams);
+    public Result authToken(PcAuthTokenParams authPcTokenParams);
 }
