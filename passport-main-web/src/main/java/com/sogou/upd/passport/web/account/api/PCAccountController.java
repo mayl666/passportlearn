@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.PcAccountManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
@@ -31,11 +31,11 @@ import javax.servlet.http.HttpServletRequest;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-public class PcAccountController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(PcAccountController.class);
+public class PCAccountController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(PCAccountController.class);
 
     @Autowired
-    private PcAccountManager pcAccountManager;
+    private PCAccountManager pcAccountManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 

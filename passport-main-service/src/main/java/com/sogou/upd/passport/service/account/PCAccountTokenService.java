@@ -11,7 +11,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
  * Time: 上午11:53
  * To change this template use File | Settings | File Templates.
  */
-public interface PcAccountTokenService {
+public interface PCAccountTokenService {
 
     /**
      * 初始化AccountToken并存储

@@ -12,7 +12,7 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
  * Time: 上午11:48
  * To change this template use File | Settings | File Templates.
  */
-public interface PcAccountManager {
+public interface PCAccountManager {
 
     /**
      * 此接口处理两种情况下的生成pairToken：

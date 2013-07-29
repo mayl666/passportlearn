@@ -4,7 +4,7 @@ import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.account.PcAccountTokenService;
+import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-public class PcAccountServiceImpl implements PcAccountTokenService {
-    private static final Logger logger = LoggerFactory.getLogger(PcAccountServiceImpl.class);
+public class PCAccountServiceImpl implements PCAccountTokenService {
+    private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
     @Autowired
     private KvUtils kvUtils;
