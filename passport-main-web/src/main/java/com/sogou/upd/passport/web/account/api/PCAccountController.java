@@ -90,7 +90,7 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return "redirect:" + authPcTokenParams.getRu()+"?status=1";
         }
         result = pcAccountManager.authToken(authPcTokenParams);
         //重定向生成cookie
@@ -107,6 +107,7 @@ public class PCAccountController extends BaseController {
                 logger.error("authToken:createCookieUrl error");
             }
         }
-        return "";
+        //token验证失败
+        return "redirect:" + authPcTokenParams.getRu()+"?status=6";
     }
 }
