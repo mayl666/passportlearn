@@ -15,7 +15,7 @@ import javax.validation.constraints.Min;
 /**
  * 用于web端的登陆的参数 User: liagng201716@sogou-inc.com Date: 13-5-12 Time: 下午10:01
  */
-public class WebLoginParameters {
+public class WebLoginParams {
 
     /**
      * 登陆用户名

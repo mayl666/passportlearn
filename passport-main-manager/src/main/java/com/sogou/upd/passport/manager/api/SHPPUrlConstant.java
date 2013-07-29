@@ -107,4 +107,7 @@ public class SHPPUrlConstant {
     public static final String CONNECT_SHARE_PIC = BASE_OPEN_API_URL + "api/share/add_pic";
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
+
+    /*================================Token验证相关url=======================================*/
+    public static final String SOHU_REFRESHTOKEN_URL = "http://passport.sohu.com/act/refreshtoken";
 }

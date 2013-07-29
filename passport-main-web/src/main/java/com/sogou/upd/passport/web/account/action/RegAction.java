@@ -10,6 +10,8 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.manager.form.ActiveEmailParams;
+import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -18,9 +20,7 @@ import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.ActiveEmailParameters;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
-import com.sogou.upd.passport.manager.form.WebRegisterParameters;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -96,7 +96,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/reguser", method = RequestMethod.POST)
     @ResponseBody
-    public Object reguser(HttpServletRequest request, WebRegisterParameters regParams, Model model)
+    public Object reguser(HttpServletRequest request, WebRegisterParams regParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -157,7 +157,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
     @ResponseBody
-    public Object activeEmail(HttpServletRequest request, ActiveEmailParameters activeParams)
+    public Object activeEmail(HttpServletRequest request, ActiveEmailParams activeParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证

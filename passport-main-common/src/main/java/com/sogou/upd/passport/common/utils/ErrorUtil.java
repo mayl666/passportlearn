@@ -24,14 +24,18 @@ public class ErrorUtil {
     public static final String PROXY_SHPP_API_EXCEPTION = "10004";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
-    // 签名或accessToken验证失败
-//    public static final String ERR_OPEN_ID = "10006";
+    // refresh_token错误
+    public static final String ERR_REFRESH_TOKEN = "10006";
+    // 签名或token验证失败
+    public static final String ERR_SIGNATURE_OR_TOKEN = "10007";
     // 接口调用频次超限
     public static final String INVOKE_BEYOND_FREQUENCY_LIMIT = "10008";
     // 账号不存在或异常或未激活
     public static final String INVALID_ACCOUNT = "10009";
-    //client_id不存在
+    // client_id不存在
     public static final String INVALID_CLIENTID = "10010";
+    // 生成token失败
+    public static final String CREATE_TOKEN_FAIL = "10011";
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -283,7 +287,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
+        ERR_CODE_MSG_MAP.put(ERR_REFRESH_TOKEN, "refresh_token错误");
+        ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN,"签名或token验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
+        ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");

@@ -19,7 +19,7 @@ import javax.validation.constraints.Min;
  * User: mayan
  * Date: 13-4-15 Time: 下午5:15
  */
-public class WebRegisterParameters {
+public class WebRegisterParams {
   @NotBlank(message = "client_id不允许为空!")
   @Min(0)
   private String client_id;

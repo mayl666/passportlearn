@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.common.model.httpclient;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.BeanUtil;
@@ -10,10 +12,14 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.DefaultedHttpParams;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 
@@ -183,5 +189,32 @@ public class RequestModel {
             logger.error("http param url encode error ", e);
             throw new RuntimeException("http param url encode error", e);
         }
+    }
+
+    public Map<String,Object> getParams(){
+        return params;
+    }
+
+    public String getUrlWithParam(){
+        if(params==null||params.isEmpty()){
+            return getUrl();
+        }
+        StringBuilder url=new StringBuilder( getUrl());
+        url.append("?");
+        try {
+        for(Map.Entry<String,Object> entry:params.entrySet()){
+            if(!StringUtil.isBlank(entry.getKey())&&entry.getValue()!=null){
+                url.append("&");
+                url.append(URLEncoder.encode(entry.getKey(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+                url.append("=");
+                url.append(URLEncoder.encode(entry.getValue().toString(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+            }
+
+        }
+        } catch (UnsupportedEncodingException e) {
+            logger.error("getUrlWithParam UnsupportedEncodingException",e);
+            throw new RuntimeException("getUrlWithParam UnsupportedEncodingException ");
+        }
+        return url.toString();
     }
 }
