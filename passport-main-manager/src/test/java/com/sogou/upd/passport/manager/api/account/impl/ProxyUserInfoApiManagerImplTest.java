@@ -1,12 +1,16 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.SortParameters;
 
 import java.util.Calendar;
 
@@ -23,7 +27,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams getUserInfoApiparams=new GetUserInfoApiparams();
-        getUserInfoApiparams.setUserid("13600001111@sohu.com");
+        getUserInfoApiparams.setUserid("13910728588");
         getUserInfoApiparams.setFields("usertype,createip,birthday,gender,createip,createtime,"
                 +
                 "personalid,personalidflag,sec_mobile,sec_email,province," +
@@ -47,4 +51,13 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         Result result= proxyUserInfoApiManagerImpl.updateUserInfo(updateUserInfoApiParams);
         System.out.println(result);
     }
+
+    @Test
+    public void testCheckUniqName(){
+        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
+        updateUserUniqnameApiParams.setUniqname(uniqname);
+        Result result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
+        System.out.println("result输出结果为:" + result.toString());
+    }
+
 }

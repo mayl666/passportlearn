@@ -4,15 +4,13 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
+import com.sogou.upd.passport.manager.form.WebAddProblemParams;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
 import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +66,7 @@ public class ProblemAction extends BaseController {
 
     @RequestMapping(value = "/problem/saveProblem", method = RequestMethod.POST)
     @ResponseBody
-    public Object saveProblem(HttpServletRequest request, WebAddProblemParameters addProblemParams)
+    public Object saveProblem(HttpServletRequest request, WebAddProblemParams addProblemParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证

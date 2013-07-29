@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.WebLoginParameters;
+import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 
 /**
@@ -14,7 +14,7 @@ public interface LoginManager {
 
     public Result authorize(OAuthTokenASRequest oauthRequest);
 
-    public Result accountLogin(WebLoginParameters parameters,String ip,String scheme);
+    public Result accountLogin(WebLoginParams parameters,String ip,String scheme);
 
     /**
      * 获取username登陆的时候是否需要登陆验证码

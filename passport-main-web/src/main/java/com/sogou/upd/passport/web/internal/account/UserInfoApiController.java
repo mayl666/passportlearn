@@ -2,10 +2,13 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.web.util.UserOperationLogUtil;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
+import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -30,7 +33,7 @@ import java.util.Date;
  */
 @Controller
 @RequestMapping("/internal/account")
-public class UserInfoApiController {
+public class UserInfoApiController extends BaseController{
 
     //TODO 需要改为配置的，但目前配置有问题
     @InitBinder
@@ -61,8 +64,6 @@ public class UserInfoApiController {
         }
         // 调用内部接口
         result = proxyUserInfoApiManagerImpl.getUserInfo(params);
-        UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),request.getRequestURI(),String.valueOf(params.getClient_id()),result.getCode(),"");
-        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -87,8 +88,33 @@ public class UserInfoApiController {
         }
         // 调用内部接口
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
+
         UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),params.getModifyip());
         UserOperationLogUtil.log(userOperationLog);
+        return result.toString();
+    }
+
+    /**
+     * 检查用户昵称是否唯一
+     *
+     * @param params
+     * @param request
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/checkuniqname",method = RequestMethod.POST)
+    @ResponseBody
+    public Object checkUniqName(UpdateUserUniqnameApiParams params,HttpServletRequest request){
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        //调用检查昵称是否唯一的内部接口
+        result = proxyUserInfoApiManagerImpl.checkUniqName(params);
         return result.toString();
     }
 

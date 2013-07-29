@@ -17,7 +17,7 @@ import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.form.WebLoginParameters;
+import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
@@ -31,7 +31,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -126,7 +125,7 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public Result accountLogin(WebLoginParameters loginParameters, String ip, String scheme) {
+    public Result accountLogin(WebLoginParams loginParameters, String ip, String scheme) {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();

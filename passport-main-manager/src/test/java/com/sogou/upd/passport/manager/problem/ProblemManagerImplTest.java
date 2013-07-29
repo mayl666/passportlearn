@@ -2,13 +2,9 @@ package com.sogou.upd.passport.manager.problem;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.account.LoginManager;
-import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
-import com.sogou.upd.passport.manager.form.WebLoginParameters;
+import com.sogou.upd.passport.manager.form.WebAddProblemParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -29,7 +25,7 @@ public class ProblemManagerImplTest extends BaseTest {
     @Test
     public void testAccountLogin() {
         try {
-            WebAddProblemParameters webAddProblemParameters = new WebAddProblemParameters();
+            WebAddProblemParams webAddProblemParameters = new WebAddProblemParams();
             webAddProblemParameters.setPassportId("18612532596@sohu.com");
             webAddProblemParameters.setContent("搜狗通行证很好");
             webAddProblemParameters.setEmail("jiamengchen@126.com");

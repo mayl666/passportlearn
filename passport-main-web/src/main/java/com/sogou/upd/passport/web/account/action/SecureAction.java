@@ -17,7 +17,6 @@ import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.AccountScodeParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
@@ -27,7 +26,7 @@ import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import com.sogou.upd.passport.web.util.UserOperationLogUtil;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -346,6 +345,12 @@ public class SecureAction extends BaseController {
         updateParams.setIp(modifyIp);
 
         result = secureManager.resetWebPassword(updateParams);
+
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
@@ -524,13 +529,11 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result =
-                secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password,
-                                                     modifyIp);
+        result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
 
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -608,7 +611,7 @@ public class SecureAction extends BaseController {
 
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -646,13 +649,11 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result =
-                secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer,
-                                                     modifyIp);
+        result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
 
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

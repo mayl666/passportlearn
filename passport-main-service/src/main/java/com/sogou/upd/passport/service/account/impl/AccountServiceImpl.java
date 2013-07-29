@@ -261,7 +261,7 @@ public class AccountServiceImpl implements AccountService {
             String cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
             String ipValue = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(ipValue)) {
-                redisUtils.set(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY, TimeUnit.SECONDS);
+                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
             } else {
                 ipCount = Long.parseLong(ipValue);
                 //判断ip注册限制次数（一天20次）

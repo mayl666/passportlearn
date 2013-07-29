@@ -113,4 +113,5 @@ public class UserOperationLog {
     public void setIp(String ip) {
         this.ip = ip;
     }
+
 }

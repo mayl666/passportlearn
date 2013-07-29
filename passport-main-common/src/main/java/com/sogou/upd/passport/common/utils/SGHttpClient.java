@@ -52,7 +52,7 @@ public class SGHttpClient {
     /**
      * 获取连接的最大等待时间
      */
-    private final static int WAIT_TIMEOUT = 10000;
+    private final static int WAIT_TIMEOUT = 2000;
     /**
      * 每个路由最大连接数
      */
@@ -60,7 +60,7 @@ public class SGHttpClient {
     /**
      * 读取超时时间
      */
-    private final static int READ_TIMEOUT = 10000;
+    private final static int READ_TIMEOUT = 2000;
 
     /**
      * http返回成功的code
@@ -188,7 +188,7 @@ public class SGHttpClient {
         HttpMethodEnum method = requestModel.getHttpMethodEnum();
         switch (method) {
             case GET:
-                httpRequest = new HttpGet(requestModel.getUrl());
+                httpRequest = new HttpGet(requestModel.getUrlWithParam());
                 break;
             case POST:
                 HttpPost httpPost = new HttpPost(requestModel.getUrl());

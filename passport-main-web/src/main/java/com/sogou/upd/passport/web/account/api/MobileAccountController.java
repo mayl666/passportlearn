@@ -119,7 +119,7 @@ public class MobileAccountController extends BaseController {
     /**
      * 找回用户密码
      */
-    @RequestMapping(value = {"/v2/findpwd", "/mobile/sendfpwdsms"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/mobile/sendfpwdsms", method = RequestMethod.GET)
     @ResponseBody
     public Object findPassword(MoblieCodeParams reqParams)
             throws Exception {
@@ -156,7 +156,7 @@ public class MobileAccountController extends BaseController {
     /**
      * 重置密码
      */
-    @RequestMapping(value = {"/v2/mobile/resetpwd", "/mobile/resetmobilepwd"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/mobile/resetmobilepwd", method = RequestMethod.POST)
     @ResponseBody
     public Object resetPassword(MobileModifyPwdParams regParams) throws Exception {
         Result result = new APIResultSupport(false);
