@@ -1,16 +1,13 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.SortParameters;
 
 import java.util.Calendar;
 
@@ -26,14 +23,14 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Test
     public void testGetUserInfo() throws Exception {
-        GetUserInfoApiparams getUserInfoApiparams=new GetUserInfoApiparams();
-        getUserInfoApiparams.setUserid("13910728588");
-        getUserInfoApiparams.setFields("usertype,createip,birthday,gender,createip,createtime,"
-                +
-                "personalid,personalidflag,sec_mobile,sec_email,province," +
-                "city,createtime,sec_ques,avatarurl,regappid");
-//        getUserInfoApiparams.setFields("gender");
-        Result result= proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+        GetUserInfoApiParams getUserInfoApiParams=new GetUserInfoApiParams();
+        getUserInfoApiParams.setUserid("13910728588");
+//        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
+//                +
+//                "personalid,personalidflag,sec_mobile,sec_email,province," +
+//                "city,createtime,sec_ques,avatarurl,regappid");
+        getUserInfoApiParams.setFields("uniqname");
+        Result result= proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiParams);
         System.out.println(result);
     }
 

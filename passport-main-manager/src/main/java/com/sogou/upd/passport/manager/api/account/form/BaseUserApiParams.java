@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.NotBlank;
 public class BaseUserApiParams extends BaseApiParams {
 
     @NotBlank(message = "用户id（userid）不能为空")
-    private String userid;
+    protected String userid;
 
     public String getUserid() {
         return userid;

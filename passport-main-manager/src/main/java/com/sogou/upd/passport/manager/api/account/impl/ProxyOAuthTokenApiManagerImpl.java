@@ -6,7 +6,8 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.OAuthTokenManager;
+import com.sogou.upd.passport.manager.api.account.OAuthTokenApiManager;
+import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.manager.form.RefreshPcTokenParams;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,14 +21,14 @@ import org.springframework.stereotype.Component;
  * Time: 下午1:49
  * To change this template use File | Settings | File Templates.
  */
-@Component("proxyOAuthTokenManager")
-public class ProxyOAuthTokenManagerImpl extends BaseProxyManager implements OAuthTokenManager {
-    private static Logger log = LoggerFactory.getLogger(ProxyOAuthTokenManagerImpl.class);
+@Component("proxyOAuthTokenApiManager")
+public class ProxyOAuthTokenApiManagerImpl extends BaseProxyManager implements OAuthTokenApiManager {
+    private static Logger log = LoggerFactory.getLogger(ProxyOAuthTokenApiManagerImpl.class);
 
-    public Result refreshToken(RefreshPcTokenParams refreshPcTokenParams){
+    public Result refreshToken(PcRefreshTokenParams pcRefreshTokenParams){
         Result result = new APIResultSupport(false);
         RequestModel requestModel = new RequestModel(SHPPUrlConstant.SOHU_REFRESHTOKEN_URL);
-        requestModel.addParams(refreshPcTokenParams);
+        requestModel.addParams(pcRefreshTokenParams);
         String resultStr = SGHttpClient.executeStr(requestModel);
         if(!StringUtils.isEmpty(resultStr)){
             String[] resultArr = resultStr.split("\\|");

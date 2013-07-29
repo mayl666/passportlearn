@@ -22,14 +22,8 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
-import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
@@ -46,14 +40,12 @@ import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -185,7 +177,7 @@ public class SecureManagerImpl implements SecureManager {
 
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // SOHU接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                GetUserInfoApiParams getUserInfoApiparams = new GetUserInfoApiParams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setFields(SECURE_FIELDS);
@@ -297,7 +289,7 @@ public class SecureManagerImpl implements SecureManager {
 
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                GetUserInfoApiParams getUserInfoApiparams = new GetUserInfoApiParams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setFields(SECURE_FIELDS);
@@ -590,7 +582,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                GetUserInfoApiParams getUserInfoApiparams = new GetUserInfoApiParams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setFields(SECURE_FIELDS);
@@ -717,7 +709,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                GetUserInfoApiParams getUserInfoApiparams = new GetUserInfoApiParams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setFields(SECURE_FIELDS);

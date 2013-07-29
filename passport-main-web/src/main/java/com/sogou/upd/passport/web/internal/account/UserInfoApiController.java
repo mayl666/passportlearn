@@ -2,15 +2,14 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiParams;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
@@ -53,7 +52,7 @@ public class UserInfoApiController extends BaseController{
     @InterfaceSecurity
     @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
     @ResponseBody
-    public Object getUserInfo(GetUserInfoApiparams params,HttpServletRequest request) {
+    public Object getUserInfo(GetUserInfoApiParams params,HttpServletRequest request) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
