@@ -20,7 +20,7 @@ import java.util.LinkedList;
 public class KvUtils {
 
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
-    private static String KEY_PREFIX = "20002/action_records/";
+    // private static String KEY_PREFIX = "20002/action_records/";
     // private static String KEY_PREFIX_TEST = "0/0/";
 
     private final static String KV_PERF4J_LOGGER = "rediesTimingLogger";
@@ -30,7 +30,7 @@ public class KvUtils {
 
     @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
     public void set(String key, String value) {
-        String storeKey = KEY_PREFIX + key;
+        String storeKey = key;
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
@@ -53,7 +53,7 @@ public class KvUtils {
 
     @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
     public String get(String key) {
-        String storeKey = KEY_PREFIX + key;
+        String storeKey = key;
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             return valueOperations.get(storeKey);
@@ -80,7 +80,7 @@ public class KvUtils {
     @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete")
     public void delete(String key) {
         try {
-            String storeKey = KEY_PREFIX + key;
+            String storeKey = key;
             kvTemplate.delete(storeKey);
         } catch (Exception e) {
 
