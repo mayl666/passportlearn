@@ -7,15 +7,15 @@ import org.hibernate.validator.constraints.NotBlank;
  * Date: 13-6-13
  * Time: 上午10:31
  */
-public class GetUserInfoApiParams extends BaseUserApiParams {
+public class GetUserInfoApiparams extends BaseUserApiParams {
 
     @NotBlank(message = "需要返回的参数列表（fields）不能为空")
     private String fields;
 
-    public GetUserInfoApiParams() {
+    public GetUserInfoApiparams() {
     }
 
-    public GetUserInfoApiParams(String userId, String fields) {
+    public GetUserInfoApiparams(String userId, String fields) {
         this.userid = userId;
         this.fields = fields;
     }

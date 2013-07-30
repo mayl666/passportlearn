@@ -3,7 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import org.junit.Test;
@@ -23,7 +23,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Test
     public void testGetUserInfo() throws Exception {
-        GetUserInfoApiParams getUserInfoApiParams=new GetUserInfoApiParams();
+        GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
         getUserInfoApiParams.setUserid("13910728588");
 //        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
 //                +

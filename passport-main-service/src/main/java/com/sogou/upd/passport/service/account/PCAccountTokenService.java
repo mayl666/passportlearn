@@ -45,7 +45,25 @@ public interface PCAccountTokenService {
      */
     public AccountToken updateOrInsertAccountToken(String passportId, String instanceId, AppConfig appConfig) throws ServiceException;
 
+    /**
+     * 验证accesstoken正确性
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param token
+     * @return
+     * @throws ServiceException
+     */
     public boolean verifyAccessToken(String passportId, int clientId, String instanceId, String token) throws ServiceException;
 
+    /**
+     * 验证refreshToken正确性
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
+     * @return
+     * @throws ServiceException
+     */
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
 }

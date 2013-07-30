@@ -8,7 +8,7 @@ import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
@@ -58,7 +58,7 @@ public class PCAccountController extends BaseController {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             // TODO 获取昵称，返回格式
             String passportId = accountToken.getPassportId();
-            GetUserInfoApiParams getUserInfoApiparams = new GetUserInfoApiParams(passportId, "uniqname");
+            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
             Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
             String uniqname;
             if (getUserInfoResult.isSuccess()) {
