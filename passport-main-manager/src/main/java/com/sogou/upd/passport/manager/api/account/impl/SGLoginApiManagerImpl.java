@@ -29,21 +29,13 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
 
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         Result result = new APIResultSupport(false);
-        String userId = authUserApiParams.getUserid();
-        String password = authUserApiParams.getPassword();
-        String passportId = userId;
         try {
-            //判断登录用户类型
-            if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))) {
-                passportId = mobilePassportMappingService.queryPassportIdByUsername(userId);
-            }
-            return accountService.verifyUserPwdVaild(passportId,password,false);
+            result = accountService.verifyUserPwdVaild(authUserApiParams.getUserid(),authUserApiParams.getPassword(),false);
+            return result;
         } catch (Exception e) {
             logger.error("accountLogin fail,userId:" + authUserApiParams.getUserid(), e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
