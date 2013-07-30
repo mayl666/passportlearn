@@ -68,6 +68,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             String key = buildKeyStr(passportId, clientId, instanceId);
             kvUtils.set(key, accountToken);
+            // TODO 更新映射关系
             return accountToken;
         } catch (Exception e) {
             logger.error("UpdateOrInsert AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);

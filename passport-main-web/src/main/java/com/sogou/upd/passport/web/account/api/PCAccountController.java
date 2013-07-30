@@ -6,11 +6,12 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -38,6 +39,8 @@ public class PCAccountController extends BaseController {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
+    private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    @Autowired
     private LoginApiManager proxyLoginApiManager;
 
     @RequestMapping(value = "/act/getpairtoken")
@@ -47,39 +50,69 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+            return "1";
         }
 
         result = pcAccountManager.createPairToken(reqParams);
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
+            // TODO 获取昵称，返回格式
+            String passportId = accountToken.getPassportId();
+            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
+            Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+            String uniqname;
+            if (getUserInfoResult.isSuccess()) {
+                uniqname = (String) getUserInfoResult.getModels().get("uniqname");
+                uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
+            } else {
+                uniqname = defaultUniqname(passportId);
+            }
+            return "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
+        } else {
+            switch (result.getCode()) {
+                case ErrorUtil.INVALID_CLIENTID:
+                    return "1"; //参数错误
+                case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
+                    return "2";  //用户名不存在
+                case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
+                    return "3";  //用户名密码错误
+                case ErrorUtil.ERR_SIGNATURE_OR_TOKEN:
+                    return "7|invalid sig"; //生成token失败
+                default:
+                    return "6"; //失败
+            }
         }
-        // TODO 获取昵称，返回格式
+    }
 
-        return result.toString();
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
     }
 
     @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
     public Object refreshToken(PcRefreshTokenParams reqParams) throws Exception {
-        Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+            return "1|invalid|required_params";  //参数错误
         }
 
-        result = pcAccountManager.authRefreshToken(reqParams);
+        Result result = pcAccountManager.authRefreshToken(reqParams);
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
+            return accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
+        } else {
+            switch (result.getCode()) {
+                case ErrorUtil.INVALID_CLIENTID:
+                    return "1|invalid|required_params";
+                case ErrorUtil.ERR_REFRESH_TOKEN:
+                    return "2|invalid|refreshtoken";
+                case ErrorUtil.CREATE_TOKEN_FAIL:
+                    return "3|failed|createtoken"; //生成token失败
+                default:
+                    return "6|error|syste_error"; //系统错误
+            }
         }
-        // TODO 获取昵称，返回格式
-
-        return result.toString();
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
@@ -88,9 +121,7 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return "redirect:" + authPcTokenParams.getRu()+"?status=1";
+            return "redirect:" + authPcTokenParams.getRu() + "?status=1";
         }
         result = pcAccountManager.authToken(authPcTokenParams);
         //重定向生成cookie
@@ -108,6 +139,6 @@ public class PCAccountController extends BaseController {
             }
         }
         //token验证失败
-        return "redirect:" + authPcTokenParams.getRu()+"?status=6";
+        return "redirect:" + authPcTokenParams.getRu() + "?status=6";
     }
 }

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
@@ -16,8 +17,7 @@ import javax.inject.Inject;
  * Time: 上午10:30
  * To change this template use File | Settings | File Templates.
  */
-@ContextConfiguration(locations = "classpath:spring-config-test.xml")
-public class AccountTokenServiceTest extends AbstractJUnit4SpringContextTests {
+public class AccountTokenServiceTest extends BaseTest {
 
     @Inject
     private AccountTokenService accountAuthService;
