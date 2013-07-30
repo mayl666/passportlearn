@@ -9,7 +9,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import org.springframework.stereotype.Component;
@@ -43,7 +43,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
     }
 
     @Override
-    public Result getUserInfo(GetUserInfoApiParams getUserInfoApiparams) {
+    public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         String fields = getUserInfoApiparams.getFields();
         String[] fieldList = fields.split(",");
