@@ -116,12 +116,16 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
-    public String authToken(HttpServletRequest request, PcAuthTokenParams authPcTokenParams) throws Exception {
+    public String authToken(PcAuthTokenParams authPcTokenParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return "redirect:" + authPcTokenParams.getRu() + "?status=1";
+            if(!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
+                return "redirect:" + authPcTokenParams.getRu() + "?status=1";
+            }
+            return "";
+
         }
         result = pcAccountManager.authToken(authPcTokenParams);
         //重定向生成cookie
