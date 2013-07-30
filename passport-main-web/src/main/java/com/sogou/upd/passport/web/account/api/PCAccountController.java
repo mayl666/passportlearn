@@ -21,10 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * 桌面端登录流程Controller
  * User: shipengzhi
@@ -116,12 +114,15 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
-    public String authToken(HttpServletRequest request, PcAuthTokenParams authPcTokenParams) throws Exception {
+    public String authToken(PcAuthTokenParams authPcTokenParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return "redirect:" + authPcTokenParams.getRu() + "?status=1";
+            if(!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
+                return "redirect:" + authPcTokenParams.getRu() + "?status=1";   //status=1表示参数错误
+            }
+            return "forward:/act/errorMsg?msg=Error: parameter error!";
         }
         result = pcAccountManager.authToken(authPcTokenParams);
         //重定向生成cookie
@@ -139,6 +140,12 @@ public class PCAccountController extends BaseController {
             }
         }
         //token验证失败
-        return "redirect:" + authPcTokenParams.getRu() + "?status=6";
+        return "redirect:" + authPcTokenParams.getRu() + "?status=6";//status=6表示验证失败
+    }
+
+    @RequestMapping(value = "/act/errorMsg")
+    @ResponseBody
+    public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
+       return msg;
     }
 }
