@@ -53,7 +53,7 @@
         <layout>
             <pattern>%msg</pattern>
         </layout>
-        <scribeCategory>passport</scribeCategory>
+        <scribeCategory>passport_user</scribeCategory>
     </appender>
 
     <logger name="userOperationLogger" level="info" additivity="false">
