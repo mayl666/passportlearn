@@ -17,7 +17,7 @@ public class ManagerHelperTest extends BaseTest {
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode(uniqname, clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCode(userid, clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {

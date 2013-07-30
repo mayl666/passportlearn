@@ -37,6 +37,12 @@ public class InfoOpenApiParams extends BaseOpenApiParams {
         return true;
     }
 
+    @AssertTrue(message = "不支持该第三方")
+    private boolean checkConnectType(){
+
+        return false;
+    }
+
     public String getMessage() {
         return message;
     }

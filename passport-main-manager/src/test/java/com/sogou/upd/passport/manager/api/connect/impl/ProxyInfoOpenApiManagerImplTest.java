@@ -121,11 +121,14 @@ public class ProxyInfoOpenApiManagerImplTest extends BaseTest {
 
     @Test
     public void testCheckProvider() {
-        String openid = "6060606060@sina.sohu.com";
-        String openid2 = "xxxxxx@qq.sohu.com";
+        String openid = "6060606060@sina.sohu.com";      //新浪
+        String openid2 = "xxxxxx@qq.sohu.com";            //QQ空间
+        String openid3 = "xxxxx@t.qq.sohu.com";           //腾讯微博
         String[] strings = openid2.split("\\.");
-        String s = strings[0].substring(strings[0].indexOf("@") + 1, strings[0].length());
-        System.out.println(s);
+        String s1 = strings[0].substring(strings[0].indexOf("@") + 1, strings[0].length());
+        //获取第三方类型
+        String s2 = openid3.substring(openid3.indexOf("@") + 1, openid3.indexOf("sohu") - 1);
+        System.out.println(s2);
 
     }
 }
