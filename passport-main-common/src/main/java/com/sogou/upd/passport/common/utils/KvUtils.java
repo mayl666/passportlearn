@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.aop.Profiled;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * sogou kv系统 User: mayan Date: 13-6-24 Time: 下午6:34
@@ -21,7 +23,6 @@ public class KvUtils {
 
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
     private static String KEY_PREFIX = "20002/action_records/";
-    // private static String KEY_PREFIX_TEST = "0/0/";
 
     private final static String KV_PERF4J_LOGGER = "rediesTimingLogger";
 
@@ -88,6 +89,25 @@ public class KvUtils {
     }
 
     /**
+     * String：Set的映射中，向Set里新增一个元素
+     * @param key
+     * @param value
+     */
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
+    public void pushToSet(String key, String value){
+        try{
+            Set set = getObject(key, Set.class);
+            if(CollectionUtils.isEmpty(set)){
+                set = Sets.newHashSet();
+            }
+            set.add(value);
+            set(key, new ObjectMapper().writeValueAsString(set));
+        } catch (Exception e) {
+            logger.error("[KvCache] lPush String To Set, key:" + key, e);
+        }
+    }
+
+    /**
      * 将value添加到值列表中
      * key：{value1、value2...}
      * @param key
@@ -129,14 +149,6 @@ public class KvUtils {
         }
     }
 
-    public void pushStringToList(String key, String str) {
-        try {
-            pushWithMaxLen(key, str, -1);
-        } catch (Exception e) {
-            logger.error("[KvCache] lpush object with maxlen key: " + key, e);
-        }
-    }
-
     public <T> T top(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -160,18 +172,7 @@ public class KvUtils {
     // 查询键key的列表
     @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>")
     public LinkedList<String> getList(String key) {
-        try {
-            String strValue = get(key);
-            if (Strings.isNullOrEmpty(strValue)) {
-                return null;
-            }
-            LinkedList<String> list = new ObjectMapper().readValue(strValue, LinkedList.class);
-
-            return list;
-        } catch (Exception e) {
-            logger.error("[KvCache] get list fail key: " + key, e);
-            return null;
-        }
+        return getObject(key, LinkedList.class);
     }
 
     @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<Object>")

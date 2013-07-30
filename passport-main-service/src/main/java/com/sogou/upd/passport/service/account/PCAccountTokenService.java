@@ -43,10 +43,11 @@ public interface PCAccountTokenService {
      * @return
      * @throws ServiceException
      */
-    public AccountToken updateOrInsertAccountToken(String passportId, String instanceId, AppConfig appConfig) throws ServiceException;
+    public AccountToken updateOrInsertAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
 
     /**
      * 验证accesstoken正确性
+     *
      * @param passportId
      * @param clientId
      * @param instanceId
@@ -58,6 +59,7 @@ public interface PCAccountTokenService {
 
     /**
      * 验证refreshToken正确性
+     *
      * @param passportId
      * @param clientId
      * @param instanceId
