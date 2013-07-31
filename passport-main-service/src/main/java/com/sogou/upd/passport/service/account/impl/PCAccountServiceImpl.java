@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class PCAccountServiceImpl implements PCAccountTokenService {
     private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
-    private static String KEY_PREFIX = "20002/account_token/";
+    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
 
     @Autowired
     private KvUtils kvUtils;
