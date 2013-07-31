@@ -68,6 +68,6 @@ public class CacheConstant {
     public static final String KV_PREFIX_PASSPORTID_ACTIONRECORD = "20002/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_"; // passportId与操作列表的映射
 
     /*==================token相关缓存常量========================*/
-    public static final String KV_PREFIX_PASSPORTID_TOKEN = "20002/account_token/ACCOUNTTOKEN_";
+    public static final String KV_PREFIX_PASSPORTID_TOKEN = "20002/account_token/";
 
 }

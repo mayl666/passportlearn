@@ -127,15 +127,12 @@ public class SGBindApiManagerImpl implements BindApiManager {
             }
         }
 
-        result = accountService.verifyUserPwdVaild(userId, password, false);
-        result.setDefaultModel(null);
-        /*if (!result.isSuccess()) {
-            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+        result = accountService.verifyUserPwdVaild(userId, password, true);
+        if(!result.isSuccess()){
             return result;
-        }*/ // TODO:Manager里已经加了
+        }
 
-        if (!emailSenderService.sendEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail, true)) {
+        if (!emailSenderService.sendBindEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail, bindEmailApiParams.getRu())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }

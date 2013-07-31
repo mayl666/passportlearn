@@ -17,6 +17,7 @@ import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.AccountScodeParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
@@ -398,11 +399,10 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
-    // TODO:等数据迁移后需要修改和测试此方法
     /*
      * 验证绑定邮件
      */
-/*    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
+    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -425,12 +425,8 @@ public class SecureAction extends BaseController {
 
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
         model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return ""; // TODO:成功页面
-        } else {
-            return ""; // TODO:错误页面
-        }
-    }   */
+        return "redirect:"+params.getRu();
+    }
 
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机

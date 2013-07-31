@@ -40,6 +40,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("city");//城市
         SUPPORT_FIELDS_MAP.add("personalid");//身份证号
         SUPPORT_FIELDS_MAP.add("username"); //用户真实姓名
+        SUPPORT_FIELDS_MAP.add("uniqname"); //用户昵称
     }
 
     @Override
