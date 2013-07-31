@@ -80,8 +80,10 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
         // 第三方账号不显示安全信息
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
-            result.setDefaultModel("disable", true);
-            result.setSuccess(true);
+            // result.setDefaultModel("disable", true);
+            // result.setSuccess(true);
+            // model.addAttribute("data", result.toString());
+            return "redirect:/";
         } else {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         }
@@ -124,7 +126,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDEMAIL_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -167,7 +169,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
             case PHONE:
                 return "redirect:/web/security";
         }
@@ -212,7 +214,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDQUES_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -255,7 +257,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_RESETPWD_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result.setSuccess(true);
@@ -291,6 +293,11 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+
+        switch (domain) {
+            case THIRD:
+                return "redirect:/";
+        }
 
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
