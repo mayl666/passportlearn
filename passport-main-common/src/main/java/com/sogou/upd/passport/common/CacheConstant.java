@@ -55,8 +55,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST = "SP.PASSPORTID_:ADDPROBLEMTIMES_"; // passortId与提交反馈次数之间的映射
     public static final String CACHE_PREFIX_PROBLEM_IPINBLACKLIST = "SP.IP_ADDPROBLEMTIMES:_"; // IP与提交反馈次数之间的映射
 
-    /*==================动作记录相关缓存常量=====================*/
-    public static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = "SP.PASSPORTID:ACTIONRECORD_LIST_"; // passportId与操作列表的映射
 
     /*==================token缓存常量=====================*/
     public static final String CACHE_PREFIX_SECURECODE = "SP.SECURECODE:SCODE_";
@@ -64,4 +62,12 @@ public class CacheConstant {
     /*==================proxy相关缓存常量=====================*/
     // TODO:迁移后，此常量将删除
     public static final String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = "SP.MOBILE:PROXY_SMSCODE_";
+
+    /*-----------------------------------------   KV系统   -----------------------------------------*/
+    /*==================动作记录相关缓存常量=====================*/
+    public static final String KV_PREFIX_PASSPORTID_ACTIONRECORD = "20002/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_"; // passportId与操作列表的映射
+
+    /*==================token相关缓存常量========================*/
+    public static final String KV_PREFIX_PASSPORTID_TOKEN = "20002/account_token/";
+
 }
