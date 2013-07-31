@@ -7,11 +7,11 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.OAuthTokenApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
@@ -30,9 +30,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PCAccountManagerImpl implements PCAccountManager {
+
+    private static final long SIG_EXPIRES = 60 * 60 * 1000; //sig里的timestamp有效期，一小时，单位毫秒
     private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private OAuthTokenApiManager proxyOAuthTokenApiManager;
     @Autowired
     private PCAccountTokenService pcAccountService;
     @Autowired
@@ -90,8 +94,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
-            // TODO 先去sohu验证refreshToken
-            if (!pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+            Result verifyRTResult = proxyOAuthTokenApiManager.refreshToken(pcRefreshTokenParams);
+            if (!verifyRTResult.isSuccess() && !pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
                 result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                 return result;
             }
@@ -138,6 +142,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
      * 校验签名，算法：sig=MD5(passportId + clientId + refresh_token + timestamp + clientSecret）
      */
     private boolean verifySig(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
+        // 校验时间戳
+        long curTimestamp = System.currentTimeMillis();
+        long ts = Long.parseLong(timestamp);
+        if (curTimestamp > ts + SIG_EXPIRES) {
+            return false;
+        }
         // TODO 调用sohu的根据userid获取refreshToken接口
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
         if (accountToken == null) {

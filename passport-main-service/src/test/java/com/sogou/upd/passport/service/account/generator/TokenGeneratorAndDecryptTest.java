@@ -77,5 +77,15 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
         }
     }
 
+    @Test
+    public void testGeneratorPcToken() {
+        try {
+            String pcToken = TokenGenerator.generatorPcToken(PASSPORT_ID_EMAIL, CLIENT_ID, EXPIRES_IN, INSTANCE_ID, CLIENT_SECRET);
+            System.out.println("pcToken:" + pcToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
