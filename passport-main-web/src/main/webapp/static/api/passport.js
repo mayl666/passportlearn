@@ -1,1 +1,1 @@
-(function(){ document.write('<script type="text/javascript" src="https://account.sogou.com/static/api/sogou.js?t=2013072934"></script>');})();
+(function(){ document.write('<script type="text/javascript" src="https://account.sogou.com/static/api/sogou.js?t=2013073101"></script>');})();

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 /**
  * 桌面端登录流程Controller
  * User: shipengzhi
@@ -98,7 +99,7 @@ public class PCAccountController extends BaseController {
         Result result = pcAccountManager.authRefreshToken(reqParams);
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            return accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
+            return "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
         } else {
             switch (result.getCode()) {
                 case ErrorUtil.INVALID_CLIENTID:
@@ -119,7 +120,7 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            if(!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
+            if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
                 return "redirect:" + authPcTokenParams.getRu() + "?status=1";   //status=1表示参数错误
             }
             return "forward:/act/errorMsg?msg=Error: parameter error!";
@@ -146,6 +147,6 @@ public class PCAccountController extends BaseController {
     @RequestMapping(value = "/act/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
-       return msg;
+        return msg;
     }
 }
