@@ -1,9 +1,0 @@
-<html>
-<head>
-    <title>绑定邮箱申请</title>
-</head>
-<body>
-亲爱的用户：<br><br>&nbsp;&nbsp;&nbsp;&nbsp;您好，欢迎您使用搜狗通行证服务!<br><br>
-我们收到您的绑定邮箱申请。请单击以下链接进行绑定邮箱：<br /><a href="$activeUrl">$activeUrl</a>
-</body>
-</html>
