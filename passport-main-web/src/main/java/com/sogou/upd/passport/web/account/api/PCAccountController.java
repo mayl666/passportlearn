@@ -15,6 +15,8 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +46,15 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/getpairtoken")
     @ResponseBody
-    public Object getPairToken(PcPairTokenParams reqParams) throws Exception {
+    public Object getPairToken(PcPairTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
+        if (!isCleanString(cb)) {
+            return getReturnStr(cb,"1");
+        }
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(reqParams.getCb(),"1");
+            return getReturnStr(cb,"1");
         }
 
         result = pcAccountManager.createPairToken(reqParams);
@@ -87,7 +92,15 @@ public class PCAccountController extends BaseController {
                     break;
             }
         }
-        return getReturnStr(reqParams.getCb(),resStr);
+        return getReturnStr(cb,resStr);
+    }
+
+    private boolean isCleanString(String cb) {
+        if (Strings.isNullOrEmpty(cb)){
+            return true;
+        }
+        String cleanValue = Jsoup.clean(cb, Whitelist.none());
+        return cleanValue.equals(cb);
     }
 
     private String defaultUniqname(String passportId) {
@@ -103,11 +116,15 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
-    public Object refreshToken(PcRefreshTokenParams reqParams) throws Exception {
+    public Object refreshToken(PcRefreshTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
         //参数验证
+        if (!isCleanString(cb)) {
+            return getReturnStr(cb,"1");
+        }
+
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(reqParams.getCb(),"1|invalid|required_params"); //参数错误
+            return getReturnStr(cb,"1|invalid|required_params"); //参数错误
         }
 
         Result result = pcAccountManager.authRefreshToken(reqParams);
@@ -131,7 +148,7 @@ public class PCAccountController extends BaseController {
                     break;
             }
         }
-        return getReturnStr(reqParams.getCb(),resStr);
+        return getReturnStr(cb,resStr);
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
