@@ -44,7 +44,7 @@ public class PCAccountController extends BaseController {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
-    @RequestMapping(value = "/act/getpairtoken")
+    @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
     @ResponseBody
     public Object getPairToken(PcPairTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
         Result result = new APIResultSupport(false);
@@ -114,7 +114,7 @@ public class PCAccountController extends BaseController {
         return resStr;
     }
 
-    @RequestMapping(value = "/act/refreshtoken")
+    @RequestMapping(value = "/act/refreshtoken", method = RequestMethod.GET)
     @ResponseBody
     public Object refreshToken(PcRefreshTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
         //参数验证
