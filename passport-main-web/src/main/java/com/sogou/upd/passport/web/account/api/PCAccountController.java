@@ -45,18 +45,17 @@ public class PCAccountController extends BaseController {
     @RequestMapping(value = "/act/getpairtoken")
     @ResponseBody
     public Object getPairToken(PcPairTokenParams reqParams) throws Exception {
-        Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             return getReturnStr(reqParams.getCb(),"1");
         }
 
-        result = pcAccountManager.createPairToken(reqParams);
+        Result result = pcAccountManager.createPairToken(reqParams);
         String resStr ="";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // TODO 获取昵称，返回格式
+            // 获取昵称，返回格式
             String passportId = accountToken.getPassportId();
             GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
             Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
@@ -69,36 +68,9 @@ public class PCAccountController extends BaseController {
             }
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
         } else {
-            switch (result.getCode()) {
-                case ErrorUtil.INVALID_CLIENTID:
-                    resStr = "1"; //参数错误
-                    break;
-                case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
-                    resStr = "2";  //用户名不存在
-                    break;
-                case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
-                    resStr = "3";  //用户名密码错误
-                    break;
-                case ErrorUtil.ERR_SIGNATURE_OR_TOKEN:
-                    resStr = "7|invalid sig"; //生成token失败
-                    break;
-                default:
-                    resStr = "6"; //失败
-                    break;
-            }
+            resStr = handleGetPairTokenErr(result.getCode());
         }
         return getReturnStr(reqParams.getCb(),resStr);
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
-    }
-
-    private String getReturnStr(String cb,String resStr) {
-        if(!Strings.isNullOrEmpty(cb)){
-            return cb+"('"+resStr+"')";
-        }
-        return resStr;
     }
 
     @RequestMapping(value = "/act/refreshtoken")
@@ -116,20 +88,7 @@ public class PCAccountController extends BaseController {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
         } else {
-            switch (result.getCode()) {
-                case ErrorUtil.INVALID_CLIENTID:
-                    resStr = "1|invalid|required_params";
-                    break;
-                case ErrorUtil.ERR_REFRESH_TOKEN:
-                    resStr = "2|invalid|refreshtoken";
-                    break;
-                case ErrorUtil.CREATE_TOKEN_FAIL:
-                    resStr = "3|failed|createtoken"; //生成token失败
-                    break;
-                default:
-                    resStr = "6|error|syste_error"; //系统错误
-                    break;
-            }
+            resStr = handleRefreshTokenErr(result.getCode());
         }
         return getReturnStr(reqParams.getCb(),resStr);
     }
@@ -171,5 +130,57 @@ public class PCAccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
+    }
+
+    private String getReturnStr(String cb,String resStr) {
+        if(!Strings.isNullOrEmpty(cb)){
+            return cb+"('"+resStr+"')";
+        }
+        return resStr;
+    }
+
+    private String handleGetPairTokenErr(String errCode){
+        String errStr;
+        switch (errCode) {
+            case ErrorUtil.INVALID_CLIENTID:
+                errStr = "1"; //参数错误
+                break;
+            case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
+                errStr = "2";  //用户名不存在
+                break;
+            case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
+                errStr = "3";  //用户名密码错误
+                break;
+            case ErrorUtil.ERR_SIGNATURE_OR_TOKEN:
+                errStr = "7|invalid sig"; //生成token失败
+                break;
+            default:
+                errStr = "6"; //失败
+                break;
+        }
+        return errStr;
+    }
+
+    private String handleRefreshTokenErr(String errCode){
+        String errStr;
+        switch (errCode) {
+            case ErrorUtil.INVALID_CLIENTID:
+                errStr = "1|invalid|required_params";
+                break;
+            case ErrorUtil.ERR_REFRESH_TOKEN:
+                errStr = "2|invalid|refreshtoken";
+                break;
+            case ErrorUtil.CREATE_TOKEN_FAIL:
+                errStr = "3|failed|createtoken"; //生成token失败
+                break;
+            default:
+                errStr = "6|error|syste_error"; //系统错误
+                break;
+        }
+        return errStr;
     }
 }
