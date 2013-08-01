@@ -19,7 +19,7 @@ public class TestAction extends BaseController {
 
 
     // TODO:删除
-    @RequestMapping(method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(method = RequestMethod.POST)
     public Object testScribe(HttpServletRequest request) {
 
         UserOperationLog
