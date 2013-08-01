@@ -19,7 +19,7 @@ public class TestAction extends BaseController {
 
 
     // TODO:删除
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.GET)
     public Object testScribe(HttpServletRequest request) {
 
         UserOperationLog
@@ -28,6 +28,6 @@ public class TestAction extends BaseController {
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
-        return "TEST SCRIBE";
+        return "/reg/email";
     }
 }
