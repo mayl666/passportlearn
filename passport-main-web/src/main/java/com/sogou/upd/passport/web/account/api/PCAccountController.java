@@ -15,6 +15,8 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,18 +46,18 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object getPairToken(PcPairTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
+    public Object getPairToken(PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
         if (!isCleanString(cb)) {
-            return getReturnStr(cb,"1");
+            return getReturnStr(cb, "1");
         }
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(cb,"1");
+            return getReturnStr(cb, "1");
         }
 
         Result result = pcAccountManager.createPairToken(reqParams);
-        String resStr ="";
+        String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             // 获取昵称，返回格式
@@ -73,31 +75,31 @@ public class PCAccountController extends BaseController {
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
         }
-        return getReturnStr(cb,resStr);
+        return getReturnStr(cb, resStr);
     }
 
     @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
-    public Object refreshToken(PcRefreshTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
+    public Object refreshToken(PcRefreshTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
         if (!isCleanString(cb)) {
-            return getReturnStr(cb,"1");
+            return getReturnStr(cb, "1");
         }
 
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(cb,"1|invalid|required_params"); //参数错误
+            return getReturnStr(cb, "1|invalid|required_params"); //参数错误
         }
 
         Result result = pcAccountManager.authRefreshToken(reqParams);
-        String resStr ="";
+        String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
         } else {
             resStr = handleRefreshTokenErr(result.getCode());
         }
-        return getReturnStr(cb,resStr);
+        return getReturnStr(cb, resStr);
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
@@ -117,7 +119,7 @@ public class PCAccountController extends BaseController {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(authPcTokenParams.getUserid());
             createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
-            if(authPcTokenParams.getLivetime() >0){
+            if (authPcTokenParams.getLivetime() > 0) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
             Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
@@ -139,18 +141,26 @@ public class PCAccountController extends BaseController {
         return msg;
     }
 
+    private boolean isCleanString(String cb) {
+        if (Strings.isNullOrEmpty(cb)) {
+            return true;
+        }
+        String cleanValue = Jsoup.clean(cb, Whitelist.none());
+        return cleanValue.equals(cb);
+    }
+
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
     }
 
-    private String getReturnStr(String cb,String resStr) {
-        if(!Strings.isNullOrEmpty(cb)){
-            return cb+"('"+resStr+"')";
+    private String getReturnStr(String cb, String resStr) {
+        if (!Strings.isNullOrEmpty(cb)) {
+            return cb + "('" + resStr + "')";
         }
         return resStr;
     }
 
-    private String handleGetPairTokenErr(String errCode){
+    private String handleGetPairTokenErr(String errCode) {
         String errStr;
         switch (errCode) {
             case ErrorUtil.INVALID_CLIENTID:
@@ -172,7 +182,7 @@ public class PCAccountController extends BaseController {
         return errStr;
     }
 
-    private String handleRefreshTokenErr(String errCode){
+    private String handleRefreshTokenErr(String errCode) {
         String errStr;
         switch (errCode) {
             case ErrorUtil.INVALID_CLIENTID:
