@@ -31,11 +31,11 @@ public class ApiGroupUtil {
     public static String getApiGroup(String api) {
         String apiGroup = apiGroupMap.get(api);
         if (Strings.isNullOrEmpty(apiGroup)) {
-            int sep = apiGroup.lastIndexOf("/");
+            int sep = api.lastIndexOf("/");
             if (sep == -1 || sep == apiGroup.length() - 1) {
                 apiGroup = api;
             } else {
-                apiGroup = apiGroup.substring(sep + 1);
+                apiGroup = api.substring(sep + 1);
             }
         }
         return apiGroup;
