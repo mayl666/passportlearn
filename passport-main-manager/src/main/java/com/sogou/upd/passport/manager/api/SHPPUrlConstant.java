@@ -109,5 +109,5 @@ public class SHPPUrlConstant {
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
 
     /*================================Token验证相关url=======================================*/
-    public static final String SOHU_REFRESHTOKEN_URL = "http://passport.sohu.com/act/refreshtoken";
+    public static final String SOHU_REFRESHTOKEN_URL = "https://passport.sohu.com/act/refreshtoken";
 }
