@@ -20,7 +20,7 @@ public class TestAction extends BaseController {
 
     // TODO:删除
     @RequestMapping(method = RequestMethod.GET)
-    public Object testScribe(HttpServletRequest request) {
+    public String testScribe(HttpServletRequest request) {
 
         UserOperationLog
                 userOperationLog = new UserOperationLog("test_sogou@sogou.com", request.getRequestURI(), "1120", "0", getIp(request));
