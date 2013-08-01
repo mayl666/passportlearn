@@ -23,7 +23,7 @@ public class TestAction extends BaseController {
     public String testScribe(HttpServletRequest request) {
 
         UserOperationLog
-                userOperationLog = new UserOperationLog("test_sogou@sogou.com", request.getRequestURI(), "1120", "0", getIp(request));
+                userOperationLog = new UserOperationLog("test_sogou@sogou.com", "/internal/account/reguser", "1120", "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
