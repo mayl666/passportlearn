@@ -42,13 +42,16 @@ public class PCAccountController extends BaseController {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
-    @RequestMapping(value = "/act/getpairtoken")
+    @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object getPairToken(PcPairTokenParams reqParams) throws Exception {
+    public Object getPairToken(PcPairTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
         //参数验证
+        if (!isCleanString(cb)) {
+            return getReturnStr(cb,"1");
+        }
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(reqParams.getCb(),"1");
+            return getReturnStr(cb,"1");
         }
 
         Result result = pcAccountManager.createPairToken(reqParams);
@@ -70,16 +73,20 @@ public class PCAccountController extends BaseController {
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
         }
-        return getReturnStr(reqParams.getCb(),resStr);
+        return getReturnStr(cb,resStr);
     }
 
     @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
-    public Object refreshToken(PcRefreshTokenParams reqParams) throws Exception {
+    public Object refreshToken(PcRefreshTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
         //参数验证
+        if (!isCleanString(cb)) {
+            return getReturnStr(cb,"1");
+        }
+
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(reqParams.getCb(),"1|invalid|required_params"); //参数错误
+            return getReturnStr(cb,"1|invalid|required_params"); //参数错误
         }
 
         Result result = pcAccountManager.authRefreshToken(reqParams);
@@ -90,7 +97,7 @@ public class PCAccountController extends BaseController {
         } else {
             resStr = handleRefreshTokenErr(result.getCode());
         }
-        return getReturnStr(reqParams.getCb(),resStr);
+        return getReturnStr(cb,resStr);
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
