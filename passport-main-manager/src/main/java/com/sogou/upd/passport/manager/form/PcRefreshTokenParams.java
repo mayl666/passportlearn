@@ -16,6 +16,8 @@ public class PcRefreshTokenParams extends PcBaseParams {
     @NotBlank(message = "refreshToken不允许为空")
     private String refresh_token; //用户获取到的refresh_token
 
+    private String cb; //用于sogou游戏桌面端，便于返回参数解析
+
     public int getAuthtype() {
         return authtype;
     }
@@ -30,5 +32,13 @@ public class PcRefreshTokenParams extends PcBaseParams {
 
     public void setRefresh_token(String refresh_token) {
         this.refresh_token = refresh_token;
+    }
+
+    public String getCb() {
+        return cb;
+    }
+
+    public void setCb(String cb) {
+        this.cb = cb;
     }
 }
