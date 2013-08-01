@@ -18,8 +18,6 @@ public class PcPairTokenParams extends PcBaseParams {
     private String timestamp; //用于sig的时间戳
     private String sig;  //用于用refresh刷新token，userid + appid + refresh_token + timestamp + key 的md5
 
-    private String cb; //用于sogou游戏桌面端，便于返回参数解析
-
     @AssertTrue(message = "password和sig不能同时为空")
     private boolean checkPwdAndSig() {
         if (Strings.isNullOrEmpty(password) && (Strings.isNullOrEmpty(sig) || Strings.isNullOrEmpty(timestamp))) {
@@ -50,13 +48,5 @@ public class PcPairTokenParams extends PcBaseParams {
 
     public void setSig(String sig) {
         this.sig = sig;
-    }
-
-    public String getCb() {
-        return cb;
-    }
-
-    public void setCb(String cb) {
-        this.cb = cb;
     }
 }
