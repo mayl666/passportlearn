@@ -49,10 +49,11 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return "1";
+            return getReturnStr(reqParams.getCb(),"1");
         }
 
         result = pcAccountManager.createPairToken(reqParams);
+        String resStr ="";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             // TODO 获取昵称，返回格式
@@ -66,25 +67,38 @@ public class PCAccountController extends BaseController {
             } else {
                 uniqname = defaultUniqname(passportId);
             }
-            return "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
+            resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
         } else {
             switch (result.getCode()) {
                 case ErrorUtil.INVALID_CLIENTID:
-                    return "1"; //参数错误
+                    resStr = "1"; //参数错误
+                    break;
                 case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
-                    return "2";  //用户名不存在
+                    resStr = "2";  //用户名不存在
+                    break;
                 case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
-                    return "3";  //用户名密码错误
+                    resStr = "3";  //用户名密码错误
+                    break;
                 case ErrorUtil.ERR_SIGNATURE_OR_TOKEN:
-                    return "7|invalid sig"; //生成token失败
+                    resStr = "7|invalid sig"; //生成token失败
+                    break;
                 default:
-                    return "6"; //失败
+                    resStr = "6"; //失败
+                    break;
             }
         }
+        return getReturnStr(reqParams.getCb(),resStr);
     }
 
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
+    }
+
+    private String getReturnStr(String cb,String resStr) {
+        if(!Strings.isNullOrEmpty(cb)){
+            return cb+"('"+resStr+"')";
+        }
+        return resStr;
     }
 
     @RequestMapping(value = "/act/refreshtoken")
@@ -93,25 +107,31 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return "1|invalid|required_params";  //参数错误
+            return getReturnStr(reqParams.getCb(),"1|invalid|required_params"); //参数错误
         }
 
         Result result = pcAccountManager.authRefreshToken(reqParams);
+        String resStr ="";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            return "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
+            resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
         } else {
             switch (result.getCode()) {
                 case ErrorUtil.INVALID_CLIENTID:
-                    return "1|invalid|required_params";
+                    resStr = "1|invalid|required_params";
+                    break;
                 case ErrorUtil.ERR_REFRESH_TOKEN:
-                    return "2|invalid|refreshtoken";
+                    resStr = "2|invalid|refreshtoken";
+                    break;
                 case ErrorUtil.CREATE_TOKEN_FAIL:
-                    return "3|failed|createtoken"; //生成token失败
+                    resStr = "3|failed|createtoken"; //生成token失败
+                    break;
                 default:
-                    return "6|error|syste_error"; //系统错误
+                    resStr = "6|error|syste_error"; //系统错误
+                    break;
             }
         }
+        return getReturnStr(reqParams.getCb(),resStr);
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
