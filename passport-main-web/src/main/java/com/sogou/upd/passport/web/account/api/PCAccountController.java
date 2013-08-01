@@ -151,6 +151,9 @@ public class PCAccountController extends BaseController {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(authPcTokenParams.getUserid());
             createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
+            if(authPcTokenParams.getLivetime() >0){
+                createCookieUrlApiParams.setPersistentcookie(1);
+            }
             Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
             if (createCookieResult.isSuccess()) {
                 String setcookieUrl = createCookieResult.getModels().get("url").toString();
