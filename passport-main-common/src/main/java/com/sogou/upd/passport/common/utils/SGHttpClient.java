@@ -188,7 +188,7 @@ public class SGHttpClient {
         HttpMethodEnum method = requestModel.getHttpMethodEnum();
         switch (method) {
             case GET:
-                httpRequest = new HttpGet(requestModel.getUrl());
+                httpRequest = new HttpGet(requestModel.getUrlWithParam());
                 break;
             case POST:
                 HttpPost httpPost = new HttpPost(requestModel.getUrl());

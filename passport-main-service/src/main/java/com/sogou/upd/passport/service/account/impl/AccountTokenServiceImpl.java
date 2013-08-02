@@ -7,7 +7,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
@@ -63,7 +63,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
     @Override
     public AccountToken verifyAccessToken(String accessToken) throws ServiceException {
         AccountToken accountToken;
-        AccessTokenCipherDO accessTokenCipherDO;
+        TokenCipherDO accessTokenCipherDO;
         try {
             accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
         } catch (Exception e) {

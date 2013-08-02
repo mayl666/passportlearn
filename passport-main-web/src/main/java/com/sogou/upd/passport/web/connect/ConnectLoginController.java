@@ -1,12 +1,12 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.web.util.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
@@ -15,6 +15,8 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,9 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
 
 /**
  * SSO-SDK第三方授权接口
@@ -43,7 +46,7 @@ public class ConnectLoginController extends BaseConnectController {
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = {"/v2/connect/ssologin/{providerStr}", "/connect/ssologin/{providerStr}"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/connect/ssologin/{providerStr}", method = RequestMethod.POST)
     @ResponseBody
     public Object handleSSOLogin(HttpServletRequest req, HttpServletResponse res, @PathVariable("providerStr") String providerStr) throws Exception {
         Result result = new APIResultSupport(false);
@@ -97,29 +100,18 @@ public class ConnectLoginController extends BaseConnectController {
             url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
 
-            //用户登陆log--二期迁移到callback中记录log
-            UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
-            String referer = req.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("ru", connectLoginParams.getRu());
-            userOperationLog.putOtherMessage("login", "Success");
-            UserOperationLogUtil.log(userOperationLog);
-
-            return new ModelAndView(new RedirectView(url));
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(connectLoginParams.getType(), e.getError(), e.getDescription());
 
-            //用户登录log
-            UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
-            String referer = req.getHeader("referer");
-            userOperationLog.putOtherMessage("referer", referer);
-            userOperationLog.putOtherMessage("ru", connectLoginParams.getRu());
-            userOperationLog.putOtherMessage("login", "Failed");
-            UserOperationLogUtil.log(userOperationLog);
-
-            return new ModelAndView(new RedirectView(url));
         }
-    }
 
+        //用户登陆log--二期迁移到callback中记录log
+        UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
+        String referer = req.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
+        return new ModelAndView(new RedirectView(url));
+    }
 
 }

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/v2/connect")
+@RequestMapping("/connect")
 public class ConnectBindController extends BaseConnectController {
 
     @Autowired

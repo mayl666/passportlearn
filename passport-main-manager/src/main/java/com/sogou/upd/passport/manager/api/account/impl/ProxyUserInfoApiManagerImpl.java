@@ -11,6 +11,7 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -26,10 +27,10 @@ import java.util.Set;
 @Component("proxyUserInfoApiManagerImpl")
 public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
-    private static Set<String> SUPPORT_FIELDS_MAP=null;
+    private static Set<String> SUPPORT_FIELDS_MAP = null;
 
-    static{
-        SUPPORT_FIELDS_MAP=new HashSet<>(8);
+    static {
+        SUPPORT_FIELDS_MAP = new HashSet<>(8);
         SUPPORT_FIELDS_MAP.add("birthday");//生日
         SUPPORT_FIELDS_MAP.add("gender");//性别
         SUPPORT_FIELDS_MAP.add("sec_mobile");//密保手机
@@ -39,6 +40,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("city");//城市
         SUPPORT_FIELDS_MAP.add("personalid");//身份证号
         SUPPORT_FIELDS_MAP.add("username"); //用户真实姓名
+        SUPPORT_FIELDS_MAP.add("uniqname"); //用户昵称
     }
 
     @Override
@@ -47,38 +49,39 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         String fields = getUserInfoApiparams.getFields();
         String[] fieldList = fields.split(",");
         for (String field : fieldList) {
-            if(SUPPORT_FIELDS_MAP.contains(field)){
+            if (SUPPORT_FIELDS_MAP.contains(field)) {
                 requestModelXml.addParam(field, "");
             }
         }
         requestModelXml.addParams(getUserInfoApiparams);
-        if(PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())){
-            requestModelXml.addParam("usertype",1);
+        if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
+            requestModelXml.addParam("usertype", 1);
         }
         requestModelXml.deleteParams("fields");
         requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
-        Result result= this.executeResult(requestModelXml);
+        Result result = this.executeResult(requestModelXml);
         return getUserInfoResultHandel(result);
     }
 
     /**
      * SHPP参数名和SGPP参数名不一样，在这里做了相关的转换
+     *
      * @param requestModelXml
      * @return
      */
-    private RequestModelXml replaceGetUserInfoParams(final RequestModelXml requestModelXml){
-        if(requestModelXml.containsKey("sec_email")){
-            requestModelXml.addParam("email","");
-            requestModelXml.addParam("emailflag","");
+    private RequestModelXml replaceGetUserInfoParams(final RequestModelXml requestModelXml) {
+        if (requestModelXml.containsKey("sec_email")) {
+            requestModelXml.addParam("email", "");
+            requestModelXml.addParam("emailflag", "");
             requestModelXml.deleteParams("sec_email");
         }
-        if(requestModelXml.containsKey("sec_mobile")){
-            requestModelXml.addParam("mobile","");
-            requestModelXml.addParam("mobileflag","");
+        if (requestModelXml.containsKey("sec_mobile")) {
+            requestModelXml.addParam("mobile", "");
+            requestModelXml.addParam("mobileflag", "");
             requestModelXml.deleteParams("sec_mobile");
         }
-        if(requestModelXml.containsKey("sec_ques")){
-            requestModelXml.addParam("question","");
+        if (requestModelXml.containsKey("sec_ques")) {
+            requestModelXml.addParam("question", "");
             requestModelXml.deleteParams("sec_ques");
         }
         return requestModelXml;
@@ -86,17 +89,18 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     /**
      * SHPP所使用的一些数据名称和SGPP
+     *
      * @param result
      * @return
      */
-    private Result getUserInfoResultHandel(final Result result){
-        if(!result.isSuccess()){
+    private Result getUserInfoResultHandel(final Result result) {
+        if (!result.isSuccess()) {
             return result;
         }
         //判断手机和邮箱是否是绑定的同时将SHPP的相关属性转换为SGPP的属性
         Map<String, String> map = result.getModels();
 
-        if(map.containsKey("email")){
+        if (map.containsKey("email")) {
             String email = map.get("email");
             String emailflag = map.get("emailflag");
             if (StringUtil.isBlank(emailflag) || !emailflag.trim().equals("1")) {
@@ -107,7 +111,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             map.remove("emailflag");
         }
 
-        if(map.containsKey("mobile")){
+        if (map.containsKey("mobile")) {
             String mobile = map.get("mobile");
             String mobileflag = map.get("mobileflag");
             if (StringUtil.isBlank(mobileflag) || !mobileflag.trim().equals("1")) {
@@ -118,7 +122,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             map.remove("mobileflag");
         }
 
-        if(map.containsKey("question")){
+        if (map.containsKey("question")) {
             String question = map.get("question");
             map.put("sec_ques", question);
             map.remove("question");
@@ -130,9 +134,9 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams updateUserInfoApiParams) {
-        if(PhoneUtil.verifyPhoneNumberFormat(updateUserInfoApiParams.getUserid())){
-            String userid=updateUserInfoApiParams.getUserid();
-            userid+="@sohu.com";
+        if (PhoneUtil.verifyPhoneNumberFormat(updateUserInfoApiParams.getUserid())) {
+            String userid = updateUserInfoApiParams.getUserid();
+            userid += "@sohu.com";
             updateUserInfoApiParams.setUserid(userid);
         }
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "register");
@@ -145,11 +149,25 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             }
             requestModelXml.addParam(key, value);
         }
-        Date birthday=updateUserInfoApiParams.getBirthday();
-        if(birthday!=null){
-            String birthdayStr=DateUtil.formatDate(birthday);
+        Date birthday = updateUserInfoApiParams.getBirthday();
+        if (birthday != null) {
+            String birthdayStr = DateUtil.formatDate(birthday);
             requestModelXml.addParam("birthday", birthdayStr);
         }
         return this.executeResult(requestModelXml);
+    }
+
+    @Override
+    public Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams) {
+        if (updateUserUniqnameApiParams.getUniqname() == null || "".equals(updateUserUniqnameApiParams.getUniqname())) {
+            throw new IllegalArgumentException("用户昵称不能为空");
+        }
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "checkuniqname");
+        requestModelXml.addParams(updateUserUniqnameApiParams);
+        Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
+        if(result.isSuccess()){
+            result.setMessage("昵称未被占用");
+        }
+        return result;
     }
 }
