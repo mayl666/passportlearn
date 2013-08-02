@@ -46,22 +46,21 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object getPairToken(PcPairTokenParams reqParams,@RequestParam(defaultValue = "")String cb) throws Exception {
-        Result result = new APIResultSupport(false);
+    public Object getPairToken(PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
         if (!isCleanString(cb)) {
-            return getReturnStr(cb,"1");
+            return getReturnStr(cb, "1");
         }
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(cb,"1");
+            return getReturnStr(cb, "1");
         }
 
-        result = pcAccountManager.createPairToken(reqParams);
-        String resStr ="";
+        Result result = pcAccountManager.createPairToken(reqParams);
+        String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // TODO 获取昵称，返回格式
+            // 获取昵称，返回格式
             String passportId = accountToken.getPassportId();
             GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
             Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
@@ -74,81 +73,33 @@ public class PCAccountController extends BaseController {
             }
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
         } else {
-            switch (result.getCode()) {
-                case ErrorUtil.INVALID_CLIENTID:
-                    resStr = "1"; //参数错误
-                    break;
-                case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
-                    resStr = "2";  //用户名不存在
-                    break;
-                case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
-                    resStr = "3";  //用户名密码错误
-                    break;
-                case ErrorUtil.ERR_SIGNATURE_OR_TOKEN:
-                    resStr = "7|invalid sig"; //生成token失败
-                    break;
-                default:
-                    resStr = "6"; //失败
-                    break;
-            }
+            resStr = handleGetPairTokenErr(result.getCode());
         }
-        return getReturnStr(cb,resStr);
+        return getReturnStr(cb, resStr);
     }
 
-    private boolean isCleanString(String cb) {
-        if (Strings.isNullOrEmpty(cb)){
-            return true;
-        }
-        String cleanValue = Jsoup.clean(cb, Whitelist.none());
-        return cleanValue.equals(cb);
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
-    }
-
-    private String getReturnStr(String cb,String resStr) {
-        if(!Strings.isNullOrEmpty(cb)){
-            return cb+"('"+resStr+"')";
-        }
-        return resStr;
-    }
-
-    @RequestMapping(value = "/act/refreshtoken", method = RequestMethod.GET)
+    @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
-    public Object refreshToken(PcRefreshTokenParams reqParams,@RequestParam(defaultValue = "")String cb) throws Exception {
+    public Object refreshToken(PcRefreshTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
         if (!isCleanString(cb)) {
-            return getReturnStr(cb,"1");
+            return getReturnStr(cb, "1");
         }
 
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return getReturnStr(cb,"1|invalid|required_params"); //参数错误
+            return getReturnStr(cb, "1|invalid|required_params"); //参数错误
         }
 
         Result result = pcAccountManager.authRefreshToken(reqParams);
-        String resStr ="";
+        String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken();
         } else {
-            switch (result.getCode()) {
-                case ErrorUtil.INVALID_CLIENTID:
-                    resStr = "1|invalid|required_params";
-                    break;
-                case ErrorUtil.ERR_REFRESH_TOKEN:
-                    resStr = "2|invalid|refreshtoken";
-                    break;
-                case ErrorUtil.CREATE_TOKEN_FAIL:
-                    resStr = "3|failed|createtoken"; //生成token失败
-                    break;
-                default:
-                    resStr = "6|error|syste_error"; //系统错误
-                    break;
-            }
+            resStr = handleRefreshTokenErr(result.getCode());
         }
-        return getReturnStr(cb,resStr);
+        return getReturnStr(cb, resStr);
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
@@ -168,7 +119,7 @@ public class PCAccountController extends BaseController {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(authPcTokenParams.getUserid());
             createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
-            if(authPcTokenParams.getLivetime() >0){
+            if (authPcTokenParams.getLivetime() > 0) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
             Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
@@ -188,5 +139,65 @@ public class PCAccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+
+    private boolean isCleanString(String cb) {
+        if (Strings.isNullOrEmpty(cb)) {
+            return true;
+        }
+        String cleanValue = Jsoup.clean(cb, Whitelist.none());
+        return cleanValue.equals(cb);
+    }
+
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
+    }
+
+    private String getReturnStr(String cb, String resStr) {
+        if (!Strings.isNullOrEmpty(cb)) {
+            return cb + "('" + resStr + "')";
+        }
+        return resStr;
+    }
+
+    private String handleGetPairTokenErr(String errCode) {
+        String errStr;
+        switch (errCode) {
+            case ErrorUtil.INVALID_CLIENTID:
+                errStr = "1"; //参数错误
+                break;
+            case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
+                errStr = "2";  //用户名不存在
+                break;
+            case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
+                errStr = "3";  //用户名密码错误
+                break;
+            case ErrorUtil.ERR_SIGNATURE_OR_TOKEN:
+                errStr = "7|invalid sig"; //生成token失败
+                break;
+            default:
+                errStr = "6"; //失败
+                break;
+        }
+        return errStr;
+    }
+
+    private String handleRefreshTokenErr(String errCode) {
+        String errStr;
+        switch (errCode) {
+            case ErrorUtil.INVALID_CLIENTID:
+                errStr = "1|invalid|required_params";
+                break;
+            case ErrorUtil.ERR_REFRESH_TOKEN:
+                errStr = "2|invalid|refreshtoken";
+                break;
+            case ErrorUtil.CREATE_TOKEN_FAIL:
+                errStr = "3|failed|createtoken"; //生成token失败
+                break;
+            default:
+                errStr = "6|error|syste_error"; //系统错误
+                break;
+        }
+        return errStr;
     }
 }
