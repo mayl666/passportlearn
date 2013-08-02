@@ -46,7 +46,7 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object getPairToken(PcPairTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
+    public Object getPairToken(PcPairTokenParams reqParams,@RequestParam(defaultValue = "")String cb) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         if (!isCleanString(cb)) {
@@ -116,7 +116,7 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/refreshtoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object refreshToken(PcRefreshTokenParams reqParams,@RequestParam(value ="cb",defaultValue = "")String cb) throws Exception {
+    public Object refreshToken(PcRefreshTokenParams reqParams,@RequestParam(defaultValue = "")String cb) throws Exception {
         //参数验证
         if (!isCleanString(cb)) {
             return getReturnStr(cb,"1");
