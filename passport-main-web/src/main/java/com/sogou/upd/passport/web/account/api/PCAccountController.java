@@ -104,7 +104,6 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
     public String authToken(PcAuthTokenParams authPcTokenParams) throws Exception {
-        Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -113,7 +112,7 @@ public class PCAccountController extends BaseController {
             }
             return "forward:/act/errorMsg?msg=Error: parameter error!";
         }
-        result = pcAccountManager.authToken(authPcTokenParams);
+        Result result = pcAccountManager.authToken(authPcTokenParams);
         //重定向生成cookie
         if (result.isSuccess()) {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
