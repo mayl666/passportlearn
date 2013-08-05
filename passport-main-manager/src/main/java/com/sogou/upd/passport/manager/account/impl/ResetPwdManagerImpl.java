@@ -1,15 +1,24 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
+import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
+import com.sogou.upd.passport.manager.account.vo.ActionRecordVO;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
@@ -27,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-8 Time: 上午10:46 To change this template use
  * File | Settings | File Templates.
@@ -34,6 +45,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResetPwdManagerImpl implements ResetPwdManager {
     private static Logger logger = LoggerFactory.getLogger(ResetPwdManagerImpl.class);
+
+    private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
@@ -57,6 +70,113 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     // Manager
     @Autowired
     private SecureApiManager sgSecureApiManager;
+    @Autowired
+    private SecureApiManager proxySecureApiManager;
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
+
+    @Override
+    public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            String userId = username;
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                userId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                if (Strings.isNullOrEmpty(userId)) {
+                    userId += "@sohu.com";
+                }
+            } else {
+                // 不查询account表
+                if (username.indexOf("@") == -1) {
+                    userId += "@sogou.com";
+                }
+            }
+
+            // 判断是否超过修改密码次数
+            if (!operateTimesService.checkLimitResetPwd(username, clientId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+                return result;
+            }
+
+            Account account = accountService.queryNormalAccount(userId);
+            if (account == null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                return result;
+            }
+
+            AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
+
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // 代理接口
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+            } else {
+                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
+                params.setUserid(userId);
+                params.setClient_id(clientId);
+                result = sgSecureApiManager.getUserSecureInfo(params);
+            }
+
+            Map<String, String> map = result.getModels();
+            result.setModels(Maps.newHashMap());
+
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            String mobile = map.get("sec_mobile");
+            String emailBind = map.get("sec_email");
+            String question = map.get("sec_ques");
+
+            if (doProcess) {
+                if (!Strings.isNullOrEmpty(emailBind)) {
+                    String emailProcessed = StringUtil.processEmail(emailBind);
+                    accountSecureInfoVO.setSec_email(emailProcessed);
+                }
+                if (!Strings.isNullOrEmpty(mobile)) {
+                    String mobileProcessed = StringUtil.processMobile(mobile);
+                    accountSecureInfoVO.setSec_mobile(mobileProcessed);
+                }
+                if (!Strings.isNullOrEmpty(question)) {
+                    accountSecureInfoVO.setSec_ques(question);
+                }
+                if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
+                    String emailRegProcessed = StringUtil.processEmail(userId);
+                    accountSecureInfoVO.setReg_email(emailRegProcessed);
+                }
+            } else {
+                if (!Strings.isNullOrEmpty(emailBind)) {
+                    accountSecureInfoVO.setSec_email(emailBind);
+                }
+                if (!Strings.isNullOrEmpty(mobile)) {
+                    accountSecureInfoVO.setSec_mobile(mobile);
+                }
+                if (!Strings.isNullOrEmpty(question)) {
+                    accountSecureInfoVO.setSec_ques(question);
+                }
+                if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
+                    accountSecureInfoVO.setReg_email(userId);
+                }
+            }
+            /*
+            String secMobile = accountSecureInfoVO.getSec_mobile();
+            String secEmail = accountSecureInfoVO.getSec_email();
+            String secQues = accountSecureInfoVO.getSec_ques();
+            String regEmail = accountSecureInfoVO.getReg_email();
+            */
+            result.setSuccess(true);
+            result.setMessage("查询成功");
+            result.setDefaultModel(accountSecureInfoVO);
+            return result;
+        } catch (ServiceException e) {
+            logger.error("query account_secure_info Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
 
     private Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
                                      String email) throws Exception {

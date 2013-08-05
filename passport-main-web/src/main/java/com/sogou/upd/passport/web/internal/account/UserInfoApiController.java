@@ -103,7 +103,7 @@ public class UserInfoApiController extends BaseController{
     @InterfaceSecurity
     @RequestMapping(value = "/checkuniqname",method = RequestMethod.POST)
     @ResponseBody
-    public Object checkUniqName(UpdateUserUniqnameApiParams params,HttpServletRequest request){
+    public Object checkUniqname(UpdateUserUniqnameApiParams params,HttpServletRequest request){
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
