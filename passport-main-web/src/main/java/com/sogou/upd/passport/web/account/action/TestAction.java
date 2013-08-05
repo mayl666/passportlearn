@@ -7,6 +7,7 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +21,7 @@ public class TestAction extends BaseController {
 
     // TODO:删除
     @RequestMapping(value = "/scribe", method = RequestMethod.POST)
+    @ResponseBody
     public Object testScribe(HttpServletRequest request) {
         try {
             Thread.sleep(10);
