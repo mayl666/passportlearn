@@ -120,7 +120,7 @@
     <!--start:redies请求log-->
     <appender name="kvPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/kv/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/kvperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
