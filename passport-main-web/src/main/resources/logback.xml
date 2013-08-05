@@ -45,20 +45,9 @@
         </encoder>
     </appender>
 
-
-    <appender name="scribeAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
-        <!--<hostname>localhost</hostname>-->
-        <scribeHost>127.0.0.1</scribeHost>
-        <scribePort>1463</scribePort>
-        <layout>
-            <pattern>%msg</pattern>
-        </layout>
-        <scribeCategory>passport_user</scribeCategory>
-    </appender>
-
     <logger name="userOperationLogger" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
-        <appender-ref ref="scribeAppender" />
+        <appender-ref ref="userOperationAppender" />
     </logger>
 
     <!--测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试-->
