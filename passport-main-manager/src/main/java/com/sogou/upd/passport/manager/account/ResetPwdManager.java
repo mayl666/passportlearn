@@ -7,6 +7,18 @@ import com.sogou.upd.passport.common.result.Result;
  * File | Settings | File Templates.
  */
 public interface ResetPwdManager {
+
+    /**
+     * 查询密保信息
+     *
+     * @param username
+     * @param clientId
+     * @param doProcess
+     * @return
+     * @throws Exception
+     */
+    public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception;
+
     /**
      * 修改密码，包括检查修改次数
      *
