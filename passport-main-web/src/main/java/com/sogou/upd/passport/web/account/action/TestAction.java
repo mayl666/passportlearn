@@ -19,8 +19,13 @@ public class TestAction extends BaseController {
 
 
     // TODO:删除
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.POST)
     public String testScribe(HttpServletRequest request) {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted");
+        }
 
         UserOperationLog
                 userOperationLog = new UserOperationLog("test_sogou@sogou.com", "/internal/account/reguser", "1120", "0", getIp(request));
@@ -28,6 +33,6 @@ public class TestAction extends BaseController {
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
-        return "/reg/email";
+        return "testscribe";
     }
 }
