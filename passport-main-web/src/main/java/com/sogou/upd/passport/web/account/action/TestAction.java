@@ -14,13 +14,13 @@ import javax.servlet.http.HttpServletRequest;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-8-1 Time: 下午5:40 To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/testscribe")
+@RequestMapping("/test")
 public class TestAction extends BaseController {
 
 
     // TODO:删除
-    @RequestMapping(method = RequestMethod.POST)
-    public String testScribe(HttpServletRequest request) {
+    @RequestMapping(value = "/scribe", method = RequestMethod.POST)
+    public Object testScribe(HttpServletRequest request) {
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
