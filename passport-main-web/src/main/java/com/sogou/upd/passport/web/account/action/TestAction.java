@@ -23,11 +23,6 @@ public class TestAction extends BaseController {
     @RequestMapping(value = "/scribe", method = RequestMethod.POST)
     @ResponseBody
     public Object testScribe(HttpServletRequest request) {
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            System.out.println("Interrupted");
-        }
 
         UserOperationLog
                 userOperationLog = new UserOperationLog("test_sogou@sogou.com", "/internal/account/reguser", "1120", "0", getIp(request));
@@ -41,11 +36,6 @@ public class TestAction extends BaseController {
     @RequestMapping(value = "/base", method = RequestMethod.POST)
     @ResponseBody
     public Object testPathLog(HttpServletRequest request) {
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            System.out.println("Interrupted");
-        }
 
         UserOperationLog
                 userOperationLog = new UserOperationLog("test_sogou@sogou.com", "/internal/account/reguser", "1120", "0", getIp(request));
