@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.AssertTrue;
 
@@ -22,11 +23,11 @@ public class InfoOpenApiParams extends BaseOpenApiParams {
     private String message;
     @NotBlank(message = "图片的URL地址不允许为空")
     private String url;
-    private String title;       //选填，QQ账号为必填项
-    private String share_url;   //选填，QQ账号为必填项
+    private String title;       //选填，人人网，QQ账号为必填项
+    private String share_url;   //选填，人人网，QQ账号为必填项
 
-    @AssertTrue(message = "标题或url不允许为空")
-    private boolean checkTitleAndUrl() {
+    @AssertTrue(message = "标题或share_url不允许为空")
+    private boolean isCheckTitleAndUrl() {
         AccountTypeEnum accountTypeEnum = AccountTypeEnum.getAccountType(openid);
         //人人网和QQ空间的title和url为必填项
         if (accountTypeEnum == AccountTypeEnum.QQ || accountTypeEnum == AccountTypeEnum.RENREN) {
@@ -37,10 +38,17 @@ public class InfoOpenApiParams extends BaseOpenApiParams {
         return true;
     }
 
-    @AssertTrue(message = "不支持该第三方")
-    private boolean checkConnectType(){
-
-        return false;
+    @AssertTrue(message = "url格式不正确")
+    private boolean isCheckUrl(){
+        if(!url.matches("[a-zA-z]+://[^\\s]*")){
+            return false;
+        }
+        if(!Strings.isNullOrEmpty(share_url)){
+            if(!share_url.matches("[a-zA-z]+://[^\\s]*")){
+                return false;
+            }
+        }
+        return true;
     }
 
     public String getMessage() {

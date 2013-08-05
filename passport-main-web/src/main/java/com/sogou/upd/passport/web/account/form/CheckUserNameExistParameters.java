@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.account.form;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.AssertTrue;
 
@@ -11,7 +10,6 @@ import javax.validation.constraints.AssertTrue;
  * User: mayan
  * Date: 13-4-15 Time: 下午5:15
  */
-@Component
 public class CheckUserNameExistParameters {
     @NotBlank(message = "用户名不允许为空!")
     private String username;
@@ -19,7 +17,7 @@ public class CheckUserNameExistParameters {
     private String client_id;
 
     @AssertTrue(message = "用户账号格式错误")
-    private boolean checkAccount() {
+    public boolean isCheckAccount() {
         if (Strings.isNullOrEmpty(username)) {
             return true;
         }
