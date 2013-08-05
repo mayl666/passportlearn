@@ -37,4 +37,22 @@ public class TestAction extends BaseController {
 
         return "testscribe";
     }
+
+    @RequestMapping(value = "/base", method = RequestMethod.POST)
+    @ResponseBody
+    public Object testPathLog(HttpServletRequest request) {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted");
+        }
+
+        UserOperationLog
+                userOperationLog = new UserOperationLog("test_sogou@sogou.com", "/internal/account/reguser", "1120", "0", getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.logTest(userOperationLog);
+
+        return "testbase";
+    }
 }
