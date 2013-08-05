@@ -17,6 +17,7 @@ import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.AccountScodeParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
@@ -80,8 +81,10 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
         // 第三方账号不显示安全信息
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
-            result.setDefaultModel("disable", true);
-            result.setSuccess(true);
+            // result.setDefaultModel("disable", true);
+            // result.setSuccess(true);
+            // model.addAttribute("data", result.toString());
+            return "redirect:/";
         } else {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         }
@@ -124,7 +127,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDEMAIL_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -167,7 +170,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
             case PHONE:
                 return "redirect:/web/security";
         }
@@ -212,7 +215,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDQUES_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -255,7 +258,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_RESETPWD_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result.setSuccess(true);
@@ -291,6 +294,11 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+
+        switch (domain) {
+            case THIRD:
+                return "redirect:/";
+        }
 
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
@@ -391,11 +399,10 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
-    // TODO:等数据迁移后需要修改和测试此方法
     /*
      * 验证绑定邮件
      */
-/*    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
+    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -418,12 +425,8 @@ public class SecureAction extends BaseController {
 
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
         model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return ""; // TODO:成功页面
-        } else {
-            return ""; // TODO:错误页面
-        }
-    }   */
+        return "redirect:"+params.getRu();
+    }
 
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机
