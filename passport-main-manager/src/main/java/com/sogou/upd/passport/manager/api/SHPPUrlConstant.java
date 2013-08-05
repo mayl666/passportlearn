@@ -83,6 +83,9 @@ public class SHPPUrlConstant {
     //更新用户信息
     public static final String UPDATE_USER_INFO = BASE_INTERNAL_URL + "updateuser";
 
+    //修改用户昵称
+    public static final String UPDATE_USER_UNIQNAME = BASE_INTERNAL_URL + "checkuniqname";
+
     /*================================安全中心操作URL=======================================*/
     // 修改密码
     public static final String SOHU_RESETPWD_URL = "https://passport.sohu.com/web/updateInfo.action?modifyType=password";
@@ -100,4 +103,11 @@ public class SHPPUrlConstant {
     public static final String CONNECT_LOGIN_ULR = "http://passport.sohu.com/openlogin/request.action";
     //获取第三方用户信息
     public static final String GET_OPEN_USER_INFO = BASE_OPEN_API_URL + "api/user/info";
+    //第三方发图片微博或分享
+    public static final String CONNECT_SHARE_PIC = BASE_OPEN_API_URL + "api/share/add_pic";
+    //第三方获取用户好友/互粉
+    public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
+
+    /*================================Token验证相关url=======================================*/
+    public static final String SOHU_REFRESHTOKEN_URL = "https://passport.sohu.com/act/refreshtoken";
 }

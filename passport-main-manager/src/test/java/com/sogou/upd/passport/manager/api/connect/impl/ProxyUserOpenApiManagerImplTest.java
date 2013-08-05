@@ -2,9 +2,8 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.UserOpenApiParams;
+import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,7 +25,10 @@ public class ProxyUserOpenApiManagerImplTest extends BaseTest {
         params.setUserid("1666643531@sina.sohu.com");
         params.setOpenid("1666643531@sina.sohu.com");
 
-        Result result= proxyUserOpenApiManager.getUserInfo(params);
+        Result result = proxyUserOpenApiManager.getUserInfo(params);
         System.out.println(result);
     }
+
+
+
 }

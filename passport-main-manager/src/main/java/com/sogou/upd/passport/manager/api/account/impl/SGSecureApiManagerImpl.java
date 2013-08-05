@@ -72,7 +72,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String modifyIp = updateQuesApiParams.getModifyip();
         int clientId = updateQuesApiParams.getClient_id();
 
-        Result result = accountService.verifyUserPwdVaild(userId, password, false);
+        Result result = accountService.verifyUserPwdVaild(userId, password, true);
         result.setDefaultModel(null);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);

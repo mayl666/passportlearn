@@ -67,43 +67,44 @@ public class CommonManagerImpl implements CommonManager {
 
     @Override
     public Account queryAccountByPassportId(String passportId) throws Exception {
-        return  accountService.queryAccountByPassportId(passportId);
+        return accountService.queryAccountByPassportId(passportId);
     }
 
     @Override
-    public boolean updateState(Account account, int newState)  throws Exception{
-      return  accountService.updateState(account,newState);
+    public boolean updateState(Account account, int newState) throws Exception {
+        return accountService.updateState(account, newState);
     }
 
     @Override
     public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception {
-      return  accountService.resetPassword(account,password,needMD5);
+        return accountService.resetPassword(account, password, needMD5);
     }
 
-  @Override
-  public Result createCookieUrl(Result result,String passportId,int autoLogin) {
-    // 种sohu域cookie
+    @Override
+    public Result createCookieUrl(Result result, String passportId, int autoLogin) {
+        // 种sohu域cookie
 
-    String scheme="https";
+        String scheme = "https";
 
-    CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-    //从返回结果中获取passportId,二期待优化
-    String passportIdTmp =  passportId;
-    if(ManagerHelper.isInvokeProxyApi(passportId)) {
-      passportIdTmp =  result.getModels().get("userid").toString();
-    } else{
-      Account account =  (Account)result.getDefaultModel();
-      passportIdTmp =  account.getPassportId();
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        //从返回结果中获取passportId,二期待优化
+        String passportIdTmp = passportId;
+        if (ManagerHelper.isInvokeProxyApi(passportId)) {
+            passportIdTmp = result.getModels().get("userid").toString();
+        } else {
+            Account account = (Account) result.getDefaultModel();
+            passportIdTmp = account.getPassportId();
+            result.setDefaultModel("userid", passportIdTmp);
+        }
+        createCookieUrlApiParams.setUserid(passportIdTmp);
+        createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
+        createCookieUrlApiParams.setPersistentcookie(autoLogin);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
+        if (createCookieResult.isSuccess()) {
+            result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+        }
+        return result;
     }
-    createCookieUrlApiParams.setUserid(passportIdTmp);
-    createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
-    createCookieUrlApiParams.setPersistentcookie(autoLogin);
-    Result createCookieResult  = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
-    if (createCookieResult.isSuccess()){
-      result.setDefaultModel("cookieUrl",createCookieResult.getModels().get("url"));
-    } else{
-      result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-    }
-    return result;
-  }
 }

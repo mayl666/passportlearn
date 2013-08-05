@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.manager.problem;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.WebAddProblemParameters;
-
-import java.util.Date;
-import java.util.List;
+import com.sogou.upd.passport.manager.form.WebAddProblemParams;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,5 +13,5 @@ import java.util.List;
 public interface ProblemManager {
 
 
-    public Result insertProblem(WebAddProblemParameters addProblemParams,String ip)throws Exception;
+    public Result insertProblem(WebAddProblemParams addProblemParams,String ip)throws Exception;
 }

@@ -3,6 +3,8 @@ package com.sogou.upd.passport.manager.api.connect.form;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -10,14 +12,13 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 上午11:49
  * To change this template use File | Settings | File Templates.
  */
-public class BaseOpenApiParams extends BaseApiParams{
+public class BaseOpenApiParams extends BaseApiParams {
 
     @NotBlank(message = "userid不允许为空")
     protected String userid; //通行证账号，如果用于绑定则是主账号
     @NotBlank(message = "openid不允许为空")
     protected String openid; //通行证账号，***@provider.sohu.com
-
-    protected String params = "";
+    protected Object params;//调用各个api所需的参数
 
     public String getUserid() {
         return userid;
@@ -35,11 +36,11 @@ public class BaseOpenApiParams extends BaseApiParams{
         this.openid = openid;
     }
 
-    public String getParams() {
+    public Object getParams() {
         return params;
     }
 
-    public void setParams(String params) {
+    public void setParams(Object params) {
         this.params = params;
     }
 }

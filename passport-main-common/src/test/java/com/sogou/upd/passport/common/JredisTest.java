@@ -8,15 +8,20 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.util.*;
 
 import javax.inject.Inject;
+
+import redis.clients.jedis.JedisShardInfo;
 
 /**
  * Created with IntelliJ IDEA. User: mayan Date: 12-11-22 Time: 下午6:26 To change this template use
@@ -30,6 +35,11 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private RedisUtils redisUtils;
+    @Inject
+    private StringRedisTemplate redisTemplate;
+
+    @Inject
+    private JedisConnectionFactory jedisConnectionFactory;
 
     @Before
     public void init() {
@@ -38,32 +48,19 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void test() {
         try {
-//            String ip="192.168.1.1";
-//            int i=0;
-//            while (i<20){
-//              String uuidName= UUID.randomUUID().toString().replaceAll("-","");
-//              redisUtils.lPush(ip,uuidName);
-//              redisUtils.set(ip+"_"+uuidName,1);
-//              i++;
-//            }
-//             String uuidName= UUID.randomUUID().toString().replaceAll("-","");
-//             while (i<20){
-//                ip="192.168.1."+i;
-//                redisUtils.lPush(uuidName,ip);
-//                redisUtils.set(uuidName+"_"+ip,1);
-//               i++;
-//             }
-//          System.out.println(redisUtils.getList(ip).size());
-//          System.out.println("fdfd");
-//            redisUtils.lPush("aa","bb");
-//            redisUtils.lPush("aa","cc");
-//            redisUtils.lPushX("aa","aa");
-          redisUtils.set("djaskljds","dasds");
-//            System.out.println(redisUtils.getList("aa1").size());
-//
-//          redisUtils.set("qqqq","wwwww");
-//          System.out.println(redisUtils.get("qqqq"));
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.set("nimei204", "nimei204");
 
+            JedisShardInfo shardInfo=new JedisShardInfo("10.12.139.205",6379);
+
+            jedisConnectionFactory.setShardInfo(shardInfo);
+            jedisConnectionFactory.afterPropertiesSet();
+
+
+            redisTemplate.setConnectionFactory(jedisConnectionFactory);
+            valueOperations = redisTemplate.opsForValue();
+
+            valueOperations.set("nimei205","nimei205");
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

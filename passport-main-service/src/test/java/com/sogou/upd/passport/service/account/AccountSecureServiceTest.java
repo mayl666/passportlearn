@@ -21,7 +21,7 @@ import java.util.List;
  */
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
-    private static final String PASSPORT_ID = "13552848876@sohu.com";
+    private static final String PASSPORT_ID = "test_sogou21@sogou.com";
     private static final int CLIENT_ID = 999;
 
     @Autowired
@@ -79,13 +79,13 @@ public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testGetAndSetRecords() throws Exception{
-        for (int i=0; i<20; i++) {
+        /*for (int i=0; i<20; i++) {
             accountSecureService.setActionRecord(PASSPORT_ID, CLIENT_ID,
                     AccountModuleEnum.RESETPWD, "127.0.0.1 - " + i, null);
-        }
+        }*/
 
         List<ActionStoreRecordDO>
-                list = accountSecureService.getActionStoreRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.RESETPWD);
+                list = accountSecureService.getActionStoreRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN);
         List<ActionStoreRecordDO>
                 list1 = accountSecureService.getActionStoreRecords(PASSPORT_ID, CLIENT_ID,
                                                                    AccountModuleEnum.REGISTER);

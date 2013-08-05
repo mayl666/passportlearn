@@ -95,4 +95,8 @@ public enum AccountDomainEnum {
 
     }
 
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
 }
