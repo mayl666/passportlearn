@@ -1,19 +1,11 @@
 package com.sogou.upd.passport.web.account.form;
 
 import com.google.common.base.Strings;
-
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-
-import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Min;
 
 /**
  * User: mayan
