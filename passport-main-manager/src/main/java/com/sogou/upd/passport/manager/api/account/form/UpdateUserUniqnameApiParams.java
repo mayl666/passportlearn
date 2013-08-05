@@ -18,7 +18,7 @@ public class UpdateUserUniqnameApiParams extends BaseApiParams {
     @NotBlank(message = "用户昵称不能为空")
     private String uniqname;
 
-    @AssertTrue(message = "检查昵称长度是否符合规则，长度在2——12字符之间")
+    @AssertTrue(message = "昵称长度不符合规则，长度应该在2——12字符之间")
     private boolean isCheckLength() {
         if (!(uniqname.length() >= 2 && uniqname.length() <= 12)) {
             return false;
@@ -28,14 +28,14 @@ public class UpdateUserUniqnameApiParams extends BaseApiParams {
 
     @AssertTrue(message = "昵称中不能含有搜狐，sohu，souhu，搜狗，sogou，sougou字样")
     private boolean isCheckSensitive() {
-        String regx = "^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!.*搜狐)(?!.*sohu)(?!.*souhu)(?!.*搜狐微博)";
+        String regx = "^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!.*搜狐)(?!.*sohu)(?!.*souhu)(?!.*搜狐微博)(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$";
         if (!uniqname.matches(regx)) {
             return false;
         }
         return true;
     }
 
-    @AssertTrue(message = "检查昵称是否符合组成规则，只能使用中文、字母、数字和下划线组合，但不能以下划线开头或结尾")
+    @AssertTrue(message = "昵称不符合组成规则，只能使用中文、字母、数字和下划线组合，但不能以下划线开头或结尾")
     private boolean isCheckElement() {
         String regx = "^(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$";
         //返回false，说明不符合组成规则
