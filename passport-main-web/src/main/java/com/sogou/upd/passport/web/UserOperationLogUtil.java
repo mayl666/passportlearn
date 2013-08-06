@@ -41,14 +41,19 @@ import ch.qos.logback.core.util.StatusPrinter;
  */
 public class UserOperationLogUtil {
 
-    private static final Logger userOperationLogger = LoggerFactory.getLogger("userOperationLogger");
+    private static final Logger userLoggerScribe = LoggerFactory.getLogger("userLoggerScribe");
 
-    // TODO:测试例子
-    private static final Logger userTestOperationLogger = LoggerFactory.getLogger("userTestOperationLogger");
+    private static final Logger userLoggerLocal = LoggerFactory.getLogger("userLoggerLocal");
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
 
     private static String LOCALIP = null;
+
+    private static Logger userLogger = userLoggerScribe;
+
+    public static void setUserLoggerToScribe(boolean flag) {
+        userLogger = (flag ? userLoggerScribe : userLoggerLocal);
+    }
 
     /**
      * 记录用户行为
@@ -126,76 +131,7 @@ public class UserOperationLogUtil {
             String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
             log.append("\t").append(otherMsgJson);
 
-            userOperationLogger.info(log.toString());
-        } catch (Exception e) {
-            logger.error("UserOperationLogUtil.log error", e);
-        }
-
-    }
-
-    // TODO:测试方式
-
-    public static void logTest(UserOperationLog userOperationLog) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap());
-    }
-
-    public static void logTest(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
-        try {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                    .getRequest();
-            if (StringUtil.isBlank(operation)) {
-                operation = request.getRequestURI();
-            }
-            StringBuilder log = new StringBuilder();
-            Date date = new Date();
-            String timestamp = String.valueOf(date.getTime()).substring(0, 10);
-            log.append(timestamp);
-            log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-
-            log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
-
-            log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
-
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            String domainStr = domain.toString();
-            if (domain == AccountDomainEnum.THIRD) {
-                AccountTypeEnum accountTypeEnum = AccountTypeEnum.getAccountType(passportId);
-                if (accountTypeEnum != AccountTypeEnum.UNKNOWN) {
-                    domainStr = accountTypeEnum.toString();
-                }
-            } else if (domain == AccountDomainEnum.INDIVID) {
-                if (operation.indexOf("connect") != -1) {
-                    domainStr = passportId;
-                } else {
-                    domainStr = AccountDomainEnum.SOGOU.toString();
-                }
-            }
-
-            log.append("\t").append(StringUtil.defaultIfEmpty(domainStr, "-"));
-            log.append("\t").append(StringUtil.defaultIfEmpty(operation, "-"));
-            log.append("\t").append(StringUtil.defaultIfEmpty(ApiGroupUtil.getApiGroup(operation), "-"));
-            log.append("\t").append(StringUtil.defaultIfEmpty(clientId, "-"));
-            log.append("\t").append(StringUtil.defaultIfEmpty(ip, "-"));
-            log.append("\t").append(StringUtil.defaultIfEmpty(resultCode, "-"));
-
-
-            Object stopWatchObject = request.getAttribute(CommonConstant.STOPWATCH);
-            if (stopWatchObject != null && stopWatchObject instanceof StopWatch) {
-                StopWatch stopWatch = (StopWatch) stopWatchObject;
-                long startTime = stopWatch.getStartTime();
-                long costTime = System.currentTimeMillis() - startTime;
-                log.append("\t").append(costTime);
-            } else {
-                log.append("\t-");
-            }
-
-            String referer = otherMessage.remove("ref");
-            log.append("\t").append(StringUtil.defaultIfEmpty(referer, "-"));
-
-            String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
-            log.append("\t").append(otherMsgJson);
-
-            userTestOperationLogger.info(log.toString());
+            userLogger.info(log.toString());
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
