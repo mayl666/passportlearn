@@ -63,6 +63,7 @@
 
     <logger name="userLoggerLocal" level="info" additivity="false">
         <appender-ref ref="userOperationAppender" />
+        <appender-ref ref="scribeAppender" />
     </logger>
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
