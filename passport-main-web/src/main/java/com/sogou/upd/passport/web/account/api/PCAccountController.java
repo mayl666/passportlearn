@@ -78,7 +78,7 @@ public class PCAccountController extends BaseController {
         return getReturnStr(cb, resStr);
     }
 
-    @RequestMapping(value = "/act/refreshtoken")
+    @RequestMapping(value = "/act/refreshtoken", method = RequestMethod.GET)
     @ResponseBody
     public Object refreshToken(PcRefreshTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
