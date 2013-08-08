@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class PcAuthTokenParams extends PcBaseParams {
 
-    private long livetime;  //token的生存期，单位为秒
+    private long livetime = 0;  //token的生存期，单位为秒
     private int authtype = 0;  //0其它，1正常登录，2记住密码登录，3输入法同步信息，4用户点击链接
 
     @NotBlank(message = "token不允许为空")

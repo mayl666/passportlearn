@@ -13,11 +13,14 @@ import org.junit.Test;
  */
 public class ManagerHelperTest extends BaseTest {
 
+    /**
+     * 测试生成内部接口code参数
+     */
     @Test
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode(userid, clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCode("1666643531@sina.sohu.com", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {
@@ -27,6 +30,26 @@ public class ManagerHelperTest extends BaseTest {
             e.printStackTrace();
         }*/
 
+    }
+
+    /**
+     * 测试生成getpairtoken接口中sig参数
+     */
+    @Test
+    public void testGeneratorSig() {
+        String passportId = "shipengzhi1986@sogou.com";
+        int clientId = 1044;
+        String refreshToken = "6724sEW686c2uJCO5U4755SFB5tJrj";
+        long timestamp = 1375250235592l;
+        String clientSecret = "=#dW$h%q)6xZB#m#lu'x]]wP=\\FUO7";
+        String sigString = passportId + clientId + refreshToken + timestamp + clientSecret;
+        String originSig = "2e5cdf5a510affe479a458d1c9ddde79";
+        try {
+            String actualSig = Coder.encryptMD5(sigString);
+            System.out.println("sig:" + actualSig);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     @Test

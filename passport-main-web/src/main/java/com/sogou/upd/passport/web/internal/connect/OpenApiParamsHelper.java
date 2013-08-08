@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.form;
+package com.sogou.upd.passport.web.internal.connect;
 
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -12,7 +12,7 @@ import java.util.Map;
  * Time: 下午1:38
  * To change this template use File | Settings | File Templates.
  */
-public class OpenApiParams {
+public class OpenApiParamsHelper {
     /**
      * 根据子类构造符合参数规则的父类
      *

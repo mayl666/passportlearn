@@ -8,16 +8,13 @@ import com.sogou.upd.passport.manager.api.connect.FriendsOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.relation.FriendsOpenApiParams;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.OpenApiParams;
+import com.sogou.upd.passport.web.internal.connect.OpenApiParamsHelper;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,7 +48,7 @@ public class FriendsOpenApiController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        BaseOpenApiParams baseOpenApiParams = new OpenApiParams().createBaseForm(params);
+        BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createBaseForm(params);
         result = proxyFriendsOpenApiManager.getUserFriends(baseOpenApiParams);
         return result.toString();
     }

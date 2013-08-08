@@ -19,7 +19,7 @@ public class PcPairTokenParams extends PcBaseParams {
     private String sig;  //用于用refresh刷新token，userid + appid + refresh_token + timestamp + key 的md5
 
     @AssertTrue(message = "password和sig不能同时为空")
-    private boolean checkPwdAndSig() {
+    private boolean isCheckPwdAndSig() {
         if (Strings.isNullOrEmpty(password) && (Strings.isNullOrEmpty(sig) || Strings.isNullOrEmpty(timestamp))) {
             return false;
         }
@@ -49,5 +49,4 @@ public class PcPairTokenParams extends PcBaseParams {
     public void setSig(String sig) {
         this.sig = sig;
     }
-
 }

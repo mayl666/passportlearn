@@ -24,7 +24,7 @@ public class KvUtils {
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
     // private static String KEY_PREFIX = "20002/action_records/";
 
-    private final static String KV_PERF4J_LOGGER = "rediesTimingLogger";
+    private final static String KV_PERF4J_LOGGER = "kvTimingLogger";
 
 
     private static RedisTemplate kvTemplate;
