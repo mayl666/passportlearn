@@ -9,8 +9,6 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ApiGroupUtil;
 
-import org.apache.commons.collections.MapUtils;
-import org.apache.thrift.TException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
@@ -18,20 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Map;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用于记录用户行为的log
@@ -86,7 +76,7 @@ public class UserOperationLogUtil {
             Date date = new Date();
             String timestamp = String.valueOf(date.getTime()).substring(0, 10);
             log.append(timestamp);
-            log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+            log.append(":").append(new SimpleDateFormat("HH:mm:ss").format(date));
 
             log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
 
