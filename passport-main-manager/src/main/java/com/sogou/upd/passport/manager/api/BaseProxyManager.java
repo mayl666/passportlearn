@@ -37,7 +37,7 @@ public class BaseProxyManager {
     }
 
     /**
-     * 执行request操作，并将返回结果构造程{@link Result}
+     * 执行request操作，并将返回结果构造程{@link com.sogou.upd.passport.common.result.Result}
      *
      * @param requestModel
      * @param signVariableStr 计算code时第一个参数值，如果为null默认是userid
@@ -55,7 +55,7 @@ public class BaseProxyManager {
                 Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
                 result.setCode(entry.getKey());
                 result.setMessage(entry.getValue());
-                this.handSHPPMap(map);   //搜狐Passport接口返回的无用信息删除掉
+                this.handSHPPMap(map,requestModel.getUrl());   //搜狐Passport接口返回的无用信息删除掉
                 result.setModels(map);
             }
         } catch (Exception e) {
@@ -139,14 +139,17 @@ public class BaseProxyManager {
      *
      * @param map
      */
-    private void handSHPPMap(final Map<String, Object> map) {
+    private void handSHPPMap(final Map<String, Object> map,String url) {
         if (map == null || map.size() == 0) {
             return;
         }
         map.remove(SHPPUrlConstant.RESULT_STATUS);
         map.remove("uid");
         map.remove("uuid");
-        map.remove("uniqname");
+        //如果是获取用户信息链接，忽略uniqname
+        if(!url.equals(SHPPUrlConstant.GET_USER_INFO)){
+            map.remove("uniqname");
+        }
         map.remove("errmsg");
     }
 }
