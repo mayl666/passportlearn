@@ -35,6 +35,19 @@
         <appender-ref ref="loginBlackListFileAppender" />
     </logger>
 
+    <!--登陆白名单-->
+    <appender name="loginWhiteListFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/whiteList/loginWhiteList.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.sogou.upd.passport.loginWhiteListFileAppender" level="info" additivity="false">
+        <appender-ref ref="loginWhiteListFileAppender" />
+    </logger>
+
     <appender name="userOperationAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd}</fileNamePattern>
