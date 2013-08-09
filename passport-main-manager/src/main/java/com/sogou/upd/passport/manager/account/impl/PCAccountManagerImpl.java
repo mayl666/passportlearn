@@ -94,8 +94,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
-            Result verifyRTResult = proxyOAuthTokenApiManager.refreshToken(pcRefreshTokenParams);
-            if (!verifyRTResult.isSuccess() && !pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+//            Result verifyRTResult = proxyOAuthTokenApiManager.refreshToken(pcRefreshTokenParams);
+//            if (!verifyRTResult.isSuccess() && !pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+//                result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+//                return result;
+//            }
+            if (!pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
                 result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                 return result;
             }

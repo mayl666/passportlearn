@@ -63,4 +63,9 @@ public class LoginConstant {
    */
   public static final int ADDPROBLEM_IP_LIMITED = 100; // ip一天限制次数
 
+    /**
+     * 当username或者ip存在白名单时，存为1
+     */
+    public static final int LOGIN_USER_IN_WHITE_LIST_ = 1;
+
 }
