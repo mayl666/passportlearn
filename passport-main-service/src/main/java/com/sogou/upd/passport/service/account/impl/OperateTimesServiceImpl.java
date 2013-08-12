@@ -156,7 +156,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLoginUserInBlackList(String username) throws ServiceException {
+    public boolean checkLoginUserInBlackList(String username,String ip) throws ServiceException {
         try {
             List<String> keyList = new ArrayList<String>();
             List<Integer> maxList = new ArrayList<Integer>();
@@ -171,7 +171,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             boolean result = checkTimesByKeyList(keyList, maxList);
 
             if (result) {
-                loginBlackListLogger.info(new Date() + ",checkLoginUserInBlackList,keyList=" + keyList.toString() + ",maxList=" + maxList.toString());
+                loginBlackListLogger.info(new Date() + ",checkLoginUserInBlackList,username" + username + ",ip:" + ip);
             }
             return result;
         } catch (Exception e) {
@@ -486,6 +486,26 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         } catch (Exception e) {
             logger.error("checkLimitCheckPwdFail:passportId" + userId, e);
             return true;
+        }
+    }
+
+    @Override
+    public boolean checkLoginUserInWhiteList(String username,String ip) throws ServiceException {
+        try {
+            String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
+            Set<String> whiteList = redisUtils.smember(whiteListKey);
+            if (CollectionUtils.isNotEmpty(whiteList)){
+                if(whiteList.contains(username)){
+                    return true;
+                }
+                if(whiteList.contains(ip)){
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("checkLoginUserWhiteList:username=" + username + ",ip="+ip, e);
+            return false;
         }
     }
 }

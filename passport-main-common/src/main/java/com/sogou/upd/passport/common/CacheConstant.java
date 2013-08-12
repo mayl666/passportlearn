@@ -70,4 +70,7 @@ public class CacheConstant {
     /*==================token相关缓存常量========================*/
     public static final String KV_PREFIX_PASSPORTID_TOKEN = "20002/account_token/";
 
+    //
+    public static final String CACHE_PREFIX_LOGIN_WHITELIST = "SP.USERNAME.IP:WHITELIST_KEY"; // username或者ip在白名单中的set KEY
+
 }
