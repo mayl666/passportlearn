@@ -3,8 +3,7 @@
     if( location.protocol.indexOf('https') != -1 ){
         passhref = 'https://account.sogou.com/static';
     }else{
-        passhref = '';
+        passhref = 'http://s.account.sogou.com/u';
     }
-
-document.write('<script type="text/javascript" src="https://account.sogou.com/static/api/sogou.js?t=2013081225"></script>');
+    document.write('<script type="text/javascript" src="'+ passhref +'/api/sogou.js?t=2013081227"></script>');
 })();
