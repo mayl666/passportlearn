@@ -492,21 +492,20 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public boolean checkLoginUserInWhiteList(String username,String ip) throws ServiceException {
         try {
-            List<String> keyList = new ArrayList<String>();
-            List<Integer> maxList = new ArrayList<Integer>();
-            //username
-            String whitelist_username = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST + username;
-            keyList.add(whitelist_username);
-            maxList.add(LoginConstant.IS_IN_WHITE_LIST);
-
-            String whitelist_ip = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST + ip;
-            keyList.add(whitelist_ip);
-            maxList.add(LoginConstant.IS_IN_WHITE_LIST);
-            boolean result = checkTimesByKeyList(keyList, maxList);
-            return result;
+            String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
+            Set<String> whiteList = redisUtils.smember(whiteListKey);
+            if (CollectionUtils.isNotEmpty(whiteList)){
+                if(whiteList.contains(username)){
+                    return true;
+                }
+                if(whiteList.contains(ip)){
+                    return true;
+                }
+            }
+            return false;
         } catch (Exception e) {
             logger.error("checkLoginUserWhiteList:username=" + username + ",ip="+ip, e);
-            throw new ServiceException(e);
+            return false;
         }
     }
 }
