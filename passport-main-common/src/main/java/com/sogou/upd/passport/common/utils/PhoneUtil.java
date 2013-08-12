@@ -28,7 +28,9 @@ public class PhoneUtil {
 
 		String phone = "8615811224181";
 		if (phone.length() > PhoneUtil.PHONE_LENTH) {
-			phone.substring(phone.length() - PhoneUtil.PHONE_LENTH);
+            phone = phone.substring(phone.length() - PhoneUtil.PHONE_LENTH);
+            System.out.println(phone);
 		}
-	}
+
+    }
 }

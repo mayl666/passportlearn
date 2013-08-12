@@ -59,7 +59,7 @@ public class HttpClientUtil {
 			PostMethod post = new PostMethod(url);
 			post.setRequestEntity(new StringRequestEntity(data, null, charset));
 			return doWget(post, charset);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			String message = e.getClass().getName() + "|" + e.getMessage();
 			return Pair.of(0, message);
 		}
@@ -75,7 +75,7 @@ public class HttpClientUtil {
 			method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
 			int code = client.executeMethod(method);
 			return code;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			String message = e.getClass().getName() + "|" + e.getMessage();
 			System.out.println(message);
 			return 0;
@@ -99,7 +99,7 @@ public class HttpClientUtil {
 			Reader reader = read(in, method, charset);
 			String body = read(reader);
 			return Pair.of(code, body);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			String message = e.getClass().getName() + "|" + e.getMessage();
 			return Pair.of(0, message);
 		} finally {
@@ -125,7 +125,7 @@ public class HttpClientUtil {
 			String mime = respHeader.getValue();
 			Pair<String, byte[]> content = Pair.of(mime, bytes);
 			return Pair.of(code, content);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return Pair.of(0, null);
 		} finally {
