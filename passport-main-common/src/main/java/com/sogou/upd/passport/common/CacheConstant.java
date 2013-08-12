@@ -36,6 +36,10 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = "SP.PASSPORTID:EMAILSCODE_"; // passportId与email中scode的映射
     public static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = "SP.PASSPORTID:SENDEMAILNUM_"; // passportId与email发送次数的映射
 
+    /*================账号黑名单、白名单缓存常量=====================*/
+    // username或者ip在白名单中的set KEY
+    public static final String CACHE_PREFIX_LOGIN_WHITELIST = "SP.USERNAME.IP:WHITELIST_KEY";
+
     /*================绑定密保限制相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_"; // passportId与当日绑定密保邮箱次数
     public static final String CACHE_PREFIX_PASSPORTID_BINDMOBILENUM = "SP.PASSPORTID:BINDMOBILENUM_"; // passportId与当日绑定密保手机次数
@@ -70,7 +74,6 @@ public class CacheConstant {
     /*==================token相关缓存常量========================*/
     public static final String KV_PREFIX_PASSPORTID_TOKEN = "20002/account_token/";
 
-    //
-    public static final String CACHE_PREFIX_LOGIN_WHITELIST = "SP.USERNAME.IP:WHITELIST_KEY"; // username或者ip在白名单中的set KEY
+
 
 }
