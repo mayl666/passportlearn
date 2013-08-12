@@ -80,7 +80,7 @@ public class MobileAccountController extends BaseController {
     /**
      * 手机账号正式注册调用
      */
-    @RequestMapping(value = {"/v2/mobile/reg", "/mobile/regmobileuser"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/mobile/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
     public Object mobileUserRegister(HttpServletRequest request, MobileRegParams regParams) {
         // 请求参数校验，必填参数是否正确，手机号码格式是否正确
