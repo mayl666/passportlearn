@@ -66,6 +66,6 @@ public class LoginConstant {
     /**
      * 当username或者ip存在白名单时，存为1
      */
-    public static final int LOGIN_USER_IN_WHITE_LIST_ = 1;
+    public static final int IS_IN_WHITE_LIST = 1;
 
 }
