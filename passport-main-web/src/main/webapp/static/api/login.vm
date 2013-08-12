@@ -33,8 +33,9 @@
         </div> 
     </body>
 
+<script type="text/javascript" src="./passport.js"></script>
     <script type="text/javascript">
-var PassportSC = {};        
+
 PassportSC.redirectUrl = 'http://demix.sogou.com/~zhengxin/passport/static/api/jump.htm';
 PassportSC.appid = 1120;
 document.getElementById('Submit').onclick = function(){
@@ -60,10 +61,6 @@ document.getElementById('Renren').onclick = function(){
 };
 
 
-PassportSC.onApiLoaded = function(){}
-var scr = document.createElement('script');
-scr.src="./passport_cb.js";
-document.body.appendChild(scr);
 
     </script>
 </html>
