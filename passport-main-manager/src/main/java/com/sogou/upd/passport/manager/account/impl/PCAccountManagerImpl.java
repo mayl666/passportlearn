@@ -16,6 +16,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +143,31 @@ public class PCAccountManagerImpl implements PCAccountManager {
         return result;
     }
 
+    @Override
+    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
+        try {
+            //验证refreshToken
+            //TODO 验证sohu refreshtoken
+            int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
+            String passportId = pcRefreshTokenParams.getUserid();
+            String instanceId = pcRefreshTokenParams.getTs();
+            return pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, pcRefreshTokenParams.getRefresh_token());
+        } catch (Exception e) {
+            logger.error("verifyRefreshToken fail", e);
+            return false;
+        }
+    }
+
+    @Override
+    public String getSig(String passportId, int clientId,String refresh_token,String timestamp){
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+        if (appConfig == null) {
+            return null;
+        }
+        String clientSecret = appConfig.getClientSecret();
+        String sig = DigestUtils.md5Hex(passportId + clientId + refresh_token + timestamp + clientSecret);
+        return sig;
+    }
     /*
      * 校验签名，算法：sig=MD5(passportId + clientId + refresh_token + timestamp + clientSecret）
      */

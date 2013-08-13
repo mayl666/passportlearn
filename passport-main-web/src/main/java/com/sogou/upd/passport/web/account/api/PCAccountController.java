@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
@@ -15,16 +14,20 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Calendar;
 
 /**
  * 桌面端登录流程Controller
@@ -43,6 +46,48 @@ public class PCAccountController extends BaseController {
     private UserInfoApiManager proxyUserInfoApiManagerImpl;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+
+    @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
+    public String regEmail(PcAccountWebParams pcAccountWebParams, Model model)
+            throws Exception {
+        //校验非法appid
+        if (!pcAccountWebParams.getAppid().matches("[0-9]{4}")) {
+            pcAccountWebParams.setAppid("9998");
+        }
+
+        //计算isAuthedUser，用于是否可以自动登录
+        boolean isAuthedUser = false;
+        if (!Strings.isNullOrEmpty(pcAccountWebParams.getRefresh_token()) && !Strings.isNullOrEmpty(pcAccountWebParams.getUserid())) {
+            PcRefreshTokenParams pcRefreshTokenParams = new PcRefreshTokenParams();
+            pcRefreshTokenParams.setRefresh_token(pcAccountWebParams.getRefresh_token());
+            pcRefreshTokenParams.setUserid(pcAccountWebParams.getUserid());
+            pcRefreshTokenParams.setAppid(pcAccountWebParams.getAppid());
+            pcRefreshTokenParams.setTs(pcAccountWebParams.getTs());
+            if (pcAccountManager.verifyRefreshToken(pcRefreshTokenParams)) {
+                isAuthedUser = true;
+            }
+        }
+        model.addAttribute("isAuthedUser", isAuthedUser);
+        if (isAuthedUser) {
+            String timestamp = new Long(Calendar.getInstance().getTimeInMillis()).toString();
+            String sig = pcAccountManager.getSig(pcAccountWebParams.getUserid(), Integer.parseInt(pcAccountWebParams.getAppid()), pcAccountWebParams.getRefresh_token(), timestamp);
+            model.addAttribute("timestamp", timestamp);
+            model.addAttribute("sig", sig);
+        }
+
+        //此处是帮浏览器打的个补丁，根据版本号判断
+        String version = pcAccountWebParams.getV();
+        boolean supportLocalHash = version.compareTo("3.1.0.0000") > 0;
+        model.addAttribute("version", version);
+        model.addAttribute("supportLocalHash", supportLocalHash);
+
+        //赋给页面值
+        model.addAttribute("userid", pcAccountWebParams.getUserid());
+        model.addAttribute("appid", pcAccountWebParams.getAppid());
+        model.addAttribute("ts", pcAccountWebParams.getTs());
+        model.addAttribute("openAppType", pcAccountWebParams.getOpenapptype());
+        return "/pcaccount/pclogin";
+    }
 
     @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
     @ResponseBody
