@@ -38,4 +38,20 @@ public interface PCAccountManager {
      * @return
      */
     public Result authToken(PcAuthTokenParams authPcTokenParams);
+
+    /**
+     * 验证refreshtoken是否正确
+     * @param pcRefreshTokenParams
+     * @return
+     */
+    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams);
+
+    /**
+     * 获取sig
+     * @param passportId
+     * @param clientId
+     * @param timestamp
+     * @return
+     */
+    public String getSig(String passportId, int clientId,String refresh_token,String timestamp);
 }
