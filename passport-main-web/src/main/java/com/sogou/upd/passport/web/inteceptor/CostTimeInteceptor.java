@@ -26,8 +26,6 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
     private final static int SLOW_TIME = 500;
 
-
-
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
