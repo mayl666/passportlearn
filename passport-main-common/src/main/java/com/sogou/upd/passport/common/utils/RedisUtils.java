@@ -451,12 +451,21 @@ public class RedisUtils {
         valueList.leftPush(key, value);
     }
 
-    // set add
+    /*
+     * 将一个或多个 member 元素加入到集合 key 当中，已经存在于集合的 member 元素将被忽略。
+     * 假如 key 不存在，则创建一个只包含 member 元素作成员的集合。
+     * 当 key 不是集合类型时，返回一个错误。
+     */
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_addStringToSet")
     public void sadd(String key, String value) {
         SetOperations operations = redisTemplate.opsForSet();
         operations.add(key, value);
     }
 
+    /*
+     * 返回集合key中的所有成员，不存在的key视为空集合
+     */
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_membersSet")
     public Set<String> smember(String key) {
         SetOperations operations = redisTemplate.opsForSet();
         Set<String> resSet = operations.members(key);
@@ -467,6 +476,7 @@ public class RedisUtils {
     }
 
     // 将value添加到键key的列表尾部，超过maxLen则删除头部元素
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_RightPushStringToList")
     public void rPushWithMaxLen(String key, String value, int maxLen) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         valueList.rightPush(key, value);
@@ -479,6 +489,7 @@ public class RedisUtils {
     }
 
     // 将value添加到键key的列表头部，超过maxLen则删除尾部元素
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_LeftPushStringToList")
     public void lPushWithMaxLen(String key, String value, int maxLen) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         valueList.leftPush(key, value);
@@ -490,6 +501,7 @@ public class RedisUtils {
         }
     }
 
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_LeftPushObjectToList")
     public void lPushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
             lPushWithMaxLen(key, new ObjectMapper().writeValueAsString(obj), maxLen);
@@ -533,7 +545,7 @@ public class RedisUtils {
         return storeList;
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_getList")
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_getListByClass")
     public <T> List<T> getList(String key, Class returnClass) {
         try {
             List<String> storeList = getList(key);
@@ -559,7 +571,6 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    // @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_setEx")
     private void set(String key, String value, long timeout, TimeUnit timeUnit) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -573,7 +584,6 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    // @Profiled(el = true,logger = "rediesTimingLogger",tag = "redies_setObjectEx")
     private void set(String key, Object obj, long timeout, TimeUnit timeUnit) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
