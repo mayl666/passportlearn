@@ -147,11 +147,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
         try {
             //验证refreshToken
-            //TODO 验证sohu refreshtoken
-            int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
-            String passportId = pcRefreshTokenParams.getUserid();
-            String instanceId = pcRefreshTokenParams.getTs();
-            return pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, pcRefreshTokenParams.getRefresh_token());
+            return pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), Integer.parseInt(pcRefreshTokenParams.getAppid()),
+                    pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token());
         } catch (Exception e) {
             logger.error("verifyRefreshToken fail", e);
             return false;
