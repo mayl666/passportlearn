@@ -152,7 +152,7 @@ public class LoginManagerImpl implements LoginManager {
             }
 
             //校验username是否在账户黑名单中
-            if (operateTimesService.checkLoginUserInBlackList(username)) {
+            if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }

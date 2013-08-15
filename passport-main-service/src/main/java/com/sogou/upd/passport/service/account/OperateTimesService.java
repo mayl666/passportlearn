@@ -48,7 +48,7 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public boolean checkLoginUserInBlackList(String username) throws ServiceException;
+    public boolean checkLoginUserInBlackList(String username,String ip) throws ServiceException;
 
     /**
      * 记录一天内修改密码的次数
