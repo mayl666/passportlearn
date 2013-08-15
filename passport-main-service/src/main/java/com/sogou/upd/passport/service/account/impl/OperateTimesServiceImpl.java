@@ -28,6 +28,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         ipListSet.add("1.194");
         ipListSet.add("123.101");
         ipListSet.add("223.241");
+//        ipListSet.add("180.109");
+        ipListSet.add("123.53");
+        ipListSet.add("114.99");
     }
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
     private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");

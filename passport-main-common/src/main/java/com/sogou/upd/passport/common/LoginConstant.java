@@ -52,7 +52,7 @@ public class LoginConstant {
     /**
      *  密码修改一个ip一天限制次数
      */
-    public static final int UPDATENUM_IP_LIMITED = 2; // 密码修改一个ip一天限制次数
+    public static final int UPDATENUM_IP_LIMITED = 50; // 密码修改一个ip一天限制次数
 
   /**
    * 一天内某一个ip注册次数限制
