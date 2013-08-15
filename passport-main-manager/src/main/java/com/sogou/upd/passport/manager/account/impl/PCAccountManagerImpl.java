@@ -16,6 +16,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,8 +95,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
-            Result verifyRTResult = proxyOAuthTokenApiManager.refreshToken(pcRefreshTokenParams);
-            if (!verifyRTResult.isSuccess() && !pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+//            Result verifyRTResult = proxyOAuthTokenApiManager.refreshToken(pcRefreshTokenParams);
+//            if (!verifyRTResult.isSuccess() && !pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+//                result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+//                return result;
+//            }
+            if (!pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
                 result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                 return result;
             }
@@ -138,6 +143,28 @@ public class PCAccountManagerImpl implements PCAccountManager {
         return result;
     }
 
+    @Override
+    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
+        try {
+            //验证refreshToken
+            return pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), Integer.parseInt(pcRefreshTokenParams.getAppid()),
+                    pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token());
+        } catch (Exception e) {
+            logger.error("verifyRefreshToken fail", e);
+            return false;
+        }
+    }
+
+    @Override
+    public String getSig(String passportId, int clientId,String refresh_token,String timestamp){
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+        if (appConfig == null) {
+            return null;
+        }
+        String clientSecret = appConfig.getClientSecret();
+        String sig = DigestUtils.md5Hex(passportId + clientId + refresh_token + timestamp + clientSecret);
+        return sig;
+    }
     /*
      * 校验签名，算法：sig=MD5(passportId + clientId + refresh_token + timestamp + clientSecret）
      */
