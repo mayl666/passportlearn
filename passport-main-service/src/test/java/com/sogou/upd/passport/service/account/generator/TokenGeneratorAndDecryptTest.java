@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import junit.framework.Assert;
 import org.junit.Before;
@@ -47,7 +47,7 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
     @Test
     public void testParsePassportIdFromAccessToken() {
         try {
-            AccessTokenCipherDO accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
+            TokenCipherDO accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
             String passportId = accessTokenCipherDO.getPassportId();
             Assert.assertEquals(passportId, PASSPORT_ID_PHONE);
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
     public void testParseAccessToken() {
         String accessToken = "brFDqEVwJ9vRcDoKgdcr5bjYBfAGK9vs4DLAFiv3nND5LZXFPl3I7qARnCc3MF9Gr1ZOyElr3BdH1ileKDAJVWnA9VBDVUB4sEmVnGrq6IgzU1BxycyBU0qyckgueI6VL5UScz0al1d3mXkU6E9DOLKFi-LLhkwyqqS6KdKlO8Y";
         try {
-            AccessTokenCipherDO accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
+            TokenCipherDO accessTokenCipherDO = TokenDecrypt.decryptAccessToken(accessToken);
             String passportId = accessTokenCipherDO.getPassportId();
             long vaildTime = accessTokenCipherDO.getVaildTime();
             if (vaildTime > System.currentTimeMillis()) {
@@ -74,6 +74,16 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
         } catch (Exception e) {
             e.printStackTrace();
             Assert.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testGeneratorPcToken() {
+        try {
+            String pcToken = TokenGenerator.generatorPcToken(PASSPORT_ID_EMAIL, CLIENT_ID, EXPIRES_IN, INSTANCE_ID, CLIENT_SECRET);
+            System.out.println("pcToken:" + pcToken);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

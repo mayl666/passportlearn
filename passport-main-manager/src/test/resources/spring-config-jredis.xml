@@ -27,14 +27,22 @@
     <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="jedisConnectionFactory"/>
 
+    <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxActive" value="150"/>
+        <property name="maxIdle" value="80"/>
+        <property name="minIdle" value="30"/>
+        <property name="maxWait" value="1000"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
     <bean id="kvConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="${passport.kv.url}"/>
+        <property name="hostName" value="tair.store.z.sogou-op.org"/>
         <property name="port" value="6379"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
-        <constructor-arg index="0" ref="jedisPoolConfig"/>
+        <constructor-arg index="0" ref="kvPoolConfig"/>
     </bean>
 
     <!-- redis template definition -->

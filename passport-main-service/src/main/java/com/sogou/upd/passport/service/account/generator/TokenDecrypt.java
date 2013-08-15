@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.common.math.AES;
-import com.sogou.upd.passport.service.account.dataobject.AccessTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
@@ -38,12 +38,12 @@ public class TokenDecrypt {
      * @return
      * @throws Exception
      */
-    public static AccessTokenCipherDO decryptAccessToken(String accessToken) throws Exception {
-        AccessTokenCipherDO accessTokenCipherDO;
+    public static TokenCipherDO decryptAccessToken(String accessToken) throws Exception {
+        TokenCipherDO accessTokenCipherDO;
         try {
             byte[] tokenByte = Base64.decodeBase64(accessToken);
             String decryTokenStr = decryptByPublicKey(tokenByte, PUBLIC_KEY);
-            accessTokenCipherDO = AccessTokenCipherDO.parseEncryptString(decryTokenStr);
+            accessTokenCipherDO = TokenCipherDO.parseEncryptString(decryTokenStr);
             return accessTokenCipherDO;
         } catch (Exception e) {
             logger.error("Access Token decrypt fail, accessToken:{}", accessToken);

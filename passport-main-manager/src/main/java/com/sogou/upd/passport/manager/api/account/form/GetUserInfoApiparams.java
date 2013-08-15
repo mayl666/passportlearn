@@ -12,6 +12,14 @@ public class GetUserInfoApiparams extends BaseUserApiParams {
     @NotBlank(message = "需要返回的参数列表（fields）不能为空")
     private String fields;
 
+    public GetUserInfoApiparams() {
+    }
+
+    public GetUserInfoApiparams(String userId, String fields) {
+        this.userid = userId;
+        this.fields = fields;
+    }
+
     public String getFields() {
         return fields;
     }

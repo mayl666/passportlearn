@@ -3,17 +3,24 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.UserCaptchaParams;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -52,77 +59,31 @@ public class ResetPwdAction extends BaseController {
         }
     }
 
-/*    @RequestMapping
-    public String findPwd(UserCaptchaParams params, Model model) throws Exception {
+/*    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
+    public Object findPwd(UserCaptchaParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "recover/index";
+            return result.toString();
         }
         String username = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String captcha = params.getCaptcha();
         String token = params.getToken();
-        *//*
-         * TODO：暂时不测
+
         if (!checkManager.checkCaptcha(captcha, token)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-            model.addAttribute("data", result.toString());
-            return "recover/index";
-        }*//*
-
-        // TODO:是否允许绑定手机取得密保信息
-        String passportId = commonManager.getPassportIdByUsername(username);
-        if (passportId == null) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            model.addAttribute("data", result.toString());
-        }
-
-        // TODO:如果getPassportIdByUsername不检测是否存在，则需要检测用户是否存在
-
-        // TODO:已修改为代理接口
-        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
-        model.addAttribute("data", result.toString());
-        return "recover/type";
-        // return "recover/index";
-    }
-
-    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
-    public String querySecureInfo(UserCaptchaParams params, Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "recover/index";
-        }
-        String username = params.getUsername();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String captcha = params.getCaptcha();
-        String token = params.getToken();
-        if (!checkManager.checkCaptcha(captcha, token)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-            model.addAttribute("data", result.toString());
-            return "recover/index";
-        }
-
-        // TODO:是否允许绑定手机取得密保信息
-        String passportId = commonManager.getPassportIdByUsername(username);
-        if (passportId == null) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            model.addAttribute("data", result.toString());
+            return result.toString();
         }
 
         // TODO:已修改为代理接口
-        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
-        model.addAttribute("data", result.toString());
-        return "recover/type";
-    }
+        result = resetPwdManager.queryAccountSecureInfo(username, clientId, true);
+        return result.toString();
+    }*/
 
+/*
     @RequestMapping(value = "/sendremail", method = RequestMethod.POST)
     public String sendEmailRegResetPwd(BaseAccountParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);

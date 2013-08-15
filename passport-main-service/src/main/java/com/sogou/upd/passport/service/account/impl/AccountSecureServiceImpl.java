@@ -31,9 +31,9 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE;
     private static final String CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE;
-
-    private static final String CACHE_PREFIX_PASSPORTID_ACTIONRECORD = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIONRECORD;
     private static final String CACHE_PREFIX_SECURECODE = CacheConstant.CACHE_PREFIX_SECURECODE;
+
+    private static final String KV_PREFIX_PASSPORTID_ACTIONRECORD = CacheConstant.KV_PREFIX_PASSPORTID_ACTIONRECORD;
 
     private static final Logger logger = LoggerFactory.getLogger(AccountSecureServiceImpl.class);
 
@@ -197,7 +197,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {
-        return CACHE_PREFIX_PASSPORTID_ACTIONRECORD + action + "_" + userId;
+        return KV_PREFIX_PASSPORTID_ACTIONRECORD + action + "_" + userId;
     }
 
 }

@@ -45,6 +45,7 @@ public interface OperateTimesService {
     /**
      * 检查username是否在黑名单中
      * @param username
+     * @param ip
      * @return
      * @throws ServiceException
      */
@@ -202,4 +203,13 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean checkLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException;
+
+    /**
+     * 检查用户是否在白名单列表里面
+     * @param username
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkLoginUserInWhiteList(String username,String ip) throws ServiceException;
 }

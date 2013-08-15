@@ -17,7 +17,7 @@ import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.form.WebLoginParameters;
+import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
@@ -31,7 +31,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -126,21 +125,28 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public Result accountLogin(WebLoginParameters loginParameters, String ip, String scheme) {
+    public Result accountLogin(WebLoginParams loginParameters, String ip, String scheme) {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();
         String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         String passportId = username;
-        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
         try {
             //校验验证码
-            if (needCaptcha) {
+            if (needCaptchaCheck(loginParameters.getClient_id(), username, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
                 if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-                    logger.info("[accountLogin captchaCode wrong warn]:username="+username+", ip="+ip+", token="+token+", captchaCode="+captchaCode);
+                    logger.info("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    return result;
+                }
+            }
+            //校验username是否在账户黑名单中
+            if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
+                //是否在白名单中
+                if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                     return result;
                 }
             }
@@ -149,12 +155,6 @@ public class LoginManagerImpl implements LoginManager {
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
             if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
                 passportId = passportId + "@sogou.com";
-            }
-
-            //校验username是否在账户黑名单中
-            if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result;
             }
 
             //封装参数

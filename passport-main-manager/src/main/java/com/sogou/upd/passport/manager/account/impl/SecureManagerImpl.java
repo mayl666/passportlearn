@@ -22,14 +22,8 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
-import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
@@ -46,14 +40,12 @@ import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -558,6 +550,10 @@ public class SecureManagerImpl implements SecureManager {
             boolean saveEmail = true;
             AccountModuleEnum module = AccountModuleEnum.SECURE;
             String newEmail = emailSenderService.checkScodeForEmail(userId, clientId, module, scode, saveEmail);
+            if(StringUtil.isEmpty(newEmail)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
+                return result;
+            }
             if (accountInfoService.modifyEmailByPassportId(userId, newEmail) == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
                 return result;
@@ -655,7 +651,7 @@ public class SecureManagerImpl implements SecureManager {
             } else {
 
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
-                result = accountService.verifyUserPwdVaild(userId, password, false);
+                result = accountService.verifyUserPwdVaild(userId, password, true);
                 if (!result.isSuccess()) {
                     operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                     return result;

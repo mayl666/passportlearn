@@ -27,7 +27,7 @@ import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import com.sogou.upd.passport.web.util.UserOperationLogUtil;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,8 +81,10 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
         // 第三方账号不显示安全信息
         if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
-            result.setDefaultModel("disable", true);
-            result.setSuccess(true);
+            // result.setDefaultModel("disable", true);
+            // result.setSuccess(true);
+            // model.addAttribute("data", result.toString());
+            return "redirect:/";
         } else {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         }
@@ -125,7 +127,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDEMAIL_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -168,7 +170,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
             case PHONE:
                 return "redirect:/web/security";
         }
@@ -213,7 +215,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_BINDQUES_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
@@ -256,7 +258,7 @@ public class SecureAction extends BaseController {
             case SOHU:
                 return "redirect:" + SOHU_RESETPWD_URL;
             case THIRD:
-                return "redirect:/web/security";
+                return "redirect:/";
         }
 
         result.setSuccess(true);
@@ -292,6 +294,11 @@ public class SecureAction extends BaseController {
         String userId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+
+        switch (domain) {
+            case THIRD:
+                return "redirect:/";
+        }
 
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
@@ -346,6 +353,12 @@ public class SecureAction extends BaseController {
         updateParams.setIp(modifyIp);
 
         result = secureManager.resetWebPassword(updateParams);
+
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
@@ -386,11 +399,10 @@ public class SecureAction extends BaseController {
         return result.toString();
     }
 
-    // TODO:等数据迁移后需要修改和测试此方法
     /*
      * 验证绑定邮件
      */
-/*    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
+    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -413,12 +425,8 @@ public class SecureAction extends BaseController {
 
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
         model.addAttribute("data", result.toString());
-        if (result.isSuccess()) {
-            return ""; // TODO:成功页面
-        } else {
-            return ""; // TODO:错误页面
-        }
-    }   */
+        return "redirect:"+params.getRu();
+    }
 
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机
@@ -524,13 +532,11 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result =
-                secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password,
-                                                     modifyIp);
+        result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
 
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -608,7 +614,7 @@ public class SecureAction extends BaseController {
 
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
@@ -646,13 +652,11 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result =
-                secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer,
-                                                     modifyIp);
+        result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
 
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("referer", referer);
+        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

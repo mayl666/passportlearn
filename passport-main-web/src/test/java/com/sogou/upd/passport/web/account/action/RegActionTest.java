@@ -21,21 +21,31 @@ public class RegActionTest extends BaseActionTest {
         String localUrl = "/web/reguser/";
         Map<String, String> params = new HashMap<>();
         params.put("client_id", "1100");
-        params.put("username", "dasdasdasdasdasd1");
+        params.put("new_email", "dasdasdasdasdasd1");
+        params.put("old_email", "asasasa");
         params.put("password", "asasasa");
+
+//      params.put("new_email", "212121");
+//      params.put("old_email", "dasdasdasdasda@sogou.com");
+//      params.put("client_id", "1100");
+//      params.put("passport_id","dasdasdasds")  ;
 //        params.put("captcha", "GVD2X");
-        String result  = sendPost("http://account.sogou.com/web/login", params);
+//        params.put("newpwd", "212121");
+//        params.put("password", "dasdasdasdasda@sogou.com");
+//        params.put("client_id", "1100");
+
+        String result  = sendPost("http://account.sogou.com/web/reguser", params);
         System.out.println(result);
     }
   @Test
   public void testUpdatePWD() throws IOException {
     String localUrl = "/web/reguser/";
     Map<String, String> params = new HashMap<>();
+    params.put("newpwd", "212121");
+    params.put("password", "dasdasdasdasda@sogou.com");
     params.put("client_id", "1100");
-    params.put("passport_id", "dasdasdasdasdasd1");
-    params.put("newpwd", "asasasa");
 //        params.put("captcha", "GVD2X");
-    String result  = sendPost("http://account.sogou.com/web/security/updatepwd", params);
+    String result  = sendPost("http://account.sogou.com/web/sendemail", params);
     System.out.println(result);
   }
 
