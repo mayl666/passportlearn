@@ -25,7 +25,7 @@ public class LoginConstant {
   /**
    * 某IP连续登陆失败多少次需要用户在登陆时输入验证码 >=
    */
-  public static final int LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT = 100;
+  public static final int LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT = 50;
   /**
    * 一小时内用户登陆成功多少次之后，用户不能再登陆
    */
