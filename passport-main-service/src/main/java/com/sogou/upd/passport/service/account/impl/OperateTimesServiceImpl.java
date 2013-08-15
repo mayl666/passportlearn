@@ -323,14 +323,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public boolean loginFailedTimesNeedCaptcha(String username, String ip) throws ServiceException {
         try {
-            List<String> keyList = new ArrayList<String>();
-            List<Integer> maxList = new ArrayList<Integer>();
             // 根据username判断是否需要弹出验证码
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            keyList.add(userNameCacheKey);
-            maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
-
-            return checkTimesByKeyList(keyList, maxList);
+            return checkTimesByKey(userNameCacheKey,LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
         } catch (Exception e) {
             logger.error("getAccountLoginFailedCount:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
