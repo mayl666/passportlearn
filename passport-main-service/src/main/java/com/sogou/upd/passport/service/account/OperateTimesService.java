@@ -67,6 +67,21 @@ public interface OperateTimesService {
     public boolean checkLimitResetPwd(String passportId) throws ServiceException;
 
     /**
+     * 记录一天内修改密码的次数
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public long incResetPwdIPTimes(String ip) throws ServiceException;
+    /**
+     *检查一天内修改密码的次数
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkIPLimitResetPwd(String ip) throws ServiceException;
+
+    /**
      * 记录一天内某ip注册次数
      * @param ip
      * @return

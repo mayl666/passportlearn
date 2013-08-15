@@ -179,6 +179,10 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 sb.append(subIpArr[0]);
                 sb.append(".");
                 sb.append(subIpArr[1]);
+                // TODO 1.194的IP全部封掉
+                if("1.194".equals(sb.toString())){
+                    return true;
+                }
                 if(ipListSet.contains(sb.toString())){
                     //一天内5次失败
                     String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
@@ -225,6 +229,27 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
                     DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return checkTimesByKey(cacheKey, LoginConstant.RESETNUM_LIMITED);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public long incResetPwdIPTimes(String ip) throws ServiceException {
+        try {
+            String resetCacheKey = CacheConstant.CACHE_PREFIX_IP_UPDATEPWDNUM + ip;
+            return recordTimes(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+        } catch (Exception e) {
+            logger.error("incResetPasswordTimes:ip" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean checkIPLimitResetPwd(String ip) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_IP_UPDATEPWDNUM + ip;
+            return checkTimesByKey(cacheKey, LoginConstant.UPDATENUM_IP_LIMITED);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -467,7 +492,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userId +
                     "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
-            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.RESETPWD_NUM);
+            return checkTimesByKey(cacheKey, DateAndNumTimesConstant.RESETPWD_NUM);
         } catch (Exception e) {
             logger.error("checkLimitResetPwd:passportId" + userId, e);
             return true;

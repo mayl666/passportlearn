@@ -352,7 +352,7 @@ public class SecureAction extends BaseController {
         String modifyIp = getIp(request);
         updateParams.setIp(modifyIp);
 
-        result = secureManager.resetWebPassword(updateParams);
+        result = secureManager.resetWebPassword(updateParams, modifyIp);
 
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");

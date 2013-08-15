@@ -49,6 +49,11 @@ public class LoginConstant {
    */
   public static final int RESETNUM_LIMITED = 10; // 密码修改一天限制次数
 
+    /**
+     *  密码修改一个ip一天限制次数
+     */
+    public static final int UPDATENUM_IP_LIMITED = 2; // 密码修改一个ip一天限制次数
+
   /**
    * 一天内某一个ip注册次数限制
    */
