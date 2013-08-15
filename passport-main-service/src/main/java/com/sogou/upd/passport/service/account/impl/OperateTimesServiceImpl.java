@@ -124,7 +124,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
                     if (!Strings.isNullOrEmpty(ip)) {
                         String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
+                        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
                     }
 
                 }
@@ -145,7 +145,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
             if (!Strings.isNullOrEmpty(ip)) {
                 String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
+                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             }
 
         } catch (Exception e) {
