@@ -104,6 +104,11 @@ public class LoginAction extends BaseController {
         if("https://account.sogou.com/web/login".equals(referer) && "1100".equals(loginParams.getClient_id())){
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
             result.setMessage("密码错误");
+
+            //用户登录log
+            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, getIp(request));
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
             result.setDefaultModel("xd", loginParams.getXd());
             model.addAttribute("data", result.toString());
             return "/login/api";
