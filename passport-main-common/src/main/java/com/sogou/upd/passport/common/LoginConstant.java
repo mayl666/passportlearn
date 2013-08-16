@@ -25,7 +25,12 @@ public class LoginConstant {
   /**
    * 某IP连续登陆失败多少次需要用户在登陆时输入验证码 >=
    */
-  public static final int LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT = 20;
+  public static final int LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT = 50;
+
+    /**
+     * 某IP连续登陆失败多少次需要用户在登陆时输入验证码 >=
+     */
+  public static final int LOGIN_FAILED_SUB_IP_LIMIT_COUNT = 5;
   /**
    * 一小时内用户登陆成功多少次之后，用户不能再登陆
    */
@@ -37,12 +42,17 @@ public class LoginConstant {
   /**
    * 一小时内IP登陆成功多少次之后，用户不能再登陆
    */
-  public static final int LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT = 100;
+  public static final int LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT = 1000;
 
   /**
    *  密码修改一天限制次数
    */
   public static final int RESETNUM_LIMITED = 10; // 密码修改一天限制次数
+
+    /**
+     *  密码修改一个ip一天限制次数
+     */
+    public static final int UPDATENUM_IP_LIMITED = 50; // 密码修改一个ip一天限制次数
 
   /**
    * 一天内某一个ip注册次数限制

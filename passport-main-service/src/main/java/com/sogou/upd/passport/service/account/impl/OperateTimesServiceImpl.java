@@ -16,17 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
  */
 @Service
 public class OperateTimesServiceImpl implements OperateTimesService {
-
+    public static Set<String> ipListSet = new HashSet<String>();
+    static {
+        ipListSet.add("1.194");
+        ipListSet.add("123.101");
+        ipListSet.add("223.241");
+//        ipListSet.add("180.109");
+        ipListSet.add("123.53");
+        ipListSet.add("114.99");
+    }
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
     private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
     private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
@@ -124,7 +129,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
                     if (!Strings.isNullOrEmpty(ip)) {
                         String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
+                        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
                     }
 
                 }
@@ -145,7 +150,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
             if (!Strings.isNullOrEmpty(ip)) {
                 String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
+                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             }
 
         } catch (Exception e) {
@@ -168,6 +173,35 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String loginSuccessUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
             keyList.add(loginSuccessUserNameKey);
             maxList.add(LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
+
+            //  根据ip判断是否需要弹出验证码
+            if (!Strings.isNullOrEmpty(ip)) {
+                String[] subIpArr = ip.split("\\.");
+
+                StringBuilder sb = new StringBuilder();
+                sb.append(subIpArr[0]);
+                sb.append(".");
+                sb.append(subIpArr[1]);
+                // TODO 1.194的IP全部封掉
+                if("1.194".equals(sb.toString())){
+                    return true;
+                }
+                if(ipListSet.contains(sb.toString())){
+                    //一天内5次失败
+                    String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+                    keyList.add(ipFailedCacheKey);
+                    maxList.add(LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT);
+                }else {
+                    //一天内ip登陆失败50次出验证码
+                    String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
+                    keyList.add(ipFailedCacheKey);
+                    maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
+                }
+                //一小时内ip登陆成功100次出验证码
+                String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
+                keyList.add(ipSuccessCacheKey);
+                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
+            }
             boolean result = checkTimesByKeyList(keyList, maxList);
 
             if (result) {
@@ -198,6 +232,27 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
                     DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return checkTimesByKey(cacheKey, LoginConstant.RESETNUM_LIMITED);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public long incResetPwdIPTimes(String ip) throws ServiceException {
+        try {
+            String resetCacheKey = CacheConstant.CACHE_PREFIX_IP_UPDATEPWDNUM + ip;
+            return recordTimes(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+        } catch (Exception e) {
+            logger.error("incResetPasswordTimes:ip" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean checkIPLimitResetPwd(String ip) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_IP_UPDATEPWDNUM + ip;
+            return checkTimesByKey(cacheKey, LoginConstant.UPDATENUM_IP_LIMITED);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -310,25 +365,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public boolean loginFailedTimesNeedCaptcha(String username, String ip) throws ServiceException {
         try {
-            List<String> keyList = new ArrayList<String>();
-            List<Integer> maxList = new ArrayList<Integer>();
             // 根据username判断是否需要弹出验证码
             String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            keyList.add(userNameCacheKey);
-            maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
-            //  根据ip判断是否需要弹出验证码
-            if (!Strings.isNullOrEmpty(ip)) {
-                //一小时内ip登陆失败20次出验证码
-                String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                keyList.add(ipFailedCacheKey);
-                maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
-
-                //一小时内ip登陆成功100次出验证码
-                String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                keyList.add(ipSuccessCacheKey);
-                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
-            }
-            return checkTimesByKeyList(keyList, maxList);
+            return checkTimesByKey(userNameCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
         } catch (Exception e) {
             logger.error("getAccountLoginFailedCount:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
@@ -456,7 +495,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userId +
                     "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
-            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.RESETPWD_NUM);
+            return checkTimesByKey(cacheKey, DateAndNumTimesConstant.RESETPWD_NUM);
         } catch (Exception e) {
             logger.error("checkLimitResetPwd:passportId" + userId, e);
             return true;

@@ -83,7 +83,7 @@ public interface SecureManager {
     /**
      * 重置用户密码（web验证码方式）
      */
-    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters) throws Exception;
+    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters, String ip) throws Exception;
 
 
     /* ------------------------------------修改密保Begin------------------------------------ */
