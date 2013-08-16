@@ -200,14 +200,14 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
         //记录登陆次数
-        operateTimesService.incLoginSuccessTimes(username, ip);
+        operateTimesService.incLoginTimes(username, ip,true);
         //用户登陆记录
         secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
     }
 
     @Override
     public void doAfterLoginFailed(final String username, final String ip) {
-        operateTimesService.incLoginFailedTimes(username, ip);
+        operateTimesService.incLoginTimes(username, ip,false);
     }
 }
 

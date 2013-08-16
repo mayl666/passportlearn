@@ -28,7 +28,7 @@
             <fileNamePattern>${log.path}/blackList/loginBlackList.log.%d{yyyy-MM-dd}</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>%msg %n</pattern>
+            <pattern>%msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.sogou.upd.passport.loginBlackListFileAppender" level="info" additivity="false">

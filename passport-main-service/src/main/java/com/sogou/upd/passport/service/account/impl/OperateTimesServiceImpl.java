@@ -10,12 +10,15 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -24,6 +27,7 @@ import java.util.*;
 @Service
 public class OperateTimesServiceImpl implements OperateTimesService {
     public static Set<String> ipListSet = new HashSet<String>();
+
     static {
         ipListSet.add("1.194");
         ipListSet.add("123.101");
@@ -32,6 +36,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         ipListSet.add("123.53");
         ipListSet.add("114.99");
     }
+
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
     private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
     private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
@@ -56,6 +61,21 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public void hRecordTimes(String hKey, String key, long timeout) throws ServiceException {
+        try {
+            if (redisUtils.checkKeyIsExist(hKey)) {
+                redisUtils.hIncrBy(hKey, key);
+            } else {
+                redisUtils.hPut(hKey, key, 1);
+                redisUtils.expire(hKey, timeout);
+            }
+        } catch (Exception e) {
+            logger.error("recordNum:cacheKey" + hKey, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public boolean checkTimesByKey(String cacheKey, final int max) throws ServiceException {
         int num = 0;
         try {
@@ -68,6 +88,24 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             }
         } catch (Exception e) {
             logger.error("checkNumByKey:" + cacheKey + ",max:" + max, e);
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hCheckTimesByKey(String hKey, String key, final int max) throws ServiceException {
+        try {
+            int num = 0;
+            String value = redisUtils.hGet(hKey, key);
+            if (!Strings.isNullOrEmpty(value)) {
+                num = Integer.valueOf(value);
+            }
+            if (num >= max) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("checkNumByKey," + hKey + "," + max, e);
             throw new ServiceException(e);
         }
         return false;
@@ -117,21 +155,17 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         return false;
     }
 
-    @Override
-    public long incLoginSuccessTimes(final String username, final String ip) throws ServiceException {
+    private void incLoginSuccessTimes(final String username, final String ip) throws ServiceException {
         try {
             discardTaskExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
-                    recordTimes(userNameCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
-
-
+                    String username_hKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINNUM + username;
+                    hRecordTimes(username_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
                     if (!Strings.isNullOrEmpty(ip)) {
-                        String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                        String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                        hRecordTimes(ip_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEDAY);
                     }
-
                 }
             });
 
@@ -139,79 +173,115 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             logger.error("incLoginSuccessTimes:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
         }
-        return 1;
     }
 
-    @Override
-    public long incLoginFailedTimes(final String username, final String ip) throws ServiceException {
+    private void incLoginFailedTimes(final String username, final String ip) throws ServiceException {
         try {
-            String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            recordTimes(userNameCacheKey, DateAndNumTimesConstant.TIME_ONEHOUR);
 
+            String username_hKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINNUM + username;
+            hRecordTimes(username_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
             if (!Strings.isNullOrEmpty(ip)) {
-                String ipCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                hRecordTimes(ip_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEDAY);
             }
-
         } catch (Exception e) {
-            logger.error("incLoginFailedTimes:username" + username + ",ip:" + ip, e);
+            logger.error("incLoginSuccessTimes:username" + username + ",ip:" + ip, e);
             throw new ServiceException(e);
         }
-        return 1;
     }
 
     @Override
-    public boolean checkLoginUserInBlackList(String username,String ip) throws ServiceException {
+    public void incLoginTimes(final String username, final String ip, final boolean isSuccess) throws ServiceException {
         try {
-            List<String> keyList = new ArrayList<String>();
-            List<Integer> maxList = new ArrayList<Integer>();
+            if (isSuccess) {
+                incLoginSuccessTimes(username, ip);
+            } else {
+                incLoginFailedTimes(username, ip);
+            }
+        } catch (Exception e) {
+            logger.error("incLoginTimes," + username + "," + ip + "," + isSuccess, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException {
+        try {
             //username
-            String loginFailedUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            keyList.add(loginFailedUserNameKey);
-            maxList.add(LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT);
+            int num = 0;
+            String userName_hKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINNUM + username;
+            Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
+            if (!MapUtils.isEmpty(username_hmap)) {
+                String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
+                if (!StringUtils.isEmpty(username_failedNum)) {
+                    num = Integer.parseInt(username_failedNum);
+                    if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                        logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_FAILED_KEY, num);
+                        return true;
+                    }
+                }
+                String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
+                if (!StringUtils.isEmpty(username_successNum)) {
+                    num = Integer.parseInt(username_successNum);
+                    if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
+                        logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
+                        return true;
+                    }
+                }
 
-            String loginSuccessUserNameKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM + username;
-            keyList.add(loginSuccessUserNameKey);
-            maxList.add(LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
+            }
 
-            //  根据ip判断是否需要弹出验证码
-            if (!Strings.isNullOrEmpty(ip)) {
+            if (!Strings.isNullOrEmpty(ip)) {      //  根据ip判断是否需要弹出验证码
                 String[] subIpArr = ip.split("\\.");
-
                 StringBuilder sb = new StringBuilder();
                 sb.append(subIpArr[0]);
                 sb.append(".");
                 sb.append(subIpArr[1]);
                 // TODO 1.194的IP全部封掉
-                if("1.194".equals(sb.toString())){
+                if ("1.194".equals(sb.toString())) {
                     return true;
                 }
-                if(ipListSet.contains(sb.toString())){
-                    //一天内5次失败
-                    String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                    keyList.add(ipFailedCacheKey);
-                    maxList.add(LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT);
-                }else {
-                    //一天内ip登陆失败50次出验证码
-                    String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
-                    keyList.add(ipFailedCacheKey);
-                    maxList.add(LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT);
+                String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
+                if (!MapUtils.isEmpty(ip_hmap)) {
+                    String ip_failedNum = ip_hmap.get(CacheConstant.CACHE_FAILED_KEY);
+                    if (!StringUtils.isEmpty(ip_failedNum)) {
+                        num = Integer.parseInt(ip_failedNum);
+                        if (ipListSet.contains(sb.toString())) {
+                            if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
+                                logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_FAILED_KEY, num);
+                                return true;
+                            }
+                        } else {
+                            if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT) {
+                                logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_FAILED_KEY, num);
+                                return true;
+                            }
+                        }
+                    }
+                    String ip_successNum = ip_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
+                    if (!StringUtils.isEmpty(ip_successNum)) {
+                        num = Integer.parseInt(ip_successNum);
+                        if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
+                            logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
+                            return true;
+                        }
+                    }
                 }
-                //一小时内ip登陆成功100次出验证码
-                String ipSuccessCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINSUCCESSNUM + ip;
-                keyList.add(ipSuccessCacheKey);
-                maxList.add(LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT);
             }
-            boolean result = checkTimesByKeyList(keyList, maxList);
-
-            if (result) {
-                loginBlackListLogger.info(new Date() + ",checkLoginUserInBlackList,username" + username + ",ip:" + ip);
-            }
-            return result;
+            return false;
         } catch (Exception e) {
-            logger.error("userInBlackList:username" + username, e);
+            logger.error("userInBlackList," + username + "," + ip, e);
             throw new ServiceException(e);
         }
+    }
+
+    private void logLoginBlackList(String username, String ip, String blackKey, int blackNum) {
+        StringBuilder log = new StringBuilder();
+        Date date = new Date();
+        log.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date)).append(" ").append(username)
+                .append(" ").append(ip).append(" ").append(blackKey).append(" ").append(blackNum);
+        loginBlackListLogger.info(log.toString());
     }
 
     @Override
@@ -366,10 +436,10 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean loginFailedTimesNeedCaptcha(String username, String ip) throws ServiceException {
         try {
             // 根据username判断是否需要弹出验证码
-            String userNameCacheKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINFAILEDNUM + username;
-            return checkTimesByKey(userNameCacheKey, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
+            String userName_hKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINNUM + username;
+            return hCheckTimesByKey(userName_hKey, CacheConstant.CACHE_FAILED_KEY, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
         } catch (Exception e) {
-            logger.error("getAccountLoginFailedCount:username" + username + ",ip:" + ip, e);
+            logger.error("loginFailedTimesNeedCaptcha," + username + "," + ip, e);
             throw new ServiceException(e);
         }
     }
@@ -529,21 +599,21 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLoginUserInWhiteList(String username,String ip) throws ServiceException {
+    public boolean checkLoginUserInWhiteList(String username, String ip) throws ServiceException {
         try {
             String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
             Set<String> whiteList = redisUtils.smember(whiteListKey);
-            if (CollectionUtils.isNotEmpty(whiteList)){
-                if(whiteList.contains(username)){
+            if (CollectionUtils.isNotEmpty(whiteList)) {
+                if (whiteList.contains(username)) {
                     return true;
                 }
-                if(whiteList.contains(ip)){
+                if (whiteList.contains(ip)) {
                     return true;
                 }
             }
             return false;
         } catch (Exception e) {
-            logger.error("checkLoginUserWhiteList:username=" + username + ",ip="+ip, e);
+            logger.error("checkLoginUserWhiteList:username=" + username + ",ip=" + ip, e);
             return false;
         }
     }
