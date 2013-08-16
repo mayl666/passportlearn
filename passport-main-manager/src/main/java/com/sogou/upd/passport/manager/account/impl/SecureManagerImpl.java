@@ -408,7 +408,7 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters)
+    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters, String ip)
             throws Exception {
         Result result = new APIResultSupport(false);
         String username = null;
@@ -419,7 +419,13 @@ public class SecureManagerImpl implements SecureManager {
             UpdatePwdApiParams updatePwdApiParams = buildProxyApiParams(updatePwdParameters);
             int clientId = updatePwdApiParams.getClient_id();
 
-            if (!operateTimesService.checkLimitResetPwd(username, clientId)) {
+            //检查是否在ip黑名单里
+            if (operateTimesService.checkIPLimitResetPwd(ip)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
+            }
+
+            if (operateTimesService.checkLimitResetPwd(username, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
@@ -432,6 +438,7 @@ public class SecureManagerImpl implements SecureManager {
 
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
+                operateTimesService.incResetPwdIPTimes(ip);
             }
         } catch (ServiceException e) {
             logger.error("resetWebPassword Fail username:" + username, e);

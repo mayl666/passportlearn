@@ -186,7 +186,7 @@ public class ProxyErrorUtil extends ErrorUtil {
             case "2":
                 return INTERNAL_REQUEST_INVALID;
         }
-        log.error("未找到相应的错误类型：" + errorCode);
+        log.warn("Not found Error code corresponding to the information! ErrorCode：" + errorCode);
         return SYSTEM_UNKNOWN_EXCEPTION;
     }
 }

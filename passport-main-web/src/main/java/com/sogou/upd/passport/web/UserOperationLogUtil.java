@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.web;
 
-import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -8,7 +7,6 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 
-import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
@@ -67,7 +65,7 @@ public class UserOperationLogUtil {
             String timestamp = String.valueOf(date.getTime()).substring(0, 10);
             log.append(timestamp);
             log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-            log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(passportId.replace("\t", " "), "-"));  // 防止恶意用户调用接口输入非法用户名
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             String domainStr = domain.toString();

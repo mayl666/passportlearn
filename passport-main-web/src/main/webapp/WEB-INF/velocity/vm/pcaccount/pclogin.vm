@@ -1,0 +1,500 @@
+<!doctype html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+<title>浏览器登录</title>
+<style type="text/css">
+    *{
+        margin:0;
+        padding:0;
+        border:0;
+    }
+    #main{
+        width:378px;
+        height:230px;
+        background:url(/./static/img/connect/back.jpg) no-repeat;
+        position:relative;
+    }
+    div{
+        font-size:12px;
+        color:#000000;
+    }
+    input{
+        width:191px;
+        height:24px;
+        border:1px solid #98b2c4;
+        line-height:24px;
+        outline: 0px;
+    }
+    a{
+        text-decoration:none;
+        color:#006ce5;
+        font-size:12px;
+    }
+    #name{
+        position:absolute;
+        left:30px;
+        top:100px;
+    }
+    #psw{
+        position:absolute;
+        left:30px;
+        top:142px;
+    }
+    #new_usr{
+        position:absolute;
+        left:297px;
+        top:100px;
+    }
+    #forgot_psw{
+        position:absolute;
+        left:297px;
+        top:142px;
+    }
+    #name_input{
+        position:absolute;
+        left:84px;
+        top:96px;
+    }
+    #psw_input{
+        position:absolute;
+        left:84px;
+        top:136px;
+    }
+    #btnlogin{
+        position:absolute;
+        width:88px;
+        height:29px;
+        background:url(/./static/img/connect/login_btn.jpg) no-repeat;
+        left:146px;
+        top:179px;
+        cursor:pointer;
+    }
+
+    .input_text:focus{
+        -webkit-box-shadow: 0px 0px 4px #98b2c4;
+    }
+    .input_text{
+        width:191px;
+        height:22px;
+        border:1px solid #98b2c4;
+        outline: 0px;
+        -webkit-border-radius:2px;
+    }
+
+    a{
+        text-decoration:none;
+        color:#006ce5;
+        font-size:12px;
+    }
+
+    #wel{
+        position:absolute;
+        width:250px;
+        line-height:20px;
+        top:100px;
+        left:100px;
+    }
+
+    #tips{
+        position:absolute;
+        top:207px;
+        left:260px;
+    }
+
+    #btn{
+        position:absolute;
+        width:88px;
+        height:29px;
+        background:url(/./static/img/connect/login_btn.jpg) no-repeat;
+        left:145px;
+        top:157px;
+        cursor:pointer;
+    }
+
+    #auto_complete{
+        border:1px solid #c6c7d2;
+        width:191px;
+        position:absolute;
+        z-index:999;
+        left:84px;
+        top:120px;
+        background:#ffffff;
+        overflow:hidden;
+        display:none;
+    }
+    .auto_complete_content{
+        font-size:12px;
+        height:14px;
+        position:relative;
+        cursor:pointer;
+        display:block;
+        width:2000px;
+
+    }
+    .choosed{
+        color:#ffffff;
+        background:#3399ff;
+    }
+</style>
+<script type="text/javascript" src="/./static/js/pcaccount/prototype.js"></script>
+<script type="text/javascript" src="/./static/js/pcaccount/pp18030.1210310953.js"></script>
+<script>
+    if (Prototype.Browser.IE) {
+        String.prototype.trim=function(){return this.replace(/(^\s*)|(\s*$)/g,"");}
+    }
+
+    function init(e) {
+        var ipt = $('loginForm');
+        if(ipt) {
+            ipt.userid.focus();
+        }
+         #if(!$isAuthedUser)
+            Event.observe($('btnlogin'), 'keypress', onCheckLoginKeyPress);
+            Event.observe($('psw_input'), 'keypress', onCheckLoginKeyPress);
+         #end
+    }
+
+    function checkLogin() {
+
+        if (!validate()) {
+            return;
+        }
+
+        var url = "https://account.sogou.com/act/getpairtoken?";
+
+        var params = {
+            userid : $('loginForm').userid.value,
+            password : hex_md5($('loginForm').password.value),
+            appid : $('loginForm').appid.value,
+            ts : $('loginForm').ts.value
+        };
+
+
+        //new Ajax.Request(url + $H(params).toQueryString(), {
+
+        url += 'userid=' + encodeURIComponent(params.userid) + '&password=' + params.password + '&appid=' + params.appid + '&ts=' + params.ts;
+        new Ajax.Request(url, {
+            method : 'get',
+            onComplete: function(t){
+                var result = '';
+                result = t.responseText.trim();
+                var status = result.split('|');
+                if (status[0] == '0') {
+                    var refresh_token = status[2];
+                    var token = status[1];
+                    var userid = status[3];
+                    var nick = decodeURIComponent(status[4]);
+                    #if(${supportLocalHash})
+                        window.external.passport('localhash', params.userid + "|" + hex_md5(params.userid + 'sogou' + $('loginForm').password.value));
+                    #else
+                        window.external.passport('result', '0|' + token + '|' + refresh_token + '|' + userid +'|' + nick );
+                    #end
+                } else {
+                    if ((status[0]=='2') || (status[0] == '3')) {
+                        alert('用户名或密码错误，请重新输入');
+                    } else if  (status[0]=='4'){
+                        alert('您的帐号还未激活');
+                    } else if (status[0] == '6' | status[0] == '5') {
+                        alert('系统繁忙，请稍候再试');
+                    } else {
+                        alert('服务器正在维护，暂时无法登录，请您稍后再试');
+                    }
+                }
+            }
+        });
+        return false;
+    }
+
+    function getAutoToken() {
+        var url = "https://account.sogou.com/act/getpairtoken?";
+
+        var params = {
+            userid : $('autoLoginForm').userid.value,
+            sig : $('autoLoginForm').sig.value,
+            timestamp : $('autoLoginForm').timestamp.value,
+            appid : $('autoLoginForm').appid.value,
+            ts : $('autoLoginForm').ts.value
+        };
+
+        //new Ajax.Request(url + $H(params).toQueryString(), {
+        url += 'userid=' + encodeURIComponent(params.userid) + '&sig=' + params.sig + '&timestamp=' + params.timestamp + '&' + 'appid=' + params.appid + '&ts=' + params.ts;
+        new Ajax.Request(url, {
+            method : 'get',
+            onComplete: function(t){
+                var result = '';
+                result = t.responseText.trim();
+                var status = result.split('|');
+
+                if (status[0] == '0') {
+                    var refresh_token = status[2];
+                    var token = status[1];
+                    var userid = status[3];
+                    var nick = decodeURIComponent(status[4]);
+
+                    window.external.passport('result', '0|' + token + '|' + refresh_token + '|' + userid +'|' + nick );
+                } else {
+                    if (status[0]=='7') {
+                        alert('自动登录失败， 请输入帐号密码重新登录');
+                        document.location.href = "https://account.sogou.com/act/pclogin?userid=" + params.userid;
+                    } else {
+                        alert('服务器正在维护，暂时无法登录，请您稍后再试');
+                    }
+                }
+            }
+        });
+        return false;
+    }
+
+    function validate() {
+        var emptyPtn = /^\s*$/;
+        if (emptyPtn.test($('loginForm').userid.value)
+                || emptyPtn.test($('loginForm').password.value)) {
+            alert('用户名或密码错误，请重新输入');
+            return false;
+        }
+
+        return true;
+    }
+
+    function onCheckLoginKeyPress(event) {
+        if (event.keyCode == 13) {
+            Event.stop(event);
+            checkLogin();
+        }
+    }
+
+    Event.observe(window, 'load', init);
+
+</script>
+
+</head>
+<body>
+#if(!$isAuthedUser)
+<form id="loginForm" onsubmit="checkLogin()">
+    <div id="main" onclick="hideComplete()">
+        <div id="name">用户名：</div>
+        <div id="name_input"><input tabindex="1" type="text" name="userid" class="input_text" onfocusin="startAutoComplete()" onblur="can_hide=1;hideEsc()" onkeyup="selectComplete()" onblur="stopAutoComplete()" value="${userid}" /></div>
+        <div id="new_usr"><a href="https://account.sogou.com/web/reg/email" target="_blank">注册新用户</a></div>
+        <div id="psw">密&emsp;码：</div>
+        <div id="psw_input"><input tabindex="2" type="password" name="password" class="input_text"/></div>
+        <div id="forgot_psw"><a href="https://account.sogou.com/web/findpwd" target="_blank">忘记密码？</a></div>
+        <div id="btnlogin" onclick="checkLogin()" tabindex="3"></div>
+        <input type="hidden" name="appid" value="${appid}"></input>
+        <input type="hidden" name="ts" value="${ts}"></input>
+        <div id="auto_complete">
+            <div onmouseover="overComplete(0)" onmousedown="chooseComplete(0)" id="acc0" class="auto_complete_content" name="acc"></div>
+            <div onmouseover="overComplete(1)" onmousedown="chooseComplete(1)" id="acc1" class="auto_complete_content" name="acc"></div>
+            <div onmouseover="overComplete(2)" onmousedown="chooseComplete(2)" id="acc2" class="auto_complete_content" name="acc"></div>
+            <div onmouseover="overComplete(3)" onmousedown="chooseComplete(3)" id="acc3" class="auto_complete_content" name="acc"></div>
+            <div onmouseover="overComplete(4)" onmousedown="chooseComplete(4)" id="acc4" class="auto_complete_content" name="acc"></div>
+            <div onmouseover="overComplete(5)" onmousedown="chooseComplete(5)" id="acc5" class="auto_complete_content" name="acc"></div>
+            <div onmouseover="overComplete(6)" onmousedown="chooseComplete(6)" id="acc6" class="auto_complete_content" name="acc"></div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    var auto_user_id = document.getElementsByName("userid")[0];
+    var last_auto_user_text = auto_user_id.value;
+    var auto_timer;
+    var suggest_no = 0;
+    var wait = 0;
+    var can_hide = 1;
+    var suggest_val = ["@sogou.com","@sohu.com","@chinaren.com","@vip.sohu.com","@17173.com","@focus.cn","@game.sohu.com"];
+    function startAutoComplete(){
+        can_hide = 0;
+        auto_timer = window.setInterval("isUserNameChanged()",500);
+    }
+    function stopAutoComplete(){
+        clearInterval(auto_timer);
+    }
+    function isUserNameChanged(){
+        var auto_user_text = auto_user_id.value;
+        showAllSuggest();
+        if(auto_user_text == ""){
+            document.getElementById("auto_complete").style.display="none";
+        }
+        if(auto_user_text.indexOf("@")>0){
+            var has = 0;
+            for(i=0;i<suggest_val.length;i++){
+                if(auto_user_text.length - auto_user_text.indexOf("@")>1){
+                    if(suggest_val[i].indexOf(auto_user_text.substr(auto_user_text.indexOf("@"),auto_user_text.length)) < 0 ){
+                        document.getElementById("acc"+i).style.display="none";
+                    }else{
+                        has = 1;
+                    }
+                }
+            }
+            if(has == 0 && auto_user_text.length - auto_user_text.indexOf("@")>1){
+                document.getElementById("auto_complete").style.display="none";
+            }
+        }
+        if(auto_user_text != last_auto_user_text && wait == 0){
+            var acc = document.getElementsByName("acc");
+            clearAllSuggest();
+            var has = 0;
+            for(i=0;i<7;i++){
+                if(acc[i].style.display!="none"){
+                    acc[i].className="auto_complete_content choosed";
+                    suggest_no = i;
+                    i=8;
+                    has = 1;
+                }
+            }
+            for(i=0;i<7;i++){
+                if(auto_user_text.indexOf("@")>0){
+                    acc[i].innerHTML = auto_user_text.substr(0,auto_user_text.indexOf("@")) + suggest_val[i];
+                }else{
+                    acc[i].innerHTML = auto_user_text + suggest_val[i];
+                }
+            }
+            if(has == 1){
+                document.getElementById("auto_complete").style.display="block";
+            }
+        }
+        last_auto_user_text = auto_user_text;
+    }
+    function selectComplete(){
+        var acc = document.getElementsByName("acc");
+        if(event.keyCode==40){
+            clearAllSuggest();
+            if(suggest_no==6) suggest_no=0;
+            else suggest_no++;
+            for(i=0;i<7;i++){
+                if(acc[suggest_no].style.display!="none"){
+                    acc[suggest_no].className="auto_complete_content choosed";
+                    i=8;
+                }else{
+                    if(suggest_no==6) suggest_no=0;
+                    else suggest_no++;
+                }
+            }
+        }else if(event.keyCode==38){
+            clearAllSuggest();
+            if(suggest_no==0) suggest_no=6;
+            else suggest_no--;
+            for(i=0;i<7;i++){
+                if(acc[suggest_no].style.display!="none"){
+                    acc[suggest_no].className="auto_complete_content choosed";
+                    i=8;
+                }else{
+                    if(suggest_no==0) suggest_no=6;
+                    else suggest_no--;
+                }
+            }
+
+        }else if(event.keyCode==27){
+            document.getElementById("auto_complete").style.display="none";
+            showAllSuggest();
+            suggest_no = 0;
+        }else if(event.keyCode==13){
+            var auto_user_text = auto_user_id.value;
+            var has = 0;
+            for(i=0;i<suggest_val.length;i++){
+                if(auto_user_text.length - auto_user_text.indexOf("@")>1){
+                    if(suggest_val[i].indexOf(auto_user_text.substr(auto_user_text.indexOf("@"),auto_user_text.length)) < 0 ){
+                        document.getElementById("acc"+i).style.display="none";
+                    }else{
+                        has = 1;
+                    }
+                }
+            }
+            if(auto_user_text.length - auto_user_text.indexOf("@")==1){
+                has = 1;
+            }
+            if(auto_user_text.length - auto_user_text.indexOf("@")>1){
+                has = 1;
+            }
+            if(has == 1){
+                if(auto_user_text.indexOf("@")<0){
+                    auto_user_id.value = auto_user_id.value + suggest_val[suggest_no];
+                }else{
+                    auto_user_id.value = auto_user_id.value.substr(0,auto_user_id.value.indexOf("@")) + suggest_val[suggest_no];
+                }
+                clearAllSuggest();
+                suggest_no = 0;
+                showAllSuggest();
+                document.getElementById("auto_complete").style.display="none";
+                wait=1;
+                setTimeout(function(){
+                    wait=0;
+                },1000);
+
+            }
+        }
+    }
+    function hideEsc(){
+        setTimeout(function(){
+            document.getElementById("auto_complete").style.display="none";
+            showAllSuggest();
+            suggest_no = 0;
+        },100);
+
+    }
+    function overComplete(a){
+        clearAllSuggest();
+        var acc = document.getElementsByName("acc");
+        acc[a].className="auto_complete_content choosed";
+        suggest_no = a;
+    }
+    function hideComplete(){
+        if(can_hide==1){
+            clearAllSuggest();
+            suggest_no = 0;
+            document.getElementById("auto_complete").style.display="none";
+        }
+    }
+    function chooseComplete(a){
+        clearAllSuggest();
+        suggest_no = 0;
+        var auto_user_text = auto_user_id.value;
+        if(auto_user_text.indexOf("@")<0){
+            auto_user_id.value = auto_user_id.value + suggest_val[a];
+        }else{
+            auto_user_id.value = auto_user_id.value.substr(0,auto_user_id.value.indexOf("@")) + suggest_val[a];
+        }
+        document.getElementById("auto_complete").style.display="none";
+        auto_user_id.focus();
+        wait=1;
+        setTimeout(function(){
+            wait=0;
+        },100);
+    }
+    function clearAllSuggest(){
+        var acc = document.getElementsByName("acc");
+        for(i=0;i<7;i++){
+            acc[i].className="auto_complete_content";
+        }
+    }
+    function showAllSuggest(){
+        var acc = document.getElementsByName("acc");
+        for(i=0;i<7;i++){
+            acc[i].style.display="block";
+        }
+    }
+    document.getElementById("userid").focus();
+</script>
+
+#else
+<div id="main" onclick="hideComplete()">
+    <div id="wel">${userid},欢迎您！<br />点击登录后继续使用网络账户</div>
+    <div id="btn"  onclick="getAutoToken()"></div>
+    <div id="tips">
+        <a href="https://account.sogou.com/act/pclogin?userid=${userid}&ts=${ts}&v=${version}">用其他搜狗账号登录</a>
+    </div>
+
+    <form id = "autoLoginForm" onsubmit="getAutoToken()">
+        <input type="hidden" name="userid" value="${userid}"></input>
+        <input type="hidden" name="appid" value="${appid}"></input>
+        <input type="hidden" name="openapptype" value="${openAppType}"></input>
+        <input type="hidden" name="sig" value="${sig}"></input>
+        <input type="hidden" name="timestamp" value="${timestamp}"></input>
+        <input type="hidden" name="ts" value="${ts}"></input>
+        <br/>
+
+    </form>
+</div>
+#end
+</body>
+</html>
+<!--zly-->

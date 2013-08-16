@@ -131,15 +131,22 @@ public class LoginManagerImpl implements LoginManager {
         String password = loginParameters.getPassword();
         String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         String passportId = username;
-        boolean needCaptcha = needCaptchaCheck(loginParameters.getClient_id(), username, ip);
         try {
             //校验验证码
-            if (needCaptcha) {
+            if (needCaptchaCheck(loginParameters.getClient_id(), username, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
                 if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-                    logger.info("[accountLogin captchaCode wrong warn]:username="+username+", ip="+ip+", token="+token+", captchaCode="+captchaCode);
+                    logger.info("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    return result;
+                }
+            }
+            //校验username是否在账户黑名单中
+            if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
+                //是否在白名单中
+                if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                     return result;
                 }
             }
@@ -148,12 +155,6 @@ public class LoginManagerImpl implements LoginManager {
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
             if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
                 passportId = passportId + "@sogou.com";
-            }
-
-            //校验username是否在账户黑名单中
-            if (operateTimesService.checkLoginUserInBlackList(username)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result;
             }
 
             //封装参数
@@ -199,14 +200,14 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
         //记录登陆次数
-        operateTimesService.incLoginSuccessTimes(username, ip);
+        operateTimesService.incLoginTimes(username, ip,true);
         //用户登陆记录
         secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
     }
 
     @Override
     public void doAfterLoginFailed(final String username, final String ip) {
-        operateTimesService.incLoginFailedTimes(username, ip);
+        operateTimesService.incLoginTimes(username, ip,false);
     }
 }
 

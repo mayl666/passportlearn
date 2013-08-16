@@ -287,4 +287,26 @@ public class StringUtil {
     public static String processMobile(String mobile) {
         return processStr(mobile, 3, 3, null, 1);
     }
+
+    /**
+     * 判断给定字符串是否包含中文
+     * @param str
+     * @return
+     */
+    public static boolean containChinese(String str) {
+        int i = str.length();
+        for (; --i >= 0; ) {
+            String b = str.substring(i, i + 1);
+            boolean c = java.util.regex.Pattern.matches("[\u4E00-\u9FA5]", b);
+            if (c) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        String a = "中国China";
+        System.out.println("isChinese:"+containChinese(a));
+    }
 }

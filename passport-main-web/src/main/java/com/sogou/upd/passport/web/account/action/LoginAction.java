@@ -100,9 +100,8 @@ public class LoginAction extends BaseController {
         }
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
-        String userId = loginParams.getUsername();
         if (result.isSuccess()) {
-            userId = result.getModels().get("userid").toString();
+            String userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
         } else {
@@ -115,7 +114,7 @@ public class LoginAction extends BaseController {
         }
 
         //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);

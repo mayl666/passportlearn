@@ -22,10 +22,8 @@ import java.util.Set;
 public class KvUtils {
 
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
-    // private static String KEY_PREFIX = "20002/action_records/";
 
     private final static String KV_PERF4J_LOGGER = "kvTimingLogger";
-
 
     private static RedisTemplate kvTemplate;
 
@@ -149,6 +147,10 @@ public class KvUtils {
         }
     }
 
+    /*
+     * 获取list中的第一个成员
+     */
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getFirstStringFromList")
     public <T> T top(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);

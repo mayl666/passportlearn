@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
-
+/**
+ * 手机号工具类 User: mayan Date: 13-3-27 Time: 上午11:19 To change this template use File | Settings | File Templates.
+ */
 public class PhoneUtil {
 
 	public static final String PHONE_FORMAT = "(^[0-9]{3,4}-[0-9]{3,8}$)|^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\\d{8}$";
@@ -26,7 +28,9 @@ public class PhoneUtil {
 
 		String phone = "8615811224181";
 		if (phone.length() > PhoneUtil.PHONE_LENTH) {
-			phone.substring(phone.length() - PhoneUtil.PHONE_LENTH);
+            phone = phone.substring(phone.length() - PhoneUtil.PHONE_LENTH);
+            System.out.println(phone);
 		}
-	}
+
+    }
 }

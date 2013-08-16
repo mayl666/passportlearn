@@ -13,10 +13,28 @@ public interface OperateTimesService {
 
     public long recordTimes(String cacheKey,long timeout)throws ServiceException;
 
+    /**
+     * 通过hash结构，记录次数
+     * @param hKey
+     * @param key
+     * @param timeout
+     * @throws ServiceException
+     */
+    public void hRecordTimes(String hKey,String key, long timeout) throws ServiceException;
+
     public boolean checkTimesByKey(String cacheKey, final int max)throws ServiceException;
 
     public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException;
 
+    /**
+     * 通过hget查询次数是否超出限制
+     * @param hKey
+     * @param key
+     * @param max
+     * @return
+     * @throws ServiceException
+     */
+    public boolean hCheckTimesByKey(String hKey, String key, final int max) throws ServiceException;
     /**
      * 是否等于受限制次数的一半，用于记录日志
      * @param cacheKey
@@ -25,30 +43,24 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean isHalfTimes(String cacheKey, final int max) throws ServiceException;
-    /**
-     *记录一小时内登陆成功次数
-     * @param username
-     * @param ip
-     * @return
-     * @throws ServiceException
-     */
-    public long incLoginSuccessTimes(String username,String ip)throws ServiceException;
 
     /**
-     * 记录一小时内登陆失败次数
+     *记录登陆成功或者失败的次数
      * @param username
      * @param ip
-     * @return
+     * @param isSuccess
+     * @throws ServiceException
      */
-    public long incLoginFailedTimes(String username,String ip)throws ServiceException;
+    public void incLoginTimes(final String username, final String ip,final boolean isSuccess) throws ServiceException;
 
     /**
      * 检查username是否在黑名单中
      * @param username
+     * @param ip
      * @return
      * @throws ServiceException
      */
-    public boolean checkLoginUserInBlackList(String username) throws ServiceException;
+    public boolean checkLoginUserInBlackList(String username,String ip) throws ServiceException;
 
     /**
      * 记录一天内修改密码的次数
@@ -64,6 +76,21 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean checkLimitResetPwd(String passportId) throws ServiceException;
+
+    /**
+     * 记录一天内修改密码的次数
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public long incResetPwdIPTimes(String ip) throws ServiceException;
+    /**
+     *检查一天内修改密码的次数
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkIPLimitResetPwd(String ip) throws ServiceException;
 
     /**
      * 记录一天内某ip注册次数
@@ -202,4 +229,13 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean checkLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException;
+
+    /**
+     * 检查用户是否在白名单列表里面
+     * @param username
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkLoginUserInWhiteList(String username,String ip) throws ServiceException;
 }
