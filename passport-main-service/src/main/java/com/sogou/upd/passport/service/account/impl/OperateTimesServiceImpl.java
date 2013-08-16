@@ -16,14 +16,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
  */
 @Service
 public class OperateTimesServiceImpl implements OperateTimesService {
-//    public static Set<String> ipListSet = new HashSet<String>();
+    //    public static Set<String> ipListSet = new HashSet<String>();
 //    static {
 //        ipListSet.add("1.194");
 //        ipListSet.add("123.101");
@@ -161,7 +164,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLoginUserInBlackList(String username,String ip) throws ServiceException {
+    public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException {
         try {
             List<String> keyList = new ArrayList<String>();
             List<Integer> maxList = new ArrayList<Integer>();
@@ -176,12 +179,12 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
             //  根据ip判断是否需要弹出验证码
             if (!Strings.isNullOrEmpty(ip)) {
-                if(checkInSubIpList(ip)){
+                if (checkInSubIpList(ip)) {
                     //一天内5次失败
                     String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
                     keyList.add(ipFailedCacheKey);
                     maxList.add(LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT);
-                }else {
+                } else {
                     //一天内ip登陆失败50次出验证码
                     String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
                     keyList.add(ipFailedCacheKey);
@@ -519,21 +522,21 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLoginUserInWhiteList(String username,String ip) throws ServiceException {
+    public boolean checkLoginUserInWhiteList(String username, String ip) throws ServiceException {
         try {
             String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
             Set<String> whiteList = redisUtils.smember(whiteListKey);
-            if (CollectionUtils.isNotEmpty(whiteList)){
-                if(whiteList.contains(username)){
+            if (CollectionUtils.isNotEmpty(whiteList)) {
+                if (whiteList.contains(username)) {
                     return true;
                 }
-                if(whiteList.contains(ip)){
+                if (whiteList.contains(ip)) {
                     return true;
                 }
             }
             return false;
         } catch (Exception e) {
-            logger.error("checkLoginUserWhiteList:username=" + username + ",ip="+ip, e);
+            logger.error("checkLoginUserWhiteList:username=" + username + ",ip=" + ip, e);
             return false;
         }
     }
@@ -550,18 +553,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
                 String subIpListKey = CacheConstant.CACHE_PREFIX_IP_SUBIPBLACKLIST;
                 Set<String> subIpList = redisUtils.smember(subIpListKey);
-                if (CollectionUtils.isNotEmpty(subIpList)){
-                    if(subIpList.contains(sb.toString())){
-                        return true;
-                    }
-                    if(subIpList.contains(ip)){
-                        return true;
-                    }
+                if (CollectionUtils.isNotEmpty(subIpList) && subIpList.contains(sb.toString())) {
+                    return true;
                 }
             }
             return false;
         } catch (Exception e) {
-            logger.error("checkLoginUserWhiteList,"+ip, e);
+            logger.error("checkLoginUserWhiteList," + ip, e);
             return false;
         }
     }
