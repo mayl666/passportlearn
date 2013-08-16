@@ -98,13 +98,24 @@ public class LoginAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/login/api";
         }
+
+        //封禁
+        String referer = request.getHeader("referer");
+        if("https://account.sogou.com/web/login".equals(referer) && "1100".equals(loginParams.getClient_id())){
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+            result.setMessage("密码错误");
+            result.setDefaultModel("xd", loginParams.getXd());
+            model.addAttribute("data", result.toString());
+            return "/login/api";
+        }
+
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
 
         String userId = loginParams.getUsername();
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
+
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
 

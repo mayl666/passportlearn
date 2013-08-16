@@ -23,15 +23,15 @@ import java.util.*;
  */
 @Service
 public class OperateTimesServiceImpl implements OperateTimesService {
-    public static Set<String> ipListSet = new HashSet<String>();
-    static {
-        ipListSet.add("1.194");
-        ipListSet.add("123.101");
-        ipListSet.add("223.241");
-//        ipListSet.add("180.109");
-        ipListSet.add("123.53");
-        ipListSet.add("114.99");
-    }
+//    public static Set<String> ipListSet = new HashSet<String>();
+//    static {
+//        ipListSet.add("1.194");
+//        ipListSet.add("123.101");
+//        ipListSet.add("223.241");
+////        ipListSet.add("180.109");
+//        ipListSet.add("123.53");
+//        ipListSet.add("114.99");
+//    }
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
     private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
     private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
@@ -176,17 +176,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
             //  根据ip判断是否需要弹出验证码
             if (!Strings.isNullOrEmpty(ip)) {
-                String[] subIpArr = ip.split("\\.");
-
-                StringBuilder sb = new StringBuilder();
-                sb.append(subIpArr[0]);
-                sb.append(".");
-                sb.append(subIpArr[1]);
-                // TODO 1.194的IP全部封掉
-                if("1.194".equals(sb.toString())){
-                    return true;
-                }
-                if(ipListSet.contains(sb.toString())){
+                if(checkInSubIpList(ip)){
                     //一天内5次失败
                     String ipFailedCacheKey = CacheConstant.CACHE_PREFIX_IP_LOGINFAILEDNUM + ip;
                     keyList.add(ipFailedCacheKey);
@@ -544,6 +534,34 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             return false;
         } catch (Exception e) {
             logger.error("checkLoginUserWhiteList:username=" + username + ",ip="+ip, e);
+            return false;
+        }
+    }
+
+    private boolean checkInSubIpList(String ip) throws ServiceException {
+        try {
+            if (!Strings.isNullOrEmpty(ip)) {
+                String[] subIpArr = ip.split("\\.");
+
+                StringBuilder sb = new StringBuilder();
+                sb.append(subIpArr[0]);
+                sb.append(".");
+                sb.append(subIpArr[1]);
+
+                String subIpListKey = CacheConstant.CACHE_PREFIX_IP_SUBIPBLACKLIST;
+                Set<String> subIpList = redisUtils.smember(subIpListKey);
+                if (CollectionUtils.isNotEmpty(subIpList)){
+                    if(subIpList.contains(sb.toString())){
+                        return true;
+                    }
+                    if(subIpList.contains(ip)){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("checkLoginUserWhiteList,"+ip, e);
             return false;
         }
     }
