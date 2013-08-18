@@ -13,7 +13,7 @@
     <!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
     <!--&lt;!&ndash; 自定义AOP &ndash;&gt;-->
     <!--<aop:aspectj-autoproxy proxy-target-class="true">-->
-        <!--<aop:include name="controllerAspect"/>-->
+    <!--<aop:include name="controllerAspect"/>-->
     <!--</aop:aspectj-autoproxy>-->
 
     <!--perf4j性能监控AOP-->
@@ -58,19 +58,23 @@
     <!-- Inteceptor 记录API请求url和执行时间 -->
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>      <!-- 打印请求响应时间 -->
+            <mvc:mapping path="/**"/>
+            <!-- 打印请求响应时间 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.CostTimeInteceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>       <!-- 设置登录后的用户信息 -->
+            <mvc:mapping path="/**"/>
+            <!-- 设置登录后的用户信息 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>    <!-- 检测是否需要登录 -->
+            <mvc:mapping path="/**"/>
+            <!-- 检测是否需要登录 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/internal/**"/>     <!-- 内部接口code和ct校验 -->
+            <mvc:mapping path="/internal/**"/>
+            <!-- 内部接口code和ct校验 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
@@ -93,8 +97,8 @@
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">
             <list>
-                <ref bean="stringHttpMessageConverter" />
-                <ref bean="mappingJacksonHttpMessageConverter" />
+                <ref bean="stringHttpMessageConverter"/>
+                <ref bean="mappingJacksonHttpMessageConverter"/>
             </list>
         </property>
     </bean>
@@ -127,4 +131,38 @@
             <value>/WEB-INF/velocity/velocity.properties</value>
         </property>
     </bean>
+
+    <!--&lt;!&ndash;配置Spring定时器&ndash;&gt;-->
+    <!--&lt;!&ndash; 要调用的工作类 &ndash;&gt;-->
+    <!--<bean id="userLogJob" class="com.sogou.upd.passport.common.utils.UserLogTimerUtil"></bean>-->
+    <!--&lt;!&ndash; 定义调用对象和调用对象的方法 &ndash;&gt;-->
+    <!--<bean id="userLogTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">-->
+        <!--&lt;!&ndash; 调用的类 &ndash;&gt;-->
+        <!--<property name="targetObject">-->
+            <!--<ref bean="userLogJob"/>-->
+        <!--</property>-->
+        <!--&lt;!&ndash; 调用类中的方法 &ndash;&gt;-->
+        <!--<property name="targetMethod">-->
+            <!--<value>run</value>-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash; 定义触发时间 &ndash;&gt;-->
+    <!--<bean id="userLogTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">-->
+        <!--<property name="jobDetail">-->
+            <!--<ref bean="userLogTask"/>-->
+        <!--</property>-->
+        <!--&lt;!&ndash; cron表达式 &ndash;&gt;-->
+        <!--<property name="cronExpression">-->
+            <!--<value>0 * 17 * * ?</value>-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash; 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  &ndash;&gt;-->
+    <!--<bean id="startQuertz" lazy-init="false" autowire="no"-->
+          <!--class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
+        <!--<property name="triggers">-->
+            <!--<list>-->
+                <!--<ref bean="userLogTrigger"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
 </beans>
