@@ -105,64 +105,24 @@ public interface OperateTimesService {
     public boolean checkAddProblemInBlackList(String ip) throws ServiceException;
 
     /**
-     * 绑定密保邮箱次数
+     * 每日设置密保次数限制
      *
      * @param userId
      * @param clientId
      * @return
      * @throws ServiceException
      */
-    public boolean incLimitBindEmail(String userId, int clientId) throws ServiceException;
+    public boolean incLimitBind(String userId, int clientId) throws ServiceException;
 
     /**
-     * 绑定密保手机次数
+     * 检查设置密保次数（含邮箱、手机、问题）
      *
      * @param userId
      * @param clientId
      * @return
      * @throws ServiceException
      */
-    public boolean incLimitBindMobile(String userId, int clientId) throws ServiceException;
-
-    /**
-     * 绑定密保问题次数
-     *
-     * @param userId
-     * @param clientId
-     * @return
-     * @throws ServiceException
-     */
-    public boolean incLimitBindQues(String userId, int clientId) throws ServiceException;
-
-    /**
-     * 检查绑定密保邮箱次数
-     *
-     * @param userId
-     * @param clientId
-     * @return
-     * @throws ServiceException
-     */
-    public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException;
-
-    /**
-     * 检查绑定密保手机次数
-     *
-     * @param userId
-     * @param clientId
-     * @return
-     * @throws ServiceException
-     */
-    public boolean checkLimitBindMobile(String userId, int clientId) throws ServiceException;
-
-    /**
-     * 检查绑定密保问题次数
-     *
-     * @param userId
-     * @param clientId
-     * @return
-     * @throws ServiceException
-     */
-    public boolean checkLimitBindQues(String userId, int clientId) throws ServiceException;
+    public boolean checkLimitBind(String userId, int clientId) throws ServiceException;
 
     /**
      * 修改密码次数

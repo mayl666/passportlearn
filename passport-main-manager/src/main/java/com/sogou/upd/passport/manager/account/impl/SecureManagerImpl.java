@@ -461,7 +461,7 @@ public class SecureManagerImpl implements SecureManager {
                                       String newEmail, String oldEmail, String ru) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -543,7 +543,7 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -560,7 +560,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             emailSenderService.deleteScodeCacheForEmail(userId, clientId, module);
 
-            operateTimesService.incLimitBindEmail(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
 
             result.setSuccess(true);
             result.setMessage("修改绑定邮箱成功！");
@@ -580,7 +580,7 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -620,7 +620,7 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account;
 
-            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -687,7 +687,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            operateTimesService.incLimitBindMobile(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
 
             result.setMessage("绑定手机成功！");
             return result;
@@ -707,7 +707,7 @@ public class SecureManagerImpl implements SecureManager {
                                            String smsCode, String scode, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -775,7 +775,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            operateTimesService.incLimitBindMobile(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
 
             result.setMessage("修改绑定手机成功！");
             return result;
@@ -794,7 +794,7 @@ public class SecureManagerImpl implements SecureManager {
                                          String newQues, String newAnswer, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindQues(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -822,7 +822,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            operateTimesService.incLimitBindQues(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
             result.setMessage("绑定密保问题成功！");
             return result;
         } catch (ServiceException e) {

@@ -44,6 +44,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_"; // passportId与当日绑定密保邮箱次数
     public static final String CACHE_PREFIX_PASSPORTID_BINDMOBILENUM = "SP.PASSPORTID:BINDMOBILENUM_"; // passportId与当日绑定密保手机次数
     public static final String CACHE_PREFIX_PASSPORTID_BINDQUESNUM = "SP.PASSPORTID:BINDQUESNUM_"; // passportId与当日绑定密保问题次数
+    public static final String CACHE_PREFIX_PASSPORTID_BINDNUM = "SP.PASSPORTID:BINDNUM_"; // passportId与当日设置密保次数
 
   /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射

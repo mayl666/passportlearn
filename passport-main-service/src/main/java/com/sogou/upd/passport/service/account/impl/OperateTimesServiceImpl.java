@@ -364,6 +364,31 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public boolean incLimitBind(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
+                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("incLimitBind:passportId" + userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkLimitBind(String userId, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
+                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+            return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
+        } catch (Exception e) {
+            logger.error("checkLimitBind:passportId" + userId, e);
+            return true;
+        }
+    }
+
+/*    @Override
     public boolean incLimitBindEmail(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDEMAILNUM + userId +
@@ -402,6 +427,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+
     @Override
     public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException {
         try {
@@ -436,7 +462,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             logger.error("checkLimitBindQues:passportId" + userId, e);
             return true;
         }
-    }
+    }*/
 
     @Override
     public boolean incLimitResetPwd(String userId, int clientId) throws ServiceException {
