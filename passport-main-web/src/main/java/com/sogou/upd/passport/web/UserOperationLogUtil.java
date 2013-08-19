@@ -32,8 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 public class UserOperationLogUtil {
 
     private static final Logger userLoggerScribe = LoggerFactory.getLogger("userLoggerScribe");
-
+    private static final Logger userLoggerScribeFail = LoggerFactory.getLogger("userLoggerScribeFail");
     private static final Logger userLoggerLocal = LoggerFactory.getLogger("userLoggerLocal");
+
+
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
 
@@ -41,8 +43,14 @@ public class UserOperationLogUtil {
 
     private static Logger userLogger = userLoggerScribe;
 
-    public static void setUserLoggerToScribe(boolean flag) {
-        userLogger = (flag ? userLoggerScribe : userLoggerLocal);
+    public static void setUserLogger(String flag) {
+        if ("scribe".equals(flag)) {
+            userLogger = userLoggerScribe;
+        } else if ("local".equals(flag)) {
+            userLogger = userLoggerLocal;
+        } else if ("fail".equals(flag)) {
+            userLogger = userLoggerScribeFail;
+        }
     }
 
     /**
