@@ -319,6 +319,28 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    //@Override
+    public long incIPBindTimes(String ip) throws ServiceException {
+        try {
+            String resetCacheKey = CacheConstant.CACHE_PREFIX_IP_BINDNUM + ip;
+            return recordTimes(resetCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+        } catch (Exception e) {
+            logger.error("incBindTimes:ip" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    //@Override
+    public boolean checkIPBindLimit(String ip) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_IP_BINDNUM + ip;
+            return checkTimesByKey(cacheKey, LoginConstant.BINDNUM_IP_LIMITED);
+        } catch (Exception e) {
+            logger.error("checkBindTimes:ip" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
     @Override
     public void incRegTimes(final String ip, final String cookieStr) throws ServiceException {
         discardTaskExecutor.execute(new Runnable() {

@@ -84,6 +84,7 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public long incResetPwdIPTimes(String ip) throws ServiceException;
+
     /**
      *检查一天内修改密码的次数
      * @param ip
@@ -91,6 +92,24 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean checkIPLimitResetPwd(String ip) throws ServiceException;
+
+    /**
+     * 每天每IP设置密保次数
+     *
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public long incIPBindTimes(String ip) throws ServiceException;
+
+    /**
+     * 每天每IP设置密保次数
+     *
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkIPBindLimit(String ip) throws ServiceException;
 
     /**
      * 记录一天内某ip注册次数

@@ -99,7 +99,7 @@ public interface SecureManager {
      * @throws Exception
      */
     public Result sendEmailForBinding(String passportId, int clientId, String password, String newEmail,
-                                      String oldEmail, String ru) throws Exception;
+                                      String oldEmail, String modifyIp, String ru) throws Exception;
 
     /**
      * 修改密保邮箱——2.根据验证链接修改绑定邮箱
