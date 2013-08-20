@@ -64,6 +64,7 @@ public class UserInfoApiController extends BaseController {
         // 调用内部接口
         result = proxyUserInfoApiManagerImpl.getUserInfo(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("fields",params.getFields());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
