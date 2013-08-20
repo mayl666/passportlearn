@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 
@@ -13,7 +14,12 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
  * To change this template use File | Settings | File Templates.
  */
 public interface PCAccountManager {
-
+    /**
+     * 校验用户名密码，生成accesstoken和refreshtoken
+     * @param pcTokenParams
+     * @return
+     */
+    public Result createToken(PcGetTokenParams pcTokenParams);
     /**
      * 此接口处理两种情况下的生成pairToken：
      * 1.验证用户名和密码；

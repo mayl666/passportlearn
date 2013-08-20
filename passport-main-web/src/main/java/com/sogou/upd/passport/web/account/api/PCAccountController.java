@@ -11,6 +11,7 @@ import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -91,6 +92,43 @@ public class PCAccountController extends BaseController {
         model.addAttribute("ts", pcAccountWebParams.getTs());
         model.addAttribute("openAppType", pcAccountWebParams.getOpenapptype());
         return "/pcaccount/pclogin";
+    }
+
+    @RequestMapping(value = "/act/gettoken", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getToken(HttpServletRequest request,PcGetTokenParams pcGetTokenParams) throws Exception {
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(pcGetTokenParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return "1";
+        }
+        Result result = pcAccountManager.createToken(pcGetTokenParams);
+        String resStr = "";
+        if (result.isSuccess()) {
+            AccountToken accountToken = (AccountToken) result.getDefaultModel();
+            // 获取昵称，返回格式
+            String passportId = accountToken.getPassportId();
+            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
+            Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+            String uniqname;
+            if (getUserInfoResult.isSuccess()) {
+                uniqname = (String) getUserInfoResult.getModels().get("uniqname");
+                uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
+            } else {
+                uniqname = defaultUniqname(passportId);
+            }
+            resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
+        } else {
+            resStr = handleGetPairTokenErr(result.getCode());
+        }
+
+        //用户log
+        String resultCode =  StringUtil.defaultIfEmpty(result.getCode(), "0");
+        UserOperationLog userOperationLog = new UserOperationLog(pcGetTokenParams.getUserid(), request.getRequestURI(), pcGetTokenParams.getAppid(), resultCode, getIp(request));
+        userOperationLog.putOtherMessage("ts", pcGetTokenParams.getTs());
+        UserOperationLogUtil.log(userOperationLog);
+
+        return resStr;
     }
 
     @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
