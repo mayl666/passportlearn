@@ -21,11 +21,11 @@ public class MemcacheUtils {
         this.tokenMaster = tokenMaster;
     }
 
-    public MemCachedClient getrTokenMaster() {
+    public MemCachedClient getRTokenMaster() {
         return rTokenMaster;
     }
 
-    public void setrTokenMaster(MemCachedClient rTokenMaster) {
+    public void setRTokenMaster(MemCachedClient rTokenMaster) {
         this.rTokenMaster = rTokenMaster;
     }
 }
