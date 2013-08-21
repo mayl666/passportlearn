@@ -342,7 +342,6 @@ public class RegManagerImpl implements RegManager {
                 //检查账号是否在白名单中
                 if (!operateTimesService.checkRegInWhiteList(ip)) {
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_IP_IN_BLACKLIST);
-                    result.setMessage("当前注册ip次数已达上限或该ip已在黑名单中");
                     return result;
                 }
             }
