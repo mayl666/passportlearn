@@ -101,7 +101,6 @@ public class LoginAction extends BaseController {
 
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
-
         String userId = loginParams.getUsername();
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
