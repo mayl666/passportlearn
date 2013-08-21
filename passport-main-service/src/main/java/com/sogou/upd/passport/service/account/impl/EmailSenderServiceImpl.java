@@ -218,7 +218,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
 
     private String buildCacheKeyForEmailLimited(String passportId, int clientId, AccountModuleEnum module, String email) {
-        return CACHE_PREFIX_PASSPORTID_SENDEMAILNUM + module + "_" + clientId + "_" + email + "_"
+        return CACHE_PREFIX_PASSPORTID_SENDEMAILNUM + module + "_" + email + "_"
                + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 

@@ -10,6 +10,7 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.OAuthTokenApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -42,6 +43,41 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
+
+    @Override
+    public Result createToken(PcGetTokenParams pcTokenParams) {
+        Result finalResult = new APIResultSupport(false);
+        try {
+            int clientId = Integer.parseInt(pcTokenParams.getAppid());
+            String passportId = pcTokenParams.getUserid();
+            String password = pcTokenParams.getPassword();
+            String instanceId = pcTokenParams.getTs();
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            //校验用户名和密码
+            AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
+            Result result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            AccountToken accountToken = pcAccountService.initialAccountToken(passportId, instanceId, appConfig);
+            if (accountToken != null) {
+                finalResult.setSuccess(true);
+                finalResult.setDefaultModel(accountToken);
+            } else {
+                finalResult.setCode(ErrorUtil.CREATE_TOKEN_FAIL);
+            }
+            return finalResult;
+        } catch (Exception e) {
+            logger.error("createPairToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
 
     @Override
     public Result createPairToken(PcPairTokenParams pcTokenParams) {

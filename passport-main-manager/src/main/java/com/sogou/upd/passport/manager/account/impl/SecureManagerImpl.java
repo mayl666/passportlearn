@@ -465,10 +465,15 @@ public class SecureManagerImpl implements SecureManager {
      */
     @Override
     public Result sendEmailForBinding(String userId, int clientId, String password,
-                                      String newEmail, String oldEmail, String ru) throws Exception {
+                                      String newEmail, String oldEmail, String modifyIp, String ru) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (operateTimesService.checkIPBindLimit(modifyIp)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
+            }
+
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -501,6 +506,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             if (result.isSuccess()) {
                 emailSenderService.incLimitForSendEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail);
+                operateTimesService.incIPBindTimes(modifyIp);
                 result.setMessage("发送绑定邮箱申请邮件成功！");
             } else if (ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
                 operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
@@ -550,7 +556,7 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindEmail(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -567,7 +573,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             emailSenderService.deleteScodeCacheForEmail(userId, clientId, module);
 
-            operateTimesService.incLimitBindEmail(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
 
             result.setSuccess(true);
             result.setMessage("修改绑定邮箱成功！");
@@ -587,7 +593,7 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -627,7 +633,13 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account;
 
-            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
+            //检查是否在ip黑名单里
+            if (operateTimesService.checkIPBindLimit(modifyIp)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
+            }
+
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -694,7 +706,8 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            operateTimesService.incLimitBindMobile(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
+            operateTimesService.incIPBindTimes(modifyIp);
 
             result.setMessage("绑定手机成功！");
             return result;
@@ -714,7 +727,12 @@ public class SecureManagerImpl implements SecureManager {
                                            String smsCode, String scode, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindMobile(userId, clientId)) {
+            if (operateTimesService.checkIPBindLimit(modifyIp)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
+            }
+
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -782,7 +800,8 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            operateTimesService.incLimitBindMobile(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
+            operateTimesService.incIPBindTimes(modifyIp);
 
             result.setMessage("修改绑定手机成功！");
             return result;
@@ -801,7 +820,12 @@ public class SecureManagerImpl implements SecureManager {
                                          String newQues, String newAnswer, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBindQues(userId, clientId)) {
+            if (operateTimesService.checkIPBindLimit(modifyIp)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
+            }
+
+            if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -829,7 +853,8 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            operateTimesService.incLimitBindQues(userId, clientId);
+            operateTimesService.incLimitBind(userId, clientId);
+            operateTimesService.incIPBindTimes(modifyIp);
             result.setMessage("绑定密保问题成功！");
             return result;
         } catch (ServiceException e) {

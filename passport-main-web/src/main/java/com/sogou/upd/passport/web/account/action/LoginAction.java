@@ -100,8 +100,16 @@ public class LoginAction extends BaseController {
         }
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
+
+        String userId = loginParams.getUsername();
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
         if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
+            userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
         } else {
@@ -111,13 +119,11 @@ public class LoginAction extends BaseController {
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
+            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+                result.setMessage("密码错误");
+            }
         }
-
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
 
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());

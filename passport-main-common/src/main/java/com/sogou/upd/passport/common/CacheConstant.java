@@ -38,15 +38,18 @@ public class CacheConstant {
 
     /*================账号黑名单、白名单缓存常量=====================*/
     public static final String CACHE_PREFIX_IP_UPDATEPWDNUM = "SP.IP:UPDATEPWDNUM_"; //IP的修改密码限制
+    public static final String CACHE_PREFIX_IP_BINDNUM = "SP.IP:BINDNUM_"; //IP的设置密保限制
     // username或者ip在白名单中的set KEY
     public static final String CACHE_PREFIX_LOGIN_WHITELIST = "SP.USERNAME.IP:WHITELIST_KEY";
     //ip在白名单中
     public static final String CACHE_PREFIX_REGISTER_WHITELIST = "SP.REG.IP:WHITELIST_KEY";
+    public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
 
     /*================绑定密保限制相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_"; // passportId与当日绑定密保邮箱次数
     public static final String CACHE_PREFIX_PASSPORTID_BINDMOBILENUM = "SP.PASSPORTID:BINDMOBILENUM_"; // passportId与当日绑定密保手机次数
     public static final String CACHE_PREFIX_PASSPORTID_BINDQUESNUM = "SP.PASSPORTID:BINDQUESNUM_"; // passportId与当日绑定密保问题次数
+    public static final String CACHE_PREFIX_PASSPORTID_BINDNUM = "SP.PASSPORTID:BINDNUM_"; // passportId与当日设置密保次数
 
   /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射

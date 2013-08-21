@@ -368,7 +368,7 @@ public class SecureAction extends BaseController {
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
-    public Object sendEmailForBind(WebBindEmailParams params) throws Exception {
+    public Object sendEmailForBind(HttpServletRequest request, WebBindEmailParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -382,6 +382,7 @@ public class SecureAction extends BaseController {
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
         String ru = params.getRu();
+        String modifyIp = getIp(request);
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
@@ -395,7 +396,7 @@ public class SecureAction extends BaseController {
                 return result.toString();
         }
 
-        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, ru);
+        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, modifyIp, ru);
         return result.toString();
     }
 
