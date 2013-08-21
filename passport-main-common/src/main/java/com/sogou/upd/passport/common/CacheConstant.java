@@ -40,6 +40,8 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_IP_UPDATEPWDNUM = "SP.IP:UPDATEPWDNUM_"; //IP的修改密码限制
     // username或者ip在白名单中的set KEY
     public static final String CACHE_PREFIX_LOGIN_WHITELIST = "SP.USERNAME.IP:WHITELIST_KEY";
+    //ip在白名单中
+    public static final String CACHE_PREFIX_REGISTER_WHITELIST = "SP.REG.IP:WHITELIST_KEY";
 
     /*================绑定密保限制相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_"; // passportId与当日绑定密保邮箱次数

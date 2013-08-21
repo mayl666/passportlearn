@@ -66,6 +66,8 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
     /* ============================================================================ */
+    //当前注册ip次数已达上限或该ip已在黑名单中
+    public static final String ERR_CODE_REGISTER_IP_IN_BLACKLIST = "20200";
     // 帐号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
     // 短信发送已达今天的最高上限20条
@@ -300,6 +302,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "账号或密码错误");
 
         // account
+        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_IP_IN_BLACKLIST, "当前注册ip次数已达上限或该ip已在黑名单中");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");

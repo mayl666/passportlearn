@@ -368,6 +368,23 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public boolean checkRegInWhiteList(String ip) throws ServiceException {
+        try {
+            String whiteListKey = CacheConstant.CACHE_PREFIX_REGISTER_WHITELIST;
+            Set<String> whiteList = redisUtils.smember(whiteListKey);
+            if (CollectionUtils.isNotEmpty(whiteList)) {
+                if (whiteList.contains(ip)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("checkRegInWhiteList:ip=" + ip, e);
+            return false;
+        }
+    }
+
+    @Override
     public boolean checkRegInBlackList(String ip, String cookieStr) throws ServiceException {
         //修改为list模式添加cookie处理 by mayan
         try {
