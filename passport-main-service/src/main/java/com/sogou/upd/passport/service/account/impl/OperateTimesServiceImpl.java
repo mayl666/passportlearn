@@ -26,15 +26,7 @@ import java.util.Set;
  */
 @Service
 public class OperateTimesServiceImpl implements OperateTimesService {
-    //    public static Set<String> ipListSet = new HashSet<String>();
-//    static {
-//        ipListSet.add("1.194");
-//        ipListSet.add("123.101");
-//        ipListSet.add("223.241");
-////        ipListSet.add("180.109");
-//        ipListSet.add("123.53");
-//        ipListSet.add("114.99");
-//    }
+
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
     private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
     private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
