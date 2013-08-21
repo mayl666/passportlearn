@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.danga.MemCached.MemCachedClient;
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.MemcachedClientBuilder;
+
+import java.io.IOException;
 
 /**
  * memcache工具类
@@ -10,22 +13,18 @@ import com.danga.MemCached.MemCachedClient;
  * To change this template use File | Settings | File Templates.
  */
 public class MemcacheUtils {
-    private MemCachedClient tokenMaster;
-    private MemCachedClient rTokenMaster;
+    private MemcachedClientBuilder builder;
+    private MemcachedClient c;
 
-    public MemCachedClient getTokenMaster() {
-        return tokenMaster;
+    public MemcachedClientBuilder getBuilder() {
+        return builder;
     }
 
-    public void setTokenMaster(MemCachedClient tokenMaster) {
-        this.tokenMaster = tokenMaster;
+    public void setBuilder(MemcachedClientBuilder builder) {
+        this.builder = builder;
     }
 
-    public MemCachedClient getRTokenMaster() {
-        return rTokenMaster;
-    }
-
-    public void setRTokenMaster(MemCachedClient rTokenMaster) {
-        this.rTokenMaster = rTokenMaster;
+    public MemcachedClient buildMemcachedClient() throws IOException {
+        return builder.build();
     }
 }
