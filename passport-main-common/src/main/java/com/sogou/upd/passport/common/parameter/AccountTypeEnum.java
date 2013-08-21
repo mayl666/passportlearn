@@ -19,7 +19,8 @@ public enum AccountTypeEnum {
     QQ(3), // QQ
     SINA(4), // Sina微博
     RENREN(5), // 人人
-    TAOBAO(6); // 淘宝
+    TAOBAO(6), // 淘宝
+    BAIDU(7);  // 百度
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -32,6 +33,7 @@ public enum AccountTypeEnum {
         PROVIDER_MAPPING_DICT.put("sina", SINA.getValue());
         PROVIDER_MAPPING_DICT.put("renren", RENREN.getValue());
         PROVIDER_MAPPING_DICT.put("taobao", TAOBAO.getValue());
+        PROVIDER_MAPPING_DICT.put("baidu", BAIDU.getValue());
     }
 
     private int value;
@@ -101,6 +103,10 @@ public enum AccountTypeEnum {
         }
 
         if (username.endsWith("@taobao.sohu.com")) {
+            return TAOBAO;
+        }
+
+        if (username.endsWith("@baidu.sohu.com")) {
             return TAOBAO;
         }
 

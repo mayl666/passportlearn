@@ -43,6 +43,7 @@ public class CommonConstant {
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.SINA.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.RENREN.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.TAOBAO.toString());
+        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.BAIDU.toString());
     }
 
 }

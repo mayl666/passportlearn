@@ -87,10 +87,11 @@ public class ConnectLoginController extends BaseConnectController {
             return new ModelAndView(new RedirectView(url));
         }
 
+        String type = connectLoginParams.getType();
         // 校验参数
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            url = buildAppErrorRu(connectLoginParams.getType(), ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            url = buildAppErrorRu(type, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
             return new ModelAndView(new RedirectView(url));
         }
 
@@ -98,7 +99,7 @@ public class ConnectLoginController extends BaseConnectController {
         String uuid = UUID.randomUUID().toString();
         try {
             url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-//            writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
+//          writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
 
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(connectLoginParams.getType(), e.getError(), e.getDescription());
@@ -109,6 +110,7 @@ public class ConnectLoginController extends BaseConnectController {
         UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
         String referer = req.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
+        userOperationLog.putOtherMessage("type", type);
         UserOperationLogUtil.log(userOperationLog);
 
         return new ModelAndView(new RedirectView(url));
