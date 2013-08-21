@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -16,7 +15,6 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequ
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,10 +24,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 /**
  * SSO-SDK第三方授权接口
@@ -82,12 +79,13 @@ public class ConnectLoginController extends BaseConnectController {
         int clientId = Integer.parseInt(connectLoginParams.getClient_id());
 
         //检查client_id是否存在
+        String type = connectLoginParams.getType();
         if (!configureManager.checkAppIsExist(clientId)) {
-            url = buildAppErrorRu(connectLoginParams.getType(), ErrorUtil.INVALID_CLIENTID, null);
+            url = buildAppErrorRu(type, ErrorUtil.INVALID_CLIENTID, null);
             return new ModelAndView(new RedirectView(url));
         }
 
-        String type = connectLoginParams.getType();
+
         // 校验参数
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -102,7 +100,7 @@ public class ConnectLoginController extends BaseConnectController {
 //          writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
 
         } catch (OAuthProblemException e) {
-            url = buildAppErrorRu(connectLoginParams.getType(), e.getError(), e.getDescription());
+            url = buildAppErrorRu(type, e.getError(), e.getDescription());
 
         }
 
