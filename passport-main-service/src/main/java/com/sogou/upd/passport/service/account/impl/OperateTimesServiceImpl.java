@@ -11,7 +11,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,23 +18,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
  */
 @Service
 public class OperateTimesServiceImpl implements OperateTimesService {
-//    public static Set<String> ipListSet = new HashSet<String>();
-//
-//    static {
-//        ipListSet.add("1.194");
-//        ipListSet.add("123.101");
-//        ipListSet.add("223.241");
-////        ipListSet.add("180.109");
-//        ipListSet.add("123.53");
-//        ipListSet.add("114.99");
-//    }
 
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
     private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
@@ -213,7 +205,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
             if (!MapUtils.isEmpty(username_hmap)) {
                 String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
-                if (!StringUtils.isEmpty(username_failedNum)) {
+                if (!Strings.isNullOrEmpty(username_failedNum)) {
                     num = Integer.parseInt(username_failedNum);
                     if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
                         logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_FAILED_KEY, num);
@@ -221,7 +213,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     }
                 }
                 String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
-                if (!StringUtils.isEmpty(username_successNum)) {
+                if (!Strings.isNullOrEmpty(username_successNum)) {
                     num = Integer.parseInt(username_successNum);
                     if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                         logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
@@ -236,7 +228,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
                 if (!MapUtils.isEmpty(ip_hmap)) {
                     String ip_failedNum = ip_hmap.get(CacheConstant.CACHE_FAILED_KEY);
-                    if (!StringUtils.isEmpty(ip_failedNum)) {
+                    if (!Strings.isNullOrEmpty(ip_failedNum)) {
                         num = Integer.parseInt(ip_failedNum);
                         if (checkInSubIpList(ip)) {
                             if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
@@ -251,7 +243,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         }
                     }
                     String ip_successNum = ip_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
-                    if (!StringUtils.isEmpty(ip_successNum)) {
+                    if (!Strings.isNullOrEmpty(ip_successNum)) {
                         num = Integer.parseInt(ip_successNum);
                         if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                             logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
@@ -548,7 +540,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             return false;
         }
     }
-
 
     @Override
     public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException {
