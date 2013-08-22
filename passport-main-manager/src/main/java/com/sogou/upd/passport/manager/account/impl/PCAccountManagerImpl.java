@@ -16,8 +16,10 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
+import com.sogou.upd.passport.service.account.SHTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private SHTokenService shTokenService;
 
     @Override
     public Result createToken(PcGetTokenParams pcTokenParams) {
@@ -131,12 +135,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
-//            Result verifyRTResult = proxyOAuthTokenApiManager.refreshToken(pcRefreshTokenParams);
-//            if (!verifyRTResult.isSuccess() && !pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
-//                result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
-//                return result;
-//            }
-            if (!pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+            if (!pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) && !shTokenService.verifhRefreshToken(passportId,clientId,instanceId,refreshToken)) {
                 result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                 return result;
             }
@@ -211,19 +210,27 @@ public class PCAccountManagerImpl implements PCAccountManager {
         if (curTimestamp > ts + SIG_EXPIRES) {
             return false;
         }
-        // TODO 调用sohu的根据userid获取refreshToken接口
+
+        String refreshToken = "";
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
         if (accountToken == null) {
-            return false;
-        }
-        String refreshToken = accountToken.getRefreshToken();
-        if (!isValidToken(accountToken.getRefreshValidTime())) {
-            return false;
+            String shRefreshToken = shTokenService.queryRefreshToken(passportId, clientId, instanceId);
+            if (StringUtils.isEmpty(shRefreshToken)) {
+                return false;
+            } else {
+                refreshToken = shRefreshToken;
+            }
+        } else {
+            if (!isValidToken(accountToken.getRefreshValidTime())) {
+                return false;
+            }
+            refreshToken = accountToken.getRefreshToken();
         }
         String sigString = passportId + clientId + refreshToken + timestamp + clientSecret;
         String actualSig = Coder.encryptMD5(sigString);
         return actualSig.equalsIgnoreCase(sig);
     }
+
 
     /**
      * 验证Token是否失效

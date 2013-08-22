@@ -5,8 +5,7 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- ==============memcache socket pools conf=========================== -->
-    <bean
-            id="memcachedClientBuilder"
+    <bean   id="memcachedClientBuilder"
             class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
             p:connectionPoolSize="50"
             p:failureMode="true">
@@ -14,11 +13,9 @@
             <list>
                 <bean class="java.net.InetSocketAddress">
                     <constructor-arg>
-                        <!--<value>${passport.memcache.token.host}</value>-->
                         <value>192.168.131.22</value>
                     </constructor-arg>
                     <constructor-arg>
-                        <!--<value>${passport.memcache.token.port}</value>-->
                         <value>11211</value>
                     </constructor-arg>
                 </bean>

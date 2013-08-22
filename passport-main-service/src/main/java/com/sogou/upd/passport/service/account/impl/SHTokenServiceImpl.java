@@ -1,10 +1,9 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.danga.MemCached.MemCachedClient;
 import com.sogou.upd.passport.common.utils.MemcacheUtils;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.model.account.SHToken;
 import com.sogou.upd.passport.service.account.SHTokenService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +17,12 @@ import org.springframework.stereotype.Service;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-public class SHTokenServiceImpl implements SHTokenService{
+public class SHTokenServiceImpl implements SHTokenService {
     private static final Logger logger = LoggerFactory.getLogger(SHTokenServiceImpl.class);
 
     @Autowired
     private MemcacheUtils memUtils;
 
-    @Autowired
-    private MemCachedClient rTokenMaster;
     /**
      * 构造SHToken的key
      * 格式为：passport|clientId|instanceId
@@ -49,38 +46,61 @@ public class SHTokenServiceImpl implements SHTokenService{
 
 
     @Override
-    public SHToken queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
+    public String queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildKeyStr(passportId, clientId);
-            Object value = rTokenMaster.get(key);
-            if(value != null){
-                System.out.println("valueStr:"+value.toString());
+            Object value = memUtils.buildMemcachedClient().get(key);
+            if (value != null) {
+                return value.toString();
 
             }
 
-            String tsKey = buildTsKeyStr(passportId, clientId,instanceId);
-            Object tsValue = rTokenMaster.get(tsKey);
-            if(tsValue != null){
-                System.out.println("tsValue:"+tsValue.toString());
+            String tsKey = buildTsKeyStr(passportId, clientId, instanceId);
+            Object tsValue = memUtils.buildMemcachedClient().get(tsKey);
+            if (tsValue != null) {
+                return tsValue.toString();
             }
-
-            String oldKey = buildOldKeyStr(passportId, clientId);
-            Object oldValue = rTokenMaster.get(oldKey);
-            if(oldValue != null){
-                System.out.println("valueStr:"+oldValue.toString());
-
-            }
-
-            String tsOldKey = buildOldTsKeyStr(passportId, clientId, instanceId);
-            Object tsOldValue = rTokenMaster.get(tsOldKey);
-            if(tsOldValue != null){
-                System.out.println("tsValue:"+tsOldValue.toString());
-            }
-
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
         }
     }
+
+    @Override
+    public String queryOldRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
+        try {
+            String key = buildOldKeyStr(passportId, clientId);
+            Object value = memUtils.buildMemcachedClient().get(key);
+            if (value != null) {
+                return value.toString();
+
+            }
+
+            String tsKey = buildOldTsKeyStr(passportId, clientId, instanceId);
+            Object tsValue = memUtils.buildMemcachedClient().get(tsKey);
+            if (tsValue != null) {
+                return tsValue.toString();
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean verifhRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+        try {
+            String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
+            if(!StringUtils.isEmpty(actualRefreshToken)) {
+                return actualRefreshToken.equals(refreshToken);
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+
 }

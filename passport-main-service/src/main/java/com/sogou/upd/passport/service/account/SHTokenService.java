@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.model.account.SHToken;
-
 /**
  * Created with IntelliJ IDEA.
  * User: chenjiameng
@@ -19,5 +17,26 @@ public interface SHTokenService {
      * @return
      * @throws ServiceException
      */
-    public SHToken queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException;
+    public String queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException;
+
+    /**
+     * 获取老refreshtoken
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @return
+     * @throws ServiceException
+     */
+    public String queryOldRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException;
+
+    /**
+     *校验refreshtoken
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
+     * @return
+     * @throws ServiceException
+     */
+    public boolean verifhRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
 }
