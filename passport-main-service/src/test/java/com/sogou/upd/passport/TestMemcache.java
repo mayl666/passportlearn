@@ -21,7 +21,7 @@ public class TestMemcache  extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void test() throws Exception {
-        System.out.println("##############"+memUtils.buildMemcachedClient().get("tinkame700@sogou.com|1044|37318746"));
+        System.out.println("##############"+memUtils.get("tinkame700@sogou.com|1044|37318746"));
 
     }
 }

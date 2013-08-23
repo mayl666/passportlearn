@@ -2,6 +2,9 @@ package com.sogou.upd.passport.common.utils;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
+import org.perf4j.aop.Profiled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -13,6 +16,8 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class MemcacheUtils {
+    private static Logger logger = LoggerFactory.getLogger(MemcacheUtils.class);
+
     private MemcachedClientBuilder builder;
     private MemcachedClient c;
 
@@ -24,7 +29,21 @@ public class MemcacheUtils {
         this.builder = builder;
     }
 
-    public MemcachedClient buildMemcachedClient() throws IOException {
+    private MemcachedClient buildMemcachedClient() throws IOException {
         return builder.build();
+    }
+
+    @Profiled(el = true, logger = "memcacheTimingLogger", tag = "memcache_get")
+    public String get(String key) throws Exception {
+        try {
+            Object value =buildMemcachedClient().get(key);
+            if (value != null) {
+                return value.toString();
+            }
+            return null;
+        }catch (Exception e) {
+            logger.error("[memcache] get cache fail, key:" + key, e);
+            return null;
+        }
     }
 }

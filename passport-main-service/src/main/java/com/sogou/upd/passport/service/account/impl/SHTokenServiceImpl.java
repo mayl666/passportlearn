@@ -44,21 +44,20 @@ public class SHTokenServiceImpl implements SHTokenService {
         return "old|" + passportId + "|" + clientId + "|" + instanceId;
     }
 
-
     @Override
     public String queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
+            String tsKey = buildTsKeyStr(passportId, clientId, instanceId);
+            Object tsValue = memUtils.get(tsKey);
+            if (tsValue != null) {
+                return tsValue.toString();
+            }
+
             String key = buildKeyStr(passportId, clientId);
-            Object value = memUtils.buildMemcachedClient().get(key);
+            Object value = memUtils.get(key);
             if (value != null) {
                 return value.toString();
 
-            }
-
-            String tsKey = buildTsKeyStr(passportId, clientId, instanceId);
-            Object tsValue = memUtils.buildMemcachedClient().get(tsKey);
-            if (tsValue != null) {
-                return tsValue.toString();
             }
             return null;
         } catch (Exception e) {
@@ -70,17 +69,17 @@ public class SHTokenServiceImpl implements SHTokenService {
     @Override
     public String queryOldRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
+            String tsKey = buildOldTsKeyStr(passportId, clientId, instanceId);
+            Object tsValue = memUtils.get(tsKey);
+            if (tsValue != null) {
+                return tsValue.toString();
+            }
+
             String key = buildOldKeyStr(passportId, clientId);
-            Object value = memUtils.buildMemcachedClient().get(key);
+            Object value = memUtils.get(key);
             if (value != null) {
                 return value.toString();
 
-            }
-
-            String tsKey = buildOldTsKeyStr(passportId, clientId, instanceId);
-            Object tsValue = memUtils.buildMemcachedClient().get(tsKey);
-            if (tsValue != null) {
-                return tsValue.toString();
             }
             return null;
         } catch (Exception e) {

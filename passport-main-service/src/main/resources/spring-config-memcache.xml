@@ -8,6 +8,7 @@
     <bean   id="memcachedClientBuilder"
             class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
             p:connectionPoolSize="50"
+            p:connectTimeout="10"
             p:failureMode="true">
         <constructor-arg>
             <list>
