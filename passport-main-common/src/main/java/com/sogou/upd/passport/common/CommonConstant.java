@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class CommonConstant {
 
+    public static final int SGPP_DEFAULT_CLIENTID = 1120;
+
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
     public static final String RESPONSE_DATA = "data"; // 响应结果数据
