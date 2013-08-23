@@ -117,7 +117,7 @@ public class PCAccountController extends BaseController {
             } else {
                 uniqname = defaultUniqname(passportId);
             }
-            resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
+            resStr = "0|" + accountToken.getAccessToken();   //0|token|refreshToken
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
         }
