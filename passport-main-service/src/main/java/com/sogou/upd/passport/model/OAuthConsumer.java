@@ -10,7 +10,6 @@ package com.sogou.upd.passport.model;
 public class OAuthConsumer {
 
     private String webUserAuthzUrl;
-    private String appUserAuthzUrl;
     private String accessTokenUrl;
     private String refreshAccessTokenUrl; // renren支持
     private String openIdUrl;  // qq支持
@@ -25,14 +24,6 @@ public class OAuthConsumer {
 
     public void setWebUserAuthzUrl(String webUserAuthzUrl) {
         this.webUserAuthzUrl = webUserAuthzUrl;
-    }
-
-    public String getAppUserAuthzUrl() {
-        return appUserAuthzUrl;
-    }
-
-    public void setAppUserAuthzUrl(String appUserAuthzUrl) {
-        this.appUserAuthzUrl = appUserAuthzUrl;
     }
 
     public String getAccessTokenUrl() {

@@ -2,9 +2,11 @@ package com.sogou.upd.passport.manager.form.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
@@ -25,8 +27,9 @@ public class ConnectLoginParams {
     @NotBlank(message = "client_id不允许为空!")
     private String client_id; // 应用id
 
-    @NotBlank(message = "ru不能为空")
-    private String ru;  // 回调地址
+    @URL
+    @Ru
+    private String ru = "https://account.sogou.com";  // 回调地址
 
     private String display;  // 样式
     private boolean forcelogin = true;   // 是否强制输入用户名、密码登录

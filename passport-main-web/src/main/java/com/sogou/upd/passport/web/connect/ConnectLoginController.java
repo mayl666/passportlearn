@@ -41,6 +41,8 @@ public class ConnectLoginController extends BaseConnectController {
     @Autowired
     private ConnectApiManager proxyConnectApiManager;
     @Autowired
+    private ConnectApiManager sgConnectApiManager;
+    @Autowired
     private ConfigureManager configureManager;
 
     @RequestMapping(value = "/connect/ssologin/{providerStr}", method = RequestMethod.POST)
@@ -73,41 +75,41 @@ public class ConnectLoginController extends BaseConnectController {
     public ModelAndView authorize(HttpServletRequest req, HttpServletResponse res,
                                   ConnectLoginParams connectLoginParams) {
 
-        String url;
-        int provider = AccountTypeEnum.getProvider(connectLoginParams.getProvider());
-        //验证client_id
-        int clientId = Integer.parseInt(connectLoginParams.getClient_id());
-
-        //检查client_id是否存在
-        String type = connectLoginParams.getType();
-        if (!configureManager.checkAppIsExist(clientId)) {
-            url = buildAppErrorRu(type, ErrorUtil.INVALID_CLIENTID, null);
-            return new ModelAndView(new RedirectView(url));
-        }
-
-
         // 校验参数
+        String url;
+        String type = connectLoginParams.getType();
+        String ru = connectLoginParams.getRu();
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            url = buildAppErrorRu(type, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+            url = buildAppErrorRu(type, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
             return new ModelAndView(new RedirectView(url));
         }
 
-        // 避免重复提交的唯一码
+        int provider = AccountTypeEnum.getProvider(connectLoginParams.getProvider());
+        int clientId = Integer.parseInt(connectLoginParams.getClient_id());
+        //检查client_id是否存在
+        if (!configureManager.checkAppIsExist(clientId)) {
+            url = buildAppErrorRu(type, ru, ErrorUtil.INVALID_CLIENTID, null);
+            return new ModelAndView(new RedirectView(url));
+        }
+
+        // 防CRSF攻击
         String uuid = UUID.randomUUID().toString();
         try {
-            url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-//          writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
-
+            if (clientId == 1044) {  // 目前只有浏览器走搜狗流程
+                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+                writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
+            } else {
+                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+            }
         } catch (OAuthProblemException e) {
-            url = buildAppErrorRu(type, e.getError(), e.getDescription());
+            url = buildAppErrorRu(type, ru, e.getError(), e.getDescription());
 
         }
 
         //用户登陆log--二期迁移到callback中记录log
         UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
-        String referer = req.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
+        userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
         userOperationLog.putOtherMessage("type", type);
         UserOperationLogUtil.log(userOperationLog);
 

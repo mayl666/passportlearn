@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +11,24 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class CommonHelper {
 
+    /**
+     * 生成第三方授权中的state参数cookie，防止CRSF攻击
+     *
+     * @param provider
+     * @return
+     */
     public static String constructStateCookieKey(int provider) {
         return AccountTypeEnum.getProviderStr(provider) + "_state";
+    }
+
+    /**
+     * 产品有自定义的第三方appkey
+     * 此方法构造自定义产品列表中的存储的key
+     * @param clientId
+     * @param provider
+     * @return
+     */
+    public static String constructSpecialConnectKey(int clientId, int provider) {
+        return clientId + CommonConstant.SEPARATOR_1 + provider;
     }
 }

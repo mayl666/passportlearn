@@ -7,7 +7,7 @@ import jodd.props.Props;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,25 +23,15 @@ public class OAuthConsumerFactory {
 
     private static Props properties = null;
 
-    protected static Map<String, OAuthConsumer> consumerMap = Maps.newConcurrentMap();
+    protected static ConcurrentMap<String, OAuthConsumer> consumerMap = Maps.newConcurrentMap();
 
     public static OAuthConsumer getOAuthConsumer(int provider) throws IOException {
 
         String providerStr = AccountTypeEnum.getProviderStr(provider);
-        OAuthConsumer oAuthConsumer = consumerMap.get(RESOURCE_NAME);
+        OAuthConsumer oAuthConsumer = consumerMap.get(buildConsumerKey(providerStr));
         if (oAuthConsumer == null) {
             oAuthConsumer = newResource(RESOURCE_NAME, providerStr);
-        }
-        synchronized (consumerMap) {
-            OAuthConsumer first = consumerMap.get(RESOURCE_NAME);
-            if (first == null) {
-                consumerMap.put(RESOURCE_NAME, oAuthConsumer);
-            } else {                /*
-                 * 有可能另外一个线程构造了一个OAuthParams
-				 * 用最新的
-				 */
-                oAuthConsumer = first;
-            }
+            consumerMap.putIfAbsent(buildConsumerKey(providerStr), oAuthConsumer);
         }
         return oAuthConsumer;
     }
@@ -53,7 +43,6 @@ public class OAuthConsumerFactory {
 
         OAuthConsumer oAuthConsumer = new OAuthConsumer();
         oAuthConsumer.setWebUserAuthzUrl(getURL("web_userAuthzUrl", providerStr));
-        oAuthConsumer.setAppUserAuthzUrl(getURL("app_userAuthzUrl", providerStr));
         oAuthConsumer.setAccessTokenUrl(getURL("accessTokenUrl", providerStr));
         oAuthConsumer.setRefreshAccessTokenUrl(getURL("refreshAccessTokenUrl", providerStr));
         oAuthConsumer.setOpenIdUrl(getURL("openIdUrl", providerStr));
@@ -70,4 +59,9 @@ public class OAuthConsumerFactory {
         }
         return url;
     }
+
+    private static String buildConsumerKey(String providerStr) {
+        return providerStr + "_" + RESOURCE_NAME;
+    }
+
 }
