@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
@@ -12,7 +11,6 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,26 +31,28 @@ public class BaseConnectController extends BaseController {
     }
 
     /**
-     * 第三方登录接口type为移动端时，需要在ru后追加status和statusText
+     * 第三方登录接口type=mapp时，需要在ru后追加status和statusText
      *
      * @param type      /connect/login接口的type参数
+     * @param ru        回调url
      * @param errorCode 错误码
      * @param errorText 错误文案
      * @return
      */
-    protected String buildAppErrorRu(String type, String errorCode, String errorText) {
-        String url = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        boolean isApp = type.equals(ConnectTypeEnum.MAPP.toString());
-        if (isApp && !Strings.isNullOrEmpty(errorCode)) {
+    protected String buildAppErrorRu(String type, String ru, String errorCode, String errorText) {
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {
             Map params = Maps.newHashMap();
             params.put(CommonConstant.RESPONSE_STATUS, errorCode);
             if (Strings.isNullOrEmpty(errorText)) {
                 errorText = ErrorUtil.ERR_CODE_MSG_MAP.get(errorCode);
             }
             params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
-            url = QueryParameterApplier.applyOAuthParametersString(url, params);
+            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         }
-        return url;
+        return ru;
     }
 
 

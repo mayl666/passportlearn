@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.service.app.impl;
 
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.ConnectConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -31,6 +33,17 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
     private ConnectConfigDAO connectConfigDAO;
     @Inject
     private RedisUtils redisUtils;
+
+    @Override
+    public ConnectConfig queryConnectConfig(int clientId, int provider) throws ServiceException {
+        ConnectConfig connectConfig;
+        if (isSpecialConnect(clientId, provider)) {
+            connectConfig = querySpecifyConnectConfig(clientId, provider);
+        } else {
+            connectConfig = querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+        }
+        return connectConfig;
+    }
 
     @Override
     public ConnectConfig querySpecifyConnectConfig(int clientId, int provider) throws ServiceException {
@@ -91,5 +104,12 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
 
     private String buildConnectConfigCacheKey(int clientId, int provider) {
         return CACHE_PREFIX_CLIENTID + clientId + "_" + provider;
+    }
+
+    /*
+     * 是否有产品自定义的appkey
+     */
+    private boolean isSpecialConnect(int clientId, int provider) {
+        return CommonConstant.SPECIAL_CONNECT_CONFIG_SET.contains(CommonHelper.constructSpecialConnectKey(clientId, provider));
     }
 }

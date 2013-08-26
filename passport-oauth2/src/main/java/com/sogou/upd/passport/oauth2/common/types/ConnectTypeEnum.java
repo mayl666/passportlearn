@@ -1,5 +1,9 @@
 package com.sogou.upd.passport.oauth2.common.types;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 /**
  * 第三方登录连接应用类型
  * User: shipengzhi
@@ -10,14 +14,34 @@ package com.sogou.upd.passport.oauth2.common.types;
 public enum ConnectTypeEnum {
 
     WEB("web"),
-    TOKEN("token"),
-    APP("app"),
-    MAPP("mapp");
+    TOKEN("token"),   //桌面应用
+    Mobile("mobile"),  //手机app，基于cookie（s_m_u）
+    MAPP("mapp");   //手机app，基于服务器端调用检验token的接口
 
     private String connectType;
 
+    private static final List<String> TYPE_LIST = Lists.newArrayList();
+
+    static {
+        TYPE_LIST.add(WEB.toString());
+        TYPE_LIST.add(TOKEN.toString());
+        TYPE_LIST.add(Mobile.toString());
+        TYPE_LIST.add(MAPP.toString());
+    }
+
     ConnectTypeEnum(String connectType) {
         this.connectType = connectType;
+    }
+
+    public static boolean isSupportType(String type) {
+        return TYPE_LIST.contains(type);
+    }
+
+    /*
+     * 是否为移动客户端，type=mapp/mobile
+     */
+    public static boolean isMobileApp(String type){
+        return type.equals(ConnectTypeEnum.MAPP.toString()) || type.equals(ConnectTypeEnum.Mobile.toString());
     }
 
     @Override

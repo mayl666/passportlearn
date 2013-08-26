@@ -1,8 +1,8 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -50,7 +50,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             // 获取connect配置
-            connectConfig = connectConfigService.querySpecifyConnectConfig(clientId, provider);
+            connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
             if (connectConfig == null) {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
@@ -66,27 +66,20 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         String scope = connectConfig.getScope();
         String appKey = connectConfig.getAppKey();
         String connectType = connectLoginParams.getType();
+        // 重新填充display，如果display为空，根据终端自动赋值；如果display不为空，则使用display
+        String display = connectLoginParams.getDisplay();
+        display = Strings.isNullOrEmpty(display) ? fillDisplay(connectType, provider) : display;
+
         String requestUrl;
-        // web应用采用Authorization Code Flow流程，sina的web应用和客户端均采用此流程
-        if (ConnectTypeEnum.WEB.toString().equals(connectType) || AccountTypeEnum.SINA.getValue() == provider) {
-            requestUrl = oAuthConsumer.getWebUserAuthzUrl();
-            request = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appKey)
-                    .setRedirectURI(redirectURI)
-                    .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
-        } else {  // 客户端应用采用Implicit Flow
-            requestUrl = oAuthConsumer.getAppUserAuthzUrl();
-            request = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appKey)
-                    .setRedirectURI(redirectURI)
-                    .setResponseType(ResponseTypeEnum.TOKEN).setScope(scope)
-                    .setDisplay(connectLoginParams.getDisplay(), provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
-        }
+        // 采用Authorization Code Flow流程
+        requestUrl = oAuthConsumer.getWebUserAuthzUrl();
+        request = OAuthAuthzClientRequest
+                .authorizationLocation(requestUrl).setAppKey(appKey)
+                .setRedirectURI(redirectURI)
+                .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
+                .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
+                .setState(uuid)
+                .buildQueryMessage(OAuthAuthzClientRequest.class);
 
         return request.getLocationUri();
     }
@@ -98,13 +91,34 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             Map<String, Object> callbackParams = Maps.newHashMap();
             callbackParams.put("client_id", oauthLoginParams.getClient_id());
             callbackParams.put("ru", ru);
+            callbackParams.put("type", oauthLoginParams.getType());
             callbackParams.put("ip", ip);
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
-            String redirectURI = pCallbackUrl + query;
-            redirectURI = URLEncoder.encode(redirectURI, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            return redirectURI;
+            return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {
             return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
     }
+
+    /*
+     * 根据type和provider重新填充display
+     */
+    private String fillDisplay(String type, int provider) {
+        String display = "";
+        if (ConnectTypeEnum.isMobileApp(type)) {
+            switch (provider) {
+                case 5:  // 人人
+                    display = "touch";
+                    break;
+                case 6:  // 淘宝
+                    display = "wap";
+                    break;
+                default:
+                    display = "mobile";
+                    break;
+            }
+        }
+        return display;
+    }
+
 }

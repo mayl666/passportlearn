@@ -88,6 +88,8 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
                 this.parameters.put(OAuth.OAUTH_RENREN_FORCELOGIN, force);
             } else if (provider == AccountTypeEnum.SINA.getValue()) {
                 this.parameters.put(OAuth.OAUTH_SINA_FORCELOGIN, force);
+            } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
+                this.parameters.put(OAuth.OAUTH_BAIDU_FORCELOGIN, force);
             }
             return this;
         }

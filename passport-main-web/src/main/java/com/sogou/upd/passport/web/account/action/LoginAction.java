@@ -98,8 +98,8 @@ public class LoginAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/login/api";
         }
-        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
+        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
         String userId = loginParams.getUsername();
         //用户登录log

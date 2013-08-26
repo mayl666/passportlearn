@@ -1,6 +1,12 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.danga.MemCached.MemCachedClient;
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.MemcachedClientBuilder;
+import org.perf4j.aop.Profiled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * memcache工具类
@@ -10,22 +16,34 @@ import com.danga.MemCached.MemCachedClient;
  * To change this template use File | Settings | File Templates.
  */
 public class MemcacheUtils {
-    private MemCachedClient tokenMaster;
-    private MemCachedClient rTokenMaster;
+    private static Logger logger = LoggerFactory.getLogger(MemcacheUtils.class);
 
-    public MemCachedClient getTokenMaster() {
-        return tokenMaster;
+    private MemcachedClientBuilder builder;
+    private MemcachedClient c;
+
+    public MemcachedClientBuilder getBuilder() {
+        return builder;
     }
 
-    public void setTokenMaster(MemCachedClient tokenMaster) {
-        this.tokenMaster = tokenMaster;
+    public void setBuilder(MemcachedClientBuilder builder) {
+        this.builder = builder;
     }
 
-    public MemCachedClient getRTokenMaster() {
-        return rTokenMaster;
+    private MemcachedClient buildMemcachedClient() throws IOException {
+        return builder.build();
     }
 
-    public void setRTokenMaster(MemCachedClient rTokenMaster) {
-        this.rTokenMaster = rTokenMaster;
+    @Profiled(el = true, logger = "memcacheTimingLogger", tag = "memcache_get")
+    public String get(String key) throws Exception {
+        try {
+            Object value =buildMemcachedClient().get(key);
+            if (value != null) {
+                return value.toString();
+            }
+            return null;
+        }catch (Exception e) {
+            logger.error("[memcache] get cache fail, key:" + key, e);
+            return null;
+        }
     }
 }

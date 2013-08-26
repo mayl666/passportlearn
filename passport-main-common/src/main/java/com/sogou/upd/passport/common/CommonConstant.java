@@ -2,14 +2,18 @@ package com.sogou.upd.passport.common;
 
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * passport通用常量类
  */
 public class CommonConstant {
+
+    public static final int SGPP_DEFAULT_CLIENTID = 1120;
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -34,15 +38,25 @@ public class CommonConstant {
     public static final int CONNECT_AUTHORIZE_STATE_TIMEOUT = 60 * 30;  // 第三方登录授权的statue缓存有效期
 
     //在request attribut中存在的用于及时的StopWatch的name
-    public static final String STOPWATCH= "stopWatch";
+    public static final String STOPWATCH = "stopWatch";
 
-    public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList(); // passport支持的第三方列表
+    // passport支持的第三方列表
+    public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 
     static {
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.QQ.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.SINA.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.RENREN.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.TAOBAO.toString());
+        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.BAIDU.toString());
+    }
+
+    // 不用通行证统一的第三方appkey的应用，client_id|provider
+    public static final Set SPECIAL_CONNECT_CONFIG_SET = Sets.newHashSet();
+
+    static {
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1001, 4));
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
     }
 
 }

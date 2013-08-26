@@ -16,6 +16,7 @@ public class ConnectDisplay {
     private static final List<String> SINA_DISPLAY = Lists.newArrayList();
     private static final List<String> RENREN_DISPLAY = Lists.newArrayList();
     private static final List<String> TAOBAO_DISPLAY = Lists.newArrayList();
+    private static final List<String> BAIDU_DISPLAY = Lists.newArrayList();
 
     static {
         QQ_DISPLAY.add("mobile");
@@ -23,21 +24,29 @@ public class ConnectDisplay {
 
     static {
         SINA_DISPLAY.add("mobile"); //移动终端的授权页面，适用于支持html5的手机
-        SINA_DISPLAY.add("popup"); //弹窗类型的授权页，适用于web浏览器小窗口
-        SINA_DISPLAY.add("wap1.2"); //wap1.2的授权页面。
-        SINA_DISPLAY.add("wap2.0"); //wap2.0的授权页面。
-        SINA_DISPLAY.add("js"); //微博JS-SDK专用授权页面，弹窗类型，返回结果为JSONP回掉函数。
+        SINA_DISPLAY.add("client"); //客户端版本授权页面，适用于PC桌面应用。
+        SINA_DISPLAY.add("wap"); //wap版授权页面，适用于非智能手机。
     }
 
     static {
-        RENREN_DISPLAY.add("mobile"); //适用于型号较老，没有全功能浏览器的手机使用。
-        RENREN_DISPLAY.add("touch"); //适用于智能手机，拥有全功能的浏览器的手机使用。
+        RENREN_DISPLAY.add("page"); //适用于Web端，最小尺寸（575px*405px），当浏览器宽度过窄时，会页面会自适应，最小尺寸（290px*580px）；
+        RENREN_DISPLAY.add("iframe");  //自适应显示在一个iframe中，适用于网页中的iframe
+        RENREN_DISPLAY.add("popup");  //弹框形式的授权页面，适用于桌面应用的弹出窗口
+        RENREN_DISPLAY.add("mobile"); //适用于移动终端，最小尺寸（320px*480px）;
+        RENREN_DISPLAY.add("touch"); //适用于不支持js的移动终端，最小尺寸（480*800px）；
     }
 
     static {
         TAOBAO_DISPLAY.add("web");  //普通的PC端（淘宝logo）浏览器页面样式。
         TAOBAO_DISPLAY.add("tmall");  //对应天猫的浏览器页面样式。
         TAOBAO_DISPLAY.add("wap");   //无线端的浏览器页面样式。
+    }
+
+    static {
+        BAIDU_DISPLAY.add("page");  //全屏形式的授权页面(默认)，适用于web应用。
+        BAIDU_DISPLAY.add("popup");  //弹框形式的授权页面，适用于桌面软件应用和web应用。
+        BAIDU_DISPLAY.add("mobile");   //适用于Iphone/Android等智能移动终端上的应用。
+        BAIDU_DISPLAY.add("pad");   //IPad/Android等智能平板电脑使用的授权页面。
     }
 
     public static boolean isSupportDisplay(String display, String provider) {

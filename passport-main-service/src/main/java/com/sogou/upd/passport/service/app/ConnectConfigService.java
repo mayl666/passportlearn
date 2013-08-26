@@ -16,6 +16,16 @@ public interface ConnectConfigService {
 
     /**
      * 根据clientId和provider获得ConnectConfig对象
+     * 如果获取不到，默认为搜狗通行证：1120的第三方appkey
+     * @param clientId
+     * @param provider
+     * @return
+     * @throws ServiceException
+     */
+    public ConnectConfig queryConnectConfig(int clientId, int provider) throws ServiceException;
+
+    /**
+     * 根据clientId和provider获得ConnectConfig对象
      * 如果获取不到，返回null
      * @param clientId
      * @param provider
