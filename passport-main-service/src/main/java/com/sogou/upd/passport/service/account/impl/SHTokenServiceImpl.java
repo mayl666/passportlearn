@@ -89,7 +89,7 @@ public class SHTokenServiceImpl implements SHTokenService {
     }
 
     @Override
-    public boolean verifhRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+    public boolean verifshRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
             if(!StringUtils.isEmpty(actualRefreshToken)) {

@@ -38,5 +38,5 @@ public interface SHTokenService {
      * @return
      * @throws ServiceException
      */
-    public boolean verifhRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+    public boolean verifshRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
 }

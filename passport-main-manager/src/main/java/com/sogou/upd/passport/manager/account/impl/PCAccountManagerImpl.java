@@ -37,6 +37,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private static final long SIG_EXPIRES = 60 * 60 * 1000; //sig里的timestamp有效期，一小时，单位毫秒
     private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
+    private static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
+
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
@@ -135,9 +137,17 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
-            if (!pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) && !shTokenService.verifhRefreshToken(passportId,clientId,instanceId,refreshToken)) {
-                result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
-                return result;
+            boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            if(!res){
+                if(clientId == PC_CLIENTID){
+                    if (!shTokenService.verifshRefreshToken(passportId,clientId,instanceId,refreshToken)) {
+                        result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+                        return result;
+                    }
+                } else {
+                    result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+                    return result;
+                }
             }
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             if (appConfig == null) {
@@ -214,11 +224,15 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String refreshToken = "";
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
         if (accountToken == null) {
-            String shRefreshToken = shTokenService.queryRefreshToken(passportId, clientId, instanceId);
-            if (StringUtils.isEmpty(shRefreshToken)) {
+            if (clientId == PC_CLIENTID){
+                String shRefreshToken = shTokenService.queryRefreshToken(passportId, clientId, instanceId);
+                if (StringUtils.isEmpty(shRefreshToken)) {
+                    return false;
+                } else {
+                    refreshToken = shRefreshToken;
+                }
+            }else {
                 return false;
-            } else {
-                refreshToken = shRefreshToken;
             }
         } else {
             if (!isValidToken(accountToken.getRefreshValidTime())) {
