@@ -42,8 +42,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
-    private OAuthTokenApiManager proxyOAuthTokenApiManager;
-    @Autowired
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
@@ -140,7 +138,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
             boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             if(!res){
                 if(clientId == PC_CLIENTID){
-                    if (!shTokenService.verifshRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+                    if (!shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken)) {
                         result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                         return result;
                     }
@@ -179,6 +177,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
             String instanceId = authPcTokenParams.getTs();
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
+            }else {
+                if(clientId == PC_CLIENTID){
+                    if(shTokenService.verifyShAccessToken(passportId,clientId,instanceId,authPcTokenParams.getToken())){
+                        result.setSuccess(true);
+                    }
+                }
             }
         } catch (Exception e) {
             logger.error("authToken fail", e);
@@ -192,8 +196,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
         try {
             //验证refreshToken
-            return pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), Integer.parseInt(pcRefreshTokenParams.getAppid()),
-                    pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token());
+            int client_id = Integer.parseInt(pcRefreshTokenParams.getAppid());
+            return (pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), client_id,
+                    pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()) ||
+                    shTokenService.verifyShRefreshToken(pcRefreshTokenParams.getUserid(), client_id, pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()));
         } catch (Exception e) {
             logger.error("verifyRefreshToken fail", e);
             return false;
@@ -238,8 +244,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     //通过sh token校验sig
     private boolean verifySigByShToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception{
-        return equalSig(passportId,clientId,shTokenService.queryRefreshToken(passportId, clientId, instanceId),timestamp,clientSecret,sig) ||
-                equalSig(passportId,clientId,shTokenService.queryOldRefreshToken(passportId, clientId, instanceId),timestamp,clientSecret,sig);
+        return (equalSig(passportId,clientId,shTokenService.queryRefreshToken(passportId, clientId, instanceId),timestamp,clientSecret,sig) ||
+                equalSig(passportId,clientId,shTokenService.queryOldRefreshToken(passportId, clientId, instanceId),timestamp,clientSecret,sig));
 
     }
 
