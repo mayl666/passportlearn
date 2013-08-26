@@ -33,10 +33,18 @@ public class MemcacheUtils {
         return builder.build();
     }
 
+    public void init() {
+        try {
+            c = buildMemcachedClient();
+        }catch (Exception e) {
+            logger.error(" init xmemchached client error, msg is :{}", e.getMessage());
+        }
+    }
+
     @Profiled(el = true, logger = "memcacheTimingLogger", tag = "memcache_get")
     public String get(String key) throws Exception {
         try {
-            Object value =buildMemcachedClient().get(key);
+            Object value =c.get(key);
             if (value != null) {
                 return value.toString();
             }

@@ -37,10 +37,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private static final long SIG_EXPIRES = 60 * 60 * 1000; //sig里的timestamp有效期，一小时，单位毫秒
     private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
+    private static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
+
     @Autowired
     private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private OAuthTokenApiManager proxyOAuthTokenApiManager;
     @Autowired
     private PCAccountTokenService pcAccountService;
     @Autowired
@@ -135,9 +135,17 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
-            if (!pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) && !shTokenService.verifhRefreshToken(passportId,clientId,instanceId,refreshToken)) {
-                result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
-                return result;
+            boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            if(!res){
+                if(clientId == PC_CLIENTID){
+                    if (!shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+                        result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+                        return result;
+                    }
+                } else {
+                    result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+                    return result;
+                }
             }
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             if (appConfig == null) {
@@ -169,6 +177,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
             String instanceId = authPcTokenParams.getTs();
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
+            }else {
+                if(clientId == PC_CLIENTID){
+                    if(shTokenService.verifyShAccessToken(passportId,clientId,instanceId,authPcTokenParams.getToken())){
+                        result.setSuccess(true);
+                    }
+                }
             }
         } catch (Exception e) {
             logger.error("authToken fail", e);
@@ -182,8 +196,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
         try {
             //验证refreshToken
-            return pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), Integer.parseInt(pcRefreshTokenParams.getAppid()),
-                    pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token());
+            int client_id = Integer.parseInt(pcRefreshTokenParams.getAppid());
+            return (pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), client_id,
+                    pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()) ||
+                    shTokenService.verifyShRefreshToken(pcRefreshTokenParams.getUserid(), client_id, pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()));
         } catch (Exception e) {
             logger.error("verifyRefreshToken fail", e);
             return false;
@@ -211,26 +227,33 @@ public class PCAccountManagerImpl implements PCAccountManager {
             return false;
         }
 
-        String refreshToken = "";
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
         if (accountToken == null) {
-            String shRefreshToken = shTokenService.queryRefreshToken(passportId, clientId, instanceId);
-            if (StringUtils.isEmpty(shRefreshToken)) {
-                return false;
+            if (clientId == PC_CLIENTID) {
+                return verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
             } else {
-                refreshToken = shRefreshToken;
-            }
-        } else {
-            if (!isValidToken(accountToken.getRefreshValidTime())) {
                 return false;
             }
-            refreshToken = accountToken.getRefreshToken();
         }
+        if (!isValidToken(accountToken.getRefreshValidTime())) {
+            return false;
+        }
+        String refreshToken = accountToken.getRefreshToken();
+        return  equalSig(passportId,clientId,refreshToken,timestamp,clientSecret,sig);
+    }
+
+    //通过sh token校验sig
+    private boolean verifySigByShToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception{
+        return (equalSig(passportId,clientId,shTokenService.queryRefreshToken(passportId, clientId, instanceId),timestamp,clientSecret,sig) ||
+                equalSig(passportId,clientId,shTokenService.queryOldRefreshToken(passportId, clientId, instanceId),timestamp,clientSecret,sig));
+
+    }
+
+    private boolean equalSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret, String sig) throws Exception {
         String sigString = passportId + clientId + refreshToken + timestamp + clientSecret;
         String actualSig = Coder.encryptMD5(sigString);
         return actualSig.equalsIgnoreCase(sig);
     }
-
 
     /**
      * 验证Token是否失效
