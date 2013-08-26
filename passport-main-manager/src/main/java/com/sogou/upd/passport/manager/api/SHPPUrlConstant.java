@@ -25,10 +25,10 @@ public class SHPPUrlConstant {
     /*  搜狐Passport内部接口URL地址                                                  */
     /* ============================================================================ */
     // 内部接口基本url
-//    private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
-    private static final String BASE_INTERNAL_URL = "http://10.11.50.89/interface/";
-    //    private static final String BASE_URL = "https://passport.sohu.com";
-    private static final String BASE_URL = "http://10.11.50.89/";
+    private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
+    //    private static final String BASE_INTERNAL_URL = "http://10.11.50.89/interface/";
+    private static final String BASE_URL = "https://passport.sohu.com/";
+    //    private static final String BASE_URL = "http://10.11.50.89/";
     // 第三方开放平台代理API基本url
     private static final String BASE_OPEN_API_URL = "http://internal.passport.sohu.com/openlogin/";
 //    private static final String BASE_OPEN_API_URL = "http://10.10.69.57/openlogin/";
