@@ -93,7 +93,16 @@ public class SHTokenServiceImpl implements SHTokenService {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
             if(!StringUtils.isEmpty(actualRefreshToken)) {
-                return actualRefreshToken.equals(refreshToken);
+                if(actualRefreshToken.equals(refreshToken)){
+                    return true;
+                }
+            }
+
+            String actualOldRefreshToken = queryOldRefreshToken(passportId, clientId, instanceId);
+            if(!StringUtils.isEmpty(actualOldRefreshToken)) {
+                if(actualOldRefreshToken.equals(refreshToken)){
+                    return true;
+                }
             }
             return false;
         } catch (Exception e) {
