@@ -34,6 +34,7 @@ public class ConnectLoginParams {
     private String display;  // 样式
     private boolean forcelogin = true;   // 是否强制输入用户名、密码登录
     private String type = "web";     // 应用类型
+    private String from; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式
 
     @AssertTrue(message = "不支持的第三方")
     private boolean isSupportProvider() {
@@ -108,5 +109,13 @@ public class ConnectLoginParams {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
     }
 }

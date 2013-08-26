@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.connect;
 
+import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 
@@ -12,19 +13,18 @@ import java.io.IOException;
  * Time: 上午12:14
  * To change this template use File | Settings | File Templates.
  */
-public interface ConnectAuthorizeService {
+public interface ConnectAuthService {
 
     /**
      * 用code获取access_token
      *
-     * @param clientId
-     * @param provider qq|sina|renren|taobao
-     * @param code   oauth授权第一步返回的code
-     * @param state   oauth授权防CRSF攻击状态码
+     * @param provider      qq|sina|renren|taobao|baidu
+     * @param code          oauth授权第一步返回的code
+     * @param connectConfig
      * @throws IOException,OAuthProblemException
      *
      */
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int clientId, int provider, String code, String state)
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig)
             throws IOException, OAuthProblemException;
 
     /**

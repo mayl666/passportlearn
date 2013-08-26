@@ -23,7 +23,7 @@ public class OAuthProblemException extends Exception {
         this(error, ErrorUtil.ERR_CODE_MSG_MAP.get(error));
     }
 
-    private OAuthProblemException(String error, String description) {
+    public OAuthProblemException(String error, String description) {
         super(error + " " + description);
         this.description = description;
         this.error = error;

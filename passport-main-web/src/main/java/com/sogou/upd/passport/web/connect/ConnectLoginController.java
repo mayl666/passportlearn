@@ -79,13 +79,15 @@ public class ConnectLoginController extends BaseConnectController {
         String url;
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
+        String from = connectLoginParams.getFrom();
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             url = buildAppErrorRu(type, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
             return new ModelAndView(new RedirectView(url));
         }
 
-        int provider = AccountTypeEnum.getProvider(connectLoginParams.getProvider());
+        String providerStr = connectLoginParams.getProvider();
+        int provider = AccountTypeEnum.getProvider(providerStr);
         int clientId = Integer.parseInt(connectLoginParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
@@ -98,17 +100,16 @@ public class ConnectLoginController extends BaseConnectController {
         try {
             if (clientId == 1044) {  // 目前只有浏览器走搜狗流程
                 url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-                writeOAuthStateCookie(res, uuid, provider); // TODO 第一阶段先注释掉，没用到
+                writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
             } else {
                 url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
             }
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(type, ru, e.getError(), e.getDescription());
-
         }
 
         //用户登陆log--二期迁移到callback中记录log
-        UserOperationLog userOperationLog = new UserOperationLog(connectLoginParams.getProvider(), req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
+        UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
         userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
         userOperationLog.putOtherMessage("type", type);
         UserOperationLogUtil.log(userOperationLog);

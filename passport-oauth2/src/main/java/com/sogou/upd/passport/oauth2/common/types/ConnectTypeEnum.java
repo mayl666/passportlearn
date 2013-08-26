@@ -40,7 +40,7 @@ public enum ConnectTypeEnum {
     /*
      * 是否为移动客户端，type=mapp/mobile
      */
-    public static boolean isMobileApp(String type){
+    public static boolean isMobileApp(String type) {
         return type.equals(ConnectTypeEnum.MAPP.toString()) || type.equals(ConnectTypeEnum.Mobile.toString());
     }
 
