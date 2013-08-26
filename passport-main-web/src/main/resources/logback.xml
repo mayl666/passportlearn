@@ -74,7 +74,7 @@
 
     <logger name="userLoggerLocal" level="info" additivity="false">
         <appender-ref ref="userOperationAppender" />
-        <appender-ref ref="scribeAppender" />
+        <!--appender-ref ref="scribeAppender" /-->
     </logger>
 
     <logger name="userLoggerScribeFail" level="info" additivity="false">
