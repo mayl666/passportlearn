@@ -25,7 +25,10 @@ public class SHPPUrlConstant {
     /*  搜狐Passport内部接口URL地址                                                  */
     /* ============================================================================ */
     // 内部接口基本url
-    private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
+//    private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
+    private static final String BASE_INTERNAL_URL = "http://10.11.50.89/interface/";
+    //    private static final String BASE_URL = "https://passport.sohu.com";
+    private static final String BASE_URL = "http://10.11.50.89/";
     // 第三方开放平台代理API基本url
     private static final String BASE_OPEN_API_URL = "http://internal.passport.sohu.com/openlogin/";
 //    private static final String BASE_OPEN_API_URL = "http://10.10.69.57/openlogin/";
@@ -33,14 +36,14 @@ public class SHPPUrlConstant {
     /*================================登录相关=======================================*/
     public static final String AUTH_USER = BASE_INTERNAL_URL + "authuser"; //检查用户名密码是否正确
     public static final String MOBILE_AUTH_TOKEN = BASE_INTERNAL_URL + "token/auth"; //检查用户名密码是否正确
-//    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
-    public static final String GET_COOKIE_VALUE="http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
-    public static final String SET_COOKIE="https://passport.sohu.com/act/setcookie";//用于前端设置cookie
-    public static final String CLEAN_COOKIE="https://passport.sohu.com/act/logout";
+    //    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
+    public static final String GET_COOKIE_VALUE = "http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
+    public static final String SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
+    public static final String CLEAN_COOKIE = BASE_URL + "act/logout";
 
-    public static final String CLEAN_COOKIE_REDIRECT="https://passport.sohu.com/sso/logout_js.jsp?ru=";
+    public static final String CLEAN_COOKIE_REDIRECT = BASE_URL + "sso/logout_js.jsp?ru=";
 
-    public static final String CHECK_USER=BASE_INTERNAL_URL+"checkuser";//查询用户名是否注册过
+    public static final String CHECK_USER = BASE_INTERNAL_URL + "checkuser";//查询用户名是否注册过
 
     /*================================注册相关=======================================*/
     public static final String SEND_MOBILE_REG_CAPTCHA = BASE_INTERNAL_URL + "sendmobileregcaptcha"; //获取注册的手机验证码
@@ -88,15 +91,15 @@ public class SHPPUrlConstant {
 
     /*================================安全中心操作URL=======================================*/
     // 修改密码
-    public static final String SOHU_RESETPWD_URL = "https://passport.sohu.com/web/updateInfo.action?modifyType=password";
+    public static final String SOHU_RESETPWD_URL = BASE_URL + "web/updateInfo.action?modifyType=password";
     // 修改密保邮箱
-    public static final String SOHU_BINDEMAIL_URL = "https://passport.sohu.com/web/requestModifyEmailAction.action";
+    public static final String SOHU_BINDEMAIL_URL = BASE_URL + "web/requestModifyEmailAction.action";
     // 修改密保手机
-    public static final String SOHU_BINDMOBILE_URL = "https://passport.sohu.com/web/requestBindMobileAction.action";
+    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "web/requestBindMobileAction.action";
     // 修改密保问题
-    public static final String SOHU_BINDQUES_URL = "https://passport.sohu.com/web/updateInfo.action?modifyType=question";
+    public static final String SOHU_BINDQUES_URL = BASE_URL + "web/updateInfo.action?modifyType=question";
     // 找回密码
-    public static final String SOHU_FINDPWD_URL = "https://passport.sohu.com/web/RecoverPwdInput.action";
+    public static final String SOHU_FINDPWD_URL = BASE_URL + "web/RecoverPwdInput.action";
 
     /*================================第三方开放平台相关url=======================================*/
     // 第三方授权通用接口
@@ -109,5 +112,5 @@ public class SHPPUrlConstant {
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
 
     /*================================Token验证相关url=======================================*/
-    public static final String SOHU_REFRESHTOKEN_URL = "https://passport.sohu.com/act/refreshtoken";
+    public static final String SOHU_REFRESHTOKEN_URL = BASE_URL + "act/refreshtoken";
 }
