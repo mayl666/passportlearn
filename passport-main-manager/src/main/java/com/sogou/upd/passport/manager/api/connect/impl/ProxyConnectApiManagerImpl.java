@@ -32,6 +32,7 @@ public class ProxyConnectApiManagerImpl implements ConnectApiManager {
         params.put("display", connectLoginParams.getDisplay());
         params.put("type", connectLoginParams.getType());
         params.put("forcelogin", connectLoginParams.isForcelogin());
+        params.put("from", connectLoginParams.getFrom());
 
         String url = QueryParameterApplier.applyOAuthParametersString(SHPPUrlConstant.CONNECT_LOGIN_ULR, params);
         return url;
