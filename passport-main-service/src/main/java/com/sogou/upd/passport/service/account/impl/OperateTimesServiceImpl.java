@@ -38,7 +38,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 //    }
 
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
-    private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
+    private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
     private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
     @Autowired
     private RedisUtils redisUtils;
@@ -397,6 +397,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    private void logRegisterBlackList(String ip, String cacheKey, int cacheNum, String ipValues) {
+        StringBuilder log = new StringBuilder();
+        Date date = new Date();
+        log.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date))
+                .append(" ").append(ip).append(" ").append(cacheKey).append(" ").append(cacheNum).append(" ").append(ipValues);
+        regBlackListLogger.info(log.toString());
+    }
+
     @Override
     public boolean checkRegInBlackList(String ip, String cookieStr) throws ServiceException {
         //修改为list模式添加cookie处理 by mayan
@@ -407,12 +415,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if (CollectionUtils.isNotEmpty(setIpVal)) {
                 int sz = setIpVal.size();
                 if (sz == (LoginConstant.REGISTER_COOKIE_LIMITED / 2)) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
-                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
+                    logRegisterBlackList(ip, cookieCacheKey, sz, setIpVal.toArray().toString());
+//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
+//                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
                 }
                 if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
-                    regBlackListLogger.info(new Date() + "checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
-                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
+                    logRegisterBlackList(ip, cookieCacheKey, sz, setIpVal.toArray().toString());
+//                    regBlackListLogger.info(new Date() + "checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
+//                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
                     return true;
                 }
             }
@@ -423,12 +433,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if (!Strings.isNullOrEmpty(value)) {
                 int num = Integer.valueOf(value);
                 if (num == (LoginConstant.REGISTER_IP_COOKIE_LIMITED / 2)) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
-                            + ",num=" + num);
+                    logRegisterBlackList(ip, cookieCacheKey, num, value);
+//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
+//                            + ",num=" + num);
                 }
                 if (num >= LoginConstant.REGISTER_IP_COOKIE_LIMITED) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
-                            + ",num=" + num);
+                    logRegisterBlackList(ip, cookieCacheKey, num, value);
+//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
+//                            + ",num=" + num);
                     return true;
                 }
             }
@@ -439,12 +451,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if (CollectionUtils.isNotEmpty(setCookieVal)) {
                 int sz = setCookieVal.size();
                 if (sz == (LoginConstant.REGISTER_IP_LIMITED / 2)) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
-                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
+                    logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
+//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
+//                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
                 }
                 if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
-                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
+                    logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
+//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
+//                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
                     return true;
                 }
             }
@@ -506,7 +520,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean incLimitBind(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
-                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                    "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
@@ -519,7 +533,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkLimitBind(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
-                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                    "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
             logger.error("checkLimitBind:passportId" + userId, e);
