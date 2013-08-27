@@ -16,7 +16,11 @@ public class LoginConstant {
 
   //PPINF 的数字签名
   public static final String COOKIE_PPRDIG ="pprdig";
+    //passport cookie 的数字签名
+  public static final String COOKIE_PASSPORT ="passport";
 
+  //地图的clientId
+  public static final int MAP_CLIENTID =1024;
 
   /**
    * 连续登陆失败多少次需要用户在登陆时输入验证码 >=

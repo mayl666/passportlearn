@@ -153,6 +153,11 @@ public class LoginAction extends BaseController {
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+        if(!StringUtil.isEmpty(client_id)){
+            if(Integer.parseInt(client_id) == LoginConstant.MAP_CLIENTID){
+                CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PASSPORT);
+            }
+        }
 
         String userId = hostHolder.getPassportId();
 
