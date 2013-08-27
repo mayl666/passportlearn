@@ -37,7 +37,7 @@
                                 <b class="focusbg"></b>
                                 <span>验证码</span>
                                 <input autocomplete="off" type="text" name="captcha" value="" />
-                                <img src="about:blank" class="" alt="" />
+                                <img src="/./static/img/b.gif" class="" alt="" />
                                 <a href="#">看不清，换一张</a>
                             </p>
                             <p class="func">
