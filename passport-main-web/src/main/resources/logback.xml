@@ -59,7 +59,7 @@
     <appender name="scribeFailAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
         <!--<hostname>localhost</hostname>-->
         <!--测试失败的情况-->
-        <scribeHost>10.1.164.64</scribeHost>
+        <scribeHost>localhost</scribeHost>
         <scribePort>1463</scribePort>
         <layout>
             <pattern>%msg</pattern>
