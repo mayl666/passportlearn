@@ -122,7 +122,7 @@ public class UserOperationLogUtil {
             log.append("\t").append(otherMsgJson);
 
 
-            userLoggerScribe.info(log.toString());
+            userLogger.info(log.toString());
             Object stopWatchObject = request.getAttribute(CommonConstant.STOPWATCH);
             if (stopWatchObject != null && stopWatchObject instanceof StopWatch) {
                 StopWatch stopWatch = (StopWatch) stopWatchObject;
