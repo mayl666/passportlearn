@@ -54,4 +54,13 @@ public class MemcacheUtils {
             return null;
         }
     }
+
+    @Profiled(el = true, logger = "memcacheTimingLogger", tag = "memcache_set")
+    public void set(String key, int exp, String value) throws Exception {
+        try {
+            c.set(key, exp, value);
+        } catch (Exception e) {
+            logger.error("[memcache] set cache fail, key:" + key + ",value:" + value, e);
+        }
+    }
 }
