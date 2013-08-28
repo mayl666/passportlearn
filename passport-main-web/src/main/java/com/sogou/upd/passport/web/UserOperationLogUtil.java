@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 public class UserOperationLogUtil {
 
     private static final Logger userLoggerScribe = LoggerFactory.getLogger("userLoggerScribe");
-    private static final Logger userLoggerLocal = LoggerFactory.getLogger("userLoggerLocal");
     private static final Logger userLoggerBase = LoggerFactory.getLogger("userLogger");
 
 
@@ -42,14 +41,6 @@ public class UserOperationLogUtil {
     private static String LOCALIP = null;
 
     private static Logger userLogger = userLoggerScribe;
-
-    public static void setUserLogger(String flag) {
-        if ("scribe".equals(flag)) {
-            userLogger = userLoggerScribe;
-        } else if ("local".equals(flag)) {
-            userLogger = userLoggerLocal;
-        }
-    }
 
     /**
      * 记录用户行为
