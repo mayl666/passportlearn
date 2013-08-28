@@ -98,6 +98,7 @@ public class ConnectLoginController extends BaseConnectController {
         // 防CRSF攻击
         String uuid = UUID.randomUUID().toString();
         try {
+            connectLoginParams.setClient_id(Integer.toString(9998));    //TODO 只是为了测试用
 //            if (clientId == 1044) {  // 目前只有浏览器走搜狗流程
 //                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //                writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
