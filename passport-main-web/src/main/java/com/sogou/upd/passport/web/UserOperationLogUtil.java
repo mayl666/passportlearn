@@ -33,6 +33,7 @@ public class UserOperationLogUtil {
 
     private static final Logger userLoggerScribe = LoggerFactory.getLogger("userLoggerScribe");
     private static final Logger userLoggerLocal = LoggerFactory.getLogger("userLoggerLocal");
+    private static final Logger userLoggerBase = LoggerFactory.getLogger("userLogger");
 
 
 
@@ -72,6 +73,7 @@ public class UserOperationLogUtil {
      */
     public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
         try {
+            long start = System.currentTimeMillis()/1000;
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
             if (StringUtil.isBlank(operation)) {
@@ -126,9 +128,9 @@ public class UserOperationLogUtil {
             log.append("\t").append(otherMsgJson);
 
 
-            userLoggerScribe.info(log.toString());
-
-            userLoggerLocal.info(log.toString()); //TODO
+            userLogger.info(log.toString());
+            log.append(System.currentTimeMillis()/1000-start);
+            userLoggerBase.info(log.toString()); //TODO
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
