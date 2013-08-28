@@ -79,7 +79,6 @@ public class ConnectLoginController extends BaseConnectController {
         String url;
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
-        String from = connectLoginParams.getFrom();
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             url = buildAppErrorRu(type, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);

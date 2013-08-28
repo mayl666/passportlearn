@@ -131,7 +131,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     private boolean isMobileDisplay(String type, String from) {
-        return type.equals(ConnectTypeEnum.TOKEN.toString()) && from.equalsIgnoreCase("mob");
+        return type.equals(ConnectTypeEnum.TOKEN.toString()) && "mob".equalsIgnoreCase(from);
     }
 
 }

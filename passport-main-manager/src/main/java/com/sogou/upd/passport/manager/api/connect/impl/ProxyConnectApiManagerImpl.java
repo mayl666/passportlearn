@@ -1,10 +1,9 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -35,12 +34,20 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         Map params = Maps.newHashMap();
         params.put("provider", providerStr);
         params.put("appid", 9998);  // TODO 只是为了测试使用
-        params.put("ru", connectLoginParams.getRu());
-        params.put("display", connectLoginParams.getDisplay());
+        if (!Strings.isNullOrEmpty(connectLoginParams.getRu())) {
+            params.put("ru", connectLoginParams.getRu());
+        }
+        if (!Strings.isNullOrEmpty(connectLoginParams.getDisplay())) {
+            params.put("display", connectLoginParams.getDisplay());
+        }
         params.put("type", connectLoginParams.getType());
         params.put("forcelogin", connectLoginParams.isForcelogin());
-        params.put("from", connectLoginParams.getFrom());
-        params.put("ts", connectLoginParams.getTs());
+        if (!Strings.isNullOrEmpty(connectLoginParams.getFrom())) {
+            params.put("from", connectLoginParams.getFrom());
+        }
+        if (!Strings.isNullOrEmpty(connectLoginParams.getTs())) {
+            params.put("ts", connectLoginParams.getTs());
+        }
 
         String url = QueryParameterApplier.applyOAuthParametersString(SHPPUrlConstant.CONNECT_LOGIN_ULR, params);
         return url;
