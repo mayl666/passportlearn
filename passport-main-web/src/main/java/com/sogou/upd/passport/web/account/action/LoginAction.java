@@ -139,6 +139,8 @@ public class LoginAction extends BaseController {
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PASSPORT);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINFO);
 
         String userId = hostHolder.getPassportId();
 
@@ -160,6 +162,8 @@ public class LoginAction extends BaseController {
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PASSPORT);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINFO);
 
         String userId = hostHolder.getPassportId();
 
