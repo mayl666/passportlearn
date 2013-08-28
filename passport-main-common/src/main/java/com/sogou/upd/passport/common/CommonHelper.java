@@ -14,11 +14,11 @@ public class CommonHelper {
     /**
      * 生成第三方授权中的state参数cookie，防止CRSF攻击
      *
-     * @param provider
+     * @param providerStr
      * @return
      */
-    public static String constructStateCookieKey(int provider) {
-        return AccountTypeEnum.getProviderStr(provider) + "_state";
+    public static String constructStateCookieKey(String providerStr) {
+        return providerStr + "_state";
     }
 
     /**

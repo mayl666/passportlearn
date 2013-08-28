@@ -10,6 +10,8 @@ import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Map;
 
 /**
@@ -25,8 +27,8 @@ public class BaseConnectController extends BaseController {
      * 为防止CRSF攻击，OAuth登录授权需传递state参数
      * 种cookie，uuid=provider_state
      */
-    protected void writeOAuthStateCookie(HttpServletResponse res, String uuid, int provider) {
-        String cookieValue = CommonHelper.constructStateCookieKey(provider);
+    protected void writeOAuthStateCookie(HttpServletResponse res, String uuid, String providerStr) {
+        String cookieValue = CommonHelper.constructStateCookieKey(providerStr);
         ServletUtil.setCookie(res, uuid, cookieValue, CommonConstant.DEFAULT_COOKIE_EXPIRE);
     }
 
@@ -41,6 +43,12 @@ public class BaseConnectController extends BaseController {
      */
     protected String buildAppErrorRu(String type, String ru, String errorCode, String errorText) {
         if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
         if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {

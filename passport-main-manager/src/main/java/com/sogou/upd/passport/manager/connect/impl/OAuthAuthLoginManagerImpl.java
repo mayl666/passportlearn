@@ -162,9 +162,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         // 验证state是否被篡改，防CRSF攻击
         String state = oar.getState();
         String stateCookie = ServletUtil.getCookie(req, state);
-        if (Strings.isNullOrEmpty(stateCookie) || !stateCookie.equals(CommonHelper.constructStateCookieKey(provider))) {
-            throw new OAuthProblemException(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
-        }
+//        if (Strings.isNullOrEmpty(stateCookie) || !stateCookie.equals(CommonHelper.constructStateCookieKey(provider))) {
+//            throw new OAuthProblemException(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
+//        }
 
         if (ConnectTypeEnum.WEB.toString().equals(connectType)) {
 

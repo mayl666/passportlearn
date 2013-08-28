@@ -24,7 +24,8 @@ import org.springframework.stereotype.Service;
 public class PCAccountServiceImpl implements PCAccountTokenService {
     private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
-    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
+//    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
+    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_TEST; // TODO 压力测试
 
     @Autowired
     private KvUtils kvUtils;
@@ -112,7 +113,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
      * 格式为：passport_clientId_instanceId
      * passportId_clientId_instanceId：AccountToken的映射
      */
-    private String buildKeyStr(String passportId, int clientId, String instanceId) {
+    public static String buildKeyStr(String passportId, int clientId, String instanceId) {
         return KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId;
     }
 
@@ -136,7 +137,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         return clientId + "_" + instanceId;
     }
 
-    private AccountToken newAccountToken(String passportId, String instanceId, AppConfig appConfig) {
+    public static AccountToken newAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         AccountToken accountToken = new AccountToken();
         int accessTokenExpiresIn = appConfig.getAccessTokenExpiresin();
         int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresin();

@@ -27,11 +27,12 @@ public class ProxyConnectApiManagerImpl implements ConnectApiManager {
 
         Map params = Maps.newHashMap();
         params.put("provider", providerStr);
-        params.put("appid", SHPPUrlConstant.APP_ID);
+        params.put("appid", 9998);  // TODO 只是为了测试使用
         params.put("ru", connectLoginParams.getRu());
         params.put("display", connectLoginParams.getDisplay());
         params.put("type", connectLoginParams.getType());
         params.put("forcelogin", connectLoginParams.isForcelogin());
+        params.put("from", connectLoginParams.getFrom());
 
         String url = QueryParameterApplier.applyOAuthParametersString(SHPPUrlConstant.CONNECT_LOGIN_ULR, params);
         return url;

@@ -11,9 +11,7 @@ import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
-import com.sogou.upd.passport.service.app.ConnectConfigService;
-import com.sogou.upd.passport.service.connect.ConnectAuthorizeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,45 +24,37 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-public class ConnectAuthorizeServiceImpl implements ConnectAuthorizeService {
-
-    @Autowired
-    private ConnectConfigService connectConfigService;
+public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     @Override
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int clientId, int provider, String code, String state)
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig)
             throws IOException, OAuthProblemException {
 
-        ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(clientId, provider);
-        if (connectConfig == null) {
-            return null;
-        }
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
 
         OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        String redirectUrl = oAuthConsumer.getCallbackUrl();
+        if (oAuthConsumer == null) {
+            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+        }
+        String redirectUrl = oAuthConsumer.getCallbackUrl();  // TODO 这里的url必须和auth里的url一样
 
         OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
                 .setAppKey(appKey).setAppSecret(appSecret).setRedirectURI(redirectUrl).setCode(code)
-                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE).setState(state);
+                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE);
 
-        OAuthAccessTokenResponse oauthResponse = null;
-        OAuthAuthzClientRequest request = null;
-        if (provider == AccountTypeEnum.SINA.getValue()) {
-            //sina微博获取access_token接口，只允许POST方式
-            request = builder.buildBodyMessage(OAuthAuthzClientRequest.class);
+        OAuthAccessTokenResponse oauthResponse;
+        OAuthAuthzClientRequest request = builder.buildBodyMessage(OAuthAuthzClientRequest.class);
+        if (provider == AccountTypeEnum.QQ.getValue()) {
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQHTMLTextAccessTokenResponse.class);
+        } else if (provider == AccountTypeEnum.SINA.getValue()) {
             oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
-        } else if (provider == AccountTypeEnum.QQ.getValue()) {
-            request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, QQHTMLTextAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {
-            request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, RenrenJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.TAOBAO.getValue()) {
-            //taobao获取access_token接口，只允许POST方式
-            request = builder.buildBodyMessage(OAuthAuthzClientRequest.class);
             oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
+        } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }

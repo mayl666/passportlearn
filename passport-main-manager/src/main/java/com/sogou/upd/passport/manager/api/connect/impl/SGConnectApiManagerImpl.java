@@ -54,44 +54,44 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             if (connectConfig == null) {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
+
+
+            String redirectURI = constructRedirectURI(clientId, connectLoginParams.getType(), connectLoginParams.getRu(), oAuthConsumer.getCallbackUrl(), ip);
+            String scope = connectConfig.getScope();
+            String appKey = connectConfig.getAppKey();
+            String connectType = connectLoginParams.getType();
+            // 重新填充display，如果display为空，根据终端自动赋值；如果display不为空，则使用display
+            String display = connectLoginParams.getDisplay();
+            display = Strings.isNullOrEmpty(display) ? fillDisplay(connectType, connectLoginParams.getFrom(), provider) : display;
+
+            String requestUrl;
+            // 采用Authorization Code Flow流程
+            requestUrl = oAuthConsumer.getWebUserAuthzUrl();
+            request = OAuthAuthzClientRequest
+                    .authorizationLocation(requestUrl).setAppKey(appKey)
+                    .setRedirectURI(redirectURI)
+                    .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
+                    .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
+                    .setState(uuid)
+                    .buildQueryMessage(OAuthAuthzClientRequest.class);
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
-            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException!");
         } catch (ServiceException se) {
             logger.error("query connect config Exception!", se);
-            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception!");
         }
-
-        String redirectURI = constructRedirectURI(connectLoginParams, oAuthConsumer.getCallbackUrl(), ip);
-        String scope = connectConfig.getScope();
-        String appKey = connectConfig.getAppKey();
-        String connectType = connectLoginParams.getType();
-        // 重新填充display，如果display为空，根据终端自动赋值；如果display不为空，则使用display
-        String display = connectLoginParams.getDisplay();
-        display = Strings.isNullOrEmpty(display) ? fillDisplay(connectType, provider) : display;
-
-        String requestUrl;
-        // 采用Authorization Code Flow流程
-        requestUrl = oAuthConsumer.getWebUserAuthzUrl();
-        request = OAuthAuthzClientRequest
-                .authorizationLocation(requestUrl).setAppKey(appKey)
-                .setRedirectURI(redirectURI)
-                .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                .setState(uuid)
-                .buildQueryMessage(OAuthAuthzClientRequest.class);
 
         return request.getLocationUri();
     }
 
-    private String constructRedirectURI(ConnectLoginParams oauthLoginParams, String pCallbackUrl, String ip) {
+    private String constructRedirectURI(int clientId, String type, String ru, String pCallbackUrl, String ip) {
         try {
-            String ru = oauthLoginParams.getRu();
             ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
-            callbackParams.put("client_id", oauthLoginParams.getClient_id());
+            callbackParams.put("client_id", clientId);
             callbackParams.put("ru", ru);
-            callbackParams.put("type", oauthLoginParams.getType());
+            callbackParams.put("type", type);
             callbackParams.put("ip", ip);
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
             return pCallbackUrl + "?" + query;
@@ -103,9 +103,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     /*
      * 根据type和provider重新填充display
      */
-    private String fillDisplay(String type, int provider) {
+    private String fillDisplay(String type, String from, int provider) {
         String display = "";
-        if (ConnectTypeEnum.isMobileApp(type)) {
+        if (ConnectTypeEnum.isMobileApp(type) || isMobileDisplay(type, from)) {
             switch (provider) {
                 case 5:  // 人人
                     display = "touch";
@@ -119,6 +119,10 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
         }
         return display;
+    }
+
+    private boolean isMobileDisplay(String type, String from) {
+        return type.equals(ConnectTypeEnum.TOKEN.toString()) && from.equalsIgnoreCase("mob");
     }
 
 }
