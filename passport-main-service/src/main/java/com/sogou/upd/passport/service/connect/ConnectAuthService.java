@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.connect;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
 
 import java.io.IOException;
 
@@ -28,11 +29,11 @@ public interface ConnectAuthService {
             throws IOException, OAuthProblemException;
 
     /**
-     * 用access_token获取openid
+     * QQ需要用access_token获取openid
      * @throws IOException
      */
-//    public OAuthOpenIdResponse obtainOpenIdByAccessToken(String accessToken, AuthzConsumerDO consumer)
-//            throws SystemException, ProblemException, IOException;
+    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken)
+            throws OAuthProblemException, IOException;
 
     /**
      * 用refresh_token刷新access_token

@@ -102,7 +102,7 @@ public class ConnectLoginController extends BaseConnectController {
 //                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //                writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
 //            } else {
-            url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            }
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(type, ru, e.getError(), e.getDescription());

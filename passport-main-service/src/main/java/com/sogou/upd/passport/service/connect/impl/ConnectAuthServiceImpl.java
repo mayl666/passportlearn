@@ -10,6 +10,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,17 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }
         return oauthResponse;
+    }
+
+    @Override
+    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken) throws OAuthProblemException, IOException {
+        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+        OAuthClientRequest request = OAuthAuthzClientRequest.openIdLocation(oAuthConsumer.getOpenIdUrl())
+                .setAccessToken(accessToken).buildQueryMessage(OAuthClientRequest.class);
+
+        QQOpenIdResponse qqOpenIdResponse = OAuthHttpClient.execute(request,
+                QQOpenIdResponse.class);
+        return qqOpenIdResponse;
     }
 
     @Override

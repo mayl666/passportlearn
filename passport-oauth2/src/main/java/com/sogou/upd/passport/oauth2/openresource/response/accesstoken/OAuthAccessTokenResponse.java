@@ -53,20 +53,6 @@ public abstract class OAuthAccessTokenResponse extends OAuthClientResponse {
         return new OAuthTokenVO(getAccessToken(), getExpiresIn(), getRefreshToken(), getRefreshTokenExpiresIn(), getScope(), getOpenid(), getNickName());
     }
 
-    public abstract void setBody(String body) throws OAuthProblemException;
-
-    public String getBody() {
-        return body;
-    }
-
-    protected void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    protected void setResponseCode(int code) {
-        this.responseCode = code;
-    }
-
     @Override
     public void init(String body, String contentType, int responseCode) throws OAuthProblemException {
         validator = new TokenValidator();

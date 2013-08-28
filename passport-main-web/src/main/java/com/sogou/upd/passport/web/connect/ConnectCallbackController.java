@@ -3,15 +3,19 @@ package com.sogou.upd.passport.web.connect;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
+import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -42,6 +46,10 @@ public class ConnectCallbackController extends BaseConnectController {
     private ConnectAuthService connectAuthService;
     @Autowired
     private ConnectConfigService connectConfigService;
+    @Autowired
+    private ConnectApiManager proxyConnectApiManager;
+    @Autowired
+    private PCAccountManager pcAccountManager;
 
     @RequestMapping("/callback/{providerStr}")
     public ModelAndView handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
@@ -52,6 +60,7 @@ public class ConnectCallbackController extends BaseConnectController {
         String ru = req.getParameter("ru");
         String ip = req.getParameter("ip");
         String type = req.getParameter("type");
+        String instanceId = req.getParameter("ts");
 
         String state = req.getParameter("state");
         String cookieValue = ServletUtil.getCookie(req, state);
@@ -71,7 +80,24 @@ public class ConnectCallbackController extends BaseConnectController {
                 return new ModelAndView(new RedirectView(url));
             }
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig);
-            OAuthTokenVO oauthToken = oauthResponse.getOAuthTokenVO();
+            OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
+            oAuthTokenVO.setIp(ip);
+
+            if (provider == AccountTypeEnum.QQ.getValue()) {
+                //3.QQ需根据access_token获取openid
+                String accessToken = oAuthTokenVO.getAccessToken();
+                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken);
+                String openId = openIdResponse.getOpenId();
+                if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
+            }
+
+            // 创建第三方账号
+            Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
+            if (connectAccountResult.isSuccess()){
+            String passportId = (String) connectAccountResult.getModels().get("userid");
+                pcAccountManager.createConnectToken(clientId, passportId,instanceId);
+            }
+
 
 
         } catch (IOException e) {
