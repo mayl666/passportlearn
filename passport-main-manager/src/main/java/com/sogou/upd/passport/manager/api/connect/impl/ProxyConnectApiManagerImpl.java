@@ -5,7 +5,11 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -55,6 +59,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
 
     @Override
     public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO) {
+        Result result = new APIResultSupport(false);
         String url = SHPPUrlConstant.CREATE_CONNECT_USER + providerStr;
         RequestModel requestModel = new RequestModel(url);
         requestModel.addParam("appid", CommonConstant.SGPP_DEFAULT_CLIENTID);
@@ -64,6 +69,17 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("refresh_token", oAuthTokenVO.getRefreshToken());
         requestModel.addParam("openid", oAuthTokenVO.getOpenid());
         requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
-        return executeResult(requestModel);
+        Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+        if ("0".equals(map.get("status"))) {
+            result.setSuccess(true);
+            result.setDefaultModel("passportId", map.get("userid"));
+            result.setDefaultModel("openid", map.get("openid"));
+            result.setDefaultModel("nickname", map.get("uniqname"));
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+            result.setDefaultModel("error", map.get("error"));
+            result.setDefaultModel("error_description", map.get("error_description"));
+        }
+        return result;
     }
 }

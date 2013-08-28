@@ -110,7 +110,7 @@ public class ConnectCallbackController extends BaseConnectController {
                     return new ModelAndView(new RedirectView(ru));
                 }
             } else {
-                url = buildAppErrorRu(type, ru, ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED, null);
+                url = buildAppErrorRu(type, ru, connectAccountResult.getCode(), null);
                 return new ModelAndView(new RedirectView(url));
             }
 
