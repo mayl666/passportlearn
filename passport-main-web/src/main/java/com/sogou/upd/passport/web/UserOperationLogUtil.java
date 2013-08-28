@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 public class UserOperationLogUtil {
 
     private static final Logger userLoggerScribe = LoggerFactory.getLogger("userLoggerScribe");
-    private static final Logger userLoggerScribeFail = LoggerFactory.getLogger("userLoggerScribeFail");
     private static final Logger userLoggerLocal = LoggerFactory.getLogger("userLoggerLocal");
 
 
@@ -48,8 +47,6 @@ public class UserOperationLogUtil {
             userLogger = userLoggerScribe;
         } else if ("local".equals(flag)) {
             userLogger = userLoggerLocal;
-        } else if ("fail".equals(flag)) {
-            userLogger = userLoggerScribeFail;
         }
     }
 
