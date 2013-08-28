@@ -65,8 +65,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     @Override
     public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken) throws OAuthProblemException, IOException {
         OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        OAuthClientRequest request = OAuthAuthzClientRequest.openIdLocation(oAuthConsumer.getOpenIdUrl())
-                .setAccessToken(accessToken).buildQueryMessage(OAuthClientRequest.class);
+        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.openIdLocation(oAuthConsumer.getOpenIdUrl())
+                .setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
 
         QQOpenIdResponse qqOpenIdResponse = OAuthHttpClient.execute(request,
                 QQOpenIdResponse.class);
