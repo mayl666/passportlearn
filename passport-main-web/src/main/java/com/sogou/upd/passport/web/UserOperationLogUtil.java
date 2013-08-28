@@ -109,17 +109,6 @@ public class UserOperationLogUtil {
             log.append("\t").append(StringUtil.defaultIfEmpty(ip, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(resultCode, "-"));
 
-            log.append("\t-"); // TODO
-
-
-            String referer = otherMessage.remove("ref");
-            log.append("\t").append(StringUtil.defaultIfEmpty(referer, "-"));
-
-            String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
-            log.append("\t").append(otherMsgJson);
-
-
-            userLoggerScribe.info(log.toString());
             Object stopWatchObject = request.getAttribute(CommonConstant.STOPWATCH);
             if (stopWatchObject != null && stopWatchObject instanceof StopWatch) {
                 StopWatch stopWatch = (StopWatch) stopWatchObject;
@@ -129,6 +118,15 @@ public class UserOperationLogUtil {
             } else {
                 log.append("\t-");
             }
+
+            String referer = otherMessage.remove("ref");
+            log.append("\t").append(StringUtil.defaultIfEmpty(referer, "-"));
+
+            String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
+            log.append("\t").append(otherMsgJson);
+
+
+            userLoggerScribe.info(log.toString());
 
             userLoggerLocal.info(log.toString()); //TODO
         } catch (Exception e) {
