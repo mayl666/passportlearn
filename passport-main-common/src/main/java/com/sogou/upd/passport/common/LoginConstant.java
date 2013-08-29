@@ -11,13 +11,12 @@ public class LoginConstant {
     //用户登陆的信息
     public static final String COOKIE_PPINF = "ppinf";
 
-    //PPINF 的数字签名
-    public static final String COOKIE_PPRDIG = "pprdig";
+  //PPINF 的数字签名
+  public static final String COOKIE_PPRDIG ="pprdig";
     //passport cookie
   public static final String COOKIE_PASSPORT ="passport";
   //ppinfo cookie
   public static final String COOKIE_PPINFO ="ppinfo";
-
 
     /**
      * 连续登陆失败多少次需要用户在登陆时输入验证码 >=

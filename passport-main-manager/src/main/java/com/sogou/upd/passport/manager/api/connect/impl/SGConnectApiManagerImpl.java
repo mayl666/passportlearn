@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +57,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
 
-
-            String redirectURI = constructRedirectURI(clientId, connectLoginParams.getType(), connectLoginParams.getRu(), oAuthConsumer.getCallbackUrl(), ip);
+            String redirectURI = constructRedirectURI(clientId, connectLoginParams, oAuthConsumer.getCallbackUrl(), ip);
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -85,14 +86,22 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         return request.getLocationUri();
     }
 
-    private String constructRedirectURI(int clientId, String type, String ru, String pCallbackUrl, String ip) {
+    @Override
+    public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO) {
+        //To change body of implemented methods use File | Settings | File Templates.
+        return null;
+    }
+
+    private String constructRedirectURI(int clientId, ConnectLoginParams connectLoginParams, String pCallbackUrl, String ip) {
         try {
+            String ru = connectLoginParams.getRu();
             ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
             callbackParams.put("client_id", clientId);
             callbackParams.put("ru", ru);
-            callbackParams.put("type", type);
+            callbackParams.put("type", connectLoginParams.getType());
             callbackParams.put("ip", ip);
+            callbackParams.put("ts", connectLoginParams.getTs());
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
             return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {
@@ -122,7 +131,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     private boolean isMobileDisplay(String type, String from) {
-        return type.equals(ConnectTypeEnum.TOKEN.toString()) && from.equalsIgnoreCase("mob");
+        return type.equals(ConnectTypeEnum.TOKEN.toString()) && "mob".equalsIgnoreCase(from);
     }
 
 }

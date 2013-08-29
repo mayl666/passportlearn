@@ -60,4 +60,13 @@ public interface PCAccountManager {
      * @return
      */
     public String getSig(String passportId, int clientId,String refresh_token,String timestamp);
+
+    /**
+     * 只生成token，不需要校验密码或者sig
+     * @param clientId
+     * @param passportId
+     * @param instanceId
+     * @return
+     */
+    public Result createConnectToken(int clientId, String passportId, String instanceId);
 }

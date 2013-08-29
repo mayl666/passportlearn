@@ -406,15 +406,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             Set<String> setIpVal = redisUtils.smember(cookieCacheKey);
             if (CollectionUtils.isNotEmpty(setIpVal)) {
                 int sz = setIpVal.size();
-                if (sz == (LoginConstant.REGISTER_COOKIE_LIMITED / 2)) {
-                    logRegisterBlackList(ip, cookieCacheKey, sz, setIpVal.toArray().toString());
-//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
-//                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
-                }
                 if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
-                    logRegisterBlackList(ip, cookieCacheKey, sz, setIpVal.toArray().toString());
-//                    regBlackListLogger.info(new Date() + "checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
-//                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
                     return true;
                 }
             }
@@ -424,15 +416,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String value = redisUtils.get(ipCookieKey);
             if (!Strings.isNullOrEmpty(value)) {
                 int num = Integer.valueOf(value);
-                if (num == (LoginConstant.REGISTER_IP_COOKIE_LIMITED / 2)) {
-                    logRegisterBlackList(ip, cookieCacheKey, num, value);
-//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
-//                            + ",num=" + num);
-                }
                 if (num >= LoginConstant.REGISTER_IP_COOKIE_LIMITED) {
-                    logRegisterBlackList(ip, cookieCacheKey, num, value);
-//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
-//                            + ",num=" + num);
                     return true;
                 }
             }
@@ -444,13 +428,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 int sz = setCookieVal.size();
                 if (sz == (LoginConstant.REGISTER_IP_LIMITED / 2)) {
                     logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
-//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
-//                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
                 }
                 if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
                     logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
-//                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
-//                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
                     return true;
                 }
             }

@@ -79,7 +79,6 @@ public class ConnectLoginController extends BaseConnectController {
         String url;
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
-        String from = connectLoginParams.getFrom();
         String validateResult = ControllerHelper.validateParams(connectLoginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             url = buildAppErrorRu(type, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -98,12 +97,12 @@ public class ConnectLoginController extends BaseConnectController {
         // 防CRSF攻击
         String uuid = UUID.randomUUID().toString();
         try {
-//            if (clientId == 1044) {  // 目前只有浏览器走搜狗流程
-//                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-//                writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
-//            } else {
-            url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-//            }
+            if (clientId == 1044) {  // 目前只有浏览器走搜狗流程
+                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+                writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
+            } else {
+                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+            }
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(type, ru, e.getError(), e.getDescription());
         }

@@ -1,0 +1,9 @@
+<html>
+<head>
+    <script type="text/javascript">
+##        var nick = decodeURIComponent(${nickname});
+        window.external.passport('result', ${result});
+
+    </script>
+</head>
+</html>

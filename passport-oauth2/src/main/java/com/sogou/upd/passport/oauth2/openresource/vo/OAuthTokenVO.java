@@ -13,6 +13,7 @@ public class OAuthTokenVO {
     private String openid;
     private String nickName; //昵称
     private String openidSecret;  // openid密钥
+    private String ip;
 
     public OAuthTokenVO() {
     }
@@ -26,11 +27,6 @@ public class OAuthTokenVO {
     public OAuthTokenVO(String accessToken, long expiresIn, String refreshToken, String scope) {
         this(accessToken, expiresIn, refreshToken);
         this.scope = scope;
-    }
-
-    public OAuthTokenVO(String accessToken, long expiresIn, String refreshToken, String scope, String openid) {
-        this(accessToken, expiresIn, refreshToken, scope);
-        this.openid = openid;
     }
 
     public OAuthTokenVO(String accessToken, long expiresIn, String refreshToken, long reExpiresIn, String scope, String openid, String nickName) {
@@ -102,5 +98,13 @@ public class OAuthTokenVO {
 
     public void setOpenidSecret(String openidSecret) {
         this.openidSecret = openidSecret;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

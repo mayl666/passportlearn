@@ -53,7 +53,7 @@ public class PCAccountController extends BaseController {
     private LoginApiManager proxyLoginApiManager;
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
-    public String regEmail(PcAccountWebParams pcAccountWebParams, Model model)
+    public String pcLogin(PcAccountWebParams pcAccountWebParams, Model model)
             throws Exception {
         //校验非法appid
         if (!pcAccountWebParams.getAppid().matches("[0-9]{4}")) {

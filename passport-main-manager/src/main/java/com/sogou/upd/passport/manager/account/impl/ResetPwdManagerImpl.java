@@ -93,7 +93,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             }
 
             // 判断是否超过修改密码次数
-            if (!operateTimesService.checkLimitResetPwd(username, clientId)) {
+            if (operateTimesService.checkLimitResetPwd(username, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
