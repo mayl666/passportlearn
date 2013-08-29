@@ -48,6 +48,8 @@ public class UserOperationLogUtil {
             userLogger = userLoggerScribe;
         } else if ("local".equals(flag)) {
             userLogger = userLoggerLocal;
+        } else {
+            userLogger = userLoggerBase;
         }
     }
 

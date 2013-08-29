@@ -23,6 +23,9 @@ public class LogBackSetAction {
             } else if ("local".equalsIgnoreCase(appender)) {
                 UserOperationLogUtil.setUserLogger("local");
                 return "set to local";
+            } else if ("base".equalsIgnoreCase(appender)) {
+                UserOperationLogUtil.setUserLogger("base");
+                return "set to fail";
             } else {
                 return "Wrong setting, should set 'appender' to scribe or local";
             }
