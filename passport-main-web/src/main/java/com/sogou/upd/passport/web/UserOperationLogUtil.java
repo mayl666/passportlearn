@@ -2,6 +2,9 @@ package com.sogou.upd.passport.web;
 
 import com.google.common.base.Strings;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -47,7 +50,7 @@ public class UserOperationLogUtil {
 
     private static Logger userLogger = userLoggerScribe;
 
-    private static AmqpAdmin admin;
+/*    private static AmqpAdmin admin;
     private static RabbitTemplate template;
     private static CachingConnectionFactory connectionFactory;
 
@@ -57,6 +60,21 @@ public class UserOperationLogUtil {
         //template.setQueue("passport_user");
         template.setQueue("passport_user_1");
         admin = new RabbitAdmin(connectionFactory);
+    }*/
+
+    private static ConnectionFactory connectionFactory =  new ConnectionFactory();
+    private static Connection connection;
+    private static Channel channel;
+    static {
+        connectionFactory.setHost("10.146.32.57");
+        connectionFactory.setPort(5672);
+        try {
+            connection = connectionFactory.newConnection();
+            channel = connection.createChannel();
+            channel.queueDeclare("passport_user_1", false, false, false, null);
+        } catch (Exception e){
+
+        }
     }
 
     public static void setUserLogger(String flag) {
@@ -150,8 +168,9 @@ public class UserOperationLogUtil {
             // Thread.sleep(60);
             start = System.currentTimeMillis();
             // userLogger.info(log.toString());
-            template.convertAndSend(log.toString());
-            log.append(System.currentTimeMillis()-start);
+            // template.convertAndSend(log.toString());
+            channel.basicPublish("", "passport_user_1", null, log.toString().getBytes());
+            log.append(System.currentTimeMillis() - start);
             userLoggerBase.info(log.toString()); //TODO
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
