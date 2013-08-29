@@ -13,6 +13,10 @@ public class LoginConstant {
 
     //PPINF 的数字签名
     public static final String COOKIE_PPRDIG = "pprdig";
+    //passport cookie
+  public static final String COOKIE_PASSPORT ="passport";
+  //ppinfo cookie
+  public static final String COOKIE_PPINFO ="ppinfo";
 
 
     /**
