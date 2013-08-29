@@ -291,7 +291,7 @@ var auto_timer;
 var suggest_no = 0;
 var wait = 0;
 var can_hide = 1;
-var suggest_val = ["","@sogou.com", "@sohu.com", "@chinaren.com", "@vip.sohu.com", "@17173.com", "@focus.cn", "@game.sohu.com"];
+var suggest_val = ["@sogou.com", "@sohu.com", "@chinaren.com", "@vip.sohu.com", "@17173.com", "@focus.cn", "@game.sohu.com"];
 var sugg_len=suggest_val.length;
 
 function startAutoComplete() {
