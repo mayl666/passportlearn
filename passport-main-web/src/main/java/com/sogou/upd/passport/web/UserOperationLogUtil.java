@@ -129,7 +129,8 @@ public class UserOperationLogUtil {
             String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
             log.append("\t").append(otherMsgJson);
 
-            Thread.sleep(60);
+            // Thread.sleep(60);
+            start = System.currentTimeMillis();
             userLogger.info(log.toString());
             log.append(System.currentTimeMillis()-start);
             userLoggerBase.info(log.toString()); //TODO
