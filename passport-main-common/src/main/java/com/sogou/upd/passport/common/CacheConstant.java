@@ -82,8 +82,8 @@ public class CacheConstant {
     public static final String KV_PREFIX_TEST = "0/0/";
 
     /*==================登陆相关缓存常量========================*/
-    public static final String CACHE_PREFIX_USERNAME_LOGINNUM = "SP.USERNAME:LOGINNUM_"; //username连续登陆的次数
-    public static final String CACHE_PREFIX_IP_LOGINNUM = "SP.IP:LOGINNUM_"; //IP连续登陆的次数
+    public static final String CACHE_PREFIX_USERNAME_LOGINNUM = "SP.USERNAME:LOGINNUM_HASH_"; //username连续登陆的次数
+    public static final String CACHE_PREFIX_IP_LOGINNUM = "SP.IP:LOGINNUM_HASH_"; //IP连续登陆的次数
     public static final String CACHE_SUCCESS_KEY = "SUCCESS"; //成功key
     public static final String CACHE_FAILED_KEY = "FAILED"; //失败key
 
