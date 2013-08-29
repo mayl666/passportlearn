@@ -13,6 +13,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -42,6 +46,17 @@ public class UserOperationLogUtil {
     private static String LOCALIP = null;
 
     private static Logger userLogger = userLoggerScribe;
+
+    private static AmqpAdmin admin;
+    private static RabbitTemplate template;
+    private static CachingConnectionFactory connectionFactory;
+
+    static {
+        connectionFactory = new CachingConnectionFactory("10.146.32.57", 5672);
+        template = new RabbitTemplate(connectionFactory);
+        template.setQueue("passport_user");
+        admin = new RabbitAdmin(connectionFactory);
+    }
 
     public static void setUserLogger(String flag) {
         if ("scribe".equals(flag)) {
@@ -133,7 +148,8 @@ public class UserOperationLogUtil {
 
             // Thread.sleep(60);
             start = System.currentTimeMillis();
-            userLogger.info(log.toString());
+            // userLogger.info(log.toString());
+            template.convertAndSend(log.toString());
             log.append(System.currentTimeMillis()-start);
             userLoggerBase.info(log.toString()); //TODO
         } catch (Exception e) {
