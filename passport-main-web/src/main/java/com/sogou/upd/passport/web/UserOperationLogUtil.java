@@ -75,7 +75,7 @@ public class UserOperationLogUtil {
      */
     public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
         try {
-            long start = System.currentTimeMillis()/1000;
+            long start = System.currentTimeMillis();
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
             if (StringUtil.isBlank(operation)) {
@@ -131,7 +131,7 @@ public class UserOperationLogUtil {
 
 
             userLogger.info(log.toString());
-            log.append(System.currentTimeMillis()/1000-start);
+            log.append(System.currentTimeMillis()-start);
             userLoggerBase.info(log.toString()); //TODO
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
