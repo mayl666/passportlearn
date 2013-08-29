@@ -67,6 +67,7 @@
     </appender>
 
     <appender name="scribeAsyncAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1000000</queueSize>
         <appender-ref ref="scribeAppender" />
     </appender>
 
