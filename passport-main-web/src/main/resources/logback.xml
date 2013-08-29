@@ -46,9 +46,19 @@
     </appender>
 
 
-    <appender name="scribeAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
+    <appender name="scribeAppenderLocal" class="de.bitzeche.logback.scribe.ScribeAppender">
         <!--<hostname>localhost</hostname>-->
         <scribeHost>10.16.131.229</scribeHost>
+        <scribePort>1463</scribePort>
+        <layout>
+            <pattern>%msg</pattern>
+        </layout>
+        <scribeCategory>passport_user</scribeCategory>
+    </appender>
+
+    <appender name="scribeAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
+        <!--<hostname>localhost</hostname>-->
+        <scribeHost>10.11.215.215</scribeHost>
         <scribePort>1463</scribePort>
         <layout>
             <pattern>%msg</pattern>
@@ -61,7 +71,12 @@
         <appender-ref ref="scribeAppender" />
     </logger>
 
-    <logger name="userLogger" level="info" additivity="false">
+    <logger name="userLoggerLocal" level="info" additivity="false">
+        <!--<appender-ref ref="userOperationAppender" />-->
+        <appender-ref ref="scribeAppenderLocal" />
+    </logger>
+
+    <logger name="userLoggerBase" level="info" additivity="false">
         <appender-ref ref="userOperationAppender" />
         <!--appender-ref ref="scribeAppender" /-->
     </logger>

@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 public class UserOperationLogUtil {
 
     private static final Logger userLoggerScribe = LoggerFactory.getLogger("userLoggerScribe");
-    private static final Logger userLoggerBase = LoggerFactory.getLogger("userLogger");
+    private static final Logger userLoggerBase = LoggerFactory.getLogger("userLoggerBase");
+    private static final Logger userLoggerLocal = LoggerFactory.getLogger("userLoggerLocal");
 
 
 
@@ -41,6 +42,14 @@ public class UserOperationLogUtil {
     private static String LOCALIP = null;
 
     private static Logger userLogger = userLoggerScribe;
+
+    public static void setUserLogger(String flag) {
+        if ("scribe".equals(flag)) {
+            userLogger = userLoggerScribe;
+        } else if ("local".equals(flag)) {
+            userLogger = userLoggerLocal;
+        }
+    }
 
     /**
      * 记录用户行为
@@ -64,7 +73,7 @@ public class UserOperationLogUtil {
      */
     public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
         try {
-            long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis()/1000;
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
             if (StringUtil.isBlank(operation)) {
@@ -120,7 +129,7 @@ public class UserOperationLogUtil {
 
 
             userLogger.info(log.toString());
-            log.append(System.currentTimeMillis()-start);
+            log.append(System.currentTimeMillis()/1000-start);
             userLoggerBase.info(log.toString()); //TODO
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
