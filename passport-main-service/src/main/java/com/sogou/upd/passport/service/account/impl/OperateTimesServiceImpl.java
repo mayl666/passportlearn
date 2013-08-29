@@ -375,7 +375,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public boolean checkRegInWhiteList(String ip) throws ServiceException {
         try {
-            String whiteListKey = CacheConstant.CACHE_PREFIX_REGISTER_WHITELIST;
+            String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
             Set<String> whiteList = redisUtils.smember(whiteListKey);
             if (CollectionUtils.isNotEmpty(whiteList)) {
                 if (whiteList.contains(ip)) {
