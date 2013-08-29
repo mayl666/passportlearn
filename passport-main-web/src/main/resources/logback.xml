@@ -66,9 +66,24 @@
         <scribeCategory>passport_user</scribeCategory>
     </appender>
 
+    <appender name="scribeAsyncAppender" class="de.bitzeche.logback.scribe.AsyncScribeAppender">
+        <!--<hostname>localhost</hostname>-->
+        <scribeHost>10.11.215.215</scribeHost>
+        <scribePort>1463</scribePort>
+        <layout>
+            <pattern>%msg</pattern>
+        </layout>
+        <scribeCategory>passport_user</scribeCategory>
+    </appender>
+
     <logger name="userLoggerScribe" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
         <appender-ref ref="scribeAppender" />
+    </logger>
+
+    <logger name="userLoggerAsync" level="info" additivity="false">
+        <!--<appender-ref ref="userOperationAppender" />-->
+        <appender-ref ref="scribeAsyncAppender" />
     </logger>
 
     <logger name="userLoggerLocal" level="info" additivity="false">

@@ -26,6 +26,9 @@ public class LogBackSetAction {
             } else if ("base".equalsIgnoreCase(appender)) {
                 UserOperationLogUtil.setUserLogger("base");
                 return "set to fail";
+            } else if ("async".equalsIgnoreCase(appender)) {
+                UserOperationLogUtil.setUserLogger("async");
+                return "set to async";
             } else {
                 return "Wrong setting, should set 'appender' to scribe or local";
             }
