@@ -7,6 +7,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,9 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
      * passportId_clientId_instanceId：AccountToken的映射
      */
     public static String buildKeyStr(String passportId, int clientId, String instanceId) {
+        if(StringUtils.isEmpty(instanceId)){
+            return  KEY_PREFIX + passportId + "_" + clientId;
+        }
         return KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId;
     }
 
