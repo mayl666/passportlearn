@@ -26,7 +26,7 @@ public class SHPPUrlConstant {
     /* ============================================================================ */
     // 内部接口基本url
     private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
-    private static final String BASE_URL = "https://passport.sohu.com/";
+    private static final String BASE_URL = "http://passport.sohu.com/";
     // 第三方开放平台代理API基本url
     private static final String BASE_OPEN_API_URL = "http://internal.passport.sohu.com/openlogin/";
 
@@ -100,9 +100,9 @@ public class SHPPUrlConstant {
 
     /*================================第三方开放平台相关url=======================================*/
     // 第三方授权通用接口
-    public static final String CONNECT_LOGIN_ULR = "http://passport.sohu.com/openlogin/request.action";
+    public static final String CONNECT_LOGIN_ULR = BASE_URL + "openlogin/request.action";
     // 同步创建第三方账号的接口
-    public static final String CREATE_CONNECT_USER = BASE_INTERNAL_URL + "openlogin/non/callback/";
+    public static final String CREATE_CONNECT_USER = BASE_URL + "openlogin/non/callback/";
     //获取第三方用户信息
     public static final String GET_OPEN_USER_INFO = BASE_OPEN_API_URL + "api/user/info";
     //第三方发图片微博或分享

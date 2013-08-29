@@ -65,15 +65,15 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("appid", CommonConstant.SGPP_DEFAULT_CLIENTID);
         requestModel.addParam("provider", providerStr);
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
-        requestModel.addParam("expires_in", oAuthTokenVO.getExpiresIn());
+        requestModel.addParam("expires_in", (int) oAuthTokenVO.getExpiresIn());  // 搜狐wiki里expires_in必须为int型
         requestModel.addParam("refresh_token", oAuthTokenVO.getRefreshToken());
         requestModel.addParam("openid", oAuthTokenVO.getOpenid());
-        requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
+//        requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
         Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         if ("0".equals(map.get("status"))) {
             result.setSuccess(true);
             result.setDefaultModel("passportId", map.get("userid"));
-            result.setDefaultModel("openid", map.get("openid"));
+            result.setDefaultModel("mappToken", map.get("token"));
             result.setDefaultModel("nickname", map.get("uniqname"));
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);

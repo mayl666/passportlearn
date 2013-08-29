@@ -33,6 +33,31 @@ public class BaseConnectController extends BaseController {
     }
 
     /**
+     * 第三方登录接口type=mapp、mobile、web时，需要对ru分别做处理
+     *
+     * @param type      /connect/login接口的type参数
+     * @param ru        回调url
+     * @return
+     */
+    protected String buildAppSuccessRu(String type, String ru, String succValue){
+        Map params = Maps.newHashMap();
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        if (type.equals(ConnectTypeEnum.MAPP.toString())) {
+            params.put("token", succValue);
+            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        } else if (type.equals(ConnectTypeEnum.Mobile.toString())) {
+            params.put("s_m_u", succValue);
+            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        }
+        return ru;
+    }
+
+    /**
      * 第三方登录接口type=mapp时，需要在ru后追加status和statusText
      *
      * @param type      /connect/login接口的type参数

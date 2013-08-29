@@ -93,22 +93,26 @@ public class ConnectCallbackController extends BaseConnectController {
                 if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
             }
 
+            // 4.获取第三方个人资料
+
+
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
             if (connectAccountResult.isSuccess()) {
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                    String passportId = (String) connectAccountResult.getModels().get("userid");
+                    String passportId = (String) connectAccountResult.getModels().get("passportId");
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, passportId, instanceId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         String result = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" +
-                                accountToken.getPassportId() + "|" + oAuthTokenVO.getNickName();
+                                accountToken.getPassportId() + "|";
+                        model.addAttribute("nickname", "跳刀的兔子");
                         model.addAttribute("result", result);
                         return new ModelAndView("/pcaccount/connectlogin");
                     }
-                } else if (type.equals(ConnectTypeEnum.WEB.toString())) {
-                    return new ModelAndView(new RedirectView(ru));
                 }
+                url = buildAppSuccessRu(type, ru, "");  //TODO token这里的值需要填上
+                return new ModelAndView(new RedirectView(url));
             } else {
                 url = buildAppErrorRu(type, ru, connectAccountResult.getCode(), null);
                 return new ModelAndView(new RedirectView(url));
@@ -126,8 +130,6 @@ public class ConnectCallbackController extends BaseConnectController {
             url = buildAppErrorRu(type, ru, ope.getError(), ope.getDescription());
             return new ModelAndView(new RedirectView(url));
         }
-
-        return new ModelAndView("");
     }
 
     private String getAuthzType(HttpServletRequest req) {
