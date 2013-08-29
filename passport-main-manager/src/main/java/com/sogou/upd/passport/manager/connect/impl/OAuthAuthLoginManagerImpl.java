@@ -140,33 +140,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
     }
 
-    @Override
-    public OAuthTokenVO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException {
-        OAuthTokenVO oAuthTokenDO;
-        OAuthAuthzClientResponse oar = buildOAuthAuthzClientResponse(req, connectType);
-        // 验证state是否被篡改，防CRSF攻击
-        String state = oar.getState();
-        String stateCookie = ServletUtil.getCookie(req, state);
-//        if (Strings.isNullOrEmpty(stateCookie) || !stateCookie.equals(CommonHelper.constructStateCookieKey(provider))) {
-//            throw new OAuthProblemException(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
-//        }
-
-        if (ConnectTypeEnum.WEB.toString().equals(connectType)) {
-
-        } else {
-            oAuthTokenDO = new OAuthTokenVO(oar.getAccessToken(), oar.getExpiresIn(), oar.getRefreshToken());
-        }
-
-        return null;
-    }
-
-    private OAuthAuthzClientResponse buildOAuthAuthzClientResponse(HttpServletRequest req, String connectType) throws OAuthProblemException {
-        OAuthAuthzClientResponse oar;
-        oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
-
-        return oar;
-    }
-
     /**
      * 该账号是否在当前应用登录过
      * 返回passportId，如果没有登录过返回null

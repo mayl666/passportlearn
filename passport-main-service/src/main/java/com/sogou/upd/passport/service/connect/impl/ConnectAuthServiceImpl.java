@@ -4,14 +4,22 @@ import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.model.OAuthConsumer;
-import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.user.QQUserAPIRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.user.RenrenUserAPIRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.user.SinaUserAPIRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
+import com.sogou.upd.passport.oauth2.openresource.response.user.QQUserAPIResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.user.RenrenUserAPIResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.user.SinaUserAPIResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.user.UserAPIResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.springframework.stereotype.Service;
 
@@ -28,17 +36,11 @@ import java.io.IOException;
 public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     @Override
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig)
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer, String redirectUrl)
             throws IOException, OAuthProblemException {
 
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
-
-        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        if (oAuthConsumer == null) {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
-        }
-        String redirectUrl = oAuthConsumer.getCallbackUrl();  // TODO 这里的url必须和auth里的url一样
 
         OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
                 .setAppKey(appKey).setAppSecret(appSecret).setRedirectURI(redirectUrl).setCode(code)
@@ -63,8 +65,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken) throws OAuthProblemException, IOException {
-        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, OAuthConsumer oAuthConsumer) throws OAuthProblemException, IOException {
         OAuthAuthzClientRequest request = OAuthAuthzClientRequest.openIdLocation(oAuthConsumer.getOpenIdUrl())
                 .setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
 
@@ -77,4 +78,45 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     public OAuthAccessTokenResponse refreshAccessToken(int appid, String connectName, String refreshToken) throws OAuthProblemException, IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public UserAPIResponse obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
+        String url = oAuthConsumer.getUserInfo();
+        String appKey = connectConfig.getAppKey();
+        String appSecret = connectConfig.getAppSecret();
+
+        OAuthClientRequest request;
+        UserAPIResponse response;
+        if (provider == AccountTypeEnum.QQ.getValue()) {
+            request = QQUserAPIRequest.apiLocation(url, QQUserAPIRequest.QQUserAPIBuilder.class)
+                    .setOauth_Consumer_Key(appKey).setOpenid(openid).setAccessToken(accessToken)
+                    .buildQueryMessage(QQUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, QQUserAPIResponse.class);
+        } else if (provider == AccountTypeEnum.SINA.getValue()) {
+            request = SinaUserAPIRequest.apiLocation(url, SinaUserAPIRequest.SinaUserAPIBuilder.class).setUid(openid)
+                    .setAccessToken(accessToken).buildQueryMessage(SinaUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, SinaUserAPIResponse.class);
+        } else if (provider == AccountTypeEnum.RENREN.getValue()) {
+            request = RenrenUserAPIRequest.apiLocation(url, RenrenUserAPIRequest.RenrenUserAPIBuilder.class)
+                    .setUserId(openid).setAccessToken(accessToken).buildQueryMessage(RenrenUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, RenrenUserAPIResponse.class);
+        } else {
+            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+        }
+        return response;
+    }
+
+    @Override
+    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
+        String nickname = oAuthTokenVO.getNickName();
+        if (provider == AccountTypeEnum.QQ.getValue() || provider == AccountTypeEnum.SINA.getValue() || provider == AccountTypeEnum.BAIDU.getValue()) {
+            UserAPIResponse response = obtainConnectUserInfo(provider, connectConfig, oAuthTokenVO.getOpenid(),
+                    oAuthTokenVO.getAccessToken(), oAuthConsumer);
+            ConnectUserInfoVO userProfileFromConnect = response.toUserInfo();
+            nickname = userProfileFromConnect.getNickname();
+            oAuthTokenVO.setNickName(nickname);
+        }
+        return nickname;
+    }
+
 }

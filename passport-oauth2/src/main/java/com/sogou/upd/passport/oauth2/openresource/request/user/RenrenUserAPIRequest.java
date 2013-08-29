@@ -22,8 +22,8 @@ public class RenrenUserAPIRequest extends RenrenAbstractAPIRequest {
          * 需要查询的用户uids,可批量(最好填)
          * users.getInfo接口使用
          */
-        public RenrenUserAPIBuilder setUids(String uids) {
-            this.parameters.put(RenrenOAuth.UIDS, uids == null ? null : uids);
+        public RenrenUserAPIBuilder setUserId(String userId) {
+            this.parameters.put(RenrenOAuth.USERID, userId == null ? null : userId);
             return this;
         }
 
@@ -32,7 +32,7 @@ public class RenrenUserAPIRequest extends RenrenAbstractAPIRequest {
          * users.getProfileInfo接口使用
          */
         public RenrenUserAPIBuilder setUid(String uid) {
-            this.parameters.put(RenrenOAuth.UID, uid == null ? null : uid);
+            this.parameters.put(RenrenOAuth.UIDS, uid == null ? null : uid);
             return this;
         }
 

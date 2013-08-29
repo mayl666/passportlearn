@@ -29,5 +29,4 @@ public interface OAuthAuthLoginManager {
      */
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip);
 
-    public OAuthTokenVO buildConnectCallbackResponse(HttpServletRequest req, String connectType, int provider) throws OAuthProblemException;
 }

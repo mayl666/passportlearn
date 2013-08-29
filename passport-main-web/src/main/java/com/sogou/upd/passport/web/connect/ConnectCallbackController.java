@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
@@ -9,14 +10,18 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
+import com.sogou.upd.passport.model.OAuthConsumer;
+import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.user.UserAPIResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -32,6 +37,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * 第三方账号授权回调接口
@@ -60,6 +67,12 @@ public class ConnectCallbackController extends BaseConnectController {
         int provider = AccountTypeEnum.getProvider(providerStr);
         int clientId = Integer.valueOf(req.getParameter("client_id"));
         String ru = req.getParameter("ru");
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
         String ip = req.getParameter("ip");
         String type = req.getParameter("type");
         String instanceId = req.getParameter("ts");
@@ -70,54 +83,62 @@ public class ConnectCallbackController extends BaseConnectController {
             url = buildAppErrorRu(type, ru, ErrorUtil.OAUTH_AUTHZ_STATE_INVALID, null);
             return new ModelAndView(new RedirectView(url));
         }
-
         try {
+            OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+            if (oAuthConsumer == null) {
+                throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            }
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
             //2.根据code值获取access_token
             ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
             if (connectConfig == null) {
-                url = buildAppErrorRu(type, ru, ErrorUtil.UNSUPPORT_THIRDPARTY, null);
-                return new ModelAndView(new RedirectView(url));
+                throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
             }
-            OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip);
+            OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
+                    oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
             oAuthTokenVO.setIp(ip);
 
             if (provider == AccountTypeEnum.QQ.getValue()) {
                 //3.QQ需根据access_token获取openid
                 String accessToken = oAuthTokenVO.getAccessToken();
-                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken);
+                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, oAuthConsumer);
                 String openId = openIdResponse.getOpenId();
                 if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
             }
 
             // 4.获取第三方个人资料
-
+            String nickName = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO,oAuthConsumer);
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
             if (connectAccountResult.isSuccess()) {
+                String userid = (String) connectAccountResult.getModels().get("userid");
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                    String passportId = (String) connectAccountResult.getModels().get("passportId");
-                    Result tokenResult = pcAccountManager.createConnectToken(clientId, passportId, instanceId);
+                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userid, instanceId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         String result = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" +
                                 accountToken.getPassportId() + "|";
-                        model.addAttribute("nickname", "跳刀的兔子");
+                        model.addAttribute("nickname", nickName);
                         model.addAttribute("result", result);
                         return new ModelAndView("/pcaccount/connectlogin");
+                    } else {
+                        // TODO
+                        url = "";
                     }
+                } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
+                    String token = (String) connectAccountResult.getModels().get("token");
+                    url = buildMappSuccessRu(ru, userid, token, nickName);
+                } else {
+                    url = ru;
                 }
-                url = buildAppSuccessRu(type, ru, "");  //TODO token这里的值需要填上
-                return new ModelAndView(new RedirectView(url));
             } else {
                 url = buildAppErrorRu(type, ru, connectAccountResult.getCode(), null);
-                return new ModelAndView(new RedirectView(url));
             }
-
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
             url = buildAppErrorRu(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
@@ -130,10 +151,7 @@ public class ConnectCallbackController extends BaseConnectController {
             url = buildAppErrorRu(type, ru, ope.getError(), ope.getDescription());
             return new ModelAndView(new RedirectView(url));
         }
+        return new ModelAndView(new RedirectView(url));
     }
 
-    private String getAuthzType(HttpServletRequest req) {
-        return Strings.isNullOrEmpty(req.getParameter(OAuth.OAUTH_CODE)) ?
-                ConnectTypeEnum.TOKEN.toString() : ConnectTypeEnum.WEB.toString();
-    }
 }

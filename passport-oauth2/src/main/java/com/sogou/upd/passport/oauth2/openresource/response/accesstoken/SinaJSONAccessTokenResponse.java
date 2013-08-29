@@ -1,10 +1,10 @@
 package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.vo.SinaOAuthTokenVO;
+import com.sogou.upd.passport.oauth2.openresource.parameters.SinaOAuth;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.Map;
@@ -15,8 +15,6 @@ import java.util.Map;
  * @author shipengzhi(shipengzhi@sogou-inc.com)
  */
 public class SinaJSONAccessTokenResponse extends OAuthAccessTokenResponse {
-
-    private SinaOAuthTokenVO oAuthTokenDO;
 
     @Override
     public void setBody(String body) throws OAuthProblemException {
@@ -30,19 +28,10 @@ public class SinaJSONAccessTokenResponse extends OAuthAccessTokenResponse {
 
     }
 
-    private SinaOAuthTokenVO getSinaOAuthTokenVO() throws Exception {
-        return new ObjectMapper().readValue(this.body, SinaOAuthTokenVO.class);
-    }
-
     @Override
     public String getOpenid() {
-        try {
-            SinaOAuthTokenVO sinaOAuthTokenVO = getSinaOAuthTokenVO();
-            return sinaOAuthTokenVO.getOpenid();
-        } catch (Exception e) {
-            log.error("Connect OAuthToken Response parse error, connect:sina, body:"+body, e);
-            return "";
-        }
+        String value = getParam(SinaOAuth.UID);
+        return Strings.isNullOrEmpty(value) ? "" : value;
     }
 
     /**

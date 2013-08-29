@@ -72,22 +72,4 @@ public abstract class OAuthClientResponse {
         return body;
     }
 
-    /**
-     * 昵称Html和XML转码
-     *
-     * @param nickName
-     * @return
-     */
-    protected String formNickName(String nickName) {
-        String name = StringUtil.unescapeHtmlAndXML(nickName);
-//		logger.debug("[ConnectNickName] connect nickName:" + nickName);
-        return name;
-    }
-
-    protected String formUserDesc(String desc) {
-        // 过滤desc,desc里可能含有Emoji表情,导致插入数据库错误
-        desc = StringUtil.filterSpecialChar(desc);
-        return desc;
-    }
-
 }

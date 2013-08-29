@@ -2,6 +2,8 @@ package com.sogou.upd.passport.service.connect;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.model.OAuthConsumer;
+import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
@@ -31,9 +33,12 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
     @Test
     public void testObtainAccessTokenByCode() {
         String code = "3256211234615615151";
+
         ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
         try {
-            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(provider, code, connectConfig);
+            OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+            String ru = "https://account.sogou.com";
+            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(provider, code, connectConfig, oAuthConsumer, ru);
             String body = response.getBody();
             System.out.println("body:" + body);
         } catch (IOException e) {
