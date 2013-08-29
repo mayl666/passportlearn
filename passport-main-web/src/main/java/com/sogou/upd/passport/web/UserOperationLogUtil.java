@@ -54,7 +54,8 @@ public class UserOperationLogUtil {
     static {
         connectionFactory = new CachingConnectionFactory("10.146.32.57", 5672);
         template = new RabbitTemplate(connectionFactory);
-        template.setQueue("passport_user");
+        //template.setQueue("passport_user");
+        template.setQueue("passport_user_1");
         admin = new RabbitAdmin(connectionFactory);
     }
 
