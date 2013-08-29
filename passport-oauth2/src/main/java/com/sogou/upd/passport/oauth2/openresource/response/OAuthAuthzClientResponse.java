@@ -42,7 +42,7 @@ public class OAuthAuthzClientResponse extends OAuthClientResponse {
     }
 
     /* Implicit Flow 响应结果，返回accessToken */
-    public static OAuthAuthzClientResponse oauthTokenAuthzResponse(HttpServletRequest request)
+    public static OAuthAuthzClientResponse oauthOpenIdResponse(HttpServletRequest request)
             throws OAuthProblemException {
         OAuthAuthzClientResponse response = new OAuthAuthzClientResponse(request, new TokenValidator());
         response.validate();

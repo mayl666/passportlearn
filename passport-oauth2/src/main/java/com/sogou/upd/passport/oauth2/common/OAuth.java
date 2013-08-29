@@ -47,6 +47,8 @@ public class OAuth {
     public static final String OAUTH_SINA_FORCELOGIN = "forcelogin"; // sina强制登录
     public static final String OAUTH_BAIDU_FORCELOGIN = "force_login";  // baidu强制登录
 
+    public static final String OAUTH_OPENID = "openid"; // qq 用access_token获取openId
+
     public static final String OAUTH_HEADER_NAME = "Bearer";
 
     //Authorization response params
