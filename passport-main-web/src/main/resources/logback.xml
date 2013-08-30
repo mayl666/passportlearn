@@ -45,6 +45,17 @@
         </encoder>
     </appender>
 
+    <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
+        <host>10.146.32.57</host>
+        <port>5672</port>
+        <virtualHost>/storm_host</virtualHost>
+        <username>davion</username>
+        <password>davion</password>
+        <queueName>passport_user_1</queueName>
+        <encoder>
+            <pattern>%msg</pattern>
+        </encoder>
+    </appender>
 
     <appender name="scribeAppenderLocal" class="de.bitzeche.logback.scribe.ScribeAppender">
         <!--<hostname>localhost</hostname>-->
@@ -70,6 +81,11 @@
         <queueSize>128</queueSize>
         <appender-ref ref="scribeAppender" />
     </appender>
+
+    <logger name="userLoggerMQ" level="info" additivity="false">
+        <!--<appender-ref ref="userOperationAppender" />-->
+        <appender-ref ref="rabbitMQAppender" />
+    </logger>
 
     <logger name="userLoggerScribe" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->

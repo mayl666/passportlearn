@@ -17,20 +17,7 @@ public class LogBackSetAction {
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     @ResponseBody
     public Object userLogAppenderSet(String appender) {
-            if ("scribe".equalsIgnoreCase(appender)) {
-                UserOperationLogUtil.setUserLogger("scribe");
-                return "set to scribe";
-            } else if ("local".equalsIgnoreCase(appender)) {
-                UserOperationLogUtil.setUserLogger("local");
-                return "set to local";
-            } else if ("base".equalsIgnoreCase(appender)) {
-                UserOperationLogUtil.setUserLogger("base");
-                return "set to fail";
-            } else if ("async".equalsIgnoreCase(appender)) {
-                UserOperationLogUtil.setUserLogger("async");
-                return "set to async";
-            } else {
-                return "Wrong setting, should set 'appender' to scribe or local";
-            }
+        UserOperationLogUtil.setUserLogger(appender);
+        return "set to " + appender;
     }
 }

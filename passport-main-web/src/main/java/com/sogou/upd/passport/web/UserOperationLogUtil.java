@@ -42,6 +42,7 @@ public class UserOperationLogUtil {
     private static final Logger userLoggerBase = LoggerFactory.getLogger("userLoggerBase");
     private static final Logger userLoggerLocal = LoggerFactory.getLogger("userLoggerLocal");
     private static final Logger userLoggerAsync = LoggerFactory.getLogger("userLoggerAsync");
+    private static final Logger userLoggerMQ = LoggerFactory.getLogger("userLoggerMQ");
 
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
@@ -85,7 +86,7 @@ public class UserOperationLogUtil {
         } else if ("async".equals(flag)) {
             userLogger = userLoggerAsync;
         } else {
-            userLogger = userLoggerBase;
+            userLogger = userLoggerMQ;
         }
     }
 
