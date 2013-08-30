@@ -58,11 +58,11 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                 connectionFactory.setPassword(password);
 
                 connection = connectionFactory.newConnection();
-                connections = new LinkedList<>();
+               /* connections = new LinkedList<>();
                 for (int i=0; i<50; i++) {
                     connections.add(connectionFactory.newConnection());
-                }
-                channel = connection.createChannel(50);
+                }*/
+                channel = connection.createChannel(10);
                 for (int i=0; i<100; i++) {
                     channels.add(connections.get(new Random().nextInt(50)).createChannel());
                 }
