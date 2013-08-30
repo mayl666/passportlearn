@@ -70,15 +70,19 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
             // this.encoder.doEncode(event);
             String msg = encoder.getLayout().doLayout(event);
             if (channel == null || !channel.isOpen()) {
+                System.out.println("---------------------Channel is null---------------------");
                 if (connection == null || !connection.isOpen()) {
+                    System.out.println("---------------------Connection is null---------------------");
                     synchronized (connection) {
                         if (connection == null || !connection.isOpen()) {
+                            System.out.println("---------------------Connection is null also---------------------");
                             connection = connectionFactory.newConnection();
                         }
                     }
                 }
                 synchronized (channel) {
                     if (channel == null || !channel.isOpen()) {
+                        System.out.println("---------------------Channel is null also---------------------");
                         channel = connection.createChannel(10);
                     }
                 }
