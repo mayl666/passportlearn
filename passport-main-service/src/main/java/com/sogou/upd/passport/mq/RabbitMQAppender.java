@@ -63,9 +63,9 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                     connections.add(connectionFactory.newConnection());
                 }*/
                 channel = connection.createChannel(10);
-                for (int i=0; i<100; i++) {
+                /*for (int i=0; i<100; i++) {
                     channels.add(connections.get(new Random().nextInt(50)).createChannel());
-                }
+                }*/
             }
             // encoder.init(System.out);
         } catch (IOException e) {
