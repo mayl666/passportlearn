@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.mq;
 
+import com.google.common.collect.Lists;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -8,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -28,7 +33,9 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
 
     private ConnectionFactory connectionFactory;
     private Connection connection;
+    private List<Connection> connections;
     private Channel channel;
+    private List<Channel> channels;
 
     PatternLayoutEncoder encoder;
 
@@ -51,8 +58,14 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                 connectionFactory.setPassword(password);
 
                 connection = connectionFactory.newConnection();
-
+                connections = new LinkedList<>();
+                for (int i=0; i<50; i++) {
+                    connections.add(connectionFactory.newConnection());
+                }
                 channel = connection.createChannel();
+                for (int i=0; i<100; i++) {
+                    channels.add(connections.get(new Random().nextInt(50)).createChannel());
+                }
             }
             // encoder.init(System.out);
         } catch (IOException e) {
@@ -87,7 +100,8 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                     }
                 }
             }
-            channel.basicPublish("", queueName, null, msg.getBytes());
+            // channel.basicPublish("", queueName, null, msg.getBytes());
+            channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
         } catch (IOException e) {
             addError("append failed: ", e);
         }
