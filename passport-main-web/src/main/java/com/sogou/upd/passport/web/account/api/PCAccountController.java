@@ -53,7 +53,7 @@ public class PCAccountController extends BaseController {
     private LoginApiManager proxyLoginApiManager;
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
-    public String pcLogin(PcAccountWebParams pcAccountWebParams, Model model)
+    public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
             throws Exception {
         //校验非法appid
         if (!pcAccountWebParams.getAppid().matches("[0-9]{4}")) {
@@ -80,6 +80,12 @@ public class PCAccountController extends BaseController {
             model.addAttribute("sig", sig);
         }
 
+        //用户log
+        UserOperationLog userOperationLog = new UserOperationLog(pcAccountWebParams.getUserid(), request.getRequestURI(), pcAccountWebParams.getAppid(), "0", getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
         //此处是帮浏览器打的个补丁，根据版本号判断
         String version = pcAccountWebParams.getV();
         boolean supportLocalHash = version.compareTo("3.1.0.0000") > 0;
@@ -96,7 +102,7 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/gettoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object getToken(HttpServletRequest request,PcGetTokenParams pcGetTokenParams) throws Exception {
+    public Object getToken(HttpServletRequest request, PcGetTokenParams pcGetTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcGetTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -123,7 +129,7 @@ public class PCAccountController extends BaseController {
         }
 
         //用户log
-        String resultCode =  StringUtil.defaultIfEmpty(result.getCode(), "0");
+        String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(pcGetTokenParams.getUserid(), request.getRequestURI(), pcGetTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ts", pcGetTokenParams.getTs());
         UserOperationLogUtil.log(userOperationLog);
@@ -133,7 +139,7 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object getPairToken(HttpServletRequest request,PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
+    public Object getPairToken(HttpServletRequest request, PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
         if (!isCleanString(cb)) {
             return getReturnStr(cb, "1");
@@ -164,7 +170,7 @@ public class PCAccountController extends BaseController {
         }
 
         //用户log
-        String resultCode =  StringUtil.defaultIfEmpty(result.getCode(), "0");
+        String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(reqParams.getUserid(), request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ts", reqParams.getTs());
         UserOperationLogUtil.log(userOperationLog);
@@ -174,7 +180,7 @@ public class PCAccountController extends BaseController {
 
     @RequestMapping(value = "/act/refreshtoken", method = RequestMethod.GET)
     @ResponseBody
-    public Object refreshToken(HttpServletRequest request,PcRefreshTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
+    public Object refreshToken(HttpServletRequest request, PcRefreshTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
         if (!isCleanString(cb)) {
             return getReturnStr(cb, "1");
@@ -195,7 +201,7 @@ public class PCAccountController extends BaseController {
         }
 
         //用户log
-        String resultCode =  StringUtil.defaultIfEmpty(result.getCode(), "0");
+        String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(reqParams.getUserid(), request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ts", reqParams.getTs());
         UserOperationLogUtil.log(userOperationLog);
@@ -204,7 +210,7 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
-    public String authToken(HttpServletRequest request,PcAuthTokenParams authPcTokenParams) throws Exception {
+    public String authToken(HttpServletRequest request, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -216,7 +222,7 @@ public class PCAccountController extends BaseController {
         Result result = pcAccountManager.authToken(authPcTokenParams);
 
         //用户log
-        String resultCode =  StringUtil.defaultIfEmpty(result.getCode(), "0");
+        String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(authPcTokenParams.getUserid(), request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ts", authPcTokenParams.getTs());
         UserOperationLogUtil.log(userOperationLog);
