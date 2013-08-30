@@ -49,7 +49,7 @@ public class UserOperationLogUtil {
 
     private static String LOCALIP = null;
 
-    private static Logger userLogger = userLoggerScribe;
+    private static Logger userLogger = userLoggerMQ;
 
 /*    private static AmqpAdmin admin;
     private static RabbitTemplate template;
