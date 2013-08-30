@@ -17,11 +17,12 @@ import java.util.Random;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import ch.qos.logback.core.UnsynchronizedAppenderBase;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-8-30 Time: 上午11:47 To change this template use File | Settings | File Templates.
  */
-public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
+public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     private String host = "localhost";
     private int port = 5672;
@@ -62,7 +63,7 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                 for (int i=0; i<50; i++) {
                     connections.add(connectionFactory.newConnection());
                 }*/
-                channel = connection.createChannel(100);
+                channel = connection.createChannel();
                 /*for (int i=0; i<100; i++) {
                     channels.add(connections.get(new Random().nextInt(50)).createChannel());
                 }*/
