@@ -20,8 +20,6 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.user.UserAPIResponse;
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -111,7 +109,7 @@ public class ConnectCallbackController extends BaseConnectController {
             }
 
             // 4.获取第三方个人资料
-            String nickName = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO,oAuthConsumer);
+            String nickName = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
@@ -127,8 +125,7 @@ public class ConnectCallbackController extends BaseConnectController {
                         model.addAttribute("result", result);
                         return new ModelAndView("/pcaccount/connectlogin");
                     } else {
-                        // TODO
-                        url = "";
+                        return new ModelAndView("/pcaccount/connecterr");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
                     String token = (String) connectAccountResult.getModels().get("token");
@@ -138,6 +135,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 }
             } else {
                 url = buildAppErrorRu(type, ru, connectAccountResult.getCode(), null);
+                return new ModelAndView("/pcaccount/connecterr");
             }
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
