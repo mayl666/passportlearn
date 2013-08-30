@@ -81,6 +81,7 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
         // output the events as formatted by our layout
         try {
             // this.encoder.doEncode(event);
+            long start = System.currentTimeMillis();
             String msg = encoder.getLayout().doLayout(event);
             if (channel == null || !channel.isOpen()) {
                 System.out.println("---------------------Channel is null---------------------");
@@ -100,7 +101,6 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                     }
                 }
             }
-            long start = System.currentTimeMillis();
             channel.basicPublish("", queueName, null, msg.getBytes());
             System.out.println(System.currentTimeMillis()-start);
             // channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
