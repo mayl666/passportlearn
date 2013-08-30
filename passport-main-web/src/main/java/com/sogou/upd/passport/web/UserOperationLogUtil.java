@@ -167,14 +167,14 @@ public class UserOperationLogUtil {
 
             // Thread.sleep(60);
             start = System.currentTimeMillis();
-            // userLogger.info(log.toString());
+            userLogger.info(log.toString());
             // template.convertAndSend(log.toString());
-            connection = connectionFactory.newConnection();
+/*            connection = connectionFactory.newConnection();
             channel = connection.createChannel();
             channel.queueDeclare("passport_user_1", false, false, false, null);
             channel.basicPublish("", "passport_user_1", null, log.toString().getBytes());
             channel.queueDeclare("passport_user", false, false, false, null);
-            channel.basicPublish("", "passport_user", null, log.toString().getBytes());
+            channel.basicPublish("", "passport_user", null, log.toString().getBytes());*/
             log.append(System.currentTimeMillis() - start);
             userLoggerBase.info(log.toString()); //TODO
         } catch (Exception e) {
