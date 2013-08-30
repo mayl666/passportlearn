@@ -66,9 +66,15 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("provider", providerStr);
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
         requestModel.addParam("expires_in", (int) oAuthTokenVO.getExpiresIn());  // 搜狐wiki里expires_in必须为int型
-        requestModel.addParam("refresh_token", oAuthTokenVO.getRefreshToken());
-        requestModel.addParam("openid", oAuthTokenVO.getOpenid());
-        requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getRefreshToken())) {
+            requestModel.addParam("refresh_token", oAuthTokenVO.getRefreshToken());
+        }
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getOpenid())) {
+            requestModel.addParam("openid", oAuthTokenVO.getOpenid());
+        }
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName())) {
+            requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
+        }
         Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         if ("0".equals(map.get("status"))) {
             result.setSuccess(true);
