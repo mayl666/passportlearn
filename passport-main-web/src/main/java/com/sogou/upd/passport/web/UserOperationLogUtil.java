@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ApiGroupUtil;
+import com.sogou.upd.passport.mq.RabbitMQPublisher;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
@@ -44,6 +45,7 @@ public class UserOperationLogUtil {
     private static final Logger userLoggerAsync = LoggerFactory.getLogger("userLoggerAsync");
     private static final Logger userLoggerMQ = LoggerFactory.getLogger("userLoggerMQ");
 
+    private static final RabbitMQPublisher publisher = new RabbitMQPublisher();
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
 
@@ -168,7 +170,9 @@ public class UserOperationLogUtil {
 
             // Thread.sleep(60);
             start = System.currentTimeMillis();
-            userLogger.info(log.toString());
+            // userLogger.info(log.toString());
+            RabbitMQPublisher.append(log.toString());
+
             // template.convertAndSend(log.toString());
 /*            connection = connectionFactory.newConnection();
             channel = connection.createChannel();
