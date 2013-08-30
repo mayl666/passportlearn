@@ -16,22 +16,22 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 public class RabbitMQPublisher {
     private String host = "localhost";
     private int port = 5672;
-    private static String queueName = "test";
+    private String queueName = "test";
     private String username = "guest";
     private String password = "guest";
     private String virtualHost = "/";
 
 
 
-    private static ConnectionFactory connectionFactory;
-    private static Connection connection;
+    private ConnectionFactory connectionFactory;
+    private Connection connection;
     //private static List<Connection> connections;
-    private static Channel channel;
+    private Channel channel;
     //private List<Channel> channels;
 
-    PatternLayoutEncoder encoder;
+    // PatternLayoutEncoder encoder;
 
-    static {
+    public RabbitMQPublisher() {
 
         boolean err = false;
 
@@ -59,7 +59,7 @@ public class RabbitMQPublisher {
 
     }
 
-    public static void append(String msg) {
+    public void append(String msg) {
         // output the events as formatted by our layout
         try {
             // this.encoder.doEncode(event);
@@ -71,5 +71,53 @@ public class RabbitMQPublisher {
         } catch (IOException e) {
         }
 
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getVirtualHost() {
+        return virtualHost;
+    }
+
+    public void setVirtualHost(String virtualHost) {
+        this.virtualHost = virtualHost;
     }
 }
