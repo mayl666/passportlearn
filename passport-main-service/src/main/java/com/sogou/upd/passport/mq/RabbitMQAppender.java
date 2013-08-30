@@ -62,7 +62,7 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                 for (int i=0; i<50; i++) {
                     connections.add(connectionFactory.newConnection());
                 }
-                channel = connection.createChannel();
+                channel = connection.createChannel(50);
                 for (int i=0; i<100; i++) {
                     channels.add(connections.get(new Random().nextInt(50)).createChannel());
                 }
@@ -100,8 +100,8 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                     }
                 }
             }
-            // channel.basicPublish("", queueName, null, msg.getBytes());
-            channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
+            channel.basicPublish("", queueName, null, msg.getBytes());
+            // channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
         } catch (IOException e) {
             addError("append failed: ", e);
         }
