@@ -100,7 +100,9 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                     }
                 }
             }
+            long start = System.currentTimeMillis();
             channel.basicPublish("", queueName, null, msg.getBytes());
+            System.out.println(System.currentTimeMillis()-start);
             // channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
         } catch (IOException e) {
             addError("append failed: ", e);
