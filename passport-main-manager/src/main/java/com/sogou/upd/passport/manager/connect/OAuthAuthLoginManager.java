@@ -29,4 +29,14 @@ public interface OAuthAuthLoginManager {
      */
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip);
 
+    /**
+     * 处理第三方登录授权回调
+     * @param req
+     * @param providerStr
+     * @param ru
+     * @param type
+     * @return
+     */
+    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type);
+
 }
