@@ -52,7 +52,7 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
 
                 connection = connectionFactory.newConnection();
 
-                channel = connection.createChannel(200);
+                channel = connection.createChannel();
             }
             // encoder.init(System.out);
         } catch (IOException e) {
@@ -83,7 +83,7 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                 synchronized (channel) {
                     if (channel == null || !channel.isOpen()) {
                         System.out.println("---------------------Channel is null also---------------------");
-                        channel = connection.createChannel(200);
+                        channel = connection.createChannel(1);
                     }
                 }
             }
