@@ -64,24 +64,7 @@ public class RabbitMQPublisher {
         try {
             // this.encoder.doEncode(event);
             long start = System.currentTimeMillis();
-            if (channel == null || !channel.isOpen()) {
-                System.out.println("---------------------Channel is null---------------------");
-                if (connection == null || !connection.isOpen()) {
-                    System.out.println("---------------------Connection is null---------------------");
-                    synchronized (connection) {
-                        if (connection == null || !connection.isOpen()) {
-                            System.out.println("---------------------Connection is null also---------------------");
-                            connection = connectionFactory.newConnection();
-                        }
-                    }
-                }
-                synchronized (channel) {
-                    if (channel == null || !channel.isOpen()) {
-                        System.out.println("---------------------Channel is null also---------------------");
-                        channel = connection.createChannel(1);
-                    }
-                }
-            }
+
             channel.basicPublish("", queueName, null, msg.getBytes());
             System.out.println(System.currentTimeMillis()-start);
             // channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
