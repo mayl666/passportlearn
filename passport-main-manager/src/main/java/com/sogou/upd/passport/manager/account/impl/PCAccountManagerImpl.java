@@ -48,33 +48,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private SHTokenService shTokenService;
 
     @Override
-    public Result createToken(PcGetTokenParams pcTokenParams) {
-        Result finalResult = new APIResultSupport(false);
-        try {
-            int clientId = Integer.parseInt(pcTokenParams.getAppid());
-            String passportId = pcTokenParams.getUserid();
-            String password = pcTokenParams.getPassword();
-            String instanceId = pcTokenParams.getTs();
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
-                return finalResult;
-            }
-            //校验用户名和密码
-            AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
-            Result result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-            if (!result.isSuccess()) {
-                return result;
-            }
-            return initialAccountToken(passportId, instanceId, appConfig);
-        } catch (Exception e) {
-            logger.error("createPairToken fail", e);
-            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return finalResult;
-        }
-    }
-
-    @Override
     public Result createPairToken(PcPairTokenParams pcTokenParams) {
         Result finalResult = new APIResultSupport(false);
         try {

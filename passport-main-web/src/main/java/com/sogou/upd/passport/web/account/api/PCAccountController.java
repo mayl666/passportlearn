@@ -102,21 +102,16 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return "1";
         }
-        Result result = pcAccountManager.createToken(pcGetTokenParams);
+
+        PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
+        pcPairTokenParams.setUserid(pcGetTokenParams.getUserid());
+        pcPairTokenParams.setAppid(pcGetTokenParams.getAppid());
+        pcPairTokenParams.setTs(pcGetTokenParams.getTs());
+        pcPairTokenParams.setPassword(pcGetTokenParams.getPassword());
+        Result result = pcAccountManager.createPairToken(pcPairTokenParams);
         String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 获取昵称，返回格式
-            String passportId = accountToken.getPassportId();
-            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-            Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
-            String uniqname;
-            if (getUserInfoResult.isSuccess()) {
-                uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-                uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-            } else {
-                uniqname = defaultUniqname(passportId);
-            }
             resStr = "0|" + accountToken.getAccessToken();   //0|token|refreshToken
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
