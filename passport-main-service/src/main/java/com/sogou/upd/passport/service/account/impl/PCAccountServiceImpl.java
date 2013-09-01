@@ -39,14 +39,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         try {
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             String key = buildKeyStr(passportId, clientId, instanceId);
-            long start1 = System.currentTimeMillis();
             kvUtils.set(key, accountToken);
-            long end1 = System.currentTimeMillis();
-            logger.info("kv set operate use time:" + (end1-start1));
-            long start2 = System.currentTimeMillis();
             kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-            long end2 = System.currentTimeMillis();
-            logger.info("kv put operate use time:" + (end2-start2));
             return accountToken;
         } catch (Exception e) {
             logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);

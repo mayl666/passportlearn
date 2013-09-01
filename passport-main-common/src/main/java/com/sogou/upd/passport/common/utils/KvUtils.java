@@ -44,7 +44,7 @@ public class KvUtils {
         }
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
     public void set(String key, Object obj) throws IOException {
         set(key, new ObjectMapper().writeValueAsString(obj));
     }
@@ -61,7 +61,7 @@ public class KvUtils {
         return null;
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject")
     public <T> T getObject(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -75,7 +75,7 @@ public class KvUtils {
         return null;
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete")
     public void delete(String key) {
         try {
             String storeKey = key;
@@ -90,7 +90,7 @@ public class KvUtils {
      * @param key
      * @param value
      */
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
     public void pushToSet(String key, String value){
         try{
             Set set = getObject(key, Set.class);
@@ -111,7 +111,7 @@ public class KvUtils {
      * @param value
      * @param maxLen 如果maxLen为-1，则不限制列表长度
      */
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToList")
     public void pushWithMaxLen(String key, String value, int maxLen) {
         try {
             LinkedList<String> list;
@@ -137,7 +137,7 @@ public class KvUtils {
         }
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList")
     public void pushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
             pushWithMaxLen(key, new ObjectMapper().writeValueAsString(obj), maxLen);
@@ -149,7 +149,7 @@ public class KvUtils {
     /*
      * 获取list中的第一个成员
      */
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getFirstStringFromList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getFirstStringFromList")
     public <T> T top(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -171,12 +171,12 @@ public class KvUtils {
     }
 
     // 查询键key的列表
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>")
     public LinkedList<String> getList(String key) {
         return getObject(key, LinkedList.class);
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<Object>")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<Object>")
     public <T> LinkedList<T> getList(String key, Class returnClass) {
         try {
             LinkedList<T> listObj = new LinkedList<>();
