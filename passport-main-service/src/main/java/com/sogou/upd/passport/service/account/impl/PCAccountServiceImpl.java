@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 public class PCAccountServiceImpl implements PCAccountTokenService {
     private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
-//    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
+    //    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
     private static String KEY_PREFIX = CacheConstant.KV_PREFIX_TEST; // TODO 压力测试
 
     @Autowired
@@ -41,13 +41,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             String key = buildKeyStr(passportId, clientId, instanceId);
             kvUtils.set(key, accountToken);
             kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-            // 异步写入映射列表
-//            batchOperateExecutor.execute(new Runnable() {
-//                @Override
-//                public void run() {
-//                    kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-//                }
-//            });
             return accountToken;
         } catch (Exception e) {
             logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -95,8 +88,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
      * passportId_clientId_instanceId：AccountToken的映射
      */
     public static String buildKeyStr(String passportId, int clientId, String instanceId) {
-        if(StringUtils.isEmpty(instanceId)){
-            return  KEY_PREFIX + passportId + "_" + clientId;
+        if (StringUtils.isEmpty(instanceId)) {
+            return KEY_PREFIX + passportId + "_" + clientId;
         }
         return KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId;
     }
