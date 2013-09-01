@@ -18,7 +18,6 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,7 +135,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-            AccountToken accountToken = pcAccountService.updateOrInsertAccountToken(passportId, instanceId, appConfig);
+            AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
             if (accountToken != null) {
                 result.setSuccess(true);
                 result.setDefaultModel(accountToken);
@@ -191,13 +190,13 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public String getSig(String passportId, int clientId, String refresh_token, String timestamp) {
+    public String getSig(String passportId, int clientId, String refresh_token, String timestamp) throws Exception {
         AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
         if (appConfig == null) {
             return null;
         }
         String clientSecret = appConfig.getClientSecret();
-        String sig = DigestUtils.md5Hex(passportId + clientId + refresh_token + timestamp + clientSecret);
+        String sig = Coder.encryptMD5(passportId + clientId + refresh_token + timestamp + clientSecret);
         return sig;
     }
 
@@ -220,7 +219,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
-        AccountToken accountToken = pcAccountService.initialAccountToken(passportId, instanceId, appConfig);
+        AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
         if (accountToken != null) {
             finalResult.setSuccess(true);
             finalResult.setDefaultModel(accountToken);
