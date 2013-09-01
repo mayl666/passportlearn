@@ -44,7 +44,7 @@ public class KvUtils {
         }
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
     public void set(String key, Object obj) throws IOException {
         set(key, new ObjectMapper().writeValueAsString(obj));
     }
@@ -61,7 +61,7 @@ public class KvUtils {
         return null;
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject")
     public <T> T getObject(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
