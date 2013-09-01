@@ -27,15 +27,14 @@ public class KvUtils {
 
     private static RedisTemplate kvTemplate;
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
+//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
     public void set(String key, String value) {
         String storeKey = key;
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
         } catch (Exception e) {
-            // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
-            System.out.println(e.getMessage());
+            logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             try {
                 delete(key);
             } catch (Exception ex) {
@@ -45,12 +44,12 @@ public class KvUtils {
         }
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
+//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
     public void set(String key, Object obj) throws IOException {
         set(key, new ObjectMapper().writeValueAsString(obj));
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
+//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
     public String get(String key) {
         String storeKey = key;
         try {
@@ -62,7 +61,7 @@ public class KvUtils {
         return null;
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject")
+//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject")
     public <T> T getObject(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -91,7 +90,7 @@ public class KvUtils {
      * @param key
      * @param value
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
+//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
     public void pushToSet(String key, String value){
         try{
             Set set = getObject(key, Set.class);
