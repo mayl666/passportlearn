@@ -90,7 +90,7 @@ public class KvUtils {
      * @param key
      * @param value
      */
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
     public void pushToSet(String key, String value){
         try{
             Set set = getObject(key, Set.class);
