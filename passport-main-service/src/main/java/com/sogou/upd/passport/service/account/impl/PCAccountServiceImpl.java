@@ -40,14 +40,14 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             String key = buildKeyStr(passportId, clientId, instanceId);
             kvUtils.set(key, accountToken);
-//            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
+            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
             // 异步写入映射列表
-            batchOperateExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-                }
-            });
+//            batchOperateExecutor.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
+//                }
+//            });
             return accountToken;
         } catch (Exception e) {
             logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
