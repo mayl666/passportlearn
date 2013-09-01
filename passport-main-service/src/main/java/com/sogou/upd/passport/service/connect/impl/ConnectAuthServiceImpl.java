@@ -109,7 +109,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     @Override
     public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
         String nickname = oAuthTokenVO.getNickName();
-        if (provider == AccountTypeEnum.QQ.getValue() || provider == AccountTypeEnum.SINA.getValue() || provider == AccountTypeEnum.BAIDU.getValue()) {
+        if (provider == AccountTypeEnum.QQ.getValue() || provider == AccountTypeEnum.SINA.getValue()) {
             UserAPIResponse response = obtainConnectUserInfo(provider, connectConfig, oAuthTokenVO.getOpenid(),
                     oAuthTokenVO.getAccessToken(), oAuthConsumer);
             ConnectUserInfoVO userProfileFromConnect = response.toUserInfo();

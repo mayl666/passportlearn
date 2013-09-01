@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.screen;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -137,11 +138,11 @@ public class AccountWeb extends BaseController {
         Map<String,String> map= Maps.newHashMap();
         if (!Strings.isNullOrEmpty(ru)) {
             result.setSuccess(true);
-            map.put("ru",ru);
+            map.put(CommonConstant.RESPONSE_RU,ru);
         }
         if (!Strings.isNullOrEmpty(client_id)) {
             result.setSuccess(true);
-            map.put("client_id", client_id);
+            map.put(CommonConstant.CLIENT_ID, client_id);
         }
         result.setModels(map);
         return result;

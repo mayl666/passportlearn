@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -129,7 +130,7 @@ public class RegAction extends BaseController {
             if (Strings.isNullOrEmpty(ru)) {
                 ru = LOGIN_INDEX_URL;
             }
-            result.setDefaultModel("ru", ru);
+            result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
         }
 
         //用户注册log

@@ -21,8 +21,8 @@ public class ConnectManagerHelper {
         try {
             ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
-            callbackParams.put("client_id", clientId);
-            callbackParams.put("ru", ru);
+            callbackParams.put(CommonConstant.CLIENT_ID, clientId);
+            callbackParams.put(CommonConstant.RESPONSE_RU, ru);
             callbackParams.put("type", type);
             callbackParams.put("ip", ip);
             callbackParams.put("ts", instanceId);

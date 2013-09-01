@@ -35,7 +35,7 @@ public class BaseConnectController extends BaseController {
     /**
      * 第三方登录接口type=mapp、mobile、web时，需要对ru分别做处理
      *
-     * @param ru   回调url
+     * @param ru 回调url
      * @return
      */
     protected String buildMappSuccessRu(String ru, String userid, String token, String nickname) {
@@ -74,6 +74,8 @@ public class BaseConnectController extends BaseController {
             }
             params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
             ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            ru = "/pcaccount/connectlogin";
         }
         return ru;
     }

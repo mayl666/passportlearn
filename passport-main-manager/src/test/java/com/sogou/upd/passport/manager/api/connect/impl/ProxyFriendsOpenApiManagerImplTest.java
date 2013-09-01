@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.connect.FriendsOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
@@ -43,9 +44,9 @@ public class ProxyFriendsOpenApiManagerImplTest extends BaseTest {
         ObjectMapper objectMapper = new ObjectMapper();
         Map map = objectMapper.convertValue(object, Map.class);
         map.remove("userid");
-        map.remove("client_id");
-        map.remove("ct");
-        map.remove("code");
+        map.remove(CommonConstant.CLIENT_ID);
+        map.remove(CommonConstant.RESQUEST_CT);
+        map.remove(CommonConstant.RESQUEST_CODE);
         map.remove("openid");
         map.remove("openapptype");
         map.remove("params");

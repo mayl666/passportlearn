@@ -53,7 +53,7 @@ public interface PCAccountManager {
      * @param timestamp
      * @return
      */
-    public String getSig(String passportId, int clientId,String refresh_token,String timestamp);
+    public String getSig(String passportId, int clientId,String refresh_token,String timestamp) throws Exception;
 
     /**
      * 只生成token，不需要校验密码或者sig

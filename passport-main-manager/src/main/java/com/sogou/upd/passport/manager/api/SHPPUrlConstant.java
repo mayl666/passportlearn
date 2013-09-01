@@ -26,7 +26,7 @@ public class SHPPUrlConstant {
     /* ============================================================================ */
     // 内部接口基本url
     private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
-    private static final String BASE_URL = "http://passport.sohu.com/";
+    private static final String BASE_URL = "https://passport.sohu.com/";
     // 第三方开放平台代理API基本url
     private static final String BASE_OPEN_API_URL = "http://internal.passport.sohu.com/openlogin/";
 
@@ -110,6 +110,4 @@ public class SHPPUrlConstant {
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
 
-    /*================================Token验证相关url=======================================*/
-    public static final String SOHU_REFRESHTOKEN_URL = BASE_URL + "act/refreshtoken";
 }

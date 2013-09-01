@@ -8,8 +8,8 @@
     <!--RefreshToken访问配置-->
     <bean   id="rTokenMemClientBuilder"
             class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
-            p:connectionPoolSize="1"
-            p:connectTimeout="1"
+            p:connectionPoolSize="50"
+            p:connectTimeout="100"
             p:failureMode="true">
         <constructor-arg>
             <list>
@@ -34,8 +34,8 @@
     <!--AccessToken访问配置-->
     <bean   id="aTokenMemClientBuilder"
             class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
-            p:connectionPoolSize="1"
-            p:connectTimeout="1"
+            p:connectionPoolSize="50"
+            p:connectTimeout="100"
             p:failureMode="true">
         <constructor-arg>
             <list>
