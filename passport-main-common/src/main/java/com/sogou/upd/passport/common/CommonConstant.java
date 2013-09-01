@@ -17,6 +17,7 @@ public class CommonConstant {
     public static final String CLIENT_ID = "client_id";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
+    public static final String UNIQNAME = "uniqname";
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明

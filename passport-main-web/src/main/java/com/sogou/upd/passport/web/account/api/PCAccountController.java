@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
@@ -9,7 +10,6 @@ import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
@@ -47,8 +47,6 @@ public class PCAccountController extends BaseController {
 
     @Autowired
     private PCAccountManager pcAccountManager;
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
@@ -112,17 +110,6 @@ public class PCAccountController extends BaseController {
         String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 获取昵称，返回格式
-            String passportId = accountToken.getPassportId();
-            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-            Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
-            String uniqname;
-            if (getUserInfoResult.isSuccess()) {
-                uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-                uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-            } else {
-                uniqname = defaultUniqname(passportId);
-            }
             resStr = "0|" + accountToken.getAccessToken();   //0|token|refreshToken
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
@@ -150,20 +137,10 @@ public class PCAccountController extends BaseController {
         }
 
         Result result = pcAccountManager.createPairToken(reqParams);
-        String resStr = "";
+        String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 获取昵称，返回格式
-            String passportId = accountToken.getPassportId();
-            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-            Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
-            String uniqname;
-            if (getUserInfoResult.isSuccess()) {
-                uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-                uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-            } else {
-                uniqname = defaultUniqname(passportId);
-            }
+            String uniqname = (String) result.getModels().get(CommonConstant.UNIQNAME);
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
@@ -262,9 +239,6 @@ public class PCAccountController extends BaseController {
         return cleanValue.equals(cb);
     }
 
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
-    }
 
     private String getReturnStr(String cb, String resStr) {
         if (!Strings.isNullOrEmpty(cb)) {

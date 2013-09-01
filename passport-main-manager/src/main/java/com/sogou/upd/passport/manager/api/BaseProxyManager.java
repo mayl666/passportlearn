@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.api;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -38,7 +37,7 @@ public class BaseProxyManager {
     }
 
     /**
-     * 执行request操作，并将返回结果构造程{@link com.sogou.upd.passport.common.result.Result}
+     * 执行request操作，并将返回结果构造程{@link Result}
      *
      * @param requestModel
      * @param signVariableStr 计算code时第一个参数值，如果为null默认是userid
@@ -106,8 +105,8 @@ public class BaseProxyManager {
         long ct = System.currentTimeMillis();
         //计算默认的code
         String code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
-        requestModel.addParam(CommonConstant.RESQUEST_CODE, code);
-        requestModel.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
+        requestModel.addParam("code", code);
+        requestModel.addParam("ct", String.valueOf(ct));
         requestModel.addParam("appid", String.valueOf(SHPPUrlConstant.APP_ID));
     }
 
@@ -117,7 +116,7 @@ public class BaseProxyManager {
      * @param requestModel
      */
     protected void paramNameAdapter(final RequestModel requestModel) {
-        this.paramNameAdapter(requestModel, CommonConstant.CLIENT_ID, "appid");
+        this.paramNameAdapter(requestModel, "client_id", "appid");
     }
 
     /**

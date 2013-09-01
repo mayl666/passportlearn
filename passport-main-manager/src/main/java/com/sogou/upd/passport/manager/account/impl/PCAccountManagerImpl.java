@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -79,6 +80,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         try {
             int clientId = Integer.parseInt(pcTokenParams.getAppid());
             String passportId = pcTokenParams.getUserid();
+            String uniqname = defaultUniqname(passportId);
             String password = pcTokenParams.getPassword();
             String instanceId = pcTokenParams.getTs();
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -92,6 +94,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 if (!result.isSuccess()) {
                     return result;
                 }
+                uniqname = (String) result.getModels().get(CommonConstant.UNIQNAME);
             } else {    //校验签名
                 String sig = pcTokenParams.getSig();
                 String timestamp = pcTokenParams.getTimestamp();
@@ -101,7 +104,11 @@ public class PCAccountManagerImpl implements PCAccountManager {
                     return finalResult;
                 }
             }
-            return initialAccountToken(passportId, instanceId, appConfig);
+            finalResult = initialAccountToken(passportId, instanceId, appConfig);
+            if (finalResult.isSuccess()) {
+                finalResult.setDefaultModel(CommonConstant.UNIQNAME, uniqname);
+            }
+            return finalResult;
         } catch (Exception e) {
             logger.error("createPairToken fail", e);
             finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -274,6 +281,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private boolean isValidToken(long tokenValidTime) {
         long currentTime = System.currentTimeMillis();
         return tokenValidTime > currentTime;
+    }
+
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
     }
 
 }
