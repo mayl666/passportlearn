@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -22,7 +23,7 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-8-30 Time: 上午11:47 To change this template use File | Settings | File Templates.
  */
-public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
+public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     private String host = "localhost";
     private int port = 5672;
@@ -37,6 +38,10 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
     private List<Connection> connections;
     private Channel channel;
     private List<Channel> channels;
+    private Random random;
+
+    private byte[] chan_flags;
+    private int flag=0;
 
     PatternLayoutEncoder encoder;
 
@@ -58,19 +63,25 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                 connectionFactory.setUsername(username);
                 connectionFactory.setPassword(password);
 
-                connection = connectionFactory.newConnection();
+               // connection = connectionFactory.newConnection();
                 connections = new LinkedList<>();
                 channels = new LinkedList<>();
-                for (int i=0; i<50; i++) {
+                for (int i=0; i<10; i++) {
                     Connection conn = connectionFactory.newConnection();
                     connections.add(conn);
-                    channels.add(conn.createChannel());
+                    for (int j=0; j<20; j++) {
+                        channels.add(conn.createChannel());
+                    }
 
                 }
-                channel = connection.createChannel();
+
+
+               // channel = connection.createChannel();
                /* for (int i=0; i<100; i++) {
                     channels.add(connections.get(new Random().nextInt(50)).createChannel());
                 }*/
+                random = new Random();
+                chan_flags = new byte[200];
             }
             // encoder.init(System.out);
         } catch (IOException e) {
@@ -106,11 +117,27 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                     }
                 }
             }
+            Channel chan;
+            int flg;
+            synchronized (channels) {
+                // int r = random.nextInt(200);
+                // int i = chan_flags[r];
+                int i = chan_flags[(++flag)%200];
+
+                int count = 100;
+                while (i == 1 && count-- != 0) {
+                    i = chan_flags[(++flag)%200];
+                }
+                flag = flag % 200;
+                chan = channels.get(flag);
+                chan_flags[flag] = 1;
+                flg = flag;
+            }
+
+            chan.basicPublish("", queueName, null, msg.getBytes());
+            chan_flags[flg] = 0;
             //channel.basicPublish("", queueName, null, msg.getBytes());
             // channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
-            Channel chan = connections.get(new Random().nextInt(50)).createChannel();
-            chan.basicPublish("", queueName, null, msg.getBytes());
-            chan.close();
             System.out.println(System.currentTimeMillis()-start);
             //
         } catch (IOException e) {
