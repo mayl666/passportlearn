@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -32,16 +34,18 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
     private String password = "guest";
     private String virtualHost = "/";
 
+    private static final int DEFAULT_CONNSIZE = 10;
+    private static final int DEFAULT_CHANSIZE = 20;
+
+    private int connSize = DEFAULT_CONNSIZE;
+    private int chanSize = DEFAULT_CHANSIZE;
+    private int allChanSize = DEFAULT_CONNSIZE * DEFAULT_CHANSIZE;
+
 
     private ConnectionFactory connectionFactory;
-    private Connection connection;
     private List<Connection> connections;
-    private Channel channel;
     private List<Channel> channels;
     private Random random;
-
-    private byte[] chan_flags;
-    private int flag=0;
 
     PatternLayoutEncoder encoder;
 
@@ -63,25 +67,27 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                 connectionFactory.setUsername(username);
                 connectionFactory.setPassword(password);
 
-                connections = new LinkedList<>();
-                channels = new LinkedList<>();
-                for (int i=0; i<10; i++) {
+                connections = new ArrayList<>();
+                channels = new ArrayList<>();
+                for (int i=0; i<connSize; i++) {
                     Connection conn = connectionFactory.newConnection();
                     connections.add(conn);
-                    for (int j=0; j<20; j++) {
+                    for (int j=0; j<chanSize; j++) {
                         channels.add(conn.createChannel());
                     }
-
                 }
 
-                //connection = connectionFactory.newConnection();
-                //channel = connection.createChannel();
+                // handle sizes
+                if (connSize <= 0) {
+                    connSize = DEFAULT_CONNSIZE;
+                }
+                if (chanSize <= 0) {
+                    chanSize = DEFAULT_CHANSIZE;
+                }
+                allChanSize = connSize * chanSize;
 
-               /* for (int i=0; i<100; i++) {
-                    channels.add(connections.get(new Random().nextInt(50)).createChannel());
-                }*/
+                // other opers
                 random = new Random();
-                chan_flags = new byte[200];
             }
             // encoder.init(System.out);
         } catch (IOException e) {
@@ -94,75 +100,79 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
     }
 
     @Override
-    public void doAppend(ILoggingEvent eventObject) {
-        long start = System.currentTimeMillis();
-        super.doAppend(eventObject);
-        long end = System.currentTimeMillis();
-        System.out.println("DoAppend:"+(end-start));
-    }
-
     public void append(ILoggingEvent event) {
-        // output the events as formatted by our layout
         try {
-            // this.encoder.doEncode(event);
-            long start = System.currentTimeMillis();
+            if (!isStarted()) {
+                return;
+            }
             String msg = encoder.getLayout().doLayout(event);
-            /*if (channel == null || !channel.isOpen()) {
-                System.out.println("---------------------Channel is null---------------------");
-                if (connection == null || !connection.isOpen()) {
-                    System.out.println("---------------------Connection is null---------------------");
-                    synchronized (connection) {
-                        if (connection == null || !connection.isOpen()) {
-                            System.out.println("---------------------Connection is null also---------------------");
-                            connection = connectionFactory.newConnection();
-                        }
-                    }
-                }
-                synchronized (channel) {
-                    if (channel == null || !channel.isOpen()) {
-                        System.out.println("---------------------Channel is null also---------------------");
-                        channel = connection.createChannel(1);
-                    }
-                }
-            }*/
-            Channel chan;
-            int flg;
-/*            synchronized (channels) {
-                // int r = random.nextInt(200);
-                // int i = chan_flags[r];
-                int i = chan_flags[(++flag)%200];
-
-                int count = 100;
-                while (i == 1 && count-- != 0) {
-                    i = chan_flags[(++flag)%200];
-                }
-                flag = flag % 200;
-                chan = channels.get(flag);
-                chan_flags[flag] = 1;
-                flg = flag;
-            }*/
-            chan = channels.get(random.nextInt(200));
-
-            chan.basicPublish("", queueName, null, msg.getBytes());
-            // chan_flags[flg] = 0;
-            //channel.basicPublish("", queueName, null, msg.getBytes());
-            // channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
-            System.out.println("Append:"+(System.currentTimeMillis()-start));
-            //
+            Channel channel = getChannelAvail();
+            if (channel == null) {
+                return;
+            }
+            channel.basicPublish("", queueName, null, msg.getBytes());
         } catch (IOException e) {
             addError("append failed: ", e);
         }
+    }
 
+    protected Channel getChannelAvail() {
+        int idx = random.nextInt(allChanSize);
+        int conn_idx = idx / chanSize;
+        Channel channel = channels.get(idx);
+        if (!channel.isOpen()) {
+            synchronized (channels) {
+                if (channel.isOpen()) {
+                    return channel;
+                }
+                try {
+                    channel.close();
+                } catch (IOException e) {
+                    addError("channel close failed: ", e);
+                }
+                Connection connection = connections.get(idx / chanSize);
+                if (!connection.isOpen()) {
+                    try {
+                        connection.close();
+                    } catch (IOException e) {
+                        addError("connection close failed: ", e);
+                    }
+
+                    try {
+                        connection = connectionFactory.newConnection();
+                        connections.set(conn_idx, connection);
+                    } catch (IOException e) {
+                        addError("new connection failed: ", e);
+                        return null;
+                    }
+
+                }
+                try {
+                    channel = connection.createChannel();
+                    channels.set(idx, channel);
+                } catch (IOException e) {
+                    addError("channel create failed: ", e);
+                    return null;
+                }
+            }
+        }
+        return channel;
     }
 
     @Override
     public void stop() {
         try {
             synchronized (this) {
-                if (channel.isOpen()) {
+                Iterator<Channel> iterator = channels.iterator();
+                Channel channel;
+                while (iterator.hasNext()) {
+                    channel = iterator.next();
                     channel.close();
                 }
-                if (connection.isOpen()) {
+                Iterator<Connection> iter = connections.iterator();
+                Connection connection;
+                while (iter.hasNext()) {
+                    connection = iter.next();
                     connection.close();
                 }
             }
@@ -235,27 +245,27 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
         this.connectionFactory = connectionFactory;
     }
 
-    public Connection getConnection() {
-        return connection;
-    }
-
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
     public String getVirtualHost() {
         return virtualHost;
     }
 
     public void setVirtualHost(String virtualHost) {
         this.virtualHost = virtualHost;
+    }
+
+    public int getConnSize() {
+        return connSize;
+    }
+
+    public void setConnSize(int connSize) {
+        this.connSize = connSize;
+    }
+
+    public int getChanSize() {
+        return chanSize;
+    }
+
+    public void setChanSize(int chanSize) {
+        this.chanSize = chanSize;
     }
 }
