@@ -80,7 +80,7 @@
     </appender>
 
     <appender name="scribeAsyncAppender" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>128</queueSize>
+        <queueSize>512</queueSize>
         <appender-ref ref="rabbitMQAppender" />
     </appender>
 
