@@ -152,6 +152,10 @@ public class UserOperationLogUtil {
             log.append("\t").append(StringUtil.defaultIfEmpty(ip, "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(resultCode, "-"));
 
+            long end = System.currentTimeMillis();
+
+            long s1 = end-start;
+
             Object stopWatchObject = request.getAttribute(CommonConstant.STOPWATCH);
             if (stopWatchObject != null && stopWatchObject instanceof StopWatch) {
                 StopWatch stopWatch = (StopWatch) stopWatchObject;
@@ -162,11 +166,18 @@ public class UserOperationLogUtil {
                 log.append("\t-");
             }
 
+            start = System.currentTimeMillis();
+
+            long s2 = start-end;
+
             String referer = otherMessage.remove("ref");
             log.append("\t").append(StringUtil.defaultIfEmpty(referer, "-"));
 
             String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
             log.append("\t").append(otherMsgJson);
+
+            end = System.currentTimeMillis();
+            long s3 = end - start;
 
             // userLogger.info(log.toString());
             userLogger.info(log.toString());
@@ -182,7 +193,7 @@ public class UserOperationLogUtil {
             channel.basicPublish("", "passport_user_1", null, log.toString().getBytes());
             channel.queueDeclare("passport_user", false, false, false, null);
             channel.basicPublish("", "passport_user", null, log.toString().getBytes());*/
-            log.append(System.currentTimeMillis() - start);
+            log.append(System.currentTimeMillis() - end);
             userLoggerBase.info(log.toString()); //TODO
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
