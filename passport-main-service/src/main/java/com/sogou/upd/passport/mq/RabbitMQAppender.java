@@ -22,7 +22,7 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-8-30 Time: 上午11:47 To change this template use File | Settings | File Templates.
  */
-public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
+public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
 
     private String host = "localhost";
     private int port = 5672;
@@ -64,7 +64,7 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                 for (int i=0; i<50; i++) {
                     Connection conn = connectionFactory.newConnection();
                     connections.add(conn);
-                    channels.add(conn.createChannel(10));
+                    channels.add(conn.createChannel());
 
                 }
                 channel = connection.createChannel();
