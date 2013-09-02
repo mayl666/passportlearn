@@ -51,7 +51,7 @@ public class UserOperationLogUtil {
 
     private static String LOCALIP = null;
 
-    private static Logger userLogger = userLoggerMQ;
+    private static Logger userLogger = userLoggerAsync;
 
 /*    private static AmqpAdmin admin;
     private static RabbitTemplate template;
@@ -171,7 +171,7 @@ public class UserOperationLogUtil {
             // Thread.sleep(60);
             start = System.currentTimeMillis();
             // userLogger.info(log.toString());
-            userLoggerBase.info(log.toString());
+            userLogger.info(log.toString());
 
 
 
