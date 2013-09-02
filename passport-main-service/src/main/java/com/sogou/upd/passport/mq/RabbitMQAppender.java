@@ -147,7 +147,7 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
             // chan_flags[flg] = 0;
             //channel.basicPublish("", queueName, null, msg.getBytes());
             // channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
-            System.out.println("DoAppend:"+(System.currentTimeMillis()-start));
+            System.out.println("Append:"+(System.currentTimeMillis()-start));
             //
         } catch (IOException e) {
             addError("append failed: ", e);
