@@ -93,7 +93,8 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
         }
     }
 
-    public synchronized void doAppend(ILoggingEvent eventObject) {
+    @Override
+    public void doAppend(ILoggingEvent eventObject) {
         long start = System.currentTimeMillis();
         super.doAppend(eventObject);
         long end = System.currentTimeMillis();
