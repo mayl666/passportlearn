@@ -119,7 +119,7 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
             }*/
             Channel chan;
             int flg;
-            synchronized (channels) {
+/*            synchronized (channels) {
                 // int r = random.nextInt(200);
                 // int i = chan_flags[r];
                 int i = chan_flags[(++flag)%200];
@@ -132,10 +132,11 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                 chan = channels.get(flag);
                 chan_flags[flag] = 1;
                 flg = flag;
-            }
+            }*/
+            chan = channels.get(random.nextInt(200));
 
             chan.basicPublish("", queueName, null, msg.getBytes());
-            chan_flags[flg] = 0;
+            // chan_flags[flg] = 0;
             //channel.basicPublish("", queueName, null, msg.getBytes());
             // channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
             System.out.println(System.currentTimeMillis()-start);
