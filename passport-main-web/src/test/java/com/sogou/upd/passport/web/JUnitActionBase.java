@@ -68,9 +68,9 @@ public class JUnitActionBase {
     public ModelAndView excuteAction(MockHttpServletRequest request, HttpServletResponse response, String signVariableStr) throws Exception {
         long ct = System.currentTimeMillis();
         String code = ManagerHelper.generatorCode(signVariableStr, clientId, APP_KEY, ct);
-        request.addParameter("code", code);
-        request.addParameter("client_id", String.valueOf(clientId));
-        request.addParameter("ct", String.valueOf(ct));
+        request.addParameter(CommonConstant.RESQUEST_CODE, code);
+        request.addParameter(CommonConstant.CLIENT_ID, String.valueOf(clientId));
+        request.addParameter(CommonConstant.RESQUEST_CT, String.valueOf(ct));
         request.setAttribute(HandlerMapping.INTROSPECT_TYPE_LEVEL_MAPPING, true);
         HandlerExecutionChain chain = handlerMapping.getHandler(request);
         final ModelAndView model = handlerAdapter.handle(request, response, chain.getHandler());

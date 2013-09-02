@@ -76,10 +76,10 @@ public class ControllerHelper {
             result = new APIResultSupport(true);
         }
 
-        result.setDefaultModel("client_id", client_id);
+        result.setDefaultModel(CommonConstant.CLIENT_ID, client_id);
 
         if (!Strings.isNullOrEmpty(ru)) {
-            result.setDefaultModel("ru", ru);
+            result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
         }
         return result;
     }

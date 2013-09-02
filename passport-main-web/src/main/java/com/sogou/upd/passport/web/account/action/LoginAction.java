@@ -171,7 +171,7 @@ public class LoginAction extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
-        userOperationLog.putOtherMessage("ru", ru);
+        userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
         UserOperationLogUtil.log(userOperationLog);
 
         if(StringUtil.isBlank(ru)){

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 public class PCAccountServiceImpl implements PCAccountTokenService {
     private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
-//    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
+    //    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
     private static String KEY_PREFIX = CacheConstant.KV_PREFIX_TEST; // TODO 压力测试
 
     @Autowired
@@ -34,22 +34,16 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private ThreadPoolTaskExecutor batchOperateExecutor;
 
     @Override
-    public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
+    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             String key = buildKeyStr(passportId, clientId, instanceId);
             kvUtils.set(key, accountToken);
-            // 异步写入映射列表
-            batchOperateExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-                }
-            });
+            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
             return accountToken;
         } catch (Exception e) {
-            logger.error("Initial AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
         }
     }
@@ -65,27 +59,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             throw new ServiceException(e);
         }
     }
-
-    @Override
-    public AccountToken updateOrInsertAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
-        final int clientId = appConfig.getClientId();
-        try {
-            AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
-            String key = buildKeyStr(passportId, clientId, instanceId);
-            kvUtils.set(key, accountToken);
-            batchOperateExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-                }
-            });
-            return accountToken;
-        } catch (Exception e) {
-            logger.error("UpdateOrInsert AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
-        }
-    }
-
 
     @Override
     public boolean verifyAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
@@ -115,8 +88,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
      * passportId_clientId_instanceId：AccountToken的映射
      */
     public static String buildKeyStr(String passportId, int clientId, String instanceId) {
-        if(StringUtils.isEmpty(instanceId)){
-            return  KEY_PREFIX + passportId + "_" + clientId;
+        if (StringUtils.isEmpty(instanceId)) {
+            return KEY_PREFIX + passportId + "_" + clientId;
         }
         return KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId;
     }
