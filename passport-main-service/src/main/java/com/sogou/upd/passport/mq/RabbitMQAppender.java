@@ -59,14 +59,14 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                 connectionFactory.setPassword(password);
 
                 connection = connectionFactory.newConnection();
-               /* connections = new LinkedList<>();
+                connections = new LinkedList<>();
                 for (int i=0; i<50; i++) {
                     connections.add(connectionFactory.newConnection());
-                }*/
+                }
                 channel = connection.createChannel();
-                /*for (int i=0; i<100; i++) {
-                    channels.add(connections.get(new Random().nextInt(50)).createChannel());
-                }*/
+                for (int i=0; i<100; i++) {
+                    channels.add(connections.get(new Random().nextInt(10)).createChannel());
+                }
             }
             // encoder.init(System.out);
         } catch (IOException e) {
@@ -102,9 +102,10 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                     }
                 }
             }
-            channel.basicPublish("", queueName, null, msg.getBytes());
+            //channel.basicPublish("", queueName, null, msg.getBytes());
+            channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
             System.out.println(System.currentTimeMillis()-start);
-            // channels.get(new Random().nextInt(100)).basicPublish("", queueName, null, msg.getBytes());
+            //
         } catch (IOException e) {
             addError("append failed: ", e);
         }
