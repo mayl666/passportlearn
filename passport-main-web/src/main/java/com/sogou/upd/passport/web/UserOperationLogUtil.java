@@ -170,7 +170,11 @@ public class UserOperationLogUtil {
 
             // Thread.sleep(60);
             start = System.currentTimeMillis();
-            userLogger.info(log.toString());
+            // userLogger.info(log.toString());
+            userLoggerBase.info(log.toString());
+
+
+
             // publisher.append(log.toString());
 
             // template.convertAndSend(log.toString());
