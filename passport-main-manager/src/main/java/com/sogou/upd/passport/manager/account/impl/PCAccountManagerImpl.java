@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -40,6 +41,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
+    private LoginApiManager sgLoginApiManager;
+    @Autowired
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
@@ -61,7 +64,13 @@ public class PCAccountManagerImpl implements PCAccountManager {
             }
             if (!Strings.isNullOrEmpty(password)) {   //校验用户名和密码
                 AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
-                Result result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                //根据域名判断是否代理，一期全部走代理
+                Result result = new APIResultSupport(false);
+                if (ManagerHelper.isInvokeProxyApi(passportId)) {
+                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                } else {
+                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
+                }
                 if (!result.isSuccess()) {
                     return result;
                 }
