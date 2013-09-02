@@ -107,7 +107,10 @@ public class RabbitMQAppender extends AppenderBase<ILoggingEvent> {
                 }
             }
             //channel.basicPublish("", queueName, null, msg.getBytes());
-            channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
+            // channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
+            Channel chan = connections.get(new Random().nextInt(50)).createChannel();
+            chan.basicPublish("", queueName, null, msg.getBytes());
+            chan.close();
             System.out.println(System.currentTimeMillis()-start);
             //
         } catch (IOException e) {
