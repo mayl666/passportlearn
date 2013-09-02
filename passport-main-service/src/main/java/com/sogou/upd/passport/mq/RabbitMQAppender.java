@@ -63,7 +63,6 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                 connectionFactory.setUsername(username);
                 connectionFactory.setPassword(password);
 
-                connection = connectionFactory.newConnection();
                 connections = new LinkedList<>();
                 channels = new LinkedList<>();
                 for (int i=0; i<10; i++) {
@@ -75,8 +74,9 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
 
                 }
 
+                //connection = connectionFactory.newConnection();
+                //channel = connection.createChannel();
 
-                channel = connection.createChannel();
                /* for (int i=0; i<100; i++) {
                     channels.add(connections.get(new Random().nextInt(50)).createChannel());
                 }*/
@@ -141,9 +141,9 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                 chan_flags[flag] = 1;
                 flg = flag;
             }*/
-            //chan = channels.get(random.nextInt(200));
+            chan = channels.get(random.nextInt(200));
 
-            channel.basicPublish("", queueName, null, msg.getBytes());
+            chan.basicPublish("", queueName, null, msg.getBytes());
             // chan_flags[flg] = 0;
             //channel.basicPublish("", queueName, null, msg.getBytes());
             // channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
