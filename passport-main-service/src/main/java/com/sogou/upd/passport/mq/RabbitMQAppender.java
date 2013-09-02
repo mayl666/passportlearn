@@ -93,6 +93,13 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
         }
     }
 
+    public synchronized void doAppend(ILoggingEvent eventObject) {
+        long start = System.currentTimeMillis();
+        super.doAppend(eventObject);
+        long end = System.currentTimeMillis();
+        System.out.println("DoAppend:"+(end-start));
+    }
+
     public void append(ILoggingEvent event) {
         // output the events as formatted by our layout
         try {
@@ -139,7 +146,7 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
             // chan_flags[flg] = 0;
             //channel.basicPublish("", queueName, null, msg.getBytes());
             // channels.get(new Random().nextInt(50)).basicPublish("", queueName, null, msg.getBytes());
-            System.out.println(System.currentTimeMillis()-start);
+            System.out.println("DoAppend:"+(System.currentTimeMillis()-start));
             //
         } catch (IOException e) {
             addError("append failed: ", e);
