@@ -57,6 +57,8 @@
         </encoder>
     </appender>
 
+
+
     <appender name="scribeAppenderLocal" class="de.bitzeche.logback.scribe.ScribeAppender">
         <!--<hostname>localhost</hostname>-->
         <scribeHost>10.16.131.229</scribeHost>
@@ -79,7 +81,7 @@
 
     <appender name="scribeAsyncAppender" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>128</queueSize>
-        <appender-ref ref="scribeAppender" />
+        <appender-ref ref="rabbitMQAppender" />
     </appender>
 
     <logger name="userLoggerMQ" level="info" additivity="false">
