@@ -168,8 +168,6 @@ public class UserOperationLogUtil {
             String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
             log.append("\t").append(otherMsgJson);
 
-            // Thread.sleep(60);
-            start = System.currentTimeMillis();
             // userLogger.info(log.toString());
             userLogger.info(log.toString());
 
