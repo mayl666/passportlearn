@@ -99,7 +99,7 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
             // this.encoder.doEncode(event);
             long start = System.currentTimeMillis();
             String msg = encoder.getLayout().doLayout(event);
-            if (channel == null || !channel.isOpen()) {
+            /*if (channel == null || !channel.isOpen()) {
                 System.out.println("---------------------Channel is null---------------------");
                 if (connection == null || !connection.isOpen()) {
                     System.out.println("---------------------Connection is null---------------------");
@@ -116,7 +116,7 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
                         channel = connection.createChannel(1);
                     }
                 }
-            }
+            }*/
             Channel chan;
             int flg;
             synchronized (channels) {
