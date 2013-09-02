@@ -87,6 +87,8 @@ public class UserOperationLogUtil {
             userLogger = userLoggerLocal;
         } else if ("async".equals(flag)) {
             userLogger = userLoggerAsync;
+        } else if ("base".equalsIgnoreCase(flag)) {
+            userLogger = userLoggerBase;
         } else {
             userLogger = userLoggerMQ;
         }
