@@ -55,17 +55,7 @@
         <encoder>
             <pattern>%msg</pattern>
         </encoder>
-        <connSize>100</connSize>
-    </appender>
-
-    <appender name="scribeAppenderLocal" class="de.bitzeche.logback.scribe.ScribeAppender">
-        <!--<hostname>localhost</hostname>-->
-        <scribeHost>10.16.131.229</scribeHost>
-        <scribePort>1463</scribePort>
-        <layout>
-            <pattern>%msg</pattern>
-        </layout>
-        <scribeCategory>passport_user</scribeCategory>
+        <connSize>50</connSize>
     </appender>
 
     <appender name="scribeAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
