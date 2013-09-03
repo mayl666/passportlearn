@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,8 +28,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Autowired
     private KvUtils kvUtils;
-    @Autowired
-    private ThreadPoolTaskExecutor batchOperateExecutor;
 
     @Override
     public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
