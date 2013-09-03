@@ -100,7 +100,7 @@ public class PCAccountController extends BaseController {
         return "/pcaccount/pclogin";
     }
 
-    @RequestMapping(value = "/act/gettoken", method = RequestMethod.GET)
+    @RequestMapping(value = "/act/gettoken")
     @ResponseBody
     public Object getToken(HttpServletRequest request, PcGetTokenParams pcGetTokenParams) throws Exception {
         //参数验证
@@ -132,7 +132,7 @@ public class PCAccountController extends BaseController {
         return resStr;
     }
 
-    @RequestMapping(value = "/act/getpairtoken", method = RequestMethod.GET)
+    @RequestMapping(value = "/act/getpairtoken")
     @ResponseBody
     public Object getPairToken(HttpServletRequest request, PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
@@ -173,7 +173,7 @@ public class PCAccountController extends BaseController {
         return getReturnStr(cb, resStr);
     }
 
-    @RequestMapping(value = "/act/refreshtoken", method = RequestMethod.GET)
+    @RequestMapping(value = "/act/refreshtoken")
     @ResponseBody
     public Object refreshToken(HttpServletRequest request, PcRefreshTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
@@ -204,7 +204,7 @@ public class PCAccountController extends BaseController {
         return getReturnStr(cb, resStr);
     }
 
-    @RequestMapping(value = "/act/authtoken", method = RequestMethod.GET)
+    @RequestMapping(value = "/act/authtoken")
     public String authToken(HttpServletRequest request, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
