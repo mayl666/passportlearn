@@ -65,7 +65,12 @@ public class UserOperationLogUtil {
             String timestamp = String.valueOf(date.getTime()).substring(0, 10);
             log.append(timestamp);
             log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-            log.append("\t").append(StringUtil.defaultIfEmpty(passportId.replace("\t", " "), "-"));  // 防止恶意用户调用接口输入非法用户名
+            if(!StringUtil.isEmpty(passportId)){
+                log.append("\t").append(passportId.replace("\t", " "));
+            }else {
+                log.append("\t").append("-");
+            }
+            // 防止恶意用户调用接口输入非法用户名
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             String domainStr = domain.toString();
