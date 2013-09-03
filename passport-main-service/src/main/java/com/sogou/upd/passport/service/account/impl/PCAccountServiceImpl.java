@@ -25,8 +25,7 @@ import org.springframework.stereotype.Service;
 public class PCAccountServiceImpl implements PCAccountTokenService {
     private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
-    //    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
-    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_TEST; // TODO 压力测试
+    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
 
     @Autowired
     private KvUtils kvUtils;
