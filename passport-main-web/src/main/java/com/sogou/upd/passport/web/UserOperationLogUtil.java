@@ -83,9 +83,9 @@ public class UserOperationLogUtil {
             }
             StringBuilder log = new StringBuilder();
             Date date = new Date();
-            String timestamp = String.valueOf(date.getTime()).substring(0, 10);
-            log.append(timestamp);
-            log.append(":").append(new SimpleDateFormat("HH:mm:ss").format(date));
+            //String timestamp = String.valueOf(date.getTime()).substring(0, 10);
+            //log.append(timestamp);
+            log.append(new SimpleDateFormat("HH:mm:ss").format(date));
             log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
             log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-").replace("\t", " "));  // 防止恶意用户调用接口输入非法用户名
 
