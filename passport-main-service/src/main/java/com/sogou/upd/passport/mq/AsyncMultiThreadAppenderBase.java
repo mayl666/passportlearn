@@ -104,7 +104,7 @@ public class AsyncMultiThreadAppenderBase<E> extends UnsynchronizedAppenderBase<
         // interrupt the worker thread so that it can terminate. Note that the interruption can be consumed
         // by sub-appenders
         for (int i=0; i<workerSize; i++) {
-            Worker worker = workers.get(0);
+            Worker worker = workers.get(i);
             worker.interrupt();
             try {
                 worker.join(1000);
