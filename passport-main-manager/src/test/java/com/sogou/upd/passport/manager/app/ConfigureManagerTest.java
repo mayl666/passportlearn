@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.app;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
@@ -18,4 +19,16 @@ public class ConfigureManagerTest extends BaseTest {
         String secret = RandomStringUtils.randomAscii(30);
         System.out.println("secret: " + secret);
     }
+
+    @Test
+    public void testGeneratorClientSecret() throws Exception {
+        // 客户端密钥
+        int appid = 1105;
+        String randomClient = RandomStringUtils.randomAlphanumeric(10);
+        long timestamp = System.currentTimeMillis();
+        String baseStrClient = appid + "|" + timestamp + "|" + randomClient;
+        String secretClient = new String(Coder.encryptMD5(baseStrClient));
+        System.out.println("clientSecret:" + secretClient);
+    }
+
 }
