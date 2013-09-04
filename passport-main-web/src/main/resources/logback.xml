@@ -55,7 +55,7 @@
         <encoder>
             <pattern>%msg</pattern>
         </encoder>
-        <connSize>50</connSize>
+        <connSize>10</connSize>
     </appender>
 
     <appender name="scribeAppender" class="de.bitzeche.logback.scribe.ScribeAppender">
@@ -68,7 +68,7 @@
         <scribeCategory>passport_user</scribeCategory>
     </appender>
 
-    <appender name="scribeAsyncAppender" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="scribeAsyncAppender" class="ch.qos.logback.classic.AsyncMultiThreadAppender">
         <queueSize>512</queueSize>
         <appender-ref ref="rabbitMQAppender" />
     </appender>
