@@ -11,6 +11,7 @@ public class AuthzCodeValidator extends AbstractClientValidator {
 
     public AuthzCodeValidator() {
         requiredParams.put(OpenOAuth.OAUTH_CODE, new String[]{});
+        requiredParams.put(OpenOAuth.OAUTH_STATE, new String[]{});
 
         notAllowedParams.add(OpenOAuth.OAUTH_ACCESS_TOKEN);
         notAllowedParams.add(OpenOAuth.OAUTH_EXPIRES_IN);

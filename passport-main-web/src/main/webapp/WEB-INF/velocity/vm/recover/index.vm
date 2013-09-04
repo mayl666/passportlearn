@@ -55,7 +55,7 @@
                 <div class="form-item form-item-vcode">
     <label for="ValidIpt">验证码：</label>
     <span class="form-el form-el-s"><input type="text" name="captcha" id="ValidIpt" value="" uui-type="require" /></span>
-    <span class="vpic"><img src="about:blank" class="" alt="" /></span>
+    <span class="vpic"><img src="/./static/img/b.gif" class="" alt="" /></span>
     <a href="#" class="change-vpic">看不清，换一张</a>
 </div>
                 <div class="form-btn">
@@ -77,7 +77,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2013081227"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2013082332"></script>
     
     <script type="text/javascript">
 

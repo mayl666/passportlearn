@@ -98,8 +98,8 @@ public class LoginAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/login/api";
         }
-        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
+        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
         String userId = loginParams.getUsername();
         //用户登录log
@@ -139,6 +139,8 @@ public class LoginAction extends BaseController {
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PASSPORT);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINFO);
 
         String userId = hostHolder.getPassportId();
 
@@ -160,6 +162,8 @@ public class LoginAction extends BaseController {
             throws Exception {
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
         CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PASSPORT);
+        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINFO);
 
         String userId = hostHolder.getPassportId();
 
@@ -167,7 +171,7 @@ public class LoginAction extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
-        userOperationLog.putOtherMessage("ru", ru);
+        userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
         UserOperationLogUtil.log(userOperationLog);
 
         if(StringUtil.isBlank(ru)){

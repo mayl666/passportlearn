@@ -120,6 +120,15 @@ public interface OperateTimesService {
     public void incRegTimes(String ip,String cookieStr) throws ServiceException;
 
     /**
+     * 检查用户ip是否在白名单中
+     *
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkRegInWhiteList(String ip) throws ServiceException;
+
+    /**
      *   检查一天内某ip注册次数
      */
     public boolean checkRegInBlackList(String ip,String cookieStr) throws ServiceException;

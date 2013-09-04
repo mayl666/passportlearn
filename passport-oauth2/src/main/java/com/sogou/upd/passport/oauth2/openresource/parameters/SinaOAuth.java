@@ -19,6 +19,9 @@ public class SinaOAuth extends OAuth {
 	public static final String CITY = "city"; // 用户所在城市ID
 	public static final String LOCATION = "location"; // 用户所在地
 
+    // 获取sina省份/城市ID转换表的url
+    public static final String SINA_PROVINCES_FORMAT_URL = "http://api.t.sina.com.cn/provinces.json";
+
 	/* 关系类API请求参数 */
 	public static final String COUNT = "count"; // 单页返回的记录条数，默认为50
 	public static final String PAGE = "page"; // 返回结果的页码，默认为1

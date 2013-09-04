@@ -255,7 +255,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+            if (operateTimesService.checkLimitResetPwd(passportId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }

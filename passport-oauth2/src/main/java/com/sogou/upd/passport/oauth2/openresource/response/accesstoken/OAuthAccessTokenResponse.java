@@ -40,7 +40,7 @@ public abstract class OAuthAccessTokenResponse extends OAuthClientResponse {
         } else if (!Strings.isNullOrEmpty(getRefreshToken())) {
             return RToken_ExpiresIn;
         } else {
-            return null;
+            return 0l;
         }
     }
 
@@ -51,20 +51,6 @@ public abstract class OAuthAccessTokenResponse extends OAuthClientResponse {
 
     public OAuthTokenVO getOAuthTokenVO() {
         return new OAuthTokenVO(getAccessToken(), getExpiresIn(), getRefreshToken(), getRefreshTokenExpiresIn(), getScope(), getOpenid(), getNickName());
-    }
-
-    public abstract void setBody(String body) throws OAuthProblemException;
-
-    public String getBody() {
-        return body;
-    }
-
-    protected void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    protected void setResponseCode(int code) {
-        this.responseCode = code;
     }
 
     @Override

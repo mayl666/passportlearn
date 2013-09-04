@@ -11,7 +11,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,26 +18,19 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
  */
 @Service
 public class OperateTimesServiceImpl implements OperateTimesService {
-//    public static Set<String> ipListSet = new HashSet<String>();
-//
-//    static {
-//        ipListSet.add("1.194");
-//        ipListSet.add("123.101");
-//        ipListSet.add("223.241");
-////        ipListSet.add("180.109");
-//        ipListSet.add("123.53");
-//        ipListSet.add("114.99");
-//    }
 
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
-    private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.blackListFileAppender");
+    private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
     private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
     @Autowired
     private RedisUtils redisUtils;
@@ -213,7 +205,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
             if (!MapUtils.isEmpty(username_hmap)) {
                 String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
-                if (!StringUtils.isEmpty(username_failedNum)) {
+                if (!Strings.isNullOrEmpty(username_failedNum)) {
                     num = Integer.parseInt(username_failedNum);
                     if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
                         logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_FAILED_KEY, num);
@@ -221,7 +213,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     }
                 }
                 String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
-                if (!StringUtils.isEmpty(username_successNum)) {
+                if (!Strings.isNullOrEmpty(username_successNum)) {
                     num = Integer.parseInt(username_successNum);
                     if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                         logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
@@ -236,7 +228,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
                 if (!MapUtils.isEmpty(ip_hmap)) {
                     String ip_failedNum = ip_hmap.get(CacheConstant.CACHE_FAILED_KEY);
-                    if (!StringUtils.isEmpty(ip_failedNum)) {
+                    if (!Strings.isNullOrEmpty(ip_failedNum)) {
                         num = Integer.parseInt(ip_failedNum);
                         if (checkInSubIpList(ip)) {
                             if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
@@ -251,7 +243,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         }
                     }
                     String ip_successNum = ip_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
-                    if (!StringUtils.isEmpty(ip_successNum)) {
+                    if (!Strings.isNullOrEmpty(ip_successNum)) {
                         num = Integer.parseInt(ip_successNum);
                         if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                             logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
@@ -381,6 +373,31 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public boolean checkRegInWhiteList(String ip) throws ServiceException {
+        try {
+            String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
+            Set<String> whiteList = redisUtils.smember(whiteListKey);
+            if (CollectionUtils.isNotEmpty(whiteList)) {
+                if (whiteList.contains(ip)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("checkRegInWhiteList:ip=" + ip, e);
+            return false;
+        }
+    }
+
+    private void logRegisterBlackList(String ip, String cacheKey, int cacheNum, String ipValues) {
+        StringBuilder log = new StringBuilder();
+        Date date = new Date();
+        log.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date))
+                .append(" ").append(ip).append(" ").append(cacheKey).append(" ").append(cacheNum).append(" ").append(ipValues);
+        regBlackListLogger.info(log.toString());
+    }
+
+    @Override
     public boolean checkRegInBlackList(String ip, String cookieStr) throws ServiceException {
         //修改为list模式添加cookie处理 by mayan
         try {
@@ -389,13 +406,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             Set<String> setIpVal = redisUtils.smember(cookieCacheKey);
             if (CollectionUtils.isNotEmpty(setIpVal)) {
                 int sz = setIpVal.size();
-                if (sz == (LoginConstant.REGISTER_COOKIE_LIMITED / 2)) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
-                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
-                }
                 if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
-                    regBlackListLogger.info(new Date() + "checkRegInBlackList,cookieCacheKey=" + cookieCacheKey
-                            + ",ipSize=" + sz + ",ipSet=" + setIpVal.toArray().toString());
                     return true;
                 }
             }
@@ -405,13 +416,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String value = redisUtils.get(ipCookieKey);
             if (!Strings.isNullOrEmpty(value)) {
                 int num = Integer.valueOf(value);
-                if (num == (LoginConstant.REGISTER_IP_COOKIE_LIMITED / 2)) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
-                            + ",num=" + num);
-                }
                 if (num >= LoginConstant.REGISTER_IP_COOKIE_LIMITED) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCookieKey=" + ipCookieKey
-                            + ",num=" + num);
                     return true;
                 }
             }
@@ -422,12 +427,10 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if (CollectionUtils.isNotEmpty(setCookieVal)) {
                 int sz = setCookieVal.size();
                 if (sz == (LoginConstant.REGISTER_IP_LIMITED / 2)) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
-                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
+                    logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
                 }
                 if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
-                    regBlackListLogger.info(new Date() + ",checkRegInBlackList,ipCacheKey=" + ipCacheKey
-                            + ",setCookieVal=" + sz + ",setCookieVal=" + setCookieVal.toArray().toString());
+                    logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
                     return true;
                 }
             }
@@ -489,7 +492,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean incLimitBind(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
-                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                    "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
@@ -502,7 +505,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkLimitBind(String userId, int clientId) throws ServiceException {
         try {
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
-                              "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                    "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
             logger.error("checkLimitBind:passportId" + userId, e);
@@ -548,7 +551,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             return false;
         }
     }
-
 
     @Override
     public boolean checkLimitBindEmail(String userId, int clientId) throws ServiceException {

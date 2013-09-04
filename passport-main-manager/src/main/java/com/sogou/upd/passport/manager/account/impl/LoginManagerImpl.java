@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
@@ -177,7 +178,7 @@ public class LoginManagerImpl implements LoginManager {
                 if (Strings.isNullOrEmpty(ru)) {
                     ru = scheme + LOGIN_INDEX_URLSTR;
                 }
-                result.setDefaultModel("ru", ru);
+                result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);

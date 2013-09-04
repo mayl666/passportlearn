@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.manager.api.connect;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 
 /**
  * 第三方授权
@@ -23,4 +25,12 @@ public interface ConnectApiManager {
      */
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid,
                                        int provider, String ip) throws OAuthProblemException;
+
+    /**
+     * 同步创建第三方账号的接口
+     * @param providerStr
+     * @param oAuthTokenVO
+     * @return
+     */
+    public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO);
 }

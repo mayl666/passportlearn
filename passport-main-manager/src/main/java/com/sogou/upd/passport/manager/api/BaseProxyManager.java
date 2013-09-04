@@ -37,7 +37,7 @@ public class BaseProxyManager {
     }
 
     /**
-     * 执行request操作，并将返回结果构造程{@link com.sogou.upd.passport.common.result.Result}
+     * 执行request操作，并将返回结果构造程{@link Result}
      *
      * @param requestModel
      * @param signVariableStr 计算code时第一个参数值，如果为null默认是userid

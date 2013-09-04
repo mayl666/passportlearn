@@ -14,14 +14,14 @@ import com.sogou.upd.passport.model.app.AppConfig;
 public interface PCAccountTokenService {
 
     /**
-     * 初始化AccountToken并存储
+     * 初始化或更新AccountToken
      *
      * @param passportId
      * @param instanceId
      * @param appConfig
      * @return
      */
-    public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
+    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
 
     /**
      * 查询AccountToken
@@ -33,17 +33,6 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException;
-
-    /**
-     * 更新或插入AccountToken
-     *
-     * @param passportId
-     * @param instanceId
-     * @param appConfig
-     * @return
-     * @throws ServiceException
-     */
-    public AccountToken updateOrInsertAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
 
     /**
      * 验证accesstoken正确性

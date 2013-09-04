@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 
@@ -13,7 +14,6 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
  * To change this template use File | Settings | File Templates.
  */
 public interface PCAccountManager {
-
     /**
      * 此接口处理两种情况下的生成pairToken：
      * 1.验证用户名和密码；
@@ -53,5 +53,14 @@ public interface PCAccountManager {
      * @param timestamp
      * @return
      */
-    public String getSig(String passportId, int clientId,String refresh_token,String timestamp);
+    public String getSig(String passportId, int clientId,String refresh_token,String timestamp) throws Exception;
+
+    /**
+     * 只生成token，不需要校验密码或者sig
+     * @param clientId
+     * @param passportId
+     * @param instanceId
+     * @return
+     */
+    public Result createConnectToken(int clientId, String passportId, String instanceId);
 }

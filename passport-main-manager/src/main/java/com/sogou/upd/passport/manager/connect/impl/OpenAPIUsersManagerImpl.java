@@ -13,10 +13,7 @@ import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.oauth2.common.utils.RenrenSignatureUtils;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
-import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenMethod;
-import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.QQUserAPIRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.RenrenUserAPIRequest;
@@ -32,8 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -117,13 +112,7 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
                 response = OAuthHttpClient.execute(request, SinaUserAPIResponse.class);
 
             } else if (provider == AccountTypeEnum.RENREN.getValue()) {
-                String appSecret = connectConfig.getAppSecret();
-                String method = RenrenMethod.GET_USER_INFO.toString();
-                String fields = "uid,name,sex,birthday,tinyurl,headurl,mainurl,hometown_location";
-                String sign = acountSign(appSecret, openid, method, connectAccessToken, fields);
-
-                request = RenrenUserAPIRequest.apiLocation(url, RenrenUserAPIRequest.RenrenUserAPIBuilder.class).setFields(fields)
-                        .setUids(openid).setMethod(method).setSign(sign).setAccessToken(connectAccessToken)
+                request = RenrenUserAPIRequest.apiLocation(url, RenrenUserAPIRequest.RenrenUserAPIBuilder.class).setUserId(openid).setAccessToken(connectAccessToken)
                         .buildBodyMessage(RenrenUserAPIRequest.class);
 
                 response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenUserAPIResponse.class);
@@ -143,10 +132,4 @@ public class OpenAPIUsersManagerImpl implements OpenAPIUsersManager {
         }
     }
 
-    private String acountSign(String secretKey, String openId, String method, String connectAccessToken, String fields) {
-        Map<String, String> map = RenrenSignatureUtils.baseSignMap(method, connectAccessToken);
-        map.put(RenrenOAuth.UIDS, openId);
-        map.put(RenrenOAuth.FIELDS, fields);
-        return RenrenSignatureUtils.getSignature(map, secretKey);
-    }
 }

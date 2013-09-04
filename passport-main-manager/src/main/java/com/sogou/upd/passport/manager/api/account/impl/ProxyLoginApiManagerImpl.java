@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -72,8 +73,8 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         String code = createCookieApiParams.getUserid() + SHPPUrlConstant.COOKIE_KEY + ct;
         try {
             code = Coder.encryptMD5(code);
-            requestModel.addParam("ct", ct);
-            requestModel.addParam("code", code);
+            requestModel.addParam(CommonConstant.RESQUEST_CT, ct);
+            requestModel.addParam(CommonConstant.RESQUEST_CODE, code);
             String value = SGHttpClient.executeStr(requestModel);
             if (StringUtil.isBlank(value) || value.trim().length() < 20) {
                 throw new RuntimeException("获取cookie值失败 userid=" + createCookieApiParams.getUserid() + " value=" + value);
