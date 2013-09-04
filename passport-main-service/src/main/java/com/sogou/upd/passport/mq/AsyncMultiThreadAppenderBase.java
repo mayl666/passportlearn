@@ -87,7 +87,7 @@ public class AsyncMultiThreadAppenderBase<E> extends UnsynchronizedAppenderBase<
         // make sure this instance is marked as "started" before staring the worker Thread
         super.start();
         for (int i=0; i<workerSize; i++) {
-            workers.get(0).start();
+            workers.get(i).start();
         }
     }
 
