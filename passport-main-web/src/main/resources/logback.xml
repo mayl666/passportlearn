@@ -68,7 +68,7 @@
         <scribeCategory>passport_user</scribeCategory>
     </appender>
 
-    <appender name="scribeAsyncAppender" class="ch.qos.logback.classic.AsyncMultiThreadAppender">
+    <appender name="scribeAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>512</queueSize>
         <appender-ref ref="rabbitMQAppender" />
     </appender>
