@@ -26,6 +26,7 @@ public class OpenApiParamsHelper {
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
         baseOpenApiParams.setUserid(map.get("userid").toString());
         baseOpenApiParams.setOpenid(map.get("openid").toString());
+        baseOpenApiParams.setClient_id(Integer.parseInt(map.get("client_id").toString()));
         baseOpenApiParams.setParams(convertObjectToMap(map));
         return baseOpenApiParams;
     }
