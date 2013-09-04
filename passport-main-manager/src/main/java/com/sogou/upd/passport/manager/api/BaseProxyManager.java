@@ -103,6 +103,9 @@ public class BaseProxyManager {
         //计算默认的code
         String url = requestModel.getUrl();
         String clientId = (String) requestModel.getParam(SHPPUrlConstant.APPID_STRING);
+        if (Strings.isNullOrEmpty(clientId)) {
+            clientId = (String) requestModel.getParam(CommonConstant.CLIENT_ID);
+        }
         String code;
         if (isNonPCOpenApiProxy(url, clientId)) {
             code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
