@@ -195,8 +195,8 @@ public class UserOperationLogUtil {
             channel.basicPublish("", "passport_user_1", null, log.toString().getBytes());
             channel.queueDeclare("passport_user", false, false, false, null);
             channel.basicPublish("", "passport_user", null, log.toString().getBytes());*/
-            log.append(System.currentTimeMillis() - end);
-            userLoggerBase.info(log.toString()+",s1:"+s1+",s2:"+s2+",s3"+s3); //TODO
+            long all = System.currentTimeMillis() - end;
+            System.out.println(all +",s1:"+s1+",s2:"+s2+",s3:"+s3); //TODO
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
