@@ -3,10 +3,12 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
@@ -172,6 +174,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
+            // 校验state，防止CRSF攻击
+            String state = req.getParameter("state");
+            String cookieValue = ServletUtil.getCookie(req, state);
+            if (!cookieValue.equals(CommonHelper.constructStateCookieKey(providerStr))) {
+                result.setCode(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
+                return result;
+            }
 
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             if (oAuthConsumer == null) {
