@@ -112,6 +112,7 @@ public class AsyncMultiThreadAppenderBase<E> extends UnsynchronizedAppenderBase<
                 addError("Failed to join worker thread", e);
             }
         }
+        workers.clear();
     }
 
 
