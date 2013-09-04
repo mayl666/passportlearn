@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.spi.AppenderAttachable;
@@ -80,9 +79,10 @@ public class AsyncMultiThreadAppenderBase<E> extends UnsynchronizedAppenderBase<
 
         workers = new ArrayList<>(workerSize);
         for (int i=0; i<workerSize; i++) {
-            Worker worker = workers.get(i);
+            Worker worker = new Worker();
             worker.setDaemon(true);
             worker.setName("AsyncAppender-Worker-" + worker.getName());
+            workers.add(worker);
         }
         // make sure this instance is marked as "started" before staring the worker Thread
         super.start();
@@ -141,6 +141,14 @@ public class AsyncMultiThreadAppenderBase<E> extends UnsynchronizedAppenderBase<
 
     public void setQueueSize(int queueSize) {
         this.queueSize = queueSize;
+    }
+
+    public int getWorkerSize() {
+        return workerSize;
+    }
+
+    public void setWorkerSize(int workerSize) {
+        this.workerSize = workerSize;
     }
 
     public int getDiscardingThreshold() {
