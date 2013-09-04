@@ -37,7 +37,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
 
         Map params = Maps.newHashMap();
         params.put("provider", providerStr);
-        params.put("appid", 9998);  // TODO 只是为了测试使用
+        params.put("appid", SHPPUrlConstant.DEFAULT_CONNECT_APP_ID);  // TODO 只是为了避免和浏览器输入法PC端冲突
         if (!Strings.isNullOrEmpty(connectLoginParams.getRu())) {
             params.put(CommonConstant.RESPONSE_RU, connectLoginParams.getRu());
         }

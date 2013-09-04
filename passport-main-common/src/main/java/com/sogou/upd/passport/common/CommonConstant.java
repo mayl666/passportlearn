@@ -14,6 +14,9 @@ import java.util.Set;
 public class CommonConstant {
 
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
+    public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
+    public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
+
     public static final String CLIENT_ID = "client_id";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";

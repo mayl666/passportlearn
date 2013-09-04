@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.MemcacheUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.SHTokenService;
@@ -24,45 +25,42 @@ public class SHTokenServiceImpl implements SHTokenService {
     private MemcacheUtils rTokenMemUtils;
     @Autowired
     private MemcacheUtils aTokenMemUtils;
+
     /**
      * 构造SHToken的key
      * 格式为：passport|clientId|instanceId
      * passportId_clientId_instanceId：AccountToken的映射
      */
-    private String buildKeyStr(String passportId, int clientId) {
-        return passportId + "|" + clientId;
+    private String buildTokenKeyStr(String passportId, int clientId, String instanceId) {
+        String key;
+        if (Strings.isNullOrEmpty(instanceId)) {
+            key = passportId + "|" + clientId;
+        } else {
+            key = passportId + "|" + clientId + "|" + instanceId;
+        }
+        return key;
     }
 
-    private String buildTsKeyStr(String passportId, int clientId, String instanceId) {
-        return passportId + "|" + clientId + "|" + instanceId;
-    }
-
-    private String buildOldKeyStr(String passportId, int clientId) {
-        return "old|" + passportId + "|" + clientId;
-    }
-
-    private String buildOldTsKeyStr(String passportId, int clientId, String instanceId) {
-        return "old|" + passportId + "|" + clientId + "|" + instanceId;
+    private String buildOldRTokenKeyStr(String passportId, int clientId, String instanceId) {
+        String key;
+        if (Strings.isNullOrEmpty(instanceId)) {
+            key = "old|" + passportId + "|" + clientId;
+        } else {
+            key = "old|" + passportId + "|" + clientId + "|" + instanceId;
+        }
+        return key;
     }
 
     @Override
     public String queryAccessToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
-            if(!StringUtils.isEmpty(instanceId)){
-                String tsKey = buildTsKeyStr(passportId, clientId, instanceId);
-                Object tsValue = aTokenMemUtils.get(tsKey);
-                if (tsValue != null) {
-                    return tsValue.toString();
-                }
-                return null;
-            }
-
-            String key = buildKeyStr(passportId, clientId);
+            String key = buildTokenKeyStr(passportId, clientId, instanceId);
             Object value = aTokenMemUtils.get(key);
             if (value != null) {
                 return value.toString();
 
             }
+            logger.info("query sohu memcache accessToken is null, key=" + key);
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -73,21 +71,12 @@ public class SHTokenServiceImpl implements SHTokenService {
     @Override
     public String queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
-            if(!StringUtils.isEmpty(instanceId)){
-                String tsKey = buildTsKeyStr(passportId, clientId, instanceId);
-                Object tsValue = rTokenMemUtils.get(tsKey);
-                if (tsValue != null) {
-                    return tsValue.toString();
-                }
-                return null;
+            String key = buildTokenKeyStr(passportId, clientId, instanceId);
+            Object tsValue = rTokenMemUtils.get(key);
+            if (tsValue != null) {
+                return tsValue.toString();
             }
-
-            String key = buildKeyStr(passportId, clientId);
-            Object value = rTokenMemUtils.get(key);
-            if (value != null) {
-                return value.toString();
-
-            }
+            logger.info("query sohu memcache new refreshToken is null, key=" + key);
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -98,21 +87,12 @@ public class SHTokenServiceImpl implements SHTokenService {
     @Override
     public String queryOldRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
-            if(!StringUtils.isEmpty(instanceId)){
-                String tsKey = buildOldTsKeyStr(passportId, clientId, instanceId);
-                Object tsValue = rTokenMemUtils.get(tsKey);
-                if (tsValue != null) {
-                    return tsValue.toString();
-                }
-                return null;
+            String key = buildOldRTokenKeyStr(passportId, clientId, instanceId);
+            Object tsValue = rTokenMemUtils.get(key);
+            if (tsValue != null) {
+                return tsValue.toString();
             }
-
-            String key = buildOldKeyStr(passportId, clientId);
-            Object value = rTokenMemUtils.get(key);
-            if (value != null) {
-                return value.toString();
-
-            }
+            logger.info("query sohu memcache old refreshToken is null, key=" + key);
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -122,7 +102,7 @@ public class SHTokenServiceImpl implements SHTokenService {
 
     @Override
     public boolean verifyShAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
-        String storeAccessToken = queryAccessToken(passportId,clientId,instanceId);
+        String storeAccessToken = queryAccessToken(passportId, clientId, instanceId);
         return accessToken.equals(storeAccessToken);
     }
 
@@ -130,15 +110,15 @@ public class SHTokenServiceImpl implements SHTokenService {
     public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
-            if(!StringUtils.isEmpty(actualRefreshToken)) {
-                if(actualRefreshToken.equals(refreshToken)){
+            if (!StringUtils.isEmpty(actualRefreshToken)) {
+                if (actualRefreshToken.equals(refreshToken)) {
                     return true;
                 }
             }
 
             String actualOldRefreshToken = queryOldRefreshToken(passportId, clientId, instanceId);
-            if(!StringUtils.isEmpty(actualOldRefreshToken)) {
-                if(actualOldRefreshToken.equals(refreshToken)){
+            if (!StringUtils.isEmpty(actualOldRefreshToken)) {
+                if (actualOldRefreshToken.equals(refreshToken)) {
                     return true;
                 }
             }

@@ -1,9 +1,7 @@
 package com.sogou.upd.passport.manager.api;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.HttpConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
@@ -16,7 +14,6 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -32,7 +29,7 @@ public class BaseProxyManager {
 
     private static Logger log = LoggerFactory.getLogger(BaseProxyManager.class);
 
-    protected  Result executeResult(final RequestModel requestModel){
+    protected Result executeResult(final RequestModel requestModel) {
         return executeResult(requestModel, null);
     }
 
@@ -55,7 +52,7 @@ public class BaseProxyManager {
                 Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModel.getUrl(), status);
                 result.setCode(entry.getKey());
                 result.setMessage(entry.getValue());
-                this.handSHPPMap(map,requestModel.getUrl());   //搜狐Passport接口返回的无用信息删除掉
+                this.handSHPPMap(map, requestModel.getUrl());   //搜狐Passport接口返回的无用信息删除掉
                 result.setModels(map);
             }
         } catch (Exception e) {
@@ -80,9 +77,9 @@ public class BaseProxyManager {
 
         //设置默认参数同时计算参数的签名
         this.setDefaultParam(requestModel, signVariableStr);
-        if(requestModel instanceof RequestModelXml){
-        return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
-        }else{
+        if (requestModel instanceof RequestModelXml) {
+            return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
+        } else {
             return SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         }
     }
@@ -104,10 +101,19 @@ public class BaseProxyManager {
         }
         long ct = System.currentTimeMillis();
         //计算默认的code
-        String code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("ct", String.valueOf(ct));
-        requestModel.addParam("appid", String.valueOf(SHPPUrlConstant.APP_ID));
+        String url = requestModel.getUrl();
+        String clientId = (String) requestModel.getParam("client_id");
+        String code;
+        if (isNonPCOpenApiProxy(url, clientId)) {
+            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
+            requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.DEFAULT_CONNECT_APP_ID));
+        } else {
+            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
+            requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.APP_ID));
+        }
+        requestModel.addParam(CommonConstant.RESQUEST_CODE, code);
+        requestModel.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
+
     }
 
     /**
@@ -139,7 +145,7 @@ public class BaseProxyManager {
      *
      * @param map
      */
-    private void handSHPPMap(final Map<String, Object> map,String url) {
+    private void handSHPPMap(final Map<String, Object> map, String url) {
         if (map == null || map.size() == 0) {
             return;
         }
@@ -147,9 +153,23 @@ public class BaseProxyManager {
         map.remove("uid");
         map.remove("uuid");
         //如果是获取用户信息链接，忽略uniqname
-        if(!url.equals(SHPPUrlConstant.GET_USER_INFO)){
+        if (!url.equals(SHPPUrlConstant.GET_USER_INFO)) {
             map.remove("uniqname");
         }
         map.remove("errmsg");
+    }
+
+    /*
+     * 第三方代理接口请求中非 client_id=1044和1105 浏览器输入法客户端的
+     * 如果是，访问搜狐时需传appid=9998；
+     * 如果否，访问搜狐时需传appid=1120；
+     */
+    private boolean isNonPCOpenApiProxy(String url, String clientId) {
+        if (url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO)) {
+            if (!clientId.equals(CommonConstant.PC_CLIENTID) && !clientId.equals(CommonConstant.PINYIN_MAC_CLIENTID)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
