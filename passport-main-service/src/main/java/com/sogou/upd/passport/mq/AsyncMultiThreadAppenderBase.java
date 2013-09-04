@@ -186,8 +186,11 @@ public class AsyncMultiThreadAppenderBase<E> extends UnsynchronizedAppenderBase<
             addInfo("Attaching appender named [" + newAppender.getName() + "] to AsyncAppender.");
             aai.addAppender(newAppender);
         } else {
-            addWarn("One and only one appender may be attached to AsyncAppender.");
-            addWarn("Ignoring additional appender named [" + newAppender.getName() + "]");
+            appenderCount++;
+            addInfo("Attaching appender named [" + newAppender.getName() + "] to AsyncAppender.");
+            aai.addAppender(newAppender);
+            // addWarn("One and only one appender may be attached to AsyncAppender.");
+            // addWarn("Ignoring additional appender named [" + newAppender.getName() + "]");
         }
     }
 
