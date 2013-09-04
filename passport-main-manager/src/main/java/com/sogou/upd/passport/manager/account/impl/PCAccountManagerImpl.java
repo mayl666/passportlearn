@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -11,7 +12,6 @@ import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -36,7 +36,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private static final long SIG_EXPIRES = 60 * 60 * 1000; //sig里的timestamp有效期，一小时，单位毫秒
     private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
-    private static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
@@ -102,7 +101,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         try {
             boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             if (!res) {
-                if (clientId == PC_CLIENTID) {
+                if (CommonHelper.isIePinyinToken(clientId)) {
                     if (!shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken)) {
                         result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                         return result;
@@ -143,7 +142,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
             } else {
-                if (clientId == PC_CLIENTID) {
+                if (CommonHelper.isIePinyinToken(clientId)) {
                     if (shTokenService.verifyShAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                         result.setSuccess(true);
                     }
@@ -224,7 +223,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
         if (accountToken == null) {
-            if (clientId == PC_CLIENTID) {
+            if (CommonHelper.isIePinyinToken(clientId)) {
                 return verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
             } else {
                 return false;

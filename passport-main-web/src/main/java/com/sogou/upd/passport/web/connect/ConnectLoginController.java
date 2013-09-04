@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -97,7 +98,7 @@ public class ConnectLoginController extends BaseConnectController {
         // 防CRSF攻击
         String uuid = UUID.randomUUID().toString();
         try {
-            if (clientId == 1044) {  // 目前只有浏览器走搜狗流程
+            if (CommonHelper.isIePinyinToken(clientId)) {  // 目前只有浏览器走搜狗流程
                 url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
                 writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
             } else {
