@@ -72,6 +72,7 @@
         <queueSize>512</queueSize>
         <workerSize>4</workerSize>
         <appender-ref ref="rabbitMQAppender" />
+        <appender-ref ref="userOperationAppender" />
     </appender>
 
     <logger name="userLoggerMQ" level="info" additivity="false">
