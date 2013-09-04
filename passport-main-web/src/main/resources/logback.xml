@@ -69,9 +69,14 @@
     </appender>
 
     <appender name="scribeAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
-        <queueSize>512</queueSize>
+        <queueSize>256</queueSize>
         <workerSize>4</workerSize>
         <appender-ref ref="rabbitMQAppender" />
+    </appender>
+
+    <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
+        <queueSize>512</queueSize>
+        <workerSize>8</workerSize>
         <appender-ref ref="userOperationAppender" />
     </appender>
 
@@ -88,6 +93,7 @@
     <logger name="userLoggerAsync" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
         <appender-ref ref="scribeAsyncAppender" />
+        <appender-ref ref="localAsyncAppender" />
     </logger>
 
     <logger name="userLoggerLocal" level="info" additivity="false">
