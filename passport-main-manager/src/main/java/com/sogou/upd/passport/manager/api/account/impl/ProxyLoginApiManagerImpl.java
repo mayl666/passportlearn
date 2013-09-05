@@ -38,6 +38,10 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         String userId = authUserParameters.getUserid();
+        if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            userId = userId + "@sogou.com";
+            authUserParameters.setUserid(userId);
+        }
         if (PhoneUtil.verifyPhoneNumberFormat(userId)) {
             authUserParameters.setUsertype(1); // 手机号
         }
@@ -105,10 +109,10 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&ru=").append(ru)
                     .append("&persistentcookie=").append(createCookieUrlApiParams.getPersistentcookie())
                     .append("&domain=sogou.com");
-            result.setDefaultModel("url",urlBuilder.toString());
+            result.setDefaultModel("url", urlBuilder.toString());
             result.setSuccess(true);
         } catch (Exception e) {
-            log.error("buildCreateCookieUrl error userid:"+createCookieUrlApiParams.getUserid()+" ru="+createCookieUrlApiParams.getRu(),e);
+            log.error("buildCreateCookieUrl error userid:" + createCookieUrlApiParams.getUserid() + " ru=" + createCookieUrlApiParams.getRu(), e);
         }
         return result;
     }
