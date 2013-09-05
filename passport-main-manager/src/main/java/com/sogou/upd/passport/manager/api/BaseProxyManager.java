@@ -102,7 +102,10 @@ public class BaseProxyManager {
         long ct = System.currentTimeMillis();
         //计算默认的code
         String url = requestModel.getUrl();
-        String clientId = (String) requestModel.getParam("client_id");
+        String clientId = (String) requestModel.getParam(SHPPUrlConstant.APPID_STRING);
+        if (Strings.isNullOrEmpty(clientId)) {
+            clientId = (String) requestModel.getParam(CommonConstant.CLIENT_ID);
+        }
         String code;
         if (isNonPCOpenApiProxy(url, clientId)) {
             code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
@@ -166,7 +169,7 @@ public class BaseProxyManager {
      */
     private boolean isNonPCOpenApiProxy(String url, String clientId) {
         if (url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO)) {
-            if (!clientId.equals(CommonConstant.PC_CLIENTID) && !clientId.equals(CommonConstant.PINYIN_MAC_CLIENTID)) {
+            if (!clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID))) {
                 return true;
             }
         }

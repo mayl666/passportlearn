@@ -57,10 +57,9 @@ public class SHTokenServiceImpl implements SHTokenService {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
             Object value = aTokenMemUtils.get(key);
             if (value != null) {
+                logger.info("query sohu memcache accessToken, key=" + key + " ,value="+value);
                 return value.toString();
-
             }
-            logger.info("query sohu memcache accessToken is null, key=" + key);
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -72,11 +71,11 @@ public class SHTokenServiceImpl implements SHTokenService {
     public String queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
-            Object tsValue = rTokenMemUtils.get(key);
-            if (tsValue != null) {
-                return tsValue.toString();
+            Object value = rTokenMemUtils.get(key);
+            if (value != null) {
+                logger.info("query sohu memcache new refreshToken, key=" + key + " ,value="+value);
+                return value.toString();
             }
-            logger.info("query sohu memcache new refreshToken is null, key=" + key);
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -88,11 +87,11 @@ public class SHTokenServiceImpl implements SHTokenService {
     public String queryOldRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildOldRTokenKeyStr(passportId, clientId, instanceId);
-            Object tsValue = rTokenMemUtils.get(key);
-            if (tsValue != null) {
-                return tsValue.toString();
+            Object value = rTokenMemUtils.get(key);
+            if (value != null) {
+                logger.info("query sohu memcache old refreshToken, key=" + key + " ,value="+value);
+                return value.toString();
             }
-            logger.info("query sohu memcache old refreshToken is null, key=" + key);
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
