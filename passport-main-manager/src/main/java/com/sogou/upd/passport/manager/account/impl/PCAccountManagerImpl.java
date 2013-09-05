@@ -92,13 +92,17 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     @Override
     public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
-
         Result result = new APIResultSupport(false);
         int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
         String passportId = pcRefreshTokenParams.getUserid();
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
             boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             if (!res) {
                 if (CommonHelper.isIePinyinToken(clientId)) {
@@ -110,11 +114,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
                     result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                     return result;
                 }
-            }
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result;
             }
             AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
             if (accountToken != null) {

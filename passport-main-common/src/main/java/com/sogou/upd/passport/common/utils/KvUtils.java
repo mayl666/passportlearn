@@ -97,8 +97,11 @@ public class KvUtils {
             if(CollectionUtils.isEmpty(set)){
                 set = Sets.newHashSet();
             }
-            set.add(value);
-            set(key, new ObjectMapper().writeValueAsString(set));
+            if(!set.contains(value)){
+                set.add(value);
+                set(key, new ObjectMapper().writeValueAsString(set));
+            }
+
         } catch (Exception e) {
             logger.error("[KvCache] lPush String To Set, key:" + key, e);
         }
