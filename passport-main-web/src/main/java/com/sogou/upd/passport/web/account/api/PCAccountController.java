@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
@@ -235,7 +236,9 @@ public class PCAccountController extends BaseController {
             Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
             if (createCookieResult.isSuccess()) {
                 String setcookieUrl = createCookieResult.getModels().get("url").toString();
-                response.addHeader("Sohupp-Cookie", "ppinf,pprdig"); // 输入法mac版从这里取到要读哪个cookie
+                if (String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID).equals(authPcTokenParams.getAppid())) {
+                    response.addHeader("Sohupp-Cookie", "ppinf,pprdig"); // 输入法mac版从这里取到要读哪个cookie
+                }
                 return "redirect:" + setcookieUrl;
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
