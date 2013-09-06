@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 
 /**
@@ -205,7 +206,7 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken")
-    public String authToken(HttpServletRequest request, PcAuthTokenParams authPcTokenParams) throws Exception {
+    public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -234,6 +235,7 @@ public class PCAccountController extends BaseController {
             Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
             if (createCookieResult.isSuccess()) {
                 String setcookieUrl = createCookieResult.getModels().get("url").toString();
+                response.addHeader("Sohupp-Cookie", "ppinf,pprdig"); // 输入法mac版从这里取到要读哪个cookie
                 return "redirect:" + setcookieUrl;
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);

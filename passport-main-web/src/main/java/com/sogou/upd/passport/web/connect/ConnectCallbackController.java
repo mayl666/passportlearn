@@ -50,13 +50,6 @@ public class ConnectCallbackController extends BaseConnectController {
         }
         String type = req.getParameter("type");
 
-        String state = req.getParameter("state");
-        String cookieValue = ServletUtil.getCookie(req, state);
-        if (!cookieValue.equals(CommonHelper.constructStateCookieKey(providerStr))) {
-            viewUrl = buildAppErrorRu(type, ru, ErrorUtil.OAUTH_AUTHZ_STATE_INVALID, null);
-            return new ModelAndView(new RedirectView(viewUrl));
-        }
-
         Result result = oAuthAuthLoginManager.handleConnectCallback(req, providerStr, ru, type);
         viewUrl = (String) result.getModels().get(CommonConstant.RESPONSE_RU);
         if (result.isSuccess()) {

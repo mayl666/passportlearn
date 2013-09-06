@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web;
 
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -16,6 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -28,10 +31,28 @@ import java.util.Map;
  */
 public class UserOperationLogUtil {
 
-    private static final Logger userOperationLogger = LoggerFactory.getLogger("userOperationLogger");
+    private static final Logger userOperationLogger = LoggerFactory.getLogger("userLoggerAsync");
+    private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
+    private static Logger userLogger = userOperationLogger;
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
 
+    private static String LOCALIP = null;
+
+    /**
+     * 修改Logger，“local”修改为只记本地，“mq/rabbitmq”修改为传RabbitMQ和本地
+     *
+     * @param loggerName local/mq/rabbitmq
+     */
+    public static void changeLogger(String loggerName) {
+        if ("local".equalsIgnoreCase(loggerName)) {
+            userLogger = userOperationLocalLogger;
+        } else if ("mq".equalsIgnoreCase(loggerName) || "rabbitmq".equalsIgnoreCase(loggerName)) {
+            userLogger = userOperationLogger;
+        } else {
+            //
+        }
+    }
 
     /**
      * 记录用户行为
@@ -62,15 +83,11 @@ public class UserOperationLogUtil {
             }
             StringBuilder log = new StringBuilder();
             Date date = new Date();
-            String timestamp = String.valueOf(date.getTime()).substring(0, 10);
-            log.append(timestamp);
-            log.append(":").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-            if(!StringUtil.isEmpty(passportId)){
-                log.append("\t").append(passportId.replace("\t", " "));
-            }else {
-                log.append("\t").append("-");
-            }
-            // 防止恶意用户调用接口输入非法用户名
+            //String timestamp = String.valueOf(date.getTime()).substring(0, 10);
+            //log.append(timestamp);
+            log.append(new SimpleDateFormat("HH:mm:ss").format(date));
+            log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
+            log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-").replace("\t", " "));  // 防止恶意用户调用接口输入非法用户名
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             String domainStr = domain.toString();
@@ -110,11 +127,23 @@ public class UserOperationLogUtil {
             String otherMsgJson = new ObjectMapper().writeValueAsString(otherMessage).replace("\t", " ");
             log.append("\t").append(otherMsgJson);
 
-            userOperationLogger.info(log.toString());
+            userLogger.info(log.toString());
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
 
 
+    }
+
+    private static String getLocalIp(HttpServletRequest request) {
+        try {
+            if (Strings.isNullOrEmpty(LOCALIP)) {
+                LOCALIP = InetAddress.getLocalHost().getHostAddress();
+            }
+        } catch (Exception e) {
+            LOCALIP = request.getLocalAddr();
+        }
+
+        return LOCALIP;
     }
 }
