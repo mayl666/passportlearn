@@ -102,9 +102,9 @@ public class BaseProxyManager {
         long ct = System.currentTimeMillis();
         //计算默认的code
         String url = requestModel.getUrl();
-        String clientId = (String) requestModel.getParam(SHPPUrlConstant.APPID_STRING);
+        String clientId = String.valueOf(requestModel.getParam(SHPPUrlConstant.APPID_STRING));
         if (Strings.isNullOrEmpty(clientId)) {
-            clientId = (String) requestModel.getParam(CommonConstant.CLIENT_ID);
+            clientId = String.valueOf(requestModel.getParam(CommonConstant.CLIENT_ID));
         }
         String code;
         if (isNonPCOpenApiProxy(url, clientId)) {
