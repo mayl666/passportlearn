@@ -57,7 +57,6 @@ public class SHTokenServiceImpl implements SHTokenService {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
             Object value = aTokenMemUtils.get(key);
             if (value != null) {
-                logger.info("query sohu memcache accessToken, key=" + key + " ,value="+value);
                 return value.toString();
             }
             return null;
@@ -73,7 +72,6 @@ public class SHTokenServiceImpl implements SHTokenService {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
             Object value = rTokenMemUtils.get(key);
             if (value != null) {
-                logger.info("query sohu memcache new refreshToken, key=" + key + " ,value="+value);
                 return value.toString();
             }
             return null;
@@ -89,7 +87,6 @@ public class SHTokenServiceImpl implements SHTokenService {
             String key = buildOldRTokenKeyStr(passportId, clientId, instanceId);
             Object value = rTokenMemUtils.get(key);
             if (value != null) {
-                logger.info("query sohu memcache old refreshToken, key=" + key + " ,value="+value);
                 return value.toString();
             }
             return null;
