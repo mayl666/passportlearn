@@ -29,7 +29,7 @@ public class ParseCookieUtil {
      * @return
      */
     public static Map<String, String> parsePpinf(HttpServletRequest request) {
-        String ppinf = CookieUtils.getCookie(request, PPINF);
+        String ppinf = ServletUtil.getCookie(request, PPINF);
         if (StringUtil.isBlank(ppinf)) {
             return Collections.emptyMap();
         }
