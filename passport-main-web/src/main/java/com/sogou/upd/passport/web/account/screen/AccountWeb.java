@@ -7,7 +7,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.CookieUtils;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,16 +148,14 @@ public class AccountWeb extends BaseController {
         return result;
     }
 
-
-
     /*
     注册种cookie防止恶意注册，黑白名单
      */
     private void webCookieProcess(HttpServletRequest request, HttpServletResponse response) {
-        String uuidName = CookieUtils.getCookie(request, "uuidName");
+        String uuidName = ServletUtil.getCookie(request, "uuidName");
         if (Strings.isNullOrEmpty(uuidName)) {
             uuidName = UUID.randomUUID().toString().replaceAll("-", "");
-            CookieUtils.setCookie(response, "uuidName", uuidName, (int) DateAndNumTimesConstant.TIME_ONEDAY);
+            ServletUtil.setCookie(response, "uuidName", uuidName, (int) DateAndNumTimesConstant.TIME_ONEDAY);
         }
     }
 }

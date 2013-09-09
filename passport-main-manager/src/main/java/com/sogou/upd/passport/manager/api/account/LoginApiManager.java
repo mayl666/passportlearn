@@ -44,4 +44,11 @@ public interface LoginApiManager {
      * @return
      */
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams);
+
+    /**
+     * 获取cookie值，包括ppinf、pprdig、passport
+     * @param createCookieUrlApiParams
+     * @return
+     */
+    public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams);
 }
