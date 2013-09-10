@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.Min;
 
@@ -26,7 +28,8 @@ public class BindEmailApiParams extends BaseUserApiParams {
 
     @Min(0)
     private int pwdtype=1; //密码类型，1为md5后的口令，缺省为明文密码
-
+    @Ru
+    @URL
     private String ru;
 
     public String getRu() {

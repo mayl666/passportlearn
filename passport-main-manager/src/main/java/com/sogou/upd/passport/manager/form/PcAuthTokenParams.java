@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * sohu桌面应用token登录流程的参数类
@@ -18,6 +20,8 @@ public class PcAuthTokenParams extends PcBaseParams {
     @NotBlank(message = "token不允许为空")
     private String token; //用户获取到的token
     @NotBlank(message = "ru地址不允许为空")
+    @URL
+    @Ru
     private String ru; //token正确时的调整地址
 
     public long getLivetime() {
