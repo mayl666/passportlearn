@@ -30,7 +30,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
 
             $("#pro_btn_basic").on("click", function(e) {
                 e.preventDefault()
-                if ($sname.val() == $sname.attr("pro_default") && $nick.val() == $nick.attr("pro_default")) return
+                if ($nick.val() == $nick.attr("pro_default")) return
                 var sC = self.checkSname($sname, $snameError, self.validObj.regacc),
                     nC = self.checkNick($nick, $nickError, self.validObj.nick)
                     if (sC && nC) {
