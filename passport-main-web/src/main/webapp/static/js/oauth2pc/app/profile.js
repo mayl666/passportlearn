@@ -2,7 +2,7 @@
 define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib/fileupload'], function($, md5, dialog, upload) {
     function Profile() {}
     Profile.prototype = {
-        sogouBaseurl: "//plus.sohu.com",
+        sogouBaseurl: "//account.sogou.com",
         init: function() {
             this.initPageEvent()
             this.initBasicProfile()
