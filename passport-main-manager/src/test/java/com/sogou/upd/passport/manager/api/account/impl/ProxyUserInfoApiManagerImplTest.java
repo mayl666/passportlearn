@@ -24,7 +24,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("13910728588");
+        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
 //        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
 //                +
 //                "personalid,personalidflag,sec_mobile,sec_email,province," +
@@ -52,7 +52,10 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testCheckUniqName(){
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
-        updateUserUniqnameApiParams.setUniqname(uniqname);
+
+//        String name="%E4%B8%AD%E6%96%87323212";
+        String name="你看";
+        updateUserUniqnameApiParams.setUniqname(name);
         Result result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
         System.out.println("result输出结果为:" + result.toString());
     }
