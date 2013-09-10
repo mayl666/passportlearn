@@ -31,15 +31,14 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             $("#pro_btn_basic").on("click", function(e) {
                 e.preventDefault()
                 if ($nick.val() == $nick.attr("pro_default")) return
-                var sC = self.checkSname($sname, $snameError, self.validObj.regacc),
-                    nC = self.checkNick($nick, $nickError, self.validObj.nick)
-                    if (sC && nC) {
-                        $.when(sC, nC).then(function() {
-                            var snameLegal = self.validObj.regacc.legal,
-                                nickLegal = self.validObj.nick.legal
-
-                            if (snameLegal && nickLegal) {
-                                var url = self.sogouBaseurl + "/a/sogou/profile/basic/update?_input_encode=utf-8"
+//               var sC = self.checkSname($sname, $snameError, self.validObj.regacc),
+                 var nC = self.checkNick($nick, $nickError, self.validObj.nick)
+                    if (nC) {
+                        $.when(1).then(function() {
+//                            var snameLegal = self.validObj.regacc.legal,
+                            var   nickLegal = self.validObj.nick.legal;
+                            if (nickLegal) {
+                                var url = self.sogouBaseurl + "/oauth2/updateNickName?_input_encode=utf-8"
                                 $.ajax({
                                     url: url,
                                     data: {

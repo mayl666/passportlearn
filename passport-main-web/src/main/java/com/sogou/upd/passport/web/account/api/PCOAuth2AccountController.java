@@ -14,6 +14,8 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
+import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * sohu+浏览器相关接口替换
@@ -51,7 +54,8 @@ public class PCOAuth2AccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(oauth2PcIndexParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return "forward:/oauth2/errorMsg?msg=" + validateResult;
+            //为了sohu+返回错误一致
+            return "forward:/oauth2/errorMsg?msg='{\"code\":-99,\"msg\":\"accesstoken illegal\"}'";
         }
         //TODO 校验token,获取userid
         String passportId = "tinkame700@sogou.com";
@@ -72,6 +76,23 @@ public class PCOAuth2AccountController extends BaseController {
 
 
         return "/oauth2pc/pcindex";
+    }
+
+    @RequestMapping(value = "/updateNickName",method = RequestMethod.POST)
+    @ResponseBody
+    public Object updateNickName(HttpServletRequest request,PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            //TODO 错误与sohu+保持一致
+            return validateResult;
+        }
+        //TODO 校验token,获取userid
+        String passportId = "tinkame700@sogou.com";
+
+        SimpleResult simpleResult = new SimpleResult(0,"");
+        return simpleResult.toString();
+
     }
 
     @RequestMapping(value = "/errorMsg")
@@ -115,4 +136,39 @@ public class PCOAuth2AccountController extends BaseController {
         return result.toString();
     }
 
+    class SimpleResult{
+        private int code=0;
+        private String message = "";
+
+        SimpleResult(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public void setCode(int code) {
+            this.code = code;
+        }
+
+        public String toString() {
+            String str = "";
+            try {
+                str = new ObjectMapper().writeValueAsString(this);
+            } catch (IOException e) {
+                logger.error("ResultObject As String is error!");
+            }
+            return str;
+        }
+    }
 }
