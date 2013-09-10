@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -18,6 +19,7 @@ public class Oauth2PcIndexParams {
     private String h;
     private String r;
     private String v = "0"; //浏览器版本
+    private int client_id= CommonConstant.PC_CLIENTID;
 
     public String getAccesstoken() {
         return accesstoken;
@@ -57,5 +59,13 @@ public class Oauth2PcIndexParams {
 
     public void setV(String v) {
         this.v = v;
+    }
+
+    public int getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(int client_id) {
+        this.client_id = client_id;
     }
 }

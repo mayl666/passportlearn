@@ -35,7 +35,7 @@
         <img alt="" src="/./static/img/oauth2pc/img_sogouAvatar175.png" />
     </div>
     <div class="photo-error" style="display:none">亲爱的用户，您的头像上传失败，请重新再传</div>
-    <div class="uesr-name">frabbit1234</div>
+    <div class="uesr-name">${uniqname}</div>
     <nav class="uesr-nav">
         <!--<a href="javascript:" id="set_account">账号设置</a>-->
 
@@ -58,14 +58,14 @@
                     <div class="control-group clearfix">
                         <label>账号</label>
                         <div class="controls">
-                            <input autocomplete="off" type="text" value="s48259169" id="pro_sname" pro_default="s48259169"/>
+                            <input autocomplete="off" type="text" value="${userid}" id="pro_sname" pro_default="${userid}" disabled="true"/>
                             <p class="tips red" style="display: none;"></p>
                         </div>
                     </div>
                     <div class="control-group clearfix">
                         <label>用户名</label>
                         <div class="controls">
-                            <input autocomplete="off" type="text" class="" value="frabbit1234" pro_default="frabbit1234" id="pro_nick"/>
+                            <input autocomplete="off" type="text" class="" value="${uniqname}" pro_default="${uniqname}" id="pro_nick"/>
                             <p class="tips red" style="display: none;"></p>
                         </div>
                     </div>

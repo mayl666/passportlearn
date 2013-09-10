@@ -1,11 +1,16 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.Oauth2PcIndexParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class Oauth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(Oauth2AccountController.class);
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManagerImpl;
 
     @RequestMapping(value = "/oauth2/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -40,13 +47,23 @@ public class Oauth2AccountController extends BaseController {
             return "forward:/oauth2/errorMsg?msg=" + validateResult;
         }
         //TODO 校验token,获取userid
-        String userid = "tinkame700@sogou.com";
+        String passportId = "tinkame700@sogou.com";
+
+        //获取昵称
+        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
+        Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+        String uniqname;
+        if (getUserInfoResult.isSuccess()) {
+            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
+            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
+        } else {
+            uniqname = defaultUniqname(passportId);
+        }
+        model.addAttribute("userid", passportId);
+        model.addAttribute("uniqname", uniqname);
 
 
 
-
-
-        model.addAttribute("userid", userid);
         return "/oauth2pc/pcindex";
     }
 
@@ -54,5 +71,8 @@ public class Oauth2AccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
     }
 }
