@@ -97,12 +97,14 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode) {
         Result result = new APIResultSupport(false);
         try {
             String ru = createCookieUrlApiParams.getRu();
             String userId = createCookieUrlApiParams.getUserid();
-            ru = URLEncoder.encode(ru, "UTF-8");
+            if (isRuEncode) {
+                ru = URLEncoder.encode(ru, "UTF-8");
+            }
             long ct = System.currentTimeMillis();
             String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
             code = Coder.encryptMD5(code);
@@ -125,7 +127,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams);
+        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false);
         String url = (String) cookieUrlResult.getModels().get("url");
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
         Result result = new APIResultSupport(false);

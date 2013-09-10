@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -10,7 +9,6 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -99,7 +97,7 @@ public class CommonManagerImpl implements CommonManager {
         createCookieUrlApiParams.setUserid(passportIdTmp);
         createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
-        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
         if (createCookieResult.isSuccess()) {
             result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
         } else {
