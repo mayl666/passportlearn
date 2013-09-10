@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.AssertTrue;
@@ -17,13 +18,14 @@ import javax.validation.constraints.AssertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class InfoOpenApiParams extends BaseOpenApiParams {
-
     private String user_ip;  //用户ip
     @NotBlank(message = "message(消息内容)不允许为空")
     private String message;
     @NotBlank(message = "图片的URL地址不允许为空")
+    @URL
     private String url;
     private String title;       //选填，人人网，QQ账号为必填项
+    @URL
     private String share_url;   //选填，人人网，QQ账号为必填项
 
     @AssertTrue(message = "标题或share_url不允许为空")

@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.AssertTrue;
 
@@ -24,6 +26,8 @@ public class RegEmailApiParams extends BaseApiParams {
     @NotBlank(message = "注册IP不允许为空")
     private String createip;  //注册IP
     private String send_email; //如果是外域账号，是否发生激活邮件，1为发生激活邮件，否则不发生激活邮件
+    @Ru
+    @URL
     private String ru; //注册成功后需回调到应用的url
 
     public RegEmailApiParams(){}
