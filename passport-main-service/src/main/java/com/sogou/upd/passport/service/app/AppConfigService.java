@@ -9,11 +9,6 @@ import com.sogou.upd.passport.model.app.AppConfig;
  */
 public interface AppConfigService {
 
-    /**
-     * 验证client合法性
-     */
-    public boolean verifyClientVaild(int clientId, String clientSecret) throws ServiceException;
-
     /*
       * 获取sms信息
       */

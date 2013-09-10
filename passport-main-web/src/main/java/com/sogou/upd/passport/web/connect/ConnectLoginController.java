@@ -11,6 +11,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -62,7 +63,8 @@ public class ConnectLoginController extends BaseConnectController {
         }
 
         // 检查client_id和client_secret是否有效
-        if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
+        AppConfig appConfig = configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret());
+        if (appConfig == null) {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             result.setMessage("client_id or client_secret mismatch");
             return result.toString();

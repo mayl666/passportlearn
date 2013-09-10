@@ -32,13 +32,18 @@ public class ConfigureManagerImpl implements ConfigureManager {
     private ConnectConfigService connectConfigService;
 
     @Override
-    public boolean verifyClientVaild(int clientId, String clientSecret) {
+    public AppConfig verifyClientVaild(int clientId, String clientSecret) {
         try {
-            boolean resultFlag = appConfigService.verifyClientVaild(clientId, clientSecret);
-            return resultFlag;
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return null;
+            } else if (!clientSecret.equals(appConfig.getClientSecret())) {
+                return null;
+            }
+            return appConfig;
         } catch (ServiceException e) {
             log.error("Verify ClientVaild Fail:", e);
-            return false;
+            return null;
         }
     }
 
