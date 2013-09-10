@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -50,9 +51,9 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
         Result result = new APIResultSupport(false);
         try {
             // read request parameters
-            int clientId = Integer.parseInt(request.getParameter("client_id"));
-            long ct = Long.parseLong(request.getParameter("ct"));
-            String originalCode = request.getParameter("code");
+            int clientId = Integer.parseInt(request.getParameter(CommonConstant.CLIENT_ID));
+            long ct = Long.parseLong(request.getParameter(CommonConstant.RESQUEST_CT));
+            String originalCode = request.getParameter(CommonConstant.RESQUEST_CODE);
 
             String firstStr = buildFirstSignString(request);
             if (!Strings.isNullOrEmpty(firstStr)) {

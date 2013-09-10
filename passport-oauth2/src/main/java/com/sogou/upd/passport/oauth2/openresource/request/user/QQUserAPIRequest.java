@@ -19,7 +19,7 @@ public class QQUserAPIRequest extends QQAbstractAPIRequest {
     /**
      * QQ用户类API调用的请求参数
      */
-    public static class QQUserAPIBuilder extends QQAbstractAPIRequest.QQCommonParamsBuilder {
+    public static class QQUserAPIBuilder extends QQCommonParamsBuilder {
 
         public QQUserAPIBuilder(String url) {
             super(url);

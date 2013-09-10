@@ -14,18 +14,26 @@ import java.util.Set;
 public class CommonConstant {
 
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
+    public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
+    public static final int BROWSER_CLIENTID = 1065; //浏览器输入法桌面端client_id
+    public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
+
+    public static final String CLIENT_ID = "client_id";
+    public static final String RESQUEST_CT = "ct";
+    public static final String RESQUEST_CODE = "code";
+    public static final String UNIQNAME = "uniqname";
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
     public static final String RESPONSE_DATA = "data"; // 响应结果数据
+    public static final String RESPONSE_RU = "ru"; // 响应结果的ru
 
     public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
-    public static final String PARAMETER_SEPARATOR = "&";
-    public static final String NAME_VALUE_SEPARATOR = "=";
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
+    public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
     //	public static final String API_ID_SOGOU_DOMAIN = "test01.id.sogou.com";
     public static final String API_ID_SOGOU_INTERNAL_DOMAIN = "api.id.sogou.com.z.sogou-op.org";
 
@@ -33,9 +41,6 @@ public class CommonConstant {
 
     //=============缓存相关配置项====================
 //	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time
-    public static final int PASSPORT_PROFILE_TIMEOUT = 0; // 不过期吧，为了性能
-    public static final int PASSPORT_USERSTATUE_TIMEOUT = 0; // 不过期吧，为了性能
-    public static final int CONNECT_AUTHORIZE_STATE_TIMEOUT = 60 * 30;  // 第三方登录授权的statue缓存有效期
 
     //在request attribut中存在的用于及时的StopWatch的name
     public static final String STOPWATCH = "stopWatch";

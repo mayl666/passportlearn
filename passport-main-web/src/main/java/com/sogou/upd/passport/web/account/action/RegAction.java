@@ -2,14 +2,15 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -109,7 +110,7 @@ public class RegAction extends BaseController {
 
         String ip = getIp(request);
         //校验用户是否允许注册
-        String uuidName = CookieUtils.getCookie(request, "uuidName");
+        String uuidName = ServletUtil.getCookie(request, "uuidName");
         result = regManager.checkRegInBlackList(ip, uuidName);
         if (!result.isSuccess()) {
             return result.toString();
@@ -129,7 +130,7 @@ public class RegAction extends BaseController {
             if (Strings.isNullOrEmpty(ru)) {
                 ru = LOGIN_INDEX_URL;
             }
-            result.setDefaultModel("ru", ru);
+            result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
         }
 
         //用户注册log

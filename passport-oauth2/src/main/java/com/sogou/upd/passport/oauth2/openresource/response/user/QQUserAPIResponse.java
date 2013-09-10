@@ -2,9 +2,12 @@ package com.sogou.upd.passport.oauth2.openresource.response.user;
 
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.impl.QQAPIValidator;
-import net.sf.json.JSONException;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.util.Map;
 
 /**
  * QQ的用户类API响应结果
@@ -12,7 +15,7 @@ import net.sf.json.JSONException;
  *
  * @author shipengzhi(shipengzhi@sogou-inc.com)
  */
-public class QQUserAPIResponse extends OAuthClientResponse {
+public class QQUserAPIResponse extends UserAPIResponse {
 
     @Override
     public void init(String body, String contentType, int responseCode) throws OAuthProblemException {
@@ -24,20 +27,19 @@ public class QQUserAPIResponse extends OAuthClientResponse {
     public void setBody(String body) throws OAuthProblemException {
         try {
             this.body = body;
-//			parameters = JSONUtils.parseJSONObject(body);
-        } catch (JSONException e) {
+            parameters = new ObjectMapper().readValue(this.body, Map.class);
+        } catch (Exception e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE);
         }
     }
 
     /*=================== 响应结果中的字段 ====================*/
-    public String toUserInfo() {
-//		UserProfile user = new UserProfile();
-//		user.setNickname(formNickName(getParam(QQOAuth.NICK_NAME)));
-//		user.setImageURL(getParam(QQOAuth.FIGURE_URL_2)); // TODO 转换为基础url
-//		user.setGender(formGender(getParam(QQOAuth.GENDER)));
-//		return user;
-        return body;
+    public ConnectUserInfoVO toUserInfo() {
+        ConnectUserInfoVO user = new ConnectUserInfoVO();
+		user.setNickname(getParam(QQOAuth.NICK_NAME));
+		user.setImageURL(getParam(QQOAuth.FIGURE_URL_2));
+		user.setGender(formGender(getParam(QQOAuth.GENDER)));
+		return user;
     }
 
     private int formGender(String gender) {

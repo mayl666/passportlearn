@@ -15,12 +15,6 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
  */
 public interface PCAccountManager {
     /**
-     * 校验用户名密码，生成accesstoken和refreshtoken
-     * @param pcTokenParams
-     * @return
-     */
-    public Result createToken(PcGetTokenParams pcTokenParams);
-    /**
      * 此接口处理两种情况下的生成pairToken：
      * 1.验证用户名和密码；
      * 2.验证由refreshtoken生成的sig；
@@ -59,7 +53,7 @@ public interface PCAccountManager {
      * @param timestamp
      * @return
      */
-    public String getSig(String passportId, int clientId,String refresh_token,String timestamp);
+    public String getSig(String passportId, int clientId,String refresh_token,String timestamp) throws Exception;
 
     /**
      * 只生成token，不需要校验密码或者sig

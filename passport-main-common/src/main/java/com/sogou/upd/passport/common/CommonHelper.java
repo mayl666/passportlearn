@@ -31,4 +31,14 @@ public class CommonHelper {
     public static String constructSpecialConnectKey(int clientId, int provider) {
         return clientId + CommonConstant.SEPARATOR_1 + provider;
     }
+
+    /**
+     * clientId=1044为浏览器PC端、浏览器移动端、输入法PC端
+     * clientId=1105为输入法MAC
+     * @param clientId
+     * @return
+     */
+    public static boolean isIePinyinToken(int clientId){
+        return clientId == CommonConstant.PC_CLIENTID || clientId == CommonConstant.PINYIN_MAC_CLIENTID;
+    }
 }

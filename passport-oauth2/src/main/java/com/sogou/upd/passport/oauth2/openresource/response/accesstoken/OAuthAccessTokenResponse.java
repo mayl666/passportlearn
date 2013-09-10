@@ -40,7 +40,7 @@ public abstract class OAuthAccessTokenResponse extends OAuthClientResponse {
         } else if (!Strings.isNullOrEmpty(getRefreshToken())) {
             return RToken_ExpiresIn;
         } else {
-            return null;
+            return 0l;
         }
     }
 

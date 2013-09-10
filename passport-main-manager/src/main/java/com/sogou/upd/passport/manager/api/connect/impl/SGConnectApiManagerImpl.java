@@ -1,12 +1,12 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
@@ -14,7 +14,6 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
-import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -24,9 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,7 +53,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
 
-            String redirectURI = constructRedirectURI(clientId, connectLoginParams, oAuthConsumer.getCallbackUrl(), ip);
+            String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
+                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(), ip);
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -90,23 +87,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO) {
         //To change body of implemented methods use File | Settings | File Templates.
         return null;
-    }
-
-    private String constructRedirectURI(int clientId, ConnectLoginParams connectLoginParams, String pCallbackUrl, String ip) {
-        try {
-            String ru = connectLoginParams.getRu();
-            ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            Map<String, Object> callbackParams = Maps.newHashMap();
-            callbackParams.put("client_id", clientId);
-            callbackParams.put("ru", ru);
-            callbackParams.put("type", connectLoginParams.getType());
-            callbackParams.put("ip", ip);
-            callbackParams.put("ts", connectLoginParams.getTs());
-            StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
-            return pCallbackUrl + "?" + query;
-        } catch (UnsupportedEncodingException e) {
-            return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
     }
 
     /*

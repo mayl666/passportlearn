@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -39,7 +38,7 @@ public class PCAccountTokenServiceTest extends AbstractJUnit4SpringContextTests 
     @Test
     public void testInitialAccountToken() {
         try {
-            AccountToken accountToken = pcAccountTokenService.initialAccountToken(PASSPORT_ID, INSTANCE_ID, appConfig);
+            AccountToken accountToken = pcAccountTokenService.initialOrUpdateAccountToken(PASSPORT_ID, INSTANCE_ID, appConfig);
             Assert.assertTrue(accountToken != null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,14 +57,4 @@ public class PCAccountTokenServiceTest extends AbstractJUnit4SpringContextTests 
         }
     }
 
-    @Test
-    public void testUpdateOrInsertAccountToken(){
-        try {
-            AccountToken accountToken = pcAccountTokenService.updateOrInsertAccountToken(PASSPORT_ID, INSTANCE_ID, appConfig);
-            Assert.assertTrue(accountToken != null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.assertTrue(false);
-        }
-    }
 }

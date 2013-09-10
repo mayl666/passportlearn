@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.internal.connect;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -25,6 +26,7 @@ public class OpenApiParamsHelper {
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
         baseOpenApiParams.setUserid(map.get("userid").toString());
         baseOpenApiParams.setOpenid(map.get("openid").toString());
+        baseOpenApiParams.setClient_id(Integer.parseInt(map.get("client_id").toString()));
         baseOpenApiParams.setParams(convertObjectToMap(map));
         return baseOpenApiParams;
     }
@@ -37,9 +39,9 @@ public class OpenApiParamsHelper {
      */
     private Map convertObjectToMap(Map<String, Object> map) {
         map.remove("userid");
-        map.remove("client_id");
-        map.remove("ct");
-        map.remove("code");
+        map.remove(CommonConstant.CLIENT_ID);
+        map.remove(CommonConstant.RESQUEST_CT);
+        map.remove(CommonConstant.RESQUEST_CODE);
         map.remove("openid");
         map.remove("params");
         return map;

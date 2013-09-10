@@ -1,16 +1,17 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -18,7 +19,6 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,43 +36,17 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private static final long SIG_EXPIRES = 60 * 60 * 1000; //sig里的timestamp有效期，一小时，单位毫秒
     private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
-    private static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
     @Autowired
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
     private SHTokenService shTokenService;
-
-    @Override
-    public Result createToken(PcGetTokenParams pcTokenParams) {
-        Result finalResult = new APIResultSupport(false);
-        try {
-            int clientId = Integer.parseInt(pcTokenParams.getAppid());
-            String passportId = pcTokenParams.getUserid();
-            String password = pcTokenParams.getPassword();
-            String instanceId = pcTokenParams.getTs();
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
-                return finalResult;
-            }
-            //校验用户名和密码
-            AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
-            Result result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-            if (!result.isSuccess()) {
-                return result;
-            }
-            return initialAccountToken(passportId, instanceId, appConfig);
-        } catch (Exception e) {
-            logger.error("createPairToken fail", e);
-            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return finalResult;
-        }
-    }
 
     @Override
     public Result createPairToken(PcPairTokenParams pcTokenParams) {
@@ -89,7 +63,13 @@ public class PCAccountManagerImpl implements PCAccountManager {
             }
             if (!Strings.isNullOrEmpty(password)) {   //校验用户名和密码
                 AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
-                Result result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                //根据域名判断是否代理，一期全部走代理
+                Result result = new APIResultSupport(false);
+                if (ManagerHelper.isInvokeProxyApi(passportId)) {
+                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                } else {
+                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
+                }
                 if (!result.isSuccess()) {
                     return result;
                 }
@@ -112,16 +92,20 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     @Override
     public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
-
         Result result = new APIResultSupport(false);
         int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
         String passportId = pcRefreshTokenParams.getUserid();
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
             boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             if (!res) {
-                if (clientId == PC_CLIENTID) {
+                if (CommonHelper.isIePinyinToken(clientId)) {
                     if (!shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken)) {
                         result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                         return result;
@@ -131,12 +115,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                     return result;
                 }
             }
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result;
-            }
-            AccountToken accountToken = pcAccountService.updateOrInsertAccountToken(passportId, instanceId, appConfig);
+            AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
             if (accountToken != null) {
                 result.setSuccess(true);
                 result.setDefaultModel(accountToken);
@@ -162,7 +141,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
             } else {
-                if (clientId == PC_CLIENTID) {
+                if (CommonHelper.isIePinyinToken(clientId)) {
                     if (shTokenService.verifyShAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                         result.setSuccess(true);
                     }
@@ -191,13 +170,13 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public String getSig(String passportId, int clientId, String refresh_token, String timestamp) {
+    public String getSig(String passportId, int clientId, String refresh_token, String timestamp) throws Exception {
         AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
         if (appConfig == null) {
             return null;
         }
         String clientSecret = appConfig.getClientSecret();
-        String sig = DigestUtils.md5Hex(passportId + clientId + refresh_token + timestamp + clientSecret);
+        String sig = Coder.encryptMD5(passportId + clientId + refresh_token + timestamp + clientSecret);
         return sig;
     }
 
@@ -220,7 +199,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
-        AccountToken accountToken = pcAccountService.initialAccountToken(passportId, instanceId, appConfig);
+        AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
         if (accountToken != null) {
             finalResult.setSuccess(true);
             finalResult.setDefaultModel(accountToken);
@@ -243,7 +222,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
         if (accountToken == null) {
-            if (clientId == PC_CLIENTID) {
+            if (CommonHelper.isIePinyinToken(clientId)) {
                 return verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
             } else {
                 return false;

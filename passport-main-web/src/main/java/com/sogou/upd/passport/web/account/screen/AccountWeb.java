@@ -3,10 +3,11 @@ package com.sogou.upd.passport.web.account.screen;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.CookieUtils;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,26 +138,24 @@ public class AccountWeb extends BaseController {
         Map<String,String> map= Maps.newHashMap();
         if (!Strings.isNullOrEmpty(ru)) {
             result.setSuccess(true);
-            map.put("ru",ru);
+            map.put(CommonConstant.RESPONSE_RU,ru);
         }
         if (!Strings.isNullOrEmpty(client_id)) {
             result.setSuccess(true);
-            map.put("client_id", client_id);
+            map.put(CommonConstant.CLIENT_ID, client_id);
         }
         result.setModels(map);
         return result;
     }
 
-
-
     /*
     注册种cookie防止恶意注册，黑白名单
      */
     private void webCookieProcess(HttpServletRequest request, HttpServletResponse response) {
-        String uuidName = CookieUtils.getCookie(request, "uuidName");
+        String uuidName = ServletUtil.getCookie(request, "uuidName");
         if (Strings.isNullOrEmpty(uuidName)) {
             uuidName = UUID.randomUUID().toString().replaceAll("-", "");
-            CookieUtils.setCookie(response, "uuidName", uuidName, (int) DateAndNumTimesConstant.TIME_ONEDAY);
+            ServletUtil.setCookie(response, "uuidName", uuidName, (int) DateAndNumTimesConstant.TIME_ONEDAY);
         }
     }
 }

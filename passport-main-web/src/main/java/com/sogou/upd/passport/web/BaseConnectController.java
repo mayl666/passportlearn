@@ -35,11 +35,10 @@ public class BaseConnectController extends BaseController {
     /**
      * 第三方登录接口type=mapp、mobile、web时，需要对ru分别做处理
      *
-     * @param type      /connect/login接口的type参数
-     * @param ru        回调url
+     * @param ru 回调url
      * @return
      */
-    protected String buildAppSuccessRu(String type, String ru, String succValue){
+    protected String buildMappSuccessRu(String ru, String userid, String token, String nickname) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
@@ -47,13 +46,10 @@ public class BaseConnectController extends BaseController {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-            params.put("token", succValue);
-            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-        } else if (type.equals(ConnectTypeEnum.Mobile.toString())) {
-            params.put("s_m_u", succValue);
-            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-        }
+        params.put("userid", userid);
+        params.put("token", token);
+        params.put("uniqname", nickname);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
 
@@ -70,12 +66,6 @@ public class BaseConnectController extends BaseController {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
         if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {
             Map params = Maps.newHashMap();
             params.put(CommonConstant.RESPONSE_STATUS, errorCode);
@@ -84,6 +74,8 @@ public class BaseConnectController extends BaseController {
             }
             params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
             ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            ru = "/pcaccount/connectlogin";
         }
         return ru;
     }

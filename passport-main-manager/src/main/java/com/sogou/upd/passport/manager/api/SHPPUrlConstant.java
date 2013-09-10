@@ -10,8 +10,12 @@ public class SHPPUrlConstant {
 
 
     public static final int APP_ID = 1120;
-
     public static final String APP_KEY = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
+
+    public static final int DEFAULT_CONNECT_APP_ID = 1110;
+    public static final String DEFAULT_CONNECT_APP_KEY = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
+
+    public static final String APPID_STRING = "appid";
 
     public static final String COOKIE_KEY = "a80d&p4^9t";
 
@@ -26,7 +30,7 @@ public class SHPPUrlConstant {
     /* ============================================================================ */
     // 内部接口基本url
     private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
-    private static final String BASE_URL = "http://passport.sohu.com/";
+    private static final String BASE_URL = "https://passport.sohu.com/";
     // 第三方开放平台代理API基本url
     private static final String BASE_OPEN_API_URL = "http://internal.passport.sohu.com/openlogin/";
 
@@ -110,6 +114,4 @@ public class SHPPUrlConstant {
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
 
-    /*================================Token验证相关url=======================================*/
-    public static final String SOHU_REFRESHTOKEN_URL = BASE_URL + "act/refreshtoken";
 }

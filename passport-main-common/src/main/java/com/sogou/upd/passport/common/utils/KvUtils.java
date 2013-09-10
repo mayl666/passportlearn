@@ -27,15 +27,14 @@ public class KvUtils {
 
     private static RedisTemplate kvTemplate;
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
+//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
     public void set(String key, String value) {
         String storeKey = key;
         try {
             ValueOperations<String, String> valueOperations = kvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
         } catch (Exception e) {
-            // logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
-            System.out.println(e.getMessage());
+            logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
             try {
                 delete(key);
             } catch (Exception ex) {
@@ -50,7 +49,7 @@ public class KvUtils {
         set(key, new ObjectMapper().writeValueAsString(obj));
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
+//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
     public String get(String key) {
         String storeKey = key;
         try {
@@ -98,8 +97,11 @@ public class KvUtils {
             if(CollectionUtils.isEmpty(set)){
                 set = Sets.newHashSet();
             }
-            set.add(value);
-            set(key, new ObjectMapper().writeValueAsString(set));
+            if(!set.contains(value)){
+                set.add(value);
+                set(key, new ObjectMapper().writeValueAsString(set));
+            }
+
         } catch (Exception e) {
             logger.error("[KvCache] lPush String To Set, key:" + key, e);
         }
