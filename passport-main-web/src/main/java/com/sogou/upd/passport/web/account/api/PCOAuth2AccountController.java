@@ -46,7 +46,7 @@ public class PCOAuth2AccountController extends BaseController {
         return "";
     }
 
-    @RequestMapping(value = "/oauth2/pcindex", method = RequestMethod.GET)
+    @RequestMapping(value = "/pcindex", method = RequestMethod.GET)
     public String pcindex(HttpServletRequest request, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(oauth2PcIndexParams);
@@ -78,6 +78,9 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
     }
 
     @Autowired
@@ -111,7 +114,5 @@ public class PCOAuth2AccountController extends BaseController {
 
         return result.toString();
     }
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
-    }
+
 }
