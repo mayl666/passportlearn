@@ -14,6 +14,7 @@ import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
@@ -67,7 +68,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
         requestModel.addParam("expires_in", (int) oAuthTokenVO.getExpiresIn());  // 搜狐wiki里expires_in必须为int型
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getRefreshToken())) {
-            requestModel.addParam("refresh_token", oAuthTokenVO.getRefreshToken());
+            requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, oAuthTokenVO.getRefreshToken());
         }
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getOpenid())) {
             requestModel.addParam("openid", oAuthTokenVO.getOpenid());

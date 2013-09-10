@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
@@ -9,6 +10,8 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -18,11 +21,13 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import org.apache.commons.httpclient.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * 代理搜狐Passport的登录实现
@@ -113,7 +118,38 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setSuccess(true);
         } catch (Exception e) {
             log.error("buildCreateCookieUrl error userid:" + createCookieUrlApiParams.getUserid() + " ru=" + createCookieUrlApiParams.getRu(), e);
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
+        return result;
+    }
+
+    @Override
+    public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
+        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams);
+        String url = (String) cookieUrlResult.getModels().get("url");
+        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
+        Result result = new APIResultSupport(false);
+        if (headers != null) {
+            String locationKey = "Location";
+            String locationUrl = "";
+            for (Header header : headers) {
+                if (locationKey.equals(header.getName())) {
+                    locationUrl = header.getValue();
+                }
+            }
+            result.setDefaultModel("redirectUrl", locationUrl);
+            if (!Strings.isNullOrEmpty(locationUrl)) {
+                Map paramMap = StringUtil.extractParameterMap(locationUrl);
+                String status = (String) paramMap.get("status");
+                if (Strings.isNullOrEmpty(status)) {
+                    result.setSuccess(true);
+                    result.setDefaultModel("ppinf", paramMap.get("ppinf"));
+                    result.setDefaultModel("pprdig", paramMap.get("pprdig"));
+                    result.setDefaultModel("passport", paramMap.get("passport"));
+                }
+            }
+        }
+        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         return result;
     }
 

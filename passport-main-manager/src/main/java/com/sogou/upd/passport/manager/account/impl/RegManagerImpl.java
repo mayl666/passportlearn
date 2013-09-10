@@ -2,12 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.parameter.*;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -17,7 +12,6 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
@@ -28,12 +22,8 @@ import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.OperateTimesService;
-
+import com.sogou.upd.passport.oauth2.common.OAuth;
+import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,9 +201,9 @@ public class RegManagerImpl implements RegManager {
                 long accessValidTime = accountToken.getAccessValidTime();
                 String refreshToken = accountToken.getRefreshToken();
                 Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put("access_token", accessToken);
-                mapResult.put("expires_time", accessValidTime);
-                mapResult.put("refresh_token", refreshToken);
+                mapResult.put(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
+                mapResult.put(OAuth.OAUTH_EXPIRES_TIME, accessValidTime);
+                mapResult.put(OAuth.OAUTH_REFRESH_TOKEN, refreshToken);
 
                 result.setSuccess(true);
                 result.setMessage("注册成功！");

@@ -30,11 +30,10 @@ public class CommonConstant {
 
     public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
-    public static final String PARAMETER_SEPARATOR = "&";
-    public static final String NAME_VALUE_SEPARATOR = "=";
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
+    public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
     //	public static final String API_ID_SOGOU_DOMAIN = "test01.id.sogou.com";
     public static final String API_ID_SOGOU_INTERNAL_DOMAIN = "api.id.sogou.com.z.sogou-op.org";
 

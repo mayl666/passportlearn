@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 下午11:21
  * To change this template use File | Settings | File Templates.
  */
-public class Oauth2PcIndexParams {
+public class PCOAuth2IndexParams {
     @NotBlank(message = "accesstoken illegal")
     private String accesstoken="";   //获取的访问token
 

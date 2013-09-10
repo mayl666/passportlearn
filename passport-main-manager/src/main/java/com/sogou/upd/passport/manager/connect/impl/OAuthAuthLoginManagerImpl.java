@@ -22,6 +22,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
@@ -148,9 +149,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 }
             }
             Map<String, Object> mapResult = Maps.newHashMap();
-            mapResult.put("access_token", accountToken.getAccessToken());
-            mapResult.put("expires_time", accountToken.getAccessValidTime());
-            mapResult.put("refresh_token", accountToken.getRefreshToken());
+            mapResult.put(OAuth.OAUTH_ACCESS_TOKEN, accountToken.getAccessToken());
+            mapResult.put(OAuth.OAUTH_EXPIRES_TIME, accountToken.getAccessValidTime());
+            mapResult.put(OAuth.OAUTH_REFRESH_TOKEN, accountToken.getRefreshToken());
 
             result.setSuccess(true);
             result.setMessage("登录成功！");

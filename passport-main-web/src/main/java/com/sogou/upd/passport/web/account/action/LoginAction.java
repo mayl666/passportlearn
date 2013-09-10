@@ -7,8 +7,8 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
@@ -137,10 +137,10 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
     public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="client_id",required=false) String client_id)
             throws Exception {
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PASSPORT);
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINFO);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
 
         String userId = hostHolder.getPassportId();
 
@@ -160,10 +160,10 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/logout_redirect", method = RequestMethod.GET)
     public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="ru",required=false) String ru,@RequestParam(value="client_id",required=false) String client_id)
             throws Exception {
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINF);
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPRDIG);
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PASSPORT);
-        CookieUtils.deleteCookie(response, LoginConstant.COOKIE_PPINFO);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
 
         String userId = hostHolder.getPassportId();
 
