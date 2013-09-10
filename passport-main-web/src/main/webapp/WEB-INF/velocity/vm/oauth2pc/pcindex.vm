@@ -172,7 +172,7 @@
             <div class="sent-btn-wrap">
                 <button class="btn-sent" id="pro_btn_pass">保存</button>
             </div>
-            <fieldset>
+            <!--<fieldset>
                 <legend>账号绑定</legend>
                 <div class="bind-list" id="pro_bind_list">
                     <ul>
@@ -198,7 +198,7 @@
                         </li>
                     </ul>
                 </div>
-            </fieldset>
+            </fieldset>-->
             <!--<div class="sent-btn-wrap">
                 <button class="btn-sent" id="pro_save">保存</button>
             </div>-->

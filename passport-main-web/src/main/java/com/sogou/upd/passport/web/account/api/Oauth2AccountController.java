@@ -40,8 +40,13 @@ public class Oauth2AccountController extends BaseController {
             return "forward:/oauth2/errorMsg?msg=" + validateResult;
         }
         //TODO 校验token,获取userid
-        String passsportid = "";
+        String userid = "tinkame700@sogou.com";
 
+
+
+
+
+        model.addAttribute("userid", userid);
         return "/oauth2pc/pcindex";
     }
 
