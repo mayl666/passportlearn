@@ -245,6 +245,7 @@ public class PCAccountController extends BaseController {
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
+
             return "redirect:" + redirectUrl;
         }
         //token验证失败
