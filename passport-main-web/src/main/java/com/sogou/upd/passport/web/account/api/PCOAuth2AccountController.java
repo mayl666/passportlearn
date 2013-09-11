@@ -5,17 +5,20 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
+import com.sogou.upd.passport.web.account.form.PCOAuth2ResetPwdParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -45,6 +48,8 @@ public class PCOAuth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PCOAuth2AccountController.class);
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    @Autowired
+    private SecureManager secureManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -113,6 +118,41 @@ public class PCOAuth2AccountController extends BaseController {
         //TODO 校验token,获取userid
 
 
+        return simpleResult.toString();
+
+    }
+
+    @RequestMapping(value = "/resetPwd",method = RequestMethod.POST)
+    @ResponseBody
+    public Object resetPwd(HttpServletRequest request,PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
+        SimpleResult simpleResult = new SimpleResult(-1,"");
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(pcOAuth2ResetPwdParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            //TODO 错误与sohu+保持一致
+            simpleResult.setCode(-1);
+            simpleResult.setMessage(validateResult);
+            return simpleResult.toString();
+        }
+        //TODO 校验token,获取userid
+        String userid="tinkame700@sgou.com";
+
+        //修改密码
+        UpdatePwdParameters updateParams = new UpdatePwdParameters();
+        updateParams.setPassword(pcOAuth2ResetPwdParams.getOldpwd());
+        updateParams.setNewpwd(pcOAuth2ResetPwdParams.getNewpwd());
+        updateParams.setIp(getIp(request));
+        updateParams.setPassport_id(userid);
+        Result result = secureManager.resetWebPassword(updateParams, getIp(request));
+
+        if(result.isSuccess()){
+            simpleResult.setCode(0);
+            simpleResult.setMessage("resetPwd success:");
+
+        }else {
+            simpleResult.setCode(-1);
+            simpleResult.setMessage("resetPwd success");
+        }
         return simpleResult.toString();
 
     }
