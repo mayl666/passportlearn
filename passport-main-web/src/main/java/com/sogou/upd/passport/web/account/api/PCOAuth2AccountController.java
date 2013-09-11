@@ -117,7 +117,6 @@ public class PCOAuth2AccountController extends BaseController {
         params.setModifyip(getIp(request));
         params.setUniqname(pcOAuth2UpdateNickParams.getNick());
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
-
         return result.toString();
     }
 
