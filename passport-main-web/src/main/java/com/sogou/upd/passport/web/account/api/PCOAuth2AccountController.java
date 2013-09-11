@@ -101,19 +101,18 @@ public class PCOAuth2AccountController extends BaseController {
     @RequestMapping(value = "/updateNickName",method = RequestMethod.POST)
     @ResponseBody
     public Object updateNickName(HttpServletRequest request,PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
-//        StringBuilder resutStr = new StringBuilder();
-//        resutStr.append("{");
+        SimpleResult simpleResult = new SimpleResult(-1,"");
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             //TODO 错误与sohu+保持一致
-            return validateResult;
+            simpleResult.setCode(-1);
+            simpleResult.setMessage(validateResult);
+            return simpleResult.toString();
         }
         //TODO 校验token,获取userid
-//        String passportId = "tinkame700@sogou.com";
-//        resutStr.append("\"code\":0,\"msg\":\"success\"}");
-//        return resutStr.toString();
-        SimpleResult simpleResult = new SimpleResult(0,"");
+
+
         return simpleResult.toString();
 
     }
