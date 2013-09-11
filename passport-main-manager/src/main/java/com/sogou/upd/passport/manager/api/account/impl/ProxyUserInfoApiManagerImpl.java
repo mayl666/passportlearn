@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
@@ -142,14 +143,17 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             userid += "@sohu.com";
             updateUserInfoApiParams.setUserid(userid);
         }
+        //
+//        try {
+            if(!Strings.isNullOrEmpty(updateUserInfoApiParams.getUniqname()))
+//            updateUserInfoApiParams.setUniqname(new String(updateUserInfoApiParams.getUniqname().getBytes("UTF-8"),"gbk"));
+                updateUserInfoApiParams.setUniqname(updateUserInfoApiParams.getUniqname());
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
 
-        try {
-            updateUserInfoApiParams.setUniqname(new String(updateUserInfoApiParams.getUniqname().getBytes("UTF-8"),"gbk"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        RequestModelXmlGBK requestModelXml = new RequestModelXmlGBK(SHPPUrlConstant.UPDATE_USER_INFO, "register");
+//        RequestModelXmlGBK requestModelXml = new RequestModelXmlGBK(SHPPUrlConstant.UPDATE_USER_INFO, "register");
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "info");
         Map<String, Object> fields = BeanUtil.beanDescribe(updateUserInfoApiParams);
         for (Map.Entry<String, Object> entry : fields.entrySet()) {
             String key = entry.getKey();
@@ -176,7 +180,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         }
 
         try {
-            updateUserUniqnameApiParams.setUniqname(URLDecoder.decode(updateUserUniqnameApiParams.getUniqname(), "utf-8"));
+//            updateUserUniqnameApiParams.setUniqname(URLDecoder.decode(updateUserUniqnameApiParams.getUniqname(), "utf-8"));
+            updateUserUniqnameApiParams.setUniqname(updateUserUniqnameApiParams.getUniqname());
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

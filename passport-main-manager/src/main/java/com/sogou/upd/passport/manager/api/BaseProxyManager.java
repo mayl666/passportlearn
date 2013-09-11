@@ -109,10 +109,10 @@ public class BaseProxyManager {
         }
         String code;
         if (isNonPCOpenApiProxy(url, clientId)) {
-            code = ManagerHelper.generatorCodeGBK(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
+            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
             requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.DEFAULT_CONNECT_APP_ID));
         } else {
-            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
+            code = ManagerHelper.generatorCodeGBK(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
             requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.APP_ID));
         }
         requestModel.addParam(CommonConstant.RESQUEST_CODE, code);

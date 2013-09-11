@@ -44,6 +44,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         updateUserInfoApiParams.setBirthday(calendar.getTime());
         updateUserInfoApiParams.setProvince(530000);
         updateUserInfoApiParams.setCity(532401);
+        updateUserInfoApiParams.setUniqname("111");
         updateUserInfoApiParams.setModifyip(modifyIp);
         Result result= proxyUserInfoApiManagerImpl.updateUserInfo(updateUserInfoApiParams);
         System.out.println(result);
