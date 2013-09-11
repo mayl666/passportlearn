@@ -46,7 +46,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
-        return "";
+        return "/oauth2pc/pclogin";
     }
 
     @RequestMapping(value = "/pcindex", method = RequestMethod.GET)
