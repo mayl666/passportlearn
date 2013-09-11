@@ -9,6 +9,7 @@ import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
@@ -97,7 +98,7 @@ public class PCOAuth2AccountController extends BaseController {
             simpleResult.setMessage("check nick success,nick:"+nickname);
 
         }else {
-            simpleResult.setCode(-1);
+            simpleResult.setCode(-2);
             simpleResult.setMessage("check nick failed,nick:"+nickname);
         }
         return simpleResult.toString();
@@ -116,8 +117,22 @@ public class PCOAuth2AccountController extends BaseController {
             return simpleResult.toString();
         }
         //TODO 校验token,获取userid
+        String userid="tinkame700@sogou.com";
 
+        UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
+        params.setUserid(userid);
+        params.setModifyip(getIp(request));
+        params.setUniqname(pcOAuth2UpdateNickParams.getNick());
+        Result result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
 
+        if(result.isSuccess()){
+            simpleResult.setCode(0);
+            simpleResult.setMessage("updateNickName success:");
+
+        }else {
+            simpleResult.setCode(-2);
+            simpleResult.setMessage("updateNickName success");
+        }
         return simpleResult.toString();
 
     }
@@ -150,7 +165,7 @@ public class PCOAuth2AccountController extends BaseController {
             simpleResult.setMessage("resetPwd success:");
 
         }else {
-            simpleResult.setCode(-1);
+            simpleResult.setCode(-2);
             simpleResult.setMessage("resetPwd success");
         }
         return simpleResult.toString();
