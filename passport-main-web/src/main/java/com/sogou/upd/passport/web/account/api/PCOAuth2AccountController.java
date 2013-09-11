@@ -150,7 +150,7 @@ public class PCOAuth2AccountController extends BaseController {
             return simpleResult.toString();
         }
         //TODO 校验token,获取userid
-        String userid="tinkame700@sgou.com";
+        String userid="tinkame700@sogou.com";
 
         //修改密码
         UpdatePwdParameters updateParams = new UpdatePwdParameters();

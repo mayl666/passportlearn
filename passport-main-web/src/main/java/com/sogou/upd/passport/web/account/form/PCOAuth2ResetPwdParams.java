@@ -11,11 +11,11 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class PCOAuth2ResetPwdParams {
     @NotBlank(message = "accesstoken illegal")
-    private String accesstoken="";   //获取的访问token
+    private String accesstoken;   //获取的访问token
     @NotBlank(message = "老密码不能为空")
     private String oldpwd;
     @NotBlank(message = "新密码不能为空")
-    private String newpwd = "";
+    private String newpwd;
     public String getAccesstoken() {
         return accesstoken;
     }
