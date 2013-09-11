@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,14 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class RuValidator implements ConstraintValidator<Ru, String> {
+
+    private static List SUPPORT_DOMAIN = Lists.newArrayList();
+
+    static {
+        SUPPORT_DOMAIN.add("sogou.com");
+        SUPPORT_DOMAIN.add("sohu.com");
+        SUPPORT_DOMAIN.add("go2map.com");
+    }
 
     @Override
     public void initialize(Ru constraintAnnotation) {
@@ -36,7 +46,7 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
             return false;
         }
 
-        if (!rootPath.equalsIgnoreCase("sogou.com") && !rootPath.equalsIgnoreCase("sohu.com")) {
+        if (!SUPPORT_DOMAIN.contains(rootPath)) {
             return false;
         }
 
