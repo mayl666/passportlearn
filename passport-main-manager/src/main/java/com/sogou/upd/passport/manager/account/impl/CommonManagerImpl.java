@@ -97,7 +97,7 @@ public class CommonManagerImpl implements CommonManager {
         createCookieUrlApiParams.setUserid(passportIdTmp);
         createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
-        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
         if (createCookieResult.isSuccess()) {
             result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
         } else {

@@ -43,7 +43,7 @@ public interface LoginApiManager {
      * @param createCookieUrlApiParams
      * @return
      */
-    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode);
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams);
 
     /**
      * 获取cookie值，包括ppinf、pprdig、passport
