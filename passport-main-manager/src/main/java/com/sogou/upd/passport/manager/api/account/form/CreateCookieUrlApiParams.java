@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -10,6 +12,8 @@ import org.hibernate.validator.constraints.NotBlank;
 public class CreateCookieUrlApiParams {
 
     @NotBlank(message = "回调地址不能为空")
+    @Ru
+    @URL
     private String ru;
 
     @NotBlank(message = "用户id不能为空")

@@ -34,7 +34,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
 //               var sC = self.checkSname($sname, $snameError, self.validObj.regacc),
                  var nC = self.checkNick($nick, $nickError, self.validObj.nick)
                     if (nC) {
-                        $.when(1).then(function() {
+                        $.when(nc).then(function() {
 //                            var snameLegal = self.validObj.regacc.legal,
                             var   nickLegal = self.validObj.nick.legal;
                             if (nickLegal) {
@@ -110,7 +110,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 if (!self.check($nick, $nickError, validObj)) return false
 
             return $.ajax({
-                url: self.sogouBaseurl + "/a/sogou/check/nick/" + val,
+                url: self.sogouBaseurl + "/oauth2/checknickname?nickname=" + val,
                 type: "get",
                 dataType: "json"
             }).done(function(result) {
