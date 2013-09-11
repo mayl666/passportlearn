@@ -82,26 +82,27 @@ public class PCOAuth2AccountController extends BaseController {
     @RequestMapping(value = "/checknickname", method = RequestMethod.GET)
     @ResponseBody
     public Object checkNickName(HttpServletRequest request,@RequestParam(value = "nickname") String nickname){
-        StringBuilder resutStr = new StringBuilder();
-        resutStr.append("{");
+        SimpleResult simpleResult = new SimpleResult(-1,"");
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams=new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(nickname);
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         Result result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
         if(result.isSuccess()){
-            resutStr.append("\"code\":0,\"msg\":\"check nick success,nick:"+nickname+"\"}");
-        }else {
-            resutStr.append("\"code\":-1,\"msg\":\"check nick failed,nick:"+nickname+"\"}");
-        }
-        return resutStr.toString();
+            simpleResult.setCode(0);
+            simpleResult.setMessage("check nick success,nick:"+nickname);
 
+        }else {
+            simpleResult.setCode(-1);
+            simpleResult.setMessage("check nick failed,nick:"+nickname);
+        }
+        return simpleResult.toString();
     }
 
     @RequestMapping(value = "/updateNickName",method = RequestMethod.POST)
     @ResponseBody
     public Object updateNickName(HttpServletRequest request,PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
-        StringBuilder resutStr = new StringBuilder();
-        resutStr.append("{");
+//        StringBuilder resutStr = new StringBuilder();
+//        resutStr.append("{");
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -109,9 +110,11 @@ public class PCOAuth2AccountController extends BaseController {
             return validateResult;
         }
         //TODO 校验token,获取userid
-        String passportId = "tinkame700@sogou.com";
-        resutStr.append("\"code\":0,\"msg\":\"success\"}");
-        return resutStr.toString();
+//        String passportId = "tinkame700@sogou.com";
+//        resutStr.append("\"code\":0,\"msg\":\"success\"}");
+//        return resutStr.toString();
+        SimpleResult simpleResult = new SimpleResult(0,"");
+        return simpleResult.toString();
 
     }
 
@@ -154,5 +157,41 @@ public class PCOAuth2AccountController extends BaseController {
         result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest,appConfig);
 
         return result.toString();
+    }
+
+    class SimpleResult{
+        private int code=0;
+        private String message = "";
+
+        SimpleResult(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public void setCode(int code) {
+            this.code = code;
+        }
+
+        public String toString() {
+            String str = "";
+            try {
+                str = new ObjectMapper().writeValueAsString(this);
+            } catch (IOException e) {
+                logger.error("ResultObject As String is error!");
+            }
+            return str;
+        }
     }
 }
