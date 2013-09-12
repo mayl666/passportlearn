@@ -1,14 +1,17 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -20,6 +23,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2ResetPwdParams;
+import com.sogou.upd.passport.web.account.form.PCOAuth2SendSmsParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -51,6 +55,8 @@ public class PCOAuth2AccountController extends BaseController {
     private UserInfoApiManager proxyUserInfoApiManagerImpl;
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -83,7 +89,26 @@ public class PCOAuth2AccountController extends BaseController {
         model.addAttribute("userid", passportId);
         model.addAttribute("uniqname", uniqname);
 
-
+        //判断账号类型,判断绑定手机或者绑定邮箱是否可用
+        AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
+        switch (accountDomain) {
+            case SOHU:
+                model.addAttribute("isBindEmailUsable", false);
+                model.addAttribute("isBindMobileUsable", false);
+                break;
+            case THIRD:
+                model.addAttribute("isBindEmailUsable", false);
+                model.addAttribute("isBindMobileUsable", false);
+                break;
+            case PHONE:
+                model.addAttribute("isBindEmailUsable", true);
+                model.addAttribute("isBindMobileUsable", false);
+                break;
+            default:
+                model.addAttribute("isBindEmailUsable", true);
+                model.addAttribute("isBindMobileUsable", true);
+                break;
+        }
 
         return "/oauth2pc/pcindex";
     }
@@ -120,55 +145,25 @@ public class PCOAuth2AccountController extends BaseController {
         return result.toString();
     }
 
-    //检查绑定手机的唯一性
-    @RequestMapping(value = "/checkMobile",method = RequestMethod.POST)
-    @ResponseBody
-    public Object checkMobile(HttpServletRequest request,PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(pcOAuth2ResetPwdParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        //TODO 校验token,获取userid
-        String userid="tinkame700@sogou.com";
-
-        //修改密码
-        UpdatePwdParameters updateParams = new UpdatePwdParameters();
-        updateParams.setPassword(pcOAuth2ResetPwdParams.getOldpwd());
-        updateParams.setNewpwd(pcOAuth2ResetPwdParams.getNewpwd());
-        updateParams.setIp(getIp(request));
-        updateParams.setPassport_id(userid);
-        result = secureManager.resetWebPassword(updateParams, getIp(request));
-
-        return result.toString();
-    }
-
     //发送绑定手机验证码
-    @RequestMapping(value = "/sendsms",method = RequestMethod.GET)
+    @RequestMapping(value = "/sendsms",method = RequestMethod.POST)
     @ResponseBody
-    public Object sendsms(HttpServletRequest request,PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
+    public Object sendsms(HttpServletRequest request,PCOAuth2SendSmsParams pcOAuth2SendSmsParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
-        String validateResult = ControllerHelper.validateParams(pcOAuth2ResetPwdParams);
+        String validateResult = ControllerHelper.validateParams(pcOAuth2SendSmsParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             return result.toString();
         }
-        //TODO 校验token,获取userid
-        String userid="tinkame700@sogou.com";
+        //TODO 根据cookie做登陆校验
 
-        //修改密码
-        UpdatePwdParameters updateParams = new UpdatePwdParameters();
-        updateParams.setPassword(pcOAuth2ResetPwdParams.getOldpwd());
-        updateParams.setNewpwd(pcOAuth2ResetPwdParams.getNewpwd());
-        updateParams.setIp(getIp(request));
-        updateParams.setPassport_id(userid);
-        result = secureManager.resetWebPassword(updateParams, getIp(request));
-
+        SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
+        sendCaptchaApiParams.setMobile(pcOAuth2SendSmsParams.getPhonenumber());
+        sendCaptchaApiParams.setClient_id(SHPPUrlConstant.APP_ID);
+        sendCaptchaApiParams.setType(3);
+        result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
         return result.toString();
     }
 
@@ -176,32 +171,6 @@ public class PCOAuth2AccountController extends BaseController {
     @RequestMapping(value = "/bindOrUpdateMobile",method = RequestMethod.POST)
     @ResponseBody
     public Object bindOrUpdateMobile(HttpServletRequest request,PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(pcOAuth2ResetPwdParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        //TODO 校验token,获取userid
-        String userid="tinkame700@sogou.com";
-
-        //修改密码
-        UpdatePwdParameters updateParams = new UpdatePwdParameters();
-        updateParams.setPassword(pcOAuth2ResetPwdParams.getOldpwd());
-        updateParams.setNewpwd(pcOAuth2ResetPwdParams.getNewpwd());
-        updateParams.setIp(getIp(request));
-        updateParams.setPassport_id(userid);
-        result = secureManager.resetWebPassword(updateParams, getIp(request));
-
-        return result.toString();
-    }
-
-    //解除绑定手机
-    @RequestMapping(value = "/removeBindMobile",method = RequestMethod.POST)
-    @ResponseBody
-    public Object removeBindMobile(HttpServletRequest request,PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcOAuth2ResetPwdParams);
