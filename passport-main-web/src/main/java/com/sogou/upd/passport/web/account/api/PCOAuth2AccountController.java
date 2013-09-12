@@ -6,9 +6,11 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -48,6 +51,8 @@ public class PCOAuth2AccountController extends BaseController {
     private UserInfoApiManager proxyUserInfoApiManagerImpl;
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private LoginApiManager proxyLoginApiManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -55,7 +60,7 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     @RequestMapping(value = "/pcindex", method = RequestMethod.GET)
-    public String pcindex(HttpServletRequest request, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
+    public String pcindex(HttpServletRequest request, HttpServletResponse response,PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(oauth2PcIndexParams);
@@ -114,6 +119,22 @@ public class PCOAuth2AccountController extends BaseController {
             } else {
                 model.addAttribute("bindEmail","");
             }
+        }
+
+        //生成cookie
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu("https://account.sogou.com");
+        //TODO sogou域账号迁移后cookie生成问题
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        if (getCookieValueResult.isSuccess()) {
+            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+            String passport = (String) getCookieValueResult.getModels().get("passport");
+            ServletUtil.setCookie(response, "ppinf", ppinf, 0, CommonConstant.SOHU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "pprdig", pprdig, 0, CommonConstant.SOHU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "passport", passport, 0, CommonConstant.SOHU_ROOT_DOMAIN);
+            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
         return "/oauth2pc/pcindex";
     }
