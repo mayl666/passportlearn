@@ -148,6 +148,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     result.setDefaultModel("ppinf", paramMap.get("ppinf"));
                     result.setDefaultModel("pprdig", paramMap.get("pprdig"));
                     result.setDefaultModel("passport", paramMap.get("passport"));
+                    return result;
                 }
             }
         }
