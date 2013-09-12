@@ -35,7 +35,7 @@ public class RequestModel {
 
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
-    private static final String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded;charset=utf-8";
+    private String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded;charset=utf-8";
 
     private static final Logger logger = LoggerFactory.getLogger(RequestModel.class);
 
@@ -216,5 +216,9 @@ public class RequestModel {
             throw new RuntimeException("getUrlWithParam UnsupportedEncodingException ");
         }
         return url.toString();
+    }
+
+    public void setHEADER_CONTENT_TYPE_VALUE(String HEADER_CONTENT_TYPE_VALUE) {
+        this.HEADER_CONTENT_TYPE_VALUE = HEADER_CONTENT_TYPE_VALUE;
     }
 }

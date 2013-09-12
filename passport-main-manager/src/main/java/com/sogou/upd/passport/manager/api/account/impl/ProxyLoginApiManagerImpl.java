@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
 
@@ -102,7 +104,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         try {
             String ru = createCookieUrlApiParams.getRu();
             String userId = createCookieUrlApiParams.getUserid();
-            ru = URLEncoder.encode(ru, "UTF-8");
             long ct = System.currentTimeMillis();
             String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
             code = Coder.encryptMD5(code);
@@ -137,7 +138,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     locationUrl = header.getValue();
                 }
             }
-            result.setDefaultModel("redirectUrl", locationUrl);
             if (!Strings.isNullOrEmpty(locationUrl)) {
                 Map paramMap = StringUtil.extractParameterMap(locationUrl);
                 String status = (String) paramMap.get("status");
@@ -146,11 +146,33 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     result.setDefaultModel("ppinf", paramMap.get("ppinf"));
                     result.setDefaultModel("pprdig", paramMap.get("pprdig"));
                     result.setDefaultModel("passport", paramMap.get("passport"));
+                    locationUrl = modifyClientRu(locationUrl);
                 }
             }
+            result.setDefaultModel("redirectUrl", locationUrl);
         }
         result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         return result;
+    }
+
+    /**
+     * 输入法Mac，/sso/setcookie？ru=xxx不需要urlencode
+     *
+     * @param locationUrl
+     * @return
+     */
+    private String modifyClientRu(String locationUrl) {
+        Map paramMap = StringUtil.extractParameterMap(locationUrl);
+        String ru = (String) paramMap.get("ru");
+        if (!Strings.isNullOrEmpty(ru)) {
+            try {
+                String decodeRu = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                locationUrl = locationUrl.replaceAll(ru, decodeRu);
+            } catch (UnsupportedEncodingException e) {
+                log.error("sohu sso setcookie ru encode fail,url:" + ru);
+            }
+        }
+        return locationUrl;
     }
 
 }

@@ -1,0 +1,9 @@
+<html>
+<head>
+    <script type="text/javascript">
+        var nick = decodeURIComponent('${nickname}');
+        window.location = "${result}" + nick;
+
+    </script>
+</head>
+</html>
