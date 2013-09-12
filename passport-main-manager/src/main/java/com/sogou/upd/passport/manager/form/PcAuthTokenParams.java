@@ -23,8 +23,6 @@ public class PcAuthTokenParams extends PcBaseParams {
     @URL
     @Ru
     @NotBlank(message = "ru地址不允许为空")
-    @URL
-    @Ru
     private String ru; //token正确时的调整地址
 
     public long getLivetime() {
