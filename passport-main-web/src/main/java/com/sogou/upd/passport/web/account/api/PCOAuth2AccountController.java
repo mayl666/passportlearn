@@ -19,7 +19,6 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.PCOAuth2BindMobileParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2ResetPwdParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
@@ -91,27 +90,36 @@ public class PCOAuth2AccountController extends BaseController {
         AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
         switch (accountDomain) {
             case SOHU:
-                model.addAttribute("isBindEmailUsable", false);
-                model.addAttribute("isBindMobileUsable", false);
+                model.addAttribute("isBindEmailUsable", 0);
+                model.addAttribute("isBindMobileUsable", 0);
                 break;
             case THIRD:
-                model.addAttribute("isBindEmailUsable", false);
-                model.addAttribute("isBindMobileUsable", false);
+                model.addAttribute("isBindEmailUsable", 0);
+                model.addAttribute("isBindMobileUsable", 0);
                 break;
             case PHONE:
-                model.addAttribute("isBindEmailUsable", true);
-                model.addAttribute("isBindMobileUsable", false);
+                model.addAttribute("isBindEmailUsable", 1);
+                model.addAttribute("isBindMobileUsable", 0);
                 break;
             default:
-                model.addAttribute("isBindEmailUsable", true);
-                model.addAttribute("isBindMobileUsable", true);
+                model.addAttribute("isBindEmailUsable", 1);
+                model.addAttribute("isBindMobileUsable", 1);
                 break;
         }
         //获取绑定手机，绑定邮箱
         result = secureManager.queryAccountSecureInfo(passportId, CommonConstant.PC_CLIENTID, true);
         if(result.isSuccess()){
-            model.addAttribute("bindMoblile", result.getModels().get("sec_mobile"));
-            model.addAttribute("bindEmail",result.getModels().get("sec_email"));
+            if(result.getModels().get("sec_mobile")!=null){
+                model.addAttribute("bindMoblile", result.getModels().get("sec_mobile"));
+            }else {
+                model.addAttribute("bindMoblile","");
+            }
+
+            if(result.getModels().get("sec_email")!=null){
+                model.addAttribute("bindEmail",result.getModels().get("sec_email"));
+            } else {
+                model.addAttribute("bindEmail","");
+            }
         }
         return "/oauth2pc/pcindex";
     }
