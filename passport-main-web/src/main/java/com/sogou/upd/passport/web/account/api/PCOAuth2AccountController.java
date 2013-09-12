@@ -6,10 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
-import com.sogou.upd.passport.manager.account.PCAccountManager;
-import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -72,7 +69,7 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private RegManager regManager;
     @Autowired
-    private PCAccountManager pcAccountManager;
+    private PCOAuth2RegManager pcoAuth2RegManager;
 
     /**
      * 浏览器sohu+注册接口
@@ -94,19 +91,19 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         String ip = getIp(request);
+        //TODO ip加安全限制
         result = checkAccountNotExists(pcoAuth2RegisterParams.getUsername());
         if (!result.isSuccess()) {
             return result.toString();
         }
-        result = regManager.webRegister(pcoAuth2RegisterParams, ip);
+//        result = regManager.webRegister(pcoAuth2RegisterParams, ip);
         //注册成功后获取token
         if (result.isSuccess()) {
             PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
-            pcPairTokenParams.setPassword(pcoAuth2RegisterParams.getPassword());
             pcPairTokenParams.setAppid(pcoAuth2RegisterParams.getClient_id());
             pcPairTokenParams.setUserid(pcoAuth2RegisterParams.getUsername());
             pcPairTokenParams.setTs(pcoAuth2RegisterParams.getInstance_id());
-            result = pcAccountManager.createPairToken(pcPairTokenParams);
+            result = pcoAuth2RegManager.getPairToken(pcPairTokenParams);
             if (result.isSuccess()) {
                 AccountToken accountToken = (AccountToken) result.getDefaultModel();
                 // 获取昵称并返回
@@ -129,29 +126,18 @@ public class PCOAuth2AccountController extends BaseController {
     //检查用户是否存在
     private Result checkAccountNotExists(String username) throws Exception {
         Result result = new APIResultSupport(false);
-        //校验是否是搜狐域内用户
-
+        //不允许sohu域用户注册
         if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
             return result;
         }
-        //校验是否是搜狗用户
+        //校验是搜狗用户还是手机用户
         if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
-            return result;
-        }
-
-        //判断是否是个性账号
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true);
-            } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false);
-            }
-        } else {
+            //sogou用户
             result = regManager.isAccountNotExists(username, false);
+        } else {
+            //手机用户
+            result = regManager.isAccountNotExists(username, true);
         }
         return result;
     }
@@ -207,20 +193,21 @@ public class PCOAuth2AccountController extends BaseController {
 
         return "/oauth2pc/pcindex";
     }
+
     @RequestMapping(value = "/checknickname", method = RequestMethod.GET)
     @ResponseBody
-    public Object checkNickName(HttpServletRequest request,@RequestParam(value = "nickname") String nickname){
+    public Object checkNickName(HttpServletRequest request, @RequestParam(value = "nickname") String nickname) {
         Result result = new APIResultSupport(false);
-        UpdateUserUniqnameApiParams updateUserUniqnameApiParams=new UpdateUserUniqnameApiParams();
+        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(nickname);
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
         return result.toString();
     }
 
-    @RequestMapping(value = "/updateNickName",method = RequestMethod.POST)
+    @RequestMapping(value = "/updateNickName", method = RequestMethod.POST)
     @ResponseBody
-    public Object updateNickName(HttpServletRequest request,PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
+    public Object updateNickName(HttpServletRequest request, PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
@@ -230,7 +217,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         //TODO 校验token,获取userid
-        String userid="tinkame700@sogou.com";
+        String userid = "tinkame700@sogou.com";
 
         UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
         params.setUserid(userid);
@@ -241,9 +228,9 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     //发送绑定手机验证码
-    @RequestMapping(value = "/sendsms",method = RequestMethod.POST)
+    @RequestMapping(value = "/sendsms", method = RequestMethod.POST)
     @ResponseBody
-    public Object sendsms(HttpServletRequest request,PCOAuth2SendSmsParams pcOAuth2SendSmsParams) throws Exception {
+    public Object sendsms(HttpServletRequest request, PCOAuth2SendSmsParams pcOAuth2SendSmsParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcOAuth2SendSmsParams);
@@ -262,10 +249,9 @@ public class PCOAuth2AccountController extends BaseController {
         return result.toString();
     }
 
-    //绑定或者修改绑定邮箱
-    @RequestMapping(value = "/bindOrUpdateBindEmail",method = RequestMethod.POST)
+    @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
     @ResponseBody
-    public Object bindOrUpdateBindEmail(HttpServletRequest request,PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
+    public Object resetPwd(HttpServletRequest request, PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcOAuth2ResetPwdParams);
@@ -275,33 +261,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         //TODO 校验token,获取userid
-        String userid="tinkame700@sogou.com";
-
-        //修改密码
-        UpdatePwdParameters updateParams = new UpdatePwdParameters();
-        updateParams.setPassword(pcOAuth2ResetPwdParams.getOldpwd());
-        updateParams.setNewpwd(pcOAuth2ResetPwdParams.getNewpwd());
-        updateParams.setIp(getIp(request));
-        updateParams.setPassport_id(userid);
-        result = secureManager.resetWebPassword(updateParams, getIp(request));
-
-        return result.toString();
-    }
-
-
-    @RequestMapping(value = "/resetPwd",method = RequestMethod.POST)
-    @ResponseBody
-    public Object resetPwd(HttpServletRequest request,PCOAuth2ResetPwdParams pcOAuth2ResetPwdParams) throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(pcOAuth2ResetPwdParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        //TODO 校验token,获取userid
-        String userid="tinkame700@sogou.com";
+        String userid = "tinkame700@sogou.com";
 
         //修改密码
         UpdatePwdParameters updateParams = new UpdatePwdParameters();
@@ -319,6 +279,7 @@ public class PCOAuth2AccountController extends BaseController {
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
     }
+
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
     }
@@ -350,7 +311,7 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             return result.toString();
         }
-        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest,appConfig);
+        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
 
         return result.toString();
     }
