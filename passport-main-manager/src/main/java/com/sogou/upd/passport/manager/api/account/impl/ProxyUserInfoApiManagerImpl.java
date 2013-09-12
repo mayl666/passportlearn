@@ -143,16 +143,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             userid += "@sohu.com";
             updateUserInfoApiParams.setUserid(userid);
         }
-        //
-//        try {
-            if(!Strings.isNullOrEmpty(updateUserInfoApiParams.getUniqname()))
-//            updateUserInfoApiParams.setUniqname(new String(updateUserInfoApiParams.getUniqname().getBytes("UTF-8"),"gbk"));
-                updateUserInfoApiParams.setUniqname(updateUserInfoApiParams.getUniqname());
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-
-//        RequestModelXmlGBK requestModelXml = new RequestModelXmlGBK(SHPPUrlConstant.UPDATE_USER_INFO, "register");
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "info");
         Map<String, Object> fields = BeanUtil.beanDescribe(updateUserInfoApiParams);
         for (Map.Entry<String, Object> entry : fields.entrySet()) {

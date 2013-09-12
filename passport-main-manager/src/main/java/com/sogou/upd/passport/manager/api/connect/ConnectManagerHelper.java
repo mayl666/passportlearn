@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
@@ -17,7 +18,7 @@ import java.util.Map;
  */
 public class ConnectManagerHelper {
 
-    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip) {
+    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from) {
         try {
             ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
@@ -26,6 +27,9 @@ public class ConnectManagerHelper {
             callbackParams.put("type", type);
             callbackParams.put("ip", ip);
             callbackParams.put("ts", instanceId);
+            if(!Strings.isNullOrEmpty(from)){
+                callbackParams.put("from", from);
+            }
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
             return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {

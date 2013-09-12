@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
 
@@ -97,14 +99,11 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode) {
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         Result result = new APIResultSupport(false);
         try {
             String ru = createCookieUrlApiParams.getRu();
             String userId = createCookieUrlApiParams.getUserid();
-            if (isRuEncode) {
-                ru = URLEncoder.encode(ru, "UTF-8");
-            }
             long ct = System.currentTimeMillis();
             String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
             code = Coder.encryptMD5(code);
@@ -127,7 +126,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false);
+        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams);
         String url = (String) cookieUrlResult.getModels().get("url");
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
         Result result = new APIResultSupport(false);
@@ -139,7 +138,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     locationUrl = header.getValue();
                 }
             }
-            result.setDefaultModel("redirectUrl", locationUrl);
             if (!Strings.isNullOrEmpty(locationUrl)) {
                 Map paramMap = StringUtil.extractParameterMap(locationUrl);
                 String status = (String) paramMap.get("status");
@@ -148,12 +146,33 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     result.setDefaultModel("ppinf", paramMap.get("ppinf"));
                     result.setDefaultModel("pprdig", paramMap.get("pprdig"));
                     result.setDefaultModel("passport", paramMap.get("passport"));
-                    return result;
+                    locationUrl = modifyClientRu(locationUrl);
                 }
             }
+            result.setDefaultModel("redirectUrl", locationUrl);
         }
         result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         return result;
+    }
+
+    /**
+     * 输入法Mac，/sso/setcookie？ru=xxx不需要urlencode
+     *
+     * @param locationUrl
+     * @return
+     */
+    private String modifyClientRu(String locationUrl) {
+        Map paramMap = StringUtil.extractParameterMap(locationUrl);
+        String ru = (String) paramMap.get("ru");
+        if (!Strings.isNullOrEmpty(ru)) {
+            try {
+                String decodeRu = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                locationUrl = locationUrl.replaceAll(ru, decodeRu);
+            } catch (UnsupportedEncodingException e) {
+                log.error("sohu sso setcookie ru encode fail,url:" + ru);
+            }
+        }
+        return locationUrl;
     }
 
 }
