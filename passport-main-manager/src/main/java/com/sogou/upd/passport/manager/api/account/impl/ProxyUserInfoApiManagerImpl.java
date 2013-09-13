@@ -175,7 +175,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "checkuniqname");
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
         requestModelXml.addParams(updateUserUniqnameApiParams);
         Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
         if(result.isSuccess()){
