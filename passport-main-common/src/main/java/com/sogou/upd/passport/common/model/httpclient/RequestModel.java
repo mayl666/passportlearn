@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.BeanUtil;
+import org.apache.commons.collections.MapUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -195,24 +196,23 @@ public class RequestModel {
         return params;
     }
 
-    public String getUrlWithParam(){
-        if(params==null||params.isEmpty()){
+    public String getUrlWithParam() {
+        if (MapUtils.isEmpty(params)) {
             return getUrl();
         }
-        StringBuilder url=new StringBuilder( getUrl());
+        StringBuilder url = new StringBuilder(getUrl());
         url.append("?");
         try {
-        for(Map.Entry<String,Object> entry:params.entrySet()){
-            if(!StringUtil.isBlank(entry.getKey())&&entry.getValue()!=null){
-                url.append("&");
-                url.append(URLEncoder.encode(entry.getKey(), CommonConstant.DEFAULT_CONTENT_CHARSET));
-                url.append("=");
-                url.append(URLEncoder.encode(entry.getValue().toString(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                if (!StringUtil.isBlank(entry.getKey()) && entry.getValue() != null) {
+                    url.append(URLEncoder.encode(entry.getKey(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+                    url.append("=");
+                    url.append(URLEncoder.encode(entry.getValue().toString(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+                    url.append("&");
+                }
             }
-
-        }
         } catch (UnsupportedEncodingException e) {
-            logger.error("getUrlWithParam UnsupportedEncodingException",e);
+            logger.error("getUrlWithParam UnsupportedEncodingException", e);
             throw new RuntimeException("getUrlWithParam UnsupportedEncodingException ");
         }
         return url.toString();
