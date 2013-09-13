@@ -334,6 +334,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public void incRegTimesForInternal(final String ip) throws ServiceException {
+        //ip与cookie映射
+        String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
+        recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEDAY);
+    }
+
+    @Override
     public void incRegTimes(final String ip, final String cookieStr) throws ServiceException {
         discardTaskExecutor.execute(new Runnable() {
             @Override
@@ -395,6 +402,20 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         log.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date))
                 .append(" ").append(ip).append(" ").append(cacheKey).append(" ").append(cacheNum).append(" ").append(ipValues);
         regBlackListLogger.info(log.toString());
+    }
+
+    @Override
+    public boolean checkRegInBlackListForInternal(String ip) throws ServiceException {
+        //通过ip+cookie限制注册次数
+        String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
+        String value = redisUtils.get(ipCookieKey);
+        if (!Strings.isNullOrEmpty(value)) {
+            int num = Integer.valueOf(value);
+            if (num >= LoginConstant.REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

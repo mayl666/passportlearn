@@ -7,6 +7,8 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
@@ -41,6 +43,12 @@ public class RegisterApiController extends BaseController{
 
     @Autowired
     private BindApiManager proxyBindApiManager;
+
+    @Autowired
+    private RegManager regManager;
+
+    @Autowired
+    private CommonManager commonManager;
 
     /**
      * 注册手机账号时，发送手机验证码
@@ -78,7 +86,7 @@ public class RegisterApiController extends BaseController{
     @InterfaceSecurity
     @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
-    public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
+    public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -87,12 +95,22 @@ public class RegisterApiController extends BaseController{
             result.setMessage(validateResult);
             return result.toString();
         }
+
+        String ip = params.getIp();
+        //校验用户ip是否允许注册
+        result = regManager.checkRegInBlackListByIpForInternal(ip);
+        if (!result.isSuccess()) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            return result.toString();
+        }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
 
         //记录log
         UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
+
+        commonManager.incRegTimesForInternal(ip);
 
         return result.toString();
     }
@@ -107,13 +125,21 @@ public class RegisterApiController extends BaseController{
     @InterfaceSecurity
     @RequestMapping(value = "/reguser", method = RequestMethod.POST)
     @ResponseBody
-    public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) {
+    public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
+            return result.toString();
+        }
+
+        String ip = params.getCreateip();
+        //校验用户ip是否允许注册
+        result = regManager.checkRegInBlackListByIpForInternal(ip);
+        if (!result.isSuccess()) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             return result.toString();
         }
         // 调用内部接口
@@ -123,6 +149,8 @@ public class RegisterApiController extends BaseController{
         UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
         userOperationLog.putOtherMessage("createip", params.getCreateip());
         UserOperationLogUtil.log(userOperationLog);
+
+        commonManager.incRegTimesForInternal(ip);
 
         return result.toString();
     }
@@ -139,13 +167,21 @@ public class RegisterApiController extends BaseController{
     @InterfaceSecurity
     @RequestMapping(value = "/regmobile", method = RequestMethod.POST)
     @ResponseBody
-    public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) {
+    public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
+            return result.toString();
+        }
+
+        String ip = params.getIp();
+        //校验用户ip是否允许注册
+        result = regManager.checkRegInBlackListByIpForInternal(ip);
+        if (!result.isSuccess()) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             return result.toString();
         }
         // 调用内部接口
@@ -156,6 +192,8 @@ public class RegisterApiController extends BaseController{
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
+
+        commonManager.incRegTimesForInternal(ip);
 
         return result.toString();
     }

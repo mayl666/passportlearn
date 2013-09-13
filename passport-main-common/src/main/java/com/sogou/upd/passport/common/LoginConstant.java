@@ -74,6 +74,11 @@ public class LoginConstant {
     public static final int REGISTER_IP_COOKIE_LIMITED = 10; // cookie加ip一天限制次数
 
     /**
+     * 内部接口一天内一个ip注册次数限制
+     */
+    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 50; //为内部接口设定的一个ip注册次数
+
+    /**
      * 一天内某一个ip提及反馈次数限制
      */
     public static final int ADDPROBLEM_IP_LIMITED = 100; // ip一天限制次数
