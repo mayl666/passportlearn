@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.BeanUtil;
+import org.apache.commons.collections.MapUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -196,7 +197,7 @@ public class RequestModel {
     }
 
     public String getUrlWithParam() {
-        if (params == null || params.isEmpty()) {
+        if (MapUtils.isEmpty(params)) {
             return getUrl();
         }
         StringBuilder url = new StringBuilder(getUrl());
