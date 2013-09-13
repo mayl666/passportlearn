@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 
 /**
@@ -21,5 +22,5 @@ public interface PCOAuth2RegManager {
      */
     public Result getPairToken(PcPairTokenParams pcPairTokenParams);
 
-//    public Result register
+    public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip);
 }

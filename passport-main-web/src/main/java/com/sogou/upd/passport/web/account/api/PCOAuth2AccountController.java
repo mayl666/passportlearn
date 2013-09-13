@@ -16,8 +16,8 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
@@ -25,7 +25,6 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
-import com.sogou.upd.passport.web.account.form.PCOAuth2RegisterParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +38,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * sohu+浏览器相关接口替换
@@ -95,7 +93,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (!result.isSuccess()) {
             return result.toString();
         }
-//        result = regManager.webRegister(pcoAuth2RegisterParams, ip);
+        result = pcoAuth2RegManager.pcAccountRegister(pcoAuth2RegisterParams, ip);
         //注册成功后获取token
         if (result.isSuccess()) {
             PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
@@ -143,7 +141,7 @@ public class PCOAuth2AccountController extends BaseController {
 
 
     @RequestMapping(value = "/pcindex", method = RequestMethod.GET)
-    public String pcindex(HttpServletRequest request, HttpServletResponse response,PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
+    public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(oauth2PcIndexParams);
@@ -190,17 +188,17 @@ public class PCOAuth2AccountController extends BaseController {
         }
         //获取绑定手机，绑定邮箱
         result = secureManager.queryAccountSecureInfo(passportId, CommonConstant.PC_CLIENTID, true);
-        if(result.isSuccess()){
-            if(result.getModels().get("sec_mobile")!=null){
+        if (result.isSuccess()) {
+            if (result.getModels().get("sec_mobile") != null) {
                 model.addAttribute("bindMoblile", result.getModels().get("sec_mobile"));
-            }else {
-                model.addAttribute("bindMoblile","");
+            } else {
+                model.addAttribute("bindMoblile", "");
             }
 
-            if(result.getModels().get("sec_email")!=null){
-                model.addAttribute("bindEmail",result.getModels().get("sec_email"));
+            if (result.getModels().get("sec_email") != null) {
+                model.addAttribute("bindEmail", result.getModels().get("sec_email"));
             } else {
-                model.addAttribute("bindEmail","");
+                model.addAttribute("bindEmail", "");
             }
         }
 
@@ -224,18 +222,18 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/checknickname", method = RequestMethod.GET)
     @ResponseBody
-    public Object checkNickName(HttpServletRequest request,@RequestParam(value = "nickname") String nickname){
+    public Object checkNickName(HttpServletRequest request, @RequestParam(value = "nickname") String nickname) {
         Result result = new APIResultSupport(false);
-        UpdateUserUniqnameApiParams updateUserUniqnameApiParams=new UpdateUserUniqnameApiParams();
+        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(nickname);
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
         return result.toString();
     }
 
-    @RequestMapping(value = "/updateNickName",method = RequestMethod.POST)
+    @RequestMapping(value = "/updateNickName", method = RequestMethod.POST)
     @ResponseBody
-    public Object updateNickName(HttpServletRequest request,PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
+    public Object updateNickName(HttpServletRequest request, PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
@@ -245,7 +243,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         //TODO 校验token,获取userid
-        String userid="tinkame700@sogou.com";
+        String userid = "tinkame700@sogou.com";
 
         UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
         params.setUserid(userid);
@@ -254,7 +252,6 @@ public class PCOAuth2AccountController extends BaseController {
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
         return result.toString();
     }
-
 
 
     @RequestMapping(value = "/errorMsg")
@@ -294,7 +291,7 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             return result.toString();
         }
-        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest,appConfig);
+        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
 
         return result.toString();
     }

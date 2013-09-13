@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.form;
+package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
@@ -6,11 +6,9 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
-import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
-import javax.management.relation.RoleUnresolvedList;
 import javax.validation.constraints.AssertTrue;
 
 /**

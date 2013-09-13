@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -52,6 +53,11 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
             finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return finalResult;
         }
+    }
+
+    @Override
+    public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private Result getAccountToken(String passportId, String instanceId, AppConfig appConfig) {
