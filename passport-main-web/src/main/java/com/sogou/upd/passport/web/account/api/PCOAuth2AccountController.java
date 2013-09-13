@@ -26,6 +26,8 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
+import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,8 @@ public class PCOAuth2AccountController extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private HostHolder hostHolder;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -230,6 +234,7 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     @RequestMapping(value = "/updateNickName", method = RequestMethod.POST)
+    @LoginRequired
     @ResponseBody
     public Object updateNickName(HttpServletRequest request, PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
         Result result = new APIResultSupport(false);
@@ -240,11 +245,11 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //TODO 校验token,获取userid
-        String userid = "tinkame700@sogou.com";
+//      String userId = "tinkame700@sogou.com";
+        String userId = hostHolder.getPassportId();
 
         UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
-        params.setUserid(userid);
+        params.setUserid(userId);
         params.setModifyip(getIp(request));
         params.setUniqname(pcOAuth2UpdateNickParams.getNick());
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
