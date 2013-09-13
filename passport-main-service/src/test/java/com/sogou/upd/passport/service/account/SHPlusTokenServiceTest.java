@@ -21,7 +21,7 @@ public class SHPlusTokenServiceTest extends BaseTest {
         String passportId = "shipengzhi1986@sogou.com";
         int clientId = 1065;
         String instanceId = "112950932";
-        String refreshToken = "43399244b170cef4264a0cac9f53cd495eb4157f2aee5c86d3734528c93136d8";
+        String refreshToken = "7d91b7c1e68ab8ff51c252dd02611b4b5ffb542542144c521625123b339b54c6";
         shPlusTokenService.verifyShPlusRefreshToken(passportId,clientId,instanceId,refreshToken);
     }
 }

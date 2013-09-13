@@ -34,6 +34,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         requestModel.addParam(OAuth.OAUTH_CLIENT_SECRET, SHPlusConstant.BROWSER_SHPLUS_CLIENTSECRET);
         requestModel.addParam(OAuth.OAUTH_SCOPE, "all");
         requestModel.addParam(OAuth.OAUTH_USERNAME, passportId);
+        requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instanceId);
         String json = SGHttpClient.executeStr(requestModel);
         return false;
     }
