@@ -121,6 +121,7 @@ public class RegisterApiController extends BaseController{
 
         //记录log
         UserOperationLog userOperationLog=new UserOperationLog(params.getUserid(),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        userOperationLog.putOtherMessage("createip:", params.getCreateip());
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
