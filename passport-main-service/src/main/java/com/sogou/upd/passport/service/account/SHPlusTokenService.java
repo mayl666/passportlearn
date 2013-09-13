@@ -31,4 +31,15 @@ public interface SHPlusTokenService {
      * @throws ServiceException
      */
     public boolean verifyShPlusRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+
+    /**
+     * 通过获取token获取资源
+     * @param instance_id
+     * @param access_token
+     * @param scope
+     * @param resource_type
+     * @return
+     * @throws ServiceException
+     */
+    public String getResourceByToken(String instance_id,String access_token,String scope,String resource_type) throws ServiceException;
 }

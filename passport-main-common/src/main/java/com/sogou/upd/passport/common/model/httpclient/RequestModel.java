@@ -195,24 +195,23 @@ public class RequestModel {
         return params;
     }
 
-    public String getUrlWithParam(){
-        if(params==null||params.isEmpty()){
+    public String getUrlWithParam() {
+        if (params == null || params.isEmpty()) {
             return getUrl();
         }
-        StringBuilder url=new StringBuilder( getUrl());
+        StringBuilder url = new StringBuilder(getUrl());
         url.append("?");
         try {
-        for(Map.Entry<String,Object> entry:params.entrySet()){
-            if(!StringUtil.isBlank(entry.getKey())&&entry.getValue()!=null){
-                url.append("&");
-                url.append(URLEncoder.encode(entry.getKey(), CommonConstant.DEFAULT_CONTENT_CHARSET));
-                url.append("=");
-                url.append(URLEncoder.encode(entry.getValue().toString(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                if (!StringUtil.isBlank(entry.getKey()) && entry.getValue() != null) {
+                    url.append(URLEncoder.encode(entry.getKey(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+                    url.append("=");
+                    url.append(URLEncoder.encode(entry.getValue().toString(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+                    url.append("&");
+                }
             }
-
-        }
         } catch (UnsupportedEncodingException e) {
-            logger.error("getUrlWithParam UnsupportedEncodingException",e);
+            logger.error("getUrlWithParam UnsupportedEncodingException", e);
             throw new RuntimeException("getUrlWithParam UnsupportedEncodingException ");
         }
         return url.toString();
