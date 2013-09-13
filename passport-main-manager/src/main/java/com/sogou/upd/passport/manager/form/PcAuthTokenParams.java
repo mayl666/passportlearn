@@ -20,7 +20,6 @@ public class PcAuthTokenParams extends PcBaseParams {
     @NotBlank(message = "token不允许为空")
     private String token; //用户获取到的token
 
-    @NotBlank(message = "ru地址不允许为空")
     @Ru
     @URL
     private String ru; //token正确时的调整地址
