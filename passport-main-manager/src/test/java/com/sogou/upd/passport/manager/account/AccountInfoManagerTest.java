@@ -24,7 +24,7 @@ public class AccountInfoManagerTest extends BaseTest {
     public void testUpload() {
         File file=new File("d:/1.jpg");
         try {
-            Result result=accountInfoManager.uploadImg(IOUtils.toByteArray(new FileInputStream(file)),"mayan@sogou.com","0") ;
+            Result result=accountInfoManager.uploadImg(IOUtils.toByteArray(new FileInputStream(file)),"tinkame700@sogou.com","0") ;
             System.out.println();
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -33,7 +33,7 @@ public class AccountInfoManagerTest extends BaseTest {
 
     @Test
     public void testObtainImage() {
-        Result result=accountInfoManager.obtainPhoto("mayan@sogou.com","180");
+        Result result=accountInfoManager.obtainPhoto("tinkame700@sogou.com","180");
         System.out.println("result:"+result.getModels().get("180"));
     }
 
