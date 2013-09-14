@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  * Date: 13-8-6
  * Time: 下午3:37
  */
-@Component
+@Component("accountInfoManager")
 public class AccountInfoManagerImpl implements AccountInfoManager {
     private static final Logger logger = LoggerFactory.getLogger(AccountInfoManagerImpl.class);
 
