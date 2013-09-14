@@ -134,6 +134,14 @@
         </property>
     </bean>
 
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设置上传文件的最大尺寸为5MB -->
+        <property name="maxUploadSize">
+            <value>5242880</value>
+        </property>
+    </bean>
+
     <!--&lt;!&ndash;配置Spring定时器&ndash;&gt;-->
     <!--&lt;!&ndash; 要调用的工作类 &ndash;&gt;-->
     <!--<bean id="userLogJob" class="com.sogou.upd.passport.common.utils.UserLogTimerUtil"></bean>-->
