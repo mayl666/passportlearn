@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -65,16 +66,44 @@ public class PCOAuth2AccountController extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private OAuth2AuthorizeManager oAuth2AuthorizeManager;
+    @Autowired
+    private ConfigureManager configureManager;
+    @Autowired
+    private RegManager regManager;
+    @Autowired
+    private PCOAuth2RegManager pcoAuth2RegManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
         return "/oauth2pc/pclogin";
     }
 
-    @Autowired
-    private RegManager regManager;
-    @Autowired
-    private PCOAuth2RegManager pcoAuth2RegManager;
+    @RequestMapping(value = "/token")
+    @ResponseBody
+    public Object authorize(HttpServletRequest request) throws Exception {
+        OAuthTokenASRequest oauthRequest;
+        Result result = new OAuthResultSupport(false);
+        try {
+            oauthRequest = new OAuthTokenASRequest(request);
+        } catch (OAuthProblemException e) {
+            result.setCode(e.getError());
+            result.setMessage(e.getDescription());
+            return result.toString();
+        }
+
+        int clientId = oauthRequest.getClientId();
+        // 检查client_id和client_secret是否有效
+        AppConfig appConfig = configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret());
+        if (appConfig == null) {
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            return result.toString();
+        }
+        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
+
+        return result.toString();
+    }
 
     /**
      * 浏览器sohu+注册接口
@@ -271,37 +300,6 @@ public class PCOAuth2AccountController extends BaseController {
         return passportId.substring(0, passportId.indexOf("@"));
     }
 
-    @Autowired
-    private OAuth2AuthorizeManager oAuth2AuthorizeManager;
-
-    @Autowired
-    private ConfigureManager configureManager;
-
-    @RequestMapping(value = "/token")
-    @ResponseBody
-    public Object authorize(HttpServletRequest request) throws Exception {
-        OAuthTokenASRequest oauthRequest;
-        Result result = new APIResultSupport(false);
-        try {
-            oauthRequest = new OAuthTokenASRequest(request);
-        } catch (OAuthProblemException e) {
-            result.setCode(e.getError());
-            result.setMessage(e.getDescription());
-            return result.toString();
-        }
-
-        int clientId = oauthRequest.getClientId();
-
-        // 检查client_id和client_secret是否有效
-        AppConfig appConfig = configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret());
-        if (appConfig == null) {
-            result.setCode(ErrorUtil.INVALID_CLIENT);
-            return result.toString();
-        }
-        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
-
-        return result.toString();
-    }
     //头像上传
     @RequestMapping(value = "/userinfo/uploadavatar")
     @LoginRequired(resultType = ResponseResultType.redirect)
@@ -333,8 +331,6 @@ public class PCOAuth2AccountController extends BaseController {
 
             byte[] byteArr = multipartFile.getBytes();
             result = accountInfoManager.uploadImg(byteArr, userId,"0");
-
-
         }else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }

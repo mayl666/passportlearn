@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
-import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -46,7 +48,7 @@ public class TokenDecrypt {
             accessTokenCipherDO = TokenCipherDO.parseEncryptString(decryTokenStr);
             return accessTokenCipherDO;
         } catch (Exception e) {
-            logger.error("Access Token decrypt fail, accessToken:{}", accessToken);
+            logger.error("Access Token decryptURLSafeString fail, accessToken:{}", accessToken);
             throw e;
         }
     }
@@ -56,11 +58,29 @@ public class TokenDecrypt {
      */
     public static RefreshTokenCipherDO decryptRefreshToken(String refreshToken) throws Exception {
         try {
-            String decryptStr = AES.decrypt(refreshToken, TokenGenerator.SECRET_KEY);
+            String decryptStr = AES.decryptURLSafeString(refreshToken, TokenGenerator.SECRET_KEY);
             RefreshTokenCipherDO refreshTokenCipherDO = RefreshTokenCipherDO.parseEncryptString(decryptStr);
             return refreshTokenCipherDO;
         } catch (Exception e) {
-            logger.error("Refresh Token decrypt fail, refreshToken:{}", refreshToken);
+            logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", refreshToken);
+            throw e;
+        }
+    }
+
+    /**
+     * 根据refreshToken解密,并返回passportId
+     */
+    public static String decryptPcToken(String token, String clientSecret) throws Exception {
+        try {
+            String passportId = null;
+            String decryptStr = AES.decryptURLSafeString(token, clientSecret);
+            if (!Strings.isNullOrEmpty(decryptStr)) {
+                String[] strArray = decryptStr.split(CommonConstant.SEPARATOR_1);
+                passportId = strArray[0];
+            }
+            return passportId;
+        } catch (Exception e) {
+            logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", token);
             throw e;
         }
     }

@@ -2,8 +2,10 @@ package com.sogou.upd.passport.service.app;
 
 import com.sogou.upd.passport.BaseTest;
 
+import com.sogou.upd.passport.common.math.Coder;
 import junit.framework.Assert;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,5 +26,20 @@ public class AppConfigServiceTest extends BaseTest {
         Assert.assertTrue(resultStr.equals("搜狗通行证"));
         resultStr = appConfigService.queryClientName(CLIENT_ID_NOEXIST);
         Assert.assertNull(resultStr);
+    }
+
+    @Test
+    public void testGeneratorSecret() {
+        String random = RandomStringUtils.randomAlphanumeric(8);
+        long time = System.currentTimeMillis();
+        int client_id = 1065;
+        try {
+            String secret = Coder.encryptMD5(client_id + time + random);
+            System.out.println("secret:" + secret);
+            Assert.assertTrue(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.assertTrue(false);
+        }
     }
 }

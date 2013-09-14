@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
@@ -76,7 +77,7 @@ public class TokenGenerator {
         try {
             RefreshTokenCipherDO refreshTokenCipherData = new RefreshTokenCipherDO(passportId, clientId, timestamp, instanceId);
             String refreshTokenContent = refreshTokenCipherData.structureEncryptString();
-            encrypt = AES.encrypt(refreshTokenContent, SECRET_KEY);
+            encrypt = AES.encryptURLSafeString(refreshTokenContent, SECRET_KEY);
         } catch (Exception e) {
             logger.error(
                     "Refresh Token generator fail, passportId:" + passportId + " clientId:" + clientId + " instanceId:"
@@ -87,28 +88,20 @@ public class TokenGenerator {
     }
 
     /**
-     * 生成Pc端登录流程使用的token 构成格式 passportID|clientId|vaild_timestamp(过期时间点，单位毫秒)|4位随机数|instanceId
-     * 采用HmacSHA1
+     * 生成Pc端登录流程使用的token 构成格式 passportID|vaild_timestamp(过期时间点，单位毫秒)
+     * 采用AES算法
      */
-    public static String generatorPcToken(String passportId, int clientId, int expiresIn, String instanceId, String clientSecret)
+    public static String generatorPcToken(String passportId, int expiresIn, String clientSecret)
             throws Exception {
 
         // 过期时间点
         long vaildTime = generatorVaildTime(expiresIn);
-
-        // 4位随机数
-        String random = RandomStringUtils.randomAlphanumeric(4);
-
-        TokenCipherDO tokenCipherData = new TokenCipherDO(passportId, clientId, vaildTime, random, instanceId);
-        String tokenContent = tokenCipherData.structureEncryptString();
-
+        String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
         String token;
         try {
-            token = AES.encrypt(tokenContent, clientSecret);
+            token = AES.encryptURLSafeString(tokenContent, clientSecret);
         } catch (Exception e) {
-            logger.error(
-                    "Pc Token generator by AES fail, passportId:" + passportId + " clientId:" + clientId + " instanceId:"
-                            + instanceId);
+            logger.error("Pc Token generator by AES fail, passportId:" + passportId);
             throw e;
         }
         return token;

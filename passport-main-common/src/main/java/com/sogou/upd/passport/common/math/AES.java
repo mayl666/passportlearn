@@ -28,7 +28,7 @@ public class AES {
      * @return
      * @throws Exception
      */
-    public static String encrypt(String data, String secKey) throws Exception {
+    public static String encryptURLSafeString(String data, String secKey) throws Exception {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.ENCRYPT_MODE, key);
@@ -45,7 +45,7 @@ public class AES {
      * @return
      * @throws Exception
      */
-    public static String decrypt(String encryptedData, String secKey) throws Exception {
+    public static String decryptURLSafeString(String encryptedData, String secKey) throws Exception {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.DECRYPT_MODE, key);
@@ -61,23 +61,4 @@ public class AES {
         return key;
     }
 
-    /**
-     * 加密
-     *
-     * @param content 需要加密的内容
-     * @param secKey  加密密码
-     * @return
-     */
-    public static byte[] encryptStr(String content, String secKey) throws Exception{
-            KeyGenerator kgen = KeyGenerator.getInstance("AES");
-            kgen.init(128, new SecureRandom(secKey.getBytes()));
-            SecretKey secretKey = kgen.generateKey();
-            byte[] enCodeFormat = secretKey.getEncoded();
-            SecretKeySpec key = new SecretKeySpec(enCodeFormat, "AES");
-            Cipher cipher = Cipher.getInstance("AES");// 创建密码器
-            byte[] byteContent = content.getBytes("utf-8");
-            cipher.init(Cipher.ENCRYPT_MODE, key);// 初始化
-            byte[] result = cipher.doFinal(byteContent);
-            return result; // 加密
-    }
 }

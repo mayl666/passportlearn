@@ -6,6 +6,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,6 +41,17 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             return accountToken;
         } catch (Exception e) {
             logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public String queryPassportIdByToken(String token, String clientSecret) {
+        try {
+            String passortId = TokenDecrypt.decryptPcToken(token, clientSecret);
+            return passortId;
+        } catch (Exception e) {
+            logger.error("Query PassportId By Token Fail, token:" + token, e);
             throw new ServiceException(e);
         }
     }
@@ -120,8 +132,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         String accessToken;
         String refreshToken;
         try {
-            accessToken = TokenGenerator.generatorPcToken(passportId, clientId, accessTokenExpiresIn, instanceId, clientSecret);
-            refreshToken = TokenGenerator.generatorPcToken(passportId, clientId, refreshTokenExpiresIn, instanceId, clientSecret);
+            accessToken = TokenGenerator.generatorPcToken(passportId, accessTokenExpiresIn, clientSecret);
+            refreshToken = TokenGenerator.generatorPcToken(passportId, refreshTokenExpiresIn, clientSecret);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

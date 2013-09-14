@@ -12,19 +12,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 public interface SHPlusTokenService {
 
     /**
-     * 验证accesstoken
-     *
-     * @param passportId
-     * @param clientId
-     * @param instanceId
-     * @param accessToken
-     * @return
-     * @throws com.sogou.upd.passport.exception.ServiceException
-     *
-     */
-    public boolean verifyShPlusAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException;
-
-    /**
      * 校验refreshtoken
      *
      * @param passportId
