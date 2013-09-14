@@ -13,16 +13,20 @@ public interface SHPlusTokenService {
 
     /**
      * 验证accesstoken
+     *
      * @param passportId
      * @param clientId
      * @param instanceId
      * @param accessToken
      * @return
      * @throws com.sogou.upd.passport.exception.ServiceException
+     *
      */
     public boolean verifyShPlusAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException;
+
     /**
-     *校验refreshtoken
+     * 校验refreshtoken
+     *
      * @param passportId
      * @param clientId
      * @param instanceId
@@ -34,6 +38,7 @@ public interface SHPlusTokenService {
 
     /**
      * 通过获取token获取资源
+     *
      * @param instance_id
      * @param access_token
      * @param scope
@@ -41,5 +46,5 @@ public interface SHPlusTokenService {
      * @return
      * @throws ServiceException
      */
-    public String getResourceByToken(String instance_id,String access_token,String scope,String resource_type) throws ServiceException;
+    public String getResourceByToken(String instance_id, String access_token, String scope, String resource_type) throws ServiceException;
 }

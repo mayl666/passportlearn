@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
@@ -58,7 +57,7 @@ public class TokenGenerator {
         String encBase64Str;
         try {
             byte[] encByte = RSA.encryptByPrivateKey(accessTokenContent.getBytes(), PRIVATE_KEY);
-            encBase64Str = Coder.encryptBASE64(encByte);
+            encBase64Str = Coder.encryptBase64URLSafeString(encByte);
         } catch (Exception e) {
             logger.error(
                     "Account Token generator fail, passportId:" + passportId + " clientId:" + clientId + " instanceId:"
@@ -105,10 +104,10 @@ public class TokenGenerator {
 
         String token;
         try {
-            token = Coder.encryptBASE64(Coder.encryptHMAC(tokenContent, clientSecret.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
+            token = AES.encrypt(tokenContent, clientSecret);
         } catch (Exception e) {
             logger.error(
-                    "Pc Token generator fail, passportId:" + passportId + " clientId:" + clientId + " instanceId:"
+                    "Pc Token generator by AES fail, passportId:" + passportId + " clientId:" + clientId + " instanceId:"
                             + instanceId);
             throw e;
         }

@@ -17,8 +17,8 @@ public class CoderTest {
 
     @Test
     public void testEncryptBASE64_DecryptBASE64() throws Exception {
-        String encryStr = Coder.encryptBASE64(str.getBytes());
-        byte[] decryByte = Coder.decryptBASE64(encryStr);
+        String encryStr = Coder.encryptBase64URLSafeString(str.getBytes());
+        byte[] decryByte = Coder.decryptBase64(encryStr);
         Assert.assertEquals(str, new String(decryByte));
     }
 
@@ -30,7 +30,7 @@ public class CoderTest {
 
     @Test
     public void testEncryptHMAC() throws Exception {
-        byte[] encryByte = Coder.encryptHMAC(str, Coder.decryptBASE64(PwdGenerator.HMAC_SHA_KEY));
+        byte[] encryByte = Coder.encryptHMAC(str, Coder.decryptBase64(PwdGenerator.HMAC_SHA_KEY));
         String str1 = Coder.toHexString(encryByte);
         System.out.println("str1:" + str1);
 

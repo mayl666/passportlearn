@@ -126,7 +126,6 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             // TODO 根据用户名到sohu+获取passportId
             String passportId = oauthRequest.getUsername();
 
-            // 檢查不同的grant types是否正確
             // TODO 消除if-else
             AccountToken renewAccountToken;
             if (GrantTypeEnum.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
