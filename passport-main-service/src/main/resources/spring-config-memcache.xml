@@ -56,6 +56,4 @@
     <bean id="aTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init">
         <property name="builder" ref="aTokenMemClientBuilder"/>
     </bean>
-
-
 </beans>
