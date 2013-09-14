@@ -22,5 +22,12 @@ public interface PCOAuth2RegManager {
      */
     public Result getPairToken(PcPairTokenParams pcPairTokenParams);
 
+    /**
+     * 用户正式注册
+     *
+     * @param params
+     * @param ip
+     * @return
+     */
     public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip);
 }

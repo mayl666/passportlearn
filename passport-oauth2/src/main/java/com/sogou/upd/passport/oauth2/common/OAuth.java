@@ -60,6 +60,9 @@ public class OAuth {
     public static final String OAUTH_RTOKEN_EXPIRES_IN = "refreshToken_expires_in";
     public static final String OAUTH_TOKEN_TYPE = "token_type";
 
+    //resource
+    public static final String OAUTH_RESOURCE_TYPE = "resource_type";
+
     // openId response params
     public static final ParameterStyleEnum DEFAULT_PARAMETER_STYLE = ParameterStyleEnum.HEADER;
     public static final TokenTypeEnum DEFAULT_TOKEN_TYPE = TokenTypeEnum.BEARER;

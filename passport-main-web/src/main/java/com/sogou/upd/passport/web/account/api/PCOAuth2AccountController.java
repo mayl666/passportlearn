@@ -23,6 +23,8 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
+import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -37,7 +39,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 
 /**
  * sohu+浏览器相关接口替换
@@ -57,6 +58,8 @@ public class PCOAuth2AccountController extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private HostHolder hostHolder;
     @Autowired
     private AccountInfoManager accountInfoManager;
 
@@ -232,6 +235,7 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     @RequestMapping(value = "/updateNickName", method = RequestMethod.POST)
+    @LoginRequired
     @ResponseBody
     public Object updateNickName(HttpServletRequest request, PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
         Result result = new APIResultSupport(false);
@@ -242,11 +246,11 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //TODO 校验token,获取userid
-        String userid = "tinkame700@sogou.com";
+//      String userId = "tinkame700@sogou.com";
+        String userId = hostHolder.getPassportId();
 
         UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
-        params.setUserid(userid);
+        params.setUserid(userId);
         params.setModifyip(getIp(request));
         params.setUniqname(pcOAuth2UpdateNickParams.getNick());
         result = proxyUserInfoApiManagerImpl.updateUserInfo(params);

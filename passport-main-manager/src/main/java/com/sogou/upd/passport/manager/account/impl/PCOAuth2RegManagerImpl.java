@@ -57,8 +57,10 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
 
     @Override
     public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) {
+
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
 
     private Result getAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result result = new APIResultSupport(false);
