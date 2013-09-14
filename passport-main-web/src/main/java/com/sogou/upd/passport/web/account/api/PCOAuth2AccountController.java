@@ -34,10 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -177,7 +175,7 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/pcindex", method = RequestMethod.GET)
+    @RequestMapping(value = "/userinfo/pcindex", method = RequestMethod.GET)
     public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -253,40 +251,6 @@ public class PCOAuth2AccountController extends BaseController {
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
         return "/oauth2pc/pcindex";
-    }
-
-    @RequestMapping(value = "/checknickname", method = RequestMethod.GET)
-    @ResponseBody
-    public Object checkNickName(HttpServletRequest request, @RequestParam(value = "nickname") String nickname) {
-        Result result = new APIResultSupport(false);
-        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
-        updateUserUniqnameApiParams.setUniqname(nickname);
-        updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-        result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
-        return result.toString();
-    }
-
-    @RequestMapping(value = "/updateNickName", method = RequestMethod.POST)
-    @LoginRequired
-    @ResponseBody
-    public Object updateNickName(HttpServletRequest request, PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-//      String userId = "tinkame700@sogou.com";
-        String userId = hostHolder.getPassportId();
-
-        UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
-        params.setUserid(userId);
-        params.setModifyip(getIp(request));
-        params.setUniqname(pcOAuth2UpdateNickParams.getNick());
-        result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
-        return result.toString();
     }
 
 
