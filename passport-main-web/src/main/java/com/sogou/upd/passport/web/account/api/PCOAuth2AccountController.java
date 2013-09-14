@@ -148,7 +148,7 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/pcindex", method = RequestMethod.GET)
+    @RequestMapping(value = "/userinfo/pcindex", method = RequestMethod.GET)
     public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
