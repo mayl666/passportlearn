@@ -41,6 +41,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 
 /**
  * sohu+浏览器相关接口替换
@@ -187,6 +188,9 @@ public class PCOAuth2AccountController extends BaseController {
         }
         //TODO 校验token,获取userid
         String passportId = "tinkame700@sogou.com";
+        //获取头像
+        result=accountInfoManager.obtainPhoto(passportId,"180");
+        model.addAttribute("photoUrl", result.getModels().get("180"));
 
         //获取昵称
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
