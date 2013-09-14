@@ -7,10 +7,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
-import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
-import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -27,7 +24,10 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,6 +63,8 @@ public class PCOAuth2AccountController extends BaseController {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -298,4 +302,43 @@ public class PCOAuth2AccountController extends BaseController {
 
         return result.toString();
     }
+    //头像上传
+    @RequestMapping(value = "/userinfo/uploadavatar")
+    @LoginRequired(resultType = ResponseResultType.redirect)
+    @ResponseBody
+    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params)
+    {
+        Result result = new APIResultSupport(false);
+
+        if (hostHolder.isLogin()) {
+
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id是否存在
+            int clientId = Integer.parseInt(params.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+
+            String userId = hostHolder.getPassportId();
+
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
+
+            byte[] byteArr = multipartFile.getBytes();
+            result = accountInfoManager.uploadImg(byteArr, userId,"0");
+
+
+        }else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+        }
+        return result.toString();
+    }
+
 }
