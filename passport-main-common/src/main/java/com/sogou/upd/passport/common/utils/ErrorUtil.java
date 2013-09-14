@@ -265,6 +265,15 @@ public class ErrorUtil {
     // 不允许发送相同内容
     public static final String REPEAT_CONTENT = "30407";
 
+    //不支持的图片后缀
+    public static final String ERR_PHOTO_EXT = "20296";
+    //图片过大
+    public static final String ERR_PHOTO_TO_LARGE = "20297";
+    //图片上传失败
+    public static final String ERR_UPLOAD_PHOTO = "20298";
+    //获取图像失败
+    public static final String ERR_OBTAIN_PHOTO = "20299";
+
     /* ============================================================================ */
     /*  反馈相关错误代码                                                            */
     /* ============================================================================ */
@@ -401,6 +410,11 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(UPDATE_MULTIPART_IMAGE, "请使用multpart格式上传图片");
         ERR_CODE_MSG_MAP.put(UNSUPPORT_IMAGE_FORMAT, "不支持的图片类型");
         ERR_CODE_MSG_MAP.put(REPEAT_CONTENT, "同样的内容请勿重复发送");
+
+        ERR_CODE_MSG_MAP.put(ERR_PHOTO_EXT, "不支持的图片后缀");
+        ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过5M");
+        ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
+        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
 
         // friend
         ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过帐号");

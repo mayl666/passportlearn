@@ -7,10 +7,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
-import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
-import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -26,6 +23,8 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 
 /**
  * sohu+浏览器相关接口替换
@@ -57,6 +57,8 @@ public class PCOAuth2AccountController extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -290,6 +292,28 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
+
+        return result.toString();
+    }
+    //头像上传
+    @InterfaceSecurity
+    @RequestMapping(value = "/userinfo/uploadavatar")
+    @ResponseBody
+    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params)
+    {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        String userId=params.getUserid();
+        String type=params.getType();
+        byte[] byteArr = params.getByteArr();
+
+        result = accountInfoManager.uploadImg(byteArr, userId,type);
 
         return result.toString();
     }
