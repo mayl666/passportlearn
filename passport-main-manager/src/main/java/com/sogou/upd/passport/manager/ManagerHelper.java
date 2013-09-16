@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager;
 
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
@@ -54,8 +55,7 @@ public class ManagerHelper {
      * @return
      */
     public static boolean isInvokeProxyApi(String passportId){
-       return true;
-//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
+       return CommonHelper.isInvokeProxyApi(passportId);
     }
 
     /**

@@ -119,10 +119,14 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             AccountToken renewAccountToken;
             if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                boolean verifyRefreshToken = verifyRefreshToken(refreshToken, passportId, clientId, instanceId, appConfig);
-                if (!verifyRefreshToken) {
-                    result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
-                    return result;
+                boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                if (!isRightPcRToken) {
+                    String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
+                    if (accessToken == null) {
+                        result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
+                        return result;
+                    }
+                    shPlusTokenService.copyAvatarToLocal(passportId, instanceId, accessToken);
                 }
             } else {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
@@ -146,16 +150,6 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
-    }
-
-    private boolean verifyRefreshToken(String refreshToken, String passportId, int clientId, String instanceId, AppConfig appConfig) throws Exception {
-
-        boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
-        if (!isRightPcRToken) {
-            boolean isRightSHRToken = shPlusTokenService.verifyShPlusRefreshToken(passportId, instanceId, refreshToken);
-            return isRightSHRToken;
-        }
-        return true;
     }
 
 }

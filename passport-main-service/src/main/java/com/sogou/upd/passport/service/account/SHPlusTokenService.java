@@ -14,21 +14,8 @@ import java.util.Map;
  */
 public interface SHPlusTokenService {
 
-    public String queryPassportBySHPlusId(String shPlusId);
-
     /**
-     * 校验refreshtoken
-     *
-     * @param clientId
-     * @param instanceId
-     * @param accessToken
-     * @return
-     * @throws ServiceException
-     */
-    public boolean verifyShPlusAccessToken(int clientId, String instanceId, String accessToken) throws ServiceException;
-
-    /**
-     * 校验refreshtoken
+     * 根据RefreshToken获得AccessToken
      *
      * @param passportId
      * @param instanceId
@@ -36,7 +23,7 @@ public interface SHPlusTokenService {
      * @return
      * @throws ServiceException
      */
-    public boolean verifyShPlusRefreshToken(String passportId, String instanceId, String refreshToken) throws ServiceException;
+    public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException;
 
     /**
      * 通过获取token获取资源
@@ -48,4 +35,13 @@ public interface SHPlusTokenService {
      * @throws ServiceException
      */
     public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException;
+
+    /**
+     * 复制sohu+头像到本地
+     * @param passportId
+     * @param instanceId
+     * @param accessToken
+     * @return
+     */
+    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken);
 }

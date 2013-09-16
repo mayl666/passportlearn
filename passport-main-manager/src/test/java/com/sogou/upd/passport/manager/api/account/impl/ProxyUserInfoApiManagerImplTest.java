@@ -19,7 +19,7 @@ import java.util.Calendar;
 public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Autowired
-    private UserInfoApiManager  proxyUserInfoApiManagerImpl;
+    private UserInfoApiManager proxyUserInfoApiManager;
 
     @Test
     public void testGetUserInfo() throws Exception {
@@ -30,7 +30,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 //                "personalid,personalidflag,sec_mobile,sec_email,province," +
 //                "city,createtime,sec_ques,avatarurl,regappid");
         getUserInfoApiParams.setFields("uniqname");
-        Result result= proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiParams);
+        Result result= proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
         System.out.println(result);
     }
 
@@ -46,7 +46,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         updateUserInfoApiParams.setCity(532401);
         updateUserInfoApiParams.setUniqname("111");
         updateUserInfoApiParams.setModifyip(modifyIp);
-        Result result= proxyUserInfoApiManagerImpl.updateUserInfo(updateUserInfoApiParams);
+        Result result= proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
         System.out.println(result);
     }
 
@@ -57,7 +57,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 //        String name="%E4%B8%AD%E6%96%87323212";
         String name="你看";
         updateUserUniqnameApiParams.setUniqname(name);
-        Result result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
+        Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
         System.out.println("result输出结果为:" + result.toString());
     }
 

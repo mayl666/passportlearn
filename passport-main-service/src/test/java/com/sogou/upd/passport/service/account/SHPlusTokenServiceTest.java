@@ -25,16 +25,16 @@ public class SHPlusTokenServiceTest extends BaseTest {
      * client_id=30000004&client_secret=59be99d1f5e957ba5a20e8d9b4d76df6&scope=all&instance_id=323906108
      * &resource_type=cookie.get&access_token=cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4
      */
-    @Test
-    public void testVerifyShPlusAccessToken() {
-
-        int clientId = 1065;
-        String instanceId = "323906108";
-        String accesstoken = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
-
-        boolean successResult = shPlusTokenService.verifyShPlusAccessToken(clientId, instanceId, accesstoken);
-        Assert.assertTrue(successResult);
-    }
+//    @Test
+//    public void testVerifyShPlusAccessToken() {
+//
+//        int clientId = 1065;
+//        String instanceId = "323906108";
+//        String accesstoken = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
+//
+//        boolean successResult = shPlusTokenService.verifyShPlusAccessToken(clientId, instanceId, accesstoken);
+//        Assert.assertTrue(successResult);
+//    }
 
     /**
      * https://open.account.sohu.com/oauth2/token/?grant_type=heartbeat&client_id=30000004
@@ -48,11 +48,11 @@ public class SHPlusTokenServiceTest extends BaseTest {
         String instanceId = "323906108";
         String passportId = "shipengzhi1986@sogou.com";
         String refreshToken = "58cc24195472c1c25a378513b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
-        boolean errorResult = shPlusTokenService.verifyShPlusRefreshToken(passportId, instanceId, refreshToken);
-        Assert.assertTrue(!errorResult);
+        String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
+        Assert.assertTrue(accessToken == null);
         refreshToken = "58cc24195472c1c25a378523b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
-        boolean successResult = shPlusTokenService.verifyShPlusRefreshToken(passportId, instanceId, refreshToken);
-        Assert.assertTrue(successResult);
+        accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
+        Assert.assertTrue(accessToken != null);
     }
 
     /**

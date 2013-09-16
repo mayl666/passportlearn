@@ -43,7 +43,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
-        Result result = new APIResultSupport(false);
+        Result result;
         String userId = updatePwdApiParams.getUserid();
         String password = updatePwdApiParams.getPassword();
         String newPassword = updatePwdApiParams.getNewpassword();

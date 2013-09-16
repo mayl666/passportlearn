@@ -5,9 +5,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
@@ -42,7 +40,7 @@ public class AccountInfoAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(AccountInfoAction.class);
 
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private HostHolder hostHolder;
 
@@ -58,7 +56,7 @@ public class AccountInfoAction extends BaseController {
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(nickname);
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-        result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
+        result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
         return result.toString();
     }
 
@@ -81,7 +79,7 @@ public class AccountInfoAction extends BaseController {
             params.setUserid(userId);
             params.setModifyip(getIp(request));
             params.setUniqname(pcOAuth2UpdateNickParams.getNick());
-            result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
+            result = proxyUserInfoApiManager.updateUserInfo(params);
             return result.toString();
         }
         return "redirect:/web/webLogin";
@@ -129,7 +127,7 @@ public class AccountInfoAction extends BaseController {
     @ResponseBody
     public String maxUploadSizeExceeded(){
         Result result = new APIResultSupport(false);
-        result.setCode(ErrorUtil.ERR_PHOTO_TO_LARGE);
+        result.setCode(ErrorUtil.ERR_CODE_PHOTO_TO_LARGE);
         return result.toString();
     }
 

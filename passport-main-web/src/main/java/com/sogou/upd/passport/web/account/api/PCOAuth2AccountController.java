@@ -64,7 +64,7 @@ import java.net.URLDecoder;
 public class PCOAuth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PCOAuth2AccountController.class);
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private SecureManager secureManager;
     @Autowired
@@ -204,7 +204,7 @@ public class PCOAuth2AccountController extends BaseController {
                 // 获取昵称并返回
                 String passportId = accountToken.getPassportId();
                 GetUserInfoApiparams userInfoApiParams = new GetUserInfoApiparams(passportId, "uniqname");
-                Result userInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(userInfoApiParams);
+                Result userInfoResult = proxyUserInfoApiManager.getUserInfo(userInfoApiParams);
                 String uniqname;
                 if (userInfoResult.isSuccess()) {
                     uniqname = (String) userInfoResult.getModels().get("uniqname");
@@ -395,7 +395,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     private String getUniqname(String passportId) {
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-        Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+        Result getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
         String uniqname;
         if (getUserInfoResult.isSuccess()) {
             uniqname = (String) getUserInfoResult.getModels().get("uniqname");

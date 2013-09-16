@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
@@ -33,44 +34,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
     @Override
-    public String queryPassportBySHPlusId(String shPlusId) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean verifyShPlusAccessToken(int clientId, String instanceId, String accessToken) throws ServiceException {
-        if (clientId != CommonConstant.BROWSER_CLIENTID) {
-            return false;
-        }
-        RequestModel requestModel = new RequestModel(SHPlusConstant.OAUTH2_RESOURCE);
-        requestModel.addParam(OAuth.OAUTH_CLIENT_ID, SHPlusConstant.BROWSER_SHPLUS_CLIENTID);
-        requestModel.addParam(OAuth.OAUTH_CLIENT_SECRET, SHPlusConstant.BROWSER_SHPLUS_CLIENTSECRET);
-        requestModel.addParam(OAuth.OAUTH_SCOPE, "all");
-        requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instanceId);
-        requestModel.addParam(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
-        requestModel.addParam(OAuth.OAUTH_RESOURCE_TYPE, OAuth2ResourceTypeEnum.GET_FULL_USERINFO.toString());
-
-
-        requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
-        String json = SGHttpClient.executeStr(requestModel);
-
-        Map resultMap = null;
-        try {
-            resultMap = jsonMapper.readValue(json, Map.class);
-        } catch (IOException e) {
-            log.error("parse json to map fail,jsonString:" + json);
-        }
-        if (resultMap != null) {
-            String result = (String) resultMap.get("result");
-            if ("confirm".equals(result)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean verifyShPlusRefreshToken(String passportId, String instanceId, String refreshToken) throws ServiceException {
+    public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException {
         RequestModelJSON requestModel = new RequestModelJSON(SHPlusConstant.OAUTH2_TOKEN);
         requestModel.addParam(OAuth.OAUTH_GRANT_TYPE, "heartbeat");
         requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, refreshToken);
@@ -94,11 +58,11 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
                 long expiresTime = Long.parseLong((String) resultMap.get(OAuth.OAUTH_EXPIRES_TIME));
                 long currTime = System.currentTimeMillis() / 1000;
                 if (currTime < expiresTime) {
-                    return true;
+                    return (String) resultMap.get("access_token");
                 }
             }
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -122,4 +86,21 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         return resultMap;
     }
 
+    @Override
+    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken) {
+        Map userInfoMap = getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
+        if (userInfoMap != null) {
+            String result = (String) userInfoMap.get("result");
+            if ("confirm".equals(result)) {
+                // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar55.png
+                String avatar = (String) userInfoMap.get("tiny_avatar");
+                if (!CommonHelper.isInvokeProxyApi(passportId)) {
+                    // TODO 写到搜狗数据库里
+                }
+
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -7,9 +7,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +31,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         try {
             //判断后缀是否符合要求
             if (!PhotoUtils.checkPhotoExt(byteArr)) {
-                result.setCode(ErrorUtil.ERR_PHOTO_EXT);
+                result.setCode(ErrorUtil.ERR_CODE_PHOTO_EXT);
                 return result;
             }
             //获取图片名
@@ -51,12 +48,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 result.setMessage("头像设置成功");
                 return result;
             } else {
-                result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
+                result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
                 return result;
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
+            result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
             return result;
         }
     }
@@ -82,13 +79,13 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         return result;
                     }
                 } else {
-                    result.setCode(ErrorUtil.PIC_URL_NOT_NULL);
+                    result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
                     return result;
                 }
             }
         }catch (Exception e){
             logger.error(e.getMessage(),e);
-            result.setCode(ErrorUtil.ERR_OBTAIN_PHOTO);
+            result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
             return result;
         }
         return result;
