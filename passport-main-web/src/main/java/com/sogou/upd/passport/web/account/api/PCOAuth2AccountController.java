@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -208,7 +209,10 @@ public class PCOAuth2AccountController extends BaseController {
                 } else {
                     uniqname = defaultUniqname(passportId);
                 }
-                result.setDefaultModel("uniqname", uniqname);
+                result.setDefaultModel("uniqname", Coder.enBase64(uniqname));
+                result.setDefaultModel("passportId", Coder.enBase64(passportId));
+                result.setDefaultModel("sid", "0");
+                result.setDefaultModel("logintype", "sogou");
             }
         }
         return result.toString();
@@ -258,12 +262,12 @@ public class PCOAuth2AccountController extends BaseController {
             int clientId = loginParams.getClient_id();
 
             //获取token
-            Result tokenResult =pcAccountManager.createAccountToken(userId,loginParams.getInstanceid(),clientId);
+            Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            result.setDefaultModel("accesstoken",accountToken.getAccessToken());
-            result.setDefaultModel("refreshtoken",accountToken.getRefreshToken());
+            result.setDefaultModel("accesstoken", accountToken.getAccessToken());
+            result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
 
-            result.setDefaultModel("autologin",loginParams.getRememberMe());
+            result.setDefaultModel("autologin", loginParams.getRememberMe());
             loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(passportId, ip);
@@ -272,7 +276,7 @@ public class PCOAuth2AccountController extends BaseController {
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
-            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
