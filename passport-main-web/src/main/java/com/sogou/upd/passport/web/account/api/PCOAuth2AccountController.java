@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -209,7 +210,10 @@ public class PCOAuth2AccountController extends BaseController {
                 } else {
                     uniqname = defaultUniqname(passportId);
                 }
-                result.setDefaultModel("uniqname", uniqname);
+                result.setDefaultModel("uniqname", Coder.enBase64(uniqname));
+                result.setDefaultModel("passportId", Coder.enBase64(passportId));
+                result.setDefaultModel("sid", "0");
+                result.setDefaultModel("logintype", "sogou");
             }
         }
         return result.toString();
