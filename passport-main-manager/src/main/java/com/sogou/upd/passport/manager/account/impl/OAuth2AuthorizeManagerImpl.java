@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
 import com.sogou.upd.passport.manager.account.vo.OAuth2TokenVO;
+import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -17,6 +18,7 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
+    @Autowired
+    private AppConfigService appConfigService;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -148,6 +152,21 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    @Override
+    public Result oauth2Resource(PCOAuth2ResourceParams pcoAuth2ResourceParams) {
+        Result result = new OAuthResultSupport(false);
+        int clientId = pcoAuth2ResourceParams.getClient_id();
+        String clientSecret = pcoAuth2ResourceParams.getClient_secret();
+
+        AppConfig appConfig = appConfigService.verifyClientVaild(clientId, clientSecret);
+        if (appConfig == null) {
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            return result;
+        }
+
+        return null;
     }
 
     private boolean verifyRefreshToken(String refreshToken, String passportId, int clientId, String instanceId, AppConfig appConfig) throws Exception {

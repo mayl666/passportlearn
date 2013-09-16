@@ -10,12 +10,14 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.*;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
+import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -26,25 +28,23 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
-import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.net.URLDecoder;
 
 /**
@@ -74,8 +74,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
-    private RegManager regManager;
-    @Autowired
     private PCOAuth2RegManager pcoAuth2RegManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
@@ -104,6 +102,25 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
+
+        return result.toString();
+    }
+
+    @RequestMapping(value = "/resource")
+    @ResponseBody
+    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams pcoAuth2ResourceParams) throws Exception {
+        Result result = new OAuthResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(pcoAuth2ResourceParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+
+        int clientId = pcoAuth2ResourceParams.getClient_id();
+        // 检查client_id和client_secret是否有效
+
 
         return result.toString();
     }

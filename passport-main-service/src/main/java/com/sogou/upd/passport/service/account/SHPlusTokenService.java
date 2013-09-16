@@ -11,6 +11,8 @@ import com.sogou.upd.passport.exception.ServiceException;
  */
 public interface SHPlusTokenService {
 
+    public String queryPassportBySHPlusId(String shPlusId);
+
     /**
      * 校验refreshtoken
      *

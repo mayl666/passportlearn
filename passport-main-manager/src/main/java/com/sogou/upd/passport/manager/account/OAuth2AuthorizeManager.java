@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 
@@ -27,5 +28,12 @@ public interface OAuth2AuthorizeManager {
      * @return
      */
     public Result oauth2Authorize(OAuthTokenASRequest oauthRequest, AppConfig appConfig);
+
+    /**
+     * 浏览器PC/移动客户端访问受保护的资源
+     * @param pcoAuth2ResourceParams
+     * @return
+     */
+    public Result oauth2Resource(PCOAuth2ResourceParams pcoAuth2ResourceParams);
 
 }

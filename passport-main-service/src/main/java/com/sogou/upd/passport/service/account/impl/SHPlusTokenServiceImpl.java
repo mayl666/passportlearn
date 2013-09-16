@@ -32,6 +32,11 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
     @Override
+    public String queryPassportBySHPlusId(String shPlusId) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public boolean verifyShPlusRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         if (clientId != CommonConstant.BROWSER_CLIENTID) {
             return false;
