@@ -61,24 +61,24 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             return result;
         } else {
-            if (!ManagerHelper.isInvokeProxyApi(username)) {
-                if (type) {
-                    //手机号判断绑定账户
-                    BaseMoblieApiParams params = new BaseMoblieApiParams();
-                    params.setMobile(username);
-                    result = sgBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    }
-                } else {
-                    //个性账号注册
-                    username = username + "@sogou.com";
-                    Account account = accountService.queryAccountByPassportId(username);
-                    if (account != null) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    }
+            //如果sohu+库里没有，说明用户名肯定不会与老用户重复
+            if (type) {
+                //TODO 搜狗账号迁移完成后，手机注册不需要来sogou库里查了，这部分代码删除，但全部账号迁移完成后，还需要来搜狗库里查，再添加
+                //手机号判断绑定账户
+                BaseMoblieApiParams params = new BaseMoblieApiParams();
+                params.setMobile(username);
+                result = sgBindApiManager.getPassportIdByMobile(params);
+                if (result.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                }
+            } else {
+                //个性账号注册
+                username = username + "@sogou.com";
+                Account account = accountService.queryAccountByPassportId(username);
+                if (account != null) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
                 }
             }
         }
