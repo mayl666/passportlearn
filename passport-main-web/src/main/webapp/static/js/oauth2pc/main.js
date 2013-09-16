@@ -12,7 +12,8 @@ require.config({
 require(['jquery', 'lib/es5-shim', 'lib/json2', 'lib/placeholder', 'almond'], function($){
     // global
     $(function(){
-
+        var ava=$('#avatar');
+        !ava.attr('src')&&ava.attr('src',ava.attr('default-src'));
     });
 });
 

@@ -1,8 +1,21 @@
+/**
+ * @adapt yinyong#sogou-inc.com
+ */
 ;
 define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib/fileupload'], function($, md5, dialog, upload) {
     function Profile() {}
     Profile.prototype = {
         sogouBaseurl: "//account.sogou.com",
+        interfaces:{
+            updateNickName: "/web/userinfo/updatenickname",
+            checkSname: "/a/sogou/check/sname/",
+            checkNickName:"/web/userinfo/checknickname?nickname=" ,
+            sendEmail:"/web/security/sendemail",
+            sendSms:"/web/security/sendsmsnew",
+            bindMobile: "/web/security/bindmobile",
+            updatePwd:"/web/security/updatepwd",
+            updateAvatar:'/web/userinfo/uploadavatar'
+        },
         init: function() {
             this.initPageEvent()
             this.initBasicProfile()
@@ -31,55 +44,58 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             $("#pro_btn_basic").on("click", function(e) {
                 e.preventDefault()
                 if ($nick.val() == $nick.attr("pro_default")) return
-//               var sC = self.checkSname($sname, $snameError, self.validObj.regacc),
-                 var nC = self.checkNick($nick, $nickError, self.validObj.nick)
-                    if (nC) {
-                        $.when(nc).then(function() {
-//                            var snameLegal = self.validObj.regacc.legal,
-                            var   nickLegal = self.validObj.nick.legal;
-                            if (nickLegal) {
-                                var url = self.sogouBaseurl + "/oauth2/updateNickName?_input_encode=utf-8"
-                                $.ajax({
-                                    url: url,
-                                    data: {
-                                        nick: $nick.val(),
-                                        sname: $sname.val(),
-                                        accesstoken: accesstoken
-                                    },
-                                    type: "post",
-                                    dataType: "json"
-                                }).done(function(result) {
-                                    var code = result.code
-                                    if (code == 0) {
-                                        $successArea.fadeIn("fast", function() {
-                                           
-                                            setTimeout(function() {    
-                                                $successArea.fadeOut(500, function() {
+                //               var sC = self.checkSname($sname, $snameError, self.validObj.regacc),
+                var nC = self.checkNick($nick, $nickError, self.validObj.nick)
+                if (nC) {
+                    $.when(nC).then(function() {
+                        //                            var snameLegal = self.validObj.regacc.legal,
+                        var nickLegal = self.validObj.nick.legal;
+                        if (nickLegal) {
+                            var url = self.sogouBaseurl +self.interfaces.updateNickName;
+                            $.ajax({
+                                url: url,
+                                data: {
+                                    nick: $nick.val(),
+                                    sname: $sname.val(),
+                                    accesstoken: accesstoken
+                                },
+                                type: "post",
+                                dataType: "json"
+                            }).done(function(result) {
+                                if(typeof result==='string'||(result&&result.constructor==String)){
+                                    result=$.parseJSON(result);
+                                }
+                                var code = +result.status;
+                                if (code == 0) {
+                                    $successArea.fadeIn("fast", function() {
 
-                                                    $sname.removeClass("error").attr("disabled", "disabled")
-                                                    $snameError.empty().hide()
-                                                    $nick.removeClass("error").attr("pro_default",$nick.val())
-                                                    $nickError.empty().hide()
-                                                    $(".sidebar>.uesr-name").html($nick.val())
-                                                    try{
-                                                        window.external.passport("onProfileChange")   
-                                                    }catch(e){
-                                                        console.log("your browser do not support the method onProfileChange,please user a high version ")
-                                                    }
-                                               
-                                                });
-                                            }, 1200);
-                                        })
+                                        setTimeout(function() {
+                                            $successArea.fadeOut(500, function() {
 
-                                    }
-                                })
-                            } else {
-                                return false
-                            }
-                        })
-                    } else {
-                        return false
-                    }
+                                                $sname.removeClass("error").attr("disabled", "disabled")
+                                                $snameError.empty().hide()
+                                                $nick.removeClass("error").attr("pro_default", $nick.val())
+                                                $nickError.empty().hide()
+                                                $(".sidebar>.uesr-name").html($nick.val())
+                                                try {
+                                                    window.external.passport("onProfileChange")
+                                                } catch (e) {
+                                                    console.log("your browser do not support the method onProfileChange,please user a high version ")
+                                                }
+
+                                            });
+                                        }, 1200);
+                                    })
+
+                                }
+                            })
+                        } else {
+                            return false;
+                        }
+                    })
+                } else {
+                    return false;
+                }
 
             })
         },
@@ -88,7 +104,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             if (!self.check($sname, $snameError, validObj)) return false
             if ($sname.val() == $sname.attr("pro_default")) return true
             return $.ajax({
-                url: self.sogouBaseurl + "/a/sogou/check/sname/" + $sname.val(),
+                url: self.sogouBaseurl +self.interfaces.checkSname+ $sname.val(),
                 type: "get",
                 dataType: "json"
             }).done(function(result) {
@@ -106,23 +122,28 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
         },
         checkNick: function($nick, $nickError, validObj) {
             var self = this,
-                val = encodeURIComponent($nick.val())
-                if (!self.check($nick, $nickError, validObj)) return false
+                val = encodeURIComponent($nick.val());
+            if (!self.check($nick, $nickError, validObj)) return false
 
             return $.ajax({
-                url: self.sogouBaseurl + "/oauth2/checknickname?nickname=" + val,
+                url: self.sogouBaseurl +self.interfaces.checkNickName  + val,
                 type: "get",
                 dataType: "json"
             }).done(function(result) {
-                if (result.code !== 0) {
-                    $nick.addClass("error")
-                    $nickError.show().html("该用户名不可用")
-                    validObj.legal = false
+                if(typeof result==='string'||(result&&result.constructor==String)){
+                    result=$.parseJSON(result);
                 }
-                if (result.code === 0) {
-                    $nick.removeClass("error")
-                    $nickError.empty().hide()
-                    validObj.legal = true
+
+                var code=+result.status;
+
+                if (code !== 0) {
+                    $nick.addClass("error");
+                    $nickError.show().html("该用户名不可用");
+                    validObj.legal = false;
+                }else {
+                    $nick.removeClass("error");
+                    $nickError.empty().hide();
+                    validObj.legal = true;
                 }
             })
         },
@@ -137,42 +158,33 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 $emailBtn = $email.next("div"),
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : ""
 
-            if ($phone.is(":disabled")) {
-                var phoneNum = $phone.val()
-                $phoneBtn.on("click", function(e) {
-                    e.stopPropagation()
-                    var msg = "确认后将解除手机号" + phoneNum + "与该账号的绑定",
-                        unbindPhoneUrl = self.sogouBaseurl + "/a/sogou/security/phone/remove"
-                    dialog.confirm(msg, function() {
-                        $.ajax({
-                            url: unbindPhoneUrl,
-                            data: {
-                                phonenumber: phoneNum,
-                                accesstoken: 　accesstoken
-                            },
-                            type: "post",
-                            dataType: "json"
-                        }).done(function(result) {
-                            if (result.code == 0) {
-                                window.location.href = window.location.href
-                            }
-
-                        })
-                    })
-                })
+                //adaptor:email&phone cannot be disbinded.
+            if (window.isBindMobileUsable || 1) {//todo
+                self.bindPhone();
             } else {
-                self.bindPhone()
+                $phone.prop('disabled', true);
             }
-            self.bindEmail()
+            if (window.isBindEmailUsable || 1) {//todo
+                self.bindEmail();
+            } else {
+                $email.prop('disabled', true);
+            }
         },
         bindEmail: function() {
             var self = this,
+
                 $unactivated = $("#pro_email_area_1"),
                 $prompt = $("#pro_email_area_2"),
                 $bind = $("#pro_email_area_3"),
+                $email = $bind.find("input"),
+                $emailError = $email.siblings("p"),
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : "",
-                instanceid = splus ? splus.instanceid ? splus.instanceid : "" : ""
-
+                instanceid = splus ? splus.instanceid ? splus.instanceid : "" : "",
+                $emailPwdArea = $("#pro_email_pwd_area"),
+                $emailPwd = $("#pro_email_pwd"),
+                $emailPwdError = $emailPwd.siblings('p'),
+                $confirmBtn = $emailPwdArea.find("div.btn-wrap>a:first"),
+                $cancelBtn = $emailPwdArea.find("div.btn-wrap>a:last");
 
 
             $unactivated.on("click", "div>a", function(e) {
@@ -185,43 +197,80 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 $prompt.hide()
                 $bind.show()
             }).on("click", "a#pre_btn_retry", function(e) {
-                var url = self.sogouBaseurl + "/a/sogou/security/email/send",
+                var url = self.sogouBaseurl +self.interfaces.sendEmail ,
                     $a = $(e.target),
                     email = $a.attr("pro_default")
-                    $.post("/a/sogou/security/email/send", {
+                    $.post(self.interfaces.sendEmail, {
                         email: email,
                         accesstoken: accesstoken,
                         instanceid: instanceid
                     })
             })
+            //下拉
+            $bind.on("click", "div>a", function() {
+                var d = self.checkEmail($email, $emailError, self.validObj.email);
+                if (d) $emailPwdArea.show();
+            });
 
+            $cancelBtn.click(function() {
+                $emailPwdArea.hide();
+            });
 
-            $bind.on("click", "div>a", function(e) {
-                var $email = $bind.find("input"),
-                    $emailError = $email.siblings("p"),
-                    validObj = self.validObj.email,
-                    em = self.checkEmail($email, $emailError, validObj),
-                    url = self.sogouBaseurl + "/a/sogou/security/email/modify"
-                if (em) em.done(function(data) {
-                    if (!validObj.legal) return
+            /*$bind*/
+            $confirmBtn.on("click", /*"div>a", */ function(e) {
+                var
+                em = self.checkEmail($email, $emailError, self.validObj.email),
+                    pp = self.check($emailPwd, $emailPwdError, self.validObj.password),
+                    url = self.sogouBaseurl +self.interfaces.sendEmail ;
+                if (em && pp) /*em.done(function(data) */ {
                     $.ajax({
                         url: url,
                         type: "post",
-                        dataType: 　
-                        "json",
+                        dataType: 　"json",
                         data: {
-                            email: $email.val(),
+                            new_email: $email.val(),
                             accesstoken: accesstoken,
-                            instanceid: instanceid
+                            //                            instanceid: instanceid,
+                            client_id: 1065,
+                            password: $emailPwd.val(),
+                            ru: window.location.href
                         }
                     }).done(function(result) {
-                        var email = result.data.email
-                        $("p:first", $prompt).html("确认邮件已发送到邮箱：" + email)
-                        $("a#pre_btn_retry", $prompt).attr("pro_default", email)
-                        $bind.hide()
-                        $prompt.show()
+                        if ((typeof result === 'string') || (result && result.constructor == String)) {
+                            result = $.parseJSON(result);
+                        }
+                        var codes = {
+                            "10001": " 未知错误 ",
+                            "10002": "参数错误,请输入必填的参数或参数验证失败",
+                            "20229": "账号未登录，请先登录 ",
+                            "20243": "SOHU域用户不允许此操作",
+                            "20244": "第三方账号不允许此操作",
+                            "20295": "今日绑定次数超限，请明日再试",
+                            "20210": "今日密码验证失败次数超过上限",
+                            "20223": "当日邮件发送次数已达上限",
+                            "20285": "旧绑定邮箱错误",
+                            "20206": "用户名或密码不正确",
+                            "20284": "申请邮件发送失败"
+                        };
+                        var code = result.status;
+                        switch (true) {
+                            case ("0"==code):
+                                $("p:first", $prompt).html("确认邮件已发送到邮箱：" + $email.val());
+                                $("a#pre_btn_retry", $prompt).attr("pro_default", $email.val());
+                                $bind.hide();
+                                $prompt.show();
+                                $emailPwdArea.hide();
+                                break;
+                            case (/20229|20210|20206/.test(code)):
+                                $emailPwd.addClass("error");
+                                $emailPwdError.html(codes[code]||result.statusText||'未知错误').addClass('red').show();
+                                break;
+                            default:
+                                $email.addClass("error");
+                                $emailError.html(codes[code]||result.statusText||'未知错误').addClass('red').show();
+                        }
                     })
-                })
+                } //)
             })
         },
         checkEmail: function($email, $emailError, validObj) {
@@ -229,11 +278,12 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             if (!self.check($email, $emailError, validObj)) {
                 validObj.legal = false
                 $emailError.addClass("red")
-                return
+                return false;
             } else {
                 $emailError.removeClass("red")
             }
-            return $.ajax({
+            return true;
+            /*$.ajax({
                 url: self.sogouBaseurl + "/a/sogou/check/email/" + $email.val() + "/",
                 type: "get",
                 dataType: "json"
@@ -248,21 +298,21 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     $emailError.empty().removeClass("red").hide()
                     validObj.legal = true
                 }
-            })
+            })*/
         },
         countdown: function($waitArea) {
             var self = this,
                 total = 60,
-                interdown 
-    
-                interdown = setInterval(function(){
-                    if(total === 0){
+                interdown
+
+                interdown = setInterval(function() {
+                    if (total === 0) {
                         $waitArea.empty().html('<a href="javascript:">获取验证码</a>')
                         clearInterval(interdown)
-                    }else{
-                        $waitArea.empty().html('<span style="height:25px;line-height:25px"><span style="color:#000093;font-size:12px">&nbsp;'+(total--)+'</span> 秒后重新获取验证码</span>')
+                    } else {
+                        $waitArea.empty().html('<span style="height:25px;line-height:25px"><span style="color:#000093;font-size:12px">&nbsp;' + (total--) + '</span> 秒后重新获取验证码</span>')
                     }
-                },1000)
+                }, 1000)
         },
         //phone bind
         bindPhone: function() {
@@ -273,11 +323,14 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 $phoneBtn = $phone.next("div"),
 
                 $vcodeErea = $("#pro_vcode_area"),
+                $vcodePwdErea = $("#pro_vcode_pwd_area"),
                 $vcode = $("#pro_vcode"),
+                $vcodePwd = $("#pro_pwd"),
                 $vcodeError = $vcode.siblings("p"),
+                $vcodePwdError = $vcodePwd.siblings("p"),
                 $confirmBtn = $vcodeErea.find("div.btn-wrap>a:first"),
                 $cancelBtn = $vcodeErea.find("div.btn-wrap>a:last"),
-                
+
                 $waitArea = $vcodeErea.find("div.code"),
 
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : ""
@@ -285,111 +338,147 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
 
             $phoneBtn.on("click", function(e) {
                 var cP = self.checkPhone($phone, $phoneError, self.validObj.phone)
-                if (cP) cP.done(function() {
+                if (cP) /*cP.done(function()*/ {
 
-                    if (!self.validObj.phone.legal) return
-                    $vcodeErea.show()
-                })
+                    // if (!self.validObj.phone.legal) return
+                    $vcodeErea.show();
+                    $vcodePwdErea.show();
+                } /*)*/
 
             })
-            $("fieldset.bind").on("click","div.code>a",function(e){
+            $("fieldset.bind").on("click", "div.code>a", function(e) {
                 e.stopPropagation()
-                var url = self.sogouBaseurl + "/a/sogou/sendsms/"
+                var url = self.sogouBaseurl +self.interfaces.sendSms ;
                 $.ajax({
                     url: url,
                     data: {
                         smstype: 1,
-                        phonenumber: $phone.val()
+                        client_id: 1065,
+                        new_mobile: $phone.val()
                     },
-                    type: "post",
+                    type: "get",
                     dataType: "json"
                 }).done(function(result) {
-                    var code = result.code
+                    if (typeof result === 'string' || (result && result.constructor == String))
+                        result = $.parseJSON(result);
+
+                    var code = +result.status;
                     switch (code) {
-                        case 2:
-                            $vcodeError.html("发送次数过多,请稍后再试").show().addClass("red")
-                            break
                         case 0:
                             self.countdown($waitArea)
                             $vcodeError.html("手机可以用来找回密码以及登陆").removeClass("red")
                             break
-                        case 3:
-                            $vcodeError.html("该号码不支持帐号绑定").show().addClass("red")
+                        case 10002:
+                            $vcodeError.html("参数错误").show().addClass("red")
                             break
-                        case 4:
-                            $vcodeError.html("该号码不支持帐号绑定").show().addClass("red")
+                        case 20229:
+                            $vcodeError.html("账号未登录，请先登录").show().addClass("red")
                             break
-                        case 5 :
-                            $vcodeError.html("请等待60秒后重新发送").show().addClass("red")
+                        case 20243:
+                            $vcodeError.html("SOHU域用户不允许此操作").show().addClass("red")
+                            break
+                        case 20244:
+                            $vcodeError.html("第三方账号不允许此操作").show().addClass("red")
+                            break
+                        case 20225:
+                            $vcodeError.html("手机号已绑定其他账号").show().addClass("red")
+                            break
+                        case 20209:
+                            $vcodeError.html("今日验证码校验错误次数已超过上限").show().addClass("red")
+                            break
+                        case 20202:
+                            $vcodeError.html("今日手机短信发送次数超过上限").show().addClass("red")
+                            break
+                        case 20204:
+                            $vcodeError.html("一分钟内只能发一条短信").show().addClass("red")
+                            break
+                        case 20213:
+                            $vcodeError.html("手机验证码发送失败").show().addClass("red")
                             break
                         default:
+                            $vcodeError.html("未知错误").show().addClass("red")
                             break
                     }
                 })
-            })
-            // $vcodeBtn.off("click").on("click", function(e) {
-            //     e.stopPropagation()
-            //     var url = self.sogouBaseurl + "/a/sogou/sendsms/"
-            //     $.ajax({
-            //         url: url,
-            //         data: {
-            //             smstype: 1,
-            //             phonenumber: $phone.val()
-            //         },
-            //         type: "post",
-            //         dataType: "json"
-            //     }).done(function(result) {
-            //         var code = result.code
-            //         switch (code) {
-            //             case 2:
-            //                 $vcodeError.html("发送次数过多,请稍后再试").show().addClass("red")
-            //                 break
-            //             case 0:
-            //                 $vcodeError.html("手机可以用来找回密码以及登陆").removeClass("red")
-            //                 break
-            //             case 3:
-            //                 $vcodeError.html("该号码不支持帐号绑定").show().addClass("red")
-            //                 break
-            //             case 4:
-            //                 $vcodeError.html("该号码不支持帐号绑定").show().addClass("red")
-            //                 break
-            //             default:
-            //                 break
-            //         }
-            //     })
-            // })
-            //cancel button
+            });
             $cancelBtn.on("click", function(e) {
                 $phone.val("")
                 $vcode.val("")
                 $vcodeErea.hide()
                 $vcodeError.empty().removeClass("red").hide()
                 $phoneError.empty().hide()
-            })
+            });
             //confirm button
             $confirmBtn.on("click", function(e) {
                 var cP = self.checkPhone($phone, $phoneError, self.validObj.phone),
-                    vP = self.check($vcode, $vcodeError, self.validObj.vcode)
-                    if (vP) {
-                        $vcodeError.removeClass("red")
-                    } else {
-                        $vcodeError.addClass("red")
-                        return
-                    }
-                if (cP) cP.done(function(data) {
-                    var url = self.sogouBaseurl + "/a/sogou/security/phone/modify"
+                    vP = self.check($vcode, $vcodeError, self.validObj.vcode),
+                    pP = self.check($vcodePwd, $vcodePwdError, self.validObj.password);
+                if (vP) {
+                    $vcodeError.removeClass("red")
+                } else {
+                    $vcodeError.addClass("red")
+                    return
+                }
+                //check password
+                if (pP) {
+                    $vcodePwdError.removeClass("red")
+                } else {
+                    $vcodePwdError.addClass("red")
+                    return
+                }
+                if (cP && pP) /*cP.done(function(data)*/ {
+                    var url = self.sogouBaseurl +self.interfaces.bindMobile;
                     $.ajax({
                         url: url,
                         data: {
-                            phonenumber: $phone.val(),
+                            new_mobile: $phone.val(),
                             smscode: $vcode.val(),
+                            client_id: 1065,
+                            password: $vcodePwd.val(),
                             accesstoken: accesstoken
                         },
                         dataType: "json",
                         type: "post"
                     }).done(function(result) {
-                        //TODO:handle when bind phone success
-                        if (result.code == 0) {
+
+                        var codes = {
+                            "10001": " 未知错误  ",
+                            "10002": " 参数错误,请输入必填的参数或参数验证失败 ",
+                            "20208":"新手机验证码错误或已过期",
+                            "20229": "账号未登录，请先登录 ",
+                            "20243": " SOHU域用户不允许此操作",
+                            "20244": " 第三方账号不允许此操作",
+                            "20245": " 手机账号不允许此操作",
+                            "20295": " 今日绑定次数超限，请明日再试",
+                            "20210": " 今日密码验证失败次数超过上限",
+                            "20206": " 用户名或密码不正确",
+                            "20225": " 手机号已绑定其他账号",
+                            "20209": " 今日验证码校验错误次数已超过上限",
+                            "20216": " 验证码错误或已过期",
+                            "20289": " 绑定手机失败"
+                        };
+                        if (typeof result === 'string' || (result && result.constructor == String))
+                            {
+                                result = $.parseJSON(result)||{};
+                            }
+                        var code = result.status;
+                        switch (true) {
+                            case (code == "0"):
+                                window.location.reload();
+                                break;
+                            case (/(20210|20206)/.test(code)):
+                                $vcodePwd.addClass("error");
+                                $vcodePwdError.addClass('red').html(codes[code]).show();
+                                break;
+                            case (/(20209|20216)/.test(code)):
+                                $vcode.addClass("error");
+                                $vcodeError.addClass('red').html(codes[code]).show();
+                                break;
+                            default:
+                                $phone.addClass("error");
+                                $phoneError.addClass('red').html(codes[code] || "未知错误").show();;
+                        }
+                        /*                        if (result.code == 0) {
                             window.location.href = window.location.href
                         } else if (result.code == 1) {
                             $phone.addClass("error")
@@ -400,9 +489,9 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                         } else {
                             $vcode.addClass("error")
                             $vcodeError.html("验证码错误").show().addClass("red")
-                        }
+                        }*/
                     })
-                })
+                } //)
 
             })
         },
@@ -416,7 +505,8 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             } else {
                 $phoneError.removeClass("red")
             }
-            return $.ajax({
+            return true;
+            /*$.ajax({
                 url: self.sogouBaseurl + "/a/sogou/check/mobile/" + $phone.val(),
                 type: "get",
                 dataType: "json"
@@ -433,7 +523,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     $phoneError.removeClass("red")
                     $phoneError.empty().hide()
                 }
-            })
+            })*/
         },
         // 密码修改部分
         initUpdatePassword: function() {
@@ -452,19 +542,37 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     self.checkPassword($oriPwd, $newPwd, $conPwd, pwdObj)
                     if (pwdObj.legal) {
                         $.ajax({
-                            url: self.sogouBaseurl + "/a/sogou/security/pwd",
+                            url: self.sogouBaseurl + self.interfaces.updatePwd,
                             type: "post",
                             dataType: "json",
                             data: {
-                                oldpwd: $oriPwd.val(),
+                                password: $oriPwd.val(),
                                 newpwd: $newPwd.val(),
+                                client_id:1065,
                                 accesstoken: accesstoken
                             }
                         }).done(function(result) {
-                            var code = result.code
-
-                            switch (code) {
-                                case 0:
+                            if(typeof result==='string'||(result&&result.constructor==String))
+                            {
+                                result=$.parseJSON(result);
+                            }
+                        var code = result.status;
+                        var codes = {
+                            "10001": "未知错误 ",
+                            "10002": "参数错误,请输入必填的参数或参数验证失败  ",
+                            "10009": "账号不存在或异常 ",
+                            "10010":  "client_id不存在",
+                            "20198": "当日用户原密码校验错误次数已达上限 ",
+                            "20205": "帐号不存在 ",
+                            "20206": "密码错误 ",
+                            "20218": "重置密码失败 ",
+                            "20221": "验证码验证失败 ",
+                            "20222": "当日修改或重置密码次数已达上限 ",
+                            "20230": "登陆用户或者ip在黑名单中 ",
+                            "20244": "第三方账号不允许此操作 "
+                        };
+                            switch (true) {
+                                case ("0"==code):
                                     $successArea.fadeIn("fast", function() {
                                         setTimeout(function() {
                                             $successArea.fadeOut(500);
@@ -476,8 +584,14 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                                     $oriPwd.next("p").empty().hide()
                                     $newPwd.next("p").empty().hide()
                                     $conPwd.next("p").empty().hide()
-                                    break
-                                case 1:
+                                    break;
+                                case (/20206/.test(code)):
+                                    $oriPwd.next("p").html(codes[code]||"未知错误").show().addClass('red')
+                                    break;
+                                default:
+                                    $conPwd.next("p").html(codes[code]||"未知错误").show().addClass('red')
+                                    ;
+                              /*  case 1:
                                     $oriPwd.val("")
                                     $newPwd.val("")
                                     $conPwd.val("")
@@ -502,7 +616,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                                     $oriPwd.focus().val("")
                                     break
                                 default:
-                                    break
+                                    break*/
                             }
                         })
                     }
@@ -516,8 +630,8 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 $conError = $conPwd.next("p")
 
                 var oriObj = $.extend({}, pwdObj, {
-                emptyMsg: "请填写密码"
-            }),
+                    emptyMsg: "请填写密码"
+                }),
                 newObj = $.extend({}, pwdObj, {
                     emptyMsg: "请填写新密码"
                 }),
@@ -580,9 +694,9 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                                         $a.removeClass("unbind-btn")
                                         var href = window.location.href
                                         window.location.href = href
-                                    }else if(result.code == 2){
+                                    } else if (result.code == 2) {
                                         dialog.alert("当前帐号只绑定了一个社交帐号，无法解除绑定")
-                                    }else if(result.code == 1){
+                                    } else if (result.code == 1) {
                                         dialog.alert("解绑失败")
                                     }
                                 })
@@ -593,7 +707,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             })
 
             //账号绑定时如果遇到失败则会弹窗提示
-            if(splus && splus.bind_tipmsg){
+            if (splus && splus.bind_tipmsg) {
                 dialog.alert(splus.bind_tipmsg)
             }
         },
@@ -604,35 +718,41 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 $imginput = $("#pro_file_input"),
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : "",
                 token = splus ? splus.avatar_token ? splus.avatar_token : "" : "",
-                url = self.sogouBaseurl + '/sogou/avatar/fileupload?_input_encode=utf8&token=' + splus.avatar_token + "&accesstoken=" + accesstoken
+                url = self.sogouBaseurl + self.interfaces.updateAvatar;
                 $imginput.fileupload({
                     url: url,
                     dataType: "json",
-                    maxFileSize: 5000000,
-                    contentType : false,
-                    acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i ,
-                    done: function(e, data) {
-                        var result = data.result
+                    maxFileSize: 1024 * 1024 * 5,
+                    contentType: false,
+                formData: {
+                    client_id: 1065
+                },
+                    acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                    done: function(e,result) {
+                        result=result.result;
+                        if(typeof result==='string'||(result&&result.constructor==String))
+                        {
+                            result=$.parseJSON(result)||{};
+                        }
+                        var code=result.status;
 
-                        if (result.code == 0) {
+                        if (0==code) {
                             $("aside.sidebar div.photo-error").empty().hide()
                             $("aside.sidebar div.uesr-photo").removeClass("uesr-photo-error")
-                            try{
-                                window.external.passport("onProfileChange")   
-                            }catch(e){
+                            try {
+                                window.external.passport("onProfileChange")
+                            } catch (e) {
                                 console.log("your browser do not support the method onProfileChange,please user a high version ")
                             }
-                           
-                            window.location.href = window.location.href
-                        }
-                        if(result.code == 7){
+                            window.location.reload();
+                        }else {
 
                             $("aside.sidebar div.photo-error").html("上传头像失败,仅支持小于5M的jpg、gif、png图片文件").show()
                             $("aside.sidebar div.uesr-photo").addClass("uesr-photo-error")
                         }
                     }
 
-                })
+                });
 
         },
         isSimple: function($input, $error, msg) {
@@ -677,7 +797,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                         self.check($input, $error, valid)
                     })
                 }
-                $error.show().html(emptyMsg)
+                $error.show().html(emptyMsg).addClass('red');
                 return false
             } else if (nullable && $input.val() == "") {
                 $input.removeClass("error")
@@ -687,20 +807,20 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 if (!regrex.test($input.val())) {
                     $input.addClass("error")
                         .one("focus", function() {
-                        $error.empty().hide()
-                        $input.removeClass("error")
-                    })
+                            $error.empty().hide()
+                            $input.removeClass("error")
+                        })
                     //when id is pro_phone or  pro_email ,do not need check when the onblur event happens
                     if ($input.attr("id") != "pro_phone" && $input.attr("id") != "pro_email") {
                         $input.one("blur", function() {
                             self.check($input, $error, valid)
                         })
                     }
-                    $error.show().html(errMsg)
+                    $error.show().html(errMsg).addClass('red');
                     return false
                 } else {
-                    $input.removeClass("error")
-                    $error.empty().hide()
+                    $input.removeClass("error");
+                    $error.empty().hide().removeClass('red;');
                     return true
                 }
             }
@@ -719,7 +839,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 errMsg: '请正确输入邮箱',
                 emptyMsg: '请输入邮箱',
                 nullable: false,
-                regStr: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                regStr: /[\w!#\$%&'\*\+\/=\?^_`\{\|\}~\-]+(?:\.[\w!#\$%&'*+\/=\?^_`\{\|\}~\-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
                 legal: true
             },
             password: {
