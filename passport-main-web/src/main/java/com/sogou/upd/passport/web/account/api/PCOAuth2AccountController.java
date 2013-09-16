@@ -28,6 +28,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
+import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
