@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.exception.ServiceException;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,23 +31,21 @@ public interface SHPlusTokenService {
      * 校验refreshtoken
      *
      * @param passportId
-     * @param clientId
      * @param instanceId
      * @param refreshToken
      * @return
      * @throws ServiceException
      */
-    public boolean verifyShPlusRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+    public boolean verifyShPlusRefreshToken(String passportId, String instanceId, String refreshToken) throws ServiceException;
 
     /**
      * 通过获取token获取资源
      *
-     * @param instance_id
-     * @param access_token
-     * @param scope
-     * @param resource_type
+     * @param instanceId
+     * @param accessToken
+     * @param resourceType
      * @return
      * @throws ServiceException
      */
-    public String getResourceByToken(String instance_id, String access_token, String scope, String resource_type) throws ServiceException;
+    public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException;
 }

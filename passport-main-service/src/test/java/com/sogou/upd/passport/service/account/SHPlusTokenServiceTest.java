@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,10 +48,10 @@ public class SHPlusTokenServiceTest extends BaseTest {
         String instanceId = "323906108";
         String passportId = "shipengzhi1986@sogou.com";
         String refreshToken = "58cc24195472c1c25a378513b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
-        boolean errorResult = shPlusTokenService.verifyShPlusRefreshToken(passportId, clientId, instanceId, refreshToken);
+        boolean errorResult = shPlusTokenService.verifyShPlusRefreshToken(passportId, instanceId, refreshToken);
         Assert.assertTrue(!errorResult);
         refreshToken = "58cc24195472c1c25a378523b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
-        boolean successResult = shPlusTokenService.verifyShPlusRefreshToken(passportId, clientId, instanceId, refreshToken);
+        boolean successResult = shPlusTokenService.verifyShPlusRefreshToken(passportId, instanceId, refreshToken);
         Assert.assertTrue(successResult);
     }
 
@@ -70,12 +73,11 @@ public class SHPlusTokenServiceTest extends BaseTest {
         // access_token=94875c31900ce878b995095ee911d9e950f59e81cf218cca25d42adcc3c6ade5&
         // instance_id=1213178981
         String instanceId = "1213178981";
-        String accesstoken = "60f1cdd4c9e48495ae7e8865aa78b0ad0c2ea508c20c89a438364892481ce786";
-        String scope = "all";
-        String resource_type = "full.get";
+        String accessToken = "60f1cdd4c9e48495ae7e8865aa78b0ad0c2ea508c20c89a438364892481ce786";
+        OAuth2ResourceTypeEnum resourceType = OAuth2ResourceTypeEnum.GET_FULL_USERINFO;
 
-        String json = shPlusTokenService.getResourceByToken(instanceId, accesstoken, scope, resource_type);
-        System.out.println("json:" + json);
+        Map resultMap = shPlusTokenService.getResourceByToken(instanceId, accessToken, resourceType);
+        System.out.println("result map:" + resultMap);
     }
 
 }

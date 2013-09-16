@@ -114,10 +114,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
         String instanceId = oauthRequest.getInstanceId();
 
         try {
-            // TODO 根据用户名到sohu+获取passportId
             String passportId = oauthRequest.getUsername();
 
-            // TODO 消除if-else
             AccountToken renewAccountToken;
             if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
@@ -154,7 +152,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
 
         boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
         if (!isRightPcRToken) {
-            boolean isRightSHRToken = shPlusTokenService.verifyShPlusRefreshToken(passportId, clientId, instanceId, refreshToken);
+            boolean isRightSHRToken = shPlusTokenService.verifyShPlusRefreshToken(passportId, instanceId, refreshToken);
             return isRightSHRToken;
         }
         return true;

@@ -14,12 +14,17 @@ public class PCOAuth2ResourceParams {
 
     @Min(0)
     private int client_id;
+
     @NotBlank(message = "client_secret不允许为空")
     private String client_secret;
+
     private String instance_id;
+
     private String scope;
+
     @NotBlank(message = "access_token不允许为空")
     private String access_token;
+
     @NotBlank(message = "resource_type不允许为空")
     private String resource_type;
 
@@ -70,4 +75,5 @@ public class PCOAuth2ResourceParams {
     public void setResource_type(String resource_type) {
         this.resource_type = resource_type;
     }
+
 }

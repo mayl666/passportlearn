@@ -17,13 +17,13 @@ public interface OAuth2ResourceManager {
      * @param params
      * @return
      */
-    public Result getCookieValue(PCOAuth2ResourceParams params);
+    public Result queryCookieValue(PCOAuth2ResourceParams params);
 
     /**
      * 获取完整的个人信息
      * @param params
      * @return
      */
-    public Result getFullUserInfo(PCOAuth2ResourceParams params);
+    public Result queryFullUserInfo(PCOAuth2ResourceParams params);
 
 }

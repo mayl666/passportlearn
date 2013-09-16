@@ -48,7 +48,9 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         requestModel.addParam(OAuth.OAUTH_SCOPE, "all");
         requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instanceId);
         requestModel.addParam(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
-        requestModel.addParam(OAuth.OAUTH_RESOURCE_TYPE, OAuth2ResourceTypeEnum.GET_COOKIE.toString());
+        requestModel.addParam(OAuth.OAUTH_RESOURCE_TYPE, OAuth2ResourceTypeEnum.GET_FULL_USERINFO.toString());
+
+
         requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
         String json = SGHttpClient.executeStr(requestModel);
 
@@ -68,10 +70,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     }
 
     @Override
-    public boolean verifyShPlusRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
-        if (clientId != CommonConstant.BROWSER_CLIENTID) {
-            return false;
-        }
+    public boolean verifyShPlusRefreshToken(String passportId, String instanceId, String refreshToken) throws ServiceException {
         RequestModelJSON requestModel = new RequestModelJSON(SHPlusConstant.OAUTH2_TOKEN);
         requestModel.addParam(OAuth.OAUTH_GRANT_TYPE, "heartbeat");
         requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, refreshToken);
@@ -103,16 +102,24 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     }
 
     @Override
-    public String getResourceByToken(String instance_id, String access_token, String scope, String resource_type) throws ServiceException {
+    public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException {
         RequestModel requestModel = new RequestModel(SHPlusConstant.OAUTH2_RESOURCE);
         requestModel.addParam(OAuth.OAUTH_CLIENT_ID, SHPlusConstant.BROWSER_SHPLUS_CLIENTID);
-        requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instance_id);
-        requestModel.addParam(OAuth.OAUTH_SCOPE, scope);
-        requestModel.addParam(OAuth.OAUTH_ACCESS_TOKEN, access_token);
-        requestModel.addParam(OAuth.OAUTH_RESOURCE_TYPE, resource_type);
+        requestModel.addParam(OAuth.OAUTH_CLIENT_SECRET, SHPlusConstant.BROWSER_SHPLUS_CLIENTSECRET);
+        requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instanceId);
+        requestModel.addParam(OAuth.OAUTH_SCOPE, "all");
+        requestModel.addParam(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
+        requestModel.addParam(OAuth.OAUTH_RESOURCE_TYPE, resourceType.getValue());
         requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
         String json = SGHttpClient.executeStr(requestModel);
-        return json;
+        Map resultMap = null;
+        try {
+            resultMap = jsonMapper.readValue(json, Map.class);
+        } catch (IOException e) {
+            log.error("parse json to map fail,jsonString:" + json);
+        }
+
+        return resultMap;
     }
 
 }
