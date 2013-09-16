@@ -119,20 +119,26 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/resource")
     @ResponseBody
-    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams pcoAuth2ResourceParams) throws Exception {
+    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
         //参数验证
-        String validateResult = ControllerHelper.validateParams(pcoAuth2ResourceParams);
+        String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             return result.toString();
         }
 
-        int clientId = pcoAuth2ResourceParams.getClient_id();
-        // 检查client_id和client_secret是否有效
+        int clientId = params.getClient_id();
+        String clientSecret = params.getClient_secret();
 
+        AppConfig appConfig = configureManager.verifyClientVaild(clientId, clientSecret);
+        if (appConfig == null) {
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            return result;
+        }
 
+        result = OAuth2ResourceFactory.getResource(params);
         return result.toString();
     }
 
@@ -192,6 +198,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         result = pcoAuth2RegManager.pcAccountRegister(pcoAuth2RegisterParams, ip);
         //注册成功后获取token
+
         if (result.isSuccess()) {
             PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
             pcPairTokenParams.setAppid(pcoAuth2RegisterParams.getClient_id());

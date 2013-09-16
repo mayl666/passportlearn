@@ -18,6 +18,22 @@ public class SHPlusTokenServiceTest extends BaseTest {
     private SHPlusTokenService shPlusTokenService;
 
     /**
+     * http://open.account.sohu.com/oauth2/resource/?
+     * client_id=30000004&client_secret=59be99d1f5e957ba5a20e8d9b4d76df6&scope=all&instance_id=323906108
+     * &resource_type=cookie.get&access_token=cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4
+     */
+    @Test
+    public void testVerifyShPlusAccessToken() {
+
+        int clientId = 1065;
+        String instanceId = "323906108";
+        String accesstoken = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
+
+        boolean successResult = shPlusTokenService.verifyShPlusAccessToken(clientId, instanceId, accesstoken);
+        Assert.assertTrue(successResult);
+    }
+
+    /**
      * https://open.account.sohu.com/oauth2/token/?grant_type=heartbeat&client_id=30000004
      * &client_secret=59be99d1f5e957ba5a20e8d9b4d76df6&redirect_url=www.sohu.com&scope=all&username=shipengzhi1986@sogou.com
      * &refresh_token=7d91b7c1e68ab8ff51c252dd02611b4b5ffb542542144c521625123b339b54c6&instance_id=323906108&sid=1061601372

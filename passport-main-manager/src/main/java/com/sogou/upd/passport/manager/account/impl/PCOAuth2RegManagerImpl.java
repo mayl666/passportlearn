@@ -93,8 +93,7 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
     public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) throws Exception {
         Result result = new APIResultSupport(false);
         String username = null;
-        int clientId = CommonConstant.PC_CLIENTID;
-        params.setClient_id(String.valueOf(CommonConstant.PC_CLIENTID));
+        int clientId = Integer.parseInt(params.getClient_id());
         username = params.getUsername().trim().toLowerCase();
         String password = params.getPassword();
         String captcha = params.getCaptcha();
