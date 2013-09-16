@@ -190,7 +190,11 @@ public class PCOAuth2AccountController extends BaseController {
         String passportId = "tinkame700@sogou.com";
         //获取头像
         result=accountInfoManager.obtainPhoto(passportId,"180");
-        model.addAttribute("photoUrl", result.getModels().get("180"));
+        if (result.getModels().get("180") != null) {
+            model.addAttribute("imageUrl", result.getModels().get("180"));
+        }else {
+            model.addAttribute("imageUrl","");
+        }
 
         //获取昵称
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
