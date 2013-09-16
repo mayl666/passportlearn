@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -23,10 +24,8 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
-import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
-import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
-import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.form.*;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
@@ -130,17 +129,6 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     /**
-     * 检查登录名
-     */
-    @RequestMapping(value = "/checkloginname", method = RequestMethod.GET)
-    @ResponseBody
-    public String checkLoginName(CheckUserNameExistParameters checkParam)
-            throws Exception {
-
-        return null;
-    }
-
-    /**
      * 浏览器桌面端sohu+注册接口
      *
      * @param request
@@ -193,14 +181,52 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     /**
-     * 检查登录名
+     * 浏览器登陆流程
      */
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public String login(CheckUserNameExistParameters checkParam)
+    public Object login(HttpServletRequest request,PCOAuth2LoginParams loginParams)
             throws Exception {
+        Result result = new APIResultSupport(false);
+        String ip = getIp(request);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(loginParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
 
-        return null;
+//        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
+//
+//        String userId = loginParams.getUsername();
+//        //用户登录log
+//        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+//        String referer = request.getHeader("referer");
+//        userOperationLog.putOtherMessage("ref", referer);
+//        UserOperationLogUtil.log(userOperationLog);
+//
+//        if (result.isSuccess()) {
+//            userId = result.getModels().get("userid").toString();
+//            int clientId = Integer.parseInt(loginParams.getClient_id());
+//            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+//        } else {
+//            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
+//            //校验是否需要验证码
+//            boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
+//            if (needCaptcha) {
+//                result.setDefaultModel("needCaptcha", true);
+//            }
+//            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+//                result.setMessage("密码错误");
+//            }
+//        }
+//
+//        result.setDefaultModel("xd", loginParams.getXd());
+//        model.addAttribute("data", result.toString());
+//        return "/login/api";
+        return result.toString();
     }
 
 
