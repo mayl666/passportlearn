@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
 import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
@@ -24,6 +25,8 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
@@ -40,6 +43,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 
 /**
  * sohu+浏览器相关接口替换
@@ -68,12 +72,44 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     @Autowired
-    private RegManager regManager;
-    @Autowired
     private PCOAuth2RegManager pcoAuth2RegManager;
 
     /**
-     * 浏览器sohu+注册接口
+     * 浏览器桌面端：用户注册检查用户名是否可用
+     */
+    @RequestMapping(value = "/checkregname", method = RequestMethod.POST)
+    @ResponseBody
+    public String checkRegisterName(PCAccountCheckRegNameParams checkParam)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(checkParam);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+        result = checkPCAccountNotExists(username);
+        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
+            result.setMessage("该手机号已注册或已绑定，请直接登录");
+        }
+        return result.toString();
+    }
+
+    /**
+     * 检查登录名
+     */
+    @RequestMapping(value = "/checkloginname", method = RequestMethod.GET)
+    @ResponseBody
+    public String checkLoginName(CheckUserNameExistParameters checkParam)
+            throws Exception {
+
+        return null;
+    }
+
+    /**
+     * 浏览器桌面端sohu+注册接口
      *
      * @param request
      * @param pcoAuth2RegisterParams
@@ -93,7 +129,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String ip = getIp(request);
         //TODO ip加安全限制
-        result = checkAccountNotExists(pcoAuth2RegisterParams.getUsername());
+        result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername());
         if (!result.isSuccess()) {
             return result.toString();
         }
@@ -102,7 +138,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (result.isSuccess()) {
             PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
             pcPairTokenParams.setAppid(pcoAuth2RegisterParams.getClient_id());
-            pcPairTokenParams.setUserid(pcoAuth2RegisterParams.getUsername());
+            pcPairTokenParams.setUserid(result.getModels().get("userid").toString());
             pcPairTokenParams.setTs(pcoAuth2RegisterParams.getInstance_id());
             result = pcoAuth2RegManager.getPairToken(pcPairTokenParams);
             if (result.isSuccess()) {
@@ -124,21 +160,36 @@ public class PCOAuth2AccountController extends BaseController {
         return result.toString();
     }
 
+    /**
+     * 检查登录名
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @ResponseBody
+    public String login(CheckUserNameExistParameters checkParam)
+            throws Exception {
+
+        return null;
+    }
+
+
     //检查用户是否存在
-    private Result checkAccountNotExists(String username) throws Exception {
+    private Result checkPCAccountNotExists(String username) throws Exception {
         Result result = new APIResultSupport(false);
         //不允许sohu域用户注册
         if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
             return result;
         }
-        //校验是搜狗用户还是手机用户
-        if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            //sogou用户
-            result = regManager.isAccountNotExists(username, false);
+        //不允许邮箱注册
+        if (username.indexOf("@") != -1) {
+            result.setCode(ErrorUtil.ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED);
+            return result;
+        }
+        //判断是否是手机号注册
+        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+            result = pcoAuth2RegManager.isPcAccountNotExists(username, true);
         } else {
-            //手机用户
-            result = regManager.isAccountNotExists(username, true);
+            result = pcoAuth2RegManager.isPcAccountNotExists(username, false);
         }
         return result;
     }

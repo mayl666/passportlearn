@@ -1,16 +1,25 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
@@ -31,9 +40,102 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
 
     @Autowired
     private AppConfigService appConfigService;
-
+    @Autowired
+    private AccountService accountService;
     @Autowired
     private PCAccountTokenService pcAccountService;
+    @Autowired
+    private BindApiManager sgBindApiManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
+    @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
+
+
+    @Override
+    public Result isPcAccountNotExists(String username, boolean type) {
+        Result result = new APIResultSupport(false);
+        //TODO sohu+添加接口：根据注册名获取passportId的方法
+        //TODO result = proxyPcRegApiManager.proxyGetPassportIdByUserName(String username);
+        if (result.isSuccess()) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            return result;
+        } else {
+            if (!ManagerHelper.isInvokeProxyApi(username)) {
+                if (type) {
+                    //手机号判断绑定账户
+                    BaseMoblieApiParams params = new BaseMoblieApiParams();
+                    params.setMobile(username);
+                    result = sgBindApiManager.getPassportIdByMobile(params);
+                    if (result.isSuccess()) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                        return result;
+                    }
+                } else {
+                    //个性账号注册
+                    username = username + "@sogou.com";
+                    Account account = accountService.queryAccountByPassportId(username);
+                    if (account != null) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                        return result;
+                    }
+                }
+            }
+        }
+        result.setSuccess(true);
+        result.setMessage("账号可以注册");
+        return result;
+    }
+
+
+    @Override
+    public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) throws Exception {
+        Result result = new APIResultSupport(false);
+        String username = null;
+        int clientId = Integer.parseInt(params.getClient_id());
+        username = params.getUsername().trim().toLowerCase();
+        String password = params.getPassword();
+        String captcha = params.getCaptcha();
+        String ru = params.getRu();
+        boolean isSogou = false;//外域还是个性账号
+        //判断是否是手机号注册
+        if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+            username = username + "@sogou.com";
+            isSogou = true;
+        }
+        //判断注册账号类型，sogou用户还是手机用户
+        AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
+
+        switch (emailType) {
+            case SOGOU://个性账号直接注册
+            case INDIVID:
+                String token = params.getToken();
+                //判断验证码
+                if (!accountService.checkCaptchaCode(token, captcha)) {
+                    logger.info("[pcAccountRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    return result;
+                }
+
+                RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
+                        clientId, ru);
+                if (ManagerHelper.isInvokeProxyApi(username)) {
+                    result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+                } else {
+                    result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+                }
+                break;
+            case PHONE://手机号
+                RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
+                if (ManagerHelper.isInvokeProxyApi(username)) {
+                    result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+                } else {
+                    result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+                }
+                break;
+        }
+        return result;
+    }
 
     @Override
     public Result getPairToken(PcPairTokenParams pcPairTokenParams) {
@@ -55,13 +157,6 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
         }
     }
 
-    @Override
-    public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) {
-
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-
     private Result getAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result result = new APIResultSupport(false);
         AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
@@ -72,5 +167,20 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
             result.setCode(ErrorUtil.CREATE_TOKEN_FAIL);
         }
         return result;
+    }
+
+    private RegEmailApiParams buildRegMailProxyApiParams(String username, String password, String ip, int clientId, String ru) {
+        return new RegEmailApiParams(username, password, ip, clientId, ru);
+    }
+
+
+    private RegMobileCaptchaApiParams buildProxyApiParams(String mobile, String password, String captcha, int clientId, String ip) {
+        RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
+        regMobileCaptchaApiParams.setMobile(mobile);
+        regMobileCaptchaApiParams.setPassword(password);
+        regMobileCaptchaApiParams.setCaptcha(captcha);
+        regMobileCaptchaApiParams.setClient_id(clientId);
+        regMobileCaptchaApiParams.setIp(ip);
+        return regMobileCaptchaApiParams;
     }
 }

@@ -15,6 +15,12 @@ import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 public interface PCOAuth2RegManager {
 
     /**
+     * 浏览器桌面端检查注册用户是否合法
+     * @return
+     */
+    public Result isPcAccountNotExists(String username, boolean type);
+
+    /**
      * 此接口为注册成功用户生成token
      *
      * @param pcPairTokenParams
@@ -29,5 +35,5 @@ public interface PCOAuth2RegManager {
      * @param ip
      * @return
      */
-    public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip);
+    public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) throws Exception;
 }

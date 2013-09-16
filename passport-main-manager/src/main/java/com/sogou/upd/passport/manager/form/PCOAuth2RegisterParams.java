@@ -37,7 +37,7 @@ public class PCOAuth2RegisterParams {
 
     @AssertTrue(message = "暂不支持sohu账号注册")
     private boolean isSohuUserName() {
-        if (Strings.isNullOrEmpty(username)) {   // NotBlank已经校验过了，无需再校验
+        if (Strings.isNullOrEmpty(username)) {
             return true;
         }
         return StringUtil.isSohuUserName(username);
