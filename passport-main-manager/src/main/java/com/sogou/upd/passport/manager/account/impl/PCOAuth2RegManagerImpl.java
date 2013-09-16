@@ -94,6 +94,7 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
         Result result = new APIResultSupport(false);
         String username = null;
         int clientId = CommonConstant.PC_CLIENTID;
+        params.setClient_id(String.valueOf(CommonConstant.PC_CLIENTID));
         username = params.getUsername().trim().toLowerCase();
         String password = params.getPassword();
         String captcha = params.getCaptcha();

@@ -68,6 +68,10 @@ public class PCOAuth2RegisterParams {
         return client_id;
     }
 
+    public void setClient_id(String client_id) {
+        this.client_id = client_id;
+    }
+
     public String getUsername() {
         return username;
     }
