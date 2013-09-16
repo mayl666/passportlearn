@@ -188,6 +188,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         //TODO 校验token,获取userid
         String passportId = "tinkame700@sogou.com";
+
         //获取头像
         result=accountInfoManager.obtainPhoto(passportId,"180");
         if (result.getModels().get("180") != null) {
