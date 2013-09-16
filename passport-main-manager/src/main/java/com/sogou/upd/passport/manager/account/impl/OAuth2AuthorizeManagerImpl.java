@@ -2,19 +2,14 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
 import com.sogou.upd.passport.manager.account.vo.OAuth2TokenVO;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -46,13 +41,9 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
-    @Autowired
     private SHPlusTokenService shPlusTokenService;
     @Autowired
-    private PCAccountTokenService pcAccountService;
+    private PCAccountTokenService pcAccountTokenService;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -126,30 +117,9 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             // TODO 根据用户名到sohu+获取passportId
             String passportId = oauthRequest.getUsername();
 
-            // 檢查不同的grant types是否正確
             // TODO 消除if-else
             AccountToken renewAccountToken;
-            if (GrantTypeEnum.PASSWORD.toString().equals(oauthRequest.getGrantType())) {
-                if (Strings.isNullOrEmpty(passportId)) {
-                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                    return result;
-                }
-                //封装参数
-                AuthUserApiParams authUserApiParams = new AuthUserApiParams();
-                authUserApiParams.setUserid(passportId);
-                String pwdMD5 = Coder.encryptMD5(oauthRequest.getPassword());
-                authUserApiParams.setPassword(pwdMD5);
-                authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-                if (ManagerHelper.isInvokeProxyApi(passportId)) {
-                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                } else {
-                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
-                }
-                if (!result.isSuccess()) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-                    return result;
-                }
-            } else if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
+            if (GrantTypeEnum.REFRESH_TOKEN.toString().equals(oauthRequest.getGrantType())) {
                 String refreshToken = oauthRequest.getRefreshToken();
                 boolean verifyRefreshToken = verifyRefreshToken(refreshToken, passportId, clientId, instanceId, appConfig);
                 if (!verifyRefreshToken) {
@@ -160,7 +130,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
-            renewAccountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
+            renewAccountToken = pcAccountTokenService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());
@@ -182,7 +152,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
 
     private boolean verifyRefreshToken(String refreshToken, String passportId, int clientId, String instanceId, AppConfig appConfig) throws Exception {
 
-        boolean isRightPcRToken = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+        boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
         if (!isRightPcRToken) {
             boolean isRightSHRToken = shPlusTokenService.verifyShPlusRefreshToken(passportId, clientId, instanceId, refreshToken);
             return isRightSHRToken;

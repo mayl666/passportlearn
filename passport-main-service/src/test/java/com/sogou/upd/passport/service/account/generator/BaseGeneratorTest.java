@@ -32,19 +32,6 @@ public class BaseGeneratorTest extends BaseTest {
     public static int PROVIDER = 4;
     public static String PASSPORT_ID_OPENID = OPENID + "@" + AccountTypeEnum.getProviderStr(PROVIDER) + ".sohu.com";
 
-    @Test
-    public void testGeneratorSecret() {
-        String random = RandomStringUtils.randomAlphanumeric(8);
-        long time = System.currentTimeMillis();
-        int client_id = 999;
-        try {
-            String secret = Coder.encryptMD5(client_id + time + random);
-            System.out.println("secret:" + secret);
-            Assert.assertTrue(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.assertTrue(false);
-        }
-    }
+
 
 }

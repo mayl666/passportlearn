@@ -4,14 +4,12 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
-import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
-import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -30,19 +28,23 @@ import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
+import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.net.URLDecoder;
 
 /**
@@ -65,14 +67,46 @@ public class PCOAuth2AccountController extends BaseController {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
+    @Autowired
+    private OAuth2AuthorizeManager oAuth2AuthorizeManager;
+    @Autowired
+    private ConfigureManager configureManager;
+    @Autowired
+    private RegManager regManager;
+    @Autowired
+    private PCOAuth2RegManager pcoAuth2RegManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
         return "/oauth2pc/pclogin";
     }
 
-    @Autowired
-    private PCOAuth2RegManager pcoAuth2RegManager;
+    @RequestMapping(value = "/token")
+    @ResponseBody
+    public Object authorize(HttpServletRequest request) throws Exception {
+        OAuthTokenASRequest oauthRequest;
+        Result result = new OAuthResultSupport(false);
+        try {
+            oauthRequest = new OAuthTokenASRequest(request);
+        } catch (OAuthProblemException e) {
+            result.setCode(e.getError());
+            result.setMessage(e.getDescription());
+            return result.toString();
+        }
+
+        int clientId = oauthRequest.getClientId();
+        // 检查client_id和client_secret是否有效
+        AppConfig appConfig = configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret());
+        if (appConfig == null) {
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            return result.toString();
+        }
+        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
+
+        return result.toString();
+    }
 
     /**
      * 浏览器桌面端：用户注册检查用户名是否可用
@@ -195,7 +229,7 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/pcindex", method = RequestMethod.GET)
+    @RequestMapping(value = "/userinfo/pcindex", method = RequestMethod.GET)
     public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -207,6 +241,9 @@ public class PCOAuth2AccountController extends BaseController {
         }
         //TODO 校验token,获取userid
         String passportId = "tinkame700@sogou.com";
+        //获取头像
+        result=accountInfoManager.obtainPhoto(passportId,"180");
+        model.addAttribute("photoUrl", result.getModels().get("180"));
 
         //获取昵称
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
@@ -273,40 +310,6 @@ public class PCOAuth2AccountController extends BaseController {
         return "/oauth2pc/pcindex";
     }
 
-    @RequestMapping(value = "/checknickname", method = RequestMethod.GET)
-    @ResponseBody
-    public Object checkNickName(HttpServletRequest request, @RequestParam(value = "nickname") String nickname) {
-        Result result = new APIResultSupport(false);
-        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
-        updateUserUniqnameApiParams.setUniqname(nickname);
-        updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-        result = proxyUserInfoApiManagerImpl.checkUniqName(updateUserUniqnameApiParams);
-        return result.toString();
-    }
-
-    @RequestMapping(value = "/updateNickName", method = RequestMethod.POST)
-    @LoginRequired
-    @ResponseBody
-    public Object updateNickName(HttpServletRequest request, PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-//      String userId = "tinkame700@sogou.com";
-        String userId = hostHolder.getPassportId();
-
-        UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
-        params.setUserid(userId);
-        params.setModifyip(getIp(request));
-        params.setUniqname(pcOAuth2UpdateNickParams.getNick());
-        result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
-        return result.toString();
-    }
-
 
     @RequestMapping(value = "/errorMsg")
     @ResponseBody
@@ -318,35 +321,41 @@ public class PCOAuth2AccountController extends BaseController {
         return passportId.substring(0, passportId.indexOf("@"));
     }
 
-    @Autowired
-    private OAuth2AuthorizeManager oAuth2AuthorizeManager;
-
-    @Autowired
-    private ConfigureManager configureManager;
-
-    @RequestMapping(value = "/token")
+    //头像上传
+    @RequestMapping(value = "/userinfo/uploadavatar")
+    @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
-    public Object authorize(HttpServletRequest request) throws Exception {
-        OAuthTokenASRequest oauthRequest;
+    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params)
+    {
         Result result = new APIResultSupport(false);
-        try {
-            oauthRequest = new OAuthTokenASRequest(request);
-        } catch (OAuthProblemException e) {
-            result.setCode(e.getError());
-            result.setMessage(e.getDescription());
-            return result.toString();
+
+        if (hostHolder.isLogin()) {
+
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id是否存在
+            int clientId = Integer.parseInt(params.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+
+            String userId = hostHolder.getPassportId();
+
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
+
+            byte[] byteArr = multipartFile.getBytes();
+            result = accountInfoManager.uploadImg(byteArr, userId,"0");
+        }else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
-
-        int clientId = oauthRequest.getClientId();
-
-        // 检查client_id和client_secret是否有效
-        AppConfig appConfig = configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret());
-        if (appConfig == null) {
-            result.setCode(ErrorUtil.INVALID_CLIENT);
-            return result.toString();
-        }
-        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
-
         return result.toString();
     }
+
 }

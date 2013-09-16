@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="photoUtils" class="com.sogou.upd.passport.common.utils.PhotoUtils" init-method="init">
+        <property name="appid" value="100140006,100140007,100140008,100140010"/>
+        <property name="storageEngineURL" value="http://innerupload01.picupload.djt.sogou-op.org/http_upload"/>
+        <property name="timeout" value="5000"/>
+    </bean>
+
+</beans>

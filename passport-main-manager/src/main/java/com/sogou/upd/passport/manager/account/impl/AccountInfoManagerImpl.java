@@ -1,0 +1,96 @@
+package com.sogou.upd.passport.manager.account.impl;
+
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
+import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.service.account.AccountService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+/**
+ * User: mayan
+ * Date: 13-8-6
+ * Time: 下午3:37
+ */
+@Component("accountInfoManager")
+public class AccountInfoManagerImpl implements AccountInfoManager {
+    private static final Logger logger = LoggerFactory.getLogger(AccountInfoManagerImpl.class);
+
+    @Autowired
+    private PhotoUtils photoUtils;
+    @Autowired
+    private RedisUtils redisUtils;
+
+    public Result uploadImg(byte[] byteArr,String passportId,String type) {
+        Result result = new APIResultSupport(false);
+        try {
+            //判断后缀是否符合要求
+            if (!PhotoUtils.checkPhotoExt(byteArr)) {
+                result.setCode(ErrorUtil.ERR_PHOTO_EXT);
+                return result;
+            }
+            //获取图片名
+            String imgName = PhotoUtils.generalFileName();
+            // 上传到OP图片平台
+            if (photoUtils.uploadImg(imgName, byteArr,null,type)) {
+                String imgURL = photoUtils.accessURLTemplate(imgName);
+                //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
+                String cacheKey="SP.PASSPORTID:SOHU+IMAGE_"+passportId;
+                redisUtils.set(cacheKey,imgURL);
+
+                result.setSuccess(true);
+                result.setDefaultModel("image",imgURL);
+                result.setMessage("头像设置成功");
+                return result;
+            } else {
+                result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
+            return result;
+        }
+    }
+
+    @Override
+    public Result obtainPhoto(String passportId, String size) {
+        Result result = new APIResultSupport(false);
+        try {
+            //获取size对应的appId
+            if(!Strings.isNullOrEmpty(size)){
+                String clientId=photoUtils.getAppIdBySize(size);
+
+                String cacheKey="SP.PASSPORTID:SOHU+IMAGE_"+passportId;
+                String image=redisUtils.get(cacheKey);
+
+                if(!Strings.isNullOrEmpty(image)){
+                    //随机获取cdn域名
+                    String cdnUrl=photoUtils.getCdnURL();
+                    String photoURL =String.format(image, cdnUrl, clientId);
+                    if(!Strings.isNullOrEmpty(photoURL)){
+                        result.setSuccess(true);
+                        result.setDefaultModel(size,photoURL);
+                        return result;
+                    }
+                } else {
+                    result.setCode(ErrorUtil.PIC_URL_NOT_NULL);
+                    return result;
+                }
+            }
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            result.setCode(ErrorUtil.ERR_OBTAIN_PHOTO);
+            return result;
+        }
+        return result;
+    }
+}

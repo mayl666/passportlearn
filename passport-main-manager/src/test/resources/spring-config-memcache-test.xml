@@ -15,7 +15,7 @@
             <list>
                 <bean class="java.net.InetSocketAddress">
                     <constructor-arg>
-                        <value>192.168.131.22</value>
+                        <value>10.11.207.133</value>
                     </constructor-arg>
                     <constructor-arg>
                         <value>11211</value>
@@ -41,10 +41,10 @@
             <list>
                 <bean class="java.net.InetSocketAddress">
                     <constructor-arg>
-                        <value>10.10.71.26</value>
+                        <value>10.11.215.220</value>
                     </constructor-arg>
                     <constructor-arg>
-                        <value>11213</value>
+                        <value>11211</value>
                     </constructor-arg>
                 </bean>
             </list>

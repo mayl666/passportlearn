@@ -36,7 +36,7 @@ public class OAuthAuthorizeController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = {"/mobile/mobilelogin", "/oauth2/token"})
+    @RequestMapping(value = "/mobile/mobilelogin")
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenASRequest oauthRequest;

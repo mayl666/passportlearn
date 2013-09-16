@@ -8,7 +8,6 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 
@@ -68,20 +67,9 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static byte[] decryptBASE64(String key) {
+    public static byte[] decryptBase64(String key) {
         return Base64.decodeBase64(key);
     }
-
-    /**
-     * 解码base64
-     * @param key
-     * @return
-     */
-    public  static String decodeBASE64(String key){
-        byte[] bytes= Base64.decodeBase64(key);
-        return  new String(bytes);
-    }
-
 
     /**
      * BASE64加密
@@ -90,7 +78,7 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String encryptBASE64(byte[] key) throws Exception {
+    public static String encryptBase64URLSafeString(byte[] key) throws Exception {
         return Base64.encodeBase64URLSafeString(key);
     }
 
@@ -104,11 +92,26 @@ public class Coder {
     public static String encryptMD5(String data) throws Exception {
 
         MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
-        md5.update(data.getBytes());
+        md5.update(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
 
         return toHexString(md5.digest());
 
     }
+
+    /**
+     * MD5加密
+     *
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public static byte[] encryptMD5_Byte(String data) throws Exception {
+
+        MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
+        md5.update(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        return md5.digest();
+    }
+
     /**
      * MD5加密
      *
@@ -153,7 +156,7 @@ public class Coder {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(KEY_MAC);
 
         SecretKey secretKey = keyGenerator.generateKey();
-        return encryptBASE64(secretKey.getEncoded());
+        return encryptBase64URLSafeString(secretKey.getEncoded());
     }
 
     /**

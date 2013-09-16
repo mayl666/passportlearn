@@ -1,14 +1,16 @@
 package com.sogou.upd.passport.common.math;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.security.SecureRandom;
 
 /**
- * Created with IntelliJ IDEA.
+ * The AES 对称加密算法
  * User: shipengzhi
  * Date: 13-3-30
  * Time: 下午6:43
@@ -26,12 +28,12 @@ public class AES {
      * @return
      * @throws Exception
      */
-    public static String encrypt(String data, String secKey) throws Exception {
+    public static String encryptURLSafeString(String data, String secKey) throws Exception {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.ENCRYPT_MODE, key);
         byte[] encVal = c.doFinal(data.getBytes());
-        String encryptedValue = new String(Base64.encodeBase64URLSafe(encVal));
+        String encryptedValue = Coder.encryptBase64URLSafeString(encVal);
         return encryptedValue;
     }
 
@@ -43,7 +45,7 @@ public class AES {
      * @return
      * @throws Exception
      */
-    public static String decrypt(String encryptedData, String secKey) throws Exception {
+    public static String decryptURLSafeString(String encryptedData, String secKey) throws Exception {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.DECRYPT_MODE, key);
@@ -55,7 +57,8 @@ public class AES {
     }
 
     private static Key generateKey(String seckey) throws Exception {
-        Key key = new SecretKeySpec(DigestUtils.md5(seckey.getBytes()), KEY_ALGORITHM);
+        Key key = new SecretKeySpec(Coder.encryptMD5_Byte(seckey), KEY_ALGORITHM);
         return key;
     }
+
 }

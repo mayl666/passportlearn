@@ -24,6 +24,13 @@ public interface PCAccountTokenService {
     public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
 
     /**
+     * 根据AccessToken或RefreshToken获取PassportId
+     * @param token
+     * @return
+     */
+    public String queryPassportIdByToken(String token, String clientSecret);
+
+    /**
      * 查询AccountToken
      *
      * @param passportId
@@ -57,4 +64,5 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+
 }
