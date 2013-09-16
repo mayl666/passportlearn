@@ -45,14 +45,14 @@ splus._timestamp="201308061701";
                             <input type="password"  class="" placeholder="请输入密码" id="user_pwd" name="user_pwd" tabindex="2"></div>
                     </div>
 
-                    <div class="control-group clearfix vcode" style="display:none;">
+                    <div class="control-group clearfix vcode" style="display:none">
                         <label>验证码</label>
                         <div class="controls">
                             <input type="text" style="width:50px;" name="vcode" tabindex="3" >
                             <div class="chkPic">
-                                <img width="100" src="//plus.sohu.com/vcode/register/?nocache=1369631915621">
+                                <img id="loginCapt" class="captcha" width="100" src="/captcha?t=2013091628">
                                 <span>
-                                    <a href="javascript:void(0);">换一张</a>
+                                    <a class="refreshCapt" href="javascript:void(0);" data-target="loginCapt">换一张</a>
                                 </span>
                             </div>
                         </div>
@@ -83,23 +83,23 @@ splus._timestamp="201308061701";
         <div class="outside-list">
             <ul>
                 <li>
-                    <a id="oauth_sina_login" href="//plus.sohu.com/spassport/bind/30000004/weibo?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true"> <i class="icon-weibo-25-1"></i>
+                    <a id="oauth_sina_login" href="//account.sogou.com/connect/login?provider=sina&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin"> <i class="icon-weibo-25-1"></i>
                         <span>新浪微博</span>
                     </a>
                 </li>
                 <li>
-                    <a id="oauth_renren_login" href="//plus.sohu.com/spassport/bind/30000004/renren?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true"> <i class="icon-renren-25-1"></i>
+                    <a id="oauth_renren_login" href="//account.sogou.com/connect/login?provider=renren&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin"> <i class="icon-renren-25-1"></i>
                         <span>人人网</span>
                     </a>
                 </li>
                 <li>
-                    <a id="oauth_qq_login" href="//plus.sohu.com/spassport/bind/30000004/qq?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true">
+                    <a id="oauth_qq_login" href="//account.sogou.com/connect/login?provider=qq&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin">
                         <i class="icon-qq-25-1"></i>
                         <span>QQ</span>
                     </a>
                 </li>
                 <li>
-                    <a id="oauth_taobao_login" href="//plus.sohu.com/spassport/bind/30000004/taobao?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true">
+                    <a id="oauth_taobao_login" href="//account.sogou.com/connect/login?provider=taobao&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin">
                         <i class="icon-taobao-25-1"></i>
                         <span>淘宝</span>
                     </a>
@@ -111,16 +111,16 @@ splus._timestamp="201308061701";
     <div class="dl-bottom" style=" display: none;">
         <h3>合作账号登录</h3>
 
-        <a id="oauth_qq_reg" href="//plus.sohu.com/spassport/bind/30000004/qq?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true">
+        <a id="oauth_qq_reg" href="//account.sogou.com/connect/login?provider=qq&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin">
             <i class="icon-qq-30-1"></i>
         </a>
-        <a id="oauth_sina_reg" href="//plus.sohu.com/spassport/bind/30000004/weibo?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true">
+        <a id="oauth_sina_reg" href="//account.sogou.com/connect/login?provider=sina&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin">
             <i class="icon-weibo-30-1"></i>
         </a>
-        <a id="oauth_renren_reg" href="//plus.sohu.com/spassport/bind/30000004/renren?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true">
+        <a id="oauth_renren_reg" href="//account.sogou.com/connect/login?provider=renren&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin">
             <i class="icon-renren-30-1"></i>
         </a>
-        <a id="oauth_taobao_reg" href="//plus.sohu.com/spassport/bind/30000004/taobao?ru=http://plus.sohu.com/sogou/oauth_callback?instanceid=178068027&forcelogin=true">
+        <a id="oauth_taobao_reg" href="//account.sogou.com/connect/login?provider=taobao&client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin">
             <i class="icon-taobao-30-1"></i>
         </a>
     </div>
@@ -141,59 +141,54 @@ splus._timestamp="201308061701";
                     <div class="controls">
                         <input type="password" id="reg_pwd1" name="reg_pwd1" placeholder="密码"></div>
                 </div>
-                <!-- <div class="control-group clearfix">
-                    <label>常用邮箱</label>
-                    <div class="controls">
-                        <input type="text" placeholder="非必填" id="reg_email" name="reg_email"></div>
-                </div> -->
-                <div class="control-group clearfix vcode" style=" display: none;">
-                    <label>验证码</label>
-                    <div class="controls">
-                        <input type="text" style="width:50px;" name="vcode">
-                        <div class="chkPic">
-                            <img width="100" src="//plus.sohu.com/vcode/register/?nocache=1369631915621">
-                            <span>
-                                <a href="javascript:void(0);">换一张</a>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-
-            <div class="btn-wrap">
-                <a class="btn-reg-big form-submit-a">注册</a>
-                <span>
-                    <a href="javascript:void(0)" id ="to_login">登录</a>
-                </span>
-            </div>
-        </form>
-    </div>
-    <div class="reg-phone"  style=" display: none;">
-        <h2 class="">手机快速注册</h2>
-        <form id="phone_reg">
-            <div class="error-tips" style=" display: none;">您输入的账号有问题</div>
-            <fieldset>
-
-                <div class="control-group clearfix">
-                    <div class="controls">
-                        <input type="text" placeholder="手机号" id="reg_phone" name="reg_phone"></div>
-                    <div class="controls">
-                        <input type="text" class="num" placeholder="输入验证码" id="reg_vcode" name="reg_vcode">
-                        <span id="phone_code_msg" style="color: rgb(145, 145, 145);">
-                            <a href="javascript:" id="get_vcode">获取验证码</a>
+            <div class="control-group clearfix vcode">
+                <label>验证码</label>
+                <div class="controls">
+                    <input type="text" style="width:50px;" name="vcode">
+                    <div class="chkPic">
+                        <img id="commonRegCapt" class="captcha" width="100" src="/captcha?t=2013091628">
+                        <span>
+                            <a class="refreshCapt" href="javascript:void(0);" data-target="commonRegCapt">换一张</a>
                         </span>
-
                     </div>
-                    <div class="controls">
-                        <input type="password" placeholder="密码" id="reg_pwd2" name="reg_pwd2"></div>
                 </div>
-            </fieldset>
-
-            <div class="btn-wrap">
-                <a class="btn-reg form-submit-a">注册</a>
             </div>
-        </form>
-    </div>
+        </fieldset>
+
+        <div class="btn-wrap">
+            <a class="btn-reg-big form-submit-a">注册</a>
+            <span>
+                <a href="javascript:void(0)" id ="to_login">登录</a>
+            </span>
+        </div>
+    </form>
+</div>
+<div class="reg-phone"  style=" display: none;">
+    <h2 class="">手机快速注册</h2>
+    <form id="phone_reg">
+        <div class="error-tips" style="display: none;">您输入的账号有问题</div>
+        <fieldset>
+
+            <div class="control-group clearfix">
+                <div class="controls">
+                    <input type="text" placeholder="手机号" id="reg_phone" name="reg_phone"></div>
+                <div class="controls">
+                    <input type="text" class="num" placeholder="输入验证码" id="reg_vcode" name="reg_vcode">
+                    <span id="phone_code_msg" style="color: rgb(145, 145, 145);">
+                        <a href="javascript:" id="get_vcode">获取验证码</a>
+                    </span>
+
+                </div>
+                <div class="controls">
+                    <input type="password" placeholder="密码" id="reg_pwd2" name="reg_pwd2"></div>
+            </div>
+        </fieldset>
+
+        <div class="btn-wrap">
+            <a class="btn-reg form-submit-a">注册</a>
+        </div>
+    </form>
+</div>
 
 </div>
 <script>require(['pages/accountV2'])</script>
