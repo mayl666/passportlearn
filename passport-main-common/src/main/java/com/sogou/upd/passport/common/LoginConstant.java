@@ -60,6 +60,11 @@ public class LoginConstant {
     public static final int BINDNUM_IP_LIMITED = 100; // 密码修改一个ip一天限制次数
 
     /**
+     * 内部接口安全限制50天一次
+     */
+    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 50;//内部接口ip限制为50次一天
+
+    /**
      * 一天内某一个ip注册次数限制
      */
     public static final int REGISTER_IP_LIMITED = 100; // ip一天限制次数

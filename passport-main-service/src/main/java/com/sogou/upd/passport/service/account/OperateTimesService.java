@@ -120,6 +120,15 @@ public interface OperateTimesService {
     public void incRegTimes(String ip,String cookieStr) throws ServiceException;
 
     /**
+     * 为内部接口添加的黑名单机制
+     *
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkRegInBlackListForInternal(String ip) throws ServiceException;
+
+    /**
      * 检查用户ip是否在白名单中
      *
      * @param ip
