@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -61,24 +62,24 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             return result;
         } else {
-            if (!ManagerHelper.isInvokeProxyApi(username)) {
-                if (type) {
-                    //手机号判断绑定账户
-                    BaseMoblieApiParams params = new BaseMoblieApiParams();
-                    params.setMobile(username);
-                    result = sgBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    }
-                } else {
-                    //个性账号注册
-                    username = username + "@sogou.com";
-                    Account account = accountService.queryAccountByPassportId(username);
-                    if (account != null) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    }
+            //如果sohu+库里没有，说明用户名肯定不会与老用户重复
+            if (type) {
+                //TODO 搜狗账号迁移完成后，手机注册不需要来sogou库里查了，这部分代码删除，但全部账号迁移完成后，还需要来搜狗库里查，再添加
+                //手机号判断绑定账户
+                BaseMoblieApiParams params = new BaseMoblieApiParams();
+                params.setMobile(username);
+                result = sgBindApiManager.getPassportIdByMobile(params);
+                if (result.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                    return result;
+                }
+            } else {
+                //个性账号注册
+                username = username + "@sogou.com";
+                Account account = accountService.queryAccountByPassportId(username);
+                if (account != null) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
                 }
             }
         }
@@ -92,23 +93,19 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
     public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) throws Exception {
         Result result = new APIResultSupport(false);
         String username = null;
-        int clientId = Integer.parseInt(params.getClient_id());
+        int clientId = CommonConstant.PC_CLIENTID;
         username = params.getUsername().trim().toLowerCase();
         String password = params.getPassword();
         String captcha = params.getCaptcha();
         String ru = params.getRu();
-        boolean isSogou = false;//外域还是个性账号
         //判断是否是手机号注册
         if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
             username = username + "@sogou.com";
-            isSogou = true;
         }
         //判断注册账号类型，sogou用户还是手机用户
         AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
-
         switch (emailType) {
             case SOGOU://个性账号直接注册
-            case INDIVID:
                 String token = params.getToken();
                 //判断验证码
                 if (!accountService.checkCaptchaCode(token, captcha)) {
@@ -116,7 +113,6 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     return result;
                 }
-
                 RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                         clientId, ru);
                 if (ManagerHelper.isInvokeProxyApi(username)) {
