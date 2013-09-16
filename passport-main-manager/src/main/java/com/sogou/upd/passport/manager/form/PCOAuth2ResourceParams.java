@@ -18,10 +18,9 @@ public class PCOAuth2ResourceParams {
     private String client_secret;
     private String instance_id;
     private String scope;
-    private String username;
-    @NotBlank(message = "accesstoken不允许为空")
+    @NotBlank(message = "access_token不允许为空")
     private String access_token;
-    @NotBlank(message = "accesstoken不允许为空")
+    @NotBlank(message = "resource_type不允许为空")
     private String resource_type;
 
     public int getClient_id() {
@@ -54,14 +53,6 @@ public class PCOAuth2ResourceParams {
 
     public void setScope(String scope) {
         this.scope = scope;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getAccess_token() {

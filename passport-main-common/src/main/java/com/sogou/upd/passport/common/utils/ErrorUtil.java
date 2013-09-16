@@ -48,8 +48,8 @@ public class ErrorUtil {
     public static final String UNSUPPORTED_GRANT_TYPE = "103";
     //unsupported_response_type
     public static final String UNSUPPORTED_RESPONSE_TYPE = "104";
-    // invalid_scope
-//    public static final String INVALID_SCOPE = "105";
+    // invalid_resource_type
+    public static final String INVALID_RESOURCE_TYPE = "105";
     // insufficient_scope
 //    public static final String INSUFFICIENT_SCOPE = "106";
     // expired_token
@@ -301,17 +301,18 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_REFRESH_TOKEN, "refresh_token错误");
-        ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN,"签名或token验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN, "签名或token验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
         ERR_CODE_MSG_MAP.put(UNSUPPORTED_GRANT_TYPE, "不支持的grant_type");
+        ERR_CODE_MSG_MAP.put(INVALID_RESOURCE_TYPE, "不支持的resource_type");
         ERR_CODE_MSG_MAP.put(INVALID_REFRESH_TOKEN, "refresh_token不存在或过期");
         ERR_CODE_MSG_MAP.put(AUTHORIZE_FAIL, "授权失败");
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "账号或密码错误");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED,"暂不支持邮箱注册");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED, "暂不支持邮箱注册");
 
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_IP_IN_BLACKLIST, "当前注册ip次数已达上限或该ip已在黑名单中");
