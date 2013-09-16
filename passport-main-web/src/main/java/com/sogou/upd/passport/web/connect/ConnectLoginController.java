@@ -13,6 +13,7 @@ import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -100,7 +101,7 @@ public class ConnectLoginController extends BaseConnectController {
         // 防CRSF攻击
         String uuid = UUID.randomUUID().toString();
         try {
-            if (CommonHelper.isIePinyinToken(clientId)) {  // 目前只有浏览器走搜狗流程
+            if (CommonHelper.isIePinyinToken(clientId) || type.equals(ConnectTypeEnum.PC.toString())) {  // 目前只有浏览器走搜狗流程
                 url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
                 writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
             } else {

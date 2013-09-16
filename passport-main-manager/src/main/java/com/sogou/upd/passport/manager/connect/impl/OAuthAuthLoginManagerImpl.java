@@ -235,6 +235,20 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     String url = buildMAppSuccessRu(ru, userId, token, nickName);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
+                    AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+                    if (tokenResult.isSuccess()) {
+                        result.setSuccess(true);
+                        result.setDefaultModel("nickname", nickName);
+                        result.setDefaultModel("passportId", userId);
+                        result.setDefaultModel("accessToken", accountToken.getAccessToken());
+                        result.setDefaultModel("refreshToken", accountToken.getRefreshToken());
+                        result.setDefaultModel("provider", providerStr);
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
+                    } else {
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
+                    }
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
@@ -287,6 +301,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
             ru = "/pcaccount/connecterr";
+        } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+            ru = "/oauth2pc/pclogin";
         }
         return ru;
     }
