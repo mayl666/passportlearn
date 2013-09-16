@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
+import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -34,6 +35,36 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     @Override
     public String queryPassportBySHPlusId(String shPlusId) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean verifyShPlusAccessToken(int clientId, String instanceId, String accessToken) throws ServiceException {
+        if (clientId != CommonConstant.BROWSER_CLIENTID) {
+            return false;
+        }
+        RequestModel requestModel = new RequestModel(SHPlusConstant.OAUTH2_RESOURCE);
+        requestModel.addParam(OAuth.OAUTH_CLIENT_ID, SHPlusConstant.BROWSER_SHPLUS_CLIENTID);
+        requestModel.addParam(OAuth.OAUTH_CLIENT_SECRET, SHPlusConstant.BROWSER_SHPLUS_CLIENTSECRET);
+        requestModel.addParam(OAuth.OAUTH_SCOPE, "all");
+        requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instanceId);
+        requestModel.addParam(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
+        requestModel.addParam(OAuth.OAUTH_RESOURCE_TYPE, OAuth2ResourceTypeEnum.GET_COOKIE.toString());
+        requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
+        String json = SGHttpClient.executeStr(requestModel);
+
+        Map resultMap = null;
+        try {
+            resultMap = jsonMapper.readValue(json, Map.class);
+        } catch (IOException e) {
+            log.error("parse json to map fail,jsonString:" + json);
+        }
+        if (resultMap != null) {
+            String result = (String) resultMap.get("result");
+            if ("confirm".equals(result)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

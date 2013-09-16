@@ -16,6 +16,17 @@ public interface SHPlusTokenService {
     /**
      * 校验refreshtoken
      *
+     * @param clientId
+     * @param instanceId
+     * @param accessToken
+     * @return
+     * @throws ServiceException
+     */
+    public boolean verifyShPlusAccessToken(int clientId, String instanceId, String accessToken) throws ServiceException;
+
+    /**
+     * 校验refreshtoken
+     *
      * @param passportId
      * @param clientId
      * @param instanceId

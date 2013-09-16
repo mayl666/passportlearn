@@ -29,11 +29,4 @@ public interface OAuth2AuthorizeManager {
      */
     public Result oauth2Authorize(OAuthTokenASRequest oauthRequest, AppConfig appConfig);
 
-    /**
-     * 浏览器PC/移动客户端访问受保护的资源
-     * @param pcoAuth2ResourceParams
-     * @return
-     */
-    public Result oauth2Resource(PCOAuth2ResourceParams pcoAuth2ResourceParams);
-
 }

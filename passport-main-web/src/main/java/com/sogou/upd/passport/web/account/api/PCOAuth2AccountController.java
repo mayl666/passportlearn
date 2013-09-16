@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -117,20 +118,26 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/resource")
     @ResponseBody
-    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams pcoAuth2ResourceParams) throws Exception {
+    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
         //参数验证
-        String validateResult = ControllerHelper.validateParams(pcoAuth2ResourceParams);
+        String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             return result.toString();
         }
 
-        int clientId = pcoAuth2ResourceParams.getClient_id();
-        // 检查client_id和client_secret是否有效
+        int clientId = params.getClient_id();
+        String clientSecret = params.getClient_secret();
 
+        AppConfig appConfig = configureManager.verifyClientVaild(clientId, clientSecret);
+        if (appConfig == null) {
+            result.setCode(ErrorUtil.INVALID_CLIENT);
+            return result;
+        }
 
+        result = OAuth2ResourceFactory.getResource(params);
         return result.toString();
     }
 
@@ -262,13 +269,22 @@ public class PCOAuth2AccountController extends BaseController {
             String userId = result.getModels().get("userid").toString();
             int clientId = loginParams.getClient_id();
 
+            //构造成功返回结果
+            result = new APIResultSupport(true);
             //获取token
-            Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
+            Result tokenResult =pcAccountManager.createAccountToken(userId,loginParams.getInstanceid(),clientId);
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            result.setDefaultModel("accesstoken", accountToken.getAccessToken());
-            result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
+            result.setDefaultModel("accesstoken",accountToken.getAccessToken());
+            result.setDefaultModel("refreshtoken",accountToken.getRefreshToken());
 
-            result.setDefaultModel("autologin", loginParams.getRememberMe());
+            result.setDefaultModel("autologin",loginParams.getRememberMe());
+            result.setDefaultModel("passport", Coder.enBase64(userId));
+            result.setDefaultModel("sname", Coder.enBase64(userId));
+            result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
+            result.setDefaultModel("result",0);
+            result.setDefaultModel("sid",0);
+            result.setDefaultModel("logintype","sogou");
+
             loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(passportId, ip);
@@ -277,7 +293,7 @@ public class PCOAuth2AccountController extends BaseController {
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
-            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
@@ -331,17 +347,9 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         //获取昵称
-        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-        Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
-        String uniqname;
-        if (getUserInfoResult.isSuccess()) {
-            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-        } else {
-            uniqname = defaultUniqname(passportId);
-        }
+
         model.addAttribute("userid", passportId);
-        model.addAttribute("uniqname", uniqname);
+        model.addAttribute("uniqname", getUniqname(passportId));
 
         //判断账号类型,判断绑定手机或者绑定邮箱是否可用
         AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
@@ -400,6 +408,19 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+
+    private String getUniqname(String passportId) {
+        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
+        Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+        String uniqname;
+        if (getUserInfoResult.isSuccess()) {
+            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
+            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
+        } else {
+            uniqname = defaultUniqname(passportId);
+        }
+        return uniqname;
     }
 
     private String defaultUniqname(String passportId) {
