@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -19,12 +20,14 @@ import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
+import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
@@ -76,6 +79,10 @@ public class PCOAuth2AccountController extends BaseController {
     private ConfigureManager configureManager;
     @Autowired
     private PCOAuth2RegManager pcoAuth2RegManager;
+    @Autowired
+    private LoginManager loginManager;
+    @Autowired
+    private PCAccountManager pcAccountManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -217,36 +224,53 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        //默认是sogou.com
+        String passportId = loginParams.getLoginname();
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
+        if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
+            //TODO 去sohu+取该个性账号的@sohu账号
+            //passportId = passportId + "@sogou.com";
+            passportId = "tinkame700@sogou.com";
+        }
 
-//        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-//
-//        String userId = loginParams.getUsername();
-//        //用户登录log
-//        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-//        String referer = request.getHeader("referer");
-//        userOperationLog.putOtherMessage("ref", referer);
-//        UserOperationLogUtil.log(userOperationLog);
-//
-//        if (result.isSuccess()) {
-//            userId = result.getModels().get("userid").toString();
-//            int clientId = Integer.parseInt(loginParams.getClient_id());
-//            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
-//        } else {
-//            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
-//            //校验是否需要验证码
-//            boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
-//            if (needCaptcha) {
-//                result.setDefaultModel("needCaptcha", true);
-//            }
-//            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
-//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-//                result.setMessage("密码错误");
-//            }
-//        }
-//
-//        result.setDefaultModel("xd", loginParams.getXd());
-//        model.addAttribute("data", result.toString());
-//        return "/login/api";
+        WebLoginParams webLoginParams = new WebLoginParams();
+        webLoginParams.setUsername(passportId);
+        webLoginParams.setPassword(loginParams.getPwd());
+        webLoginParams.setCaptcha(loginParams.getCaptcha());
+        webLoginParams.setToken(loginParams.getToken());
+        webLoginParams.setClient_id(String.valueOf(loginParams.getClient_id()));
+        result = loginManager.accountLogin(webLoginParams, ip, request.getScheme());
+
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
+        if (result.isSuccess()) {
+            String userId = result.getModels().get("userid").toString();
+            int clientId = loginParams.getClient_id();
+
+            //获取token
+            Result tokenResult =pcAccountManager.createAccountToken(userId,loginParams.getInstanceid(),clientId);
+            AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+            result.setDefaultModel("accesstoken",accountToken.getAccessToken());
+            result.setDefaultModel("refreshtoken",accountToken.getRefreshToken());
+
+            result.setDefaultModel("autologin",loginParams.getRememberMe());
+            loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
+        } else {
+            loginManager.doAfterLoginFailed(passportId, ip);
+            //校验是否需要验证码
+            boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(loginParams.getClient_id()), passportId, ip);
+            if (needCaptcha) {
+                result.setDefaultModel("needCaptcha", true);
+            }
+            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+                result.setMessage("密码错误");
+            }
+        }
         return result.toString();
     }
 

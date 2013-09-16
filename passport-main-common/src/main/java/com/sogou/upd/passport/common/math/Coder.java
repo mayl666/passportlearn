@@ -72,6 +72,17 @@ public class Coder {
     }
 
     /**
+     * BASE64解密
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public static String deBase64(String key) {
+        return new String(decryptBase64(key));
+    }
+
+    /**
      * BASE64加密
      *
      * @param key
@@ -80,6 +91,17 @@ public class Coder {
      */
     public static String encryptBase64URLSafeString(byte[] key) throws Exception {
         return Base64.encodeBase64URLSafeString(key);
+    }
+
+    /**
+     * BASE64加密
+     *
+     * @param str
+     * @return
+     * @throws Exception
+     */
+    public static String enBase64(String str) throws Exception {
+        return encryptBase64URLSafeString(str.getBytes());
     }
 
     /**
