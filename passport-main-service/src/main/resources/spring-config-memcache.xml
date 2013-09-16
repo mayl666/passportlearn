@@ -15,10 +15,10 @@
             <list>
                 <bean class="java.net.InetSocketAddress">
                     <constructor-arg>
-                        <value>192.168.131.22</value>
+                        <value>${passport.memcache.refresh_token}</value>
                     </constructor-arg>
                     <constructor-arg>
-                        <value>11211</value>
+                        <value>${passport.memcache.refresh_token.port}</value>
                     </constructor-arg>
                 </bean>
             </list>
@@ -41,10 +41,10 @@
             <list>
                 <bean class="java.net.InetSocketAddress">
                     <constructor-arg>
-                        <value>10.10.71.26</value>
+                        <value>${passport.memcache.token}</value>
                     </constructor-arg>
                     <constructor-arg>
-                        <value>11213</value>
+                        <value>${passport.memcache.token.port}</value>
                     </constructor-arg>
                 </bean>
             </list>
@@ -56,6 +56,4 @@
     <bean id="aTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init">
         <property name="builder" ref="aTokenMemClientBuilder"/>
     </bean>
-
-
 </beans>
