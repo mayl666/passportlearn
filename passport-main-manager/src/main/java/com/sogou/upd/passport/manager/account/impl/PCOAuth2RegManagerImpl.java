@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -92,23 +93,19 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
     public Result pcAccountRegister(PCOAuth2RegisterParams params, String ip) throws Exception {
         Result result = new APIResultSupport(false);
         String username = null;
-        int clientId = Integer.parseInt(params.getClient_id());
+        int clientId = CommonConstant.PC_CLIENTID;
         username = params.getUsername().trim().toLowerCase();
         String password = params.getPassword();
         String captcha = params.getCaptcha();
         String ru = params.getRu();
-        boolean isSogou = false;//外域还是个性账号
         //判断是否是手机号注册
         if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
             username = username + "@sogou.com";
-            isSogou = true;
         }
         //判断注册账号类型，sogou用户还是手机用户
         AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
-
         switch (emailType) {
             case SOGOU://个性账号直接注册
-            case INDIVID:
                 String token = params.getToken();
                 //判断验证码
                 if (!accountService.checkCaptchaCode(token, captcha)) {
@@ -116,7 +113,6 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     return result;
                 }
-
                 RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                         clientId, ru);
                 if (ManagerHelper.isInvokeProxyApi(username)) {
