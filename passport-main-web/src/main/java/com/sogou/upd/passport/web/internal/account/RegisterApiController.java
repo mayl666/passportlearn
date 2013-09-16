@@ -95,22 +95,12 @@ public class RegisterApiController extends BaseController{
             result.setMessage(validateResult);
             return result.toString();
         }
-
-        String ip = params.getIp();
-        //校验用户ip是否允许注册
-        result = regManager.checkRegInBlackListByIpForInternal(ip);
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-            return result.toString();
-        }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileCaptchaUser(params);
 
         //记录log
         UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
-
-        commonManager.incRegTimesForInternal(ip);
 
         return result.toString();
     }
@@ -176,14 +166,6 @@ public class RegisterApiController extends BaseController{
             result.setMessage(validateResult);
             return result.toString();
         }
-
-        String ip = params.getIp();
-        //校验用户ip是否允许注册
-        result = regManager.checkRegInBlackListByIpForInternal(ip);
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-            return result.toString();
-        }
         // 调用内部接口
         result = proxyRegisterApiManager.regMobileUser(params);
 
@@ -192,8 +174,6 @@ public class RegisterApiController extends BaseController{
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
-
-        commonManager.incRegTimesForInternal(ip);
 
         return result.toString();
     }
