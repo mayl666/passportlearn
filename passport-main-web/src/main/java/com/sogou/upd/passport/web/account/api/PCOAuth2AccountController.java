@@ -190,6 +190,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         result = pcoAuth2RegManager.pcAccountRegister(pcoAuth2RegisterParams, ip);
         //注册成功后获取token
+
         if (result.isSuccess()) {
             PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
             pcPairTokenParams.setAppid(pcoAuth2RegisterParams.getClient_id());
