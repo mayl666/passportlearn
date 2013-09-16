@@ -177,6 +177,12 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String ip = getIp(request);
         //TODO ip加安全限制
+        //验证client_id
+        int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result.toString();
+        }
         result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername());
         if (!result.isSuccess()) {
             return result.toString();
@@ -213,7 +219,7 @@ public class PCOAuth2AccountController extends BaseController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public Object login(HttpServletRequest request,PCOAuth2LoginParams loginParams)
+    public Object login(HttpServletRequest request, PCOAuth2LoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -312,11 +318,11 @@ public class PCOAuth2AccountController extends BaseController {
         String passportId = "tinkame700@sogou.com";
 
         //获取头像
-        result=accountInfoManager.obtainPhoto(passportId,"180");
+        result = accountInfoManager.obtainPhoto(passportId, "180");
         if (result.getModels().get("180") != null) {
             model.addAttribute("imageUrl", result.getModels().get("180"));
-        }else {
-            model.addAttribute("imageUrl","");
+        } else {
+            model.addAttribute("imageUrl", "");
         }
 
         //获取昵称
@@ -399,8 +405,7 @@ public class PCOAuth2AccountController extends BaseController {
     @RequestMapping(value = "/userinfo/uploadavatar")
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
-    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params)
-    {
+    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params) {
         Result result = new APIResultSupport(false);
 
         if (hostHolder.isLogin()) {
@@ -425,8 +430,8 @@ public class PCOAuth2AccountController extends BaseController {
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
 
             byte[] byteArr = multipartFile.getBytes();
-            result = accountInfoManager.uploadImg(byteArr, userId,"0");
-        }else {
+            result = accountInfoManager.uploadImg(byteArr, userId, "0");
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
         return result.toString();

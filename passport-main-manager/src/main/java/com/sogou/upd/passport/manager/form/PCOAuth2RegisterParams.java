@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +21,8 @@ import javax.validation.constraints.AssertTrue;
  */
 public class PCOAuth2RegisterParams {
     @NotBlank(message = "client_id不能为空")
-    private String client_id = String.valueOf(CommonConstant.PC_CLIENTID);
+    @Min(0)
+    private String client_id = String.valueOf(CommonConstant.BROWSER_CLIENTID);
 
     private String instance_id = null;
     @NotBlank(message = "注册账号不允许为空!")
