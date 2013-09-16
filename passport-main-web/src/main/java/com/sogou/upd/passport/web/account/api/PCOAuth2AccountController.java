@@ -74,8 +74,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
-    private RegManager regManager;
-    @Autowired
     private PCOAuth2RegManager pcoAuth2RegManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
