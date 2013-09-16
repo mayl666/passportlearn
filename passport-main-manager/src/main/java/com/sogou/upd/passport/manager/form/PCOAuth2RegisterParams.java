@@ -19,7 +19,7 @@ import javax.validation.constraints.AssertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class PCOAuth2RegisterParams {
-
+    @NotBlank(message = "client_id不能为空")
     private String client_id = String.valueOf(CommonConstant.PC_CLIENTID);
 
     private String instance_id = null;
@@ -66,6 +66,10 @@ public class PCOAuth2RegisterParams {
 
     public String getClient_id() {
         return client_id;
+    }
+
+    public void setClient_id(String client_id) {
+        this.client_id = client_id;
     }
 
     public String getUsername() {

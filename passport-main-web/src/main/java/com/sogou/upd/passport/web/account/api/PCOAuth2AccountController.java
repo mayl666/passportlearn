@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -11,40 +10,42 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.*;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
+import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.*;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
+import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
+import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.net.URLDecoder;
 
 /**
@@ -74,8 +75,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
-    private LoginManager loginManager;
-    @Autowired
     private PCOAuth2RegManager pcoAuth2RegManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
@@ -104,6 +103,25 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
+
+        return result.toString();
+    }
+
+    @RequestMapping(value = "/resource")
+    @ResponseBody
+    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams pcoAuth2ResourceParams) throws Exception {
+        Result result = new OAuthResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(pcoAuth2ResourceParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+
+        int clientId = pcoAuth2ResourceParams.getClient_id();
+        // 检查client_id和client_secret是否有效
+
 
         return result.toString();
     }
@@ -199,51 +217,36 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //默认是sogou.com
-        String passportId = loginParams.getLoginname();
-        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
-        if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-            //TODO 去sohu+取该个性账号的@sohu账号
-            //passportId = passportId + "@sogou.com";
-            passportId = "tinkame700@sogou.com";
-        }
 
-        WebLoginParams webLoginParams = new WebLoginParams();
-        webLoginParams.setUsername(passportId);
-        webLoginParams.setPassword(loginParams.getPwd());
-        webLoginParams.setCaptcha(loginParams.getCaptcha());
-        webLoginParams.setToken(loginParams.getToken());
-        webLoginParams.setClient_id(String.valueOf(loginParams.getClient_id()));
-
-        result = loginManager.accountLogin(webLoginParams, ip, request.getScheme());
-
-
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
-        if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
-            int clientId = loginParams.getClient_id();
-            result.setDefaultModel("accesstoken","");
-
-
-
-            loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
-        } else {
-            loginManager.doAfterLoginFailed(passportId, ip);
-            //校验是否需要验证码
-            boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(loginParams.getClient_id()), passportId, ip);
-            if (needCaptcha) {
-                result.setDefaultModel("needCaptcha", true);
-            }
-            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-                result.setMessage("密码错误");
-            }
-        }
+//        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
+//
+//        String userId = loginParams.getUsername();
+//        //用户登录log
+//        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+//        String referer = request.getHeader("referer");
+//        userOperationLog.putOtherMessage("ref", referer);
+//        UserOperationLogUtil.log(userOperationLog);
+//
+//        if (result.isSuccess()) {
+//            userId = result.getModels().get("userid").toString();
+//            int clientId = Integer.parseInt(loginParams.getClient_id());
+//            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+//        } else {
+//            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
+//            //校验是否需要验证码
+//            boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
+//            if (needCaptcha) {
+//                result.setDefaultModel("needCaptcha", true);
+//            }
+//            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+//                result.setMessage("密码错误");
+//            }
+//        }
+//
+//        result.setDefaultModel("xd", loginParams.getXd());
+//        model.addAttribute("data", result.toString());
+//        return "/login/api";
         return result.toString();
     }
 

@@ -23,4 +23,10 @@ public interface AppConfigService {
      * 根据clientId获取clientName
      */
     public String queryClientName(int clientId) throws ServiceException;
+
+    /**
+     *  验证clientId和clientSecret合法性
+     *  如果不合法返回null
+     */
+    public AppConfig verifyClientVaild(int clientId, String clientSecret);
 }
