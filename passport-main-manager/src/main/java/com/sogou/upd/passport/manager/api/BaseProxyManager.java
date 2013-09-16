@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -77,7 +78,7 @@ public class BaseProxyManager {
 
         //设置默认参数同时计算参数的签名
         this.setDefaultParam(requestModel, signVariableStr);
-        if (requestModel instanceof RequestModelXml) {
+        if (requestModel instanceof RequestModelXml ||requestModel instanceof RequestModelXmlGBK) {
             return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
         } else {
             return SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
@@ -102,16 +103,16 @@ public class BaseProxyManager {
         long ct = System.currentTimeMillis();
         //计算默认的code
         String url = requestModel.getUrl();
-        String clientId = (String) requestModel.getParam(SHPPUrlConstant.APPID_STRING);
+        String clientId = String.valueOf(requestModel.getParam(SHPPUrlConstant.APPID_STRING));
         if (Strings.isNullOrEmpty(clientId)) {
-            clientId = (String) requestModel.getParam(CommonConstant.CLIENT_ID);
+            clientId = String.valueOf(requestModel.getParam(CommonConstant.CLIENT_ID));
         }
         String code;
         if (isNonPCOpenApiProxy(url, clientId)) {
             code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
             requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.DEFAULT_CONNECT_APP_ID));
         } else {
-            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
+            code = ManagerHelper.generatorCodeGBK(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
             requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.APP_ID));
         }
         requestModel.addParam(CommonConstant.RESQUEST_CODE, code);

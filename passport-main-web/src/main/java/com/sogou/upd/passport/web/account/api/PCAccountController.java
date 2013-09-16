@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -232,15 +234,19 @@ public class PCAccountController extends BaseController {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
             //TODO sogou域账号迁移后cookie生成问题
-            Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams);
-            if (createCookieResult.isSuccess()) {
-                String setcookieUrl = createCookieResult.getModels().get("url").toString();
-                response.addHeader("Sohupp-Cookie", "ppinf,pprdig"); // 输入法mac版从这里取到要读哪个cookie
-                return "redirect:" + setcookieUrl;
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-                logger.error("authToken:createCookieUrl error");
+            Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+            if (getCookieValueResult.isSuccess()) {
+                String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+                String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+                String passport = (String) getCookieValueResult.getModels().get("passport");
+                ServletUtil.setCookie(response, "ppinf", ppinf, 0, CommonConstant.SOHU_ROOT_DOMAIN);
+                ServletUtil.setCookie(response, "pprdig", pprdig, 0, CommonConstant.SOHU_ROOT_DOMAIN);
+                ServletUtil.setCookie(response, "passport", passport, 0, CommonConstant.SOHU_ROOT_DOMAIN);
+                response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
             }
+            String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
+
+            return "redirect:" + redirectUrl;
         }
         //token验证失败
         return "redirect:" + authPcTokenParams.getRu() + "?status=6";//status=6表示验证失败

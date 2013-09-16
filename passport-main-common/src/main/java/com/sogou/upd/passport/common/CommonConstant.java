@@ -15,6 +15,7 @@ public class CommonConstant {
 
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
+    public static final int BROWSER_CLIENTID = 1065; //浏览器输入法桌面端client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
 
     public static final String CLIENT_ID = "client_id";
@@ -29,11 +30,10 @@ public class CommonConstant {
 
     public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
-    public static final String PARAMETER_SEPARATOR = "&";
-    public static final String NAME_VALUE_SEPARATOR = "=";
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
+    public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
     //	public static final String API_ID_SOGOU_DOMAIN = "test01.id.sogou.com";
     public static final String API_ID_SOGOU_INTERNAL_DOMAIN = "api.id.sogou.com.z.sogou-op.org";
 

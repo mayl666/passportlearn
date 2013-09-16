@@ -22,201 +22,213 @@ import java.util.zip.InflaterInputStream;
 
 public class HttpClientUtil {
 
-	public static Pair<Integer, String> get(String url) {
-		GetMethod get = new GetMethod(url);
-		return doWget(get);
-	}
+    public static Pair<Integer, String> get(String url) {
+        GetMethod get = new GetMethod(url);
+        return doWget(get);
+    }
 
-	// integer 表示的返回状态吗，String表示的Content-Type的值，InputStream是内容
-	public static Pair<Integer, Pair<String, byte[]>> getFile(String url) {
-		GetMethod get = new GetMethod(url);
-		return doWgetAsStream(get);
-	}
+    // integer 表示的返回状态吗，String表示的Content-Type的值，InputStream是内容
+    public static Pair<Integer, Pair<String, byte[]>> getFile(String url) {
+        GetMethod get = new GetMethod(url);
+        return doWgetAsStream(get);
+    }
 
-	public static Pair<Integer, String> post(String url, Map<String, String> postdata)
-			throws Exception {
-		PostMethod post = new PostMethod(url);
-		post.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-		for (Entry<String, String> entry : postdata.entrySet()) {
-			post.addParameter(entry.getKey(), entry.getValue());
+    public static Pair<Integer, String> post(String url, Map<String, String> postdata)
+            throws Exception {
+        PostMethod post = new PostMethod(url);
+        post.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        for (Entry<String, String> entry : postdata.entrySet()) {
+            post.addParameter(entry.getKey(), entry.getValue());
 //			post.addParameter(entry.getKey(), StringUtil.urlEncodeUTF8(entry.getValue()));//SignatureUtil.encUtf8(entry.getValue()));
-		}
-		return doWget(post);
-	}
+        }
+        return doWget(post);
+    }
 
-	public static Pair<Integer, String> postJson(String url, String json) throws Exception {
-		PostMethod post = new PostMethod(url);
+    public static Pair<Integer, String> postJson(String url, String json) throws Exception {
+        PostMethod post = new PostMethod(url);
 
-		StringRequestEntity requestEntity = new StringRequestEntity(json, "application/json",
-				"UTF-8");
-		post.setRequestEntity(requestEntity);
-		return doWget(post);
-	}
-
-
-	public static Pair<Integer, String> postContent(String url, String data, String charset) {
-		try {
-			PostMethod post = new PostMethod(url);
-			post.setRequestEntity(new StringRequestEntity(data, null, charset));
-			return doWget(post, charset);
-		} catch (Exception e) {
-			String message = e.getClass().getName() + "|" + e.getMessage();
-			return Pair.of(0, message);
-		}
-	}
-
-	private static Pair<Integer, String> doWget(HttpMethod method) {
-		return doWget(method, null);
-	}
-
-	public static int doHead(String url) {
-		HeadMethod method = new HeadMethod(url);
-		try {
-			method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-			int code = client.executeMethod(method);
-			return code;
-		} catch (Exception e) {
-			String message = e.getClass().getName() + "|" + e.getMessage();
-			System.out.println(message);
-			return 0;
-		} finally {
-			method.releaseConnection();
-		}
-	}
-
-	private static Pair<Integer, String> doWget(HttpMethod method, String charset) {
-		try {
-			method.setFollowRedirects(false);
-			method.setDoAuthentication(false);
-			method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-			method.getParams().setParameter(HttpMethodParams.USER_AGENT,
-					"Sogou Passport Center Notifier");
-			method.setRequestHeader("Accept-Encoding", "gzip, deflate");
-			int code = client.executeMethod(method);
-			InputStream in = method.getResponseBodyAsStream();
-
-			in = decode(in, method);
-			Reader reader = read(in, method, charset);
-			String body = read(reader);
-			return Pair.of(code, body);
-		} catch (Exception e) {
-			String message = e.getClass().getName() + "|" + e.getMessage();
-			return Pair.of(0, message);
-		} finally {
-			method.releaseConnection();
-		}
-	}
-
-	private static Pair<Integer, Pair<String, byte[]>> doWgetAsStream(HttpMethod method) {
-		try {
-			method.setFollowRedirects(false);
-			method.setDoAuthentication(false);
-			method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-			method.getParams().setParameter(HttpMethodParams.USER_AGENT,
-					"Sogou Passport Center Notifier");
-			method.setRequestHeader("Accept-Encoding", "gzip, deflate");
-			int code = client.executeMethod(method);
-			//			InputStream in = method.getResponseBodyAsStream();
-			//			Header h = method.getResponseHeader("Content-Length");
-			//			byte[] bytes = new byte[Integer.parseInt(h.getValue())];
-			//			in.read(bytes, 0, bytes.length);
-			byte[] bytes = method.getResponseBody();
-			Header respHeader = method.getResponseHeader("Content-Type");
-			String mime = respHeader.getValue();
-			Pair<String, byte[]> content = Pair.of(mime, bytes);
-			return Pair.of(code, content);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return Pair.of(0, null);
-		} finally {
-			method.releaseConnection();
-		}
-	}
-
-	private static InputStream decode(InputStream in, HttpMethod method) throws IOException {
-		Header encodingHeader = method.getResponseHeader("Content-Encoding");
-		if (encodingHeader != null) {
-			String encoding = encodingHeader.getValue();
-			if (encoding.contains("gzip"))
-				in = new GZIPInputStream(in);
-			else if (encoding.contains("deflate")) in = new InflaterInputStream(in);
-		}
-		return in;
-	}
-
-	private static Reader read(InputStream in, HttpMethod method, String charset)
-			throws IOException {
-		// check utf8 bom
-		byte[] cache = new byte[3];
-		int cacheSize = in.read(cache);
-		if (cacheSize <= 0) return new StringReader("");
-
-		byte[] bomUtf8 = { (byte) 0xef, (byte) 0xbb, (byte) 0xbf };
-		if (Arrays.equals(bomUtf8, cache)) return new InputStreamReader(in, "utf-8");
-		in = pushback(in, cache);
-
-		// check by header
-		if (charset == null) {
-			charset = getCharsetFromHeader(method);
-			if (charset.equals("gb2312") || charset.equals("gbk")) charset = "gb18030";
-			if (charset == null) charset = "utf-8";
-		}
-		return new InputStreamReader(in, charset);
-	}
-	private static InputStream pushback(InputStream in, byte[] cache) throws IOException {
-		PushbackInputStream pushback = new PushbackInputStream(in, cache.length);
-		pushback.unread(cache, 0, cache.length);
-		return pushback;
-	}
-	private static String getCharsetFromHeader(HttpMethod get) {
-		Header content = get.getResponseHeader("Content-Type");
-		if (content != null) {
-			String contentType = content.getValue().toLowerCase();
-			String charsetPrefix = "charset=";
-			int idx = contentType.indexOf(charsetPrefix);
-			if (idx > 0) {
-				String charset = contentType.substring(idx + charsetPrefix.length()).trim();
-				charset = charset.replaceAll("[^\\w\\d_-].*", "");
-				if (charset.length() > 0) return charset;
-			}
-		}
-		return null;
-	}
-
-	private static String read(Reader reader) throws IOException {
-		StringBuilder cache = new StringBuilder();
-		char[] buf = new char[1024];
-		int l;
-		while ((l = reader.read(buf)) > 0)
-			cache.append(buf, 0, l);
-		reader.close();
-		return cache.toString();
-	}
-
-	public static HttpClient getClient() {
-		return client;
-	}
-
-	private static HttpClient client;
-	static {
-		MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
-		manager.getParams().setConnectionTimeout(3000);
-		manager.getParams().setSoTimeout(3000);
-		client = new HttpClient(manager);
-	}
-
-	public static void main(String[] args) throws Exception {
-		Map<String, String> postData = Maps.newHashMap();
-		postData.put("appid", "1003");
-		postData.put("account", "18610017622");
-		postData.put("signature", "tj6sEa2BFKeoFd1pSNFqOZVFSwZLmvldAgvOt_Ojoqs");
-		postData.put("nickname", "戴菲菲");
+        StringRequestEntity requestEntity = new StringRequestEntity(json, "application/json",
+                "UTF-8");
+        post.setRequestEntity(requestEntity);
+        return doWget(post);
+    }
 
 
-		Pair<Integer, String> p = HttpClientUtil.post("http://localhost/account/regexpuser",
-				postData);
-		System.out.println(p);
-	}
+    public static Pair<Integer, String> postContent(String url, String data, String charset) {
+        try {
+            PostMethod post = new PostMethod(url);
+            post.setRequestEntity(new StringRequestEntity(data, null, charset));
+            return doWget(post, charset);
+        } catch (Exception e) {
+            String message = e.getClass().getName() + "|" + e.getMessage();
+            return Pair.of(0, message);
+        }
+    }
+
+    private static Pair<Integer, String> doWget(HttpMethod method) {
+        return doWget(method, null);
+    }
+
+    public static int doHead(String url) {
+        HeadMethod method = new HeadMethod(url);
+        try {
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            int code = client.executeMethod(method);
+            return code;
+        } catch (Exception e) {
+            String message = e.getClass().getName() + "|" + e.getMessage();
+            System.out.println(message);
+            return 0;
+        } finally {
+            method.releaseConnection();
+        }
+    }
+
+    public static Header[] getResponseHeadersWget(String url) {
+        GetMethod method = new GetMethod(url);
+        Pair<Integer, String> pair = doWget(method);
+        if (pair.getKey() != 0) {
+            return method.getResponseHeaders();
+        }
+        return null;
+    }
+
+    private static Pair<Integer, String> doWget(HttpMethod method, String charset) {
+        try {
+            method.setFollowRedirects(false);
+            method.setDoAuthentication(false);
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
+                    "Sogou Passport Center Notifier");
+            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
+            int code = client.executeMethod(method);
+            InputStream in = method.getResponseBodyAsStream();
+
+            in = decode(in, method);
+            Reader reader = read(in, method, charset);
+            String body = read(reader);
+            return Pair.of(code, body);
+        } catch (Exception e) {
+            String message = e.getClass().getName() + "|" + e.getMessage();
+            return Pair.of(0, message);
+        } finally {
+            method.releaseConnection();
+        }
+    }
+
+    private static Pair<Integer, Pair<String, byte[]>> doWgetAsStream(HttpMethod method) {
+        try {
+            method.setFollowRedirects(false);
+            method.setDoAuthentication(false);
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
+                    "Sogou Passport Center Notifier");
+            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
+            int code = client.executeMethod(method);
+            //			InputStream in = method.getResponseBodyAsStream();
+            //			Header h = method.getResponseHeader("Content-Length");
+            //			byte[] bytes = new byte[Integer.parseInt(h.getValue())];
+            //			in.read(bytes, 0, bytes.length);
+            byte[] bytes = method.getResponseBody();
+            Header respHeader = method.getResponseHeader("Content-Type");
+            String mime = respHeader.getValue();
+            Pair<String, byte[]> content = Pair.of(mime, bytes);
+            return Pair.of(code, content);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Pair.of(0, null);
+        } finally {
+            method.releaseConnection();
+        }
+    }
+
+    private static InputStream decode(InputStream in, HttpMethod method) throws IOException {
+        Header encodingHeader = method.getResponseHeader("Content-Encoding");
+        if (encodingHeader != null) {
+            String encoding = encodingHeader.getValue();
+            if (encoding.contains("gzip"))
+                in = new GZIPInputStream(in);
+            else if (encoding.contains("deflate")) in = new InflaterInputStream(in);
+        }
+        return in;
+    }
+
+    private static Reader read(InputStream in, HttpMethod method, String charset)
+            throws IOException {
+        // check utf8 bom
+        byte[] cache = new byte[3];
+        int cacheSize = in.read(cache);
+        if (cacheSize <= 0) return new StringReader("");
+
+        byte[] bomUtf8 = {(byte) 0xef, (byte) 0xbb, (byte) 0xbf};
+        if (Arrays.equals(bomUtf8, cache)) return new InputStreamReader(in, "utf-8");
+        in = pushback(in, cache);
+
+        // check by header
+        if (charset == null) {
+            charset = getCharsetFromHeader(method);
+            if (charset.equals("gb2312") || charset.equals("gbk")) charset = "gb18030";
+            if (charset == null) charset = "utf-8";
+        }
+        return new InputStreamReader(in, charset);
+    }
+
+    private static InputStream pushback(InputStream in, byte[] cache) throws IOException {
+        PushbackInputStream pushback = new PushbackInputStream(in, cache.length);
+        pushback.unread(cache, 0, cache.length);
+        return pushback;
+    }
+
+    private static String getCharsetFromHeader(HttpMethod get) {
+        Header content = get.getResponseHeader("Content-Type");
+        if (content != null) {
+            String contentType = content.getValue().toLowerCase();
+            String charsetPrefix = "charset=";
+            int idx = contentType.indexOf(charsetPrefix);
+            if (idx > 0) {
+                String charset = contentType.substring(idx + charsetPrefix.length()).trim();
+                charset = charset.replaceAll("[^\\w\\d_-].*", "");
+                if (charset.length() > 0) return charset;
+            }
+        }
+        return null;
+    }
+
+    private static String read(Reader reader) throws IOException {
+        StringBuilder cache = new StringBuilder();
+        char[] buf = new char[1024];
+        int l;
+        while ((l = reader.read(buf)) > 0)
+            cache.append(buf, 0, l);
+        reader.close();
+        return cache.toString();
+    }
+
+    public static HttpClient getClient() {
+        return client;
+    }
+
+    private static HttpClient client;
+
+    static {
+        MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+        manager.getParams().setConnectionTimeout(5000);
+        manager.getParams().setSoTimeout(5000);
+        client = new HttpClient(manager);
+    }
+
+    public static void main(String[] args) throws Exception {
+        Map<String, String> postData = Maps.newHashMap();
+        postData.put("appid", "1003");
+        postData.put("account", "18610017622");
+        postData.put("signature", "tj6sEa2BFKeoFd1pSNFqOZVFSwZLmvldAgvOt_Ojoqs");
+        postData.put("nickname", "戴菲菲");
+
+
+        Pair<Integer, String> p = HttpClientUtil.post("http://localhost/account/regexpuser",
+                postData);
+        System.out.println(p);
+    }
 
 
 }

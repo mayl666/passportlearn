@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.BeanUtil;
 import com.sogou.upd.passport.common.utils.DateUtil;
@@ -14,6 +16,8 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -139,7 +143,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             userid += "@sohu.com";
             updateUserInfoApiParams.setUserid(userid);
         }
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "register");
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "info");
         Map<String, Object> fields = BeanUtil.beanDescribe(updateUserInfoApiParams);
         for (Map.Entry<String, Object> entry : fields.entrySet()) {
             String key = entry.getKey();
@@ -154,6 +158,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             String birthdayStr = DateUtil.formatDate(birthday);
             requestModelXml.addParam("birthday", birthdayStr);
         }
+
+
         return this.executeResult(requestModelXml);
     }
 
@@ -162,7 +168,14 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         if (updateUserUniqnameApiParams.getUniqname() == null || "".equals(updateUserUniqnameApiParams.getUniqname())) {
             throw new IllegalArgumentException("用户昵称不能为空");
         }
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "checkuniqname");
+
+        try {
+//            updateUserUniqnameApiParams.setUniqname(URLDecoder.decode(updateUserUniqnameApiParams.getUniqname(), "utf-8"));
+            updateUserUniqnameApiParams.setUniqname(updateUserUniqnameApiParams.getUniqname());
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
         requestModelXml.addParams(updateUserUniqnameApiParams);
         Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
         if(result.isSuccess()){

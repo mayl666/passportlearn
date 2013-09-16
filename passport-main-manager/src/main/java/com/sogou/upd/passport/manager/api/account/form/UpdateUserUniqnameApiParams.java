@@ -37,7 +37,7 @@ public class UpdateUserUniqnameApiParams extends BaseApiParams {
 
     @AssertTrue(message = "昵称不符合组成规则，只能使用中文、字母、数字和下划线组合，但不能以下划线开头或结尾")
     private boolean isCheckElement() {
-        String regx = "^(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$";
+        String regx = "^[a-zA-Z0-9\\u4e00-\\u9fa5]+$";
         //返回false，说明不符合组成规则
         if (!uniqname.matches(regx)) {
             return false;

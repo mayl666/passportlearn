@@ -29,6 +29,8 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams{
     //省份
     private Integer city;
 
+    private String uniqname;
+
 
     public Date getBirthday() {
         return birthday;
@@ -68,5 +70,13 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams{
 
     public void setModifyip(String modifyip) {
         this.modifyip = modifyip;
+    }
+
+    public String getUniqname() {
+        return uniqname;
+    }
+
+    public void setUniqname(String uniqname) {
+        this.uniqname = uniqname;
     }
 }

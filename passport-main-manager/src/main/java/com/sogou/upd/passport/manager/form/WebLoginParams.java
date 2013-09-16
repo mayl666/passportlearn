@@ -6,8 +6,10 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import com.sogou.upd.passport.common.validation.constraints.Password;
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
@@ -45,7 +47,8 @@ public class WebLoginParams {
     private String captcha;//验证码
     //  @NotBlank(message = "标识码不允许为空!")
     private String token;//标识码
-
+    @URL
+    @Ru
     private String ru;//登陆来源
 
     @NotBlank(message = "client_id不允许为空!")

@@ -27,8 +27,6 @@ public class ConnectLoginParams {
     @NotBlank(message = "client_id不允许为空!")
     private String client_id; // 应用id
 
-    @URL
-    @Ru
     private String ru = "https://account.sogou.com";  // 回调地址
 
     private String display;  // 样式
