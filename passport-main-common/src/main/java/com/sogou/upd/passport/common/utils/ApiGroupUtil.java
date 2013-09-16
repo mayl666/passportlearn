@@ -30,13 +30,6 @@ public class ApiGroupUtil {
         apiGroupMap.put("/web/logout_redirect", LOGOUT);
 
         apiGroupMap.put("/web/security/updatepwd", UPDATEPWD);
-/*
-        apiGroupMap.put("/internal/account/updateuserinfo", "updateinfo");
-
-        apiGroupMap.put("/web/security/bindques", "bindques");
-        apiGroupMap.put("/web/security/bindmobilenew", "bindmobile");
-        apiGroupMap.put("/web/security/bindmobile", "bindmobile");
-*/
 
     }
 
@@ -45,23 +38,6 @@ public class ApiGroupUtil {
             return null;
         }
         String apiGroup = apiGroupMap.get(api);
-        /*if (Strings.isNullOrEmpty(apiGroup)) {
-            if (api.indexOf("login") != -1) {
-                return LOGIN;
-            } else if (api.indexOf("reg") != -1) {
-                return REGISTER;
-            } else if (api.indexOf("logout") != -1) {
-                return LOGOUT;
-            }
-        }*/
-        /*if (Strings.isNullOrEmpty(apiGroup)) {
-            int sep = api.lastIndexOf("/");
-            if (sep == -1 || sep == api.length() - 1) {
-                apiGroup = api;
-            } else {
-                apiGroup = api.substring(sep + 1);
-            }
-        }*/
         return apiGroup;
     }
 }

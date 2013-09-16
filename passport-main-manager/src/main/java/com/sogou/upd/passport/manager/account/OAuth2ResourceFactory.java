@@ -28,7 +28,7 @@ public class OAuth2ResourceFactory {
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
 
-    public static Result getResource(PCOAuth2ResourceParams params) {
+    public static Result getResource(PCOAuth2ResourceParams params, AppConfig appConfig) {
         Result result = new OAuthResultSupport(false);
         String resourceType = params.getResource_type();
         //校验accessToken
@@ -43,14 +43,18 @@ public class OAuth2ResourceFactory {
         return result;
     }
 
-    private boolean verifyAccessToken(String refreshToken, String passportId, int clientId, String instanceId, AppConfig appConfig) throws Exception {
+    /*
+     * 验证accessToken有效性并且返回passportId
+     */
+    private String queryPassportIdByToken(int clientId, String instanceId, String clientSecret, String accessToken) throws Exception {
 
-        boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
-        if (!isRightPcRToken) {
-            boolean isRightSHRToken = shPlusTokenService.verifyShPlusRefreshToken(passportId, clientId, instanceId, refreshToken);
-            return isRightSHRToken;
-        }
-        return true;
+//        boolean isRightPcRToken = pcAccountTokenService.verifyAccessToken(clientId, instanceId, clientSecret, accessToken);
+//        if (!isRightPcRToken) {
+//            String passportId = shPlusTokenService.verifyShPlusAccessToken(clientId, instanceId, accessToken);
+//            return isRightSHRToken;
+//        }
+//        return true;
+        return null;
     }
 
 }

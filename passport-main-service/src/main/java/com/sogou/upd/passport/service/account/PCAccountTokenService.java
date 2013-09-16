@@ -21,14 +21,14 @@ public interface PCAccountTokenService {
      * @param appConfig
      * @return
      */
-    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
+    public AccountToken initialOrUpdateAccountToken(String passportId, String instanceId, AppConfig appConfig) throws ServiceException;
 
     /**
-     * 根据AccessToken或RefreshToken获取PassportId
+     * 验证AccessToken合法性并返回PassportId
      * @param token
      * @return
      */
-    public String queryPassportIdByToken(String token, String clientSecret);
+    public String queryPassportIdByAccessToken(int clientId, String instanceId, String token, String clientSecret);
 
     /**
      * 查询AccountToken

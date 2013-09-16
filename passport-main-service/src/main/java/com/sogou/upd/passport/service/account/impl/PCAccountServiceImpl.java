@@ -31,7 +31,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private KvUtils kvUtils;
 
     @Override
-    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
+    public AccountToken initialOrUpdateAccountToken(String passportId, String instanceId, AppConfig appConfig) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
@@ -46,7 +46,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public String queryPassportIdByToken(String token, String clientSecret) {
+    public String queryPassportIdByAccessToken(int clientId, String instanceId, String token, String clientSecret) {
         try {
             String passortId = TokenDecrypt.decryptPcToken(token, clientSecret);
             return passortId;
