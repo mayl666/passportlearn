@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -240,7 +241,6 @@ public class PCOAuth2AccountController extends BaseController {
         AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
         if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
             //TODO 去sohu+取该个性账号的@sohu账号
-            //passportId = passportId + "@sogou.com";
             passportId = "tinkame700@sogou.com";
         }
 
@@ -261,7 +261,6 @@ public class PCOAuth2AccountController extends BaseController {
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             int clientId = loginParams.getClient_id();
-
             //构造成功返回结果
             result = new APIResultSupport(true);
             //获取token
@@ -277,7 +276,6 @@ public class PCOAuth2AccountController extends BaseController {
             result.setDefaultModel("result",0);
             result.setDefaultModel("sid",0);
             result.setDefaultModel("logintype","sogou");
-
             loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(passportId, ip);
@@ -317,7 +315,6 @@ public class PCOAuth2AccountController extends BaseController {
         return result;
     }
 
-
     @RequestMapping(value = "/userinfo/pcindex", method = RequestMethod.GET)
     public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -331,54 +328,16 @@ public class PCOAuth2AccountController extends BaseController {
         //TODO 校验token,获取userid
         String passportId = "tinkame700@sogou.com";
 
-        //获取头像
+        //获取头像Url
         result = accountInfoManager.obtainPhoto(passportId, "180");
-        if (result.getModels().get("180") != null) {
-            model.addAttribute("imageUrl", result.getModels().get("180"));
-        } else {
-            model.addAttribute("imageUrl", "");
-        }
-
+        String imageUrl = result.getModels().get("180") != null ? result.getModels().get("180").toString():"";
+        model.addAttribute("imageUrl", imageUrl);
         //获取昵称
-
         model.addAttribute("userid", passportId);
         model.addAttribute("uniqname", getUniqname(passportId));
 
-        //判断账号类型,判断绑定手机或者绑定邮箱是否可用
-        AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
-        switch (accountDomain) {
-            case SOHU:
-                model.addAttribute("isBindEmailUsable", 0);
-                model.addAttribute("isBindMobileUsable", 0);
-                break;
-            case THIRD:
-                model.addAttribute("isBindEmailUsable", 0);
-                model.addAttribute("isBindMobileUsable", 0);
-                break;
-            case PHONE:
-                model.addAttribute("isBindEmailUsable", 1);
-                model.addAttribute("isBindMobileUsable", 0);
-                break;
-            default:
-                model.addAttribute("isBindEmailUsable", 1);
-                model.addAttribute("isBindMobileUsable", 1);
-                break;
-        }
-        //获取绑定手机，绑定邮箱
-        result = secureManager.queryAccountSecureInfo(passportId, CommonConstant.PC_CLIENTID, true);
-        if (result.isSuccess()) {
-            if (result.getModels().get("sec_mobile") != null) {
-                model.addAttribute("bindMoblile", result.getModels().get("sec_mobile"));
-            } else {
-                model.addAttribute("bindMoblile", "");
-            }
-
-            if (result.getModels().get("sec_email") != null) {
-                model.addAttribute("bindEmail", result.getModels().get("sec_email"));
-            } else {
-                model.addAttribute("bindEmail", "");
-            }
-        }
+        //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
+        handleBind(passportId,model);
 
         //生成cookie
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
@@ -401,6 +360,36 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+
+    private void handleBind(String passportId,Model model) throws Exception{
+        AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
+        switch (accountDomain) {
+            case SOHU:
+                model.addAttribute("isBindEmailUsable", 0);
+                model.addAttribute("isBindMobileUsable", 0);
+                break;
+            case THIRD:
+                model.addAttribute("isBindEmailUsable", 0);
+                model.addAttribute("isBindMobileUsable", 0);
+                break;
+            case PHONE:
+                model.addAttribute("isBindEmailUsable", 1);
+                model.addAttribute("isBindMobileUsable", 0);
+                break;
+            default:
+                model.addAttribute("isBindEmailUsable", 1);
+                model.addAttribute("isBindMobileUsable", 1);
+                break;
+        }
+        //获取绑定手机，绑定邮箱
+        Result result = secureManager.queryAccountSecureInfo(passportId, CommonConstant.PC_CLIENTID, true);
+        if (result.isSuccess()) {
+            String bindMobile = result.getModels().get("sec_mobile") != null ? result.getModels().get("sec_mobile").toString():"";
+            model.addAttribute("bindMoblile", bindMobile);
+            String bindEmail = result.getModels().get("sec_email") != null ? result.getModels().get("sec_email").toString():"";
+            model.addAttribute("bindEmail", bindEmail);
+        }
     }
 
     private String getUniqname(String passportId) {
