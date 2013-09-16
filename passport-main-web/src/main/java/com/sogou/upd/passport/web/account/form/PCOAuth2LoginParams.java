@@ -20,6 +20,9 @@ public class PCOAuth2LoginParams {
     private String instanceid = "";  //客户端的实例id
     private int client_id= CommonConstant.BROWSER_CLIENTID;
 
+    private String captcha;//验证码
+    private String token;//标识码
+
     public String getInstanceid() {
         return instanceid;
     }
@@ -34,5 +37,45 @@ public class PCOAuth2LoginParams {
 
     public void setClient_id(int client_id) {
         this.client_id = client_id;
+    }
+
+    public String getLoginname() {
+        return loginname;
+    }
+
+    public void setLoginname(String loginname) {
+        this.loginname = loginname;
+    }
+
+    public int getRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(int rememberMe) {
+        this.rememberMe = rememberMe;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

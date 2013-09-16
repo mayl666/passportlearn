@@ -197,6 +197,23 @@ public class PCAccountManagerImpl implements PCAccountManager {
         }
     }
 
+    @Override
+    public Result createAccountToken(String passportId, String instanceId,int  clientId) {
+        Result finalResult = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            return initialAccountToken(passportId, instanceId, appConfig);
+        } catch (ServiceException e) {
+            logger.error("createToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
+
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
         AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);

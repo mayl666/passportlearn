@@ -2,6 +2,9 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -19,12 +22,14 @@ import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
+import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
@@ -76,6 +81,10 @@ public class PCOAuth2AccountController extends BaseController {
     private ConfigureManager configureManager;
     @Autowired
     private PCOAuth2RegManager pcoAuth2RegManager;
+    @Autowired
+    private LoginManager loginManager;
+    @Autowired
+    private PCAccountManager pcAccountManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -176,6 +185,12 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String ip = getIp(request);
         //TODO ip加安全限制
+        //验证client_id
+        int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result.toString();
+        }
         result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername());
         if (!result.isSuccess()) {
             return result.toString();
@@ -201,7 +216,10 @@ public class PCOAuth2AccountController extends BaseController {
                 } else {
                     uniqname = defaultUniqname(passportId);
                 }
-                result.setDefaultModel("uniqname", uniqname);
+                result.setDefaultModel("uniqname", Coder.enBase64(uniqname));
+                result.setDefaultModel("passportId", Coder.enBase64(passportId));
+                result.setDefaultModel("sid", "0");
+                result.setDefaultModel("logintype", "sogou");
             }
         }
         return result.toString();
@@ -212,7 +230,7 @@ public class PCOAuth2AccountController extends BaseController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public Object login(HttpServletRequest request,PCOAuth2LoginParams loginParams)
+    public Object login(HttpServletRequest request, PCOAuth2LoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -223,36 +241,62 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        //默认是sogou.com
+        String passportId = loginParams.getLoginname();
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
+        if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
+            //TODO 去sohu+取该个性账号的@sohu账号
+            //passportId = passportId + "@sogou.com";
+            passportId = "tinkame700@sogou.com";
+        }
 
-//        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-//
-//        String userId = loginParams.getUsername();
-//        //用户登录log
-//        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-//        String referer = request.getHeader("referer");
-//        userOperationLog.putOtherMessage("ref", referer);
-//        UserOperationLogUtil.log(userOperationLog);
-//
-//        if (result.isSuccess()) {
-//            userId = result.getModels().get("userid").toString();
-//            int clientId = Integer.parseInt(loginParams.getClient_id());
-//            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
-//        } else {
-//            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
-//            //校验是否需要验证码
-//            boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
-//            if (needCaptcha) {
-//                result.setDefaultModel("needCaptcha", true);
-//            }
-//            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
-//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-//                result.setMessage("密码错误");
-//            }
-//        }
-//
-//        result.setDefaultModel("xd", loginParams.getXd());
-//        model.addAttribute("data", result.toString());
-//        return "/login/api";
+        WebLoginParams webLoginParams = new WebLoginParams();
+        webLoginParams.setUsername(passportId);
+        webLoginParams.setPassword(loginParams.getPwd());
+        webLoginParams.setCaptcha(loginParams.getCaptcha());
+        webLoginParams.setToken(loginParams.getToken());
+        webLoginParams.setClient_id(String.valueOf(loginParams.getClient_id()));
+        result = loginManager.accountLogin(webLoginParams, ip, request.getScheme());
+
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
+        if (result.isSuccess()) {
+            String userId = result.getModels().get("userid").toString();
+            int clientId = loginParams.getClient_id();
+
+            //构造成功返回结果
+            result = new APIResultSupport(true);
+            //获取token
+            Result tokenResult =pcAccountManager.createAccountToken(userId,loginParams.getInstanceid(),clientId);
+            AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+            result.setDefaultModel("accesstoken",accountToken.getAccessToken());
+            result.setDefaultModel("refreshtoken",accountToken.getRefreshToken());
+
+            result.setDefaultModel("autologin",loginParams.getRememberMe());
+            result.setDefaultModel("passport", Coder.enBase64(userId));
+            result.setDefaultModel("sname", Coder.enBase64(userId));
+            result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
+            result.setDefaultModel("result",0);
+            result.setDefaultModel("sid",0);
+            result.setDefaultModel("logintype","sogou");
+
+            loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
+        } else {
+            loginManager.doAfterLoginFailed(passportId, ip);
+            //校验是否需要验证码
+            boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(loginParams.getClient_id()), passportId, ip);
+            if (needCaptcha) {
+                result.setDefaultModel("needCaptcha", true);
+            }
+            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+                result.setMessage("密码错误");
+            }
+        }
         return result.toString();
     }
 
@@ -294,25 +338,17 @@ public class PCOAuth2AccountController extends BaseController {
         String passportId = "tinkame700@sogou.com";
 
         //获取头像
-        result=accountInfoManager.obtainPhoto(passportId,"180");
+        result = accountInfoManager.obtainPhoto(passportId, "180");
         if (result.getModels().get("180") != null) {
             model.addAttribute("imageUrl", result.getModels().get("180"));
-        }else {
-            model.addAttribute("imageUrl","");
+        } else {
+            model.addAttribute("imageUrl", "");
         }
 
         //获取昵称
-        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-        Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
-        String uniqname;
-        if (getUserInfoResult.isSuccess()) {
-            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-        } else {
-            uniqname = defaultUniqname(passportId);
-        }
+
         model.addAttribute("userid", passportId);
-        model.addAttribute("uniqname", uniqname);
+        model.addAttribute("uniqname", getUniqname(passportId));
 
         //判断账号类型,判断绑定手机或者绑定邮箱是否可用
         AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
@@ -373,6 +409,19 @@ public class PCOAuth2AccountController extends BaseController {
         return msg;
     }
 
+    private String getUniqname(String passportId) {
+        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
+        Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+        String uniqname;
+        if (getUserInfoResult.isSuccess()) {
+            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
+            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
+        } else {
+            uniqname = defaultUniqname(passportId);
+        }
+        return uniqname;
+    }
+
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
     }
@@ -381,8 +430,7 @@ public class PCOAuth2AccountController extends BaseController {
     @RequestMapping(value = "/userinfo/uploadavatar")
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
-    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params)
-    {
+    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params) {
         Result result = new APIResultSupport(false);
 
         if (hostHolder.isLogin()) {
@@ -407,8 +455,8 @@ public class PCOAuth2AccountController extends BaseController {
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
 
             byte[] byteArr = multipartFile.getBytes();
-            result = accountInfoManager.uploadImg(byteArr, userId,"0");
-        }else {
+            result = accountInfoManager.uploadImg(byteArr, userId, "0");
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
         return result.toString();

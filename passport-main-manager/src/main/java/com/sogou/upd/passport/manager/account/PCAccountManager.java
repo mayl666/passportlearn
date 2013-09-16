@@ -63,4 +63,13 @@ public interface PCAccountManager {
      * @return
      */
     public Result createConnectToken(int clientId, String passportId, String instanceId);
+
+    /**
+     * 只生成token
+     * @param clientId
+     * @param passportId
+     * @param instanceId
+     * @return
+     */
+    public Result createAccountToken(String passportId, String instanceId,int  clientId);
 }
