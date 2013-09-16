@@ -11,19 +11,11 @@ import org.hibernate.validator.constraints.NotBlank;
  * To change this template use File | Settings | File Templates.
  */
 public class PCOAuth2UpdateNickParams {
-    @NotBlank(message = "accesstoken illegal")
-    private String accesstoken="";   //获取的访问token
+
     @NotBlank(message = "昵称不能为空")
     private String nick;
 
     private String sname = "";  //账号，sohu+继承而来，这里不做处理
-    public String getAccesstoken() {
-        return accesstoken;
-    }
-
-    public void setAccesstoken(String accesstoken) {
-        this.accesstoken = accesstoken;
-    }
 
     public String getSname() {
         return sname;
