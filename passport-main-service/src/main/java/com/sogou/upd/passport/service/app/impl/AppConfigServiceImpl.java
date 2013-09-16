@@ -100,4 +100,20 @@ public class AppConfigServiceImpl implements AppConfigService {
         return flag;
     }
 
+    @Override
+    public AppConfig verifyClientVaild(int clientId, String clientSecret) {
+        try {
+            AppConfig appConfig = queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return null;
+            } else if (!clientSecret.equals(appConfig.getClientSecret())) {
+                return null;
+            }
+            return appConfig;
+        } catch (ServiceException e) {
+            logger.error("[app] Verify ClientVaild Fail:", e);
+            return null;
+        }
+    }
+
 }
