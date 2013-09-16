@@ -15,6 +15,15 @@ public class RegMobileCaptchaApiParams extends BaseMoblieApiParams {
     private String password;  //必须为md5
     @NotBlank(message = "手机验证码不允许为空")
     private String captcha;
+    private String ip;
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 
     public String getPassword() {
         return password;
