@@ -132,7 +132,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.10", CONNECT_REQUEST_FREQUENCY_LIMIT);//调用超限（5分钟调用超过了1000次）
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.11", SYSTEM_UNKNOWN_EXCEPTION);//加V用户不能修改uniqname
 
-        //checkuniqname 修改用户昵称
+        //checkuniqname 检查用户昵称
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuniqname.3",ERR_CODE_UNIQNAME_ALREADY_EXISTS);//用户昵称已经被使用
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuniqname.4",ERR_CODE_UNIQNAME_FORBID);//用户昵称包含限制词
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuniqname.6",SYSTEM_UNKNOWN_EXCEPTION);//系统异常
