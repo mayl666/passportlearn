@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -19,6 +20,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,7 +215,35 @@ public class PCAccountManagerImpl implements PCAccountManager {
             return finalResult;
         }
     }
-
+    @Override
+    public Result queryPassportIdByAccessToken(String token,int clientId){
+        Result finalResult = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            String passportId = pcAccountService.queryPassportIdByAccessToken(token,appConfig.getClientSecret());
+            if(StringUtils.isEmpty(passportId)){
+                if(clientId == CommonConstant.BROWSER_CLIENTID){
+                     //TODO 通过sohu+ token获取userid
+                    passportId="";
+                }
+            }
+            if(StringUtils.isEmpty(passportId)){
+                finalResult.setCode(ErrorUtil.QUERY_PASSPORTID_BYTOKEN_FAILED);
+                return finalResult;
+            }
+            finalResult.setSuccess(true);
+            finalResult.setDefaultModel(passportId);
+            return finalResult;
+        } catch (ServiceException e) {
+            logger.error("createToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
         AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);

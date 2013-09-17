@@ -28,7 +28,7 @@ public interface PCAccountTokenService {
      * @param token
      * @return
      */
-    public String queryPassportIdByAccessToken(int clientId, String instanceId, String token, String clientSecret);
+    public String queryPassportIdByAccessToken(String token, String clientSecret);
 
     /**
      * 查询AccountToken

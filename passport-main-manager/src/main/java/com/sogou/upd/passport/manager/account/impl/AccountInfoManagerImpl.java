@@ -89,9 +89,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         //获取图片尺寸
                         String clientId = photoUtils.getAppIdBySize(sizeArry[i]);
 
-                        String photoURL = String.format(image, cdnUrl, clientId);
-                        if (!Strings.isNullOrEmpty(photoURL)) {
-                            result.setDefaultModel(size, photoURL);
+                        String photoURL =String.format(image, cdnUrl, clientId);
+                        if(!Strings.isNullOrEmpty(photoURL)){
+                            result.setDefaultModel(sizeArry[i],photoURL);
                         }
                     }
                     return result;

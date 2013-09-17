@@ -63,6 +63,9 @@ public class ErrorUtil {
     // 用户名密码不匹配
     public static final String USERNAME_PWD_MISMATCH = "111";  // 与20206一样，因为T3历史原因，暂不删除
 
+    //根据token获取passportId失败
+    public static final String QUERY_PASSPORTID_BYTOKEN_FAILED = "112";
+
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
     /* ============================================================================ */
@@ -320,6 +323,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(AUTHORIZE_FAIL, "授权失败");
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "账号或密码错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED, "暂不支持邮箱注册");
+        ERR_CODE_MSG_MAP.put(QUERY_PASSPORTID_BYTOKEN_FAILED, "根据token获取用户失败");
 
         // account
         ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_IP_IN_BLACKLIST, "当前注册ip次数已达上限或该ip已在黑名单中");

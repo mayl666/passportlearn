@@ -321,11 +321,13 @@ public class PCOAuth2AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return "forward:/oauth2/errorMsg?msg="+result.toString();
         }
-        //TODO 校验token,获取userid
-        String passportId = "tinkame700@sogou.com";
-
+        Result queryPassportIdResult = pcAccountManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(),oauth2PcIndexParams.getClient_id());
+        if(!queryPassportIdResult.isSuccess()){
+            return "forward:/oauth2/errorMsg?msg="+queryPassportIdResult.toString();
+        }
+        String passportId = (String)queryPassportIdResult.getDefaultModel();
         //获取头像Url
         result = accountInfoManager.obtainPhoto(passportId, "180");
         String imageUrl = result.getModels().get("180") != null ? result.getModels().get("180").toString() : "";
@@ -333,10 +335,8 @@ public class PCOAuth2AccountController extends BaseController {
         //获取昵称
         model.addAttribute("userid", passportId);
         model.addAttribute("uniqname", getUniqname(passportId));
-
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
         handleBind(passportId, model);
-
         //生成cookie
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
@@ -405,42 +405,6 @@ public class PCOAuth2AccountController extends BaseController {
 
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
-    }
-
-    //头像上传
-    @RequestMapping(value = "/userinfo/uploadavatar")
-    @LoginRequired(resultType = ResponseResultType.redirect)
-    @ResponseBody
-    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params) {
-        Result result = new APIResultSupport(false);
-
-        if (hostHolder.isLogin()) {
-
-            //参数验证
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            //验证client_id是否存在
-            int clientId = Integer.parseInt(params.getClient_id());
-            if (!configureManager.checkAppIsExist(clientId)) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result.toString();
-            }
-
-            String userId = hostHolder.getPassportId();
-
-            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-            CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
-
-            byte[] byteArr = multipartFile.getBytes();
-            result = accountInfoManager.uploadImg(byteArr, userId, "0");
-        } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
-        }
-        return result.toString();
     }
 
 }
