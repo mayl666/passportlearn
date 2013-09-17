@@ -126,6 +126,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                         result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
                         return result;
                     }
+                    // 迁移sohu+的图片到本地
                     shPlusTokenService.copyAvatarToLocal(passportId, instanceId, accessToken);
                 }
             } else {

@@ -86,7 +86,7 @@ public class PCOAuth2AccountController extends BaseController {
         return "/oauth2pc/pclogin";
     }
 
-    @RequestMapping(value = "/token")
+    @RequestMapping(value = "/token/")
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenASRequest oauthRequest;
@@ -111,7 +111,7 @@ public class PCOAuth2AccountController extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/resource")
+    @RequestMapping(value = "/resource/")
     @ResponseBody
     public Object resource(HttpServletRequest request, PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
