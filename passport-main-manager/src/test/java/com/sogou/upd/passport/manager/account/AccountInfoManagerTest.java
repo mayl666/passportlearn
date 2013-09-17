@@ -33,7 +33,7 @@ public class AccountInfoManagerTest extends BaseTest {
 
     @Test
     public void testObtainImage() {
-        Result result=accountInfoManager.obtainPhoto("tinkame700@sogou.com","180");
+        Result result=accountInfoManager.obtainPhoto("tinkame700@sogou.com","50,180");
         System.out.println("result:"+result.getModels().get("180"));
     }
 

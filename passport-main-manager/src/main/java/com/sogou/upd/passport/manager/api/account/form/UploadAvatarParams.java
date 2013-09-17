@@ -16,12 +16,30 @@ public class UploadAvatarParams {
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private String client_id=  String.valueOf(SHPPUrlConstant.APP_ID);
+    private String imgsize;
+    private String imgurl;
 
     public String getClient_id() {
         return client_id;
     }
 
+    public String getImgsize() {
+        return imgsize;
+    }
+
+    public void setImgsize(String imgsize) {
+        this.imgsize = imgsize;
+    }
+
     public void setClient_id(String client_id) {
         this.client_id = client_id;
+    }
+
+    public String getImgurl() {
+        return imgurl;
+    }
+
+    public void setImgurl(String imgurl) {
+        this.imgurl = imgurl;
     }
 }

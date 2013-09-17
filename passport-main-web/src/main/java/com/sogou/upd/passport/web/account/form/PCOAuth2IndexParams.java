@@ -19,7 +19,7 @@ public class PCOAuth2IndexParams {
     private String h;
     private String r;
     private String v; //浏览器版本
-    private int client_id= CommonConstant.BROWSER_CLIENTID;
+    private int client_id= CommonConstant.PC_CLIENTID; //用户通过token解密获取userid,所以传1044
 
     public String getAccesstoken() {
         return accesstoken;
