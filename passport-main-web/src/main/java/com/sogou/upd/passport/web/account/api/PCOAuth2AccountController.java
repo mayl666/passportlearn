@@ -18,10 +18,7 @@ import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
-import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.WebLoginParams;
+import com.sogou.upd.passport.manager.form.*;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
@@ -29,6 +26,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
@@ -83,6 +81,8 @@ public class PCOAuth2AccountController extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private PCAccountManager pcAccountManager;
+    @Autowired
+    private RegManager regManager;
 
     @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
@@ -141,7 +141,7 @@ public class PCOAuth2AccountController extends BaseController {
      */
     @RequestMapping(value = "/checkregname", method = RequestMethod.POST)
     @ResponseBody
-    public String checkRegisterName(PCAccountCheckRegNameParams checkParam)
+    public String checkRegisterName(CheckUserNameExistParameters checkParam)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -171,40 +171,62 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object register(HttpServletRequest request, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(pcoAuth2RegisterParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String ip = getIp(request);
-        //TODO ip加安全限制
-        //验证client_id
-        int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
-        if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result.toString();
-        }
-        result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername());
-        if (!result.isSuccess()) {
-            return result.toString();
-        }
-        result = pcoAuth2RegManager.pcAccountRegister(pcoAuth2RegisterParams, ip);
-        //注册成功后获取token
-
-        if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
-            String instanceId = pcoAuth2RegisterParams.getInstance_id();
-            result = pcAccountManager.createAccountToken(userId, instanceId, clientId);
-            if (result.isSuccess()) {
-                AccountToken accountToken = (AccountToken) result.getDefaultModel();
-                result = new APIResultSupport(true);
-                String passportId = accountToken.getPassportId();
-                setDefaultModelForResult(result, passportId, accountToken);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(pcoAuth2RegisterParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
             }
+            String ip = getIp(request);
+            //TODO ip加安全限制
+            //验证client_id
+            int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername());
+            if (!result.isSuccess()) {
+                return result.toString();
+            }
+
+            result = regManager.webRegister(transferToWebParams(pcoAuth2RegisterParams), ip);
+            //注册成功后获取token
+
+            if (result.isSuccess()) {
+                String userId = result.getModels().get("userid").toString();
+                String instanceId = pcoAuth2RegisterParams.getInstance_id();
+                result = pcAccountManager.createAccountToken(userId, instanceId, clientId);
+                if (result.isSuccess()) {
+                    AccountToken accountToken = (AccountToken) result.getDefaultModel();
+                    result = new APIResultSupport(true);
+                    String passportId = accountToken.getPassportId();
+                    setDefaultModelForResult(result, passportId, accountToken);
+                }
+            }
+        } catch (Exception e) {
+            logger.info("sohu+ register failed:" + e);
+        } finally {
+            //用户注册log
+            UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
+    }
+
+    private WebRegisterParams transferToWebParams(PCOAuth2RegisterParams pcParams) {
+        WebRegisterParams webParams = new WebRegisterParams();
+        webParams.setCaptcha(pcParams.getCaptcha());
+        webParams.setClient_id(pcParams.getClient_id());
+        webParams.setPassword(pcParams.getPassword());
+        webParams.setRu(pcParams.getRu());
+        webParams.setToken(pcParams.getToken());
+        webParams.setUsername(pcParams.getUsername());
+        return webParams;
     }
 
     private Result setDefaultModelForResult(Result result, String passportId, AccountToken accountToken) throws Exception {
@@ -294,11 +316,6 @@ public class PCOAuth2AccountController extends BaseController {
     //检查用户是否存在
     private Result checkPCAccountNotExists(String username) throws Exception {
         Result result = new APIResultSupport(false);
-        //不允许sohu域用户注册
-        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-            return result;
-        }
         //不允许邮箱注册
         if (username.indexOf("@") != -1) {
             result.setCode(ErrorUtil.ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED);
