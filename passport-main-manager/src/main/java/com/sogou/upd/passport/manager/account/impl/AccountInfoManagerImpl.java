@@ -126,7 +126,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
                         String photoURL =String.format(image, cdnUrl, clientId);
                         if(!Strings.isNullOrEmpty(photoURL)){
-                            result.setDefaultModel(sizeArry[i],photoURL);
+                            result.setDefaultModel("img_"+sizeArry[i],photoURL);
                         }
                     }
                     return result;
