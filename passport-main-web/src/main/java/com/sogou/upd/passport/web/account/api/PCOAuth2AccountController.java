@@ -328,7 +328,7 @@ public class PCOAuth2AccountController extends BaseController {
             return "forward:/oauth2/errorMsg?msg="+queryPassportIdResult.toString();
         }
         String passportId = (String)queryPassportIdResult.getDefaultModel();
-        //获取头像Url
+        //获取头像Url TODO 如何获取sohu+头像
         result = accountInfoManager.obtainPhoto(passportId, "180");
         String imageUrl = result.getModels().get("180") != null ? result.getModels().get("180").toString() : "";
         model.addAttribute("imageUrl", imageUrl);
