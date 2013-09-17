@@ -16,9 +16,11 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
-import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.*;
+import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
+import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
+import com.sogou.upd.passport.manager.form.WebLoginParams;
+import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
@@ -27,11 +29,8 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
-import com.sogou.upd.passport.web.account.form.PCAccountCheckRegNameParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
-import com.sogou.upd.passport.web.annotation.LoginRequired;
-import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +41,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -192,10 +189,8 @@ public class PCOAuth2AccountController extends BaseController {
             if (!result.isSuccess()) {
                 return result.toString();
             }
-
             result = regManager.webRegister(transferToWebParams(pcoAuth2RegisterParams), ip);
             //注册成功后获取token
-
             if (result.isSuccess()) {
                 String userId = result.getModels().get("userid").toString();
                 String instanceId = pcoAuth2RegisterParams.getInstance_id();
@@ -209,7 +204,7 @@ public class PCOAuth2AccountController extends BaseController {
                 }
             }
         } catch (Exception e) {
-            logger.info("sohu+ register failed:" + e);
+            logger.error("Sohu+ Register Failed,PassportId Is " + finalPassportId, e);
         } finally {
             //用户注册log
             UserOperationLog userOperationLog = new UserOperationLog(finalPassportId, request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
