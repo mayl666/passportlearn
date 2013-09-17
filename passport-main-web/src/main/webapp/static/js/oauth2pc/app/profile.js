@@ -3,7 +3,8 @@
  */
 ;
 define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib/fileupload'], function($, md5, dialog, upload) {
-    function Profile() {}
+    var _g_client_id=1044;
+    function Profile() {};
     Profile.prototype = {
         sogouBaseurl: "//account.sogou.com",
         interfaces:{
@@ -231,7 +232,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                             new_email: $email.val(),
                             accesstoken: accesstoken,
                             //                            instanceid: instanceid,
-                            client_id: 1065,
+                            client_id: _g_client_id,
                             password: $emailPwd.val(),
                             ru: window.location.href
                         }
@@ -353,7 +354,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     url: url,
                     data: {
                         smstype: 1,
-                        client_id: 1065,
+                        client_id: _g_client_id,
                         new_mobile: $phone.val()
                     },
                     type: "get",
@@ -433,7 +434,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                         data: {
                             new_mobile: $phone.val(),
                             smscode: $vcode.val(),
-                            client_id: 1065,
+                            client_id: _g_client_id,
                             password: $vcodePwd.val(),
                             accesstoken: accesstoken
                         },
@@ -548,7 +549,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                             data: {
                                 password: $oriPwd.val(),
                                 newpwd: $newPwd.val(),
-                                client_id:1065,
+                                client_id:_g_client_id,
                                 accesstoken: accesstoken
                             }
                         }).done(function(result) {
@@ -725,7 +726,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     maxFileSize: 1024 * 1024 * 5,
                     contentType: false,
                 formData: {
-                    client_id: 1065
+                    client_id: _g_client_id
                 },
                     acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
                     done: function(e,result) {
