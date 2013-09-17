@@ -28,18 +28,4 @@ public class AppConfigServiceTest extends BaseTest {
         Assert.assertNull(resultStr);
     }
 
-    @Test
-    public void testGeneratorSecret() {
-        String random = RandomStringUtils.randomAlphanumeric(8);
-        long time = System.currentTimeMillis();
-        int client_id = 1065;
-        try {
-            String secret = Coder.encryptMD5(client_id + time + random);
-            System.out.println("secret:" + secret);
-            Assert.assertTrue(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.assertTrue(false);
-        }
-    }
 }

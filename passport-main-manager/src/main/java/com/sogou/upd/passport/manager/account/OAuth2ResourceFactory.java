@@ -9,6 +9,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +26,33 @@ public class OAuth2ResourceFactory {
     private static Logger log = LoggerFactory.getLogger(OAuth2ResourceFactory.class);
 
     @Autowired
+    private AppConfigService appConfigService;
+    @Autowired
     private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
 
-    public static Result getResource(PCOAuth2ResourceParams params, AppConfig appConfig) {
+    public static Result getResource(PCOAuth2ResourceParams params) {
         OAuth2ResourceFactory factory = new OAuth2ResourceFactory();
-        String clientSecret = appConfig.getClientSecret();
-        return factory.resource(params, clientSecret);
+        return factory.resource(params);
     }
 
-    public Result resource(PCOAuth2ResourceParams params, String clientSecret) {
+    public Result resource(PCOAuth2ResourceParams params) {
         Result result = new OAuthResultSupport(false);
         int clientId = params.getClient_id();
         String instanceId = params.getInstance_id();
         String accessToken = params.getAccess_token();
         try {
-            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            clientId = clientId == 30000004 ? 1044 : clientId;  //兼容浏览器PC端sohu+接口
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENT);
+                return result;
+            }
+
+            String passportId = TokenDecrypt.decryptPcToken(accessToken, appConfig.getClientSecret());
             //校验accessToken
             if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
                 result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);

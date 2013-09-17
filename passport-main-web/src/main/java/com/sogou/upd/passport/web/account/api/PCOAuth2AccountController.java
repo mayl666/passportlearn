@@ -99,21 +99,14 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
 
-        int clientId = oauthRequest.getClientId();
-        // 检查client_id和client_secret是否有效
-        AppConfig appConfig = configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret());
-        if (appConfig == null) {
-            result.setCode(ErrorUtil.INVALID_CLIENT);
-            return result.toString();
-        }
-        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest, appConfig);
+        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest);
 
         return result.toString();
     }
 
     @RequestMapping(value = "/resource/")
     @ResponseBody
-    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams params) throws Exception {
+    public Object resource(PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(params);
@@ -122,14 +115,13 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
         AppConfig appConfig = configureManager.verifyClientVaild(params.getClient_id(), params.getClient_secret());
         if (appConfig == null) {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             return result;
         }
 
-        result = OAuth2ResourceFactory.getResource(params, appConfig);
+        result = OAuth2ResourceFactory.getResource(params);
         return result.toString();
     }
 
