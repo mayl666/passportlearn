@@ -89,6 +89,15 @@ public class PhotoUtils {
         return sizeToAppIdMap.get(size);
     }
 
+    //获取所有图片尺寸
+    public String[] getAllImageSize(){
+        Map<String,String> map=getAllAppId();
+
+        String []imgSize=map.keySet().toArray(new String[map.size()]);
+
+        return imgSize;
+    }
+
     //获取所有appId
     public Map<String, String> getAllAppId() {
         return sizeToAppIdMap;

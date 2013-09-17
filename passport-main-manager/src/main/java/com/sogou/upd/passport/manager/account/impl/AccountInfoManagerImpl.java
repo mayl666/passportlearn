@@ -64,6 +64,34 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     }
 
     @Override
+    public Result uploadDefaultImg(String webUrl,String clientId) {
+        Result result = new APIResultSupport(false);
+        try {
+            //获取图片名
+            String imgName = clientId+"_"+System.currentTimeMillis();
+            // 上传到OP图片平台
+            if (photoUtils.uploadImg(imgName, null,webUrl,"1")) {
+                String imgURL = photoUtils.accessURLTemplate(imgName);
+                //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
+                String cacheKey="SP.PASSPORTID:SOHU+IMAGE_"+clientId;
+                redisUtils.set(cacheKey,imgURL);
+
+                result.setSuccess(true);
+                result.setDefaultModel("image",imgURL);
+                result.setMessage("头像设置成功");
+                return result;
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
+            return result;
+        }
+    }
+
+    @Override
     public Result obtainPhoto(String passportId, String size) {
         Result result = new APIResultSupport(false);
         try {
@@ -80,6 +108,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                             return result;
                         }
                     }
+                } else {
+                    //为空获取所有的尺寸
+                   sizeArry=photoUtils.getAllImageSize();
                 }
 
                 String cacheKey="SP.PASSPORTID:SOHU+IMAGE_"+passportId;
