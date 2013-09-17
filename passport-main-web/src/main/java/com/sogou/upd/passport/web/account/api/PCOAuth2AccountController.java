@@ -194,32 +194,37 @@ public class PCOAuth2AccountController extends BaseController {
         //注册成功后获取token
 
         if (result.isSuccess()) {
-            PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
-            pcPairTokenParams.setAppid(pcoAuth2RegisterParams.getClient_id());
-            pcPairTokenParams.setUserid(result.getModels().get("userid").toString());
-            pcPairTokenParams.setTs(pcoAuth2RegisterParams.getInstance_id());
+            PcPairTokenParams pcPairTokenParams = buildPcPairTokenParams(result, pcoAuth2RegisterParams);
             result = pcoAuth2RegManager.getPairToken(pcPairTokenParams);
             if (result.isSuccess()) {
                 AccountToken accountToken = (AccountToken) result.getDefaultModel();
-                // 获取昵称并返回
+                result = new APIResultSupport(true);
                 String passportId = accountToken.getPassportId();
-                GetUserInfoApiparams userInfoApiParams = new GetUserInfoApiparams(passportId, "uniqname");
-                Result userInfoResult = proxyUserInfoApiManager.getUserInfo(userInfoApiParams);
-                String uniqname;
-                if (userInfoResult.isSuccess()) {
-                    uniqname = (String) userInfoResult.getModels().get("uniqname");
-                    uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-                } else {
-                    uniqname = defaultUniqname(passportId);
-                }
-                result.setDefaultModel("uniqname", Coder.enBase64(uniqname));
-                result.setDefaultModel("passportId", Coder.enBase64(passportId));
-                result.setDefaultModel("result", 0);
-                result.setDefaultModel("sid", 0);
-                result.setDefaultModel("logintype", "sogou");
+                setDefaultModelForResult(result, passportId, accountToken);
             }
         }
         return result.toString();
+    }
+
+    private PcPairTokenParams buildPcPairTokenParams(Result result, PCOAuth2RegisterParams params) {
+        PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
+        pcPairTokenParams.setAppid(params.getClient_id());
+        pcPairTokenParams.setUserid(result.getModels().get("userid").toString());
+        pcPairTokenParams.setTs(params.getInstance_id());
+        return pcPairTokenParams;
+
+    }
+
+    private Result setDefaultModelForResult(Result result, String passportId, AccountToken accountToken) throws Exception {
+        result.setDefaultModel("accesstoken", accountToken.getAccessToken());
+        result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
+        result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
+        result.setDefaultModel("sname", Coder.enBase64(passportId));
+        result.setDefaultModel("passport", Coder.enBase64(passportId));
+        result.setDefaultModel("result", 0);
+        result.setDefaultModel("sid", 0);
+        result.setDefaultModel("logintype", "sogou");
+        return result;
     }
 
     /**
