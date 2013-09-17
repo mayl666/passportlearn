@@ -90,8 +90,6 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
-    private LoginApiManager sgLoginApiManager;
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
 
     /*

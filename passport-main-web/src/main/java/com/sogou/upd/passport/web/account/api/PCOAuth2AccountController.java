@@ -64,7 +64,7 @@ import java.net.URLDecoder;
 public class PCOAuth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PCOAuth2AccountController.class);
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private SecureManager secureManager;
     @Autowired
@@ -204,7 +204,7 @@ public class PCOAuth2AccountController extends BaseController {
                 // 获取昵称并返回
                 String passportId = accountToken.getPassportId();
                 GetUserInfoApiparams userInfoApiParams = new GetUserInfoApiparams(passportId, "uniqname");
-                Result userInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(userInfoApiParams);
+                Result userInfoResult = proxyUserInfoApiManager.getUserInfo(userInfoApiParams);
                 String uniqname;
                 if (userInfoResult.isSuccess()) {
                     uniqname = (String) userInfoResult.getModels().get("uniqname");
@@ -214,7 +214,8 @@ public class PCOAuth2AccountController extends BaseController {
                 }
                 result.setDefaultModel("uniqname", Coder.enBase64(uniqname));
                 result.setDefaultModel("passportId", Coder.enBase64(passportId));
-                result.setDefaultModel("sid", "0");
+                result.setDefaultModel("result", 0);
+                result.setDefaultModel("sid", 0);
                 result.setDefaultModel("logintype", "sogou");
             }
         }
@@ -265,18 +266,18 @@ public class PCOAuth2AccountController extends BaseController {
             //构造成功返回结果
             result = new APIResultSupport(true);
             //获取token
-            Result tokenResult =pcAccountManager.createAccountToken(userId,loginParams.getInstanceid(),clientId);
+            Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            result.setDefaultModel("accesstoken",accountToken.getAccessToken());
-            result.setDefaultModel("refreshtoken",accountToken.getRefreshToken());
+            result.setDefaultModel("accesstoken", accountToken.getAccessToken());
+            result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
 
-            result.setDefaultModel("autologin",loginParams.getRememberMe());
+            result.setDefaultModel("autologin", loginParams.getRememberMe());
             result.setDefaultModel("passport", Coder.enBase64(userId));
             result.setDefaultModel("sname", Coder.enBase64(userId));
             result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
-            result.setDefaultModel("result",0);
-            result.setDefaultModel("sid",0);
-            result.setDefaultModel("logintype","sogou");
+            result.setDefaultModel("result", 0);
+            result.setDefaultModel("sid", 0);
+            result.setDefaultModel("logintype", "sogou");
             loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(passportId, ip);
@@ -285,7 +286,7 @@ public class PCOAuth2AccountController extends BaseController {
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
-            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
@@ -331,14 +332,14 @@ public class PCOAuth2AccountController extends BaseController {
 
         //获取头像Url
         result = accountInfoManager.obtainPhoto(passportId, "180");
-        String imageUrl = result.getModels().get("180") != null ? result.getModels().get("180").toString():"";
+        String imageUrl = result.getModels().get("180") != null ? result.getModels().get("180").toString() : "";
         model.addAttribute("imageUrl", imageUrl);
         //获取昵称
         model.addAttribute("userid", passportId);
         model.addAttribute("uniqname", getUniqname(passportId));
 
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
-        handleBind(passportId,model);
+        handleBind(passportId, model);
 
         //生成cookie
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
@@ -363,7 +364,7 @@ public class PCOAuth2AccountController extends BaseController {
         return msg;
     }
 
-    private void handleBind(String passportId,Model model) throws Exception{
+    private void handleBind(String passportId, Model model) throws Exception {
         AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
         switch (accountDomain) {
             case SOHU:
@@ -386,16 +387,16 @@ public class PCOAuth2AccountController extends BaseController {
         //获取绑定手机，绑定邮箱
         Result result = secureManager.queryAccountSecureInfo(passportId, CommonConstant.PC_CLIENTID, true);
         if (result.isSuccess()) {
-            String bindMobile = result.getModels().get("sec_mobile") != null ? result.getModels().get("sec_mobile").toString():"";
+            String bindMobile = result.getModels().get("sec_mobile") != null ? result.getModels().get("sec_mobile").toString() : "";
             model.addAttribute("bindMoblile", bindMobile);
-            String bindEmail = result.getModels().get("sec_email") != null ? result.getModels().get("sec_email").toString():"";
+            String bindEmail = result.getModels().get("sec_email") != null ? result.getModels().get("sec_email").toString() : "";
             model.addAttribute("bindEmail", bindEmail);
         }
     }
 
     private String getUniqname(String passportId) {
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-        Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+        Result getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
         String uniqname;
         if (getUserInfoResult.isSuccess()) {
             uniqname = (String) getUserInfoResult.getModels().get("uniqname");

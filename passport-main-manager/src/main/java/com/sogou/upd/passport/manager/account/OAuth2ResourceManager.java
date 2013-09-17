@@ -14,16 +14,14 @@ public interface OAuth2ResourceManager {
 
     /**
      * 获取cookie值
-     * @param params
      * @return
      */
-    public Result getCookieValue(PCOAuth2ResourceParams params);
+    public Result getCookieValue(String passportId);
 
     /**
      * 获取完整的个人信息
-     * @param params
      * @return
      */
-    public Result getFullUserInfo(PCOAuth2ResourceParams params);
+    public Result getFullUserInfo(String passportId);
 
 }

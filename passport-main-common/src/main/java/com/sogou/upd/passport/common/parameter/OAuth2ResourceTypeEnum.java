@@ -21,7 +21,7 @@ public enum OAuth2ResourceTypeEnum {
 
     public static boolean isEqual(String value, OAuth2ResourceTypeEnum resourceTypeEnum) {
         if (!Strings.isNullOrEmpty(value)) {
-            return value.equals(resourceTypeEnum.toString());
+            return value.equals(resourceTypeEnum.getValue());
         }
         return false;
     }

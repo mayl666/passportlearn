@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.exception.ServiceException;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,40 +14,34 @@ import com.sogou.upd.passport.exception.ServiceException;
  */
 public interface SHPlusTokenService {
 
-    public String queryPassportBySHPlusId(String shPlusId);
-
     /**
-     * 校验refreshtoken
-     *
-     * @param clientId
-     * @param instanceId
-     * @param accessToken
-     * @return
-     * @throws ServiceException
-     */
-    public boolean verifyShPlusAccessToken(int clientId, String instanceId, String accessToken) throws ServiceException;
-
-    /**
-     * 校验refreshtoken
+     * 根据RefreshToken获得AccessToken
      *
      * @param passportId
-     * @param clientId
      * @param instanceId
      * @param refreshToken
      * @return
      * @throws ServiceException
      */
-    public boolean verifyShPlusRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+    public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException;
 
     /**
      * 通过获取token获取资源
      *
-     * @param instance_id
-     * @param access_token
-     * @param scope
-     * @param resource_type
+     * @param instanceId
+     * @param accessToken
+     * @param resourceType
      * @return
      * @throws ServiceException
      */
-    public String getResourceByToken(String instance_id, String access_token, String scope, String resource_type) throws ServiceException;
+    public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException;
+
+    /**
+     * 复制sohu+头像到本地
+     * @param passportId
+     * @param instanceId
+     * @param accessToken
+     * @return
+     */
+    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken);
 }

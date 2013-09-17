@@ -23,13 +23,13 @@ public class PCAccountCheckRegNameParams {
         if (Strings.isNullOrEmpty(username)) {
             return true;
         }
-            if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                //个性账号格式是否拼配
-                String regx = "[a-z]([a-zA-Z0-9_.]{4,16})";
-                if (!username.matches(regx)) {
-                    return false;
-                }
+        if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+            //个性账号格式是否拼配
+            String regx = "[a-z]([a-zA-Z0-9_.]{4,16})";
+            if (!username.matches(regx)) {
+                return false;
             }
+        }
         return true;
     }
 

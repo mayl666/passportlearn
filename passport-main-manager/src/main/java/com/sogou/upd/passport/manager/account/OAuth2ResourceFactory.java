@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,34 +28,42 @@ public class OAuth2ResourceFactory {
     private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     public static Result getResource(PCOAuth2ResourceParams params, AppConfig appConfig) {
-        Result result = new OAuthResultSupport(false);
-        String resourceType = params.getResource_type();
-        //校验accessToken
-
-        if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
-
-        } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
-
-        } else {
-           result.setCode(ErrorUtil.INVALID_RESOURCE_TYPE);
-        }
-        return result;
+        OAuth2ResourceFactory factory = new OAuth2ResourceFactory();
+        String clientSecret = appConfig.getClientSecret();
+        return factory.resource(params, clientSecret);
     }
 
-    /*
-     * 验证accessToken有效性并且返回passportId
-     */
-    private String queryPassportIdByToken(int clientId, String instanceId, String clientSecret, String accessToken) throws Exception {
+    public Result resource(PCOAuth2ResourceParams params, String clientSecret) {
+        Result result = new OAuthResultSupport(false);
+        int clientId = params.getClient_id();
+        String instanceId = params.getInstance_id();
+        String accessToken = params.getAccess_token();
+        try {
+            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            //校验accessToken
+            if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
+                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return result;
+            }
 
-//        boolean isRightPcRToken = pcAccountTokenService.verifyAccessToken(clientId, instanceId, clientSecret, accessToken);
-//        if (!isRightPcRToken) {
-//            String passportId = shPlusTokenService.verifyShPlusAccessToken(clientId, instanceId, accessToken);
-//            return isRightSHRToken;
-//        }
-//        return true;
-        return null;
+            String resourceType = params.getResource_type();
+            if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
+                result = oAuth2ResourceManager.getCookieValue(passportId);
+            } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
+                result = oAuth2ResourceManager.getFullUserInfo(passportId);
+            } else {
+                result.setCode(ErrorUtil.INVALID_RESOURCE_TYPE);
+                return result;
+            }
+        } catch (Exception e) {
+            log.error("Obtain OAuth2 Resource Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
 }

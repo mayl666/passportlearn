@@ -51,7 +51,7 @@ public class PCAccountController extends BaseController {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
@@ -154,7 +154,7 @@ public class PCAccountController extends BaseController {
             // 获取昵称，返回格式
             String passportId = accountToken.getPassportId();
             GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-            Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+            Result getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             String uniqname;
             if (getUserInfoResult.isSuccess()) {
                 uniqname = (String) getUserInfoResult.getModels().get("uniqname");
