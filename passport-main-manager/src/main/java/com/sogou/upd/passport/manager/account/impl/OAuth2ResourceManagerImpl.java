@@ -122,11 +122,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String ppinf = (String) cookieResult.getModels().get("ppinf");
                 String pprdig = (String) cookieResult.getModels().get("pprdig");
                 String[] cookieArray = new String[]{"ppinf=" + ppinf, "ppridg=" + pprdig};
-                Map resource = Maps.newHashMap();
-                resource.put("msg", "get cookie success");
-                resource.put("code", "0");
-                resource.put("scookie", cookieArray);
-                resourceMap.put(RESOURCE, resource);
+                resourceMap.put("msg", "get cookie success");
+                resourceMap.put("code", "0");
+                resourceMap.put("scookie", cookieArray);
             } else {
                 Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_COOKIE);
                 resourceMap = (Map) map.get(RESOURCE);
@@ -173,9 +171,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String tinyAvatar = (String) ((Map) userInfoResult.getModels().get("avatarurl")).get("img_55");
                 String email = (String) userInfoResult.getModels().get("sec_email");
                 String uniqname = (String) userInfoResult.getModels().get("uniqname");
-                Map resource = Maps.newHashMap();
-                resource.put("msg", "get full user info success");
-                resource.put("code", "0");
                 Map data = Maps.newHashMap();
                 data.put("sname", uniqname);
                 data.put("nick", uniqname);
@@ -183,8 +178,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 data.put("large_avatar", largeAvatar);
                 data.put("mid_avatar", midAvatar);
                 data.put("tiny_avatar", tinyAvatar);
-                resource.put("data", data);
-                resourceMap.put(RESOURCE, resource);
+                resourceMap.put("data", data);
+                resourceMap.put("msg", "get full user info success");
+                resourceMap.put("code", "0");
+                result.setDefaultModel(RESOURCE, resourceMap);
             } else {
                 Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
                 resourceMap = (Map) map.get(RESOURCE);

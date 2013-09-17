@@ -25,7 +25,7 @@ public class OAuth2ResourceManagerTest extends BaseTest {
     public static final String ACCESS_TOKEN_SHPLUS = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
     public static final String INSTANCEID = "323906108";
 
-    public static final String ACCESS_TOKEN_SG = "h34XqEVyxMaRphjblxAbLnoItQ1z_re3PfABehoSM3U1-GyQyQ0zAYxjVhEqWcjg";
+    public static final String ACCESS_TOKEN_SG = "h34XqEVyxMaRphjblxAbLtocLbQOUOnbO5kJ0VMlzN5nT96JgoGLw4t6dfPTSLBr";
 
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
@@ -35,9 +35,9 @@ public class OAuth2ResourceManagerTest extends BaseTest {
         PCOAuth2ResourceParams params = new PCOAuth2ResourceParams();
         params.setClient_id(CLIENT_ID);
         params.setClient_secret(CLIENT_SECRET);
-        params.setAccess_token(ACCESS_TOKEN_SHPLUS);
+        params.setAccess_token(ACCESS_TOKEN_SG);
         params.setInstance_id(INSTANCEID);
-        params.setResource_type("cookie.get");
+        params.setResource_type("full.get");
         Result result = oAuth2ResourceManager.resource(params);
         System.out.println("resource result:" + result);
     }
