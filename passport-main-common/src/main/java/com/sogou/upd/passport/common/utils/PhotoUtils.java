@@ -73,7 +73,7 @@ public class PhotoUtils {
         listCDN.add("http://imgstore04.cdn.sogou.com");
     }
     //图片名生成
-    public static String generalFileName()
+    public String generalFileName()
     {
         StringBuilder sb = new StringBuilder();
         for(int i=0;i<16;i++)
