@@ -119,8 +119,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                     result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
                     return result;
                 }
-                String ppinf = (String) cookieResult.getModels().get("ppinf");
-                String pprdig = (String) cookieResult.getModels().get("pprdig");
+                String suffix = ";path=/;domain=.sogou.com;expires=Tuesday, 17-Sep-13 19:02:21 GMT";
+                String ppinf = cookieResult.getModels().get("ppinf") + suffix;
+                String pprdig = cookieResult.getModels().get("pprdig") + suffix;
                 String[] cookieArray = new String[]{"ppinf=" + ppinf, "ppridg=" + pprdig};
                 resourceMap.put("msg", "get cookie success");
                 resourceMap.put("code", "0");
