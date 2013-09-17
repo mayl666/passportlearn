@@ -28,7 +28,7 @@ public class SHPlusTokenServiceTest extends BaseTest {
 //    @Test
 //    public void testVerifyShPlusAccessToken() {
 //
-//        int clientId = 1065;
+//        int clientId = 1044;
 //        String instanceId = "323906108";
 //        String accesstoken = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
 //
@@ -44,7 +44,7 @@ public class SHPlusTokenServiceTest extends BaseTest {
      */
     @Test
     public void testVerifyShPlusRefreshToken() {
-        int clientId = 1065;
+        int clientId = 1044;
         String instanceId = "323906108";
         String passportId = "shipengzhi1986@sogou.com";
         String refreshToken = "58cc24195472c1c25a378513b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
