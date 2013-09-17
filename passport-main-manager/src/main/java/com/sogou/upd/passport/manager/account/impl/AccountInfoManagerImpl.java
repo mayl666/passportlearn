@@ -7,10 +7,15 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * User: mayan
@@ -35,7 +40,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 return result;
             }
             //获取图片名
-            String imgName = PhotoUtils.generalFileName();
+            String imgName = photoUtils.generalFileName();
             // 上传到OP图片平台
             if (photoUtils.uploadImg(imgName, byteArr,null,type)) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
@@ -62,22 +67,38 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     public Result obtainPhoto(String passportId, String size) {
         Result result = new APIResultSupport(false);
         try {
+            String []sizeArry=null;
             //获取size对应的appId
             if(!Strings.isNullOrEmpty(size)){
-                String clientId=photoUtils.getAppIdBySize(size);
+                //检测是否是支持的尺寸
+                sizeArry=size.split(",");
+
+                if(ArrayUtils.isNotEmpty(sizeArry)){
+                    for(int i=0;i<sizeArry.length;i++){
+                        if(Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))){
+                            result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
+                            return result;
+                        }
+                    }
+                }
 
                 String cacheKey="SP.PASSPORTID:SOHU+IMAGE_"+passportId;
                 String image=redisUtils.get(cacheKey);
 
-                if(!Strings.isNullOrEmpty(image)){
-                    //随机获取cdn域名
-                    String cdnUrl=photoUtils.getCdnURL();
-                    String photoURL =String.format(image, cdnUrl, clientId);
-                    if(!Strings.isNullOrEmpty(photoURL)){
-                        result.setSuccess(true);
-                        result.setDefaultModel(size,photoURL);
-                        return result;
+                if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
+                    result.setSuccess(true);
+                    for (int i=0;i<sizeArry.length;i++){
+                        //随机获取cdn域名
+                        String cdnUrl=photoUtils.getCdnURL();
+                        //获取图片尺寸
+                        String clientId=photoUtils.getAppIdBySize(sizeArry[i]);
+
+                        String photoURL =String.format(image, cdnUrl, clientId);
+                        if(!Strings.isNullOrEmpty(photoURL)){
+                            result.setDefaultModel(size,photoURL);
+                        }
                     }
+                    return result;
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
                     return result;

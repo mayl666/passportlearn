@@ -35,7 +35,7 @@
     <aside class="sidebar">
         <h1>搜狗浏览器个人中心</h1>
         <div class="uesr-photo">
-            <img id="avatar" src="${imageUrl}" default-src="/./static/css/oauth2pc/img_sogouAvatar175.png" />
+            <img id="avatar" src="${imageUrl}" default-src="http://imgstore01.cdn.sogou.com/app/a/100140008/1065_1379399471998" />
         </div>
         <div class="photo-error" style="display:none">亲爱的用户，您的头像上传失败，请重新再传</div>
         <div class="uesr-name">${uniqname}</div>

@@ -7,6 +7,8 @@ import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.oauth2.common.OAuth;
@@ -15,6 +17,7 @@ import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,6 +35,11 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
 
     private static Logger log = LoggerFactory.getLogger(SHPlusTokenServiceImpl.class);
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
+
+    @Autowired
+    private PhotoUtils photoUtils;
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException {
@@ -92,13 +100,26 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         if (userInfoMap != null) {
             String result = (String) userInfoMap.get("result");
             if ("confirm".equals(result)) {
-                // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar55.png
-                String avatar = (String) userInfoMap.get("tiny_avatar");
+                // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar175.png
+                String avatar = (String) userInfoMap.get("large_avatar");
                 if (!CommonHelper.isInvokeProxyApi(passportId)) {
                     // TODO 写到搜狗数据库里
                 }
-
-                return true;
+                //更新图片到缓存中
+                //获取图片名
+                String imgName = photoUtils.generalFileName();
+                // 上传到OP图片平台
+                if (photoUtils.uploadImg(imgName, null, avatar, "1")) {
+                    String imgURL = photoUtils.accessURLTemplate(imgName);
+                    //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
+                    String cacheKey = "SP.PASSPORTID:SOHU+IMAGE_" + passportId;
+                    try {
+                        redisUtils.set(cacheKey, imgURL);
+                    } catch (Exception e) {
+                        log.error("copyAvatarToLocal fail", e);
+                    }
+                    return true;
+                }
             }
         }
         return false;

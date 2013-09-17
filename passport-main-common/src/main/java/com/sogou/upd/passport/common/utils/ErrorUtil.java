@@ -227,6 +227,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_PROFILE_FIELD = "20301";
     //用户信息获取失败
     public static final String ERR_CODE_GET_USER_INFO = "20302";
+    //不支持的图片尺寸
+    public static final String ERR_CODE_ERROR_IMAGE_SIZE = "20303";
 
     /* ============================================================================ */
     /*  Connect通用的错误代码                                                        */
@@ -408,6 +410,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_OBTAIN_PHOTO, "获取图像失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
         ERR_CODE_MSG_MAP.put(ERR_CODE_GET_USER_INFO, "用户信息获取失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_IMAGE_SIZE, "不支持的图片尺寸");
+
+
+
 
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
