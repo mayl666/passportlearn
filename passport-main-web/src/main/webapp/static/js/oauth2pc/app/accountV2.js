@@ -13,8 +13,6 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
             }
             return result;
         }
-
-        if (typeof result !== 'object')
             return {};
     }
 
@@ -575,7 +573,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                             autoLogin = data.autologin,
                             // passport = Base64.encode(data.passport)
                             passport = data.passport*/
-                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + data.uniqname + '|' + data.uniqname + '|' + data.sid + '|' + data.passportId + '|' + (data.autoLogin||1)
+                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname||data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin||1)
                         console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break
@@ -746,9 +744,9 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 switch (true) {
                     case (0 == code):
                         var data = result.data;
-                        var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accessToken + '|' + data.refreshToken + '|' + /*sname*/ data.uniqname + '|' + /*nick*/ data.uniqname + '|' + data.sid + '|' + data.passportId + '|' + '1';
+                        var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accessToken + '|' + data.refreshToken + '|' + /*sname*/ (data.sname||data.uniqname)+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport + '|' + '1';
                         console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
-                        window.external && window.external.passport && window.external.passport('result ', msg)
+                        window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                         /*                    case code < 1:
                         if (hasVcode) {
@@ -891,9 +889,9 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 var code = result.status;
                 switch (code) {
                     case (0 == code):
-                        var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accessToken + '|' + data.refreshToken + '|' + /*sname*/ data.uniqname + '|' + /*nick*/ data.uniqname + '|' + data.sid + '|' + data.passportId + '|' + '1';
+                        var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accessToken + '|' + data.refreshToken + '|' + /*sname*/ (data.sname||data.uniqname )+ '|' + /*nick*/ data.uniqname + '|' + data.sid + '|' + data.passportId + '|' + '1';
                         console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
-                        window.external && window.external.passport && window.external.passport('result ', msg)
+                        window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                         /*                    case 0:
                         var data = result.data,
