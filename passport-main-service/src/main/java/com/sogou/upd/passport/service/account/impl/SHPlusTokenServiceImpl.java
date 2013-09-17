@@ -92,8 +92,8 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         if (userInfoMap != null) {
             String result = (String) userInfoMap.get("result");
             if ("confirm".equals(result)) {
-                // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar55.png
-                String avatar = (String) userInfoMap.get("tiny_avatar");
+                // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar175.png
+                String avatar = (String) userInfoMap.get("large_avatar");
                 if (!CommonHelper.isInvokeProxyApi(passportId)) {
                     // TODO 写到搜狗数据库里
                 }
