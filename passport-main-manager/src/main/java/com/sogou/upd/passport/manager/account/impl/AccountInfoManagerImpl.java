@@ -40,7 +40,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 return result;
             }
             //获取图片名
-            String imgName = PhotoUtils.generalFileName();
+            String imgName = photoUtils.generalFileName();
             // 上传到OP图片平台
             if (photoUtils.uploadImg(imgName, byteArr,null,type)) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
@@ -95,7 +95,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
                         String photoURL =String.format(image, cdnUrl, clientId);
                         if(!Strings.isNullOrEmpty(photoURL)){
-                            result.setDefaultModel(size,photoURL);
+                            result.setDefaultModel(sizeArry[i],photoURL);
                         }
                     }
                     return result;
