@@ -97,6 +97,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     /**
      * 获取cookie值
+     *
      * @return
      */
     @Override
@@ -132,7 +133,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 log.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
             }
             result.setSuccess(true);
-            result.setModels(resourceMap);
+            result.setDefaultModel(RESOURCE, resourceMap);
         } catch (ServiceException e) {
             log.error("OAuth2 Resource get cookie value fail", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -143,6 +144,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     /**
      * 获取完整的个人信息
+     *
      * @return
      */
     @Override
@@ -190,7 +192,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 log.info("[SHPlusToken] get shplus userinfo by accesstoken,accessToken：" + accessToken);
             }
             result.setSuccess(true);
-            result.setModels(resourceMap);
+            result.setDefaultModel(RESOURCE, resourceMap);
         } catch (ServiceException e) {
             log.error("OAuth2 Resource get full userInfo fail", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
