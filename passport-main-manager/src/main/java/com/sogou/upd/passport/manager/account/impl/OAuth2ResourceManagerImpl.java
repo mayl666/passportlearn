@@ -120,7 +120,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                     return result;
                 }
                 String suffix1 = ";path=/;domain=.sogou.com;expires=Tuesday, 17-Sep-13 19:02:21 GMT";
-                String suffix2 = ";path=/;domain=.sogou.com;expires=Tuesday, 17-Sep-13 19:02:21 GMT";
+                String suffix2 = ";path=/;domain=.sohu.com;expires=Tuesday, 17-Sep-13 19:02:21 GMT";
                 String ppinf = (String) cookieResult.getModels().get("ppinf");
                 String pprdig = (String) cookieResult.getModels().get("pprdig");
                 String[] cookieArray = new String[]{"spinfo=" + ppinf + suffix1, "spinfo=" + ppinf + suffix2, "spsession=" + pprdig + suffix1, "spsession=" + pprdig + suffix2};
