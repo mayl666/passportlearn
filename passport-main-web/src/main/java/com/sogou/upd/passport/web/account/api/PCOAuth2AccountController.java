@@ -194,8 +194,9 @@ public class PCOAuth2AccountController extends BaseController {
         //注册成功后获取token
 
         if (result.isSuccess()) {
-            PcPairTokenParams pcPairTokenParams = buildPcPairTokenParams(result, pcoAuth2RegisterParams);
-            result = pcoAuth2RegManager.getPairToken(pcPairTokenParams);
+            String userId = result.getModels().get("userid").toString();
+            String instanceId = pcoAuth2RegisterParams.getInstance_id();
+            result = pcAccountManager.createAccountToken(userId, instanceId, clientId);
             if (result.isSuccess()) {
                 AccountToken accountToken = (AccountToken) result.getDefaultModel();
                 result = new APIResultSupport(true);
@@ -204,15 +205,6 @@ public class PCOAuth2AccountController extends BaseController {
             }
         }
         return result.toString();
-    }
-
-    private PcPairTokenParams buildPcPairTokenParams(Result result, PCOAuth2RegisterParams params) {
-        PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
-        pcPairTokenParams.setAppid(params.getClient_id());
-        pcPairTokenParams.setUserid(result.getModels().get("userid").toString());
-        pcPairTokenParams.setTs(params.getInstance_id());
-        return pcPairTokenParams;
-
     }
 
     private Result setDefaultModelForResult(Result result, String passportId, AccountToken accountToken) throws Exception {
