@@ -65,11 +65,11 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
-    private HostHolder hostHolder;
-    @Autowired
     private AccountInfoManager accountInfoManager;
     @Autowired
     private OAuth2AuthorizeManager oAuth2AuthorizeManager;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
@@ -116,7 +116,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
 
-        result = OAuth2ResourceFactory.getResource(params);
+        result = oAuth2ResourceManager.resource(params);
         return result.toString();
     }
 

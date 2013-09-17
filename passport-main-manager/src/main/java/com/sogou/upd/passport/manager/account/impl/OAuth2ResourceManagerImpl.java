@@ -14,8 +14,12 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     public static final String RESOURCE = "resource";
 
     @Autowired
+    private AppConfigService appConfigService;
+    @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
@@ -47,7 +53,52 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private SHPlusTokenService shPlusTokenService;
+    @Autowired
+    private PCAccountTokenService pcAccountTokenService;
 
+    @Override
+    public Result resource(PCOAuth2ResourceParams params) {
+        Result result = new OAuthResultSupport(false);
+        int clientId = params.getClient_id();
+        String instanceId = params.getInstance_id();
+        String accessToken = params.getAccess_token();
+        try {
+            clientId = clientId == 30000004 ? 1044 : clientId;  //兼容浏览器PC端sohu+接口
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENT);
+                return result;
+            }
+            String clientSecret = appConfig.getClientSecret();
+            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            if (!Strings.isNullOrEmpty(passportId)) {
+                //校验accessToken
+                if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
+                    result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                    return result;
+                }
+            }
+
+            String resourceType = params.getResource_type();
+            if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
+                result = getCookieValue(accessToken, clientSecret, instanceId);
+            } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
+                result = getFullUserInfo(accessToken, clientSecret, instanceId);
+            } else {
+                result.setCode(ErrorUtil.INVALID_RESOURCE_TYPE);
+                return result;
+            }
+        } catch (Exception e) {
+            log.error("Obtain OAuth2 Resource Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
+    }
+
+    /**
+     * 获取cookie值
+     * @return
+     */
     @Override
     public Result getCookieValue(String accessToken, String clientSecret, String instanceId) {
         Result result = new OAuthResultSupport(false);
@@ -90,6 +141,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     }
 
+    /**
+     * 获取完整的个人信息
+     * @return
+     */
     @Override
     public Result getFullUserInfo(String accessToken, String clientSecret, String instanceId) {
         Result result = new OAuthResultSupport(false);

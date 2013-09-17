@@ -13,6 +13,13 @@ import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 public interface OAuth2ResourceManager {
 
     /**
+     * 获取受保护的资源
+     * @param params
+     * @return
+     */
+    public Result resource(PCOAuth2ResourceParams params);
+
+    /**
      * 获取cookie值
      * @return
      */
