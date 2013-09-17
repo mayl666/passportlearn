@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
@@ -19,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -106,8 +103,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
                                 redisUtils.hPutAll(cacheKey, mapResult);
 
-                                cacheKey="SP.PASSPORTID:IMAGE_"+passportId;
-                                redisUtils.set(cacheKey,sgImg);
+                                cacheKey = "SP.PASSPORTID:IMAGE_" + passportId;
+                                redisUtils.set(cacheKey, sgImg);
                             } else {
                                 result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
                                 return result;
@@ -125,11 +122,13 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
                             redisUtils.hPutAll(cacheKey, mapResult);
 
-                            cacheKey="SP.PASSPORTID:IMAGE_"+passportId;
-                            redisUtils.set(cacheKey,sgImg);
+                            cacheKey = "SP.PASSPORTID:IMAGE_" + passportId;
+                            redisUtils.set(cacheKey, sgImg);
                         }
                     }
-                    result.setDefaultModel("avatarurl", accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize()));
+                    Result photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+                    Map photoMap = photoResult.getModels();
+                    result.setDefaultModel("avatarurl", photoMap);
 
                 }
             }

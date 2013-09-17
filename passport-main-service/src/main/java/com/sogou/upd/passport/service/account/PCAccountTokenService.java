@@ -24,13 +24,6 @@ public interface PCAccountTokenService {
     public AccountToken initialOrUpdateAccountToken(String passportId, String instanceId, AppConfig appConfig) throws ServiceException;
 
     /**
-     * 验证AccessToken合法性并返回PassportId
-     * @param token
-     * @return
-     */
-    public String queryPassportIdByAccessToken(String token, String clientSecret);
-
-    /**
      * 查询AccountToken
      *
      * @param passportId

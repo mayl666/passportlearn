@@ -69,20 +69,20 @@ public class TokenDecrypt {
 
     /**
      * 根据refreshToken解密,并返回passportId
+     * 解密失败则返回null
      */
-    public static String decryptPcToken(String token, String clientSecret) throws Exception {
+    public static String decryptPcToken(String token, String clientSecret) {
+        String passportId = null;
         try {
-            String passportId = null;
             String decryptStr = AES.decryptURLSafeString(token, clientSecret);
             if (!Strings.isNullOrEmpty(decryptStr)) {
                 String[] strArray = decryptStr.split("\\"+CommonConstant.SEPARATOR_1);
                 passportId = strArray[0];
             }
-            return passportId;
         } catch (Exception e) {
             logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", token);
-            throw e;
         }
+        return passportId;
     }
 
     /**

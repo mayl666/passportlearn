@@ -16,12 +16,12 @@ public interface OAuth2ResourceManager {
      * 获取cookie值
      * @return
      */
-    public Result getCookieValue(String passportId);
+    public Result getCookieValue(String accessToken, String clientSecret, String instanceId);
 
     /**
      * 获取完整的个人信息
      * @return
      */
-    public Result getFullUserInfo(String passportId);
+    public Result getFullUserInfo(String accessToken, String clientSecret, String instanceId);
 
 }

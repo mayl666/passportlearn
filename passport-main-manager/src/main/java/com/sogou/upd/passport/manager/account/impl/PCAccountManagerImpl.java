@@ -19,6 +19,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -224,7 +225,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
                 return finalResult;
             }
-            String passportId = pcAccountService.queryPassportIdByAccessToken(token,appConfig.getClientSecret());
+            String passportId = TokenDecrypt.decryptPcToken(token, appConfig.getClientSecret());
             if(StringUtils.isEmpty(passportId)){
                 if(clientId == CommonConstant.BROWSER_CLIENTID){
                      //TODO 通过sohu+ token获取userid

@@ -4,16 +4,18 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.service.account.SHPlusTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     private Logger log = LoggerFactory.getLogger(OAuth2ResourceManagerImpl.class);
 
+    public static final String RESOURCE = "resource";
+
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
@@ -42,35 +46,44 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
-    private AccountInfoManager accountInfoManager;
+    private SHPlusTokenService shPlusTokenService;
 
     @Override
-    public Result getCookieValue(String passportId) {
+    public Result getCookieValue(String accessToken, String clientSecret, String instanceId) {
         Result result = new OAuthResultSupport(false);
-        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams(passportId,
-                CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1);
         Result cookieResult;
+        Map resourceMap = Maps.newHashMap();
         try {
-            if (CommonHelper.isBuildNewCookie()) {
-                cookieResult = sgLoginApiManager.getCookieValue(createCookieUrlApiParams);
+            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            if (!Strings.isNullOrEmpty(passportId)) {
+                CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams(passportId,
+                        CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1);
+                if (CommonHelper.isBuildNewCookie()) {
+                    cookieResult = sgLoginApiManager.getCookieValue(createCookieUrlApiParams);
+                } else {
+                    cookieResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+                }
+                if (!cookieResult.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                    return result;
+                }
+                String ppinf = (String) cookieResult.getModels().get("ppinf");
+                String pprdig = (String) cookieResult.getModels().get("pprdig");
+                String[] cookieArray = new String[]{"ppinf=" + ppinf, "ppridg=" + pprdig};
+                Map resource = Maps.newHashMap();
+                resource.put("msg", "get cookie success");
+                resource.put("code", "0");
+                resource.put("scookie", cookieArray);
+                resourceMap.put(RESOURCE, resource);
             } else {
-                cookieResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+                Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_COOKIE);
+                resourceMap = (Map) map.get(RESOURCE);
+                log.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
             }
-            if (!cookieResult.isSuccess()) {
-                result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-                return result;
-            }
-            String ppinf = (String) cookieResult.getModels().get("ppinf");
-            String pprdig = (String) cookieResult.getModels().get("pprdig");
             result.setSuccess(true);
-            Map resource = Maps.newHashMap();
-            String[] cookieArray = {ppinf, pprdig};
-            resource.put("msg", "get cookie success");
-            resource.put("code", "0");
-            resource.put("scookie", cookieArray);
-            setResourceMap(resource, result);
+            result.setModels(resourceMap);
         } catch (ServiceException e) {
-            log.error("OAuth2 Resource get cookie value fail,passportId:" + passportId, e);
+            log.error("OAuth2 Resource get cookie value fail", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
@@ -78,65 +91,56 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public Result getFullUserInfo(String passportId) {
+    public Result getFullUserInfo(String accessToken, String clientSecret, String instanceId) {
         Result result = new OAuthResultSupport(false);
-        String fields = "sec_email,uniqname";
-        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, fields);
-        Result userInfoResult;
+        Map resourceMap = Maps.newHashMap();
         try {
-            if (CommonHelper.isInvokeProxyApi(passportId)) {
-                userInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            if (!Strings.isNullOrEmpty(passportId)) {
+                String fields = "sec_email,uniqname,avatarurl";
+                String imagesize = "180,55";
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, fields);
+                getUserInfoApiparams.setImagesize(imagesize);
+                Result userInfoResult;
+                if (CommonHelper.isInvokeProxyApi(passportId)) {
+                    userInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                } else {
+                    userInfoResult = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                }
+                if (!userInfoResult.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_GET_USER_INFO);
+                    return result;
+                }
+                String largeAvatar = (String) ((Map) userInfoResult.getModels().get("avatarurl")).get("img_180");
+                String midAvatar = (String) ((Map) userInfoResult.getModels().get("avatarurl")).get("img_55");
+                String tinyAvatar = (String) ((Map) userInfoResult.getModels().get("avatarurl")).get("img_55");
+                String email = (String) userInfoResult.getModels().get("sec_email");
+                String uniqname = (String) userInfoResult.getModels().get("uniqname");
+                Map resource = Maps.newHashMap();
+                resource.put("msg", "get full user info success");
+                resource.put("code", "0");
+                Map data = Maps.newHashMap();
+                data.put("sname", uniqname);
+                data.put("nick", uniqname);
+                data.put("email", Strings.isNullOrEmpty(email) ? "" : email);
+                data.put("large_avatar", largeAvatar);
+                data.put("mid_avatar", midAvatar);
+                data.put("tiny_avatar", tinyAvatar);
+                resource.put("data", data);
+                resourceMap.put(RESOURCE, resource);
             } else {
-                userInfoResult = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
+                resourceMap = (Map) map.get(RESOURCE);
+
+                log.info("[SHPlusToken] get shplus userinfo by accesstoken,accessToken：" + accessToken);
             }
-            if (!userInfoResult.isSuccess()) {
-                result.setCode(ErrorUtil.ERR_CODE_GET_USER_INFO);
-                return result;
-            }
-            // TODO 支持一次返回多张图片
-            Result photoResult = accountInfoManager.obtainPhoto(passportId, "180");
-            String largeAvatar;
-            String midAvatar;
-            String tinyAvatar;
-            if (!photoResult.isSuccess()) {          // TODO 换成搜狗的默认图片地址
-                largeAvatar = CommonConstant.DEFAULT_AVATAR_URL + "175.png";
-                midAvatar = CommonConstant.DEFAULT_AVATAR_URL + "95.png";
-                tinyAvatar = CommonConstant.DEFAULT_AVATAR_URL + "55.png";
-            } else {
-                largeAvatar = (String) photoResult.getModels().get("180");
-                midAvatar = (String) photoResult.getModels().get("95");
-                tinyAvatar = (String) photoResult.getModels().get("55");
-            }
-            String email = (String) userInfoResult.getModels().get("sec_email");
-            String uniqname = (String) userInfoResult.getModels().get("uniqname");
             result.setSuccess(true);
-            Map resource = Maps.newHashMap();
-            resource.put("msg", "get full user info success");
-            resource.put("code", "0");
-            Map data = Maps.newHashMap();
-            data.put("sname", uniqname);
-            data.put("nick", uniqname);
-            data.put("email", Strings.isNullOrEmpty(email) ? "" : email);
-            data.put("large_avatar", largeAvatar);
-            data.put("mid_avatar", midAvatar);
-            data.put("tiny_avatar", tinyAvatar);
-            resource.put("data", data);
-            setResourceMap(resource, result);
+            result.setModels(resourceMap);
         } catch (ServiceException e) {
-            log.error("OAuth2 Resource get full userInfo fail,passportId:" + passportId, e);
+            log.error("OAuth2 Resource get full userInfo fail", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
     }
 
-    /*
-     * 统一的返回结果
-     *  resource: {...},
-     *  result: "confirm"
-     */
-    private void setResourceMap(Map resource, Result result) {
-        Map resourceMap = Maps.newHashMap();
-        resourceMap.put("resource", resource);
-        result.setModels(resourceMap);
-    }
 }

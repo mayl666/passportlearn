@@ -115,11 +115,6 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        AppConfig appConfig = configureManager.verifyClientVaild(params.getClient_id(), params.getClient_secret());
-        if (appConfig == null) {
-            result.setCode(ErrorUtil.INVALID_CLIENT);
-            return result;
-        }
 
         result = OAuth2ResourceFactory.getResource(params);
         return result.toString();

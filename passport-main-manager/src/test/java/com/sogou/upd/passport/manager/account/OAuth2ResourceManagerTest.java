@@ -19,21 +19,25 @@ import java.util.Map;
  */
 public class OAuth2ResourceManagerTest extends BaseTest {
 
+    public static final String CLIENT_SECRET = "c1756a351db27d817225e2a4fd7b3f7d";
+    public static final String ACCESS_TOKEN_SHPLUS = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
+    public static final String INSTANCEID = "323906108";
+
+    public static final String ACCESS_TOKEN_SG = "h34XqEVyxMaRphjblxAbLnoItQ1z_re3PfABehoSM3U1-GyQyQ0zAYxjVhEqWcjg";
+
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
 
     @Test
     public void testGetCookieValue() {
-        String passportId = "shipengzhi1986@sogou.com";
-        Result result = oAuth2ResourceManager.getCookieValue(passportId);
-        System.out.println(result.toString());
+        Result result = oAuth2ResourceManager.getCookieValue(ACCESS_TOKEN_SG, CLIENT_SECRET, INSTANCEID);
+        System.out.println("get cookie value result" + result.toString());
     }
 
     @Test
     public void testGetFullUserInfo() {
-        String passportId = "shipengzhi1986@sogou.com";
-        Result result = oAuth2ResourceManager.getFullUserInfo(passportId);
-        System.out.println(result.toString());
+        Result result = oAuth2ResourceManager.getFullUserInfo(ACCESS_TOKEN_SG, CLIENT_SECRET, INSTANCEID);
+        System.out.println("get userinfo result" + result.toString());
     }
 
     @Test

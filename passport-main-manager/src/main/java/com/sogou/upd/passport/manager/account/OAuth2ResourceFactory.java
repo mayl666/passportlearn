@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -7,7 +8,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
-import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
@@ -27,8 +27,7 @@ public class OAuth2ResourceFactory {
 
     @Autowired
     private AppConfigService appConfigService;
-    @Autowired
-    private SHPlusTokenService shPlusTokenService;
+
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
@@ -51,19 +50,21 @@ public class OAuth2ResourceFactory {
                 result.setCode(ErrorUtil.INVALID_CLIENT);
                 return result;
             }
-
-            String passportId = TokenDecrypt.decryptPcToken(accessToken, appConfig.getClientSecret());
-            //校验accessToken
-            if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
-                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
-                return result;
+            String clientSecret = appConfig.getClientSecret();
+            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            if (!Strings.isNullOrEmpty(passportId)) {
+                //校验accessToken
+                if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
+                    result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                    return result;
+                }
             }
 
             String resourceType = params.getResource_type();
             if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
-                result = oAuth2ResourceManager.getCookieValue(passportId);
+                result = oAuth2ResourceManager.getCookieValue(accessToken, clientSecret, instanceId);
             } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
-                result = oAuth2ResourceManager.getFullUserInfo(passportId);
+                result = oAuth2ResourceManager.getFullUserInfo(accessToken, clientSecret, instanceId);
             } else {
                 result.setCode(ErrorUtil.INVALID_RESOURCE_TYPE);
                 return result;
