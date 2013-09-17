@@ -45,7 +45,7 @@ public abstract class AbstractValidator<T extends HttpServletRequest> implements
     @Override
     public void validateMethod(T request) throws OAuthProblemException {
         String method = request.getMethod();
-        if (!method.equals(HttpConstant.HttpMethod.POST) || !method.equals(HttpConstant.HttpMethod.GET)) {
+        if (!method.equals(HttpConstant.HttpMethod.POST) && !method.equals(HttpConstant.HttpMethod.GET)) {
             throw OAuthUtils.handleOAuthProblemException("Method not set to POST or GET.");
         }
     }
