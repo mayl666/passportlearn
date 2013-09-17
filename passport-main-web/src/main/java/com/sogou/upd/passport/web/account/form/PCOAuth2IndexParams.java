@@ -19,7 +19,7 @@ public class PCOAuth2IndexParams {
     private String h;
     private String r;
     private String v; //浏览器版本
-    private int client_id= CommonConstant.BROWSER_CLIENTID;
+    private int client_id= CommonConstant.PC_CLIENTID;
 
     public String getAccesstoken() {
         return accesstoken;
