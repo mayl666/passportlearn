@@ -243,7 +243,6 @@ public class PCOAuth2AccountController extends BaseController {
         AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
         if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
             //TODO 去sohu+取该个性账号的@sohu账号
-            passportId = "tinkame700@sogou.com";
         }
 
         WebLoginParams webLoginParams = new WebLoginParams();
