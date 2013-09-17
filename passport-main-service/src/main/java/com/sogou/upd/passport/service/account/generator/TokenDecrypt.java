@@ -75,7 +75,7 @@ public class TokenDecrypt {
             String passportId = null;
             String decryptStr = AES.decryptURLSafeString(token, clientSecret);
             if (!Strings.isNullOrEmpty(decryptStr)) {
-                String[] strArray = decryptStr.split(CommonConstant.SEPARATOR_1);
+                String[] strArray = decryptStr.split("\\"+CommonConstant.SEPARATOR_1);
                 passportId = strArray[0];
             }
             return passportId;

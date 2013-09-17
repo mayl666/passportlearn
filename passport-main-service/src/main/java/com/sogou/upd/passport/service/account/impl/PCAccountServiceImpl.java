@@ -46,7 +46,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public String queryPassportIdByAccessToken(int clientId, String instanceId, String token, String clientSecret) {
+    public String queryPassportIdByAccessToken(String token, String clientSecret) {
         try {
             String passortId = TokenDecrypt.decryptPcToken(token, clientSecret);
             return passortId;
