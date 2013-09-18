@@ -112,6 +112,10 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 self.refreshVcode(img);
             });
 
+            $(".captcha").click(function(e){
+                self.refreshVcode($(this));
+            });
+
             if (location.hash == "#register") {
                 this.showReg();
             } else {
@@ -1208,13 +1212,13 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 errMsg: '请正确输入邮箱（非必填）',
                 emptyMsg: '',
                 nullable: true,
-                regStr: /[\w!#\$%&'\*\+\/=?^_`\{\|\}~\-]+(?:\.[\w!#\$%&'\*\+\/=?^_`\{\|\}~\-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/
+                regStr: /^(\w)+(\.\w+)*@([\w_\-])+((\.\w+)+)$/
             },
             password: {
-                errMsg: '请正确输入密码',
+                errMsg: '密码必须是6-16位字母、数字、下划线的组合',
                 emptyMsg: '请输入6-16位密码',
                 nullable: false,
-                regStr: /^\S{6,20}$/
+                regStr: /^\w{6,16}$/
             },
             vcode: {
                 errMsg: '请正确输入验证码',
@@ -1223,14 +1227,12 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 regStr: /^\w*$/
             },
             regacc: {
-                errMsg: '仅支持4-16位字母、数字及“-”',
+                errMsg: '必须是小写字母开头的4-16位字母、数字、“.”及“-”的组合',
                 emptyMsg: '请填写帐号',
                 nullable: false,
-                regStr: /^[a-zA-Z0-9-]{4,20}$/
-                // regStr: /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/
+                regStr: /^[a-z][a-zA-Z0-9-\.]{3,15}$/
             },
             vcode: {
-
                 errMsg: '验证码错误，请重新输入',
                 emptyMsg: '请输入验证码',
                 nullable: false

@@ -55,7 +55,6 @@ import java.net.URLDecoder;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/oauth2")
 public class PCOAuth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PCOAuth2AccountController.class);
     @Autowired
@@ -81,12 +80,12 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private RegManager regManager;
 
-    @RequestMapping(value = "/pclogin", method = RequestMethod.GET)
+    @RequestMapping(value = "/sogou/flogon", method = RequestMethod.GET)
     public String pcLogin(Model model) throws Exception {
         return "/oauth2pc/pclogin";
     }
 
-    @RequestMapping(value = "/token/")
+    @RequestMapping(value = "/oauth2/token/")
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenASRequest oauthRequest;
@@ -104,7 +103,7 @@ public class PCOAuth2AccountController extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/resource/")
+    @RequestMapping(value = "/oauth2/resource/")
     @ResponseBody
     public Object resource(PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
@@ -123,7 +122,7 @@ public class PCOAuth2AccountController extends BaseController {
     /**
      * 浏览器桌面端：用户注册检查用户名是否可用
      */
-    @RequestMapping(value = "/checkregname", method = RequestMethod.POST)
+    @RequestMapping(value = "/oauth2/checkregname", method = RequestMethod.POST)
     @ResponseBody
     public String checkRegisterName(CheckUserNameExistParameters checkParam)
             throws Exception {
@@ -151,11 +150,10 @@ public class PCOAuth2AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/oauth2/register", method = RequestMethod.POST)
     @ResponseBody
     public Object register(HttpServletRequest request, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
         Result result = new APIResultSupport(false);
-        String finalPassportId = null;
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(pcoAuth2RegisterParams);
@@ -186,15 +184,14 @@ public class PCOAuth2AccountController extends BaseController {
                     AccountToken accountToken = (AccountToken) result.getDefaultModel();
                     result = new APIResultSupport(true);
                     String passportId = accountToken.getPassportId();
-                    finalPassportId = passportId;
                     setDefaultModelForResult(result, passportId, accountToken);
                 }
             }
         } catch (Exception e) {
-            logger.error("Sohu+ Register Failed,PassportId Is " + finalPassportId, e);
+            logger.error("Sohu+ Register Failed,UserName Is " + pcoAuth2RegisterParams.getUsername(), e);
         } finally {
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(finalPassportId, request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
@@ -228,7 +225,7 @@ public class PCOAuth2AccountController extends BaseController {
     /**
      * 浏览器登陆流程
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/oauth2/login", method = RequestMethod.POST)
     @ResponseBody
     public Object login(HttpServletRequest request, PCOAuth2LoginParams loginParams)
             throws Exception {
@@ -314,7 +311,7 @@ public class PCOAuth2AccountController extends BaseController {
         return result;
     }
 
-    @RequestMapping(value = "/userinfo/pcindex", method = RequestMethod.GET)
+    @RequestMapping(value = "/sogou/profile/basic/edit", method = RequestMethod.GET)
     public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -355,7 +352,7 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/errorMsg")
+    @RequestMapping(value = "/oauth2/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
