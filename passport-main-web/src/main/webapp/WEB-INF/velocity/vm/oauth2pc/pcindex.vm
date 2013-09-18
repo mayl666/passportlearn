@@ -196,7 +196,7 @@
     </div>
 </fieldset>
 <div class="sent-btn-wrap">
-    <button class="btn-sent" id="pro_btn_pass">保存</button>
+    <button type="button"  class="btn-sent" id="pro_btn_pass">保存</button>
 </div>
 <!--这里从搜狐删除的第三方登录-->
 </form>
