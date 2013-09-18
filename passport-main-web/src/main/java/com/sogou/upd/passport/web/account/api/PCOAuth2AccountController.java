@@ -22,7 +22,6 @@ import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
@@ -31,7 +30,7 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
-import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
+import java.util.Map;
+
 
 /**
  * sohu+浏览器相关接口替换
@@ -60,11 +61,7 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
-    private SecureManager secureManager;
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private AccountInfoManager accountInfoManager;
     @Autowired
     private OAuth2AuthorizeManager oAuth2AuthorizeManager;
     @Autowired
@@ -311,6 +308,7 @@ public class PCOAuth2AccountController extends BaseController {
         return result;
     }
 
+    //个人中心页面
     @RequestMapping(value = "/sogou/profile/basic/edit", method = RequestMethod.GET)
     public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -326,15 +324,33 @@ public class PCOAuth2AccountController extends BaseController {
             return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
-        //获取头像Url
-        result = accountInfoManager.obtainPhoto(passportId, "180");
-        String imageUrl = result.getModels().get("180") != null ? result.getModels().get("180").toString() : "";
+        //获取用户信息
+        GetUserInfoApiparams getUserInfoApiparams =  new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
+        getUserInfoApiparams.setImagesize("180");
+        Result getUserInfoResult=proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+        String uniqname="",imageUrl ="",bindMobile="",bindEmail="";
+        if (getUserInfoResult.isSuccess()) {
+            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
+            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
+            bindMobile = (String) getUserInfoResult.getModels().get("sec_mobile");
+            bindMobile = Strings.isNullOrEmpty(bindMobile)?"":bindMobile;
+            bindEmail =(String)getUserInfoResult.getModels().get("sec_email");
+            bindEmail = Strings.isNullOrEmpty(bindEmail)? "":bindEmail;
+            String avatarStr =  getUserInfoResult.getModels().get("avatarurl").toString();
+            if(!StringUtils.isEmpty(avatarStr)){
+                Map map = (Map)getUserInfoResult.getModels().get("avatarurl");
+                imageUrl =(String)map.get("img_180");
+            }
+        } else {
+            uniqname = defaultUniqname(passportId);
+        }
+        model.addAttribute("uniqname",uniqname);
         model.addAttribute("imageUrl", imageUrl);
-        //获取昵称
+        model.addAttribute("bindMobile", bindMobile);
+        model.addAttribute("bindEmail", bindEmail);
         model.addAttribute("userid", passportId);
-        model.addAttribute("uniqname", getUniqname(passportId));
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
-        handleBind(passportId, model);
+        handleBind(passportId,bindMobile,bindEmail,model);
         //生成cookie
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
@@ -358,7 +374,7 @@ public class PCOAuth2AccountController extends BaseController {
         return msg;
     }
 
-    private void handleBind(String passportId, Model model) throws Exception {
+    private void handleBind(String passportId, String bindMobile, String bindEmail, Model model) throws Exception {
         AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
         switch (accountDomain) {
             case SOHU:
@@ -370,21 +386,25 @@ public class PCOAuth2AccountController extends BaseController {
                 model.addAttribute("isBindMobileUsable", 0);
                 break;
             case PHONE:
-                model.addAttribute("isBindEmailUsable", 1);
+                if (StringUtils.isEmpty(bindEmail)) {
+                    model.addAttribute("isBindEmailUsable", 1);
+                } else {
+                    model.addAttribute("isBindEmailUsable", 0);
+                }
                 model.addAttribute("isBindMobileUsable", 0);
                 break;
             default:
-                model.addAttribute("isBindEmailUsable", 1);
-                model.addAttribute("isBindMobileUsable", 1);
+                if (StringUtils.isEmpty(bindEmail)) {
+                    model.addAttribute("isBindEmailUsable", 1);
+                } else {
+                    model.addAttribute("isBindEmailUsable", 0);
+                }
+                if (StringUtils.isEmpty(bindMobile)) {
+                    model.addAttribute("isBindMobileUsable", 1);
+                } else {
+                    model.addAttribute("isBindMobileUsable", 0);
+                }
                 break;
-        }
-        //获取绑定手机，绑定邮箱
-        Result result = secureManager.queryAccountSecureInfo(passportId, CommonConstant.PC_CLIENTID, true);
-        if (result.isSuccess()) {
-            String bindMobile = result.getModels().get("sec_mobile") != null ? result.getModels().get("sec_mobile").toString() : "";
-            model.addAttribute("bindMoblile", bindMobile);
-            String bindEmail = result.getModels().get("sec_email") != null ? result.getModels().get("sec_email").toString() : "";
-            model.addAttribute("bindEmail", bindEmail);
         }
     }
 
