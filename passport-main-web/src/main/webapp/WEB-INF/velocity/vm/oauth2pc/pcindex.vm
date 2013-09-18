@@ -125,7 +125,7 @@
         <label>邮箱绑定</label>
 
         <div class="controls"  id="pro_email_area_1" style="display: none;">
-            <input autocomplete="off" disabled type="text" value="" id="pro_email" />
+            <input autocomplete="off" disabled type="text" value="" id="pro_xemail" />
             <div class="bind-btn unbind-btn">
                 <a href="javascript:">重新绑定</a>
             </div>
