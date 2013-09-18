@@ -37,7 +37,7 @@ public class OAuth2ResourceManagerTest extends BaseTest {
         params.setClient_secret(CLIENT_SECRET);
         params.setAccess_token(ACCESS_TOKEN_SG);
         params.setInstance_id(INSTANCEID);
-        params.setResource_type("full.get");
+        params.setResource_type("cookie.get");
         Result result = oAuth2ResourceManager.resource(params);
         System.out.println("resource result:" + result);
     }

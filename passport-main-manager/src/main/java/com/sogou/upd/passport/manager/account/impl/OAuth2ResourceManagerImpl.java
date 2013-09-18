@@ -186,7 +186,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             } else {
                 Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
                 resourceMap = (Map) map.get(RESOURCE);
-
                 log.info("[SHPlusToken] get shplus userinfo by accesstoken,accessToken：" + accessToken);
             }
             result.setSuccess(true);
