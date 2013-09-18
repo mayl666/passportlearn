@@ -23,7 +23,7 @@
         splus._timestamp="201308061701";
     </script>
     <script type="text/javascript">
-  try{  var isBindMobileUsable=+eval("$(isBindMobileUsable)"),isBindEmailUsable=+eval("$(isBindEmailUsable)");}catch(e){}
+  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");}catch(e){}
     </script>
     <script type="text/javascript" src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
@@ -125,7 +125,7 @@
         <label>邮箱绑定</label>
 
         <div class="controls"  id="pro_email_area_1" style="display: none;">
-            <input autocomplete="off" disabled type="text" value="" id="pro_email" />
+            <input autocomplete="off" disabled type="text" value="" id="pro_xemail" />
             <div class="bind-btn unbind-btn">
                 <a href="javascript:">重新绑定</a>
             </div>
@@ -196,7 +196,7 @@
     </div>
 </fieldset>
 <div class="sent-btn-wrap">
-    <button class="btn-sent" id="pro_btn_pass">保存</button>
+    <button type="button"  class="btn-sent" id="pro_btn_pass">保存</button>
 </div>
 <!--这里从搜狐删除的第三方登录-->
 </form>

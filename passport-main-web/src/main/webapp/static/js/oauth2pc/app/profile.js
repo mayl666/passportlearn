@@ -163,12 +163,12 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             if (window.isBindMobileUsable) {
                 self.bindPhone();
             } else {
-                $phone.prop('disabled', true).css("background-color":"#ccc");
+                $phone.prop('disabled', true).css("background-color","#ccc");
             }
             if (window.isBindEmailUsable ) {
                 self.bindEmail();
             } else {
-                $email.prop('disabled', true).css("background-color":"#ccc");
+                $email.prop('disabled', true).css("background-color","#ccc");
             }
         },
         bindEmail: function() {
