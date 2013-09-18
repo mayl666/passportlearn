@@ -120,7 +120,7 @@ public class RegAction extends BaseController {
                 if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
-                    result.setMessage("注册异常");
+                    result.setMessage("注册失败");
                 }
 
                 return result.toString();
