@@ -18,7 +18,7 @@ public class PCOAuth2LoginParams {
 
     private int rememberMe=0;
     private String instanceid = "";  //客户端的实例id
-    private int client_id= CommonConstant.BROWSER_CLIENTID;
+    private int client_id= CommonConstant.PC_CLIENTID;
 
     private String captcha;//验证码
     private String token;//标识码

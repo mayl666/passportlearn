@@ -3,6 +3,7 @@
  */
 ;
 define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
+    var _g_client_id=1044;
     //user login and register
     function getJSON(result) {
         if (typeof result === 'string' || (result && result.constructor == String)) {
@@ -256,7 +257,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                         $.ajax({
                             url: url,
                             data: {
-                                client_id: 1065,
+                                client_id: _g_client_id,
                                 mobile: $phone.val()
                             },
                             type: "get",
@@ -303,7 +304,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                             url: self.sogouBaseurl + self.interfaces.checkNeedCaptcha,
                             data: {
                                 username: $ele.val(),
-                                client_id: 1065
+                                client_id: _g_client_id
                             },
                             type: 'get',
                             dataType: 'json'
@@ -530,7 +531,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                     pwd: password,
                     rememberMe: 　checked,
                     instanceid: instanceid,
-                    client_id: 1065,
+                    client_id: _g_client_id,
                     token: $img.attr("data-token")
                 },
                 hasVcode = $img.is(":visible"),
@@ -714,7 +715,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                     username: $input.val(),
                     password: $password.val(),
                     instance_id: instanceid,
-                    client_id: 1065,
+                    client_id: _g_client_id,
                     token: $img.attr('data-token')
                 }
                 /*if (email != "") {
@@ -874,7 +875,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                     captcha: $vcode.val(),
                     password: $password.val(),
                     instance_id: instanceid,
-                    client_id: 1065,
+                    client_id: _g_client_id,
                     token: $img.attr('data-token')
                 },
                 dataType: "json"

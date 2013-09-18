@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.sogou.upd.passport.common.CommonConstant;
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
@@ -95,33 +96,44 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     }
 
     @Override
-    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken) {
-        Map userInfoMap = getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
-        if (userInfoMap != null) {
-            String result = (String) userInfoMap.get("result");
-            if ("confirm".equals(result)) {
-                // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar175.png
-                String avatar = (String) userInfoMap.get("large_avatar");
-                if (!CommonHelper.isInvokeProxyApi(passportId)) {
-                    // TODO 写到搜狗数据库里
-                }
-                //更新图片到缓存中
-                //获取图片名
-                String imgName = photoUtils.generalFileName();
-                // 上传到OP图片平台
-                if (photoUtils.uploadImg(imgName, null, avatar, "1")) {
-                    String imgURL = photoUtils.accessURLTemplate(imgName);
-                    //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                    String cacheKey = "SP.PASSPORTID:SOHU+IMAGE_" + passportId;
-                    try {
-                        redisUtils.set(cacheKey, imgURL);
-                    } catch (Exception e) {
-                        log.error("copyAvatarToLocal fail", e);
+    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken) throws ServiceException {
+        String cacheKey = buildAvatarCacheKey(passportId);
+        try {
+            String avatarUrl = redisUtils.get(cacheKey);
+            if (!Strings.isNullOrEmpty(avatarUrl)) {
+                return true;
+            }
+            Map userInfoMap = getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
+            if (userInfoMap != null) {
+                String result = (String) userInfoMap.get("result");
+                if ("confirm".equals(result)) {
+                    // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar175.png
+                    Map resource = (Map) userInfoMap.get("resource");
+                    Map data = (Map) resource.get("data");
+                    String avatar = (String) data.get("large_avatar");
+                    if (!CommonHelper.isInvokeProxyApi(passportId)) {
+                        // TODO 写到搜狗数据库里
                     }
-                    return true;
+                    //更新图片到缓存中
+                    //获取图片名
+                    String imgName = photoUtils.generalFileName();
+                    // 上传到OP图片平台
+                    if (photoUtils.uploadImg(imgName, null, avatar, "1")) {
+                        String imgURL = photoUtils.accessURLTemplate(imgName);
+                        //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
+                        redisUtils.set(cacheKey, imgURL);
+                        return true;
+                    }
                 }
             }
+        } catch (Exception e) {
+            log.error("copyAvatarToLocal fail", e);
+            throw new ServiceException(e);
         }
         return false;
+    }
+
+    private String buildAvatarCacheKey(String passportId) {
+        return CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL + passportId;
     }
 }

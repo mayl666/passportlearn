@@ -30,6 +30,7 @@ public class OAuthTokenASRequest extends OAuthASRequest {
         validators.put(GrantTypeEnum.CLIENT_CREDENTIALS.toString(), ClientCredentialValidator.class);
         validators.put(GrantTypeEnum.AUTHORIZATION_CODE.toString(), AuthorizationCodeValidator.class);
         validators.put(GrantTypeEnum.REFRESH_TOKEN.toString(), RefreshTokenValidator.class);
+        validators.put(GrantTypeEnum.HEART_BEAT.toString(), RefreshTokenValidator.class);
         String requestTypeValue = getParam(OAuth.OAUTH_GRANT_TYPE);
         if (Strings.isNullOrEmpty(requestTypeValue)) {
             throw OAuthUtils.handleOAuthProblemException("Missing grant_type parameter value");

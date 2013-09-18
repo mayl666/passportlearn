@@ -17,6 +17,9 @@ import java.util.Map;
  */
 public class SHPlusTokenServiceTest extends BaseTest {
 
+    public static final String ACCESS_TOKEN = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
+    public static final String INSTANCEID = "323906108";
+
     @Autowired
     private SHPlusTokenService shPlusTokenService;
 
@@ -28,7 +31,7 @@ public class SHPlusTokenServiceTest extends BaseTest {
 //    @Test
 //    public void testVerifyShPlusAccessToken() {
 //
-//        int clientId = 1065;
+//        int clientId = 1044;
 //        String instanceId = "323906108";
 //        String accesstoken = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
 //
@@ -44,7 +47,7 @@ public class SHPlusTokenServiceTest extends BaseTest {
      */
     @Test
     public void testVerifyShPlusRefreshToken() {
-        int clientId = 1065;
+        int clientId = 1044;
         String instanceId = "323906108";
         String passportId = "shipengzhi1986@sogou.com";
         String refreshToken = "58cc24195472c1c25a378513b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
@@ -56,27 +59,25 @@ public class SHPlusTokenServiceTest extends BaseTest {
     }
 
     /**
-     * https://account.sogou.com/oauth2/resource/?client_id=30000004&scope=all&instance_id=1213178981&resource_type=full.get
+     * https://account.sogou.com/oauth2/resource/?client_id=30000004&scope=all&instance_id=1213178981&resource_type=cookie.get
      * &access_token=94875c31900ce878b995095ee911d9e950f59e81cf218cca25d42adcc3c6ade5&h=DF9BB5F023D9D0007F4EC6345416E8FE&r=2170&v=4.2.0.8850
      */
+    @Test
+    public void testGetCookieValue() {
+        OAuth2ResourceTypeEnum resourceType = OAuth2ResourceTypeEnum.GET_COOKIE;
+
+        Map resultMap = shPlusTokenService.getResourceByToken(INSTANCEID, ACCESS_TOKEN, resourceType);
+        System.out.println("result map:" + resultMap);
+    }
     /**
      * http://open.account.sohu.com/oauth2/resource/?scope=all&resource_type=full.get&client_id=30000004
      * &access_token=94875c31900ce878b995095ee911d9e950f59e81cf218cca25d42adcc3c6ade5&instance_id=1213178981
      */
     @Test
-    public void testGetResourceByToken() {
-
-        //http://open.account.sohu.com/oauth2/resource/?
-        // scope=all&
-        // resource_type=full.get&
-        // client_id=30000004&
-        // access_token=94875c31900ce878b995095ee911d9e950f59e81cf218cca25d42adcc3c6ade5&
-        // instance_id=1213178981
-        String instanceId = "1213178981";
-        String accessToken = "60f1cdd4c9e48495ae7e8865aa78b0ad0c2ea508c20c89a438364892481ce786";
+    public void testGetUserInfo() {
         OAuth2ResourceTypeEnum resourceType = OAuth2ResourceTypeEnum.GET_FULL_USERINFO;
 
-        Map resultMap = shPlusTokenService.getResourceByToken(instanceId, accessToken, resourceType);
+        Map resultMap = shPlusTokenService.getResourceByToken(INSTANCEID, ACCESS_TOKEN, resourceType);
         System.out.println("result map:" + resultMap);
     }
 

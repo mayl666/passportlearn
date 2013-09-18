@@ -43,5 +43,5 @@ public interface SHPlusTokenService {
      * @param accessToken
      * @return
      */
-    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken);
+    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken) throws ServiceException;
 }

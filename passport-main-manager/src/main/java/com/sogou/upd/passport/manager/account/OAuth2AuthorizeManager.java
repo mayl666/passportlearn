@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
-import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 
 /**
@@ -27,6 +25,6 @@ public interface OAuth2AuthorizeManager {
      * @param oauthRequest
      * @return
      */
-    public Result oauth2Authorize(OAuthTokenASRequest oauthRequest, AppConfig appConfig);
+    public Result oauth2Authorize(OAuthTokenASRequest oauthRequest);
 
 }

@@ -20,7 +20,7 @@ public class PCOAuth2ResourceParams {
 
     private String instance_id;
 
-    private String scope;
+    private String scope = "all";
 
     @NotBlank(message = "access_token不允许为空")
     private String access_token;

@@ -46,17 +46,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public String queryPassportIdByAccessToken(String token, String clientSecret) {
-        try {
-            String passortId = TokenDecrypt.decryptPcToken(token, clientSecret);
-            return passortId;
-        } catch (Exception e) {
-            logger.error("Query PassportId By Token Fail, token:" + token, e);
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildKeyStr(passportId, clientId, instanceId);

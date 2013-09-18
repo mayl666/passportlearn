@@ -230,6 +230,17 @@ public class ErrorUtil {
     //不支持的图片尺寸
     public static final String ERR_CODE_ERROR_IMAGE_SIZE = "20303";
 
+    //不支持的图片后缀
+    public static final String ERR_PHOTO_EXT = "20296";
+    //图片过大
+    public static final String ERR_PHOTO_TO_LARGE = "20297";
+    //图片上传失败
+    public static final String ERR_UPLOAD_PHOTO = "20298";
+    //获取图像失败
+    public static final String ERR_OBTAIN_PHOTO = "20299";
+
+
+
     /* ============================================================================ */
     /*  Connect通用的错误代码                                                        */
     /* ============================================================================ */
@@ -411,6 +422,11 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
         ERR_CODE_MSG_MAP.put(ERR_CODE_GET_USER_INFO, "用户信息获取失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_IMAGE_SIZE, "不支持的图片尺寸");
+
+        ERR_CODE_MSG_MAP.put(ERR_PHOTO_EXT, "不支持的图片后缀");
+        ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过5M");
+        ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
+        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
 
 
 

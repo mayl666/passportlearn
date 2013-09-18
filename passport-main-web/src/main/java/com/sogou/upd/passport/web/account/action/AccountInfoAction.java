@@ -123,6 +123,38 @@ public class AccountInfoAction extends BaseController {
         return result.toString();
     }
 
+
+    //默认头像上传
+    @RequestMapping(value = "/userinfo/uploadefaultavatar")
+    @ResponseBody
+    public Object uploadDefaultAvatar(HttpServletRequest request, UploadAvatarParams params)
+    {
+        Result result = new APIResultSupport(false);
+
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        //验证client_id是否存在
+        int clientId = Integer.parseInt(params.getClient_id());
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result.toString();
+        }
+
+        String size = params.getImgsize();
+
+        result=accountInfoManager.uploadDefaultImg(params.getImgurl(),String.valueOf(clientId));
+        if(result.isSuccess()) {
+            result=accountInfoManager.obtainPhoto(String.valueOf(clientId),size);
+        }
+        return result.toString();
+    }
+
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseBody
     public String maxUploadSizeExceeded(){

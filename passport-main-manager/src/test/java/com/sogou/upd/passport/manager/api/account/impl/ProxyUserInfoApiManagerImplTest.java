@@ -23,39 +23,41 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Test
     public void testGetUserInfo() throws Exception {
-        GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
+        GetUserInfoApiparams getUserInfoApiParams = new GetUserInfoApiparams();
         getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
-//        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
-//                +
-//                "personalid,personalidflag,sec_mobile,sec_email,province," +
-//                "city,createtime,sec_ques,avatarurl,regappid");
+        //获取昵称
         getUserInfoApiParams.setFields("uniqname");
-        Result result= proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
-        System.out.println(result);
+        Result result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
+        System.out.println("nick result:" + result);
+        //获取图片
+        getUserInfoApiParams.setFields("sec_email,uniqname,avatarurl");
+        getUserInfoApiParams.setImagesize("180,55");
+        Result result1 = proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
+        System.out.println("avatar result:" + result1);
     }
 
     @Test
-    public void testUpdateUserInfo(){
-        UpdateUserInfoApiParams updateUserInfoApiParams=new UpdateUserInfoApiParams();
+    public void testUpdateUserInfo() {
+        UpdateUserInfoApiParams updateUserInfoApiParams = new UpdateUserInfoApiParams();
         updateUserInfoApiParams.setUserid(userid);
         updateUserInfoApiParams.setGender("2");
-        Calendar calendar=Calendar.getInstance();
-        calendar.set(Calendar.YEAR,1988);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 1988);
         updateUserInfoApiParams.setBirthday(calendar.getTime());
         updateUserInfoApiParams.setProvince(530000);
         updateUserInfoApiParams.setCity(532401);
         updateUserInfoApiParams.setUniqname("111");
         updateUserInfoApiParams.setModifyip(modifyIp);
-        Result result= proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+        Result result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
         System.out.println(result);
     }
 
     @Test
-    public void testCheckUniqName(){
+    public void testCheckUniqName() {
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
 
 //        String name="%E4%B8%AD%E6%96%87323212";
-        String name="你看";
+        String name = "你看";
         updateUserUniqnameApiParams.setUniqname(name);
         Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
         System.out.println("result输出结果为:" + result.toString());
