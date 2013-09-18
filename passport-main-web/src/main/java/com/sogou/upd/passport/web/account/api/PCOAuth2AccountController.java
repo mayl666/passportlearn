@@ -17,10 +17,7 @@ import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
-import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
-import com.sogou.upd.passport.manager.form.WebLoginParams;
-import com.sogou.upd.passport.manager.form.WebRegisterParams;
+import com.sogou.upd.passport.manager.form.*;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -28,6 +25,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +76,9 @@ public class PCOAuth2AccountController extends BaseController {
     private RegManager regManager;
 
     @RequestMapping(value = "/sogou/flogon", method = RequestMethod.GET)
-    public String pcLogin(Model model) throws Exception {
+    public String pcLogin(PCOAuth2BaseParams pcOAuth2BaseParams,Model model) throws Exception {
+        model.addAttribute("instanceid",pcOAuth2BaseParams.getInstanceid());
+        model.addAttribute("client_id",pcOAuth2BaseParams.getClient_id());
         return "/oauth2pc/pclogin";
     }
 
@@ -324,6 +324,17 @@ public class PCOAuth2AccountController extends BaseController {
             return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
+        //校验token有效期
+        PcAuthTokenParams authPcTokenParams = new PcAuthTokenParams();
+        authPcTokenParams.setToken(oauth2PcIndexParams.getAccesstoken());
+        authPcTokenParams.setAppid(String.valueOf(oauth2PcIndexParams.getClient_id()));
+        authPcTokenParams.setTs(oauth2PcIndexParams.getInstanceid());
+        authPcTokenParams.setUserid(passportId);
+        Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
+        if(!authTokenResult.isSuccess()){
+            result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+            return "forward:/oauth2/errorMsg?msg=" + result.toString();
+        }
         //获取用户信息
         GetUserInfoApiparams getUserInfoApiparams =  new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
         getUserInfoApiparams.setImagesize("180");
