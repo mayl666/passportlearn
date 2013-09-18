@@ -154,7 +154,6 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object register(HttpServletRequest request, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
         Result result = new APIResultSupport(false);
-        String finalPassportId = null;
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(pcoAuth2RegisterParams);
@@ -185,15 +184,14 @@ public class PCOAuth2AccountController extends BaseController {
                     AccountToken accountToken = (AccountToken) result.getDefaultModel();
                     result = new APIResultSupport(true);
                     String passportId = accountToken.getPassportId();
-                    finalPassportId = passportId;
                     setDefaultModelForResult(result, passportId, accountToken);
                 }
             }
         } catch (Exception e) {
-            logger.error("Sohu+ Register Failed,PassportId Is " + finalPassportId, e);
+            logger.error("Sohu+ Register Failed,UserName Is " + pcoAuth2RegisterParams.getUsername(), e);
         } finally {
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(finalPassportId, request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
