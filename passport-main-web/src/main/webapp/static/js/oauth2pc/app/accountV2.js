@@ -3,7 +3,8 @@
  */
 ;
 define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
-    var _g_client_id=1044;
+    var _g_client_id=window._client_id||1044;
+    var _g_instance_id=window._instanceid||"";
     //user login and register
     function getJSON(result) {
         if (typeof result === 'string' || (result && result.constructor == String)) {
@@ -38,7 +39,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
         retStatus: {
             checkSname: {
                 "10002": "必填参数错误",
-                "20201": " 此帐号已注册，请直接登录 ",
+                "20201": "此帐号已注册，请直接登录",
                 "20217": "暂不支持邮箱注册",
                 "20225": "该手机号已注册或已绑定，请直接登录",
                 "20241": " 暂不支持sohu域内邮箱注册 "
@@ -1212,13 +1213,13 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 errMsg: '请正确输入邮箱（非必填）',
                 emptyMsg: '',
                 nullable: true,
-                regStr: /[\w!#\$%&'\*\+\/=?^_`\{\|\}~\-]+(?:\.[\w!#\$%&'\*\+\/=?^_`\{\|\}~\-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/
+                regStr: /^(\w)+(\.\w+)*@([\w_\-])+((\.\w+)+)$/
             },
             password: {
-                errMsg: '请正确输入密码',
+                errMsg: '密码必须是6-16位字母、数字、下划线的组合',
                 emptyMsg: '请输入6-16位密码',
                 nullable: false,
-                regStr: /^\S{6,20}$/
+                regStr: /^\w{6,16}$/
             },
             vcode: {
                 errMsg: '请正确输入验证码',
@@ -1231,10 +1232,8 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 emptyMsg: '请填写帐号',
                 nullable: false,
                 regStr: /^[a-z][a-zA-Z0-9-\.]{3,15}$/
-                // regStr: /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/
             },
             vcode: {
-
                 errMsg: '验证码错误，请重新输入',
                 emptyMsg: '请输入验证码',
                 nullable: false

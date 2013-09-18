@@ -19,11 +19,11 @@
         splus.sp_status="1";
         splus.avatar_token="1378731807624|NzE0MTExODE=";
         splus.accesstoken="94875c31900ce878b995095ee911d9e950f59e81cf218cca25d42adcc3c6ade5";
-        splus.instanceid="1213178981";
+        splus.instanceid="${instanceid}";
         splus._timestamp="201308061701";
     </script>
     <script type="text/javascript">
-  try{  var isBindMobileUsable=+eval("$(isBindMobileUsable)"),isBindEmailUsable=+eval("$(isBindEmailUsable)");}catch(e){}
+  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");var _client_id=+eval("${client_id}")}catch(e){}
     </script>
     <script type="text/javascript" src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
@@ -84,7 +84,7 @@
             <div class="control-group clearfix">
                 <label>手机绑定</label>
                 <div class="controls">
-                    <input autocomplete="off" type="text" value="${bindMoblile}" id="pro_phone"/>
+                    <input autocomplete="off" type="text" value="${bindMobile}" id="pro_phone"/>
                     <div class="bind-btn">
                         <a href="javascript:">绑定</a>
                     </div>
@@ -125,7 +125,7 @@
         <label>邮箱绑定</label>
 
         <div class="controls"  id="pro_email_area_1" style="display: none;">
-            <input autocomplete="off" disabled type="text" value="" id="pro_email" />
+            <input autocomplete="off" disabled type="text" value="" id="pro_xemail" />
             <div class="bind-btn unbind-btn">
                 <a href="javascript:">重新绑定</a>
             </div>
@@ -138,13 +138,7 @@
             <div class="email">
                 <p>没收到邮件?</p>
                 <p>
-                    请到邮箱的广告邮件，垃圾邮件目录下找找，或点击
-                    <a href="javascript:" pro_default="" id="pre_btn_retry">再次发送</a>
-                    ?
-                </p>
-                <p>
-                    如邮箱错误，
-                    <a href="javascript:"  id="pre_btn_back">请重新选择邮箱绑定!</a>
+                    请到邮箱的广告邮件，垃圾邮件目录下找找
                 </p>
             </div>
             <p class="tips">可用邮箱找回密码及登录</p>
@@ -202,7 +196,7 @@
     </div>
 </fieldset>
 <div class="sent-btn-wrap">
-    <button class="btn-sent" id="pro_btn_pass">保存</button>
+    <button type="button"  class="btn-sent" id="pro_btn_pass">保存</button>
 </div>
 <!--这里从搜狐删除的第三方登录-->
 </form>

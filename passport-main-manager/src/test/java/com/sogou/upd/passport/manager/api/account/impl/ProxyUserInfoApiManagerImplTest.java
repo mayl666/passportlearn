@@ -1,15 +1,19 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Calendar;
+import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -24,15 +28,29 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams = new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
+        getUserInfoApiParams.setUserid("tinkame700@sogou.com");
         //获取昵称
-        getUserInfoApiParams.setFields("uniqname");
-        Result result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
-        System.out.println("nick result:" + result);
+//        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
+//        getUserInfoApiParams.setFields("uniqname");
+//        Result result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
+//        System.out.println("nick result:" + result);
         //获取图片
-        getUserInfoApiParams.setFields("sec_email,uniqname,avatarurl");
-        getUserInfoApiParams.setImagesize("180,55");
+        getUserInfoApiParams.setFields("sec_mobile,sec_email,uniqname,avatarurl");
+        getUserInfoApiParams.setImagesize("180");
         Result result1 = proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
+        String bindMobile = (String) result1.getModels().get("sec_mobile");
+        String bindEmail =(String)result1.getModels().get("sec_email");
+
+        String imgurl="";
+        String avaterMap =  result1.getModels().get("avatarurl").toString();
+        if(!StringUtils.isEmpty(avaterMap)){
+
+            Map map = (Map)result1.getModels().get("avatarurl");
+            imgurl =(String)map.get("img_180");
+        }
+
+        System.out.println("bindMobile:"+bindMobile);
+        System.out.println("bindEmail:"+bindEmail);
         System.out.println("avatar result:" + result1);
     }
 
