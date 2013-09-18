@@ -83,20 +83,24 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+        } catch (Exception e) {
+            logger.error("regMobileCaptchaUser:Mobile User With Captcha Register Is Failed,Mobile Is " + params.getMobile(), e);
+        } finally {
+            //记录log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         }
 
-        // 调用内部接口
-        result = proxyRegisterApiManager.regMobileCaptchaUser(params);
-
-        //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
     }
@@ -113,31 +117,33 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        String ip = null;
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            ip = params.getCreateip();
+            //校验用户ip是否允许注册
+            result = regManager.checkRegInBlackListByIpForInternal(ip);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = proxyRegisterApiManager.regMailUser(params);
+        } catch (Exception e) {
+            logger.error("regMailUser:Mail User Register Is Failed,Userid Is " + params.getUserid(), e);
+        } finally {
+            //记录log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("createip", params.getCreateip());
+            UserOperationLogUtil.log(userOperationLog);
         }
-
-        String ip = params.getCreateip();
-        //校验用户ip是否允许注册
-        result = regManager.checkRegInBlackListByIpForInternal(ip);
-        if (!result.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-            return result.toString();
-        }
-        // 调用内部接口
-        result = proxyRegisterApiManager.regMailUser(params);
-
-        //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("createip", params.getCreateip());
-        UserOperationLogUtil.log(userOperationLog);
-
         commonManager.incRegTimesForInternal(ip);
-
         return result.toString();
     }
 
@@ -155,21 +161,26 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = proxyRegisterApiManager.regMobileUser(params);
+        } catch (Exception e) {
+            logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
+        } finally {
+            //记录log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        // 调用内部接口
-        result = proxyRegisterApiManager.regMobileUser(params);
 
-        //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();
     }
