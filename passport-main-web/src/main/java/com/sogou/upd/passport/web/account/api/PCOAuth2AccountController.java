@@ -136,7 +136,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
         result = checkPCAccountNotExists(username);
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
+        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
             result.setMessage("该手机号已注册或已绑定，请直接登录");
         }
         return result.toString();
