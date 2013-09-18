@@ -84,7 +84,7 @@
             <div class="control-group clearfix">
                 <label>手机绑定</label>
                 <div class="controls">
-                    <input autocomplete="off" type="text" value="${bindMoblile}" id="pro_phone"/>
+                    <input autocomplete="off" type="text" value="${bindMobile}" id="pro_phone"/>
                     <div class="bind-btn">
                         <a href="javascript:">绑定</a>
                     </div>

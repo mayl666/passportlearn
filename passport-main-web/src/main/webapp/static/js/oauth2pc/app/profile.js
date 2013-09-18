@@ -160,15 +160,15 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : ""
 
                 //adaptor:email&phone cannot be disbinded.
-            if (window.isBindMobileUsable || 1) {//todo
+            if (window.isBindMobileUsable) {
                 self.bindPhone();
             } else {
-                $phone.prop('disabled', true);
+                $phone.prop('disabled', true).css("background-color":"#ccc");
             }
-            if (window.isBindEmailUsable || 1) {//todo
+            if (window.isBindEmailUsable ) {
                 self.bindEmail();
             } else {
-                $email.prop('disabled', true);
+                $email.prop('disabled', true).css("background-color":"#ccc");
             }
         },
         bindEmail: function() {
