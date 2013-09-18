@@ -31,7 +31,7 @@ public class PCOAuth2RegisterParams {
     private String token;//标识码
     @NotBlank(message = "client_id不能为空")
     @Min(0)
-    private String client_id = String.valueOf(CommonConstant.BROWSER_CLIENTID);
+    private String client_id = String.valueOf(CommonConstant.PC_CLIENTID);
     private String instance_id = null;
     @URL
     @Ru
