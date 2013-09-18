@@ -19,11 +19,11 @@
         splus.sp_status="1";
         splus.avatar_token="1378731807624|NzE0MTExODE=";
         splus.accesstoken="94875c31900ce878b995095ee911d9e950f59e81cf218cca25d42adcc3c6ade5";
-        splus.instanceid="1213178981";
+        splus.instanceid="${instanceid}";
         splus._timestamp="201308061701";
     </script>
     <script type="text/javascript">
-  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");}catch(e){}
+  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");var _client_id=+eval("${client_id}")}catch(e){}
     </script>
     <script type="text/javascript" src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
