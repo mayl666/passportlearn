@@ -160,15 +160,15 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : ""
 
                 //adaptor:email&phone cannot be disbinded.
-            if (window.isBindMobileUsable || 1) {//todo
+            if (window.isBindMobileUsable) {
                 self.bindPhone();
             } else {
-                $phone.prop('disabled', true);
+                $phone.prop('disabled', true).css("background-color":"#ccc");
             }
-            if (window.isBindEmailUsable || 1) {//todo
+            if (window.isBindEmailUsable ) {
                 self.bindEmail();
             } else {
-                $email.prop('disabled', true);
+                $email.prop('disabled', true).css("background-color":"#ccc");
             }
         },
         bindEmail: function() {
@@ -832,7 +832,6 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 errMsg: '请正确填写手机号',
                 emptyMsg: '手机号不能为空',
                 nullable: false,
-                // regStr: /((^\d{11,13}$) |(^[\w_]{4,20}$))|([\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?)/,
                 regStr: /^1\d{10}$/,
                 legal: true
             },
@@ -840,7 +839,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 errMsg: '请正确输入邮箱',
                 emptyMsg: '请输入邮箱',
                 nullable: false,
-                regStr: /[\w!#\$%&'\*\+\/=\?^_`\{\|\}~\-]+(?:\.[\w!#\$%&'*+\/=\?^_`\{\|\}~\-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                regStr: /^(\w)+(\.\w+)*@([\w_\-])+((\.\w+)+)$/,
                 legal: true
             },
             password: {
@@ -862,15 +861,13 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 emptyMsg: '请填写帐号',
                 nullable: false,
                 regStr: /^[a-zA-Z0-9-]{4,16}$/,
-                // regStr: /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/,
                 legal: true
             },
             nick: {
-                errMsg: '用户名为1-20位中英文字符，及“-”和“_”',
+                errMsg: '用户名为4-16位中英文字符，及“-”和“_”',
                 emptyMsg: '请填写用户名',
                 nullable: false,
-                regStr: /^[a-zA-Z0-9-_\u4e00-\u9fa5]{1,20}$/,
-
+                regStr: /^[a-z][a-zA-Z0-9-_\u4e00-\u9fa5]{3,15}$/,
                 legal: true
             }
         }

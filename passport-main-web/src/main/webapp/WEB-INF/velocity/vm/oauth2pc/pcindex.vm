@@ -23,7 +23,7 @@
         splus._timestamp="201308061701";
     </script>
     <script type="text/javascript">
-  try{  var isBindMobileUsable=+eval("$(isBindMobileUsable)"),isBindEmailUsable=+eval("$(isBindEmailUsable)");}catch(e){}
+  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");}catch(e){}
     </script>
     <script type="text/javascript" src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
@@ -84,7 +84,7 @@
             <div class="control-group clearfix">
                 <label>手机绑定</label>
                 <div class="controls">
-                    <input autocomplete="off" type="text" value="${bindMoblile}" id="pro_phone"/>
+                    <input autocomplete="off" type="text" value="${bindMobile}" id="pro_phone"/>
                     <div class="bind-btn">
                         <a href="javascript:">绑定</a>
                     </div>
@@ -138,13 +138,7 @@
             <div class="email">
                 <p>没收到邮件?</p>
                 <p>
-                    请到邮箱的广告邮件，垃圾邮件目录下找找，或点击
-                    <a href="javascript:" pro_default="" id="pre_btn_retry">再次发送</a>
-                    ?
-                </p>
-                <p>
-                    如邮箱错误，
-                    <a href="javascript:"  id="pre_btn_back">请重新选择邮箱绑定!</a>
+                    请到邮箱的广告邮件，垃圾邮件目录下找找
                 </p>
             </div>
             <p class="tips">可用邮箱找回密码及登录</p>
