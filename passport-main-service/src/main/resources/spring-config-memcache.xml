@@ -27,7 +27,7 @@
             <bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder" />
         </property>
     </bean>
-    <bean id="rTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init">
+    <bean id="rTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init" destroy-method="shutdown">
           <property name="builder" ref="rTokenMemClientBuilder"/>
     </bean>
 
@@ -53,7 +53,7 @@
             <bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder" />
         </property>
     </bean>
-    <bean id="aTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init">
+    <bean id="aTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init" destroy-method="shutdown">
         <property name="builder" ref="aTokenMemClientBuilder"/>
     </bean>
 </beans>
