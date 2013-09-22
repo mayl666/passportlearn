@@ -360,6 +360,8 @@ public class PCOAuth2AccountController extends BaseController {
         model.addAttribute("bindMobile", bindMobile);
         model.addAttribute("bindEmail", bindEmail);
         model.addAttribute("userid", passportId);
+        model.addAttribute("instanceid",oauth2PcIndexParams.getInstanceid());
+        model.addAttribute("client_id",oauth2PcIndexParams.getClient_id());
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
         handleBind(passportId,bindMobile,bindEmail,model);
         //生成cookie
