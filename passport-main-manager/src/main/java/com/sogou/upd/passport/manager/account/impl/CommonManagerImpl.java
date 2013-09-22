@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -31,6 +32,7 @@ public class CommonManagerImpl implements CommonManager {
 
     private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
     private static final String COOKIE_URL_RUSTR = "://account.sogou.com/static/api/ru.htm";
+    private static final String COOKIE_URL_RU = "https://account.sogou.com/static/api/ru.htm";
 
 
     @Autowired
@@ -107,6 +109,24 @@ public class CommonManagerImpl implements CommonManager {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
+    }
+
+    @Override
+    public Result createCookieUrl(String passportId, int autoLogin){
+        Result result = new APIResultSupport(false);
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu(COOKIE_URL_RU);
+        createCookieUrlApiParams.setPersistentcookie(autoLogin);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
+        if (createCookieResult.isSuccess()) {
+            result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
+            result.setSuccess(true);
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+        }
+        return result;
+
     }
 
     @Override
