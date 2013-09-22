@@ -71,6 +71,10 @@ public class ErrorUtil {
     /* ============================================================================ */
     //暂不支持邮箱注册
     public static final String ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED = "20197";
+    //当日用户原密码校验错误次数已达上限
+    public static final String ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD = "20198";
+    //重新发送激活邮件失败
+    public static final String ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED = "20199";
     //注册失败
     public static final String ERR_CODE_REGISTER_USER_UNUSUAL = "20200";
     // 帐号已经注册，请直接登录
@@ -336,6 +340,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(QUERY_PASSPORTID_BYTOKEN_FAILED, "根据token获取用户失败");
 
         // account
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD, "用户当日原密码校验错误次数已达上限!");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED, "重新发送激活邮件失败!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_USER_UNUSUAL, "注册失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
