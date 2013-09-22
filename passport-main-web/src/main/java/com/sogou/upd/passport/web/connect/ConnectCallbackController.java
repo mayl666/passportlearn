@@ -64,7 +64,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("nick", result.getModels().get("nick"));
                 model.addAttribute("passport", result.getModels().get("passport"));
                 model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
-                model.addAttribute("refreshToken", result.getModels().get("refreshToken"));
+                model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
                 model.addAttribute("logintype", result.getModels().get("logintype"));
                 return new ModelAndView(viewUrl);
             } else {
