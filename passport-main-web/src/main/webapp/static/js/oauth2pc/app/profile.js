@@ -19,15 +19,19 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
         },
         init: function() {
             this.initPageEvent();
-            this.initBasicProfile()
-            this.initAccountSecure()
-            if (window.isUpdatepwdUsable) {
-                this.initUpdatePassword();
-            } else {
-                $(".pwd").prop("disabled", true).css('background-color', '#ccc');
+            this.initBasicProfile();
+            //搜狐帐号不能修改密码和绑定
+            if(!window.isSohuAccount)
+            {
+                this.initAccountSecure();
+                if (window.isUpdatepwdUsable) {
+                    this.initUpdatePassword();
+                } else {
+                    $(".pwd").prop("disabled", true).css('background-color', '#ccc');
+                }
+                this.initAccountBind();
             }
-            this.initAccountBind()
-            this.initHeadPortrait()
+            this.initHeadPortrait();
         },
         //页面整体控制
         initPageEvent: function() {
