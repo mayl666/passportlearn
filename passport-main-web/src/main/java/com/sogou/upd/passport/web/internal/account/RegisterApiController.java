@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -11,15 +10,11 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -121,6 +116,7 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
+        String ip = null;
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -130,7 +126,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
 
-            String ip = params.getCreateip();
+            ip = params.getCreateip();
             //校验用户ip是否允许注册
             result = regManager.checkRegInBlackListByIpForInternal(ip);
             if (!result.isSuccess()) {
@@ -146,6 +142,7 @@ public class RegisterApiController extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
         }
+        commonManager.incRegTimesForInternal(ip);
         return result.toString();
     }
 

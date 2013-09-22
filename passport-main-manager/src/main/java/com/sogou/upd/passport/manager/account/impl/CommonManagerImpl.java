@@ -13,6 +13,7 @@ import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class CommonManagerImpl implements CommonManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private BindApiManager proxyBindApiManager;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
 
     @Override
@@ -104,5 +107,10 @@ public class CommonManagerImpl implements CommonManager {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
+    }
+
+    @Override
+    public void incRegTimesForInternal(String ip) {
+        operateTimesService.incRegTimesForInternal(ip);
     }
 }

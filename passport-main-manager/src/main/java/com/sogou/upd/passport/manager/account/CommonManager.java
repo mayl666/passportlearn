@@ -20,38 +20,42 @@ public interface CommonManager {
      */
     public boolean isAccountExists(String username) throws Exception;
 
-   /**
-   *
-   * @param passportId
-   * @return
-   * @throws Exception
-   */
+    /**
+     * @param passportId
+     * @return
+     * @throws Exception
+     */
     public Account queryAccountByPassportId(String passportId) throws Exception;
 
-  /**
-   *
-   * @param account
-   * @return
-   * @throws Exception
-   */
-    public boolean updateState(Account account, int newState)  throws Exception;
-  /**
-   *
-   * @param account
-   * @param password
-   * @param needMD5
-   * @return
-   * @throws Exception
-   */
+    /**
+     * @param account
+     * @return
+     * @throws Exception
+     */
+    public boolean updateState(Account account, int newState) throws Exception;
+
+    /**
+     * @param account
+     * @param password
+     * @param needMD5
+     * @return
+     * @throws Exception
+     */
     public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception;
 
-  /**
-   *
-   * @param result
-   * @param passportId
-   * @param autoLogin
-   * @return
-   */
-    public Result createCookieUrl(Result result,String passportId,int autoLogin);
+    /**
+     * @param result
+     * @param passportId
+     * @param autoLogin
+     * @return
+     */
+    public Result createCookieUrl(Result result, String passportId, int autoLogin);
+
+    /**
+     * 内部接口注册的ip次数累加
+     *
+     * @param ip
+     */
+    public void incRegTimesForInternal(String ip);
 
 }
