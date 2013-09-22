@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LoginTypeUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.*;
@@ -44,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -77,11 +80,14 @@ public class PCOAuth2AccountController extends BaseController {
     private PCAccountManager pcAccountManager;
     @Autowired
     private RegManager regManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @RequestMapping(value = "/sogou/flogon", method = RequestMethod.GET)
-    public String pcLogin(PCOAuth2BaseParams pcOAuth2BaseParams,Model model) throws Exception {
-        model.addAttribute("instanceid",pcOAuth2BaseParams.getInstanceid());
-        model.addAttribute("client_id",pcOAuth2BaseParams.getClient_id());
+    public String pcLogin(HttpServletRequest request, HttpServletResponse response, PCOAuth2BaseParams pcOAuth2BaseParams, Model model) throws Exception {
+        webCookieProcess(request, response);
+        model.addAttribute("instanceid", pcOAuth2BaseParams.getInstanceid());
+        model.addAttribute("client_id", pcOAuth2BaseParams.getClient_id());
         return "/oauth2pc/pclogin";
     }
 
@@ -154,6 +160,9 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object register(HttpServletRequest request, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
         Result result = new APIResultSupport(false);
+        String ip = null;
+        String uuidName = null;
+        String finalCode = null;
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(pcoAuth2RegisterParams);
@@ -162,8 +171,16 @@ public class PCOAuth2AccountController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            String ip = getIp(request);
-            //TODO ip加安全限制
+            ip = getIp(request);
+            uuidName = ServletUtil.getCookie(request, "uuidName");
+            result = regManager.checkRegInBlackList(ip, uuidName);
+            if (!result.isSuccess()) {
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_USER_UNUSUAL);
+                    return result;
+                }
+            }
             //验证client_id
             int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
             if (!configureManager.checkAppIsExist(clientId)) {
@@ -184,18 +201,25 @@ public class PCOAuth2AccountController extends BaseController {
                     AccountToken accountToken = (AccountToken) result.getDefaultModel();
                     result = new APIResultSupport(true);
                     String passportId = accountToken.getPassportId();
-                    setDefaultModelForResult(result, passportId, accountToken);
+                    setDefaultModelForResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
                 }
             }
         } catch (Exception e) {
             logger.error("Sohu+ Register Failed,UserName Is " + pcoAuth2RegisterParams.getUsername(), e);
         } finally {
+            String logCode = null;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
+        commonManager.incRegTimes(ip, uuidName);
         return result.toString();
     }
 
@@ -208,18 +232,6 @@ public class PCOAuth2AccountController extends BaseController {
         webParams.setToken(pcParams.getToken());
         webParams.setUsername(pcParams.getUsername());
         return webParams;
-    }
-
-    private Result setDefaultModelForResult(Result result, String passportId, AccountToken accountToken) throws Exception {
-        result.setDefaultModel("accesstoken", accountToken.getAccessToken());
-        result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
-        result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
-        result.setDefaultModel("sname", Coder.enBase64(passportId));
-        result.setDefaultModel("passport", Coder.enBase64(passportId));
-        result.setDefaultModel("result", 0);
-        result.setDefaultModel("sid", 0);
-        result.setDefaultModel("logintype", "sogou");
-        return result;
     }
 
     /**
@@ -271,9 +283,9 @@ public class PCOAuth2AccountController extends BaseController {
             result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
 
             result.setDefaultModel("autologin", loginParams.getRememberMe());
-            result.setDefaultModel("passport", Coder.enBase64(userId));
-            result.setDefaultModel("sname", Coder.enBase64(userId));
-            result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
+            result.setDefaultModel("passport", Coder.encryptBase64URLSafeString(userId));
+            result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(userId));
+            result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(getUniqname(passportId)));
             result.setDefaultModel("result", 0);
             result.setDefaultModel("sid", 0);
             result.setDefaultModel("logintype", "sogou");
@@ -456,6 +468,17 @@ public class PCOAuth2AccountController extends BaseController {
 
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
+    }
+
+    /*
+    注册种cookie防止恶意注册，黑白名单
+     */
+    private void webCookieProcess(HttpServletRequest request, HttpServletResponse response) {
+        String uuidName = ServletUtil.getCookie(request, "uuidName");
+        if (Strings.isNullOrEmpty(uuidName)) {
+            uuidName = UUID.randomUUID().toString().replaceAll("-", "");
+            ServletUtil.setCookie(response, "uuidName", uuidName, (int) DateAndNumTimesConstant.TIME_ONEDAY);
+        }
     }
 
 }
