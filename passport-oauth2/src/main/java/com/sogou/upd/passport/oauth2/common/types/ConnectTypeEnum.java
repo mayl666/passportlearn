@@ -27,6 +27,8 @@ public enum ConnectTypeEnum {
         TYPE_LIST.add(WEB.toString());
         TYPE_LIST.add(TOKEN.toString());
         TYPE_LIST.add(MAPP.toString());
+        TYPE_LIST.add(PC.toString());
+        TYPE_LIST.add(MOBILE.toString());
     }
 
     ConnectTypeEnum(String connectType) {
