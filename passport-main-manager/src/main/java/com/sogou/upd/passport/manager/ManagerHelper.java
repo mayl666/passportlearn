@@ -76,4 +76,22 @@ public class ManagerHelper {
         }
         return code;
     }
+    /**
+     * 内部接口方法签名生成
+     *
+     * @param firstStr code算法第一个字符串，可能为userid、mobile、userid+mobile
+     * @return
+     * @throws Exception
+     */
+    public static String generatorCodeGBK(String firstStr, int clientId, String secret, long ct) {
+        //计算默认的code
+        String code = "";
+        try {
+            code = firstStr + clientId + secret + ct;
+            code = Coder.encryptMD5GBK(code);
+        } catch (Exception e) {
+            log.error("calculate default code error", e);
+        }
+        return code;
+    }
 }

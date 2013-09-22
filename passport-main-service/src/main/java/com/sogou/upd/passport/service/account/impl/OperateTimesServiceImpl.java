@@ -373,6 +373,20 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public boolean checkRegInBlackListForInternal(String ip) throws ServiceException {
+        //通过ip+cookie限制注册次数
+        String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
+        String value = redisUtils.get(ipCookieKey);
+        if (!Strings.isNullOrEmpty(value)) {
+            int num = Integer.valueOf(value);
+            if (num >= LoginConstant.REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean checkRegInWhiteList(String ip) throws ServiceException {
         try {
             String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;

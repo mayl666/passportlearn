@@ -20,7 +20,7 @@ public class ManagerHelperTest extends BaseTest {
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode("1666643531@sina.sohu.com", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("大发充值说的", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {

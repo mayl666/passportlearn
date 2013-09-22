@@ -170,6 +170,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
             String ip = req.getParameter("ip");
             String instanceId = req.getParameter("ts");
+            String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
             int provider = AccountTypeEnum.getProvider(providerStr);
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
@@ -193,7 +194,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -222,10 +223,15 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     if (tokenResult.isSuccess()) {
                         String value = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" +
                                 accountToken.getPassportId() + "|";
+                        String responseVm = "/pcaccount/connectlogin";
+                        if (!Strings.isNullOrEmpty(from) && "mob".equals(from)) {
+                            value = "semob://semob/pairtoken?" + value;
+                            responseVm = "/pcaccount/connectmobilelogin";
+                        }
                         result.setSuccess(true);
                         result.setDefaultModel("nickname", nickName);
                         result.setDefaultModel("result", value);
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, "/pcaccount/connectlogin");
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, responseVm);
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }

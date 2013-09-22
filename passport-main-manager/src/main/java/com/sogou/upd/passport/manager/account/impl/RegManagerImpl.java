@@ -333,6 +333,20 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
+    public Result checkRegInBlackListByIpForInternal(String ip) throws Exception {
+        Result result = new APIResultSupport(false);
+        //如果在黑名单，也在白名单，允许注册；如果在黑名单不在白名单，不允许注册
+        if (operateTimesService.checkRegInBlackListForInternal(ip)) {
+            if (!operateTimesService.checkRegInWhiteList(ip)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
+            }
+        }
+        result.setSuccess(true);
+        return result;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Result checkRegInBlackList(String ip, String cookieStr) throws Exception {
 
         Result result = new APIResultSupport(false);
@@ -341,7 +355,7 @@ public class RegManagerImpl implements RegManager {
             if (operateTimesService.checkRegInBlackList(ip, cookieStr)) {
                 //检查账号是否在白名单中
                 if (!operateTimesService.checkRegInWhiteList(ip)) {
-                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_IP_IN_BLACKLIST);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                     return result;
                 }
             }

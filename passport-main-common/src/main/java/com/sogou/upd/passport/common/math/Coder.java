@@ -109,6 +109,23 @@ public class Coder {
         return toHexString(md5.digest());
 
     }
+    /**
+     * MD5加密
+     *
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public static String encryptMD5GBK(String data) throws Exception {
+
+        MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
+
+        md5.update(data.getBytes("GBK"));
+
+        return toHexString(md5.digest());
+
+    }
+
 
     /**
      * SHA加密

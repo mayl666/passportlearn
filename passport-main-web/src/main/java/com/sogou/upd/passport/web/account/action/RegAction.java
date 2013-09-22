@@ -8,9 +8,9 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.CookieUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -100,44 +100,64 @@ public class RegAction extends BaseController {
     public Object reguser(HttpServletRequest request, WebRegisterParams regParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(regParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-
-        String ip = getIp(request);
-        //校验用户是否允许注册
-        String uuidName = CookieUtils.getCookie(request, "uuidName");
-        result = regManager.checkRegInBlackList(ip, uuidName);
-        if (!result.isSuccess()) {
-            return result.toString();
-        }
-
-        //检验用户名是否存在
-        String username = regParams.getUsername();
-        result = checkAccountNotExists(username);
-        if (!result.isSuccess()) {
-            return result.toString();
-        }
-
-        result = regManager.webRegister(regParams, ip);
-        if (result.isSuccess()) {
-            //设置来源
-            String ru = regParams.getRu();
-            if (Strings.isNullOrEmpty(ru)) {
-                ru = LOGIN_INDEX_URL;
+        String ip = null;
+        String uuidName = null;
+        String finalCode = null;
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(regParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
             }
-            result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
+
+            ip = getIp(request);
+            //校验用户是否允许注册
+            uuidName = ServletUtil.getCookie(request, "uuidName");
+            result = regManager.checkRegInBlackList(ip, uuidName);
+            if (!result.isSuccess()) {
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+                    result.setMessage("注册失败");
+                }
+
+                return result.toString();
+            }
+
+            //检验用户名是否存在
+            String username = regParams.getUsername();
+            result = checkAccountNotExists(username);
+            if (!result.isSuccess()) {
+                return result.toString();
+            }
+
+            result = regManager.webRegister(regParams, ip);
+            if (result.isSuccess()) {
+                //设置来源
+                String ru = regParams.getRu();
+                if (Strings.isNullOrEmpty(ru)) {
+                    ru = LOGIN_INDEX_URL;
+                }
+                result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
+            }
+        } catch (Exception e) {
+            logger.error("reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
+        } finally {
+            String logCode = null;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
+            //用户注册log
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
 
-        //用户注册log
-        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), regParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
 
         regManager.incRegTimes(ip, uuidName);
         String userId = (String) result.getModels().get("userid");
@@ -148,6 +168,7 @@ public class RegAction extends BaseController {
                 secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
             }
         }
+
         return result.toString();
     }
 
