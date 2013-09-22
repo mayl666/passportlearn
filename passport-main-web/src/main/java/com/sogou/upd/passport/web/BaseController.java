@@ -87,17 +87,4 @@ public class BaseController {
         return false;
     }
 
-    protected Result setDefaultModelForResult(Result result, String uniqName, AccountToken accountToken, String loginType) throws Exception {
-        result.setDefaultModel("accesstoken", accountToken.getAccessToken());
-        result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
-        result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(uniqName));
-        result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(accountToken.getPassportId()));
-        result.setDefaultModel("passport", Coder.encryptBase64URLSafeString(accountToken.getPassportId()));
-        result.setDefaultModel("result", 0);
-        result.setDefaultModel("sid", 0);
-        result.setDefaultModel("logintype", loginType);
-        return result;
-    }
-
-
 }

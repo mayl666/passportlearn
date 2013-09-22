@@ -62,10 +62,10 @@ public class ConnectCallbackController extends BaseConnectController {
             } else if (type.equals(ConnectTypeEnum.PC.toString())) {
                 model.addAttribute("sname", result.getModels().get("sname"));
                 model.addAttribute("nick", result.getModels().get("nick"));
-                model.addAttribute("passportId", result.getModels().get("passportId"));
-                model.addAttribute("accessToken", result.getModels().get("accessToken"));
+                model.addAttribute("passport", result.getModels().get("passport"));
+                model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
                 model.addAttribute("refreshToken", result.getModels().get("refreshToken"));
-                model.addAttribute("provider", providerStr);
+                model.addAttribute("logintype", result.getModels().get("logintype"));
                 return new ModelAndView(viewUrl);
             } else {
                 // TODO 少了种cookie
