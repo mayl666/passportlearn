@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class PCOAuth2IndexParams extends PCOAuth2BaseParams{
     @NotBlank(message = "accesstoken illegal")
-    private String accesstoken="";   //获取的访问token
+    private String accesstoken;   //获取的访问token
 
     public String getAccesstoken() {
         return accesstoken;

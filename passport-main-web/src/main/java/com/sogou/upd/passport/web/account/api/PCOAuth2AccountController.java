@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -356,7 +357,7 @@ public class PCOAuth2AccountController extends BaseController {
             uniqname = defaultUniqname(passportId);
         }
         model.addAttribute("uniqname",uniqname);
-        model.addAttribute("imageUrl", imageUrl);
+        model.addAttribute("imageUrl", StringUtil.defaultIfEmpty(imageUrl, "http://imgstore01.cdn.sogou.com/app/a/100140008/1065_1379399471998"));
         model.addAttribute("bindMobile", bindMobile);
         model.addAttribute("bindEmail", bindEmail);
         model.addAttribute("userid", passportId);
