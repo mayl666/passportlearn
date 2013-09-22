@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -241,11 +240,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         result.setSuccess(true);
-                        result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(userId));
-                        result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(nickName));
-                        result.setDefaultModel("passportId", Coder.encryptBase64URLSafeString(userId));
-                        result.setDefaultModel("accessToken", accountToken.getAccessToken());
-                        result.setDefaultModel("refreshToken", accountToken.getRefreshToken());
+                        ManagerHelper.setModelForOAuthResult(result, nickName, accountToken, providerStr);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");

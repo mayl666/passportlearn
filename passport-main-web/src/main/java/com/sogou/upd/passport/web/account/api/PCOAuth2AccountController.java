@@ -14,6 +14,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LoginTypeUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -202,7 +203,7 @@ public class PCOAuth2AccountController extends BaseController {
                     AccountToken accountToken = (AccountToken) result.getDefaultModel();
                     result = new APIResultSupport(true);
                     String passportId = accountToken.getPassportId();
-                    setDefaultModelForResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+                    ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
                 }
             }
         } catch (Exception e) {

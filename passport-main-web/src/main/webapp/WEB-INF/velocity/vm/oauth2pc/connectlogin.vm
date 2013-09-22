@@ -31,11 +31,11 @@
         splus.sname = '${sname}';
         splus.nick = '${nick}';
         splus.sid = "0";
-        splus.passport = '${passportId}';
-        splus.accesstoken = '${accessToken}';
-        splus.refreshtoken = '${refreshToken}';
+        splus.passport = '${passport}';
+        splus.accesstoken = '${accesstoken}';
+        splus.refreshtoken = '${refreshtoken}';
         splus.result = "0";
-        splus.logintype = '${provider}';
+        splus.logintype = '${logintype}';
 
         splus._timestamp = "201308061701";
     </script>

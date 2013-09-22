@@ -3,6 +3,8 @@ package com.sogou.upd.passport.manager;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import org.slf4j.Logger;
@@ -93,5 +95,17 @@ public class ManagerHelper {
             log.error("calculate default code error", e);
         }
         return code;
+    }
+
+    public static Result setModelForOAuthResult(Result result, String uniqName, AccountToken accountToken, String loginType) throws Exception {
+        result.setDefaultModel("accesstoken", accountToken.getAccessToken());
+        result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
+        result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(uniqName));
+        result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(accountToken.getPassportId()));
+        result.setDefaultModel("passport", Coder.encryptBase64URLSafeString(accountToken.getPassportId()));
+        result.setDefaultModel("result", 0);
+        result.setDefaultModel("sid", 0);
+        result.setDefaultModel("logintype", loginType);
+        return result;
     }
 }
