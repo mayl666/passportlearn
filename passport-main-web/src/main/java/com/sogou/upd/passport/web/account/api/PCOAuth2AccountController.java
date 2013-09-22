@@ -327,7 +327,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     //个人中心页面
     @RequestMapping(value = "/sogou/profile/basic/edit", method = RequestMethod.GET)
-    public String pcindexCreateCookie(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
+    public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(oauth2PcIndexParams);
@@ -352,38 +352,6 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
             return "forward:/oauth2/errorMsg?msg=" + result.toString();
         }
-        //生成cookie
-        /*CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-        createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu("https://account.sogou.com");
-        //TODO sogou域账号迁移后cookie生成问题
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-        if (getCookieValueResult.isSuccess()) {
-            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-            ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-            ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-        }*/
-
-        result = commonManager.createCookieUrl(passportId, 0);
-        //设置来源
-        result.setDefaultModel("userid",passportId);
-        result.setDefaultModel(CommonConstant.RESPONSE_RU, "https://account.sogou.com/oauth2/pcindex");
-        result.setDefaultModel("xd","https://account.sogou.com/static/api/jump.htm");
-        model.addAttribute("data", result.toString());
-        return "/login/api";
-    }
-
-    //个人中心页面
-    @RequestMapping(value = "/oauth2/pcindex")
-    public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        if (!hostHolder.isLogin()) {
-            return "redirect:/web/webLogin";
-        }
-        String passportId = hostHolder.getPassportId();
-        //获取用户信息
         GetUserInfoApiparams getUserInfoApiparams =  new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
         getUserInfoApiparams.setImagesize("180");
         Result getUserInfoResult=proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
@@ -412,6 +380,20 @@ public class PCOAuth2AccountController extends BaseController {
         model.addAttribute("client_id",oauth2PcIndexParams.getClient_id());
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
         handleBindAndPwd(passportId,bindMobile,bindEmail,model);
+
+        //生成cookie
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu("https://account.sogou.com");
+        //TODO sogou域账号迁移后cookie生成问题
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        if (getCookieValueResult.isSuccess()) {
+            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+            ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+        }
         return "/oauth2pc/pcindex";
     }
 
