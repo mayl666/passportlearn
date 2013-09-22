@@ -32,6 +32,7 @@ import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +82,8 @@ public class PCOAuth2AccountController extends BaseController {
     private RegManager regManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private HostHolder hostHolder;
 
     @RequestMapping(value = "/sogou/flogon", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, HttpServletResponse response, PCOAuth2BaseParams pcOAuth2BaseParams, Model model) throws Exception {
@@ -324,7 +327,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     //个人中心页面
     @RequestMapping(value = "/sogou/profile/basic/edit", method = RequestMethod.GET)
-    public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
+    public String pcindexCreateCookie(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(oauth2PcIndexParams);
@@ -349,6 +352,37 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
             return "forward:/oauth2/errorMsg?msg=" + result.toString();
         }
+        //生成cookie
+        /*CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu("https://account.sogou.com");
+        //TODO sogou域账号迁移后cookie生成问题
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        if (getCookieValueResult.isSuccess()) {
+            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+            ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+        }*/
+
+        result = commonManager.createCookieUrl(passportId, 0);
+        //设置来源
+        result.setDefaultModel("userid",passportId);
+        result.setDefaultModel(CommonConstant.RESPONSE_RU, "https://account.sogou.com/oauth2/pcindex");
+        result.setDefaultModel("xd","https://account.sogou.com/static/api/jump.htm");
+        model.addAttribute("data", result.toString());
+        return "/login/api";
+    }
+
+    //个人中心页面
+    @RequestMapping(value = "/oauth2/pcindex")
+    public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        if (!hostHolder.isLogin()) {
+            return "redirect:/web/webLogin";
+        }
+        String passportId = hostHolder.getPassportId();
         //获取用户信息
         GetUserInfoApiparams getUserInfoApiparams =  new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
         getUserInfoApiparams.setImagesize("180");
@@ -377,33 +411,9 @@ public class PCOAuth2AccountController extends BaseController {
         model.addAttribute("instanceid",oauth2PcIndexParams.getInstanceid());
         model.addAttribute("client_id",oauth2PcIndexParams.getClient_id());
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
-        handleBindAndPwd(passportId, bindMobile, bindEmail, model);
-        //生成cookie
-        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-        createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu("https://account.sogou.com");
-        //TODO sogou域账号迁移后cookie生成问题
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-        if (getCookieValueResult.isSuccess()) {
-            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-            ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-            ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-        }
-
-//        result = commonManager.createCookieUrl(result, passportId, 0);
-//        //设置来源
-//        String ru = loginParameters.getRu();
-//        if (Strings.isNullOrEmpty(ru)) {
-//            ru = scheme + LOGIN_INDEX_URLSTR;
-//        }
-//        result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
-//        result.setDefaultModel("xd", loginParams.getXd());
-//        model.addAttribute("data", result.toString());
+        handleBindAndPwd(passportId,bindMobile,bindEmail,model);
         return "/oauth2pc/pcindex";
     }
-
 
     @RequestMapping(value = "/oauth2/errorMsg")
     @ResponseBody

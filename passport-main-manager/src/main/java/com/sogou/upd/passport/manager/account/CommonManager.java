@@ -59,4 +59,12 @@ public interface CommonManager {
      */
     public void incRegTimes(String ip, String uuidName);
 
+    /**
+     * 只根据 passportId和autoLogin生成cookie  URL
+     * @param passportId
+     * @param autoLogin
+     * @return
+     */
+    public Result createCookieUrl(String passportId, int autoLogin);
+
 }
