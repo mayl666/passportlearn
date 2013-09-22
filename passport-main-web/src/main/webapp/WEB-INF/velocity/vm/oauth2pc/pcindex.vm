@@ -5,7 +5,7 @@
     <title>用户信息</title>
     <meta name="description" content="搜狗浏览器个人中心页"/>
     <meta name="author" content="yinyong#sogou-inc.com"/>
-    <link href="/./static/css/oauth2pc/login.css?t=763849" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc/login.css?t=872952" rel="stylesheet" />
     <!--[if IE 6]>
     <link href="/./static/css/oauth2pc/ie6.css?t=821014" rel="stylesheet" />
     <![endif]-->
@@ -23,7 +23,10 @@
         splus._timestamp="201308061701";
     </script>
     <script type="text/javascript">
-  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}"),isUpdatepwdUsable=+eval("${isUpdatepwdUsable}");}catch(e){}
+  try{var isBindMobileUsable=+eval("${isBindMobileUsable}")}catch(e){}
+  try{var isBindEmailUsable=+eval("${isBindEmailUsable}")}catch(e){}
+  try{var isUpdatepwdUsable=+eval("${isUpdatepwdUsable}")}catch(e){}
+  try{var isSohuAccount=+eval("${isSohuAccount}")}catch(e){}
     </script>
     <script type="text/javascript" src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
@@ -79,7 +82,7 @@
         <div class="sent-btn-wrap">
             <button class="btn-sent" id="pro_btn_basic">保存</button>
         </div>
-        <fieldset class="bind">
+        <fieldset class="bind sogou">
             <legend>账号安全</legend>
             <div class="control-group clearfix">
                 <label>手机绑定</label>
@@ -165,7 +168,7 @@
         </div>
     </div>
 </fieldset>
-<fieldset>
+<fieldset class="sogou">
     <legend>密码修改</legend>
     <div class="opt-area">
         <div class="state-wrapper hide">
@@ -195,7 +198,7 @@
 
     </div>
 </fieldset>
-<div class="sent-btn-wrap">
+<div class="sent-btn-wrap sogou">
     <button type="button"  class="btn-sent" id="pro_btn_pass">保存</button>
 </div>
 <!--这里从搜狐删除的第三方登录-->
@@ -220,4 +223,11 @@
 </div>
 </div>
 </body>
+<script type="text/javascript">
+    if(window.isSohuAccount){
+        $(".sogou").remove();
+        $('form').append("<a class='sohu' href='${sohuBindUrl}'>去搜狐修改密保信息</a>")
+        $('form').append("<a class='sohu' href='${sohuUpdatepwdUrl}'>去搜狐修改密码</a>")
+    }
+</script>
 </html>
