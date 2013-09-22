@@ -3,7 +3,7 @@
  */
 ;
 define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib/fileupload'], function($, md5, dialog, upload) {
-    var _g_client_id=1044;
+    var _g_client_id=splus.client_id||1044;
     function Profile() {};
     Profile.prototype = {
         sogouBaseurl: "//account.sogou.com",
