@@ -13,7 +13,7 @@ import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.PCOAuth2UpdateNickParams;
+import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
@@ -51,10 +51,17 @@ public class AccountInfoAction extends BaseController {
 
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
-    public Object checkNickName(HttpServletRequest request, @RequestParam(value = "nickname") String nickname) {
+    public Object checkNickName(HttpServletRequest request, CheckOrUpdateNickNameParams checkOrUpdateNickNameParams) {
         Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(checkOrUpdateNickNameParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
-        updateUserUniqnameApiParams.setUniqname(nickname);
+        updateUserUniqnameApiParams.setUniqname(checkOrUpdateNickNameParams.getNickname());
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
         return result.toString();
@@ -63,26 +70,27 @@ public class AccountInfoAction extends BaseController {
     @RequestMapping(value = "/userinfo/updatenickname", method = RequestMethod.POST)
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
-    public Object updateNickName(HttpServletRequest request, PCOAuth2UpdateNickParams pcOAuth2UpdateNickParams) throws Exception {
+    public Object updateNickName(HttpServletRequest request, CheckOrUpdateNickNameParams checkOrUpdateNickNameParams) throws Exception {
         Result result = new APIResultSupport(false);
-        if (hostHolder.isLogin()) {
-            //参数验证
-            String validateResult = ControllerHelper.validateParams(pcOAuth2UpdateNickParams);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            String userId = hostHolder.getPassportId();
-
-            UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
-            params.setUserid(userId);
-            params.setModifyip(getIp(request));
-            params.setUniqname(pcOAuth2UpdateNickParams.getNick());
-            result = proxyUserInfoApiManager.updateUserInfo(params);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(checkOrUpdateNickNameParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
             return result.toString();
         }
-        return "redirect:/web/webLogin";
+
+        if (!hostHolder.isLogin()) {
+            return "redirect:/web/webLogin";
+        }
+        String userId = hostHolder.getPassportId();
+        UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
+        params.setUserid(userId);
+        params.setModifyip(getIp(request));
+        params.setUniqname(checkOrUpdateNickNameParams.getNickname());
+        result = proxyUserInfoApiManager.updateUserInfo(params);
+        return result.toString();
+
     }
 
     //头像上传
