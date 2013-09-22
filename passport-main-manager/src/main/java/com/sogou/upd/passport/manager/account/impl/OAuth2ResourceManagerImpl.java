@@ -124,7 +124,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String pprdig = cookieResult.getModels().get("pprdig") + suffix;
                 String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
                 resourceMap.put("msg", "get cookie success");
-                resourceMap.put("code", "0");
+                resourceMap.put("code", 0);
                 resourceMap.put("scookie", cookieArray);
             } else {
                 Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_COOKIE);
