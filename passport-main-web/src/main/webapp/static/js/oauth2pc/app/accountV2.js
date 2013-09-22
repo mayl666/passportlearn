@@ -563,7 +563,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 var code = result.status,
                     data = result.data;
                 if (result.needCaptcha) {
-
+                    $img.show();
                 }
                 switch (true) {
                     case (0 == code):
@@ -846,7 +846,8 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
 
         },
         doRegPhone: function(form) {
-            if (this.submited) return
+            var self=this;
+            if (this.submited) return;
             var $input = $(form.reg_phone),
                 $vcode = $(form.reg_vcode),
                 $password = $(form.reg_pwd2),
@@ -881,7 +882,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                     password: $password.val(),
                     instance_id: instanceid,
                     client_id: _g_client_id,
-                    token: $img.attr('data-token')
+                    token: $vcode.attr('data-token')
                 },
                 dataType: "json"
             }).done(function(result) {;
