@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.web;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.converters.CustomDateEditor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -82,6 +85,18 @@ public class BaseController {
             return true;
         }
         return false;
+    }
+
+    protected Result setDefaultModelForResult(Result result, String uniqName, AccountToken accountToken, String loginType) throws Exception {
+        result.setDefaultModel("accesstoken", accountToken.getAccessToken());
+        result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
+        result.setDefaultModel("nick", Coder.enBase64(uniqName));
+        result.setDefaultModel("sname", Coder.enBase64(accountToken.getPassportId()));
+        result.setDefaultModel("passport", Coder.enBase64(accountToken.getPassportId()));
+        result.setDefaultModel("result", 0);
+        result.setDefaultModel("sid", 0);
+        result.setDefaultModel("logintype", loginType);
+        return result;
     }
 
 
