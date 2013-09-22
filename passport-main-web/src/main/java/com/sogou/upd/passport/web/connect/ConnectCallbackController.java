@@ -1,11 +1,8 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -61,6 +58,14 @@ public class ConnectCallbackController extends BaseConnectController {
             if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                 model.addAttribute("nickname", result.getModels().get("nickname"));
                 model.addAttribute("result", result.getModels().get("result"));
+                return new ModelAndView(viewUrl);
+            } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+                model.addAttribute("sname", result.getModels().get("sname"));
+                model.addAttribute("nick", result.getModels().get("nick"));
+                model.addAttribute("passportId", result.getModels().get("passportId"));
+                model.addAttribute("accessToken", result.getModels().get("accessToken"));
+                model.addAttribute("refreshToken", result.getModels().get("refreshToken"));
+                model.addAttribute("provider", providerStr);
                 return new ModelAndView(viewUrl);
             } else {
                 // TODO 少了种cookie

@@ -28,9 +28,9 @@
 
         splus.bru = "";
         splus.sp_status = "1";
-        splus.sname = '${nickname}';
-        splus.nick = '${nickname}';
-        //        splus.sid = "2941705";
+        splus.sname = '${sname}';
+        splus.nick = '${nick}';
+        splus.sid = "0";
         splus.passport = '${passportId}';
         splus.accesstoken = '${accessToken}';
         splus.refreshtoken = '${refreshToken}';
