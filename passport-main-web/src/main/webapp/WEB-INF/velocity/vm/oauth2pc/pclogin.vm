@@ -84,23 +84,23 @@ splus.client_id="${client_id}";
         <div class="outside-list">
             <ul>
                 <li>
-                    <a id="oauth_sina_login" href="//account.sogou.com/connect/login?provider=sina&client_id=1065&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}"> <i class="icon-weibo-25-1"></i>
+                    <a id="oauth_sina_login" href="//account.sogou.com/connect/login?provider=sina&client_id=1065&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"> <i class="icon-weibo-25-1"></i>
                         <span>新浪微博</span>
                     </a>
                 </li>
                 <li>
-                    <a id="oauth_renren_login" href="//account.sogou.com/connect/login?provider=renren&client_id=1065&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}"> <i class="icon-renren-25-1"></i>
+                    <a id="oauth_renren_login" href="//account.sogou.com/connect/login?provider=renren&client_id=1065&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"> <i class="icon-renren-25-1"></i>
                         <span>人人网</span>
                     </a>
                 </li>
                 <li>
-                    <a id="oauth_qq_login" href="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}">
+                    <a id="oauth_qq_login" href="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
                         <i class="icon-qq-25-1"></i>
                         <span>QQ</span>
                     </a>
                 </li>
                 <li>
-                    <a id="oauth_taobao_login" href="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}">
+                    <a id="oauth_taobao_login" href="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
                         <i class="icon-taobao-25-1"></i>
                         <span>淘宝</span>
                     </a>
@@ -112,16 +112,16 @@ splus.client_id="${client_id}";
     <div class="dl-bottom" style=" display: none;">
         <h3>合作账号登录</h3>
 
-        <a id="oauth_qq_reg" href="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}">
+        <a id="oauth_qq_reg" href="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
             <i class="icon-qq-30-1"></i>
         </a>
-        <a id="oauth_sina_reg" href="//account.sogou.com/connect/login?provider=sina&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}">
+        <a id="oauth_sina_reg" href="//account.sogou.com/connect/login?provider=sina&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
             <i class="icon-weibo-30-1"></i>
         </a>
-        <a id="oauth_renren_reg" href="//account.sogou.com/connect/login?provider=renren&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}">
+        <a id="oauth_renren_reg" href="//account.sogou.com/connect/login?provider=renren&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
             <i class="icon-renren-30-1"></i>
         </a>
-        <a id="oauth_taobao_reg" href="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts={instanceid}">
+        <a id="oauth_taobao_reg" href="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
             <i class="icon-taobao-30-1"></i>
         </a>
     </div>
