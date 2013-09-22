@@ -3,7 +3,7 @@
  */
 ;
 define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib/fileupload'], function($, md5, dialog, upload) {
-    var _g_client_id=1044;
+    var _g_client_id=splus.client_id||1044;
     function Profile() {};
     Profile.prototype = {
         sogouBaseurl: "//account.sogou.com",
@@ -160,15 +160,15 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : ""
 
                 //adaptor:email&phone cannot be disbinded.
-            if (window.isBindMobileUsable || 1) {//todo
+            if (window.isBindMobileUsable) {
                 self.bindPhone();
             } else {
-                $phone.prop('disabled', true);
+                $phone.prop('disabled', true).css("background-color","#ccc");
             }
-            if (window.isBindEmailUsable || 1) {//todo
+            if (window.isBindEmailUsable ) {
                 self.bindEmail();
             } else {
-                $email.prop('disabled', true);
+                $email.prop('disabled', true).css("background-color","#ccc");
             }
         },
         bindEmail: function() {
@@ -864,10 +864,10 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 legal: true
             },
             nick: {
-                errMsg: '用户名为4-16位中英文字符，及“-”和“_”',
+                errMsg: '用户名为6-16位中英文字符，及“-”和“_”',
                 emptyMsg: '请填写用户名',
                 nullable: false,
-                regStr: /^[a-z][a-zA-Z0-9-_\u4e00-\u9fa5]{3,15}$/,
+                regStr: /^[a-z][a-zA-Z0-9-_\u4e00-\u9fa5]{5,15}$/,
                 legal: true
             }
         }

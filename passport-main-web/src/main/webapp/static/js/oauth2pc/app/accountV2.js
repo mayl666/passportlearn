@@ -3,7 +3,8 @@
  */
 ;
 define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
-    var _g_client_id=1044;
+    var _g_client_id=splus._client_id||1044;
+    var _g_instance_id=splus.instanceid||"";
     //user login and register
     function getJSON(result) {
         if (typeof result === 'string' || (result && result.constructor == String)) {
@@ -38,7 +39,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
         retStatus: {
             checkSname: {
                 "10002": "必填参数错误",
-                "20201": " 此帐号已注册，请直接登录 ",
+                "20201": "此帐号已注册，请直接登录",
                 "20217": "暂不支持邮箱注册",
                 "20225": "该手机号已注册或已绑定，请直接登录",
                 "20241": " 暂不支持sohu域内邮箱注册 "
