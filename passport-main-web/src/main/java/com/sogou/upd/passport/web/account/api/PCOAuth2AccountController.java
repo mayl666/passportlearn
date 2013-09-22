@@ -364,7 +364,7 @@ public class PCOAuth2AccountController extends BaseController {
         model.addAttribute("instanceid",oauth2PcIndexParams.getInstanceid());
         model.addAttribute("client_id",oauth2PcIndexParams.getClient_id());
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
-        handleBind(passportId,bindMobile,bindEmail,model);
+        handleBindAndPwd(passportId,bindMobile,bindEmail,model);
         //生成cookie
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
@@ -388,13 +388,16 @@ public class PCOAuth2AccountController extends BaseController {
         return msg;
     }
 
-    private void handleBind(String passportId, String bindMobile, String bindEmail, Model model) throws Exception {
+    private void handleBindAndPwd(String passportId, String bindMobile, String bindEmail, Model model) throws Exception {
         AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
         switch (accountDomain) {
             case SOHU:
-                model.addAttribute("isBindEmailUsable", 0);
-                model.addAttribute("isBindMobileUsable", 0);
-                model.addAttribute("isUpdatepwdUsable", 0);
+//                model.addAttribute("isBindEmailUsable", 0);
+//                model.addAttribute("isBindMobileUsable", 0);
+//                model.addAttribute("isUpdatepwdUsable", 0);
+                model.addAttribute("isSohuAccount", 1);
+                model.addAttribute("sohuBindUrl","https://passport.sohu.com/web/requestBindMobileAction.action");
+                model.addAttribute("sohuUpdatepwdUrl","https://passport.sohu.com/web/updateInfo.action?modifyType=password");
                 break;
             case THIRD:
                 model.addAttribute("isBindEmailUsable", 0);
