@@ -393,10 +393,12 @@ public class PCOAuth2AccountController extends BaseController {
             case SOHU:
                 model.addAttribute("isBindEmailUsable", 0);
                 model.addAttribute("isBindMobileUsable", 0);
+                model.addAttribute("isUpdatepwdUsable", 0);
                 break;
             case THIRD:
                 model.addAttribute("isBindEmailUsable", 0);
                 model.addAttribute("isBindMobileUsable", 0);
+                model.addAttribute("isUpdatepwdUsable", 0);
                 break;
             case PHONE:
                 if (StringUtils.isEmpty(bindEmail)) {
@@ -405,6 +407,7 @@ public class PCOAuth2AccountController extends BaseController {
                     model.addAttribute("isBindEmailUsable", 0);
                 }
                 model.addAttribute("isBindMobileUsable", 0);
+                model.addAttribute("isUpdatepwdUsable", 1);
                 break;
             default:
                 if (StringUtils.isEmpty(bindEmail)) {
@@ -417,6 +420,7 @@ public class PCOAuth2AccountController extends BaseController {
                 } else {
                     model.addAttribute("isBindMobileUsable", 0);
                 }
+                model.addAttribute("isUpdatepwdUsable", 1);
                 break;
         }
     }

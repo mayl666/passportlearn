@@ -331,7 +331,7 @@ public class RegManagerImpl implements RegManager {
             if (operateTimesService.checkRegInBlackList(ip, cookieStr)) {
                 //检查账号是否在白名单中
                 if (!operateTimesService.checkRegInWhiteList(ip)) {
-                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_IP_IN_BLACKLIST);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                     return result;
                 }
             }

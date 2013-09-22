@@ -23,7 +23,7 @@
         splus._timestamp="201308061701";
     </script>
     <script type="text/javascript">
-  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");}catch(e){}
+  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}"),isUpdatepwdUsable=+eval("${isUpdatepwdUsable}");}catch(e){}
     </script>
     <script type="text/javascript" src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
@@ -174,21 +174,21 @@
         <div class="control-group clearfix">
             <label>原始密码</label>
             <div class="controls">
-                <input autocomplete="off" type="password" id="pro_ori_pass"/>
+                <input autocomplete="off" disableautocomplete class="pwd" type="password" id="pro_ori_pass"/>
                 <p class="tips red" style="display: none;"></p>
             </div>
         </div>
         <div class="control-group clearfix">
             <label>新密码</label>
             <div class="controls">
-                <input autocomplete="off" type="password" id="pro_new_pass"/>
+                <input autocomplete="off" disableautocomplete class="pwd" type="password" id="pro_new_pass"/>
                 <p class="tips red" style="display: none;"></p>
             </div>
         </div>
         <div class="control-group clearfix">
             <label>确认新密码</label>
             <div class="controls">
-                <input autocomplete="off" type="password" id="pro_con_pass" />
+                <input autocomplete="off" disableautocomplete class="pwd" type="password" id="pro_con_pass" />
                 <p class="tips red" style="display: none;"></p>
             </div>
         </div>

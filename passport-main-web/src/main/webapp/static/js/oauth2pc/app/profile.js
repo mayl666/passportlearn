@@ -18,10 +18,14 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             updateAvatar:'/web/userinfo/uploadavatar'
         },
         init: function() {
-            this.initPageEvent()
+            this.initPageEvent();
             this.initBasicProfile()
             this.initAccountSecure()
-            this.initUpdatePassword()
+            if (window.isUpdatepwdUsable) {
+                this.initUpdatePassword();
+            } else {
+                $(".pwd").prop("disabled", true).css('background-color', '#ccc');
+            }
             this.initAccountBind()
             this.initHeadPortrait()
         },
@@ -56,7 +60,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                             $.ajax({
                                 url: url,
                                 data: {
-                                    nick: $nick.val(),
+                                    nickname: $nick.val(),
                                     sname: $sname.val(),
                                     accesstoken: accesstoken
                                 },
@@ -644,7 +648,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     pwdObj.legal = false
                     return false
                 }
-            if (!self.check($newPwd, $newError, newObj) || !self.isSimple($newPwd, $newError, "密码过于简单")) {
+            if (!self.check($newPwd, $newError, newObj)) {
                 pwdObj.legal = false
                 return false
             }
@@ -864,10 +868,10 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 legal: true
             },
             nick: {
-                errMsg: '用户名为6-16位中英文字符，及“-”和“_”',
+                errMsg: '用户名为2-12位中英文字符',
                 emptyMsg: '请填写用户名',
                 nullable: false,
-                regStr: /^[a-z][a-zA-Z0-9-_\u4e00-\u9fa5]{5,15}$/,
+                regStr: /^([a-zA-Z0-9]|[\u4e00-\u9fa5]){2,12}$/,
                 legal: true
             }
         }
