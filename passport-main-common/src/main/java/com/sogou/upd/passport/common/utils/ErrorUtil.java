@@ -70,9 +70,9 @@ public class ErrorUtil {
     /*  account 服务的错误代码                                                       */
     /* ============================================================================ */
     //暂不支持邮箱注册
-    public static final String ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED = "20217";
-    //当前注册ip次数已达上限或该ip已在黑名单中
-    public static final String ERR_CODE_REGISTER_IP_IN_BLACKLIST = "20200";
+    public static final String ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED = "20197";
+    //注册失败
+    public static final String ERR_CODE_REGISTER_USER_UNUSUAL = "20200";
     // 帐号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
     // 短信发送已达今天的最高上限20条
@@ -240,7 +240,6 @@ public class ErrorUtil {
     public static final String ERR_OBTAIN_PHOTO = "20299";
 
 
-
     /* ============================================================================ */
     /*  Connect通用的错误代码                                                        */
     /* ============================================================================ */
@@ -337,7 +336,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(QUERY_PASSPORTID_BYTOKEN_FAILED, "根据token获取用户失败");
 
         // account
-        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_IP_IN_BLACKLIST, "当前注册ip次数已达上限或该ip已在黑名单中");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_USER_UNUSUAL, "注册失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");
@@ -427,8 +426,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过5M");
         ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
         ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
-
-
 
 
         // connect

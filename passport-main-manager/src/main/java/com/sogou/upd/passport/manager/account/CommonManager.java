@@ -20,38 +20,43 @@ public interface CommonManager {
      */
     public boolean isAccountExists(String username) throws Exception;
 
-   /**
-   *
-   * @param passportId
-   * @return
-   * @throws Exception
-   */
+    /**
+     * @param passportId
+     * @return
+     * @throws Exception
+     */
     public Account queryAccountByPassportId(String passportId) throws Exception;
 
-  /**
-   *
-   * @param account
-   * @return
-   * @throws Exception
-   */
-    public boolean updateState(Account account, int newState)  throws Exception;
-  /**
-   *
-   * @param account
-   * @param password
-   * @param needMD5
-   * @return
-   * @throws Exception
-   */
+    /**
+     * @param account
+     * @return
+     * @throws Exception
+     */
+    public boolean updateState(Account account, int newState) throws Exception;
+
+    /**
+     * @param account
+     * @param password
+     * @param needMD5
+     * @return
+     * @throws Exception
+     */
     public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception;
 
-  /**
-   *
-   * @param result
-   * @param passportId
-   * @param autoLogin
-   * @return
-   */
-    public Result createCookieUrl(Result result,String passportId,int autoLogin);
+    /**
+     * @param result
+     * @param passportId
+     * @param autoLogin
+     * @return
+     */
+    public Result createCookieUrl(Result result, String passportId, int autoLogin);
+
+    /**
+     * 用户注册时ip次数的累加
+     *
+     * @param ip
+     * @param uuidName
+     */
+    public void incRegTimes(String ip, String uuidName);
 
 }

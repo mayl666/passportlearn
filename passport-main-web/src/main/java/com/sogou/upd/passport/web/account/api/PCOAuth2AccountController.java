@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -74,11 +76,14 @@ public class PCOAuth2AccountController extends BaseController {
     private PCAccountManager pcAccountManager;
     @Autowired
     private RegManager regManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @RequestMapping(value = "/sogou/flogon", method = RequestMethod.GET)
-    public String pcLogin(PCOAuth2BaseParams pcOAuth2BaseParams,Model model) throws Exception {
-        model.addAttribute("instanceid",pcOAuth2BaseParams.getInstanceid());
-        model.addAttribute("client_id",pcOAuth2BaseParams.getClient_id());
+    public String pcLogin(HttpServletRequest request, HttpServletResponse response, PCOAuth2BaseParams pcOAuth2BaseParams, Model model) throws Exception {
+        webCookieProcess(request, response);
+        model.addAttribute("instanceid", pcOAuth2BaseParams.getInstanceid());
+        model.addAttribute("client_id", pcOAuth2BaseParams.getClient_id());
         return "/oauth2pc/pclogin";
     }
 
@@ -151,6 +156,9 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object register(HttpServletRequest request, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
         Result result = new APIResultSupport(false);
+        String ip = null;
+        String uuidName = null;
+        String finalCode = null;
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(pcoAuth2RegisterParams);
@@ -159,8 +167,16 @@ public class PCOAuth2AccountController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            String ip = getIp(request);
-            //TODO ip加安全限制
+            ip = getIp(request);
+            uuidName = ServletUtil.getCookie(request, "uuidName");
+            result = regManager.checkRegInBlackList(ip, uuidName);
+            if (!result.isSuccess()) {
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_USER_UNUSUAL);
+                    return result;
+                }
+            }
             //验证client_id
             int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
             if (!configureManager.checkAppIsExist(clientId)) {
@@ -187,12 +203,19 @@ public class PCOAuth2AccountController extends BaseController {
         } catch (Exception e) {
             logger.error("Sohu+ Register Failed,UserName Is " + pcoAuth2RegisterParams.getUsername(), e);
         } finally {
+            String logCode = null;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
+        commonManager.incRegTimes(ip, uuidName);
         return result.toString();
     }
 
@@ -331,39 +354,39 @@ public class PCOAuth2AccountController extends BaseController {
         authPcTokenParams.setTs(oauth2PcIndexParams.getInstanceid());
         authPcTokenParams.setUserid(passportId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
-        if(!authTokenResult.isSuccess()){
+        if (!authTokenResult.isSuccess()) {
             result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
             return "forward:/oauth2/errorMsg?msg=" + result.toString();
         }
         //获取用户信息
-        GetUserInfoApiparams getUserInfoApiparams =  new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
+        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
         getUserInfoApiparams.setImagesize("180");
-        Result getUserInfoResult=proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-        String uniqname="",imageUrl ="",bindMobile="",bindEmail="";
+        Result getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+        String uniqname = "", imageUrl = "", bindMobile = "", bindEmail = "";
         if (getUserInfoResult.isSuccess()) {
             uniqname = (String) getUserInfoResult.getModels().get("uniqname");
             uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
             bindMobile = (String) getUserInfoResult.getModels().get("sec_mobile");
-            bindMobile = Strings.isNullOrEmpty(bindMobile)?"":bindMobile;
-            bindEmail =(String)getUserInfoResult.getModels().get("sec_email");
-            bindEmail = Strings.isNullOrEmpty(bindEmail)? "":bindEmail;
-            String avatarStr =  getUserInfoResult.getModels().get("avatarurl").toString();
-            if(!StringUtils.isEmpty(avatarStr)){
-                Map map = (Map)getUserInfoResult.getModels().get("avatarurl");
-                imageUrl =(String)map.get("img_180");
+            bindMobile = Strings.isNullOrEmpty(bindMobile) ? "" : bindMobile;
+            bindEmail = (String) getUserInfoResult.getModels().get("sec_email");
+            bindEmail = Strings.isNullOrEmpty(bindEmail) ? "" : bindEmail;
+            String avatarStr = getUserInfoResult.getModels().get("avatarurl").toString();
+            if (!StringUtils.isEmpty(avatarStr)) {
+                Map map = (Map) getUserInfoResult.getModels().get("avatarurl");
+                imageUrl = (String) map.get("img_180");
             }
         } else {
             uniqname = defaultUniqname(passportId);
         }
-        model.addAttribute("uniqname",uniqname);
+        model.addAttribute("uniqname", uniqname);
         model.addAttribute("imageUrl", imageUrl);
         model.addAttribute("bindMobile", bindMobile);
         model.addAttribute("bindEmail", bindEmail);
         model.addAttribute("userid", passportId);
-        model.addAttribute("instanceid",oauth2PcIndexParams.getInstanceid());
-        model.addAttribute("client_id",oauth2PcIndexParams.getClient_id());
+        model.addAttribute("instanceid", oauth2PcIndexParams.getInstanceid());
+        model.addAttribute("client_id", oauth2PcIndexParams.getClient_id());
         //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
-        handleBind(passportId,bindMobile,bindEmail,model);
+        handleBind(passportId, bindMobile, bindEmail, model);
         //生成cookie
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
@@ -440,6 +463,17 @@ public class PCOAuth2AccountController extends BaseController {
 
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
+    }
+
+    /*
+    注册种cookie防止恶意注册，黑白名单
+     */
+    private void webCookieProcess(HttpServletRequest request, HttpServletResponse response) {
+        String uuidName = ServletUtil.getCookie(request, "uuidName");
+        if (Strings.isNullOrEmpty(uuidName)) {
+            uuidName = UUID.randomUUID().toString().replaceAll("-", "");
+            ServletUtil.setCookie(response, "uuidName", uuidName, (int) DateAndNumTimesConstant.TIME_ONEDAY);
+        }
     }
 
 }
