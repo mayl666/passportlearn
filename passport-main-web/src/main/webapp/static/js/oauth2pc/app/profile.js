@@ -644,7 +644,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     pwdObj.legal = false
                     return false
                 }
-            if (!self.check($newPwd, $newError, newObj) || !self.isSimple($newPwd, $newError, "密码过于简单")) {
+            if (!self.check($newPwd, $newError, newObj)) {
                 pwdObj.legal = false
                 return false
             }
