@@ -17,8 +17,9 @@ var splus = {};
 splus.pwd_token = "e073fa1dd6f40445a4d0940b58828793";
 splus.bru = "";
 splus.login_history="";
-splus.instanceid="178068027";
+splus.instanceid="${instanceid}";
 splus._timestamp="201308061701";
+splus.client_id="1044";
 </script>
     <script src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
@@ -28,7 +29,7 @@ splus._timestamp="201308061701";
 </head>
 <body>
     <div class="dl-wrap" >
-        <div class="login-wrap" style=" display: none;">
+        <div class="login-wrap" style="display: none;">
             <form id="login_form" autocomplete="off" disableautocomplete>
                 <fieldset>
                     <legend>搜狗账号登录</legend>
@@ -50,7 +51,7 @@ splus._timestamp="201308061701";
                         <div class="controls">
                             <input type="text" style="width:50px;" name="vcode" tabindex="3" >
                             <div class="chkPic">
-                                <img id="loginCapt" class="captcha" width="100" src="/captcha?t=2013091859">
+                                <img id="loginCapt" class="captcha" width="100" src="/captcha?t=2013092226">
                                 <span>
                                     <a class="refreshCapt" href="javascript:void(0);" data-target="loginCapt">换一张</a>
                                 </span>
@@ -146,7 +147,7 @@ splus._timestamp="201308061701";
                 <div class="controls">
                     <input type="text" style="width:50px;" name="vcode">
                     <div class="chkPic">
-                        <img id="commonRegCapt" class="captcha" width="100" src="/captcha?t=2013091859">
+                        <img id="commonRegCapt" class="captcha" width="100" src="/captcha?t=2013092226">
                         <span>
                             <a class="refreshCapt" href="javascript:void(0);" data-target="commonRegCapt">换一张</a>
                         </span>

@@ -23,7 +23,7 @@
         splus._timestamp="201308061701";
     </script>
     <script type="text/javascript">
-  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");var _client_id=+eval("${client_id}")}catch(e){}
+  try{  var isBindMobileUsable=+eval("${isBindMobileUsable}"),isBindEmailUsable=+eval("${isBindEmailUsable}");}catch(e){}
     </script>
     <script type="text/javascript" src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
