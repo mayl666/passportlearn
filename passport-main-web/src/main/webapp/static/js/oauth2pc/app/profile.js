@@ -18,10 +18,14 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
             updateAvatar:'/web/userinfo/uploadavatar'
         },
         init: function() {
-            this.initPageEvent()
+            this.initPageEvent();
             this.initBasicProfile()
             this.initAccountSecure()
-            this.initUpdatePassword()
+            if (window.isUpdatepwdUsable) {
+                this.initUpdatePassword();
+            } else {
+                $(".pwd").prop("disabled", true).css('background-color', '#ccc');
+            }
             this.initAccountBind()
             this.initHeadPortrait()
         },
