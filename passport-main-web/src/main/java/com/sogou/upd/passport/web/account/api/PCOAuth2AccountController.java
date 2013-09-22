@@ -62,6 +62,8 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
+    private CommonManager commonManager;
+    @Autowired
     private OAuth2AuthorizeManager oAuth2AuthorizeManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
@@ -378,6 +380,16 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
+
+//        result = commonManager.createCookieUrl(result, passportId, 0);
+//        //设置来源
+//        String ru = loginParameters.getRu();
+//        if (Strings.isNullOrEmpty(ru)) {
+//            ru = scheme + LOGIN_INDEX_URLSTR;
+//        }
+//        result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
+//        result.setDefaultModel("xd", loginParams.getXd());
+//        model.addAttribute("data", result.toString());
         return "/oauth2pc/pcindex";
     }
 
