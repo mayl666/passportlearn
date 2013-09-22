@@ -864,10 +864,10 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 legal: true
             },
             nick: {
-                errMsg: '用户名为6-16位中英文字符，及“-”和“_”',
+                errMsg: '用户名为2-12位中英文字符',
                 emptyMsg: '请填写用户名',
                 nullable: false,
-                regStr: /^[a-z][a-zA-Z0-9-_\u4e00-\u9fa5]{5,15}$/,
+                regStr: /^([a-zA-Z0-9]|[\u4e00-\u9fa5]){2,12}$/,
                 legal: true
             }
         }
