@@ -111,7 +111,9 @@ public class LoginManagerImpl implements LoginManager {
 
     @Override
     public boolean needCaptchaCheck(String client_id, String username, String ip) {
-        if (Integer.parseInt(client_id) == SHPPUrlConstant.APP_ID) {
+        int clientId = Integer.parseInt(client_id);
+        //目前使用sogou验证码的应用有passport 浏览器4.2及以上版本
+        if (clientId== SHPPUrlConstant.APP_ID || clientId== CommonConstant.PC_CLIENTID) {
             if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
                 return true;
             }
