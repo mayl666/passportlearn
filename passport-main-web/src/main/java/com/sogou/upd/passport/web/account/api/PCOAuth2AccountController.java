@@ -65,8 +65,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
-    private CommonManager commonManager;
-    @Autowired
     private OAuth2AuthorizeManager oAuth2AuthorizeManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
