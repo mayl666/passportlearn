@@ -60,7 +60,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                             $.ajax({
                                 url: url,
                                 data: {
-                                    nick: $nick.val(),
+                                    nickname: $nick.val(),
                                     sname: $sname.val(),
                                     accesstoken: accesstoken
                                 },
