@@ -368,6 +368,7 @@ public class PCOAuth2AccountController extends BaseController {
 
         result = commonManager.createCookieUrl(passportId, 0);
         //设置来源
+        result.setDefaultModel("userid",passportId);
         result.setDefaultModel(CommonConstant.RESPONSE_RU, "https://account.sogou.com/oauth2/pcindex");
         result.setDefaultModel("xd","https://account.sogou.com/static/api/jump.htm");
         model.addAttribute("data", result.toString());
