@@ -562,8 +562,10 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                 result = getJSON(result);
                 var code = result.status,
                     data = result.data;
-                if (result.needCaptcha) {
-                    $img.show();
+                if (result.data.needCaptcha) {
+                    $vcodeContainer.show();
+                }else{
+                    $vcodeContainer.hide();
                 }
                 switch (true) {
                     case (0 == code):
