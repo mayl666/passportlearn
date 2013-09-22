@@ -100,7 +100,7 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String enBase64(String str) throws Exception {
+    public static String encryptBase64URLSafeString(String str) throws Exception {
         return encryptBase64URLSafeString(str.getBytes());
     }
 

@@ -211,9 +211,9 @@ public class PCOAuth2AccountController extends BaseController {
     private Result setDefaultModelForResult(Result result, String passportId, AccountToken accountToken) throws Exception {
         result.setDefaultModel("accesstoken", accountToken.getAccessToken());
         result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
-        result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
-        result.setDefaultModel("sname", Coder.enBase64(passportId));
-        result.setDefaultModel("passport", Coder.enBase64(passportId));
+        result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(getUniqname(passportId)));
+        result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(passportId));
+        result.setDefaultModel("passport", Coder.encryptBase64URLSafeString(passportId));
         result.setDefaultModel("result", 0);
         result.setDefaultModel("sid", 0);
         result.setDefaultModel("logintype", "sogou");
@@ -269,9 +269,9 @@ public class PCOAuth2AccountController extends BaseController {
             result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
 
             result.setDefaultModel("autologin", loginParams.getRememberMe());
-            result.setDefaultModel("passport", Coder.enBase64(userId));
-            result.setDefaultModel("sname", Coder.enBase64(userId));
-            result.setDefaultModel("nick", Coder.enBase64(getUniqname(passportId)));
+            result.setDefaultModel("passport", Coder.encryptBase64URLSafeString(userId));
+            result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(userId));
+            result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(getUniqname(passportId)));
             result.setDefaultModel("result", 0);
             result.setDefaultModel("sid", 0);
             result.setDefaultModel("logintype", "sogou");
