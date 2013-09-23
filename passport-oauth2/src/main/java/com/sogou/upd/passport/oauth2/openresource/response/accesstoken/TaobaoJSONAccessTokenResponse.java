@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.TaobaoOAuthTokenVO;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import java.net.URLDecoder;
 import java.util.Map;
 
 /**
@@ -49,7 +51,9 @@ public class TaobaoJSONAccessTokenResponse extends OAuthAccessTokenResponse {
     public String getNickName() {
         try {
             TaobaoOAuthTokenVO taobaoOAuthTokenVO = getTaobaoOAuthTokenVO();
-            return taobaoOAuthTokenVO.getTaobao_user_nick();
+            String nickName = taobaoOAuthTokenVO.getTaobao_user_nick();
+            nickName = URLDecoder.decode(nickName, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            return nickName;
         } catch (Exception e) {
             log.error("Connect OAuthToken Response parse error, connect:taobao, body:" + body, e);
             return "";
