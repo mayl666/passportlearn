@@ -179,6 +179,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 data.put("large_avatar", largeAvatar);
                 data.put("mid_avatar", midAvatar);
                 data.put("tiny_avatar", tinyAvatar);
+//                data.put("update_at", System.currentTimeMillis());
+//                data.put("active_at", System.currentTimeMillis());
+//                data.put("create_at", 0);
+                data.put("status", 2);
                 resourceMap.put("data", data);
                 resourceMap.put("msg", "get full user info success");
                 resourceMap.put("code", "0");
