@@ -334,6 +334,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public void incRegTimesForInternal(final String ip) throws ServiceException {
+        //ip与cookie映射
+        String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
+        recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEDAY);
+    }
+
+    @Override
     public void incRegTimes(final String ip, final String cookieStr) throws ServiceException {
         discardTaskExecutor.execute(new Runnable() {
             @Override
