@@ -72,14 +72,14 @@ public class Coder {
     }
 
     /**
-     * BASE64解密
+     * BASE64加密
      *
      * @param key
      * @return
      * @throws Exception
      */
-    public static String deBase64(String key) {
-        return new String(decryptBase64(key));
+    public static String encryptBase64(String key) throws UnsupportedEncodingException {
+        return Base64.encodeBase64String(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
     }
 
     /**
@@ -89,7 +89,7 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String encryptBase64URLSafeString(byte[] key) throws Exception {
+    public static String encryptBase64URLSafeString(byte[] key) {
         return Base64.encodeBase64URLSafeString(key);
     }
 
@@ -100,7 +100,7 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String encryptBase64URLSafeString(String str) throws Exception {
+    public static String encryptBase64URLSafeString(String str) throws UnsupportedEncodingException {
         return encryptBase64URLSafeString(str.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
     }
 

@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
@@ -53,11 +52,12 @@ public class ManagerHelper {
 
     /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
+     *
      * @param passportId passport内部传输的用户id
      * @return
      */
-    public static boolean isInvokeProxyApi(String passportId){
-       return CommonHelper.isInvokeProxyApi(passportId);
+    public static boolean isInvokeProxyApi(String passportId) {
+        return CommonHelper.isInvokeProxyApi(passportId);
     }
 
     /**
@@ -78,6 +78,7 @@ public class ManagerHelper {
         }
         return code;
     }
+
     /**
      * 内部接口方法签名生成
      *
@@ -100,9 +101,9 @@ public class ManagerHelper {
     public static Result setModelForOAuthResult(Result result, String uniqName, AccountToken accountToken, String loginType) throws Exception {
         result.setDefaultModel("accesstoken", accountToken.getAccessToken());
         result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
-        result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(uniqName));
-        result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(accountToken.getPassportId()));
-        result.setDefaultModel("passport", Coder.encryptBase64URLSafeString(accountToken.getPassportId()));
+        result.setDefaultModel("nick", Coder.encryptBase64(uniqName));
+        result.setDefaultModel("sname", Coder.encryptBase64(accountToken.getPassportId()));
+        result.setDefaultModel("passport", Coder.encryptBase64(accountToken.getPassportId()));
         result.setDefaultModel("result", 0);
         result.setDefaultModel("sid", 0);
         result.setDefaultModel("logintype", loginType);
