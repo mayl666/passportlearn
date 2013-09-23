@@ -256,7 +256,7 @@ public class PCOAuth2AccountController extends BaseController {
         String passportId = loginParams.getLoginname();
         AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
         if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-            //TODO 去sohu+取该个性账号的@sohu账号
+            //TODO 去sohu+取该个性账号的@sohu账号   搜狗个性账号  sohu+个性账号只能取一个
         }
 
         WebLoginParams webLoginParams = new WebLoginParams();
@@ -278,19 +278,10 @@ public class PCOAuth2AccountController extends BaseController {
             int clientId = loginParams.getClient_id();
             //构造成功返回结果
             result = new APIResultSupport(true);
-            //获取token
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
-            AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            result.setDefaultModel("accesstoken", accountToken.getAccessToken());
-            result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
-
             result.setDefaultModel("autologin", loginParams.getRememberMe());
-            result.setDefaultModel("passport", Coder.encryptBase64URLSafeString(userId));
-            result.setDefaultModel("sname", Coder.encryptBase64URLSafeString(userId));
-            result.setDefaultModel("nick", Coder.encryptBase64URLSafeString(getUniqname(passportId)));
-            result.setDefaultModel("result", 0);
-            result.setDefaultModel("sid", 0);
-            result.setDefaultModel("logintype", "sogou");
+            AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+            ManagerHelper.setModelForOAuthResult(result,Coder.encryptBase64URLSafeString(getUniqname(passportId)),accountToken,"sogou");
             loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(passportId, ip);
@@ -407,9 +398,6 @@ public class PCOAuth2AccountController extends BaseController {
         AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
         switch (accountDomain) {
             case SOHU:
-//                model.addAttribute("isBindEmailUsable", 0);
-//                model.addAttribute("isBindMobileUsable", 0);
-//                model.addAttribute("isUpdatepwdUsable", 0);
                 model.addAttribute("isSohuAccount", 1);
                 model.addAttribute("sohuBindUrl","https://passport.sohu.com/web/requestBindMobileAction.action");
                 model.addAttribute("sohuUpdatepwdUrl","https://passport.sohu.com/web/updateInfo.action?modifyType=password");
