@@ -624,6 +624,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                         break*/
                     default:
                         $error.show().html(self.retStatus[code] || result.statusText || "未知错误");
+                         self.refreshVcode($img);
                         break
                 }
 

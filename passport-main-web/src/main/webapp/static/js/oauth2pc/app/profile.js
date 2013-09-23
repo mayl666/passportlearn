@@ -375,20 +375,20 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                     switch (code) {
                         case 0:
                             self.countdown($waitArea)
-                            $vcodeError.html("手机可以用来找回密码以及登陆").removeClass("red")
-                            break
+                            $vcodeError.html("手机可以用来找回密码以及登陆").removeClass("red");
+                            break;
                         case 10002:
-                            $vcodeError.html("参数错误").show().addClass("red")
-                            break
+                            $vcodeError.html("参数错误").show().addClass("red");
+                            break;
                         case 20229:
-                            $vcodeError.html("账号未登录，请先登录").show().addClass("red")
-                            break
+                            $vcodeError.html("账号未登录，请先登录").show().addClass("red");
+                            break;
                         case 20243:
-                            $vcodeError.html("SOHU域用户不允许此操作").show().addClass("red")
-                            break
+                            $vcodeError.html("SOHU域用户不允许此操作").show().addClass("red");
+                            break;
                         case 20244:
-                            $vcodeError.html("第三方账号不允许此操作").show().addClass("red")
-                            break
+                            $vcodeError.html("第三方账号不允许此操作").show().addClass("red");
+                            break;
                         case 20225:
                             $vcodeError.html("手机号已绑定其他账号").show().addClass("red")
                             break
@@ -543,7 +543,26 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                 $btn = $("#pro_btn_pass"),
                 $successArea = ($oriPwd.parents("div.control-group")).siblings("div.state-wrapper"),
                 accesstoken = splus ? splus.accesstoken ? splus.accesstoken : "" : "",
-                pwdObj = self.validObj.password
+                pwdObj = self.validObj.password;
+
+                $newPwd.on('blur',function(e){
+                   if(!self.check($(this),$(this).next('p'),pwdObj))
+                   {
+                    $(this).next('p').show().addClass('red');
+                   }
+                });   
+
+                $conPwd.on('blur',function(e){
+                    if($(this).val()!=$newPwd.val())
+                    {
+                        $(this).next('p').text("密码不一致").show().addClass('red');
+                        return;
+                    }
+                   if(!self.check($(thisArea),$(this).next('p'),pwdObj))
+                   {
+                        $(this).next('p').show().addClass('red');
+                   }
+                });
 
                 $btn.on("click", function(e) {
                     e.preventDefault()
@@ -629,7 +648,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                             }
                         })
                     }
-                })
+                });
 
         },
         checkPassword: function($oriPwd, $newPwd, $conPwd, pwdObj) {
