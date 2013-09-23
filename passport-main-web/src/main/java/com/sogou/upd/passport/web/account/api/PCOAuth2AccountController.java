@@ -304,7 +304,8 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, Coder.encryptBase64URLSafeString(getUniqname(passportId)), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, "sogou");
+
             loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(passportId, ip);
