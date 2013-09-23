@@ -167,9 +167,15 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                     result.setCode(ErrorUtil.ERR_CODE_GET_USER_INFO);
                     return result;
                 }
-                String largeAvatar = (String) ((Map) userInfoResult.getModels().get("avatarurl")).get("img_180");
-                String midAvatar = (String) ((Map) userInfoResult.getModels().get("avatarurl")).get("img_55");
-                String tinyAvatar = (String) ((Map) userInfoResult.getModels().get("avatarurl")).get("img_55");
+                Object avatarObject = userInfoResult.getModels().get("avatarurl");
+                String largeAvatar = "";
+                String midAvatar = "";
+                String tinyAvatar = "";
+                if (avatarObject instanceof Map) {
+                    largeAvatar = (String) ((Map) avatarObject).get("img_180");
+                    midAvatar = (String) ((Map) avatarObject).get("img_55");
+                    tinyAvatar = (String) ((Map) avatarObject).get("img_55");
+                }
                 String email = (String) userInfoResult.getModels().get("sec_email");
                 String uniqname = (String) userInfoResult.getModels().get("uniqname");
                 Map data = Maps.newHashMap();
@@ -179,9 +185,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 data.put("large_avatar", largeAvatar);
                 data.put("mid_avatar", midAvatar);
                 data.put("tiny_avatar", tinyAvatar);
-                data.put("update_at", System.currentTimeMillis());
-                data.put("active_at", System.currentTimeMillis());
-                data.put("create_at", 0);
+                data.put("update_at", String.valueOf(System.currentTimeMillis()));
+                data.put("active_at", String.valueOf(System.currentTimeMillis()));
+                data.put("create_at", "0");
                 data.put("status", "2");
                 resourceMap.put("data", data);
                 resourceMap.put("msg", "get full user info success");
