@@ -276,14 +276,15 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         //默认是sogou.com
-        String passportId = loginParams.getLoginname();
+        String username = loginParams.getLoginname();
         AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
         if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
             //TODO 去sohu+取该个性账号的@sohu账号   搜狗个性账号  sohu+个性账号只能取一个
         }
+        //TODO sohu+注册手机号  sogou 手机号登陆
 
         WebLoginParams webLoginParams = new WebLoginParams();
-        webLoginParams.setUsername(passportId);
+        webLoginParams.setUsername(username);
         webLoginParams.setPassword(loginParams.getPwd());
         webLoginParams.setCaptcha(loginParams.getCaptcha());
         webLoginParams.setToken(loginParams.getToken());
@@ -291,7 +292,7 @@ public class PCOAuth2AccountController extends BaseController {
         result = loginManager.accountLogin(webLoginParams, ip, request.getScheme());
 
         //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
+        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
@@ -304,13 +305,12 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, "sogou");
-
-            loginManager.doAfterLoginSuccess(passportId, ip, userId, clientId);
+            ManagerHelper.setModelForOAuthResult(result, getUniqname(userId), accountToken, "sogou");
+            loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
-            loginManager.doAfterLoginFailed(passportId, ip);
+            loginManager.doAfterLoginFailed(username, ip);
             //校验是否需要验证码
-            boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(loginParams.getClient_id()), passportId, ip);
+            boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(loginParams.getClient_id()), username, ip);
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
