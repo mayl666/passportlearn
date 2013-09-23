@@ -101,7 +101,7 @@ public class Coder {
      * @throws Exception
      */
     public static String encryptBase64URLSafeString(String str) throws Exception {
-        return encryptBase64URLSafeString(str.getBytes());
+        return encryptBase64URLSafeString(str.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
     }
 
     /**
