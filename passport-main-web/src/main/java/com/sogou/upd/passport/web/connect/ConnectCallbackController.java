@@ -72,7 +72,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 return new ModelAndView(new RedirectView(viewUrl));
             }
         } else {
-            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            if (type.equals(ConnectTypeEnum.TOKEN.toString()) || type.equals(ConnectTypeEnum.PC.toString())) {
                 return new ModelAndView(viewUrl);
             } else {
                 return new ModelAndView(new RedirectView(viewUrl));
