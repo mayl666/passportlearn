@@ -63,7 +63,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         String instanceId = params.getInstance_id();
         String accessToken = params.getAccess_token();
         try {
-            clientId = clientId == 30000004 ? 1044 : clientId;  //兼容浏览器PC端sohu+接口
+            clientId = clientId == 30000004 ? CommonConstant.PC_CLIENTID : clientId;  //兼容浏览器PC端sohu+接口
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             if (appConfig == null) {
                 result.setCode(ErrorUtil.INVALID_CLIENT);
@@ -173,7 +173,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String email = (String) userInfoResult.getModels().get("sec_email");
                 String uniqname = (String) userInfoResult.getModels().get("uniqname");
                 Map data = Maps.newHashMap();
-                data.put("sname", uniqname);
+                data.put("sname", passportId);
                 data.put("nick", uniqname);
                 data.put("email", Strings.isNullOrEmpty(email) ? "" : email);
                 data.put("large_avatar", largeAvatar);
