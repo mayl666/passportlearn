@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -117,7 +118,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
         String instanceId = oauthRequest.getInstanceId();
 
         try {
-            clientId = clientId == 30000004 ? 1044 : clientId;  //兼容浏览器PC端sohu+接口
+            clientId = clientId == 30000004 ? CommonConstant.PC_CLIENTID : clientId;  //兼容浏览器PC端sohu+接口
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             if (appConfig == null) {
                 result.setCode(ErrorUtil.INVALID_CLIENT);
