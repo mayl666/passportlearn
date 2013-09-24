@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -20,6 +21,7 @@ import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,6 +180,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 }
                 String email = (String) userInfoResult.getModels().get("sec_email");
                 String uniqname = (String) userInfoResult.getModels().get("uniqname");
+                DateTime dateTime = new DateTime();
+                long update_at =  dateTime.getMillis();
+                long active_at = dateTime.minus(DateAndNumTimesConstant.MILLTIME_ONEDAY).getMillis();
+
                 Map data = Maps.newHashMap();
                 data.put("sname", passportId);
                 data.put("nick", uniqname);
@@ -185,8 +191,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 data.put("large_avatar", largeAvatar);
                 data.put("mid_avatar", midAvatar);
                 data.put("tiny_avatar", tinyAvatar);
-                data.put("update_at", String.valueOf(System.currentTimeMillis()));
-                data.put("active_at", String.valueOf(System.currentTimeMillis()));
+                data.put("update_at", String.valueOf(update_at));
+                data.put("active_at", String.valueOf(active_at));
                 data.put("create_at", "0");
                 data.put("status", "2");
                 resourceMap.put("data", data);

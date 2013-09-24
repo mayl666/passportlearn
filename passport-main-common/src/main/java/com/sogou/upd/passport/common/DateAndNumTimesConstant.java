@@ -16,4 +16,5 @@ public class DateAndNumTimesConstant {
     public static final long TIME_ONEHOUR = 60 * 60; // 时间 一小时,单位s
     public static final int BIND_LIMIT = 10;   // 每日绑定限制次数
     public static final int ACTIONRECORD_NUM = 10; // 动作记录条数
+    public static final long MILLTIME_ONEDAY = 24*60 * 60* 1000; // 一天 单位 毫秒
 }
