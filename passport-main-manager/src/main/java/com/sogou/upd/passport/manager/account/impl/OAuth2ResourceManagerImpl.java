@@ -124,7 +124,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String suffix = ";path=/;domain=.sogou.com;expires=Tuesday, 17-Sep-13 19:02:21 GMT";
                 String ppinf = cookieResult.getModels().get("ppinf") + suffix;
                 String pprdig = cookieResult.getModels().get("pprdig") + suffix;
-                String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
+//                String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
+
+                String spinfo="c29nb3V8emhhbmdoYW8tMXw1MjU0OTgzMg==;path=/;domain=.sohu.com;expires=Tuesday, 24-Sep-13 07:52:11 GMT";
+                String spsession="NTI1NDk4MzJ8MTM4MDYxMTMzOXwxMzgyNTk4NTM5fHpoYW5naGFvLTE=-6yB7o5KHmrOheCIOuZSA3VmjLKE=;path=/;domain=.sohu.com;expires=Tuesday, 24-Sep-13 07:19:04 GMT";
+
+                String[] cookieArray = new String[]{"spinfo=" + spinfo, "spsession=" + spsession};
+
                 resourceMap.put("msg", "get cookie success");
                 resourceMap.put("code", 0);
                 resourceMap.put("scookie", cookieArray);
