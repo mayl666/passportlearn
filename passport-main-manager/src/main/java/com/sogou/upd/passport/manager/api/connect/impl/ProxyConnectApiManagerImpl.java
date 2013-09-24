@@ -75,7 +75,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getOpenid())) {
             requestModel.addParam("openid", oAuthTokenVO.getOpenid());
         }
-        if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName()) && !providerStr.equals(AccountTypeEnum.TAOBAO.toString())) {
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName())) {
             String nickName = oAuthTokenVO.getNickName();
             if (AccountTypeEnum.TAOBAO.toString().equals(providerStr)) {    // taobao注册账号昵称返回乱码
                 try {
