@@ -897,7 +897,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                     }
                 }
                 var code = result.status;
-                switch (code) {
+                switch (true) {
                     case (0 == code):
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname )+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport+ '|' + '1';
                         console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
