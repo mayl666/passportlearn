@@ -15,7 +15,7 @@ public class JacksonJsonMapperUtil {
     }
 
     public static ObjectMapper getMapper() {
-        if ((objectMapper == null)) {
+        if (objectMapper == null) {
             synchronized (ObjectMapper.class) {
                 if (objectMapper == null) {
                     objectMapper = new ObjectMapper();
