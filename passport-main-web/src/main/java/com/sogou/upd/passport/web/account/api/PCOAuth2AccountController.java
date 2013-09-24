@@ -209,7 +209,7 @@ public class PCOAuth2AccountController extends BaseController {
             result = regManager.webRegister(transferToWebParams(pcoAuth2RegisterParams), ip);
             //注册成功后获取token
             if (result.isSuccess()) {
-                getTokenAfterSuccess(result, pcoAuth2RegisterParams);
+                result = getTokenAfterSuccess(result, pcoAuth2RegisterParams);
             }
         } catch (Exception e) {
             logger.error("Sohu+ Register Failed,UserName Is " + pcoAuth2RegisterParams.getUsername(), e);
