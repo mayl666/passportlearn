@@ -233,7 +233,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 }
             }
             if(StringUtils.isEmpty(passportId)){
-                finalResult.setCode(ErrorUtil.QUERY_PASSPORTID_BYTOKEN_FAILED);
+                finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
             }
             finalResult.setSuccess(true);

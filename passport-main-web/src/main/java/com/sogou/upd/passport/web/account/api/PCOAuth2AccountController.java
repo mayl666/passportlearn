@@ -379,6 +379,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (getUserInfoResult.isSuccess()) {
             uniqname = (String) getUserInfoResult.getModels().get("uniqname");
             uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
+            uniqname = URLDecoder.decode(uniqname,CommonConstant.DEFAULT_CONTENT_CHARSET); //淘宝的昵称需要urldecoder
             bindMobile = (String) getUserInfoResult.getModels().get("sec_mobile");
             bindMobile = Strings.isNullOrEmpty(bindMobile) ? "" : bindMobile;
             bindEmail = (String) getUserInfoResult.getModels().get("sec_email");
