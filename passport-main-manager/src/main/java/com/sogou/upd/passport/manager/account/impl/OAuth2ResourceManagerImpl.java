@@ -182,8 +182,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String uniqname = (String) userInfoResult.getModels().get("uniqname");
                 DateTime dateTime = new DateTime();
                 long update_at =  dateTime.getMillis();
-                long active_at = dateTime.minus(DateAndNumTimesConstant.MILLTIME_ONEDAY).getMillis();
-
+                long active_at = dateTime.minus(DateAndNumTimesConstant.MILLTIME_ONE_YEAR).getMillis();
                 Map data = Maps.newHashMap();
                 data.put("sname", passportId);
                 data.put("nick", uniqname);
