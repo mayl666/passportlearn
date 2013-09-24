@@ -896,7 +896,7 @@ define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
                         result = {};
                     }
                 }
-                var code = result.status;
+                var code = result.status,data=result.data;
                 switch (true) {
                     case (0 == code):
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname )+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport+ '|' + '1';
