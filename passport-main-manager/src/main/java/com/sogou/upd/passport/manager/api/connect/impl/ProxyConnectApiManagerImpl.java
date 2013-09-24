@@ -18,6 +18,8 @@ import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -33,6 +35,8 @@ import java.util.Map;
  */
 @Component("proxyConnectApiManager")
 public class ProxyConnectApiManagerImpl extends BaseProxyManager implements ConnectApiManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ProxyConnectApiManagerImpl.class);
 
     @Override
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip) throws OAuthProblemException {
@@ -79,8 +83,9 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
             String nickName = oAuthTokenVO.getNickName();
             if (AccountTypeEnum.TAOBAO.toString().equals(providerStr)) {    // taobao注册账号昵称返回乱码
                 try {
-                    nickName = URLEncoder.encode(nickName,CommonConstant.DEFAULT_CONTENT_CHARSET);
+                    nickName = URLEncoder.encode(nickName, CommonConstant.DEFAULT_CONTENT_CHARSET);
                 } catch (UnsupportedEncodingException e) {
+                    log.error("encoder taobao nickname exception,nickName:" + nickName, e);
                 }
             }
             requestModel.addParam("nick_name", nickName);
