@@ -20,7 +20,7 @@ public class JsonUtil {
      * @return 转换的结果
      */
     public static  <T> T jsonToBean(String value,java.lang.Class<T> type){
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = JacksonJsonMapperUtil.getMapper();
         ObjectReader reader = mapper.reader(type);
         try {
             return reader.readValue(value);

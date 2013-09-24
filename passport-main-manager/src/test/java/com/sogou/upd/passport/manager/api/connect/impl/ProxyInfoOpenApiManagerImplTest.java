@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.connect.InfoOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.info.InfoOpenApiParams;
@@ -66,7 +67,7 @@ public class ProxyInfoOpenApiManagerImplTest extends BaseTest {
     }
 
     private Map convertObjectToMap(Object object) {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
         Map map = objectMapper.convertValue(object, Map.class);
         map.remove("userid");
         map.remove(CommonConstant.CLIENT_ID);
@@ -85,7 +86,7 @@ public class ProxyInfoOpenApiManagerImplTest extends BaseTest {
         baseOpenApiParams.setOpenid("2327267612@sina.sohu.com");
         InfoOpenApiParams infoOpenApiParams = new InfoOpenApiParams();
         infoOpenApiParams.setMessage("这是一条测试数据");
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
         Map<String, Object> map1 = objectMapper.convertValue(infoOpenApiParams, Map.class);
         baseOpenApiParams.setParams(map1);
         //以下模拟，将java对象转化成Map，map转换成json..
@@ -103,7 +104,7 @@ public class ProxyInfoOpenApiManagerImplTest extends BaseTest {
         infoOpenApiParams.setOpenid("6060606060@sina.sohu.com");
         infoOpenApiParams.setMessage("这是一条测试数据");
         infoOpenApiParams.setUrl("http://download.ie.sogou.com/skin/thumb/theme/7c/53/d741949fd59381b08431d79e0868_b.jpg");
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
         Map map = objectMapper.convertValue(infoOpenApiParams, Map.class);
         map.remove("userid");
         map.remove(CommonConstant.CLIENT_ID);

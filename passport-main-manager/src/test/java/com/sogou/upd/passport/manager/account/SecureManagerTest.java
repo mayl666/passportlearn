@@ -3,12 +3,8 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.IpLocationUtil;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-15 Time: 下午4:31 To change this template use

@@ -7,14 +7,8 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**

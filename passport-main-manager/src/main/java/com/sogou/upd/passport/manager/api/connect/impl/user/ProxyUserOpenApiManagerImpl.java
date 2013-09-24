@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.api.connect.impl.user;
 
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.BaseApiParams;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;

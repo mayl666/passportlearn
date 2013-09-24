@@ -2,7 +2,6 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.utils.iploc.Ip2location;
 
 import javax.servlet.http.HttpServletRequest;

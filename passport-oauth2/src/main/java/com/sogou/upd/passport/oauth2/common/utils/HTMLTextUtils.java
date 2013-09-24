@@ -3,7 +3,6 @@ package com.sogou.upd.passport.oauth2.common.utils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.oauth2.common.exception.HTMLTextParseException;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 

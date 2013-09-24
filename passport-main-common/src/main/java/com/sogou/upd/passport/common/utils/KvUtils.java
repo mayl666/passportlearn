@@ -22,6 +22,7 @@ import java.util.Set;
 public class KvUtils {
 
     private static Logger logger = LoggerFactory.getLogger(KvUtils.class);
+    private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
     private final static String KV_PERF4J_LOGGER = "kvTimingLogger";
 
@@ -46,7 +47,7 @@ public class KvUtils {
 
     @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
     public void set(String key, Object obj) throws IOException {
-        set(key, new ObjectMapper().writeValueAsString(obj));
+        set(key, jsonMapper.writeValueAsString(obj));
     }
 
 //    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
@@ -66,7 +67,7 @@ public class KvUtils {
         try {
             String strValue = get(key);
             if (!Strings.isNullOrEmpty(strValue)) {
-                T object = new ObjectMapper().readValue(strValue, returnClass);
+                T object = jsonMapper.readValue(strValue, returnClass);
                 return object;
             }
         } catch (Exception e) {
@@ -99,7 +100,7 @@ public class KvUtils {
             }
             if(!set.contains(value)){
                 set.add(value);
-                set(key, new ObjectMapper().writeValueAsString(set));
+                set(key, jsonMapper.writeValueAsString(set));
             }
 
         } catch (Exception e) {
@@ -122,7 +123,7 @@ public class KvUtils {
             if (Strings.isNullOrEmpty(strValue)) {
                 list = Lists.newLinkedList();
             } else {
-                list = new ObjectMapper().readValue(strValue, LinkedList.class);
+                list = jsonMapper.readValue(strValue, LinkedList.class);
                 if (CollectionUtils.isEmpty(list)) {
                     list = Lists.newLinkedList();
                 }
@@ -134,7 +135,7 @@ public class KvUtils {
                     list.pollLast();
                 }
             }
-            set(key, new ObjectMapper().writeValueAsString(list));
+            set(key, jsonMapper.writeValueAsString(list));
         } catch (Exception e) {
             logger.error("[KvCache] lPush with maxLen fail, key:" + key, e);
         }
@@ -143,7 +144,7 @@ public class KvUtils {
     @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList")
     public void pushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
-            pushWithMaxLen(key, new ObjectMapper().writeValueAsString(obj), maxLen);
+            pushWithMaxLen(key, jsonMapper.writeValueAsString(obj), maxLen);
         } catch (Exception e) {
             logger.error("[KvCache] lpush object with maxlen key: " + key, e);
         }
@@ -159,12 +160,12 @@ public class KvUtils {
             if (Strings.isNullOrEmpty(strValue)) {
                 return null;
             }
-            LinkedList<String> list = new ObjectMapper().readValue(strValue, LinkedList.class);
+            LinkedList<String> list = jsonMapper.readValue(strValue, LinkedList.class);
             if (CollectionUtils.isEmpty(list)) {
                 return null;
             } else {
                 String value = list.getFirst();
-                T object = new ObjectMapper().readValue(value, returnClass);
+                T object = jsonMapper.readValue(value, returnClass);
                 return object;
             }
         } catch (Exception e) {
@@ -190,7 +191,7 @@ public class KvUtils {
             Iterator<String> it = list.iterator();
             while (it.hasNext()) {
                 String value = it.next();
-                T object = (T) new ObjectMapper().readValue(value, returnClass);
+                T object = (T) jsonMapper.readValue(value, returnClass);
                 listObj.add(object);
             }
             return listObj;

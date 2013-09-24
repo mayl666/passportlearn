@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
-import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.URL;
 
 /**
  * sohu桌面应用token登录流程的参数类

@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.BeanUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +117,7 @@ public class APIResultSupport extends ResultSupport {
         public String toString() {
             String str = "";
             try {
-                str = new ObjectMapper().writeValueAsString(this);
+                str = JacksonJsonMapperUtil.getMapper().writeValueAsString(this);
             } catch (IOException e) {
                 log.error("ResultObject As String is error!");
             }

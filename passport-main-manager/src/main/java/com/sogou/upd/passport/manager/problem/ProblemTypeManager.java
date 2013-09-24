@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.problem;
 
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.problem.ProblemType;
 
 import java.util.List;

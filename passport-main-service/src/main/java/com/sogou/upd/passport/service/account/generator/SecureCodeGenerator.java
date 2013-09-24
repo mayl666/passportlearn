@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.common.math.Coder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,7 +2,6 @@ package com.sogou.upd.passport.mq;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AsyncAppenderBase;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-9-4 Time: 上午10:46 To change this template use File | Settings | File Templates.

@@ -1,14 +1,10 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
-
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
-
-import javax.validation.constraints.AssertTrue;
 
 /**
  * 邮箱、个性域名注册参数类

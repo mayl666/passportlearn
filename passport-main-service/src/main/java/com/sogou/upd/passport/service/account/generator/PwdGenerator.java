@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.math.Coder;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;

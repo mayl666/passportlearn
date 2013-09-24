@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.model.account;
 
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-
 import java.util.Date;
 
 /**

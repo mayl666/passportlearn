@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.service.problem;
 
-import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.problem.ProblemType;
-import com.sogou.upd.passport.service.account.AccountInfoService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

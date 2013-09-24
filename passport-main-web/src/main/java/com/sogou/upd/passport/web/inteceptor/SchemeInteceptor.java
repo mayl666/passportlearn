@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.web.inteceptor;
 
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;

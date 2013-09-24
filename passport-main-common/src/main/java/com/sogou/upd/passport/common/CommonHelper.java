@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.common;
 
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi

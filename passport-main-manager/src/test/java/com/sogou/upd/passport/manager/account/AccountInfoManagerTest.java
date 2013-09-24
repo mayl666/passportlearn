@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;

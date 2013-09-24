@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.model.account.AccountInfo;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

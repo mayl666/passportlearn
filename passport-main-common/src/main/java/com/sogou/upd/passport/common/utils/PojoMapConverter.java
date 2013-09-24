@@ -5,18 +5,15 @@ package com.sogou.upd.passport.common.utils;
  * Date: 13-6-4
  * Time: 下午2:51
  */
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class PojoMapConverter implements Converter {
 

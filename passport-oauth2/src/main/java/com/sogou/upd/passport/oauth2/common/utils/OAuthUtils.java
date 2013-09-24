@@ -6,11 +6,11 @@ import com.google.common.collect.Sets;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +165,7 @@ public class OAuthUtils {
         if (isJsonBodyBlank(fromIndex1, fromIndex2)) {
             String json = body.substring(fromIndex1 + 1, fromIndex2);
             try {
-                parameters = new ObjectMapper().readValue(json, Map.class);
+                parameters = JacksonJsonMapperUtil.getMapper().readValue(json, Map.class);
             } catch (Exception e) {
                 throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
                         "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");

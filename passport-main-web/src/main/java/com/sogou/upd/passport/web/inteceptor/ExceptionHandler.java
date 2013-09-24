@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.web.inteceptor;
 
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;

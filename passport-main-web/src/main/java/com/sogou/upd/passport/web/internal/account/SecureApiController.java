@@ -1,20 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.api.account.SecureApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.web.ControllerHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * User: ligang201716@sogou-inc.com

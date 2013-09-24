@@ -2,22 +2,20 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.patchca.background.SingleColorBackgroundFactory;
 import org.patchca.color.DefaultColorFactory;
-import org.patchca.color.SingleColorFactory;
 import org.patchca.filter.predefined.DefaultRippleFilterFactory;
 import org.patchca.font.RandomFontFactory;
 import org.patchca.service.Captcha;
 import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.text.renderer.BestFitTextRenderer;
-import org.patchca.text.renderer.RandomYBestFitTextRenderer;
 import org.patchca.word.DefaultRandomWordFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * User: mayan Date: 13-5-8 Time: 下午2:20 To change this template use File | Settings | File Templates.

@@ -1,11 +1,9 @@
 package com.sogou.upd.passport.common.parameter;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

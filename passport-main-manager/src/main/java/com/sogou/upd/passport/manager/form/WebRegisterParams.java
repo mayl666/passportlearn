@@ -1,20 +1,14 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
-
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 
 /**

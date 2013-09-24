@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.manager.form;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 /**
  * Created with IntelliJ IDEA.
  * User: liuling

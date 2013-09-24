@@ -1,8 +1,6 @@
 package com.sogou.upd.passport;
 
 import junit.framework.TestCase;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;

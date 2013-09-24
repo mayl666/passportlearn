@@ -2,12 +2,11 @@ package com.sogou.upd.passport.common;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.model.ActiveEmail;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class JacksonTest extends TestCase {
     public void testWriteValueAsString() {
         try {
             ActiveEmail activeEmail = buildJsonObject();
-            String jsonString = new ObjectMapper().writeValueAsString(activeEmail);
+            String jsonString = JacksonJsonMapperUtil.getMapper().writeValueAsString(activeEmail);
             System.out.println("Object write Json String:" + jsonString);
             Assert.assertTrue(true);
         } catch (IOException e) {
@@ -40,7 +39,7 @@ public class JacksonTest extends TestCase {
     public void testReadValue() {
         try {
             String jsonString = "{\"map\":{\"nickname\":\"spz\"},\"toEmail\":\"shipengzhi@sogou-inc.com\",\"subject\":\"Send Active Email\",\"category\":\"aaa\",\"activeUrl\":\"http://www.sogou.com\",\"templateFile\":null}";
-            ActiveEmail activeEmail = new ObjectMapper().readValue(jsonString, ActiveEmail.class);
+            ActiveEmail activeEmail = JacksonJsonMapperUtil.getMapper().readValue(jsonString, ActiveEmail.class);
             System.out.println("Read Object:" + activeEmail);
             Assert.assertTrue(true);
         } catch (IOException e) {
@@ -72,8 +71,9 @@ public class JacksonTest extends TestCase {
             List list = new ArrayList<>();
             list.add(activeEmail);
             list.add(activeEmail);
-            String jsonResult = new ObjectMapper().writeValueAsString(list);
-            List<ActiveEmail> transferList = new ObjectMapper().readValue(jsonResult, new TypeReference<List<ActiveEmail>>() { });
+            String jsonResult = JacksonJsonMapperUtil.getMapper().writeValueAsString(list);
+            List<ActiveEmail> transferList = JacksonJsonMapperUtil.getMapper().readValue(jsonResult, new TypeReference<List<ActiveEmail>>() {
+            });
             ActiveEmail activeEmailJson = transferList.get(0);
             System.out.println("Old object: " + activeEmail.getMap() + activeEmail.getActiveUrl());
             System.out.println("From Json to object: " + activeEmailJson.getMap() + activeEmailJson.getActiveUrl());
@@ -98,10 +98,10 @@ public class JacksonTest extends TestCase {
 //      jsonObject.setSubject("");
 
       ActiveEmail activeEmail = jsonObject;
-      String jsonString = new ObjectMapper().writeValueAsString(activeEmail);
+      String jsonString = JacksonJsonMapperUtil.getMapper().writeValueAsString(activeEmail);
 
 
-      ActiveEmail newActiveEmail =  (ActiveEmail)new ObjectMapper().readValue(jsonString, ActiveEmail.class);
+      ActiveEmail newActiveEmail =  (ActiveEmail)JacksonJsonMapperUtil.getMapper().readValue(jsonString, ActiveEmail.class);
       System.out.println("activeEmail.getActiveUrl(): " + activeEmail.getActiveUrl());
       System.out.println("activeEmail.getCategory(): " + activeEmail.getCategory());
 

@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

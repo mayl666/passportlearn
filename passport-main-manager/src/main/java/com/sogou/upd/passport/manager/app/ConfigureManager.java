@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.app;
 
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 

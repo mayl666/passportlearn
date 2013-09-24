@@ -4,12 +4,7 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
-import junit.framework.Assert;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

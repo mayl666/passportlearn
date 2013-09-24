@@ -1,11 +1,11 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 import com.sogou.upd.passport.common.HttpConstant;
+import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.method.HandlerMethod;
-import com.sogou.upd.passport.web.annotation.LoginRequired;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

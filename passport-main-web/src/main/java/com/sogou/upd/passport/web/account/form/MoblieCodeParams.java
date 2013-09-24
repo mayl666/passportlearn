@@ -1,11 +1,8 @@
 package com.sogou.upd.passport.web.account.form;
 
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.Phone;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 
 /**

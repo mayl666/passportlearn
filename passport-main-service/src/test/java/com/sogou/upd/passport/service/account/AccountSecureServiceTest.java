@@ -1,12 +1,10 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
-
 import junit.framework.Assert;
-
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -91,9 +89,9 @@ public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
                                                                    AccountModuleEnum.REGISTER);
         Iterator it = list.iterator();
         System.out.println("List: ");
-        System.out.println(new ObjectMapper().writeValueAsString(list));
+        System.out.println(JacksonJsonMapperUtil.getMapper().writeValueAsString(list));
         while (it.hasNext()) {
-            System.out.println(new ObjectMapper().writeValueAsString(it.next()));
+            System.out.println(JacksonJsonMapperUtil.getMapper().writeValueAsString(it.next()));
         }
         Assert.assertTrue(list1 == null);
     }

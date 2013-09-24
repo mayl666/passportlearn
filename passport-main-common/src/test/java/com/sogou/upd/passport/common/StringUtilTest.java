@@ -1,11 +1,8 @@
 package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
-
 import junit.framework.TestCase;
-
 import org.junit.Test;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-22 Time: 下午5:34 To change this template use

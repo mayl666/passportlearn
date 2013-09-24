@@ -1,11 +1,11 @@
 package com.sogou.upd.passport.oauth2.openresource.response.user;
 
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.impl.QQAPIValidator;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class QQUserAPIResponse extends UserAPIResponse {
     public void setBody(String body) throws OAuthProblemException {
         try {
             this.body = body;
-            parameters = new ObjectMapper().readValue(this.body, Map.class);
+            parameters = JacksonJsonMapperUtil.getMapper().readValue(this.body, Map.class);
         } catch (Exception e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE);
         }

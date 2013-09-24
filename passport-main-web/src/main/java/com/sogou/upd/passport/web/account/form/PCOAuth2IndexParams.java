@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.web.account.form;
 
-import com.sogou.upd.passport.common.CommonConstant;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**

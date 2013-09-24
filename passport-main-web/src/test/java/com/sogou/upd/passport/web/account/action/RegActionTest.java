@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.sogou.upd.passport.web.test.BaseActionTest;
-
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 import java.io.IOException;

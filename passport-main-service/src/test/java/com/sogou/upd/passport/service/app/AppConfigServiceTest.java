@@ -1,11 +1,7 @@
 package com.sogou.upd.passport.service.app;
 
 import com.sogou.upd.passport.BaseTest;
-
-import com.sogou.upd.passport.common.math.Coder;
 import junit.framework.Assert;
-
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

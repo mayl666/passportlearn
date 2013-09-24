@@ -1,16 +1,12 @@
 package com.sogou.upd.passport.dao.connect;
 
 import com.sogou.upd.passport.dao.BaseDAOTest;
-import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import junit.framework.Assert;
-import net.paoding.rose.jade.annotation.SQL;
-import net.paoding.rose.jade.annotation.SQLParam;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

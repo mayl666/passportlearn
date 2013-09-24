@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.utils.BeanUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public class OAuthResultSupport extends ResultSupport {
         resultMap.put("result", result);
 
         try {
-            return new ObjectMapper().writeValueAsString(resultMap);
+            return JacksonJsonMapperUtil.getMapper().writeValueAsString(resultMap);
         } catch (IOException e) {
             log.error("OAuth Result Object As String is error!");
             return "";

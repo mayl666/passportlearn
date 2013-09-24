@@ -1,11 +1,8 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.validation.constraints.SafeInput;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.SafeHtml;
-import javax.validation.constraints.Min;
 
 /**
  * User: chenjiameng Date: 13-6-11 Time: 下午5:15 To change this template use File | Settings | File

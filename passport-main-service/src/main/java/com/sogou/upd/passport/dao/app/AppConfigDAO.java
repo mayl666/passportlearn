@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.dao.app;
 
 import com.sogou.upd.passport.model.app.AppConfig;
-
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;

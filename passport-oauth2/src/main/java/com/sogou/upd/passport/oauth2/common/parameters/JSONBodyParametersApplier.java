@@ -22,8 +22,8 @@
 package com.sogou.upd.passport.oauth2.common.parameters;
 
 import com.sogou.upd.passport.common.lang.BuilderUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class JSONBodyParametersApplier implements OAuthParametersApplier {
     public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
         String json = "";
         try {
-            json = new ObjectMapper().writeValueAsString(params);
+            json = JacksonJsonMapperUtil.getMapper().writeValueAsString(params);
         } catch (IOException e) {
             logger.error("Params Write AS JsonString fail! Params:" + BuilderUtil.mapAsString(params));
         }

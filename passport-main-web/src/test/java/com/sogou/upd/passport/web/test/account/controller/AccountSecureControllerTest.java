@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.web.test.account.controller;
 
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.web.test.BaseActionTest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;

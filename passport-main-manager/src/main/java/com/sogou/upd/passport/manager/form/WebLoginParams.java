@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
-
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.Length;

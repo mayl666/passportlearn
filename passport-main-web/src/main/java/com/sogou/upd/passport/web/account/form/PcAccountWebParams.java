@@ -1,13 +1,5 @@
 package com.sogou.upd.passport.web.account.form;
 
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.manager.form.PcBaseParams;
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Min;
-
 /**
  * sohu桌面应用token登录流程的参数类
  * 应用于：/getpairtoken接口

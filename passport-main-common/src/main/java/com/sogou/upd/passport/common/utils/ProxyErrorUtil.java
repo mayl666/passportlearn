@@ -2,7 +2,6 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
-
 import org.apache.commons.collections.keyvalue.DefaultMapEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

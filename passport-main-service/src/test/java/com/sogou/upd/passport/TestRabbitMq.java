@@ -1,10 +1,6 @@
 package com.sogou.upd.passport;
 
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-
-import javax.inject.Inject;
 
 /**
  * Created with IntelliJ IDEA.

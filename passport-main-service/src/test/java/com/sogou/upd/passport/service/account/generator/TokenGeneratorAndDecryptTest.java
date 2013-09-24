@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;

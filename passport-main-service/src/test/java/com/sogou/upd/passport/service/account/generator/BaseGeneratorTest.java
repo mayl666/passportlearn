@@ -1,12 +1,7 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import junit.framework.Assert;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Test;
 
 /**
  * Created with IntelliJ IDEA.

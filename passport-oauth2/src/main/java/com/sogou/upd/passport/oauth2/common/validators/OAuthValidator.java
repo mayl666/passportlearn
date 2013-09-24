@@ -21,9 +21,9 @@
 
 package com.sogou.upd.passport.oauth2.common.validators;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *

@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.junit.Test;

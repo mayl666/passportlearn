@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -21,7 +22,7 @@ public class OpenApiParamsHelper {
      * @return
      */
     public BaseOpenApiParams createBaseForm(Object object) {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
         Map<String, Object> map = objectMapper.convertValue(object, Map.class);
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
         baseOpenApiParams.setUserid(map.get("userid").toString());

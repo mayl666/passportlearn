@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;

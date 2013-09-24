@@ -3,17 +3,13 @@ package com.sogou.upd.passport.service.account.mail;
 import com.sohu.sendcloud.Message;
 import com.sohu.sendcloud.SendCloud;
 import com.sohu.sendcloud.SmtpApiHeader;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: mayan

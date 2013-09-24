@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;

@@ -1,12 +1,12 @@
 package com.sogou.upd.passport.oauth2.authzserver.request;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.authzserver.validator.AuthorizationCodeValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.ClientCredentialValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.PasswordValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.RefreshTokenValidator;
 import com.sogou.upd.passport.oauth2.common.OAuth;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.common.validators.OAuthValidator;
