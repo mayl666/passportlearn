@@ -20,6 +20,8 @@ import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -74,7 +76,14 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
             requestModel.addParam("openid", oAuthTokenVO.getOpenid());
         }
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName()) && !providerStr.equals(AccountTypeEnum.TAOBAO.toString())) {
-            requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
+            String nickName = oAuthTokenVO.getNickName();
+            if (AccountTypeEnum.TAOBAO.toString().equals(providerStr)) {    // taobao注册账号昵称返回乱码
+                try {
+                    nickName = URLEncoder.encode(nickName,CommonConstant.DEFAULT_CONTENT_CHARSET);
+                } catch (UnsupportedEncodingException e) {
+                }
+            }
+            requestModel.addParam("nick_name", nickName);
         }
         Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         if ("0".equals(map.get("status"))) {
