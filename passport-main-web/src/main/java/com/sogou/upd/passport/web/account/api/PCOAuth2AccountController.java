@@ -209,7 +209,15 @@ public class PCOAuth2AccountController extends BaseController {
             result = regManager.webRegister(transferToWebParams(pcoAuth2RegisterParams), ip);
             //注册成功后获取token
             if (result.isSuccess()) {
-                getTokenAfterSuccess(result, pcoAuth2RegisterParams);
+                String userId = result.getModels().get("userid").toString();
+                String instanceId = pcoAuth2RegisterParams.getInstance_id();
+                result = pcAccountManager.createAccountToken(userId, instanceId, clientId);
+                if (result.isSuccess()) {
+                    AccountToken accountToken = (AccountToken) result.getDefaultModel();
+                    result = new APIResultSupport(true);
+                    String passportId = accountToken.getPassportId();
+                    ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+                }
             }
         } catch (Exception e) {
             logger.error("Sohu+ Register Failed,UserName Is " + pcoAuth2RegisterParams.getUsername(), e);
@@ -218,19 +226,6 @@ public class PCOAuth2AccountController extends BaseController {
         }
         commonManager.incRegTimes(ip, uuidName);
         return result.toString();
-    }
-
-    private void getTokenAfterSuccess(Result result, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
-        String userId = result.getModels().get("userid").toString();
-        String instanceId = pcoAuth2RegisterParams.getInstance_id();
-        int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
-        result = pcAccountManager.createAccountToken(userId, instanceId, clientId);
-        if (result.isSuccess()) {
-            AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            result = new APIResultSupport(true);
-            String passportId = accountToken.getPassportId();
-            ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
-        }
     }
 
     private void writeUserLogForRegister(String finalCode, Result result, HttpServletRequest request, PCOAuth2RegisterParams pcoAuth2RegisterParams) {
