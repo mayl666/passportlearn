@@ -73,7 +73,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getOpenid())) {
             requestModel.addParam("openid", oAuthTokenVO.getOpenid());
         }
-        if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName())) {
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName()) && !providerStr.equals(AccountTypeEnum.TAOBAO.toString())) {
             requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
         }
         Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);

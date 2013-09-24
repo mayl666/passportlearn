@@ -18,9 +18,9 @@ public interface ConnectApiManager {
      * 第三方账户登录接口
      *
      * @param connectLoginParams OAuth2登录授权请求参数
-     * @param uuid                防CRSF攻击的唯一值
+     * @param uuid               防CRSF攻击的唯一值
      * @param provider           第三方平台
-     * @param ip                  登录的ip
+     * @param ip                 登录的ip
      * @return
      */
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid,
@@ -28,6 +28,7 @@ public interface ConnectApiManager {
 
     /**
      * 同步创建第三方账号的接口
+     *
      * @param providerStr
      * @param oAuthTokenVO
      * @return
