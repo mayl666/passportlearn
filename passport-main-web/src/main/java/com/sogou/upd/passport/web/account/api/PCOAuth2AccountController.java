@@ -220,7 +220,7 @@ public class PCOAuth2AccountController extends BaseController {
         return result.toString();
     }
 
-    private void getTokenAfterSuccess(Result result, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
+    private Result getTokenAfterSuccess(Result result, PCOAuth2RegisterParams pcoAuth2RegisterParams) throws Exception {
         String userId = result.getModels().get("userid").toString();
         String instanceId = pcoAuth2RegisterParams.getInstance_id();
         int clientId = Integer.parseInt(pcoAuth2RegisterParams.getClient_id());
@@ -229,8 +229,9 @@ public class PCOAuth2AccountController extends BaseController {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             result = new APIResultSupport(true);
             String passportId = accountToken.getPassportId();
-            ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+            result = ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
         }
+        return result;
     }
 
     private void writeUserLogForRegister(String finalCode, Result result, HttpServletRequest request, PCOAuth2RegisterParams pcoAuth2RegisterParams) {
