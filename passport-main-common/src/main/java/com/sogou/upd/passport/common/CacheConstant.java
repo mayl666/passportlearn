@@ -45,7 +45,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_REGISTER_WHITELIST = "SP.REG.IP:WHITELIST_KEY";
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
 
-    public static final String CACHE_PREFIX_PASSPORTID_AVATARURL = "SP.PASSPORTID:IMAGE_"; //passportId与头像url的映射
     public static final String CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING = "SP.PASSPORTID:IMAGE_HASH_"; //passportId与新旧头像映射
 
     /*================绑定密保限制相关缓存常量=====================*/

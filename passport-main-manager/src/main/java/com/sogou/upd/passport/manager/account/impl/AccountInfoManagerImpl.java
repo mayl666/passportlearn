@@ -46,10 +46,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (photoUtils.uploadImg(imgName, byteArr,null,type)) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
                 //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL + passportId;
-                redisUtils.set(cacheKey, imgURL);
-                //更新图片映射
-                cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
 
                 redisUtils.hPut(cacheKey,"sgImg",imgURL);
 
@@ -79,8 +76,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (photoUtils.uploadImg(imgName, null,webUrl,"1")) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
                 //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                String cacheKey="SP.PASSPORTID:IMAGE_"+clientId;
-                redisUtils.set(cacheKey,imgURL);
+                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + clientId;
+
+                redisUtils.hPut(cacheKey,"sgImg",imgURL);
 
                 result.setSuccess(true);
                 result.setDefaultModel("image",imgURL);
