@@ -131,7 +131,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
                 } else{
                     //搜狐头像为空返回默认头像
-                    Result photoResult = accountInfoManager.obtainPhoto(Integer.toString(getUserInfoApiparams.getClient_id()), getUserInfoApiparams.getImagesize());
+                    Result photoResult = accountInfoManager.obtainPhoto("1065", getUserInfoApiparams.getImagesize());
                     Map photoMap = photoResult.getModels();
                     result.setDefaultModel("avatarurl", photoMap);
                 }
