@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
@@ -36,7 +37,8 @@ public class LoginApiController extends BaseController {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private SecureManager secureManager;
-
+    @Autowired
+    private LoginManager loginManager;
     /**
      * web端校验用户名和密码是否正确
      *
@@ -56,6 +58,18 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        String ip = getIp(request);
+        if(params.getClient_id()==1119){
+            result.setMessage("用户名或密码错误") ;
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+
+            // 获取记录UserOperationLog的数据
+            String userId = params.getUserid();
+
+            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
+            return result.toString();
+        }
 
         // 调用内部接口
         result = proxyLoginApiManager.webAuthUser(params);
@@ -63,9 +77,9 @@ public class LoginApiController extends BaseController {
         if (result.isSuccess()) {
             String userId = params.getUserid();
             int clientId = params.getClient_id();
-            String ip = getIp(request);
-            secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+            loginManager.doAfterLoginSuccess(params.getUserid(), ip, userId, clientId);
         } else if (ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
+            loginManager.doAfterLoginFailed(params.getUserid(), ip);
             result.setMessage("用户名或密码错误");
         }
 
