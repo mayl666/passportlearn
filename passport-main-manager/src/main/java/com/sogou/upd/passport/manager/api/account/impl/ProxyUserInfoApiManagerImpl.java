@@ -111,19 +111,21 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                         }
                     }
                 } else {
-                    //获取图片名
-                    String imgName = photoUtils.generalFileName();
-                    // 上传到OP图片平台
-                    if (photoUtils.uploadImg(imgName, null, image, "1")) {
-                        String sgImg = photoUtils.accessURLTemplate(imgName);
-                        Map<String, String> mapResult = Maps.newHashMap();
-                        mapResult.put("shImg", image);
-                        mapResult.put("sgImg", sgImg);
+                    if(Strings.isNullOrEmpty(image)){
+                        //获取图片名
+                        String imgName = photoUtils.generalFileName();
+                        // 上传到OP图片平台
+                        if (photoUtils.uploadImg(imgName, null, image, "1")) {
+                            String sgImg = photoUtils.accessURLTemplate(imgName);
+                            Map<String, String> mapResult = Maps.newHashMap();
+                            mapResult.put("shImg", image);
+                            mapResult.put("sgImg", sgImg);
 
-                        redisUtils.hPutAll(cacheKey, mapResult);
+                            redisUtils.hPutAll(cacheKey, mapResult);
 
-                        cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL + passportId;
-                        redisUtils.set(cacheKey, sgImg);
+                            cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL + passportId;
+                            redisUtils.set(cacheKey, sgImg);
+                        }
                     }
                 }
                 Result photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
