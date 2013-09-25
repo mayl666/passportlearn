@@ -775,7 +775,7 @@ define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib
                             window.location.reload();
                         }else {
 
-                            $("aside.sidebar div.photo-error").html("上传头像失败,仅支持小于5M的jpg、gif、png图片文件").show()
+                            $("aside.sidebar div.photo-error").html("上传头像失败,仅支持小于3M的jpg、gif、png图片文件").show()
                             $("aside.sidebar div.uesr-photo").addClass("uesr-photo-error")
                         }
                     }

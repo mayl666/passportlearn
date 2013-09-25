@@ -215,6 +215,7 @@ public class PCOAuth2AccountController extends BaseController {
                 if (result.isSuccess()) {
                     AccountToken accountToken = (AccountToken) result.getDefaultModel();
                     result = new APIResultSupport(true);
+                    result.setCode("0");
                     String passportId = accountToken.getPassportId();
                     ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
                 }
@@ -258,7 +259,7 @@ public class PCOAuth2AccountController extends BaseController {
      */
     @RequestMapping(value = "/oauth2/login", method = RequestMethod.POST)
     @ResponseBody
-    public Object login(HttpServletRequest request,HttpServletResponse response, PCOAuth2LoginParams loginParams)
+    public Object login(HttpServletRequest request, PCOAuth2LoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -300,20 +301,6 @@ public class PCOAuth2AccountController extends BaseController {
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
             ManagerHelper.setModelForOAuthResult(result, getUniqname(userId), accountToken, "sogou");
-
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(userId);
-            createCookieUrlApiParams.setRu("https://account.sogou.com");
-            //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-            if (getCookieValueResult.isSuccess()) {
-                String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-                String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-            }
-
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(username, ip);
@@ -387,7 +374,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (getUserInfoResult.isSuccess()) {
             uniqname = (String) getUserInfoResult.getModels().get("uniqname");
             uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-            uniqname = URLDecoder.decode(uniqname,CommonConstant.DEFAULT_CONTENT_CHARSET); //淘宝的昵称需要urldecoder
+            uniqname = URLDecoder.decode(uniqname, CommonConstant.DEFAULT_CONTENT_CHARSET); //淘宝的昵称需要urldecoder
             bindMobile = (String) getUserInfoResult.getModels().get("sec_mobile");
             bindMobile = Strings.isNullOrEmpty(bindMobile) ? "" : bindMobile;
             bindEmail = (String) getUserInfoResult.getModels().get("sec_email");
@@ -411,18 +398,18 @@ public class PCOAuth2AccountController extends BaseController {
         handleBindAndPwd(passportId, bindMobile, bindEmail, model);
 
         //生成cookie
-//        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-//        createCookieUrlApiParams.setUserid(passportId);
-//        createCookieUrlApiParams.setRu("https://account.sogou.com");
-//        //TODO sogou域账号迁移后cookie生成问题
-//        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-//        if (getCookieValueResult.isSuccess()) {
-//            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-//            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-//            ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-//            ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-//            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-//        }
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu("https://account.sogou.com");
+        //TODO sogou域账号迁移后cookie生成问题
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        if (getCookieValueResult.isSuccess()) {
+            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+            ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+        }
         return "/oauth2pc/pcindex";
     }
 

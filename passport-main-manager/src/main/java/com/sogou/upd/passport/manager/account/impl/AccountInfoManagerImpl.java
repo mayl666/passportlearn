@@ -1,17 +1,22 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * User: mayan
@@ -41,8 +46,13 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (photoUtils.uploadImg(imgName, byteArr,null,type)) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
                 //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                String cacheKey="SP.PASSPORTID:IMAGE_"+passportId;
-                redisUtils.set(cacheKey,imgURL);
+                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL + passportId;
+                redisUtils.set(cacheKey, imgURL);
+                //更新图片映射
+                cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+
+                redisUtils.hPut(cacheKey,"sgImg",imgURL);
+
 
                 result.setSuccess(true);
                 result.setDefaultModel("image",imgURL);
@@ -109,8 +119,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                    sizeArry=photoUtils.getAllImageSize();
                 }
 
-                String cacheKey="SP.PASSPORTID:IMAGE_"+passportId;
-                String image=redisUtils.get(cacheKey);
+                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+                String image=redisUtils.hGet(cacheKey,"sgImg");
 
                 if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
                     result.setSuccess(true);
