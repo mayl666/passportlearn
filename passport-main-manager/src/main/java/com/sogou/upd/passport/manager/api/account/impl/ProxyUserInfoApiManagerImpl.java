@@ -99,7 +99,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                         //获取图片名
                         String imgName = photoUtils.generalFileName();
                         // 上传到OP图片平台
-                        if (photoUtils.uploadImg(imgName, null, image, "1")) {
+                        if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
                             sgImg = photoUtils.accessURLTemplate(imgName);
                             Map<String, String> mapResult = Maps.newHashMap();
                             mapResult.put("shImg", image);
