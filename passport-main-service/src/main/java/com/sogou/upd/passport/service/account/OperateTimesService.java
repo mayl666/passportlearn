@@ -259,4 +259,18 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public void incRegTimesForInternal(final String ip) throws ServiceException;
+
+    /**
+     * 内部接口authuser次数累加
+     */
+    public void incAuthUserTimes(final String username, final String ip, final boolean isSuccess) throws ServiceException;
+
+    /**
+     * 内部接口authuser 判断是否在黑名单中
+     * @param username
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean isWebAuthUserInBlackList(String username, String ip) throws ServiceException;
 }

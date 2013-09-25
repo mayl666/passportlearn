@@ -87,5 +87,9 @@ public class CacheConstant {
     public static final String CACHE_SUCCESS_KEY = "SUCCESS"; //成功key
     public static final String CACHE_FAILED_KEY = "FAILED"; //失败key
 
+    /*==================内部接口登陆相关缓存常量========================*/
+    public static final String CACHE_PREFIX_USERNAME_AUTHUSER_NUM = "SP.USERNAME:AUTHUSERNNUM_HASH_"; //username连续登陆的次数
+    public static final String CACHE_PREFIX_IP_AUTHUSER_NNUM = "SP.IP:AUTHUSERNUM_HASH_"; //IP连续登陆的次数
+
 
 }

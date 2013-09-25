@@ -681,6 +681,120 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    @Override
+    public void incAuthUserTimes(final String username, final String ip, final boolean isSuccess) throws ServiceException {
+        try {
+            if (isSuccess) {
+                incAuthUserSuccessTimes(username, ip);
+            } else {
+                incAuthUserFailedTimes(username, ip);
+            }
+        } catch (Exception e) {
+            logger.error("incAuthUserTimes," + username + "," + ip + "," + isSuccess, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    private void incAuthUserSuccessTimes(final String username, final String ip) throws ServiceException {
+        try {
+            discardTaskExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    String username_hKey = buildAuthUserNameKey(username);
+                    hRecordTimes(username_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                    if (!Strings.isNullOrEmpty(ip)) {
+                        String ip_hKey = buildAuthUserIpKey(ip);
+                        hRecordTimes(ip_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            logger.error("incAuthUserSuccessTimes:username" + username + ",ip:" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    private void incAuthUserFailedTimes(final String username, final String ip) throws ServiceException {
+        try {
+            String username_hKey = buildAuthUserNameKey(username);
+            hRecordTimes(username_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+            if (!Strings.isNullOrEmpty(ip)) {
+                String ip_hKey = buildAuthUserIpKey(ip);
+                hRecordTimes(ip_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+            }
+        } catch (Exception e) {
+            logger.error("incAuthUserFailedTimes:username" + username + ",ip:" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+    private String buildAuthUserNameKey(String username){
+        return CacheConstant.CACHE_PREFIX_USERNAME_AUTHUSER_NUM + username;
+
+    }
+
+    private String buildAuthUserIpKey(String ip){
+       return CacheConstant.CACHE_PREFIX_IP_AUTHUSER_NNUM + ip;
+
+    }
+
+    @Override
+    public boolean isWebAuthUserInBlackList(String username, String ip) throws ServiceException {
+        try {
+            //username
+            int num = 0;
+            String userName_hKey =buildAuthUserNameKey(username);
+            Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
+            if (!MapUtils.isEmpty(username_hmap)) {
+                String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
+                if (!Strings.isNullOrEmpty(username_failedNum)) {
+                    num = Integer.parseInt(username_failedNum);
+                    if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                        logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_FAILED_KEY, num);
+                        return true;
+                    }
+                }
+                String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
+                if (!Strings.isNullOrEmpty(username_successNum)) {
+                    num = Integer.parseInt(username_successNum);
+                    if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
+                        logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
+                        return true;
+                    }
+                }
+
+            }
+
+            if (!Strings.isNullOrEmpty(ip)) {      //  根据ip判断是否需要弹出验证码
+                String ip_hKey = buildAuthUserIpKey(ip);
+                Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
+                if (!MapUtils.isEmpty(ip_hmap)) {
+                    String ip_failedNum = ip_hmap.get(CacheConstant.CACHE_FAILED_KEY);
+                    if (!Strings.isNullOrEmpty(ip_failedNum)) {
+                        num = Integer.parseInt(ip_failedNum);
+                        if (num >= LoginConstant.AUTHUSER_IP_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                            logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_FAILED_KEY, num);
+                            return true;
+                        }
+
+                    }
+                    String ip_successNum = ip_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
+                    if (!Strings.isNullOrEmpty(ip_successNum)) {
+                        num = Integer.parseInt(ip_successNum);
+                        if (num >= LoginConstant.AUTHUSER_IP_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                            logLoginBlackList(username, ip, userName_hKey + "_" + CacheConstant.CACHE_SUCCESS_KEY, num);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("userInBlackList," + username + "," + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
     private boolean checkInSubIpList(String ip) throws ServiceException {
         try {
             if (!Strings.isNullOrEmpty(ip)) {
