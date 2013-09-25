@@ -95,7 +95,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                     String sgImg = map.get("sgImg");
 
                     //验证sohu修改图片后，搜狗自动更新
-                    if (!shImg.equals(image)) {
+                    if (!Strings.isNullOrEmpty(shImg) && !shImg.equals(image)) {
                         //获取图片名
                         String imgName = photoUtils.generalFileName();
                         // 上传到OP图片平台
