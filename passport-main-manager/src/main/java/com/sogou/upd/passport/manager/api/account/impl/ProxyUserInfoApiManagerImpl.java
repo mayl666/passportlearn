@@ -111,7 +111,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                         }
                     }
                 } else {
-                    if(Strings.isNullOrEmpty(image)){
+                    if(!Strings.isNullOrEmpty(image)){
                         //获取图片名
                         String imgName = photoUtils.generalFileName();
                         // 上传到OP图片平台
