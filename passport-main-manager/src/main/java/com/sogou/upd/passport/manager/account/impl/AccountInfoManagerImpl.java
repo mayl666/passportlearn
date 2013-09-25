@@ -51,7 +51,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 //更新图片映射
                 cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
 
-                Map<String, String> map = redisUtils.hGetAll(cacheKey);
                 redisUtils.hPut(cacheKey,"sgImg",imgURL);
 
 

@@ -32,7 +32,8 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void test() {
         try {
-            redisUtils.set("aaaaa", "bbbb");
+//            redisUtils.set("aaaaa", "bbbb");
+            redisUtils.hPut("dsdsds","aaa","bbba");
 //        redisUtils.expire("aaaaa",10);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
