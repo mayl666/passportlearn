@@ -417,7 +417,7 @@ public class ErrorUtil {
 
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_EXT, "不支持的图片后缀");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_TO_LARGE, "上传图片过大，不能超过5M");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_TO_LARGE, "上传图片过大，不能超过3M");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UPLOAD_PHOTO, "上传图片失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_OBTAIN_PHOTO, "获取图像失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
@@ -425,7 +425,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_IMAGE_SIZE, "不支持的图片尺寸");
 
         ERR_CODE_MSG_MAP.put(ERR_PHOTO_EXT, "不支持的图片后缀");
-        ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过5M");
+        ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过3M");
         ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
         ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
 
