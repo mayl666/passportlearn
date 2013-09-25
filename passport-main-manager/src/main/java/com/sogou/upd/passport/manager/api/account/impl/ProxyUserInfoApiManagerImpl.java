@@ -81,6 +81,10 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                 //替换搜狐的个人头像
                 String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
                 String image = Strings.isNullOrEmpty(avatarurl) ? "" : avatarurl.replaceAll("\\/\\/", "");
+                if(!Strings.isNullOrEmpty(image)){
+                    image=image.substring(image.indexOf("/"),image.length());
+                }
+
                 String passportId = getUserInfoApiparams.getUserid();
 
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
