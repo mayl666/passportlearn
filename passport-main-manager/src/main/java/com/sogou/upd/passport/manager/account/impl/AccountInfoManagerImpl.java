@@ -119,8 +119,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                    sizeArry=photoUtils.getAllImageSize();
                 }
 
-                String cacheKey="SP.PASSPORTID:IMAGE_"+passportId;
-                String image=redisUtils.get(cacheKey);
+                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+                String image=redisUtils.hGet(cacheKey,"sgImg");
 
                 if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
                     result.setSuccess(true);

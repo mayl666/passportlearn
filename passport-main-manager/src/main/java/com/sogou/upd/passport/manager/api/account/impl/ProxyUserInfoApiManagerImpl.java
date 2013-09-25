@@ -122,7 +122,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
                         redisUtils.hPutAll(cacheKey, mapResult);
 
-                        cacheKey = "SP.PASSPORTID:IMAGE_" + passportId;
+                        cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL + passportId;
                         redisUtils.set(cacheKey, sgImg);
                     }
                 }
