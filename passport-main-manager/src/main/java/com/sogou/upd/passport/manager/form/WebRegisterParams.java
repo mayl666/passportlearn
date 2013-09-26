@@ -48,14 +48,14 @@ public class WebRegisterParams {
     }
 
     @AssertTrue(message = "用户账号格式错误")
-    private boolean checkAccount() {
+    private boolean isCheckAccount() {
         if (Strings.isNullOrEmpty(username)) {
             return true;
         }
         if (username.indexOf("@") == -1) {
             if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
                 //个性账号格式是否拼配
-                String regx = "[a-z]([a-zA-Z0-9_.]{4,16})";
+                String regx = "[a-z]([a-zA-Z0-9_.-]{4,16})";
                 if (!username.matches(regx)) {
                     return false;
                 }
