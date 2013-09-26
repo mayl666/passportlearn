@@ -81,10 +81,10 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                 //替换搜狐的个人头像
                 String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
                 String image = Strings.isNullOrEmpty(avatarurl) ? null : avatarurl.replaceAll("\\/\\/", "");
+
+                String passportId = getUserInfoApiparams.getUserid();
                 if(!Strings.isNullOrEmpty(image)){
                     image=image.substring(image.indexOf("/"),image.length());
-
-                    String passportId = getUserInfoApiparams.getUserid();
 
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
 
@@ -131,7 +131,16 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
                 } else{
                     //搜狐头像为空返回默认头像
-                    Result photoResult = accountInfoManager.obtainPhoto("1065", getUserInfoApiparams.getImagesize());
+                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+
+                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
+                    Result photoResult=null;
+                    if(MapUtils.isNotEmpty(map)) {
+                        photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+                    } else {
+                        photoResult = accountInfoManager.obtainPhoto("1065", getUserInfoApiparams.getImagesize());
+                    }
+
                     Map photoMap = photoResult.getModels();
                     result.setDefaultModel("avatarurl", photoMap);
                 }
