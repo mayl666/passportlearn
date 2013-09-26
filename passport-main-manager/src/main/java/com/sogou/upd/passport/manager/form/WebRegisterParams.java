@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -26,6 +27,7 @@ public class WebRegisterParams {
     @Min(0)
     private String client_id;
 
+    @Length(min = 1, max = 100, message = "用户名错误！")
     @NotBlank(message = "注册账号不允许为空!")
     private String username;
 

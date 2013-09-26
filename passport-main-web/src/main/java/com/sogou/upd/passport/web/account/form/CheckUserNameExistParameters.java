@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.form;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
@@ -11,6 +12,7 @@ import javax.validation.constraints.AssertTrue;
  * Date: 13-4-15 Time: 下午5:15
  */
 public class CheckUserNameExistParameters {
+    @Length(min = 1, max = 100, message = "用户名错误！")
     @NotBlank(message = "用户名不允许为空!")
     private String username;
 
