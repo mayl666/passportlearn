@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.Result;
@@ -79,56 +80,70 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             if (result.isSuccess()) {
                 //替换搜狐的个人头像
                 String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
-                String image = Strings.isNullOrEmpty(avatarurl) ? "" : avatarurl.replaceAll("\\/\\/", "");
+                String image = Strings.isNullOrEmpty(avatarurl) ? null : avatarurl.replaceAll("\\/\\/", "");
+
                 String passportId = getUserInfoApiparams.getUserid();
+                if(!Strings.isNullOrEmpty(image)){
+                    image=image.substring(image.indexOf("/"),image.length());
 
-                String cacheKey = "SP.PASSPORTID:IMAGE_SET_" + passportId;
+                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
 
-                Map<String, String> map = redisUtils.hGetAll(cacheKey);
-                if (MapUtils.isNotEmpty(map)) {
-                    String shImg = map.get("shImg");
-                    String sgImg = map.get("sgImg");
+                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
+                    if (MapUtils.isNotEmpty(map)) {
+                        String shImg = map.get("shImg");
+                        String sgImg = map.get("sgImg");
 
-                    //验证sohu修改图片后，搜狗自动更新
-                    if (!shImg.equals(image)) {
-                        //获取图片名
-                        String imgName = photoUtils.generalFileName();
-                        // 上传到OP图片平台
-                        if (photoUtils.uploadImg(imgName, null, image, "1")) {
-                            sgImg = photoUtils.accessURLTemplate(imgName);
-                            Map<String, String> mapResult = Maps.newHashMap();
-                            mapResult.put("shImg", image);
-                            mapResult.put("sgImg", sgImg);
+                        //验证sohu修改图片后，搜狗自动更新
+                        if (!Strings.isNullOrEmpty(shImg) && !shImg.equals(image)) {
+                            //获取图片名
+                            String imgName = photoUtils.generalFileName();
+                            // 上传到OP图片平台   sohu头像暂时用 a1.itc.cn域名
+                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
+                                sgImg = photoUtils.accessURLTemplate(imgName);
+                                Map<String, String> mapResult = Maps.newHashMap();
+                                mapResult.put("shImg", image);
+                                mapResult.put("sgImg", sgImg);
 
-                            redisUtils.hPutAll(cacheKey, mapResult);
+                                redisUtils.hPutAll(cacheKey, mapResult);
+                            } else {
+                                result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
+                                return result;
+                            }
+                        }
+                    } else {
+                        if(!Strings.isNullOrEmpty(image)){
+                            //获取图片名
+                            String imgName = photoUtils.generalFileName();
+                            // 上传到OP图片平台
+                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
+                                String sgImg = photoUtils.accessURLTemplate(imgName);
+                                Map<String, String> mapResult = Maps.newHashMap();
+                                mapResult.put("shImg", image);
+                                mapResult.put("sgImg", sgImg);
 
-                            cacheKey = "SP.PASSPORTID:IMAGE_" + passportId;
-                            redisUtils.set(cacheKey, sgImg);
-                        } else {
-                            result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
-                            return result;
+                                redisUtils.hPutAll(cacheKey, mapResult);
+                            }
                         }
                     }
-                } else {
-                    //获取图片名
-                    String imgName = photoUtils.generalFileName();
-                    // 上传到OP图片平台
-                    if (photoUtils.uploadImg(imgName, null, image, "1")) {
-                        String sgImg = photoUtils.accessURLTemplate(imgName);
-                        Map<String, String> mapResult = Maps.newHashMap();
-                        mapResult.put("shImg", image);
-                        mapResult.put("sgImg", sgImg);
+                    Result photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+                    Map photoMap = photoResult.getModels();
+                    result.setDefaultModel("avatarurl", photoMap);
 
-                        redisUtils.hPutAll(cacheKey, mapResult);
+                } else{
+                    //搜狐头像为空返回默认头像
+                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
 
-                        cacheKey = "SP.PASSPORTID:IMAGE_" + passportId;
-                        redisUtils.set(cacheKey, sgImg);
+                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
+                    Result photoResult=null;
+                    if(MapUtils.isNotEmpty(map)) {
+                        photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+                    } else {
+                        photoResult = accountInfoManager.obtainPhoto("1065", getUserInfoApiparams.getImagesize());
                     }
-                }
-                Result photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
-                Map photoMap = photoResult.getModels();
-                result.setDefaultModel("avatarurl", photoMap);
 
+                    Map photoMap = photoResult.getModels();
+                    result.setDefaultModel("avatarurl", photoMap);
+                }
             }
 
         } catch (Exception e) {
