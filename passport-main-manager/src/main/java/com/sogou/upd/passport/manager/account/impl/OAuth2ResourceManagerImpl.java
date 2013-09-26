@@ -83,7 +83,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
                 result = getCookieValue(accessToken, clientSecret, instanceId);
             } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
-                result = getFullUserInfo(accessToken, clientSecret, instanceId);
+                result = getFullUserInfo(clientId, accessToken, clientSecret, instanceId);
             } else {
                 result.setCode(ErrorUtil.INVALID_RESOURCE_TYPE);
                 return result;
@@ -147,7 +147,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
      * @return
      */
     @Override
-    public Result getFullUserInfo(String accessToken, String clientSecret, String instanceId) {
+    public Result getFullUserInfo(int clientId, String accessToken, String clientSecret, String instanceId) {
         Result result = new OAuthResultSupport(false);
         Map resourceMap = Maps.newHashMap();
         try {
@@ -156,6 +156,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String fields = "sec_email,uniqname,avatarurl";
                 String imagesize = "180,55";
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, fields);
+                getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setImagesize(imagesize);
                 Result userInfoResult;
                 if (CommonHelper.isInvokeProxyApi(passportId)) {

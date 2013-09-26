@@ -29,6 +29,6 @@ public interface OAuth2ResourceManager {
      * 获取完整的个人信息
      * @return
      */
-    public Result getFullUserInfo(String accessToken, String clientSecret, String instanceId);
+    public Result getFullUserInfo(int clientId, String accessToken, String clientSecret, String instanceId);
 
 }

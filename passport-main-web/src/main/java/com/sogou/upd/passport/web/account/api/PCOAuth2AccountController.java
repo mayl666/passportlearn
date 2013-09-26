@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -63,6 +64,8 @@ public class PCOAuth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PCOAuth2AccountController.class);
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
@@ -368,8 +371,14 @@ public class PCOAuth2AccountController extends BaseController {
             return "forward:/oauth2/errorMsg?msg=" + result.toString();
         }
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
+        getUserInfoApiparams.setClient_id(oauth2PcIndexParams.getClient_id());
         getUserInfoApiparams.setImagesize("180");
-        Result getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+        Result getUserInfoResult;
+        if (CommonHelper.isInvokeProxyApi(passportId)) {
+            getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+        } else {
+            getUserInfoResult = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+        }
         String uniqname = "", imageUrl = "", bindMobile = "", bindEmail = "";
         if (getUserInfoResult.isSuccess()) {
             uniqname = (String) getUserInfoResult.getModels().get("uniqname");
