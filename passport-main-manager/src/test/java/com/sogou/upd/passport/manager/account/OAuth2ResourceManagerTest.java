@@ -50,7 +50,7 @@ public class OAuth2ResourceManagerTest extends BaseTest {
 
     @Test
     public void testGetFullUserInfo() {
-        Result result = oAuth2ResourceManager.getFullUserInfo(ACCESS_TOKEN_SG, CLIENT_SECRET, INSTANCEID);
+        Result result = oAuth2ResourceManager.getFullUserInfo(CLIENT_ID, ACCESS_TOKEN_SG, CLIENT_SECRET, INSTANCEID);
         System.out.println("get userinfo result" + result.toString());
     }
 
