@@ -62,7 +62,7 @@ public class WebLoginParams {
         if (username.indexOf("@") == -1) {
             if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
                 //个性账号格式是否拼配
-                String regx = "[a-z]([a-zA-Z0-9_.]{3,15})";
+                String regx = "[a-z]([a-zA-Z0-9_.-]{4,16})";
                 if (!username.matches(regx)) {
                     return false;
                 }
