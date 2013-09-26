@@ -15,6 +15,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.service.SHPlusConstant;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,10 +100,11 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken) throws ServiceException {
         String cacheKey = buildAvatarCacheKey(passportId);
         try {
-            String avatarUrl = redisUtils.get(cacheKey);
-            if (!Strings.isNullOrEmpty(avatarUrl)) {
+            Map<String, String> map = redisUtils.hGetAll(cacheKey);
+            if(map!=null && map.size()>0){
                 return true;
             }
+
             Map userInfoMap = getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
             if (userInfoMap != null) {
                 String result = (String) userInfoMap.get("result");
@@ -121,7 +123,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
                     if (photoUtils.uploadImg(imgName, null, avatar, "1")) {
                         String imgURL = photoUtils.accessURLTemplate(imgName);
                         //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                        redisUtils.set(cacheKey, imgURL);
+                        redisUtils.hPut(cacheKey,"sgImg",imgURL);
                         return true;
                     }
                 }
@@ -134,6 +136,6 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     }
 
     private String buildAvatarCacheKey(String passportId) {
-        return CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL + passportId;
+        return  CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
     }
 }
