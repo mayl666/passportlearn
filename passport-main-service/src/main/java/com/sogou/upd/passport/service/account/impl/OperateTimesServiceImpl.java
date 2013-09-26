@@ -422,36 +422,36 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkRegInBlackList(String ip, String cookieStr) throws ServiceException {
         //修改为list模式添加cookie处理 by mayan
         try {
-            //cookie与ip映射
-            String cookieCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
-            Set<String> setIpVal = redisUtils.smember(cookieCacheKey);
-            if (CollectionUtils.isNotEmpty(setIpVal)) {
-                int sz = setIpVal.size();
-                if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
-                    return true;
+            if (!Strings.isNullOrEmpty(cookieStr)) {
+                //cookie与ip映射
+                String cookieCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_COOKIEBLACKLIST + cookieStr;
+                Set<String> setIpVal = redisUtils.smember(cookieCacheKey);
+                if (CollectionUtils.isNotEmpty(setIpVal)) {
+                    int sz = setIpVal.size();
+                    if (sz >= LoginConstant.REGISTER_COOKIE_LIMITED) {
+                        return true;
+                    }
+                }
+                //ip与cookie映射
+                String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
+                Set<String> setCookieVal = redisUtils.smember(ipCacheKey);
+                if (CollectionUtils.isNotEmpty(setCookieVal)) {
+                    int sz = setCookieVal.size();
+                    if (sz == (LoginConstant.REGISTER_IP_LIMITED / 2)) {
+                        logRegisterBlackList(ip, ipCacheKey, sz, setCookieVal.toArray().toString());
+                    }
+                    if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
+                        logRegisterBlackList(ip, ipCacheKey, sz, setCookieVal.toArray().toString());
+                        return true;
+                    }
                 }
             }
-
             //通过ip+cookie限制注册次数
             String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_" + cookieStr;
             String value = redisUtils.get(ipCookieKey);
             if (!Strings.isNullOrEmpty(value)) {
                 int num = Integer.valueOf(value);
                 if (num >= LoginConstant.REGISTER_IP_COOKIE_LIMITED) {
-                    return true;
-                }
-            }
-
-            //ip与cookie映射
-            String ipCacheKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip;
-            Set<String> setCookieVal = redisUtils.smember(ipCacheKey);
-            if (CollectionUtils.isNotEmpty(setCookieVal)) {
-                int sz = setCookieVal.size();
-                if (sz == (LoginConstant.REGISTER_IP_LIMITED / 2)) {
-                    logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
-                }
-                if (sz >= LoginConstant.REGISTER_IP_LIMITED) {
-                    logRegisterBlackList(ip, cookieCacheKey, sz, setCookieVal.toArray().toString());
                     return true;
                 }
             }
