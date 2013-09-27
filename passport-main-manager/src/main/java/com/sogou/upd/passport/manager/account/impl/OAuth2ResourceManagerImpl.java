@@ -179,7 +179,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 }
                 String uniqname = (String) userInfoResult.getModels().get("uniqname");
                 Map data = Maps.newHashMap();
-                data.put("nick", uniqname);
+                data.put("nick", Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname);
                 data.put("large_avatar", largeAvatar);
                 data.put("mid_avatar", midAvatar);
                 data.put("tiny_avatar", tinyAvatar);
@@ -199,6 +199,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
+    }
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
     }
 
 }

@@ -138,7 +138,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                     if(MapUtils.isNotEmpty(map)) {
                         photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
                     } else {
-                        photoResult = accountInfoManager.obtainPhoto("1065", getUserInfoApiparams.getImagesize());
+                        photoResult = accountInfoManager.obtainPhoto(Integer.toString(getUserInfoApiparams.getClient_id()), getUserInfoApiparams.getImagesize());
                     }
 
                     Map photoMap = photoResult.getModels();
