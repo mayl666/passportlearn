@@ -764,8 +764,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 }
 
             }
-
-            if (!Strings.isNullOrEmpty(ip)) {      //  根据ip判断是否需要弹出验证码
+            //暂时去掉
+           /* if (!Strings.isNullOrEmpty(ip)) {      //  根据ip判断是否需要弹出验证码
                 String ip_hKey = buildAuthUserIpKey(ip);
                 Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
                 if (!MapUtils.isEmpty(ip_hmap)) {
@@ -787,7 +787,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         }
                     }
                 }
-            }
+            }  */
             return false;
         } catch (Exception e) {
             logger.error("userInBlackList," + username + "," + ip, e);
