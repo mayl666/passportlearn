@@ -18,7 +18,7 @@ public class CheckUserNameExistParameters {
 
     private String client_id;
 
-    @AssertTrue(message = "用户账号格式错误")
+   /* @AssertTrue(message = "用户账号格式错误")
     public boolean isCheckAccount() {
         if (Strings.isNullOrEmpty(username)) {
             return true;
@@ -37,7 +37,7 @@ public class CheckUserNameExistParameters {
             return username.matches(regex);
         }
         return true;
-    }
+    }*/
 
     public String getUsername() {
         return username;
