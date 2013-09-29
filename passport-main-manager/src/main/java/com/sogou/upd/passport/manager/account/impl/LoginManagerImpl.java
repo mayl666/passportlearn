@@ -65,12 +65,9 @@ public class LoginManagerImpl implements LoginManager {
                 }
             }
             //校验username是否在账户黑名单中
-            if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
-                //是否在白名单中
-                if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                    return result;
-                }
+            if(isLoginUserInBlackList(username,ip)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
             }
 
             //默认是sogou.com
@@ -113,6 +110,18 @@ public class LoginManagerImpl implements LoginManager {
     public boolean needCaptchaCheck(String client_id, String username, String ip) {
         if (Integer.parseInt(client_id) == SHPPUrlConstant.APP_ID) {
             if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isLoginUserInBlackList(final String username, final String ip) {
+        //校验username是否在账户黑名单中
+        if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
+            //是否在白名单中
+            if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                 return true;
             }
         }

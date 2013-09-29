@@ -45,6 +45,10 @@ public class LoginConstant {
     public static final int LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT = 1000;
 
     /**
+     * 内部接口一小时内某IP验证失败多少次之后，用户不能再登陆
+     */
+    public static final int AUTHUSER_IP_FAILED_EXCEED_MAX_LIMIT_COUNT = 50;
+    /**
      * 密码修改一天限制次数
      */
     public static final int RESETNUM_LIMITED = 10; // 密码修改一天限制次数
