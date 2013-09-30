@@ -60,4 +60,11 @@ public class ManagerHelperTest extends BaseTest {
         //限制输入含有特定字符的
         //System.out.println(str.matches("^(?!.*搜狗)(?!.*sogou)(?!.*sougou).*$"));
     }
+
+    @Test
+    public void testEmail() {
+        String email = "t5y-.uku@-163.com";
+        String regex = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
+        System.out.println(email.matches(regex));
+    }
 }
