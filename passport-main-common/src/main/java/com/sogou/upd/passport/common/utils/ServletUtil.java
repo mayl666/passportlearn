@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * request/response相关工具类
@@ -14,6 +15,18 @@ import javax.servlet.http.HttpServletResponse;
 public class ServletUtil {
 
     public static String defaultDomain = CommonConstant.SOGOU_ROOT_DOMAIN;
+
+    public static String getParameterString(HttpServletRequest request){
+        StringBuilder requestParam = new StringBuilder();
+        Map map = request.getParameterMap();
+        for (Object key : map.keySet().toArray()) {
+            requestParam.append(key.toString());
+            requestParam.append(":");
+            requestParam.append(request.getParameter(key.toString()));
+            requestParam.append(",");
+        }
+        return requestParam.toString();
+    }
 
 	/* ------------------------- cookie ------------------------- */
 
