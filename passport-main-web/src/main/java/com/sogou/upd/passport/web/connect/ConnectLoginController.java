@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
@@ -69,6 +70,9 @@ public class ConnectLoginController extends BaseConnectController {
         }
 
         result = oAuthAuthLoginManager.connectSSOLogin(oauthRequest, provider, ip);
+        UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), String.valueOf(oauthRequest.getClientId()), result.getCode(), ip);
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
