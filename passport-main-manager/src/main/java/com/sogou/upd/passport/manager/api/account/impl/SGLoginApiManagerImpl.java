@@ -52,7 +52,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     }
 
     @Override
-    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

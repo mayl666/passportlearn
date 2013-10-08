@@ -15,10 +15,10 @@
             <list>
                 <bean class="java.net.InetSocketAddress">
                     <constructor-arg>
-                        <value>${passport.memcache.refresh_token}</value>
+                        <value>10.11.207.133</value>
                     </constructor-arg>
                     <constructor-arg>
-                        <value>${passport.memcache.refresh_token.port}</value>
+                        <value>11211</value>
                     </constructor-arg>
                 </bean>
             </list>
@@ -41,10 +41,10 @@
             <list>
                 <bean class="java.net.InetSocketAddress">
                     <constructor-arg>
-                        <value>${passport.memcache.token}</value>
+                        <value>10.11.215.220</value>
                     </constructor-arg>
                     <constructor-arg>
-                        <value>${passport.memcache.token.port}</value>
+                        <value>11211</value>
                     </constructor-arg>
                 </bean>
             </list>

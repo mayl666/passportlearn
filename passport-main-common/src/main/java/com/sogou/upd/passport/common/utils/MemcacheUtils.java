@@ -41,6 +41,14 @@ public class MemcacheUtils {
         }
     }
 
+    public void shutdown() {
+        try {
+            c.shutdown();
+        }catch (Exception e) {
+            logger.error(" shutdown xmemchached client error, msg is :{}", e.getMessage());
+        }
+    }
+
     @Profiled(el = true, logger = "memcacheTimingLogger", tag = "memcache_get")
     public String get(String key) throws Exception {
         try {
@@ -63,4 +71,5 @@ public class MemcacheUtils {
             logger.error("[memcache] set cache fail, key:" + key + ",value:" + value, e);
         }
     }
+
 }

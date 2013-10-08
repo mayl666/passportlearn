@@ -90,7 +90,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         }
     }
 
-    @Override
+    /*@Override
     public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
         Result result = new APIResultSupport(false);
         int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
@@ -115,14 +115,41 @@ public class PCAccountManagerImpl implements PCAccountManager {
                     return result;
                 }
             }
-            AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
-            if (accountToken != null) {
-                result.setSuccess(true);
-                result.setDefaultModel(accountToken);
-            } else {
-                result.setCode(ErrorUtil.CREATE_TOKEN_FAIL);
-            }
+            return  initialAccountToken(passportId,instanceId,appConfig);
+        } catch (Exception e) {
+            logger.error("authRefreshToken fail", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
+        }
+    }*/
+
+    //todo 临时将token存储在sohu memcache
+    @Override
+    public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
+        Result result = new APIResultSupport(false);
+        int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
+        String passportId = pcRefreshTokenParams.getUserid();
+        String instanceId = pcRefreshTokenParams.getTs();
+        String refreshToken = pcRefreshTokenParams.getRefresh_token();
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
+            if (CommonHelper.isIePinyinToken(clientId)) {
+                if (!shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+                    result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+                    return result;
+                }
+            } else {
+                boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                if (!res) {
+                    result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+                    return result;
+                }
+            }
+            return initialAccountToken(passportId, instanceId, appConfig);
         } catch (Exception e) {
             logger.error("authRefreshToken fail", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -130,7 +157,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         }
     }
 
-    @Override
+    /*@Override
     public Result authToken(PcAuthTokenParams authPcTokenParams) {
         Result result = new APIResultSupport(false);
         try {
@@ -153,9 +180,36 @@ public class PCAccountManagerImpl implements PCAccountManager {
             return result;
         }
         return result;
+    }*/
+    //todo 临时将token存储在sohu memcache
+    @Override
+    public Result authToken(PcAuthTokenParams authPcTokenParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            //验证accessToken
+            int clientId = Integer.parseInt(authPcTokenParams.getAppid());
+            String passportId = authPcTokenParams.getUserid();
+            String instanceId = authPcTokenParams.getTs();
+            if (CommonHelper.isIePinyinToken(clientId)) {
+                if (shTokenService.verifyShAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
+                    result.setSuccess(true);
+                }
+            }else {
+                if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
+                    result.setSuccess(true);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("authToken fail", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+        return result;
     }
 
-    @Override
+
+
+    /*@Override
     public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
         try {
             //验证refreshToken
@@ -163,6 +217,19 @@ public class PCAccountManagerImpl implements PCAccountManager {
             return (pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), client_id,
                     pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()) ||
                     shTokenService.verifyShRefreshToken(pcRefreshTokenParams.getUserid(), client_id, pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()));
+        } catch (Exception e) {
+            logger.error("verifyRefreshToken fail", e);
+            return false;
+        }
+    }*/
+
+    //todo 临时将token存储在sohu memcache
+    @Override
+    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
+        try {
+            //验证refreshToken
+            int client_id = Integer.parseInt(pcRefreshTokenParams.getAppid());
+            return shTokenService.verifyShRefreshToken(pcRefreshTokenParams.getUserid(), client_id, pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token());
         } catch (Exception e) {
             logger.error("verifyRefreshToken fail", e);
             return false;
@@ -199,7 +266,13 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
-        AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
+        AccountToken accountToken = null;
+        //todo 临时将token存储在sohu memcache
+        if (CommonHelper.isIePinyinToken(appConfig.getClientId())) {
+            accountToken = shTokenService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
+        }else {
+            accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
+        }
         if (accountToken != null) {
             finalResult.setSuccess(true);
             finalResult.setDefaultModel(accountToken);
@@ -212,7 +285,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     /*
      * 校验签名，算法：sig=MD5(passportId + clientId + refresh_token + timestamp + clientSecret）
      */
-    private boolean verifySig(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
+    /*private boolean verifySig(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
         // 校验时间戳
         long curTimestamp = System.currentTimeMillis();
         long ts = Long.parseLong(timestamp);
@@ -227,6 +300,27 @@ public class PCAccountManagerImpl implements PCAccountManager {
             } else {
                 return false;
             }
+        }
+        if (!isValidToken(accountToken.getRefreshValidTime())) {
+            return false;
+        }
+        String refreshToken = accountToken.getRefreshToken();
+        return equalSig(passportId, clientId, refreshToken, timestamp, clientSecret, sig);
+    }*/
+    //todo 临时将token存储在sohu memcache
+    private boolean verifySig(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
+        // 校验时间戳
+        long curTimestamp = System.currentTimeMillis();
+        long ts = Long.parseLong(timestamp);
+        if (curTimestamp > ts + SIG_EXPIRES) {
+            return false;
+        }
+        if (CommonHelper.isIePinyinToken(clientId)) {
+            return verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+        }
+        AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
+        if (accountToken == null) {
+            return false;
         }
         if (!isValidToken(accountToken.getRefreshValidTime())) {
             return false;

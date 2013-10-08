@@ -1,9 +1,14 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.MemcacheUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.AccountToken;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +30,6 @@ public class SHTokenServiceImpl implements SHTokenService {
     private MemcacheUtils rTokenMemUtils;
     @Autowired
     private MemcacheUtils aTokenMemUtils;
-
     /**
      * 构造SHToken的key
      * 格式为：passport|clientId|instanceId
@@ -121,6 +125,21 @@ public class SHTokenServiceImpl implements SHTokenService {
             return false;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
+        final int clientId = appConfig.getClientId();
+        try {
+            AccountToken accountToken = PCAccountServiceImpl.newAccountToken(passportId, instanceId, appConfig);
+            String key = buildTokenKeyStr(passportId, clientId, instanceId);
+            aTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_HOUR_INSECONDS,accountToken.getAccessToken());
+            rTokenMemUtils.set(key,DateAndNumTimesConstant.TEN_DAY_INSECONDS,accountToken.getRefreshToken());
+            return accountToken;
+        } catch (Exception e) {
+            logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
         }
     }

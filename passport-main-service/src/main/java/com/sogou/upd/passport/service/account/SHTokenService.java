@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.AccountToken;
+import com.sogou.upd.passport.model.app.AppConfig;
+
 /**
  * Created with IntelliJ IDEA.
  * User: chenjiameng
@@ -58,4 +61,14 @@ public interface SHTokenService {
      * @throws ServiceException
      */
     public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+
+    /**
+     *生成token,存储在sh memcache中
+     * @param passportId
+     * @param instanceId
+     * @param appConfig
+     * @return
+     * @throws ServiceException
+     */
+    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
 }
