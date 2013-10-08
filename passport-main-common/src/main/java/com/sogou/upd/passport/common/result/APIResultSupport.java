@@ -51,6 +51,14 @@ public class APIResultSupport extends ResultSupport {
     }
 
     @Override
+    public void setSuccess(boolean success) {
+        this.success = success;
+        if (success) {
+            this.code = "0";
+        }
+    }
+
+    @Override
     public String toString() {
         String status = "0";
         String statusText = getMessage();
