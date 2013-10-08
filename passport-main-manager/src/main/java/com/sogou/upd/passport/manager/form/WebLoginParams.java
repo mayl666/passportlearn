@@ -57,7 +57,7 @@ public class WebLoginParams {
 
     private String xd; // 跨域通信所用字段，直接返回
 
-    @AssertTrue(message = "用户账号格式错误")
+    /*@AssertTrue(message = "用户账号格式错误")
     public boolean isCheckAccount() {
         if (Strings.isNullOrEmpty(username)) {
             return true;
@@ -76,7 +76,7 @@ public class WebLoginParams {
             return username.matches(regex);
         }
         return true;
-    }
+    }*/
 
     public String getUsername() {
         return username;
