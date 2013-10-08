@@ -9,7 +9,9 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import com.sogou.upd.passport.common.validation.constraints.UserName;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -26,7 +28,9 @@ public class WebRegisterParams {
     @Min(0)
     private String client_id;
 
+    @Length(min = 1, max = 100, message = "用户名错误！")
     @NotBlank(message = "注册账号不允许为空!")
+    @UserName
     private String username;
 
     @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
@@ -47,26 +51,26 @@ public class WebRegisterParams {
         return StringUtil.isSohuUserName(username);
     }
 
-    @AssertTrue(message = "用户账号格式错误")
-    private boolean checkAccount() {
-        if (Strings.isNullOrEmpty(username)) {
-            return true;
-        }
-        if (username.indexOf("@") == -1) {
-            if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                //个性账号格式是否拼配
-                String regx = "[a-z]([a-zA-Z0-9_.]{4,16})";
-                if (!username.matches(regx)) {
-                    return false;
-                }
-            }
-        } else {
-            //邮箱格式
-            String regex = "(\\w)+(\\.\\w+)*@([\\w_\\-])+((\\.\\w+)+)";
-            return username.matches(regex);
-        }
-        return true;
-    }
+//    @AssertTrue(message = "用户账号格式错误")
+//    private boolean isCheckAccount() {
+//        if (Strings.isNullOrEmpty(username)) {
+//            return true;
+//        }
+//        if (username.indexOf("@") == -1) {
+//            if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+//                //个性账号格式是否拼配
+//                String regx = "[a-z]([a-zA-Z0-9_.-]{4,16})";
+//                if (!username.matches(regx)) {
+//                    return false;
+//                }
+//            }
+//        } else {
+//            //邮箱格式
+//            String regex = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
+//            return username.matches(regex);
+//        }
+//        return true;
+//    }
 
     public String getClient_id() {
         return client_id;
