@@ -42,6 +42,7 @@ public class UpdateUserUniqnameApiParams extends BaseApiParams {
         return true;
     }
 
+
     public String getUniqname() {
         return uniqname;
     }
