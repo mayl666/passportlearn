@@ -233,6 +233,7 @@ public class PCAccountController extends BaseController {
             if (authPcTokenParams.getLivetime() > 0) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
+            createCookieUrlApiParams.setDomain("sogou.com");
             //TODO sogou域账号迁移后cookie生成问题
             Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
             if (getCookieValueResult.isSuccess()) {

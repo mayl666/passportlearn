@@ -149,7 +149,7 @@ public class RegManagerImpl implements RegManager {
             Object obj = result.getModels().get("isSetCookie");
             if (obj != null && (obj instanceof Boolean) && (boolean) obj) {
                 // 种sohu域cookie
-                result = commonManager.createCookieUrl(result, username, 1);
+                result = commonManager.createCookieUrl(result, username,"/", 1);
             }
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);

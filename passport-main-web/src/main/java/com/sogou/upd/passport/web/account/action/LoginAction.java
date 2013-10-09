@@ -124,6 +124,7 @@ public class LoginAction extends BaseController {
                 ru = LOGIN_INDEX_URLSTR;
             }
             createCookieUrlApiParams.setRu(ru);
+            createCookieUrlApiParams.setDomain("sogou.com");
 
             //TODO sogou域账号迁移后cookie生成问题
             Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);

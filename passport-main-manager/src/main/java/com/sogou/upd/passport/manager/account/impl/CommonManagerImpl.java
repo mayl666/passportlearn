@@ -84,7 +84,7 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createCookieUrl(Result result, String passportId, int autoLogin) {
+    public Result createCookieUrl(Result result, String passportId,String domain, int autoLogin) {
         // 种sohu域cookie
 
         String scheme = "https";
@@ -102,6 +102,7 @@ public class CommonManagerImpl implements CommonManager {
         createCookieUrlApiParams.setUserid(passportIdTmp);
         createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
+        createCookieUrlApiParams.setDomain(domain);
         Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
         if (createCookieResult.isSuccess()) {
             result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));

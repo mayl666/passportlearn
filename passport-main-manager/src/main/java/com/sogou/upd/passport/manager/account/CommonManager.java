@@ -49,7 +49,7 @@ public interface CommonManager {
      * @param autoLogin
      * @return
      */
-    public Result createCookieUrl(Result result, String passportId, int autoLogin);
+    public Result createCookieUrl(Result result, String passportId, String domain,int autoLogin);
 
     /**
      * 只根据 passportId和autoLogin生成cookie  URL

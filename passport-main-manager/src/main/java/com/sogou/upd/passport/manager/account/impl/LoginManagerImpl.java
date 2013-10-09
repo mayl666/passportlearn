@@ -90,7 +90,7 @@ public class LoginManagerImpl implements LoginManager {
 
             //记录返回结果
             if (result.isSuccess()) {
-                result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
+                result = commonManager.createCookieUrl(result, passportId,"/", loginParameters.getAutoLogin());
                 //设置来源
                 String ru = loginParameters.getRu();
                 if (Strings.isNullOrEmpty(ru)) {
