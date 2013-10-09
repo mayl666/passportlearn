@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -131,8 +132,19 @@ public class LoginAction extends BaseController {
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+
+                int authLogin=loginParams.getAutoLogin();
+                //0-否  1-真
+                switch (authLogin){
+                    case 0:
+                        ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+                        ServletUtil.setCookie(response, "pprdig", pprdig,  -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+                        break;
+                    case 1:
+                        ServletUtil.setCookie(response, "ppinf", ppinf, (int)DateAndNumTimesConstant.TWO_WEEKS, CommonConstant.SOGOU_ROOT_DOMAIN);
+                        ServletUtil.setCookie(response, "pprdig", pprdig,  (int)DateAndNumTimesConstant.TWO_WEEKS, CommonConstant.SOGOU_ROOT_DOMAIN);
+                        break;
+                }
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
 
                 userId = result.getModels().get("userid").toString();
