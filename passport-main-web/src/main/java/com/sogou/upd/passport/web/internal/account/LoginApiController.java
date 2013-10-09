@@ -61,7 +61,7 @@ public class LoginApiController extends BaseController {
 
         if(loginManager.isLoginUserInBlackList(params.getUserid(),createip)){
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-            return result;
+            return result.toString();
         }
 
         // 调用内部接口
