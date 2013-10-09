@@ -54,6 +54,7 @@ public class LoginAction extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    private static final String LOGIN_INDEX_URLSTR = "https://account.sogou.com";
 
     /**
      * 用户登录检查是否显示验证码
@@ -116,7 +117,13 @@ public class LoginAction extends BaseController {
 
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
-            createCookieUrlApiParams.setRu(loginParams.getRu());
+
+            //设置来源
+            String ru = loginParams.getRu();
+            if (Strings.isNullOrEmpty(ru)) {
+                ru = LOGIN_INDEX_URLSTR;
+            }
+            createCookieUrlApiParams.setRu(ru);
 
             //TODO sogou域账号迁移后cookie生成问题
             Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
