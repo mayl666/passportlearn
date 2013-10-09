@@ -226,7 +226,7 @@ public class RegAction extends BaseController {
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
             // 种sohu域cookie
-            result = commonManager.createCookieUrl(result, activeParams.getPassport_id(), "/", 1);
+            result = commonManager.createCookieUrl(result, activeParams.getPassport_id(), "", 1);
 
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(activeParams.getPassport_id());
