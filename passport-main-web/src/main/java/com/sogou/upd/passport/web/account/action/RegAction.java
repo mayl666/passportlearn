@@ -147,7 +147,10 @@ public class RegAction extends BaseController {
                 }
 
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-                createCookieUrlApiParams.setUserid(regParams.getUsername());
+
+                Object obj = result.getModels().get("username");
+
+                createCookieUrlApiParams.setUserid((String)obj);
                 createCookieUrlApiParams.setRu(ru);
                 createCookieUrlApiParams.setDomain("sogou.com");
 

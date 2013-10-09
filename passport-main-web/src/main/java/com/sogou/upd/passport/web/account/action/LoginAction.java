@@ -135,16 +135,11 @@ public class LoginAction extends BaseController {
 
                 int authLogin=loginParams.getAutoLogin();
                 //0-否  1-真
-                switch (authLogin){
-                    case 0:
-                        ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                        ServletUtil.setCookie(response, "pprdig", pprdig,  -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                        break;
-                    case 1:
-                        ServletUtil.setCookie(response, "ppinf", ppinf, (int)DateAndNumTimesConstant.TWO_WEEKS, CommonConstant.SOGOU_ROOT_DOMAIN);
-                        ServletUtil.setCookie(response, "pprdig", pprdig,  (int)DateAndNumTimesConstant.TWO_WEEKS, CommonConstant.SOGOU_ROOT_DOMAIN);
-                        break;
-                }
+                int validTime=authLogin==0?-1:(int)DateAndNumTimesConstant.TWO_WEEKS;
+
+                ServletUtil.setCookie(response, "ppinf", ppinf, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setCookie(response, "pprdig", pprdig, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
+
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
 
                 userId = result.getModels().get("userid").toString();
