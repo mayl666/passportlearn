@@ -115,7 +115,8 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&code=").append(code)
                     .append("&ru=").append(ru)
                     .append("&persistentcookie=").append(createCookieUrlApiParams.getPersistentcookie())
-                    .append("&domain=sogou.com");
+                    .append("&domain=");
+//                    .append("&domain=sogou.com");
             result.setDefaultModel("url", urlBuilder.toString());
             result.setSuccess(true);
         } catch (Exception e) {

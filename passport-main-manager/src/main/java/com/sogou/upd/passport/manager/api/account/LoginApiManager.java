@@ -47,6 +47,7 @@ public interface LoginApiManager {
 
     /**
      * 获取cookie值，包括ppinf、pprdig、passport
+     * 只有浏览器老版本PC端才会用到passport
      * @param createCookieUrlApiParams
      * @return
      */

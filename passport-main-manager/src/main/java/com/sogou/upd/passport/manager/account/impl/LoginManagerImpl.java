@@ -14,6 +14,7 @@ import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
@@ -90,12 +91,15 @@ public class LoginManagerImpl implements LoginManager {
 
             //记录返回结果
             if (result.isSuccess()) {
-                result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
+
                 //设置来源
                 String ru = loginParameters.getRu();
                 if (Strings.isNullOrEmpty(ru)) {
                     ru = scheme + LOGIN_INDEX_URLSTR;
                 }
+
+                result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
+
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
         } catch (Exception e) {

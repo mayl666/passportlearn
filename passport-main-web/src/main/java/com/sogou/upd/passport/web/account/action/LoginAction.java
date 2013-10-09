@@ -9,6 +9,8 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
@@ -50,6 +52,8 @@ public class LoginAction extends BaseController {
 
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private LoginApiManager proxyLoginApiManager;
 
     /**
      * 用户登录检查是否显示验证码
@@ -85,7 +89,7 @@ public class LoginAction extends BaseController {
      * @param loginParams 传入的参数
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, Model model, WebLoginParams loginParams)
+    public String login(HttpServletRequest request, HttpServletResponse response,Model model, WebLoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -109,9 +113,26 @@ public class LoginAction extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
 
         if (result.isSuccess()) {
-            userId = result.getModels().get("userid").toString();
-            int clientId = Integer.parseInt(loginParams.getClient_id());
-            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+
+            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+            createCookieUrlApiParams.setUserid(userId);
+            createCookieUrlApiParams.setRu(loginParams.getRu());
+
+            //TODO sogou域账号迁移后cookie生成问题
+            Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+            if (getCookieValueResult.isSuccess()) {
+                String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+                String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+                ServletUtil.setCookie(response, "ppinf", ppinf, 0, CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setCookie(response, "pprdig", pprdig, 0, CommonConstant.SOGOU_ROOT_DOMAIN);
+                response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+
+                userId = result.getModels().get("userid").toString();
+                int clientId = Integer.parseInt(loginParams.getClient_id());
+                loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+            }
+
+
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
             //校验是否需要验证码
