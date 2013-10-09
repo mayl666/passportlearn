@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ApiGroupUtil;
 
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
@@ -135,7 +136,7 @@ public class UserOperationLogUtil {
 
                 String otherMsgJson = null;
                 if (MapUtils.isNotEmpty(otherMessage)) {
-                    otherMsgJson= new ObjectMapper().writeValueAsString(otherMessage).replace("\t", TAB).replace("\n", NEXTLINE);
+                    otherMsgJson= JacksonJsonMapperUtil.getMapper().writeValueAsString(otherMessage).replace("\t", TAB).replace("\n", NEXTLINE);
                 }
                 log.append("\t").append(StringUtil.defaultIfEmpty(otherMsgJson, "-"));
             }

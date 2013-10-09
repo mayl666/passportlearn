@@ -29,6 +29,7 @@ public class RedisUtils {
 
     private static Logger logger = LoggerFactory.getLogger(RedisUtils.class);
     private static final Logger redisMissLogger = LoggerFactory.getLogger("redisMissLogger");
+    private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
     private static RedisTemplate redisTemplate;
 
@@ -60,7 +61,7 @@ public class RedisUtils {
     public void set(String key, Object obj) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.set(key, new ObjectMapper().writeValueAsString(obj));
+            valueOperations.set(key, jsonMapper.writeValueAsString(obj));
         } catch (Exception e) {
             logger.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
             try {
@@ -98,7 +99,7 @@ public class RedisUtils {
             for (String key : keySet) {
                 T obj = mapData.get(key);
                 if (obj != null) {
-                    objectMap.put(key, new ObjectMapper().writeValueAsString(obj));
+                    objectMap.put(key, jsonMapper.writeValueAsString(obj));
                 }
             }
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -189,7 +190,7 @@ public class RedisUtils {
         try {
             String cacheStr = get(cacheKey);
             if (!Strings.isNullOrEmpty(cacheStr)) {
-                T object = (T) new ObjectMapper().readValue(cacheStr, returnClass);
+                T object = (T) jsonMapper.readValue(cacheStr, returnClass);
                 return object;
             }
             redisMissLogger.info("getObject cache miss, key:" + cacheKey);
@@ -266,7 +267,7 @@ public class RedisUtils {
             for (String key : keySet) {
                 T obj = mapData.get(key);
                 if (obj != null) {
-                    objectMap.put(key, new ObjectMapper().writeValueAsString(obj));
+                    objectMap.put(key, jsonMapper.writeValueAsString(obj));
                 }
             }
             BoundHashOperations<String, String, Object> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -306,7 +307,7 @@ public class RedisUtils {
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutObject")
     public void hPut(String cacheKey, String key, Object obj) throws Exception {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-        boundHashOperations.put(key, new ObjectMapper().writeValueAsString(obj));
+        boundHashOperations.put(key, jsonMapper.writeValueAsString(obj));
     }
 
     /**
@@ -333,7 +334,7 @@ public class RedisUtils {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             String cacheStr = boundHashOperations.get(key);
             if (!Strings.isNullOrEmpty(cacheStr)) {
-                T object = (T) new ObjectMapper().readValue(cacheStr, returnClass);
+                T object = (T) jsonMapper.readValue(cacheStr, returnClass);
                 return object;
             }
             redisMissLogger.info("hGetObject cache miss, key:" + cacheKey);
@@ -408,7 +409,7 @@ public class RedisUtils {
         for (String key : keySet) {
             String value = mapData.get(key);
             if (!Strings.isNullOrEmpty(value)) {
-                T object = (T) new ObjectMapper().readValue(value, returnClass);
+                T object = (T) jsonMapper.readValue(value, returnClass);
                 results.put(key, object);
             }
         }
@@ -504,7 +505,7 @@ public class RedisUtils {
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_LeftPushObjectToList")
     public void lPushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
-            lPushWithMaxLen(key, new ObjectMapper().writeValueAsString(obj), maxLen);
+            lPushWithMaxLen(key, jsonMapper.writeValueAsString(obj), maxLen);
         } catch (Exception e) {
             logger.error("[Cache] lpush object key: " + key, e);
         }
@@ -521,7 +522,7 @@ public class RedisUtils {
             List<String> storeList = valueList.range(key, 0, 0);
             if (CollectionUtils.isNotEmpty(storeList)) {
                 String value = storeList.get(0);
-                T object = new ObjectMapper().readValue(value, returnClass);
+                T object = jsonMapper.readValue(value, returnClass);
                 return object;
             }
             return null;
@@ -558,7 +559,7 @@ public class RedisUtils {
             Iterator it = storeList.iterator();
             while (it.hasNext()) {
                 String value = (String) it.next();
-                T object = (T) new ObjectMapper().readValue(value, returnClass);
+                T object = (T) jsonMapper.readValue(value, returnClass);
                 resultList.add(object);
             }
             return resultList;
@@ -587,7 +588,7 @@ public class RedisUtils {
     private void set(String key, Object obj, long timeout, TimeUnit timeUnit) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.set(key, new ObjectMapper().writeValueAsString(obj), timeout, timeUnit);
+            valueOperations.set(key, jsonMapper.writeValueAsString(obj), timeout, timeUnit);
         } catch (Exception e) {
             logger.error("[Cache] set cache fail, key:" + key + " value:" + obj, e);
 

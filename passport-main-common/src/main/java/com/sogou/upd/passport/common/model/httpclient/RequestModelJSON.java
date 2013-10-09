@@ -2,11 +2,11 @@ package com.sogou.upd.passport.common.model.httpclient;
 
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class RequestModelJSON extends RequestModel {
     @Override
     public HttpEntity getRequestEntity() {
         try {
-            String json = new ObjectMapper().writeValueAsString(params);
+            String json = JacksonJsonMapperUtil.getMapper().writeValueAsString(params);
             return new StringEntity(json, HttpConstant.ContentType.JSON,
                     DEFAULT_ENCODE);
         } catch (UnsupportedEncodingException e) {

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.problem.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.problem.ProblemTypeDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -58,11 +59,11 @@ public class ProblemTypeServiceImpl implements ProblemTypeService {
             if (Strings.isNullOrEmpty(listStr)) {
                 list = problemTypeDAO.getProblemTypeList();
                 if(!CollectionUtils.isEmpty(list)) {
-                    String jsonResult = new ObjectMapper().writeValueAsString(list);
+                    String jsonResult = JacksonJsonMapperUtil.getMapper().writeValueAsString(list);
                     redisUtils.set(cacheKey, jsonResult);
                 }
             } else {
-                list = new ObjectMapper().readValue(listStr, new TypeReference<List<ProblemType>>() {
+                list = JacksonJsonMapperUtil.getMapper().readValue(listStr, new TypeReference<List<ProblemType>>() {
                 });
             }
         } catch (Exception e) {
