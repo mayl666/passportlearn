@@ -70,7 +70,6 @@ public class ConnectLoginController extends BaseConnectController {
         }
 
         result = oAuthAuthLoginManager.connectSSOLogin(oauthRequest, provider, ip);
-
         UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), String.valueOf(oauthRequest.getClientId()), result.getCode(), ip);
         userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
         UserOperationLogUtil.log(userOperationLog);

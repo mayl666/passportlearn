@@ -52,10 +52,16 @@ public interface CommonManager {
     public Result createCookieUrl(Result result, String passportId, int autoLogin);
 
     /**
-     * 为内部接口添加的ip注册次数的累加
+     * 只根据 passportId和autoLogin生成cookie  URL
+     * @param passportId
+     * @param autoLogin
+     * @return
+     */
+    public Result createCookieUrl(String passportId, int autoLogin);
+    /**
+     * 内部接口注册的ip次数累加
      *
      * @param ip
-     * @return
      */
     public void incRegTimesForInternal(String ip);
 

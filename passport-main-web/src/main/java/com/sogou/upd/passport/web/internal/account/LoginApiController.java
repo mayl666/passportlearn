@@ -37,9 +37,7 @@ public class LoginApiController extends BaseController {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
-    private SecureManager secureManager;
-    @Autowired
-    private InternalLoginApiManager internalLoginApiManager;
+    private LoginManager loginManager;
     /**
      * web端校验用户名和密码是否正确
      *
@@ -59,35 +57,27 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String ip = getIp(request);
-        if(params.getClient_id()==1119){
-            if(internalLoginApiManager.isAuthUserInBlackList(params.getUserid(),ip)){
-                result.setMessage("用户名或密码错误") ;
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                // 获取记录UserOperationLog的数据
-                String userId = params.getUserid();
-                UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-                UserOperationLogUtil.log(userOperationLog);
-                return result.toString();
-            }
+        String createip =params.getCreateip();
+
+        if(loginManager.isLoginUserInBlackList(params.getUserid(),createip)){
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            return result;
         }
 
         // 调用内部接口
         result = proxyLoginApiManager.webAuthUser(params);
 
         if (result.isSuccess()) {
-            String userId = params.getUserid();
-            int clientId = params.getClient_id();
-            internalLoginApiManager.doAfterAuthUserSuccess(params.getUserid(), ip, userId, clientId);
+            String userId = result.getModels().get("userid").toString();
+            loginManager.doAfterLoginSuccess(params.getUserid(),createip,userId,params.getClient_id());
         } else {
-            internalLoginApiManager.doAfterAuthUserFailed(params.getUserid(), ip);
+            loginManager.doAfterLoginFailed(params.getUserid(),createip);
             result.setMessage("用户名或密码错误");
         }
 
         // 获取记录UserOperationLog的数据
-        String userId = params.getUserid();
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("createip",createip);
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

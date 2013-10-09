@@ -66,7 +66,7 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
     /* ============================================================================ */
-    //注册失败
+    //注册异常
     public static final String ERR_CODE_REGISTER_UNUSUAL = "20200";
     // 帐号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";

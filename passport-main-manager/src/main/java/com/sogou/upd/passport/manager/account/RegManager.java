@@ -58,15 +58,6 @@ public interface RegManager {
     public Result checkRegInBlackList(String ip, String cookieStr) throws Exception;
 
     /**
-     * 注册内部接口ip安全限制
-     *
-     * @param ip
-     * @return
-     * @throws Exception
-     */
-    public Result checkRegInBlackListByIpForInternal(String ip) throws Exception;
-
-    /**
      * 记录一天内某ip注册次数
      *
      * @param ip
@@ -74,5 +65,14 @@ public interface RegManager {
      * @throws ServiceException
      */
     public void incRegTimes(String ip, String cookieStr) throws Exception;
+
+    /**
+     * 注册内部接口ip安全限制
+     *
+     * @param ip
+     * @return
+     * @throws Exception
+     */
+    public Result checkRegInBlackListByIpForInternal(String ip) throws Exception;
 
 }

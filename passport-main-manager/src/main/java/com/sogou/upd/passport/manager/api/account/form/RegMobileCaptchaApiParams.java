@@ -1,10 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.AssertTrue;
 
 /**
  * 带验证码的手机号注册参数类
@@ -20,6 +16,14 @@ public class RegMobileCaptchaApiParams extends BaseMoblieApiParams {
     @NotBlank(message = "手机验证码不允许为空")
     private String captcha;
     private String ip;
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 
     public String getPassword() {
         return password;
@@ -37,11 +41,4 @@ public class RegMobileCaptchaApiParams extends BaseMoblieApiParams {
         this.captcha = captcha;
     }
 
-  public String getIp() {
-    return ip;
-  }
-
-  public void setIp(String ip) {
-    this.ip = ip;
-  }
 }

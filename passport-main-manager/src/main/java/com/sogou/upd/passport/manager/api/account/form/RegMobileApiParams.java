@@ -9,7 +9,6 @@ public class RegMobileApiParams extends BaseMoblieApiParams {
 
     @NotBlank(message = "密码不允许为空")
     private String password;  //必须为md5
-    private String ip;
 
     public String getPassword() {
         return password;
@@ -19,11 +18,4 @@ public class RegMobileApiParams extends BaseMoblieApiParams {
         this.password = password;
     }
 
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
 }

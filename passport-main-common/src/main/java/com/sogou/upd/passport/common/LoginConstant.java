@@ -47,7 +47,7 @@ public class LoginConstant {
     /**
      * 内部接口一小时内某IP验证失败多少次之后，用户不能再登陆
      */
-    public static final int AUTHUSER_IP_FAILED_EXCEED_MAX_LIMIT_COUNT = 500;
+    public static final int AUTHUSER_IP_FAILED_EXCEED_MAX_LIMIT_COUNT = 50;
     /**
      * 密码修改一天限制次数
      */
@@ -64,6 +64,11 @@ public class LoginConstant {
     public static final int BINDNUM_IP_LIMITED = 100; // 密码修改一个ip一天限制次数
 
     /**
+     * 内部接口安全限制50天一次
+     */
+    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 50;//内部接口ip限制为50次一天
+
+    /**
      * 一天内某一个ip注册次数限制
      */
     public static final int REGISTER_IP_LIMITED = 100; // ip一天限制次数
@@ -76,11 +81,6 @@ public class LoginConstant {
      * 一天内某一个ip+cookie注册次数限制
      */
     public static final int REGISTER_IP_COOKIE_LIMITED = 10; // cookie加ip一天限制次数
-
-    /**
-     * 内部接口一天内一个ip注册次数限制
-     */
-    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 50; //为内部接口设定的一个ip注册次数
 
     /**
      * 一天内某一个ip提及反馈次数限制

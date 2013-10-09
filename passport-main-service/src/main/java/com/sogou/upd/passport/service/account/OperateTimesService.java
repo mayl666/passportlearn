@@ -123,6 +123,14 @@ public interface OperateTimesService {
     public boolean checkIPBindLimit(String ip) throws ServiceException;
 
     /**
+     * 内部接口注册的ip次数累加
+     *
+     * @param ip
+     * @throws ServiceException
+     */
+    public void incRegTimesForInternal(final String ip) throws ServiceException;
+
+    /**
      * 记录一天内某ip注册次数
      *
      * @param ip
@@ -130,6 +138,15 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public void incRegTimes(String ip, String cookieStr) throws ServiceException;
+
+    /**
+     * 为内部接口添加的黑名单机制
+     *
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkRegInBlackListForInternal(String ip) throws ServiceException;
 
     /**
      * 检查用户ip是否在白名单中
@@ -144,15 +161,6 @@ public interface OperateTimesService {
      * 检查一天内某ip注册次数
      */
     public boolean checkRegInBlackList(String ip, String cookieStr) throws ServiceException;
-
-    /**
-     * 为内部接口添加的黑名单机制
-     *
-     * @param ip
-     * @return
-     * @throws ServiceException
-     */
-    public boolean checkRegInBlackListForInternal(String ip) throws ServiceException;
 
     /**
      * 联系登陆失败的次数超过限制，需要输入验证码
@@ -252,13 +260,7 @@ public interface OperateTimesService {
      */
     public boolean checkLoginUserInWhiteList(String username, String ip) throws ServiceException;
 
-    /**
-     * 内部接口ip注册次数累加
-     *
-     * @param ip
-     * @throws ServiceException
-     */
-    public void incRegTimesForInternal(final String ip) throws ServiceException;
+
 
     /**
      * 内部接口authuser次数累加
@@ -272,5 +274,5 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public boolean isWebAuthUserInBlackList(String username, String ip) throws ServiceException;
+    public boolean isWebAuthUserInBlackList(final String username, final String ip) throws ServiceException;
 }

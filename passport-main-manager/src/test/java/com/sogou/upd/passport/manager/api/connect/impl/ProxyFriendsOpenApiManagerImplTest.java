@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.connect.FriendsOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.relation.FriendsOpenApiParams;
@@ -41,7 +42,7 @@ public class ProxyFriendsOpenApiManagerImplTest extends BaseTest {
     }
 
     private Map convertObjectToMap(Object object) {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
         Map map = objectMapper.convertValue(object, Map.class);
         map.remove("userid");
         map.remove(CommonConstant.CLIENT_ID);

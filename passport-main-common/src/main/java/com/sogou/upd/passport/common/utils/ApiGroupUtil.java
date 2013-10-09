@@ -30,6 +30,7 @@ public class ApiGroupUtil {
         apiGroupMap.put("/web/logout_redirect", LOGOUT);
 
         apiGroupMap.put("/web/security/updatepwd", UPDATEPWD);
+
     }
 
     public static String getApiGroup(String api) {

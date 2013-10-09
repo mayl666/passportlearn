@@ -53,11 +53,11 @@ public class InternalLoginApiManagerImpl implements InternalLoginApiManager {
     private SecureManager secureManager;
 
     @Override
-    public void doAfterAuthUserSuccess(final String username, final String ip, final String passportId, final int clientId) {
+    public void doAfterAuthUserSuccess(final String username, final String ip,final String passportId, final int clientId) {
         //记录登陆次数
         operateTimesService.incAuthUserTimes(username, ip,true);
         //用户登陆记录
-        secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
+//        secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
     }
 
     @Override
@@ -68,6 +68,11 @@ public class InternalLoginApiManagerImpl implements InternalLoginApiManager {
     @Override
     public boolean isAuthUserInBlackList(final String username, final String ip) {
         return operateTimesService.isWebAuthUserInBlackList(username,ip);
+    }
+
+    @Override
+    public boolean isIPInBlackList(final String ip) {
+        return operateTimesService.isWebAuthUserInBlackList("",ip);
     }
 
 

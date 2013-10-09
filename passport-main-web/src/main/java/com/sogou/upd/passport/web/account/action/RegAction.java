@@ -122,6 +122,7 @@ public class RegAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                     result.setMessage("注册失败");
                 }
+
                 return result.toString();
             }
 
@@ -157,6 +158,7 @@ public class RegAction extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
 
+
         regManager.incRegTimes(ip, uuidName);
         String userId = (String) result.getModels().get("userid");
         if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
@@ -166,6 +168,7 @@ public class RegAction extends BaseController {
                 secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
             }
         }
+
         return result.toString();
     }
 

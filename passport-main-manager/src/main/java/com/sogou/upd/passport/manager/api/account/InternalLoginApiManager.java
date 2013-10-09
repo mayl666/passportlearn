@@ -1,11 +1,5 @@
 package com.sogou.upd.passport.manager.api.account;
 
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-
 /**
  * 登录相关
  * User: ligang201716@sogou-inc.com
@@ -36,4 +30,11 @@ public interface InternalLoginApiManager {
      * @return
      */
     public boolean isAuthUserInBlackList(final String username, final String ip);
+
+    /**
+     *调用authuser IP 是否在黑名单中
+     * @param ip
+     * @return
+     */
+    public boolean isIPInBlackList(final String ip);
 }

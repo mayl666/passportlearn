@@ -81,7 +81,7 @@ public class RegisterApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
-    public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) throws Exception {
+    public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
         Result result = new APIResultSupport(false);
         try {
             // 参数校验
@@ -94,13 +94,12 @@ public class RegisterApiController extends BaseController {
             // 调用内部接口
             result = proxyRegisterApiManager.regMobileCaptchaUser(params);
         } catch (Exception e) {
-            logger.error("regMobileCaptchaUser:Mobile User With Captcha Register Is Failed,Mobile Is " + params.getMobile(), e);
+            logger.error("regMobileCaptchaUser:Mobile User With Captcha For Internal Is Failed,Mobile is " + params.getMobile(), e);
         } finally {
             //记录log
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
         }
-
 
         return result.toString();
     }
@@ -126,6 +125,7 @@ public class RegisterApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+
             ip = params.getCreateip();
             //校验用户ip是否允许注册
             result = regManager.checkRegInBlackListByIpForInternal(ip);
@@ -136,11 +136,10 @@ public class RegisterApiController extends BaseController {
             // 调用内部接口
             result = proxyRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
-            logger.error("regMailUser:Mail User Register Is Failed,Userid Is " + params.getUserid(), e);
+            logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
             //记录log
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-            userOperationLog.putOtherMessage("createip", params.getCreateip());
             UserOperationLogUtil.log(userOperationLog);
         }
         commonManager.incRegTimesForInternal(ip);
@@ -159,7 +158,7 @@ public class RegisterApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/regmobile", method = RequestMethod.POST)
     @ResponseBody
-    public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) throws Exception {
+    public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) {
         Result result = new APIResultSupport(false);
         try {
             // 参数校验
@@ -171,6 +170,7 @@ public class RegisterApiController extends BaseController {
             }
             // 调用内部接口
             result = proxyRegisterApiManager.regMobileUser(params);
+
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
