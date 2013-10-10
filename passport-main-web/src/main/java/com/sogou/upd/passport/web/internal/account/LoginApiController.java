@@ -16,6 +16,9 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/internal")
 public class LoginApiController extends BaseController {
+    private static final Logger logger = LoggerFactory.getLogger(LoginApiController.class);
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
@@ -57,30 +61,37 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String createip =params.getCreateip();
+        String createip = params.getCreateip();
 
-        if(loginManager.isLoginUserInBlackList(params.getUserid(),createip)){
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        try {
+            if(StringUtils.isEmpty(createip)){
+                createip =null;
+            }
+            if (loginManager.isLoginUserInBlackList(params.getUserid(), createip)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = proxyLoginApiManager.webAuthUser(params);
+            if (result.isSuccess()) {
+                String userId = result.getModels().get("userid").toString();
+                loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());
+            } else {
+                loginManager.doAfterLoginFailed(params.getUserid(), createip);
+                result.setMessage("用户名或密码错误");
+            }
+        } catch (Exception e) {
+            logger.error("authuser fail,userid:" + params.getUserid(), e);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+            return result.toString();
+
+        } finally {
+            // 获取记录UserOperationLog的数据
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("createip", createip);
+            UserOperationLogUtil.log(userOperationLog);
             return result.toString();
         }
-
-        // 调用内部接口
-        result = proxyLoginApiManager.webAuthUser(params);
-
-        if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
-            loginManager.doAfterLoginSuccess(params.getUserid(),createip,userId,params.getClient_id());
-        } else {
-            loginManager.doAfterLoginFailed(params.getUserid(),createip);
-            result.setMessage("用户名或密码错误");
-        }
-
-        // 获取记录UserOperationLog的数据
-        UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("createip",createip);
-        UserOperationLogUtil.log(userOperationLog);
-
-        return result.toString();
     }
 
     /**
