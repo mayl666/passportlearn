@@ -116,6 +116,8 @@ public class LoginAction extends BaseController {
 
         if (result.isSuccess()) {
 
+            userId = result.getModels().get("userid").toString();
+
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
 
