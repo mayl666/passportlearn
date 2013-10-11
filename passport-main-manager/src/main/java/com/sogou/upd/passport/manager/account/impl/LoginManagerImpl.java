@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
@@ -139,6 +140,18 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public void doAfterLoginFailed(final String username, final String ip) {
         operateTimesService.incLoginTimes(username, ip,false);
+    }
+
+    @Override
+    public String getPassportIdByUsername(String username) {
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
+        if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
+            return (username + "@sogou.com");
+        }
+        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+            return (username + "@sohu.com"); // 手机号
+        }
+        return username;
     }
 }
 
