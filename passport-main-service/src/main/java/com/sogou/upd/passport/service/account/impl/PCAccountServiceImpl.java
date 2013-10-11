@@ -132,7 +132,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         final int clientId = appConfig.getClientId();
         try {
             //更新缓存
-            tokenRedisUtils.setWithinSeconds(buildTokenRedisKeyStr(passportId, clientId, instanceId), refreshToken, appConfig.getRefreshTokenExpiresin());
+            tokenRedisUtils.setWithinSeconds(buildOldRTokenKeyStr(passportId, clientId, instanceId), refreshToken, appConfig.getRefreshTokenExpiresin());
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
