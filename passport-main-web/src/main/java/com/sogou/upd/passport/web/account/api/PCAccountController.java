@@ -114,7 +114,7 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return "1";
         }
-
+        pcGetTokenParams.setUserid(loginManager.getPassportIdByUsername(pcGetTokenParams.getUserid()));
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
         pcPairTokenParams.setUserid(pcGetTokenParams.getUserid());
         pcPairTokenParams.setAppid(pcGetTokenParams.getAppid());

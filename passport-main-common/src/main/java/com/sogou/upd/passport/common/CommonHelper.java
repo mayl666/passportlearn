@@ -41,4 +41,14 @@ public class CommonHelper {
     public static boolean isIePinyinToken(int clientId){
         return clientId == CommonConstant.PC_CLIENTID || clientId == CommonConstant.PINYIN_MAC_CLIENTID;
     }
+
+    /**
+     * clientId=1044为浏览器PC端、浏览器移动端、输入法PC端
+     * @param clientId
+     * @return
+     */
+    public static boolean isExplorerToken(int clientId){
+        return clientId == CommonConstant.PC_CLIENTID;
+    }
+
 }

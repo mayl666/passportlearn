@@ -38,7 +38,18 @@ public class PCAccountTokenServiceTest extends AbstractJUnit4SpringContextTests 
     @Test
     public void testInitialAccountToken() {
         try {
-            AccountToken accountToken = pcAccountTokenService.initialOrUpdateAccountToken(PASSPORT_ID, INSTANCE_ID, appConfig);
+            AccountToken accountToken = pcAccountTokenService.initialAccountToken(PASSPORT_ID, INSTANCE_ID, appConfig);
+            Assert.assertTrue(accountToken != null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testupdateAccountToken() {
+        try {
+            AccountToken accountToken = pcAccountTokenService.updateAccountToken(PASSPORT_ID, INSTANCE_ID, appConfig);
             Assert.assertTrue(accountToken != null);
         } catch (Exception e) {
             e.printStackTrace();
