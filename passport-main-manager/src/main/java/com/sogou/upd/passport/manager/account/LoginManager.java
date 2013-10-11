@@ -34,4 +34,11 @@ public interface LoginManager {
      * @return
      */
     public boolean isLoginUserInBlackList(final String username, final String ip);
+
+    /**
+     * 通过username获取passportId
+     * @param username
+     * @return
+     */
+    public String getPassportIdByUsername(String username);
 }
