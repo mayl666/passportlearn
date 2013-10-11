@@ -202,8 +202,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         String accessToken;
         String refreshToken;
         try {
-            accessToken = TokenGenerator.generatorPcToken(passportId, clientId, accessTokenExpiresIn, instanceId, clientSecret);
-            refreshToken = TokenGenerator.generatorPcToken(passportId, clientId, refreshTokenExpiresIn, instanceId, clientSecret);
+            accessToken = TokenGenerator.generatorPcToken(passportId, accessTokenExpiresIn, clientSecret);
+            refreshToken = TokenGenerator.generatorPcToken(passportId, refreshTokenExpiresIn, clientSecret);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
