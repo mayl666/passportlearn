@@ -23,7 +23,7 @@ public class ConfigureManagerTest extends BaseTest {
     @Test
     public void testGeneratorClientSecret() throws Exception {
         // 客户端密钥
-        int appid = 1105;
+        int appid = 1110;
         String randomClient = RandomStringUtils.randomAlphanumeric(10);
         long timestamp = System.currentTimeMillis();
         String baseStrClient = appid + "|" + timestamp + "|" + randomClient;
