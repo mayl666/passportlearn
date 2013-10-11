@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -54,6 +55,8 @@ public class PCAccountController extends BaseController {
     private UserInfoApiManager proxyUserInfoApiManagerImpl;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private LoginManager loginManager;
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
@@ -146,6 +149,7 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return getReturnStr(cb, "1");
         }
+        reqParams.setUserid(loginManager.getPassportIdByUsername(reqParams.getUserid()));
 
         Result result = pcAccountManager.createPairToken(reqParams);
         String resStr;
