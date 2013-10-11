@@ -17,7 +17,7 @@ public class CoderTest {
 
     @Test
     public void testEncryptBASE64_DecryptBASE64() throws Exception {
-        String encryStr = Coder.encryptBASE64(str.getBytes());
+        String encryStr = Coder.encryptBase64URLSafeString(str.getBytes());
         byte[] decryByte = Coder.decryptBASE64(encryStr);
         Assert.assertEquals(str, new String(decryByte));
     }

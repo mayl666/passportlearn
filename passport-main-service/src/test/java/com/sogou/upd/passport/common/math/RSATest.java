@@ -30,11 +30,11 @@ public class RSATest {
         Map<String, Object> key = RSA.initKey();
         // 公钥
         RSAPublicKey publickKey = (RSAPublicKey) key.get("RSAPublicKey");
-        System.out.println("公钥：" + Coder.encryptBASE64(publickKey.getEncoded()));
+        System.out.println("公钥：" + Coder.encryptBase64URLSafeString(publickKey.getEncoded()));
 
         // 私钥
         RSAPrivateKey privateKey = (RSAPrivateKey) key.get("RSAPrivateKey");
-        System.out.println("私钥：" + Coder.encryptBASE64(privateKey.getEncoded()));
+        System.out.println("私钥：" + Coder.encryptBase64URLSafeString(privateKey.getEncoded()));
     }
 
     /**

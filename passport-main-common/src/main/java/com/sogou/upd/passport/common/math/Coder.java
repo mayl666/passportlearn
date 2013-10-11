@@ -8,7 +8,6 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 
@@ -90,7 +89,7 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String encryptBASE64(byte[] key) throws Exception {
+    public static String encryptBase64URLSafeString(byte[] key) throws Exception {
         return Base64.encodeBase64URLSafeString(key);
     }
 
@@ -109,6 +108,21 @@ public class Coder {
         return toHexString(md5.digest());
 
     }
+
+    /**
+     * MD5加密
+     *
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public static byte[] encryptMD5_Byte(String data) throws Exception {
+
+        MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
+        md5.update(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        return md5.digest();
+    }
+
     /**
      * MD5加密
      *
@@ -153,7 +167,7 @@ public class Coder {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(KEY_MAC);
 
         SecretKey secretKey = keyGenerator.generateKey();
-        return encryptBASE64(secretKey.getEncoded());
+        return encryptBase64URLSafeString(secretKey.getEncoded());
     }
 
     /**
