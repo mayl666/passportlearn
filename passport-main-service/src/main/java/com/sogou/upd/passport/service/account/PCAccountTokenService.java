@@ -12,17 +12,35 @@ import com.sogou.upd.passport.model.app.AppConfig;
  * To change this template use File | Settings | File Templates.
  */
 public interface PCAccountTokenService {
-
     /**
-     * 初始化或更新AccountToken
-     *
+     * 初始化token
      * @param passportId
      * @param instanceId
      * @param appConfig
      * @return
+     * @throws ServiceException
      */
-    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
+    public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
 
+    /**
+     *更新token
+     * @param passportId
+     * @param instanceId
+     * @param appConfig
+     * @return
+     * @throws ServiceException
+     */
+    public AccountToken updateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
+
+    /**
+     * 存储accountToken
+     * @param passportId
+     * @param instanceId
+     * @param appConfig
+     * @param accountToken
+     * @throws ServiceException
+     */
+    public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException;
     /**
      * 查询AccountToken
      *
@@ -57,4 +75,14 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+
+    /**
+     * 保存浏览器老的refreshtoken
+     * @param passportId
+     * @param instanceId
+     * @param appConfig
+     * @param refreshToken
+     * @throws ServiceException
+     */
+    public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException;
 }

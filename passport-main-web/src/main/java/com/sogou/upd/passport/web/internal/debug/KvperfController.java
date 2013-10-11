@@ -58,7 +58,7 @@ public class KvperfController {
         String passportId = RandomStringUtils.randomAlphanumeric(8) + "@sogou.com";
         String instanceId = RandomStringUtils.randomAlphanumeric(10);
 
-        pcAccountTokenService.initialOrUpdateAccountToken(passportId, instanceId, appconfig);
+        pcAccountTokenService.updateAccountToken(passportId, instanceId, appconfig);
         return "OK";
     }
 
@@ -77,7 +77,7 @@ public class KvperfController {
     public String testKvSet_Get() throws Exception {
         String passportId = RandomStringUtils.randomAlphanumeric(8) + "@sogou.com";
         String instanceId = RandomStringUtils.randomAlphanumeric(10);
-        pcAccountTokenService.initialOrUpdateAccountToken(passportId, instanceId, appconfig);
+        pcAccountTokenService.updateAccountToken(passportId, instanceId, appconfig);
         AccountToken accountToken = pcAccountTokenService.queryAccountToken(passportId, 1044, instanceId);
         return "OK";
     }

@@ -115,7 +115,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
                     return result;
                 }
             }
-            return  initialAccountToken(passportId,instanceId,appConfig);
+            if(CommonHelper.isExplorerToken(clientId)){
+                pcAccountService.saveOldRefreshToken(passportId,instanceId,appConfig,refreshToken);
+            }
+            return  updateAccountToken(passportId,instanceId,appConfig);
         } catch (Exception e) {
             logger.error("authRefreshToken fail", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -192,12 +195,19 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
-//        if (CommonHelper.isIePinyinToken(appConfig.getClientId())) {
-//            accountToken = shTokenService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
-//        }else {
-//            accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
-//        }
-        AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
+        AccountToken accountToken = pcAccountService.initialAccountToken(passportId, instanceId, appConfig);
+        if (accountToken != null) {
+            finalResult.setSuccess(true);
+            finalResult.setDefaultModel(accountToken);
+        } else {
+            finalResult.setCode(ErrorUtil.CREATE_TOKEN_FAIL);
+        }
+        return finalResult;
+    }
+
+    private Result updateAccountToken(String passportId, String instanceId, AppConfig appConfig) {
+        Result finalResult = new APIResultSupport(false);
+        AccountToken accountToken = pcAccountService.updateAccountToken(passportId, instanceId, appConfig);
         if (accountToken != null) {
             finalResult.setSuccess(true);
             finalResult.setDefaultModel(accountToken);
