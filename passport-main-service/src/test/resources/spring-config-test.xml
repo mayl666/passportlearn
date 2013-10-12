@@ -34,7 +34,7 @@
     <import resource="classpath:spring-config-dao.xml"/>
 
     <import resource="classpath:spring-config-service.xml"/>
-    <import resource="classpath:spring-config-jredis.xml"/>
+    <import resource="classpath:spring-config-jredis-test.xml"/>
     <import resource="classpath:spring-config-memcache-test.xml"/>
     <import resource="spring-config-mail.xml"/>
 

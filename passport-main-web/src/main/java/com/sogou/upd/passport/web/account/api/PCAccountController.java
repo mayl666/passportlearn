@@ -246,8 +246,8 @@ public class PCAccountController extends BaseController {
                 String passport = (String) getCookieValueResult.getModels().get("passport");
                 ServletUtil.setCookie(response, "ppinf", ppinf, 0, CommonConstant.SOHU_ROOT_DOMAIN);
                 ServletUtil.setCookie(response, "pprdig", pprdig, 0, CommonConstant.SOHU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "passport", passport, 0, CommonConstant.SOHU_ROOT_DOMAIN);
-                response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+                ServletUtil.setCookie(response, "passport", passport, 0, CommonConstant.SOHU_ROOT_DOMAIN);  // 浏览器移动端需要此cookie
+                response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
 

@@ -9,9 +9,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,7 +24,7 @@ import redis.clients.jedis.JedisShardInfo;
  * Created with IntelliJ IDEA. User: mayan Date: 12-11-22 Time: 下午6:26 To change this template use
  * File | Settings | File Templates.
  */
-@ContextConfiguration(locations = {"classpath:spring-config-jredis.xml"})
+@ContextConfiguration(locations = {"classpath:spring-config-jredis-test.xml"})
 public class JredisTest extends AbstractJUnit4SpringContextTests {
     private static final String TEST_KEY = "TEST_REDIS_KEY";
     private static final String TEST_SUB_KEY = "TEST_REDIS_SUB_KEY";
