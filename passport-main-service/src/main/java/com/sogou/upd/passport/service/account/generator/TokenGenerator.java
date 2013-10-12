@@ -93,13 +93,13 @@ public class TokenGenerator {
      */
     public static String generatorPcToken(String passportId, int expiresIn, String clientSecret)
             throws Exception {
-
         // 过期时间点
         long vaildTime = generatorVaildTime(expiresIn);
         String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
         String token;
         try {
-            token = AES.encryptURLSafeString(tokenContent, clientSecret);
+            //加上4为随机数，是为了与sohu+ token长度区别开来
+            token = RandomStringUtils.randomAlphanumeric(4) + AES.encryptURLSafeString(tokenContent, clientSecret);
         } catch (Exception e) {
             logger.error("Pc Token generator by AES fail, passportId:" + passportId);
             throw e;
