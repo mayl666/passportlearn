@@ -1,8 +1,8 @@
 <html>
 <head>
     <script type="text/javascript">
-        var nick = decodeURIComponent('${nickname}');
-        window.location = "${result}" + nick;
+        var uniqname = decodeURIComponent('${uniqname}');
+        window.location = "${result}" + uniqname;
 
     </script>
 </head>
