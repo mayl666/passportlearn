@@ -10,9 +10,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
@@ -52,8 +50,6 @@ public class PCAccountController extends BaseController {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginManager loginManager;
@@ -65,7 +61,6 @@ public class PCAccountController extends BaseController {
         if (!pcAccountWebParams.getAppid().matches("[0-9]{4}")) {
             pcAccountWebParams.setAppid("9998");
         }
-
         //计算isAuthedUser，用于是否可以自动登录
         boolean isAuthedUser = false;
         if (!Strings.isNullOrEmpty(pcAccountWebParams.getRefresh_token()) && !Strings.isNullOrEmpty(pcAccountWebParams.getUserid())) {
@@ -114,8 +109,8 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return "1";
         }
-        pcGetTokenParams.setUserid(loginManager.getPassportIdByUsername(pcGetTokenParams.getUserid()));
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
+        //仅限输入法使用，用户只能输入userid；客户端使用用户输入的userid作为唯一标识
         pcPairTokenParams.setUserid(pcGetTokenParams.getUserid());
         pcPairTokenParams.setAppid(pcGetTokenParams.getAppid());
         pcPairTokenParams.setTs(pcGetTokenParams.getTs());
@@ -149,23 +144,16 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return getReturnStr(cb, "1");
         }
+        //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         reqParams.setUserid(loginManager.getPassportIdByUsername(reqParams.getUserid()));
 
         Result result = pcAccountManager.createPairToken(reqParams);
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 获取昵称，返回格式
-            String passportId = accountToken.getPassportId();
-            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-            Result getUserInfoResult = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
-            String uniqname;
-            if (getUserInfoResult.isSuccess()) {
-                uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-                uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-            } else {
-                uniqname = defaultUniqname(passportId);
-            }
+            // 浏览器使用userid，@前半部分作为昵称
+            String uniqname = defaultUniqname(accountToken.getPassportId());
+            //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
