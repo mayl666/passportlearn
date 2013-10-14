@@ -37,6 +37,12 @@
             <artifactId>spring-data-redis</artifactId>
             <version>1.0.3.RELEASE</version>
         </dependency>
+        <!-- sogou昵称生成器 -->
+        <dependency>
+            <groupId>com.sogou.upd</groupId>
+            <artifactId>upd-generator-mysql</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 
         <!--DAL-by shipengzhi-->
         <dependency>

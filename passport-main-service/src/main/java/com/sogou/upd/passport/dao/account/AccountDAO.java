@@ -25,21 +25,21 @@ public interface AccountDAO {
    */
   String
       ALL_FIELD =
-      " id, passport_id, passwd, mobile, reg_time, reg_ip, status, version, account_type ";
+      " id, passport_id, passwd, mobile, reg_time, reg_ip, status, version, account_type, image, nickname  ";
 
   /**
    * 值列表
    */
   String
       VALUE_FIELD =
-      " :account.id, :account.passportId, :account.passwd, :account.mobile, :account.regTime, :account.regIp, :account.status, :account.version, :account.accountType ";
+      " :account.id, :account.passportId, :account.passwd, :account.mobile, :account.regTime, :account.regIp, :account.status, :account.version, :account.accountType, :account.image, :account.nickname ";
 
   /**
    * 修改字段列表
    */
   String
       UPDATE_FIELD =
-      " passport_id = :account.passportId, passwd = :account.passwd, mobile = :account.mobile, reg_time = :account.regTime, reg_ip = :account.regIp, status = :account.status, version = :account.version, account_type = :account.accountType ";
+      " passport_id = :account.passportId, passwd = :account.passwd, mobile = :account.mobile, reg_time = :account.regTime, reg_ip = :account.regIp, status = :account.status, version = :account.version, account_type = :account.accountType , image=:account.image, nickname=:account.nickname ";
 
   /**
    * 根据passportId获取Account
@@ -80,6 +80,15 @@ public interface AccountDAO {
   public int updateMobile(@SQLParam("mobile") String mobile,
                           @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
+    /**
+     * 修改昵称
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set nickname=:nickname where passport_id=:passport_id")
+    public int updateNickName(@SQLParam("nickname") String nickname,
+                            @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
   /**
    * 封禁或解禁用户
    */
@@ -89,15 +98,25 @@ public interface AccountDAO {
   public int updateState(@SQLParam("status") int status,
                           @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
-  /**
+    /**
+     * 修改或设置头像
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set image=:image where passport_id=:passport_id")
+    public int updateImage(@SQLParam("image") String image,
+                           @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
+
+    /**
    * 验证合法，用户注册
    */
   @SQL(
       "insert into " +
               TABLE_NAME +
-              "(passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type) "
+              "(passport_id,passwd,mobile,reg_time,reg_ip,status,version,account_type,nickname,image) "
       + "values (:passport_id,:account.passwd,:account.mobile,:account.regTime,:account.regIp,:account.status,:account.version,"
-      + ":account.accountType)")
+      + ":account.accountType,:account.nickname,:account.image)")
   public int insertAccount(@SQLParam("passport_id") String passport_id,
                            @SQLParam("account") Account account) throws DataAccessException;
 

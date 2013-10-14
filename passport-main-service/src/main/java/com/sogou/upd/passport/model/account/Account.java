@@ -24,6 +24,8 @@ public class
     private int status;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
     private int version;  // 0-sohu老用户，1-sogou新用户
     private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-
+    private String nickname;
+    private String image;
 
     public Account() {
     }
@@ -126,5 +128,21 @@ public class
 
     public void setAccountType(int accountType) {
         this.accountType = accountType;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
