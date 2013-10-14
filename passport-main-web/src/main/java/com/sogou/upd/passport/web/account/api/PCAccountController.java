@@ -51,8 +51,6 @@ public class PCAccountController extends BaseController {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginManager loginManager;
