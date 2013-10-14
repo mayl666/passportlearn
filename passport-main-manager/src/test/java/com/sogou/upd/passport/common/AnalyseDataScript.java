@@ -3,7 +3,6 @@ package com.sogou.upd.passport.common;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import org.junit.Test;
@@ -28,7 +27,8 @@ public class AnalyseDataScript extends BaseTest {
     public void test() throws Exception {
 
         File readFile = new File("d:/data.txt");
-        BufferedReader reader = new BufferedReader(new FileReader(readFile));
+        BufferedReader reader1 = new BufferedReader(new FileReader(readFile));
+        BufferedReader reader2 = new BufferedReader(new FileReader(readFile));
         File writeFile = new File("d:/dataresult.txt");
         BufferedWriter write = new BufferedWriter(new FileWriter(writeFile));
         try {
@@ -39,30 +39,39 @@ public class AnalyseDataScript extends BaseTest {
             //检测出@sohu.com账号
             write.append("===以下账号应加@sohu.com后缀===").append("\r\n");
             int i = 0;
-            while ((str = reader.readLine()) != null) {
-                params.setUserid(str + "@sohu.com");
+            int j = 0;
+            while ((str = reader1.readLine()) != null) {
+                String s = str + "@sohu.com";
+                params.setUserid(s);
                 Result result = proxyRegisterApiManager.checkUser(params);
                 if (!result.isSuccess()) {
                     String userid = (String) result.getModels().get("userid");
-                    write.append(str).append("\t").append(userid).append("\r\n");
+                    write.append(str).append("\t").append(userid).append("\t").append(result.toString()).append("\r\n");
                     sohuList.add(str);
+                    j++;
                 }
                 i++;
             }
-            write.append("total:" + i).append("\r\n");
+            write.append("不能注册的账号量:" + j).append("\r\n");
+            write.append("检测的账号总量:" + i).append("\r\n");
             //检测出@sogou.com账号
             write.append("===以下账号应加@sogou.com后缀===").append("\r\n");
-            while ((str = reader.readLine()) != null) {
-                params.setUserid(str + "@sogou.com");
+            i = 0;
+            j = 0;
+            while ((str = reader2.readLine()) != null) {
+                String s = str + "@sogou.com";
+                params.setUserid(s);
                 Result result = proxyRegisterApiManager.checkUser(params);
-                if (result.getCode().equals(ErrorUtil.ERR_CODE_USER_ID_EXIST)) {
+                if (!result.isSuccess()) {
                     String userid = (String) result.getModels().get("userid");
-                    write.append(str).append("\t").append(userid).append("\r\n");
+                    write.append(str).append("\t").append(userid).append("\t").append(result.toString()).append("\r\n");
                     sogouList.add(str);
+                    j++;
                 }
                 i++;
             }
-            write.append("total:" + i).append("\r\n");
+            write.append("不能注册的账号量:" + j).append("\r\n");
+            write.append("检测的账号总量:" + i).append("\r\n");
 
             //检测出@sogou.com账号
             write.append("===以下账号@sogou.com、@sohu.com都有的===").append("\r\n");
@@ -70,8 +79,10 @@ public class AnalyseDataScript extends BaseTest {
             for (String s : sohuList) {
                 write.append(s).append("\r\n");
             }
+            write.append("重复的账号量:" + sohuList.size()).append("\r\n");
         } finally {
-            reader.close();
+            reader1.close();
+            reader2.close();
             write.close();
         }
     }
