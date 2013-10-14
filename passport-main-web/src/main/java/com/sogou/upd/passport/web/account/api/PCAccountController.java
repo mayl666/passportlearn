@@ -10,7 +10,6 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcGetTokenParams;
