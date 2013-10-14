@@ -37,7 +37,6 @@ public class ErrorUtil {
     // 生成token失败
     public static final String CREATE_TOKEN_FAIL = "10011";
 
-    public static final String ERR_CODE_COM_TYPE_ERROR = "10012";
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
     /* ============================================================================ */
@@ -208,16 +207,6 @@ public class ErrorUtil {
     // 今日绑定次数已超过10次
     public static final String ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED = "20295";
 
-    //不支持的图片后缀
-    public static final String ERR_PHOTO_EXT = "20296";
-    //图片过大
-    public static final String ERR_PHOTO_TO_LARGE = "20297";
-    //图片上传失败
-    public static final String ERR_UPLOAD_PHOTO = "20298";
-    //获取图像失败
-    public static final String ERR_OBTAIN_PHOTO = "20299";
-
-
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
     /* ============================================================================ */
@@ -290,20 +279,6 @@ public class ErrorUtil {
     //用户提及反馈的次数超限
     public static final String ERR_CODE_PROBLEM_ADDTIMES_LIMITED = "30605";
 
-    /* ============================================================================ */
-    /*  找回密码相关错误代码                                                            */
-    /* ============================================================================ */
-    //能提交找回密码请求次数超过限制
-    public static final String ERR_CODE_FINDPWD_LIMITED = "30701";
-    public static final String ERR_CODE_FINDPWD_SCODE_FAILED = "30702";
-
-    /* ============================================================================ */
-    //个人信息修改失败
-    public static final String ERR_CODE_UPDATE_USERINFO = "30801";
-    //获取个人资料失败
-    public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
-
-
     static {
         // 通用错误
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
@@ -318,7 +293,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN,"签名或token验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_TYPE_ERROR, "账号类型错误，请到sohu通行证执行该操作");
+
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
         ERR_CODE_MSG_MAP.put(UNSUPPORTED_GRANT_TYPE, "不支持的grant_type");
@@ -375,15 +350,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_NOTALLOWED, "SOHU域用户不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_THIRD_NOTALLOWED, "第三方账号不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
-        ERR_CODE_MSG_MAP.put(ERR_PHOTO_EXT, "不支持的图片后缀");
-        ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过5M");
-        ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
-        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
-
-        ERR_CODE_MSG_MAP.put(ERR_CODE_UPDATE_USERINFO, "个人信息修改失败");
-        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_ACCOUNT_INFO, "获取个人信息失败");
-
-
         // account bind
         ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
         ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");

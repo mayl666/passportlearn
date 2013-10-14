@@ -124,39 +124,8 @@ public interface AccountService {
 
   public boolean updateState(Account account, int newState) throws ServiceException;
 
-    /**
-     * 更新或设置头像
-     *
-     * @param account
-     * @param photoUrl
-     * @return
-     * @throws ServiceException
-     */
-
-    public boolean updateImage(Account account,String photoUrl) throws ServiceException;
-
-
   /*
    *检查验证码
    */
   public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
-
-    /*
-     *检查昵称是否存在
-     */
-    public String checkUniqName(String nickname) throws Exception;
-    /*
-     *更新个人信息
-     */
-    public boolean updateNickName(Account account,String nickname);
-
-    /*
-     *删除昵称
-     */
-    public boolean removeUniqName(String nickname) throws ServiceException;
-    /*
-     *获取激活信息
-     */
-    public Map<String,String> getActiveInfo(String username);
-
 }

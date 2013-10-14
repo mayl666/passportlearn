@@ -2,8 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.generator.mysql.NumberGenerator;
-import com.sogou.upd.generator.mysql.exception.GenerateFailedException;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -12,23 +11,25 @@ import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.utils.CaptchaUtils;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.MailUtils;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
-import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
-import com.sogou.upd.passport.dao.account.account.NickNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -41,30 +42,22 @@ public class AccountServiceImpl implements AccountService {
 
     private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
     private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
+    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
     private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
-    private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
-
-    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAIL = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAIL;
 
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
     private AccountDAO accountDAO;
     @Autowired
-    private MobilePassportMappingDAO mobilePassportMappingDAO;
-    @Autowired
-    private NickNamePassportMappingDAO nickNamePassportMappingDAO;
-    @Autowired
     private RedisUtils redisUtils;
     @Autowired
     private MailUtils mailUtils;
     @Autowired
     private CaptchaUtils captchaUtils;
-    @Autowired
-    private NumberGenerator mysqlIdGenerator;
 
     @Override
     public Account initialWebAccount(String username, String ip) throws ServiceException {
@@ -78,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
                 long id = accountDAO.insertAccount(username, account);
                 if (id != 0) {
                     //删除临时账户缓存，成为正式账户
-                    redisUtils.set(cacheKey, account,3*30, TimeUnit.DAYS);
+                    redisUtils.set(cacheKey, account);
                     //更新黑名单缓存
                     cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
                     redisUtils.increment(cacheKey);
@@ -91,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         } finally {
             //删除激活
-            cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAIL + username ;
+            cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
             redisUtils.delete(cacheKey);
         }
         return null;
@@ -113,9 +106,6 @@ public class AccountServiceImpl implements AccountService {
             account.setAccountType(provider);
             account.setStatus(AccountStatusEnum.REGULAR.getValue());
             account.setVersion(Account.NEW_ACCOUNT_VERSION);
-            account.setNickname(generatorNickName());
-            account.setImage("");
-
             String mobile = null;
             if (AccountTypeEnum.isPhone(username, provider)) {
                 mobile = username;
@@ -123,40 +113,14 @@ public class AccountServiceImpl implements AccountService {
             account.setMobile(mobile);
             long id = accountDAO.insertAccount(passportId, account);
             if (id != 0) {
-
-                //更新昵称映射表
-                String nickname=account.getNickname();
-                if(!Strings.isNullOrEmpty(nickname)){
-                    nickNamePassportMappingDAO.insertNickNamePassportMapping(nickname,account.getPassportId());
-                }
-                //手机注册，写mobile与passportId映射表
-                if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
-                    int row = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
-                    if (row != 0) {
-                        String cacheKey = buildAccountKey(passportId);
-                        //缓存3个月
-                        redisUtils.set(cacheKey, account,3*30, TimeUnit.DAYS);
-                        return account;
-                    }
-                } else {
-                    String cacheKey = buildAccountKey(passportId);
-
-                    redisUtils.set(cacheKey, account);
-                    return account;
-                }
+                String cacheKey = buildAccountKey(passportId);
+                redisUtils.set(cacheKey, account);
+                return account;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return null;
-    }
-
-    private String generatorNickName() throws GenerateFailedException {
-        String nickname=null;
-        do{
-            nickname="搜狗u"+mysqlIdGenerator.generate("user").longValue();
-        }while (!Strings.isNullOrEmpty(nickNamePassportMappingDAO.getPassportIdByNickName(nickname)));
-        return nickname;
     }
 
     @Override
@@ -323,14 +287,9 @@ public class AccountServiceImpl implements AccountService {
                     PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
-
-
-            String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAIL + username ;
-            Map<String,String> mapParam=new HashMap<String,String>();
-            //设置连接失效时间
-            mapParam.put("token",token);
-            //设置ru
-            mapParam.put("ru",ru);
+            if(!Strings.isNullOrEmpty(ru)){
+              activeUrl=  activeUrl +"&ru="+ru;
+            }
 
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
@@ -347,15 +306,13 @@ public class AccountServiceImpl implements AccountService {
             activeEmail.setToEmail(username);
 
             mailUtils.sendEmail(activeEmail);
-
-            //如果重新发送激活邮件，password是为空的，说明不是注册，否则需要临时注册到缓存
-            if (!Strings.isNullOrEmpty(passpord)) {
-                initialAccountToCache(username, passpord, ip);
-
-                redisUtils.hPutAll(cacheKey,mapParam);
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
-            }
-
+            //连接失效时间
+            String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
+            redisUtils.setWithinSeconds(cacheKey, token, DateAndNumTimesConstant.TIME_TWODAY);
+            /*redisUtils.set(cacheKey, token);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);*/
+            //临时注册到缓存
+            initialAccountToCache(username, passpord, ip);
         } catch (Exception e) {
             flag = false;
         }
@@ -363,17 +320,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean activeEmail(String username, String token, int clientId) throws Exception {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Map<String, String> getActiveInfo(String username) {
-        String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAIL + username ;
-        Map<String, String> mapParam=redisUtils.hGetAll(cacheKey) ;
-
-        return mapParam;
-
+    public boolean activeEmail(String username, String token, int clientId) throws ServiceException {
+        try {
+            String cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                String tokenCache = redisUtils.get(cacheKey);
+                if (tokenCache.equals(token)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
     }
 
     @Override
@@ -446,38 +405,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean updateState(Account account, int newState) throws ServiceException {
-        try {
-            String passportId = account.getPassportId();
-            int row = accountDAO.updateState(newState, passportId);
-            if (row > 0) {
-                String cacheKey = buildAccountKey(passportId);
-                account.setStatus(newState);
-                redisUtils.set(cacheKey, account);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
+       try {
+           String passportId = account.getPassportId();
+           int row = accountDAO.updateState(newState, passportId);
+           if (row > 0) {
+               String cacheKey = buildAccountKey(passportId);
+               account.setStatus(newState);
+               redisUtils.set(cacheKey, account);
+               return true;
+           }
+       } catch (Exception e) {
+           throw new ServiceException(e);
+       }
+       return false;
     }
-
-    @Override
-    public boolean updateImage(Account account, String photoUrl) throws ServiceException {
-        try {
-            String passportId = account.getPassportId();
-            int row = accountDAO.updateImage(photoUrl, account.getPassportId());
-            if (row > 0) {
-                String cacheKey = buildAccountKey(passportId);
-                account.setImage(photoUrl);
-                redisUtils.set(cacheKey, account);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
   /*
    * 外域邮箱注册
    */
@@ -497,8 +438,6 @@ public class AccountServiceImpl implements AccountService {
             account.setStatus(AccountStatusEnum.DISABLED.getValue());
             account.setVersion(Account.NEW_ACCOUNT_VERSION);
             account.setRegIp(ip);
-            account.setImage("");
-            account.setNickname(generatorNickName());
 
             String cacheKey = buildAccountKey(username);
             redisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
@@ -527,74 +466,5 @@ public class AccountServiceImpl implements AccountService {
       return false;
     }
     return true;
-    }
-
-    @Override
-    public String checkUniqName(String nickname) throws ServiceException {
-        String passportId = null;
-        try {
-            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-            passportId = redisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(passportId)) {
-                passportId = nickNamePassportMappingDAO.getPassportIdByNickName(nickname);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("checkUniqName fail", e);
-        }
-        return passportId;
-    }
-
-    @Override
-    public boolean updateNickName(Account account, String nickname) throws ServiceException {
-        try {
-            String oldNickName = account.getNickname();
-            String passportId = account.getPassportId();
-            //更新数据库
-            int row = accountDAO.updateNickName(nickname, passportId);
-            if (row > 0) {
-                String cacheKey = buildAccountKey(passportId);
-                account.setNickname(nickname);
-                redisUtils.set(cacheKey, account);
-
-                //移除原来映射表
-                if (removeUniqName(oldNickName)) {
-                    //更新新的映射表
-                    row = nickNamePassportMappingDAO.insertNickNamePassportMapping(nickname, passportId);
-                    if (row > 0) {
-                        cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-                        redisUtils.set(cacheKey, passportId);
-                    }
-                }
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-
-    //缓存中移除原来昵称
-    @Override
-    public boolean removeUniqName(String nickname) throws ServiceException {
-        try {
-            if (!Strings.isNullOrEmpty(nickname)) {
-                //更新映射
-                int row = nickNamePassportMappingDAO.deleteNickNamePassportMapping(nickname);
-                if (row > 0) {
-                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-                    redisUtils.delete(cacheKey);
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            logger.error("removeUniqName fail", e);
-            return false;
-        }
-        return false;
   }
-
 }
