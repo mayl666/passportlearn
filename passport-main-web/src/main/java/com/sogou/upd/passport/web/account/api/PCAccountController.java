@@ -161,6 +161,7 @@ public class PCAccountController extends BaseController {
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             // 浏览器sohu接口昵称先从论坛初始化，为空时使用userid，@前半部分作为昵称
+            // 壁纸、游戏用自己存的
             String uniqname = pcAccountManager.getBrowserBbsUniqname(accountToken.getPassportId());
             //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
