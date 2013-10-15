@@ -31,7 +31,7 @@ public class RedisUtils {
     private static final Logger redisMissLogger = LoggerFactory.getLogger("redisMissLogger");
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
-    private static RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;
 
     private static final String ALL_REQUEST_TIMER = "REDIES_ALL_REQUEST";
 
