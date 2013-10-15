@@ -81,4 +81,14 @@ public class PCAccountManagerImplTest extends BaseTest {
         }
     }
 
+    @Test
+    public void testGetBrowserBbsUniqname(){
+        String passportId = "shipengzhi1986@sogou.com";
+        String uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
+        System.out.println("passportId:"+passportId + " uniqname:" + uniqname);
+        passportId = "13621009174@sohu.com";
+        uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
+        System.out.println("passportId:"+passportId + " uniqname:" + uniqname);
+    }
+
 }

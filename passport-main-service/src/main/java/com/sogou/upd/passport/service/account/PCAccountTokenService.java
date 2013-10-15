@@ -85,4 +85,14 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException;
+
+    /**
+     * 获取浏览器 老的token
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @return
+     * @throws ServiceException
+     */
+    public String queryOldPCToken(String passportId, int clientId, String instanceId) throws ServiceException;
 }

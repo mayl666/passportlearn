@@ -117,7 +117,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&code=").append(code)
                     .append("&ru=").append(ru)
                     .append("&persistentcookie=").append(createCookieUrlApiParams.getPersistentcookie())
-                    .append("&domain="+createCookieUrlApiParams.getDomain());
+                    .append("&domain=" + createCookieUrlApiParams.getDomain());
             result.setDefaultModel("url", urlBuilder.toString());
             result.setSuccess(true);
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams,false);
+        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false);
         String url = (String) cookieUrlResult.getModels().get("url");
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
         Result result = new APIResultSupport(false);
@@ -153,8 +153,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                 }
             }
             result.setDefaultModel("redirectUrl", locationUrl);
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
-        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         return result;
     }
 

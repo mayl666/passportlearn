@@ -209,8 +209,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             // 获取第三方个人资料
-            String nickName = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
-            oAuthTokenVO.setNickName(nickName);
+            String uniqname = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
+            oAuthTokenVO.setNickName(uniqname);
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
@@ -229,7 +229,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                             responseVm = "/pcaccount/connectmobilelogin";
                         }
                         result.setSuccess(true);
-                        result.setDefaultModel("nickname", nickName);
+                        result.setDefaultModel("uniqname", uniqname);
                         result.setDefaultModel("result", value);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, responseVm);
                     } else {
@@ -237,7 +237,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
                     String token = (String) connectAccountResult.getModels().get("token");
-                    String url = buildMAppSuccessRu(ru, userId, token, nickName);
+                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else {
@@ -263,7 +263,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return result;
     }
 
-    private String buildMAppSuccessRu(String ru, String userid, String token, String nickname) {
+    private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
@@ -273,7 +273,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         params.put("userid", userid);
         params.put("token", token);
-        params.put("uniqname", nickname);
+        params.put("uniqname", uniqname);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
