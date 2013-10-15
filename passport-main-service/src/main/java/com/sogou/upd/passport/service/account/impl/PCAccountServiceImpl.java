@@ -99,7 +99,11 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             throw new ServiceException(e);
         }
     }
-
+    @Override
+    public String queryOldPCToken(String passportId, int clientId, String instanceId) throws ServiceException {
+        String oldRTokenKey = buildOldRTokenKeyStr(passportId, clientId, instanceId);
+        return tokenRedisUtils.get(oldRTokenKey);
+    }
     @Override
     public boolean verifyAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
         AccountToken accountToken = queryAccountToken(passportId, clientId, instanceId);
@@ -120,7 +124,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             long tokenValidTime = accountToken.getRefreshValidTime();
             res = refreshToken.equals(actualRefreshToken) && isValidToken(tokenValidTime);
             if (!res && CommonHelper.isExplorerToken(clientId)) {
-                String oldRToken = tokenRedisUtils.get(buildOldRTokenKeyStr(passportId, clientId, instanceId));
+                String oldRToken = queryOldPCToken(passportId,clientId,instanceId);
                 res = refreshToken.equals(oldRToken);
             }
         }

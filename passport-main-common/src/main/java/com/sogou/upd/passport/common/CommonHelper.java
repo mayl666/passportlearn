@@ -51,4 +51,13 @@ public class CommonHelper {
         return clientId == CommonConstant.PC_CLIENTID;
     }
 
+    /**
+     * clientId=1105为输入法MAC
+     * @param clientId
+     * @return
+     */
+    public static boolean isPinyinMACToken(int clientId){
+        return clientId == CommonConstant.PINYIN_MAC_CLIENTID;
+    }
+
 }

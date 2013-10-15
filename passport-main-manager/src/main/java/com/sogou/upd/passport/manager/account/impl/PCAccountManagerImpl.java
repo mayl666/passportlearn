@@ -171,9 +171,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         if (appConfig == null) {
             return null;
         }
-        String clientSecret = appConfig.getClientSecret();
-        String sig = Coder.encryptMD5(passportId + clientId + refresh_token + timestamp + clientSecret);
-        return sig;
+        return getSig(passportId,clientId,refresh_token,timestamp,appConfig.getClientSecret());
     }
 
     @Override
@@ -227,33 +225,45 @@ public class PCAccountManagerImpl implements PCAccountManager {
         if (curTimestamp > ts + SIG_EXPIRES) {
             return false;
         }
+        if (CommonHelper.isExplorerToken(clientId)) {
+            return (verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
+                    verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
+                    verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
+        } else if (CommonHelper.isPinyinMACToken(clientId)) {
+            return (verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
+                    verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
+        } else {
+            return verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+        }
+    }
 
+    //通过sh token校验sig
+    private boolean verifySigByShToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
+        return (isEqualSig(passportId, clientId, shTokenService.queryRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig) ||
+                isEqualSig(passportId, clientId, shTokenService.queryOldRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig));
+
+    }
+
+    //通过sh token校验sig
+    private boolean verifySigByPCToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
-        if (accountToken == null) {
-            if (CommonHelper.isIePinyinToken(clientId)) {
-                return verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
-            } else {
-                return false;
-            }
+        if (accountToken == null){
+            return false;
         }
         if (!isValidToken(accountToken.getRefreshValidTime())) {
             return false;
         }
         String refreshToken = accountToken.getRefreshToken();
-        return equalSig(passportId, clientId, refreshToken, timestamp, clientSecret, sig);
+        return isEqualSig(passportId, clientId, refreshToken, timestamp, clientSecret, sig);
     }
 
-
-    //通过sh token校验sig
-    private boolean verifySigByShToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
-        return (equalSig(passportId, clientId, shTokenService.queryRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig) ||
-                equalSig(passportId, clientId, shTokenService.queryOldRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig));
-
+    private boolean verifySigByPCOldToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
+        String oldPCToken = pcAccountService.queryOldPCToken(passportId,clientId,instanceId);
+        return isEqualSig(passportId,clientId,oldPCToken,timestamp,clientSecret,sig);
     }
 
-    private boolean equalSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret, String sig) throws Exception {
-        String sigString = passportId + clientId + refreshToken + timestamp + clientSecret;
-        String actualSig = Coder.encryptMD5(sigString);
+    private boolean isEqualSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret, String sig) throws Exception {
+        String actualSig =getSig(passportId, clientId, refreshToken, timestamp,clientSecret);
         return actualSig.equalsIgnoreCase(sig);
     }
 
@@ -263,6 +273,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private boolean isValidToken(long tokenValidTime) {
         long currentTime = System.currentTimeMillis();
         return tokenValidTime > currentTime;
+    }
+
+    private String getSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret) throws Exception{
+        return Coder.encryptMD5(passportId + clientId + refreshToken + timestamp + clientSecret);
     }
 
 }
