@@ -1,11 +1,14 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
@@ -24,6 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * 桌面端登录流程Manager
  * User: chenjiameng
@@ -36,6 +42,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private static final long SIG_EXPIRES = 60 * 60 * 1000; //sig里的timestamp有效期，一小时，单位毫秒
     private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
+    private static final String BROWSER_BBS_UNIQNAME_URL = "http://ie.sogou.com/passport/nickname_utf8.php";
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
@@ -115,10 +122,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
                     return result;
                 }
             }
-            if(CommonHelper.isExplorerToken(clientId)){
-                pcAccountService.saveOldRefreshToken(passportId,instanceId,appConfig,refreshToken);
+            if (CommonHelper.isExplorerToken(clientId)) {
+                pcAccountService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
             }
-            return  updateAccountToken(passportId,instanceId,appConfig);
+            return updateAccountToken(passportId, instanceId, appConfig);
         } catch (Exception e) {
             logger.error("authRefreshToken fail", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -189,6 +196,22 @@ public class PCAccountManagerImpl implements PCAccountManager {
             finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return finalResult;
         }
+    }
+
+    @Override
+    public String getBrowserBbsUniqname(String passportId) {
+        RequestModel requestModel = new RequestModel(BROWSER_BBS_UNIQNAME_URL);
+        String uniqname = "";
+        try {
+            requestModel.addParam("uid", passportId);
+            uniqname = SGHttpClient.executeStr(requestModel);
+            if (Strings.isNullOrEmpty(uniqname)) {
+                uniqname = passportId.substring(0, passportId.indexOf("@"));
+            }
+        } catch (Exception e) {
+            logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
+        }
+        return uniqname;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
