@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -155,7 +156,13 @@ public class PCAccountController extends BaseController {
         String userId = reqParams.getUserid();
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         reqParams.setUserid(loginManager.getPassportIdByUsername(userId));
-
+        String ip = getIp(request);
+        if(ip.equals("124.73.67.107")) {
+            Result result = new APIResultSupport(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+            result.setMessage("密码错误");
+            return result.toString();
+        }
         Result result = pcAccountManager.createPairToken(reqParams);
         String resStr;
         if (result.isSuccess()) {
