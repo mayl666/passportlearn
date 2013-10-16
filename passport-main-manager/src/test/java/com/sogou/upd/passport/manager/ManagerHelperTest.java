@@ -18,9 +18,10 @@ public class ManagerHelperTest extends BaseTest {
      */
     @Test
     public void testGeneratorCode() {
-        long ct = System.currentTimeMillis();
-        System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCodeGBK("大发充值说的", clientId, serverSecret, ct);
+//        long ct = System.currentTimeMillis();
+//        System.out.println("ct:" + ct);
+        String ct =  "1381915491000";
+        String code = ManagerHelper.generatorCodeGBK(userid, clientId, serverSecret, Long.parseLong(ct));
         System.out.println("code:" + code);
 
         /*try {
