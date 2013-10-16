@@ -95,4 +95,15 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public String queryOldPCToken(String passportId, int clientId, String instanceId) throws ServiceException;
+
+    /**
+     * 验证老token
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
+     * @return
+     * @throws ServiceException
+     */
+    public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
 }

@@ -79,7 +79,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             kvUtils.set(buildKeyStr(passportId, clientId, instanceId), accountToken);
             kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
             //更新缓存
-            tokenRedisUtils.setWithinSeconds(buildTokenRedisKeyStr(passportId, clientId, instanceId), accountToken, appConfig.getRefreshTokenExpiresin());
+            tokenRedisUtils.set(buildTokenRedisKeyStr(passportId, clientId, instanceId), accountToken);
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
@@ -89,9 +89,13 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     @Override
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
-            AccountToken accountToken = tokenRedisUtils.getObject(buildTokenRedisKeyStr(passportId, clientId, instanceId),AccountToken.class);
+            String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
+            AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey,AccountToken.class);
             if(accountToken == null){
                 accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
+                if(accountToken != null){
+                    tokenRedisUtils.set(tokenRedisKey,accountToken);
+                }
             }
             return accountToken;
         } catch (Exception e) {
@@ -123,20 +127,25 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             String actualRefreshToken = accountToken.getRefreshToken();
             long tokenValidTime = accountToken.getRefreshValidTime();
             res = refreshToken.equals(actualRefreshToken) && isValidToken(tokenValidTime);
-            if (!res && CommonHelper.isExplorerToken(clientId)) {
-                String oldRToken = queryOldPCToken(passportId,clientId,instanceId);
-                res = refreshToken.equals(oldRToken);
-            }
         }
         return res;
     }
 
     @Override
+    public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+        if ( CommonHelper.isExplorerToken(clientId)) {
+            String oldRToken = queryOldPCToken(passportId,clientId,instanceId);
+            return refreshToken.equals(oldRToken);
+        }
+        return false;
+    }
+
+        @Override
     public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
             //更新缓存
-            tokenRedisUtils.setWithinSeconds(buildOldRTokenKeyStr(passportId, clientId, instanceId), refreshToken, appConfig.getRefreshTokenExpiresin());
+            tokenRedisUtils.set(buildOldRTokenKeyStr(passportId, clientId, instanceId), refreshToken);
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
@@ -249,5 +258,4 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         long halfExpireTime = (long) (expiresIn / 2);
         return leftTime < halfExpireTime;
     }
-
 }

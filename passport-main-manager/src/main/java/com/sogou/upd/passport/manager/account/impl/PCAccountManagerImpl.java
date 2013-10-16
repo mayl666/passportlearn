@@ -163,9 +163,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
         try {
             //验证refreshToken
             int client_id = Integer.parseInt(pcRefreshTokenParams.getAppid());
-            return (pcAccountService.verifyRefreshToken(pcRefreshTokenParams.getUserid(), client_id,
-                    pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()) ||
-                    shTokenService.verifyShRefreshToken(pcRefreshTokenParams.getUserid(), client_id, pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token()));
+            String userid= pcRefreshTokenParams.getUserid();
+            String ts = pcRefreshTokenParams.getTs();
+            String refreshToken = pcRefreshTokenParams.getRefresh_token();
+            return (pcAccountService.verifyRefreshToken(userid, client_id,ts,refreshToken ) ||
+                    pcAccountService.verifyPCOldRefreshToken(userid,client_id,ts,refreshToken) ||
+                    shTokenService.verifyShRefreshToken(userid, client_id, ts, refreshToken));
         } catch (Exception e) {
             logger.error("verifyRefreshToken fail", e);
             return false;
