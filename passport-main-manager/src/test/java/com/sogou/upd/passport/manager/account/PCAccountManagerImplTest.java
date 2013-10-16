@@ -32,7 +32,7 @@ public class PCAccountManagerImplTest extends BaseTest {
             params.setPassword(Coder.encryptMD5("123456"));
             params.setTs("2147483647");
 
-            Result result = pcAccountManager.createPairToken(params);
+            Result result = pcAccountManager.createPairToken(params,"127.0.0.1");
             System.out.println("testCreatePairToken:"+result.isSuccess());
             AccountToken accountToken = (AccountToken)result.getDefaultModel();
             accesstoken = accountToken.getAccessToken();

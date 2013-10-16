@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -54,11 +55,17 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private AppConfigService appConfigService;
     @Autowired
     private SHTokenService shTokenService;
+    @Autowired
+    private LoginManager loginManager;
 
     @Override
-    public Result createPairToken(PcPairTokenParams pcTokenParams) {
+    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip) {
         Result finalResult = new APIResultSupport(false);
         try {
+            if(loginManager.isLoginUserInBlackList(pcTokenParams.getUserid(),ip)){
+                finalResult.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return finalResult;
+            }
             int clientId = Integer.parseInt(pcTokenParams.getAppid());
             String passportId = pcTokenParams.getUserid();
             String password = pcTokenParams.getPassword();
@@ -284,8 +291,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     private boolean verifySigByPCOldToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
-        String oldPCToken = pcAccountService.queryOldPCToken(passportId,clientId,instanceId);
-        return isEqualSig(passportId,clientId,oldPCToken,timestamp,clientSecret,sig);
+        String oldPCToken = pcAccountService.queryOldPCToken(passportId, clientId, instanceId);
+        return isEqualSig(passportId, clientId, oldPCToken, timestamp, clientSecret, sig);
     }
 
     private boolean isEqualSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret, String sig) throws Exception {

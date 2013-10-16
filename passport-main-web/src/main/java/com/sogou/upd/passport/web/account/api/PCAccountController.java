@@ -123,13 +123,17 @@ public class PCAccountController extends BaseController {
         pcPairTokenParams.setAppid(appId);
         pcPairTokenParams.setTs(ts);
         pcPairTokenParams.setPassword(pcGetTokenParams.getPassword());
-        Result result = pcAccountManager.createPairToken(pcPairTokenParams);
+
+        String ip = getIp(request);
+        Result result = pcAccountManager.createPairToken(pcPairTokenParams,ip);
         String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             resStr = "0|" + accountToken.getAccessToken();   //0|token|refreshToken
+            loginManager.doAfterLoginSuccess(userId, ip, userId, Integer.parseInt(pcGetTokenParams.getAppid()));
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
+            loginManager.doAfterLoginFailed(userId, ip);
         }
 
         //用户log
@@ -156,7 +160,9 @@ public class PCAccountController extends BaseController {
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         reqParams.setUserid(loginManager.getPassportIdByUsername(userId));
 
-        Result result = pcAccountManager.createPairToken(reqParams);
+        userId = reqParams.getUserid();
+        String ip = getIp(request);
+        Result result = pcAccountManager.createPairToken(reqParams,ip);
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
@@ -165,13 +171,15 @@ public class PCAccountController extends BaseController {
             String uniqname = pcAccountManager.getBrowserBbsUniqname(accountToken.getPassportId());
             //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
+            loginManager.doAfterLoginSuccess(userId, ip, userId, Integer.parseInt(reqParams.getAppid()));
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
+            loginManager.doAfterLoginFailed(reqParams.getUserid(), ip);
         }
 
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, ip);
         userOperationLog.putOtherMessage("ts", reqParams.getTs());
         UserOperationLogUtil.log(userOperationLog);
 
