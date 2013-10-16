@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -124,13 +123,17 @@ public class PCAccountController extends BaseController {
         pcPairTokenParams.setAppid(appId);
         pcPairTokenParams.setTs(ts);
         pcPairTokenParams.setPassword(pcGetTokenParams.getPassword());
-        Result result = pcAccountManager.createPairToken(pcPairTokenParams);
+
+        String ip = getIp(request);
+        Result result = pcAccountManager.createPairToken(pcPairTokenParams,ip);
         String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
             resStr = "0|" + accountToken.getAccessToken();   //0|token|refreshToken
+            loginManager.doAfterLoginSuccess(userId, ip, userId, Integer.parseInt(pcGetTokenParams.getAppid()));
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
+            loginManager.doAfterLoginFailed(userId, ip);
         }
 
         //用户log
@@ -156,14 +159,10 @@ public class PCAccountController extends BaseController {
         String userId = reqParams.getUserid();
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         reqParams.setUserid(loginManager.getPassportIdByUsername(userId));
+
+        userId = reqParams.getUserid();
         String ip = getIp(request);
-        if(ip.equals("124.73.67.107")) {
-            Result result = new APIResultSupport(false);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-            result.setMessage("密码错误");
-            return result.toString();
-        }
-        Result result = pcAccountManager.createPairToken(reqParams);
+        Result result = pcAccountManager.createPairToken(reqParams,ip);
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
@@ -172,13 +171,15 @@ public class PCAccountController extends BaseController {
             String uniqname = pcAccountManager.getBrowserBbsUniqname(accountToken.getPassportId());
             //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
+            loginManager.doAfterLoginSuccess(userId, ip, userId, Integer.parseInt(reqParams.getAppid()));
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
+            loginManager.doAfterLoginFailed(reqParams.getUserid(), ip);
         }
 
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, ip);
         userOperationLog.putOtherMessage("ts", reqParams.getTs());
         UserOperationLogUtil.log(userOperationLog);
 
