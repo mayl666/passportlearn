@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -162,7 +163,16 @@ public class PCAccountController extends BaseController {
 
         userId = reqParams.getUserid();
         String ip = getIp(request);
-        Result result = pcAccountManager.createPairToken(reqParams,ip);
+        Result result = new APIResultSupport(false);
+
+        if("60.168.246.164".equals(ip) || "223.241.233.128".equals(ip)){
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+
+        } else {
+            result = pcAccountManager.createPairToken(reqParams,ip);
+
+        }
+
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
