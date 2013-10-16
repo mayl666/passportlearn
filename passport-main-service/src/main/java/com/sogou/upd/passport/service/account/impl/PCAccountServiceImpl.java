@@ -127,15 +127,20 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             String actualRefreshToken = accountToken.getRefreshToken();
             long tokenValidTime = accountToken.getRefreshValidTime();
             res = refreshToken.equals(actualRefreshToken) && isValidToken(tokenValidTime);
-            if (!res && CommonHelper.isExplorerToken(clientId)) {
-                String oldRToken = queryOldPCToken(passportId,clientId,instanceId);
-                res = refreshToken.equals(oldRToken);
-            }
         }
         return res;
     }
 
     @Override
+    public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+        if ( CommonHelper.isExplorerToken(clientId)) {
+            String oldRToken = queryOldPCToken(passportId,clientId,instanceId);
+            return refreshToken.equals(oldRToken);
+        }
+        return false;
+    }
+
+        @Override
     public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
