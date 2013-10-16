@@ -77,9 +77,11 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         final int clientId = appConfig.getClientId();
         try {
             kvUtils.set(buildKeyStr(passportId, clientId, instanceId), accountToken);
-            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-            //更新缓存
+            //重新设置缓存
             tokenRedisUtils.set(buildTokenRedisKeyStr(passportId, clientId, instanceId), accountToken);
+            //保存映射关系
+            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
+
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
