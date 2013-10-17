@@ -26,15 +26,17 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
         }
         if (value.indexOf("@") == -1) {
             if (!PhoneUtil.verifyPhoneNumberFormat(value)) {
-                //个性账号格式是否拼配
-                String regx = "[a-z]([a-zA-Z0-9_.-]{4,16})";
-                if (!value.matches(regx)) {
+                //个性账号格式是否拼配，{3，15}就表示4--16位，这个地方我自作聪明，改错一次，切忌
+                String regx = "[a-z]([a-zA-Z0-9_.-]{3,15})";
+                boolean flag = value.matches(regx);
+                if (!flag) {
                     return false;
                 }
             }
         } else {
-            String regex = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
-            boolean flag = value.matches(regex);
+            //邮箱格式,与sohu的邮箱格式相匹配了
+            String reg = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
+            boolean flag = value.matches(reg);
             if (!flag) {
                 return false;
             }
