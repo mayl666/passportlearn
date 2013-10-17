@@ -22,7 +22,7 @@ public interface PCAccountManager {
      * @param pcTokenParams
      * @return
      */
-    public Result createPairToken(PcPairTokenParams pcTokenParams);
+    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip);
 
     /**
      * 根据refreshtoken换一个token用来延长登陆
@@ -63,4 +63,12 @@ public interface PCAccountManager {
      * @return
      */
     public Result createConnectToken(int clientId, String passportId, String instanceId);
+
+    /**
+     * 从浏览器论坛获取用户昵称
+     * 如果为空，则返回用户名@前面一段
+     * @param passportId
+     * @return
+     */
+    public String getBrowserBbsUniqname(String passportId);
 }

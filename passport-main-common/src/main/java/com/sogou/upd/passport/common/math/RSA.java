@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.common.math;
 
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.crypto.Cipher;
@@ -157,7 +156,7 @@ public class RSA extends Coder {
         signature.initSign(priKey);
         signature.update(data.getBytes());
 
-        return encryptBASE64(signature.sign());
+        return encryptBase64URLSafeString(signature.sign());
     }
 
     /**
