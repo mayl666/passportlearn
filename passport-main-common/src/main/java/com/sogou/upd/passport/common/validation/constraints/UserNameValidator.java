@@ -33,9 +33,11 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
                 }
             }
         } else {
-            //邮箱格式
-            String regex = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
-            return value.matches(regex);
+            String regex = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
+            boolean flag = value.matches(regex);
+            if (!flag) {
+                return false;
+            }
         }
         return true;
     }
