@@ -3,12 +3,14 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
+import com.sogou.upd.passport.service.account.SHTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -34,6 +36,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private KvUtils kvUtils;
     @Autowired
     private RedisUtils tokenRedisUtils;
+    @Autowired
+    private SHTokenService shTokenService;
 
     @Override
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
@@ -76,12 +80,17 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
-            kvUtils.set(buildKeyStr(passportId, clientId, instanceId), accountToken);
+            String kvKey = buildKeyStr(passportId, clientId, instanceId);
+            kvUtils.set(kvKey, accountToken);
             //重新设置缓存
-            tokenRedisUtils.set(buildTokenRedisKeyStr(passportId, clientId, instanceId), accountToken);
+            String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
+            tokenRedisUtils.set(redisKey, accountToken);
+
+            //保存一份在sohu memcache
+            shTokenService.saveAccountToken(passportId,instanceId,appConfig,accountToken);
+
             //保存映射关系
             kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
@@ -146,8 +155,9 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
-            //更新缓存
-            tokenRedisUtils.set(buildOldRTokenKeyStr(passportId, clientId, instanceId), refreshToken);
+            //保存老的token，与sohu保持一致，有效期为1天
+            String oldRTokenKey = buildOldRTokenKeyStr(passportId, clientId, instanceId);
+            tokenRedisUtils.setWithinSeconds(oldRTokenKey, refreshToken, DateAndNumTimesConstant.TIME_ONEDAY);
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
@@ -217,8 +227,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         String accessToken;
         String refreshToken;
         try {
-            accessToken = TokenGenerator.generatorPcToken(passportId, accessTokenExpiresIn, clientSecret);
-            refreshToken = TokenGenerator.generatorPcToken(passportId, refreshTokenExpiresIn, clientSecret);
+            accessToken = TokenGenerator.generateSoHuPcToken(passportId, accessTokenExpiresIn, clientSecret);
+            refreshToken = TokenGenerator.generateSoHuPcToken(passportId, refreshTokenExpiresIn, clientSecret);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

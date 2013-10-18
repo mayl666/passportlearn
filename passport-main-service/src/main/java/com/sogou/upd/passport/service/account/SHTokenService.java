@@ -61,14 +61,23 @@ public interface SHTokenService {
      * @throws ServiceException
      */
     public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
-
     /**
-     *生成token,存储在sh memcache中
+     * 保持sohu 老的refreshtoken
      * @param passportId
      * @param instanceId
      * @param appConfig
-     * @return
+     * @param refreshToken
      * @throws ServiceException
      */
-    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
+    public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException;
+
+    /**
+     * 保存accounttoken到sohu memcache
+     * @param passportId
+     * @param instanceId
+     * @param appConfig
+     * @param accountToken
+     * @throws ServiceException
+     */
+    public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException;
 }

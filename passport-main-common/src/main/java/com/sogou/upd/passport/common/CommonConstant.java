@@ -17,6 +17,7 @@ public class CommonConstant {
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
     public static final int BROWSER_CLIENTID = 1065; //浏览器输入法桌面端client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
+    public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
 
     public static final String CLIENT_ID = "client_id";
     public static final String RESQUEST_CT = "ct";

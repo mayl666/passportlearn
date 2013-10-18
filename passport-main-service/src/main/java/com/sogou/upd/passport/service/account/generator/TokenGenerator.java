@@ -106,6 +106,13 @@ public class TokenGenerator {
         }
         return token;
     }
+    //sohu生成token算法
+    public static String generateSoHuPcToken(String passportId, int expiresIn, String clientSecret)
+            throws Exception {
+        RandomStr rs = new RandomStr();
+        String refreshToken = rs.getRandomStr(CommonConstant.SOHU_PCTOKEN_LEN);
+        return refreshToken;
+    }
 
     /**
      * 生成过期时间点

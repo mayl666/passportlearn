@@ -130,16 +130,26 @@ public class SHTokenServiceImpl implements SHTokenService {
     }
 
     @Override
-    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
+    public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException{
         final int clientId = appConfig.getClientId();
         try {
-            AccountToken accountToken = PCAccountServiceImpl.newAccountToken(passportId, instanceId, appConfig);
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
-            aTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_DAY_INSECONDS,accountToken.getAccessToken());
-            rTokenMemUtils.set(key,DateAndNumTimesConstant.TEN_DAY_INSECONDS,accountToken.getRefreshToken());
-            return accountToken;
+            aTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_HOUR_INSECONDS,accountToken.getAccessToken());
+            rTokenMemUtils.set(key,DateAndNumTimesConstant.ONE_MONTH_INSECONDS,accountToken.getRefreshToken());
         } catch (Exception e) {
             logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+    @Override
+    public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {
+        final int clientId = appConfig.getClientId();
+        try {
+            //保存老的token，与sohu保持一致，有效期为1天
+            String key = buildOldRTokenKeyStr(passportId, clientId, instanceId);
+            rTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_DAY_INSECONDS, refreshToken);
+        } catch (Exception e) {
+            logger.error("saveOldRefreshToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
         }
     }
