@@ -16,7 +16,7 @@ public class ServletUtil {
 
     public static String defaultDomain = CommonConstant.SOGOU_ROOT_DOMAIN;
 
-    public static String getParameterString(HttpServletRequest request){
+    public static String getParameterString(HttpServletRequest request) {
         StringBuilder requestParam = new StringBuilder();
         Map map = request.getParameterMap();
         for (Object key : map.keySet().toArray()) {
@@ -37,6 +37,20 @@ public class ServletUtil {
             if (cookie.getName().equals(key)) return cookie.getValue();
         }
         return null;
+    }
+
+    /*
+     * 有效期默认为-1
+     * 格式为：key=value; domain=.sohu.com; path=/; HttpOnly
+     */
+    public static void setHttpOnlyCookie(HttpServletResponse response, String key, String value, String domain) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(key).append("=").append(value).append("; ");
+        sb.append("domain=").append(domain).append("; ");
+        sb.append("path=/").append("; ");
+        sb.append("HttpOnly");
+        String cookieValue = sb.toString();
+        response.addHeader("Set-Cookie", cookieValue);
     }
 
     public static void setCookie(HttpServletResponse response, String key, String value, int second, String domain) {
