@@ -22,7 +22,7 @@ public interface PCAccountManager {
      * @param pcTokenParams
      * @return
      */
-    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip);
+    public Result createPairToken(PcPairTokenParams pcTokenParams);
 
     /**
      * 根据refreshtoken换一个token用来延长登陆
@@ -40,11 +40,14 @@ public interface PCAccountManager {
     public Result authToken(PcAuthTokenParams authPcTokenParams);
 
     /**
-     * 验证refreshtoken是否正确
-     * @param pcRefreshTokenParams
+     *验证refreshtoken是否正确
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
      * @return
      */
-    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams);
+    public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken);
 
     /**
      * 获取sig

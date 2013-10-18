@@ -55,17 +55,11 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private AppConfigService appConfigService;
     @Autowired
     private SHTokenService shTokenService;
-    @Autowired
-    private LoginManager loginManager;
 
     @Override
-    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip) {
+    public Result createPairToken(PcPairTokenParams pcTokenParams) {
         Result finalResult = new APIResultSupport(false);
         try {
-            if(loginManager.isLoginUserInBlackList(pcTokenParams.getUserid(),ip)){
-                finalResult.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return finalResult;
-            }
             int clientId = Integer.parseInt(pcTokenParams.getAppid());
             String passportId = pcTokenParams.getUserid();
             String password = pcTokenParams.getPassword();
@@ -87,6 +81,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 if (!result.isSuccess()) {
                     return result;
                 }
+                passportId = (String)result.getModels().get("userid");
             } else {    //校验签名
                 String sig = pcTokenParams.getSig();
                 String timestamp = pcTokenParams.getTimestamp();
@@ -117,20 +112,14 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-            boolean res = pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            boolean res = verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             if (!res) {
-                if (CommonHelper.isIePinyinToken(clientId)) {
-                    if (!shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken)) {
-                        result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
-                        return result;
-                    }
-                } else {
-                    result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
-                    return result;
-                }
+                result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+                return result;
             }
             if (CommonHelper.isExplorerToken(clientId)) {
                 pcAccountService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
+                shTokenService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
             }
             return updateAccountToken(passportId, instanceId, appConfig);
         } catch (Exception e) {
@@ -166,16 +155,18 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {
+    public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) {
         try {
-            //验证refreshToken
-            int client_id = Integer.parseInt(pcRefreshTokenParams.getAppid());
-            String userid= pcRefreshTokenParams.getUserid();
-            String ts = pcRefreshTokenParams.getTs();
-            String refreshToken = pcRefreshTokenParams.getRefresh_token();
-            return (pcAccountService.verifyRefreshToken(userid, client_id,ts,refreshToken ) ||
-                    pcAccountService.verifyPCOldRefreshToken(userid,client_id,ts,refreshToken) ||
-                    shTokenService.verifyShRefreshToken(userid, client_id, ts, refreshToken));
+            if(CommonHelper.isExplorerToken(clientId)){
+                return (pcAccountService.verifyRefreshToken(passportId, clientId,instanceId,refreshToken ) ||
+                        pcAccountService.verifyPCOldRefreshToken(passportId,clientId,instanceId,refreshToken) ||
+                        shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken));
+            }else if(CommonHelper.isPinyinMACToken(clientId)){
+                return (pcAccountService.verifyRefreshToken(passportId, clientId,instanceId,refreshToken) ||
+                        shTokenService.verifyShRefreshToken(passportId,clientId,instanceId,refreshToken));
+            }else {
+                return  pcAccountService.verifyRefreshToken(passportId, clientId,instanceId,refreshToken);
+            }
         } catch (Exception e) {
             logger.error("verifyRefreshToken fail", e);
             return false;

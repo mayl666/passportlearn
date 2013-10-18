@@ -40,5 +40,5 @@ public interface LoginManager {
      * @param username
      * @return
      */
-    public String getPassportIdByUsername(String username);
+    public String getIndividPassportIdByUsername(String username);
 }
