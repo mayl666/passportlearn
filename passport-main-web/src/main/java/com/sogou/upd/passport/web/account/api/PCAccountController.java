@@ -250,10 +250,10 @@ public class PCAccountController extends BaseController {
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                String passport = (String) getCookieValueResult.getModels().get("passport");
-                ServletUtil.setCookie(response, "ppinf", ppinf, 0, CommonConstant.SOHU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "pprdig", pprdig, 0, CommonConstant.SOHU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "passport", passport, 0, CommonConstant.SOHU_ROOT_DOMAIN);  // 浏览器移动端需要此cookie
+                String passport = (String) getCookieValueResult.getModels().get("passport");   // 浏览器移动端需要此cookie
+                ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOHU_ROOT_DOMAIN);   //有效期必须为-1
+                ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOHU_ROOT_DOMAIN);
+                ServletUtil.setCookie(response, "passport", passport, -1, CommonConstant.SOHU_ROOT_DOMAIN);  // 浏览器移动端需要此cookie
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
