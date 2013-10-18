@@ -68,7 +68,6 @@ public class CookieManagerImpl implements CookieManager {
             }
             ServletUtil.setCookie(response, "ppinf", ppinf, maxAge);
             ServletUtil.setCookie(response, "pprdig", pprdig, maxAge);
-            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
             result.setSuccess(true);
             result.setMessage("种cookie成功");
             result.setDefaultModel("userid", cookieApiParams.getUserid());
