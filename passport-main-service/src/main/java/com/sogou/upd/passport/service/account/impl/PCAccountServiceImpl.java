@@ -142,7 +142,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         return false;
     }
 
-        @Override
+    @Override
     public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
