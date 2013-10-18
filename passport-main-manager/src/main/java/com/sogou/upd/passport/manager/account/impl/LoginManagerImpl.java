@@ -71,12 +71,7 @@ public class LoginManagerImpl implements LoginManager {
                 return result;
             }
 
-            //默认是sogou.com
-            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-                passportId = passportId + "@sogou.com";
-            }
-
+            passportId =  getIndividPassportIdByUsername(username);
             //封装参数
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
             authUserApiParams.setUserid(passportId);
@@ -143,13 +138,10 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public String getPassportIdByUsername(String username) {
+    public String getIndividPassportIdByUsername(String username) {
         AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
         if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
             return (username + "@sogou.com");
-        }
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            return (username + "@sohu.com"); // 手机号
         }
         return username;
     }
