@@ -41,6 +41,15 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException;
+
+    /**
+     * 删除accounttoken
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @throws ServiceException
+     */
+    public void removeAccountToken(final String passportId, final int clientId, final String instanceId) throws ServiceException;
     /**
      * 查询AccountToken
      *

@@ -101,6 +101,19 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
+    public void removeAccountToken(final String passportId, final int clientId, final String instanceId) throws ServiceException {
+        try {
+            String kvKey = buildKeyStr(passportId, clientId, instanceId);
+            kvUtils.delete(kvKey);
+            String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
+            tokenRedisUtils.delete(redisKey);
+        } catch (Exception e) {
+            logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
