@@ -92,10 +92,7 @@ public class PCAccountController extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
-        userOperationLog.putOtherMessage("ts",pcAccountWebParams.getTs());
-        userOperationLog.putOtherMessage("refresh_token",pcAccountWebParams.getRefresh_token());
-        userOperationLog.putOtherMessage("v",pcAccountWebParams.getV());
-        userOperationLog.putOtherMessage("openapptype",pcAccountWebParams.getOpenapptype());
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         //此处是帮浏览器打的个补丁，根据版本号判断
