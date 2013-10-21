@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -106,7 +107,8 @@ public class HttpClientUtil {
                     "Sogou Passport Center Notifier");
             method.setRequestHeader("Accept-Encoding", "gzip, deflate");
             client.executeMethod(method);
-            stopWatch(stopWatch, url, "success");
+            String[] urlArray = url.split("[?]");
+            stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
         } catch (Exception e) {
             stopWatch(stopWatch, "http request error", "failed");
@@ -256,9 +258,15 @@ public class HttpClientUtil {
         postData.put("nickname", "戴菲菲");
 
 
-        Pair<Integer, String> p = HttpClientUtil.post("http://localhost/account/regexpuser",
-                postData);
-        System.out.println(p);
+//        Pair<Integer, String> p = HttpClientUtil.post("http://localhost/account/regexpuser",
+//                postData);
+//        System.out.println(p);
+        String urlStr = "http://passport.sohu.com/act/setcookie?userid=wg494943628@sogou.com&appid=1120&ct=1382384218435&code=ffee354f18ef84cf73b4655a37ddd528&ru=http://profile.pinyin.sogou.com/&persistentcookie=0&domain=sogou.com";
+        URL url = new URL(urlStr);
+        System.out.println("protocol:" + url.getProtocol());
+        System.out.println("host:" + url.getHost());
+        System.out.println("path:" + url.getPath());
+        System.out.println("uri:" + url.toURI().getScheme());
     }
 
 
