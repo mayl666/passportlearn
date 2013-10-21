@@ -112,8 +112,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-            boolean res = verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
-            if (!res) {
+            if (!verifyRefreshToken(passportId, clientId, instanceId, refreshToken)) {
                 result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
                 return result;
             }

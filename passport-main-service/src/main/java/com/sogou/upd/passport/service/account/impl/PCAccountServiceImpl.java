@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -47,14 +48,16 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             saveAccountToken(passportId, instanceId, appConfig, accountToken);
             return accountToken;
         } catch (Exception e) {
-            logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            logger.error("initialAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
         }
     }
 
     @Override
     public AccountToken updateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
-        final int clientId = appConfig.getClientId();
+        //todo 暂时每次都返回新的token
+        return initialAccountToken(passportId,instanceId,appConfig);
+        /*final int clientId = appConfig.getClientId();
         try {
             AccountToken accountToken = queryAccountToken(passportId,clientId,instanceId);
             if(accountToken == null || !isValidToken(accountToken.getAccessValidTime()) || !isValidToken(accountToken.getRefreshValidTime())){
@@ -62,18 +65,20 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             }
             if(isNeedUpdate(accountToken,appConfig)){
                 if(isNeedExtendTime(accountToken.getAccessValidTime(),appConfig.getAccessTokenExpiresin())){
-                    accountToken.setAccessValidTime(accountToken.getAccessValidTime() + (long)appConfig.getAccessTokenExpiresin());
+                    long newAccessValidTime = DateUtil.generatorVaildTime(appConfig.getAccessTokenExpiresin());
+                    accountToken.setAccessValidTime(newAccessValidTime);
                 }
                 if(isNeedExtendTime(accountToken.getRefreshValidTime(),appConfig.getRefreshTokenExpiresin())){
-                    accountToken.setRefreshValidTime(accountToken.getRefreshValidTime() + (long) appConfig.getRefreshTokenExpiresin());
+                    long newRefreshValidTime = DateUtil.generatorVaildTime(appConfig.getRefreshTokenExpiresin());
+                    accountToken.setRefreshValidTime(newRefreshValidTime);
                 }
                 saveAccountToken(passportId, instanceId, appConfig, accountToken);
             }
             return accountToken;
         } catch (Exception e) {
-            logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            logger.error("updateAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
-        }
+        } */
     }
 
     @Override
@@ -235,9 +240,9 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         accountToken.setPassportId(passportId);
         accountToken.setClientId(clientId);
         accountToken.setAccessToken(accessToken);
-        accountToken.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresIn));
+        accountToken.setAccessValidTime(DateUtil.generatorVaildTime(accessTokenExpiresIn));
         accountToken.setRefreshToken(refreshToken);
-        accountToken.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresIn));
+        accountToken.setRefreshValidTime(DateUtil.generatorVaildTime(refreshTokenExpiresIn));
         accountToken.setInstanceId(instanceId);
 
         return accountToken;
