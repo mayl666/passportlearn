@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -75,7 +76,7 @@ public class PCAccountController extends BaseController {
             pcRefreshTokenParams.setAppid(appId);
             pcRefreshTokenParams.setTs(ts);
             int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
-            if (pcAccountManager.verifyRefreshToken(pcRefreshTokenParams.getUserid(),clientId,pcRefreshTokenParams.getTs(),pcRefreshTokenParams.getRefresh_token())) {
+            if (pcAccountManager.verifyRefreshToken(pcRefreshTokenParams.getUserid(), clientId, pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token())) {
                 isAuthedUser = true;
             }
         }
@@ -160,11 +161,12 @@ public class PCAccountController extends BaseController {
         reqParams.setUserid(loginManager.getIndividPassportIdByUsername(userId));
         userId = reqParams.getUserid();
         String ip = getIp(request);
+        int appid = Integer.parseInt(reqParams.getAppid());
 
         Result result = new APIResultSupport(false);
-        if(loginManager.isLoginUserInBlackList(userId,ip)){
+        if (!CommonHelper.isIePinyinToken(appid) && loginManager.isLoginUserInBlackList(userId, ip)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-        }else {
+        } else {
             result = pcAccountManager.createPairToken(reqParams);
         }
         String resStr;
@@ -255,9 +257,9 @@ public class PCAccountController extends BaseController {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
                 String passport = (String) getCookieValueResult.getModels().get("passport");   // 浏览器移动端需要此cookie
-                ServletUtil.setHttpOnlyCookie(response, "ppinf", ppinf , CommonConstant.SOGOU_ROOT_DOMAIN);   //浏览器移动端要求返回cookie以HttpOnly结尾
-                ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig , CommonConstant.SOGOU_ROOT_DOMAIN);
-                ServletUtil.setHttpOnlyCookie(response, "passport", passport , CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setHttpOnlyCookie(response, "ppinf", ppinf, CommonConstant.SOGOU_ROOT_DOMAIN);   //浏览器移动端要求返回cookie以HttpOnly结尾
+                ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setHttpOnlyCookie(response, "passport", passport, CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
