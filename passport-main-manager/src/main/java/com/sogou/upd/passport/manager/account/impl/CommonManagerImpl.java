@@ -103,7 +103,7 @@ public class CommonManagerImpl implements CommonManager {
         createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
         createCookieUrlApiParams.setDomain(domain);
-        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true,true);
         if (createCookieResult.isSuccess()) {
             result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
         } else {
@@ -119,7 +119,7 @@ public class CommonManagerImpl implements CommonManager {
         createCookieUrlApiParams.setUserid(passportId);
         createCookieUrlApiParams.setRu(COOKIE_URL_RU);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
-        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true, true);
         if (createCookieResult.isSuccess()) {
             result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
             result.setSuccess(true);

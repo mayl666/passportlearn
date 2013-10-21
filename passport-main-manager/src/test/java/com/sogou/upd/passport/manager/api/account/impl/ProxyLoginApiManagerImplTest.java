@@ -8,7 +8,6 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,8 +51,8 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testCreateCookie(){
-        CreateCookieApiParams createCookieApiParams=new CreateCookieApiParams();
+    public void testCreateCookie() {
+        CreateCookieApiParams createCookieApiParams = new CreateCookieApiParams();
         createCookieApiParams.setUserid(userid);
         createCookieApiParams.setIp(modifyIp);
         Result result = proxyLoginApiManager.createCookie(createCookieApiParams);
@@ -62,7 +61,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 
     @Test
     public void testGetCookieValue() {
-        CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid("shipengzhi1986@sogou.com");
         createCookieUrlApiParams.setRu("https://account.sogou.com/login/success");
         createCookieUrlApiParams.setPersistentcookie(1);
@@ -72,12 +71,12 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testBuildCreateCookieUrl(){
-        CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
+    public void testBuildCreateCookieUrl() {
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(userid);
         createCookieUrlApiParams.setRu("https://account.sogou.com/login/success");
         createCookieUrlApiParams.setPersistentcookie(1);
-        Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams,false);
+        Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, false, true);
         System.out.println(result);
     }
 }
