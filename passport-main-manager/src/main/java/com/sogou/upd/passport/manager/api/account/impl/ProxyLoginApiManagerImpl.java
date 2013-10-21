@@ -160,7 +160,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     /**
-     * 输入法Mac，/sso/setcookie？ru=xxx不需要urlencode
+     * 输入法Mac，passport.sogou.com/sso/setcookie？ru=xxx不需要urlencode
      *
      * @param locationUrl
      * @return
@@ -172,6 +172,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             try {
                 String decodeRu = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
                 locationUrl = locationUrl.replaceAll(ru, decodeRu);
+                locationUrl = locationUrl.replaceAll("https", "http");
             } catch (UnsupportedEncodingException e) {
                 log.error("sohu sso setcookie ru encode fail,url:" + ru);
             }
