@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -159,9 +160,11 @@ public class PCAccountController extends BaseController {
         reqParams.setUserid(loginManager.getIndividPassportIdByUsername(userId));
         userId = reqParams.getUserid();
         String ip = getIp(request);
+        int appid = Integer.parseInt(reqParams.getAppid());
 
         Result result = new APIResultSupport(false);
-        if(loginManager.isLoginUserInBlackList(userId,ip)){
+        // 手机移动端，取不到用户的真实ip，所以不做安全限制
+        if(!CommonHelper.isIePinyinToken(appid) && loginManager.isLoginUserInBlackList(userId,ip)){
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
         }else {
             result = pcAccountManager.createPairToken(reqParams);
