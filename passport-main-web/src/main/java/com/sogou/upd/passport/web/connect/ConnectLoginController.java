@@ -92,7 +92,7 @@ public class ConnectLoginController extends BaseConnectController {
 
         String providerStr = connectLoginParams.getProvider();
         int provider = AccountTypeEnum.getProvider(providerStr);
-
+        // 浏览器、输入法的第三方登录转发需兼容appid参数
         if(!Strings.isNullOrEmpty(connectLoginParams.getAppid()) && Strings.isNullOrEmpty(connectLoginParams.getClient_id())){
             connectLoginParams.setClient_id(connectLoginParams.getAppid());
         }

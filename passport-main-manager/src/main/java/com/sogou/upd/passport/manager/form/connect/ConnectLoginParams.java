@@ -36,6 +36,11 @@ public class ConnectLoginParams {
     private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式
     private String ts;
 
+    @AssertTrue(message = "Client_id不允许为空")
+    private boolean isEmptyClientId(){
+        return !Strings.isNullOrEmpty(appid) || !Strings.isNullOrEmpty(client_id);
+    }
+
     @AssertTrue(message = "不支持的第三方")
     private boolean isSupportProvider() {
         if (Strings.isNullOrEmpty(this.provider)) {
