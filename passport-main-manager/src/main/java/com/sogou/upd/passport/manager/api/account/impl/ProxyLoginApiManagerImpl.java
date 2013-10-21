@@ -172,7 +172,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             try {
                 String decodeRu = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
                 locationUrl = locationUrl.replaceAll(ru, decodeRu);
-                locationUrl = locationUrl.replaceAll("https", "http");
             } catch (UnsupportedEncodingException e) {
                 log.error("sohu sso setcookie ru encode fail,url:" + ru);
             }
