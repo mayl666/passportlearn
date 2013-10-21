@@ -15,8 +15,8 @@ public class PcGetTokenParams extends PcBaseParams {
     @NotBlank(message = "password不允许为空")
     private String password;  //密码的md5
 
-    private int authtype = 0;  //0其它，1正常登录，2记住密码登录，3输入法同步信息，4用户点击链接
-    private long livetime = 0;  //token的生存期，单位为秒
+    private String authtype = "0";  //0其它，1正常登录，2记住密码登录，3输入法同步信息，4用户点击链接
+    private String livetime = "0";  //token的生存期，单位为秒
 
     public String getPassword() {
         return password;
@@ -26,19 +26,19 @@ public class PcGetTokenParams extends PcBaseParams {
         this.password = password;
     }
 
-    public int getAuthtype() {
+    public String getAuthtype() {
         return authtype;
     }
 
-    public void setAuthtype(int authtype) {
+    public void setAuthtype(String authtype) {
         this.authtype = authtype;
     }
 
-    public long getLivetime() {
+    public String getLivetime() {
         return livetime;
     }
 
-    public void setLivetime(long livetime) {
+    public void setLivetime(String livetime) {
         this.livetime = livetime;
     }
 }

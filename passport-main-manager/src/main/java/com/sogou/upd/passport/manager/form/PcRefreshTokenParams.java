@@ -12,15 +12,15 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class PcRefreshTokenParams extends PcBaseParams {
 
-    private int authtype = 0;  //0其它，1正常登录，2记住密码登录，3输入法同步信息，4用户点击链接
+    private String authtype = "0";  //0其它，1正常登录，2记住密码登录，3输入法同步信息，4用户点击链接
     @NotBlank(message = "refreshToken不允许为空")
     private String refresh_token; //用户获取到的refresh_token
 
-    public int getAuthtype() {
+    public String getAuthtype() {
         return authtype;
     }
 
-    public void setAuthtype(int authtype) {
+    public void setAuthtype(String authtype) {
         this.authtype = authtype;
     }
 
