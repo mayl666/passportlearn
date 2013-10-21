@@ -74,4 +74,12 @@ public interface PCAccountManager {
      * @return
      */
     public String getBrowserBbsUniqname(String passportId);
+
+    /**
+     * 通过clientId获取不同的昵称
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    public String getUniqnameByClientId(String passportId,int clientId);
 }

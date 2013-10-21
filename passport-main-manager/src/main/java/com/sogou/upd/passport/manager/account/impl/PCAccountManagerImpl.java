@@ -214,6 +214,14 @@ public class PCAccountManagerImpl implements PCAccountManager {
         return uniqname;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public String getUniqnameByClientId(String passportId,int clientId) {
+         if(CommonHelper.isExplorerToken(clientId)){
+             return  getBrowserBbsUniqname(passportId);
+         }
+         return (passportId.substring(0, passportId.indexOf("@")));
+    }
+
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
         AccountToken accountToken = pcAccountService.initialAccountToken(passportId, instanceId, appConfig);
