@@ -12,6 +12,10 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.tuple.Pair;
+import org.perf4j.StopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Arrays;
@@ -20,7 +24,7 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
-public class HttpClientUtil {
+public class HttpClientUtil extends SGHttpClient{
 
     public static Pair<Integer, String> get(String url) {
         GetMethod get = new GetMethod(url);
@@ -85,8 +89,10 @@ public class HttpClientUtil {
     }
 
     public static Header[] getResponseHeadersWget(String url) {
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         GetMethod method = new GetMethod(url);
         Pair<Integer, String> pair = doWget(method);
+        stopWatch(stopWatch, url, "success");
         if (pair.getKey() != 0) {
             return method.getResponseHeaders();
         }

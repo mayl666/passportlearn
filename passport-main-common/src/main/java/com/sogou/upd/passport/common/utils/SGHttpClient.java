@@ -72,7 +72,7 @@ public class SGHttpClient {
      */
     private final static int SLOW_TIME = 500;
 
-    private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
+    static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SGHttpClient.class);
 
@@ -215,7 +215,7 @@ public class SGHttpClient {
      * @param tag
      * @param message
      */
-    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+    static void stopWatch(StopWatch stopWatch, String tag, String message) {
         //无论什么情况都记录下所有的请求数据
         if(stopWatch.getElapsedTime() >= SLOW_TIME){
             tag+="(slow)";
