@@ -119,7 +119,7 @@ public class ConnectLoginController extends BaseConnectController {
         //用户登陆log--二期迁移到callback中记录log
         UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
         userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
-        userOperationLog.putOtherMessage("type", type);
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
         UserOperationLogUtil.log(userOperationLog);
 
         return new ModelAndView(new RedirectView(url));
