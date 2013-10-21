@@ -248,7 +248,7 @@ public class PCAccountController extends BaseController {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
             createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
-            if (Integer.parseInt(authPcTokenParams.getLivetime()) > 0) {
+            if (!"0".equals(authPcTokenParams.getLivetime())) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
             createCookieUrlApiParams.setDomain("sogou.com");
