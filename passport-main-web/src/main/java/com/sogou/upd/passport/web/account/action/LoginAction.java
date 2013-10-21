@@ -142,8 +142,6 @@ public class LoginAction extends BaseController {
                 ServletUtil.setCookie(response, "ppinf", ppinf, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setCookie(response, "pprdig", pprdig, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
 
-                response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-
                 userId = result.getModels().get("userid").toString();
                 int clientId = Integer.parseInt(loginParams.getClient_id());
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
