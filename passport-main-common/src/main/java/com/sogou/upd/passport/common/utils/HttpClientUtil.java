@@ -24,7 +24,14 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
-public class HttpClientUtil extends SGHttpClient{
+public class HttpClientUtil {
+
+    /**
+     * 超过500ms的请求定义为慢请求
+     */
+    private final static int SLOW_TIME = 500;
+
+    private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     public static Pair<Integer, String> get(String url) {
         GetMethod get = new GetMethod(url);
@@ -91,12 +98,30 @@ public class HttpClientUtil extends SGHttpClient{
     public static Header[] getResponseHeadersWget(String url) {
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         GetMethod method = new GetMethod(url);
-        Pair<Integer, String> pair = doWget(method);
-        stopWatch(stopWatch, url, "success");
-        if (pair.getKey() != 0) {
+        try {
+            method.setFollowRedirects(false);
+            method.setDoAuthentication(false);
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
+                    "Sogou Passport Center Notifier");
+            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
+            client.executeMethod(method);
+            stopWatch(stopWatch, url, "success");
             return method.getResponseHeaders();
+        } catch (Exception e) {
+            stopWatch(stopWatch, "http request error", "failed");
+            return null;
+        } finally {
+            method.releaseConnection();
         }
-        return null;
+    }
+
+    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+        //无论什么情况都记录下所有的请求数据
+        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
+            tag += "(slow)";
+        }
+        stopWatch.stop(tag, message);
     }
 
     private static Pair<Integer, String> doWget(HttpMethod method, String charset) {
