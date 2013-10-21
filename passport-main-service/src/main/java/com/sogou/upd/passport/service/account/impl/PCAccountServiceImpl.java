@@ -55,7 +55,9 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public AccountToken updateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
-        final int clientId = appConfig.getClientId();
+        //todo 暂时每次都返回新的token
+        return initialAccountToken(passportId,instanceId,appConfig);
+        /*final int clientId = appConfig.getClientId();
         try {
             AccountToken accountToken = queryAccountToken(passportId,clientId,instanceId);
             if(accountToken == null || !isValidToken(accountToken.getAccessValidTime()) || !isValidToken(accountToken.getRefreshValidTime())){
@@ -76,7 +78,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         } catch (Exception e) {
             logger.error("updateAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
-        }
+        } */
     }
 
     @Override
@@ -94,19 +96,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             }
             //保存映射关系
             kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
-        } catch (Exception e) {
-            logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
-    public void removeAccountToken(final String passportId, final int clientId, final String instanceId) throws ServiceException {
-        try {
-            String kvKey = buildKeyStr(passportId, clientId, instanceId);
-            kvUtils.delete(kvKey);
-            String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
-            tokenRedisUtils.delete(redisKey);
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);

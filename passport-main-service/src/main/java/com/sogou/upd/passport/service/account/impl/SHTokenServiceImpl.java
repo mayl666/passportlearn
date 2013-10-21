@@ -30,8 +30,6 @@ public class SHTokenServiceImpl implements SHTokenService {
     private MemcacheUtils rTokenMemUtils;
     @Autowired
     private MemcacheUtils aTokenMemUtils;
-    @Autowired
-    private PCAccountTokenService pcAccountService;
     /**
      * 构造SHToken的key
      * 格式为：passport|clientId|instanceId
@@ -106,9 +104,6 @@ public class SHTokenServiceImpl implements SHTokenService {
     public boolean verifyShAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
         String storeAccessToken = queryAccessToken(passportId, clientId, instanceId);
         if(accessToken.equals(storeAccessToken)){
-            //为了保持sh memcache与sogou kv一致性
-            //当上线回滚，再切时，sogou kv中已经有啦相应的token，所以必须删除
-            pcAccountService.removeAccountToken(passportId,clientId,instanceId);
             return true;
         }
         return false;
@@ -119,17 +114,11 @@ public class SHTokenServiceImpl implements SHTokenService {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
             if(refreshToken.equals(actualRefreshToken)){
-                //为了保持sh memcache与sogou kv一致性
-                //当上线回滚，再切时，sogou kv中已经有啦相应的token，所以必须删除
-                pcAccountService.removeAccountToken(passportId,clientId,instanceId);
                 return true;
             }
 
             String actualOldRefreshToken = queryOldRefreshToken(passportId, clientId, instanceId);
             if(refreshToken.equals(actualOldRefreshToken)){
-                //为了保持sh memcache与sogou kv一致性
-                //当上线回滚，再切时，sogou kv中已经有啦相应的token，所以必须删除
-                pcAccountService.removeAccountToken(passportId,clientId,instanceId);
                 return true;
             }
             return false;
