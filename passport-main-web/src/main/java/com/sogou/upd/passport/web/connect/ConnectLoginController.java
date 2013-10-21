@@ -92,6 +92,10 @@ public class ConnectLoginController extends BaseConnectController {
 
         String providerStr = connectLoginParams.getProvider();
         int provider = AccountTypeEnum.getProvider(providerStr);
+
+        if(!Strings.isNullOrEmpty(connectLoginParams.getAppid()) && Strings.isNullOrEmpty(connectLoginParams.getClient_id())){
+            connectLoginParams.setClient_id(connectLoginParams.getAppid());
+        }
         int clientId = Integer.parseInt(connectLoginParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
