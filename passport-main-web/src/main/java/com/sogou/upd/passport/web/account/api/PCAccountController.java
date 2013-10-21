@@ -92,6 +92,10 @@ public class PCAccountController extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
+        userOperationLog.putOtherMessage("ts",pcAccountWebParams.getTs());
+        userOperationLog.putOtherMessage("refresh_token",pcAccountWebParams.getRefresh_token());
+        userOperationLog.putOtherMessage("v",pcAccountWebParams.getV());
+        userOperationLog.putOtherMessage("openapptype",pcAccountWebParams.getOpenapptype());
         UserOperationLogUtil.log(userOperationLog);
 
         //此处是帮浏览器打的个补丁，根据版本号判断
@@ -139,6 +143,9 @@ public class PCAccountController extends BaseController {
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, resultCode, getIp(request));
         userOperationLog.putOtherMessage("ts", ts);
+        userOperationLog.putOtherMessage("password", pcGetTokenParams.getPassword());
+        userOperationLog.putOtherMessage("authtype", String.valueOf(pcGetTokenParams.getAuthtype()));
+        userOperationLog.putOtherMessage("livetime", String.valueOf(pcGetTokenParams.getLivetime()));
         UserOperationLogUtil.log(userOperationLog);
 
         return resStr;
@@ -186,6 +193,9 @@ public class PCAccountController extends BaseController {
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, ip);
         userOperationLog.putOtherMessage("ts", reqParams.getTs());
+        userOperationLog.putOtherMessage("password", reqParams.getPassword());
+        userOperationLog.putOtherMessage("timestamp", reqParams.getTimestamp());
+        userOperationLog.putOtherMessage("sig", reqParams.getSig());
         UserOperationLogUtil.log(userOperationLog);
 
         return getReturnStr(cb, resStr);
@@ -217,6 +227,8 @@ public class PCAccountController extends BaseController {
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(reqParams.getUserid(), request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ts", reqParams.getTs());
+        userOperationLog.putOtherMessage("authtype", String.valueOf(reqParams.getAuthtype()));
+        userOperationLog.putOtherMessage("refresh_token", reqParams.getRefresh_token());
         UserOperationLogUtil.log(userOperationLog);
 
         return getReturnStr(cb, resStr);
@@ -239,6 +251,10 @@ public class PCAccountController extends BaseController {
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ts", authPcTokenParams.getTs());
+        userOperationLog.putOtherMessage("token", authPcTokenParams.getToken());
+        userOperationLog.putOtherMessage("ru", authPcTokenParams.getRu());
+        userOperationLog.putOtherMessage("livetime", String.valueOf(authPcTokenParams.getLivetime()));
+        userOperationLog.putOtherMessage("authtype", String.valueOf(authPcTokenParams.getAuthtype()));
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie
