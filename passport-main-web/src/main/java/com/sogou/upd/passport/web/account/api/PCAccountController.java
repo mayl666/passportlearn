@@ -256,7 +256,7 @@ public class PCAccountController extends BaseController {
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                String passport = (String) getCookieValueResult.getModels().get("passport");   // 浏览器移动端需要此cookie
+                String passport = (String) getCookieValueResult.getModels().get("passport");   // 手机浏览器需要此cookie
                 ServletUtil.setHttpOnlyCookie(response, "ppinf", ppinf , CommonConstant.SOGOU_ROOT_DOMAIN);   //浏览器移动端要求返回cookie以HttpOnly结尾
                 ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig , CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setHttpOnlyCookie(response, "passport", passport , CommonConstant.SOGOU_ROOT_DOMAIN);

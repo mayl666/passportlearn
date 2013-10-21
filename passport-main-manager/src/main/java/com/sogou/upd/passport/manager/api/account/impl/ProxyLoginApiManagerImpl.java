@@ -161,7 +161,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     /**
      * 输入法Mac，passport.sogou.com/sso/setcookie？ru=xxx不需要urlencode
-     *
+     * 手机浏览器跳转的passport.sogou.com/sso/setcookie必须为http
      * @param locationUrl
      * @return
      */
