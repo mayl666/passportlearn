@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -258,9 +259,9 @@ public class AccountTokenServiceImpl implements AccountTokenService {
             accountAuth.setPassportId(passportId);
             accountAuth.setClientId(clientId);
             accountAuth.setAccessToken(accessToken);
-            accountAuth.setAccessValidTime(TokenGenerator.generatorVaildTime(accessTokenExpiresIn));
+            accountAuth.setAccessValidTime(DateUtil.generatorVaildTime(accessTokenExpiresIn));
             accountAuth.setRefreshToken(refreshToken);
-            accountAuth.setRefreshValidTime(TokenGenerator.generatorVaildTime(refreshTokenExpiresIn));
+            accountAuth.setRefreshValidTime(DateUtil.generatorVaildTime(refreshTokenExpiresIn));
             accountAuth.setInstanceId(instanceId);
         }
 

@@ -126,7 +126,6 @@ public class PCAccountController extends BaseController {
         pcPairTokenParams.setTs(ts);
         pcPairTokenParams.setPassword(pcGetTokenParams.getPassword());
 
-        String ip = getIp(request);
         Result result = pcAccountManager.createPairToken(pcPairTokenParams);
         String resStr = "";
         if (result.isSuccess()) {

@@ -103,24 +103,23 @@ public class SHTokenServiceImpl implements SHTokenService {
     @Override
     public boolean verifyShAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
         String storeAccessToken = queryAccessToken(passportId, clientId, instanceId);
-        return accessToken.equals(storeAccessToken);
+        if(accessToken.equals(storeAccessToken)){
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
-            if (!StringUtils.isEmpty(actualRefreshToken)) {
-                if (actualRefreshToken.equals(refreshToken)) {
-                    return true;
-                }
+            if(refreshToken.equals(actualRefreshToken)){
+                return true;
             }
 
             String actualOldRefreshToken = queryOldRefreshToken(passportId, clientId, instanceId);
-            if (!StringUtils.isEmpty(actualOldRefreshToken)) {
-                if (actualOldRefreshToken.equals(refreshToken)) {
-                    return true;
-                }
+            if(refreshToken.equals(actualOldRefreshToken)){
+                return true;
             }
             return false;
         } catch (Exception e) {
