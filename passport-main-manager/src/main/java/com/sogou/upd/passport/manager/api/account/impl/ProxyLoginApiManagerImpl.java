@@ -99,7 +99,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode) {
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps) {
         Result result = new APIResultSupport(false);
         try {
             String ru = createCookieUrlApiParams.getRu();
@@ -110,7 +110,11 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             long ct = System.currentTimeMillis();
             String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
             code = Coder.encryptMD5(code);
-            StringBuilder urlBuilder = new StringBuilder(SHPPUrlConstant.SET_COOKIE);
+            String shUrl = SHPPUrlConstant.HTTP_SET_COOKIE;
+            if (isHttps) {
+                shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
+            }
+            StringBuilder urlBuilder = new StringBuilder(shUrl);
             urlBuilder.append("?").append("userid=").append(userId)
                     .append("&appid=").append(SHPPUrlConstant.APP_ID)
                     .append("&ct=").append(ct)
@@ -129,7 +133,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false);
+        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
         String url = (String) cookieUrlResult.getModels().get("url");
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
         Result result = new APIResultSupport(false);
@@ -160,7 +164,8 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     /**
-     * 输入法Mac，/sso/setcookie？ru=xxx不需要urlencode
+     * 输入法Mac，passport.sogou.com/sso/setcookie？ru=xxx不需要urlencode
+     * 手机浏览器跳转的passport.sogou.com/sso/setcookie必须为http
      *
      * @param locationUrl
      * @return

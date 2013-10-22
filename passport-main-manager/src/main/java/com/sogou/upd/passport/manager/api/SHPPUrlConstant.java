@@ -39,7 +39,9 @@ public class SHPPUrlConstant {
     public static final String MOBILE_AUTH_TOKEN = BASE_INTERNAL_URL + "token/auth"; //检查用户名密码是否正确
     //    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
     public static final String GET_COOKIE_VALUE = "http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
-    public static final String SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
+    // 手机浏览器/authtoken接口返回结果后会302到setcookie接口，这个必须为http，所以此处也为http，得到location的也为http
+    public static final String HTTPS_SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
+    public static final String HTTP_SET_COOKIE = "http://passport.sohu.com/act/setcookie";//用于前端设置cookie
     public static final String CLEAN_COOKIE = BASE_URL + "act/logout";
 
     public static final String CLEAN_COOKIE_REDIRECT = BASE_URL + "sso/logout_js.jsp?ru=";

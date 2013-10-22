@@ -2,8 +2,10 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -57,7 +59,6 @@ public class PCAccountController extends BaseController {
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
             throws Exception {
-        // TODO 参数校验没有？
         String refreshToken = pcAccountWebParams.getRefresh_token();
         String userId = pcAccountWebParams.getUserid();
         String appId = pcAccountWebParams.getAppid();
@@ -74,7 +75,8 @@ public class PCAccountController extends BaseController {
             pcRefreshTokenParams.setUserid(userId);
             pcRefreshTokenParams.setAppid(appId);
             pcRefreshTokenParams.setTs(ts);
-            if (pcAccountManager.verifyRefreshToken(pcRefreshTokenParams)) {
+            int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
+            if (pcAccountManager.verifyRefreshToken(pcRefreshTokenParams.getUserid(),clientId,pcRefreshTokenParams.getTs(),pcRefreshTokenParams.getRefresh_token())) {
                 isAuthedUser = true;
             }
         }
@@ -90,6 +92,7 @@ public class PCAccountController extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         //此处是帮浏览器打的个补丁，根据版本号判断
@@ -123,6 +126,7 @@ public class PCAccountController extends BaseController {
         pcPairTokenParams.setAppid(appId);
         pcPairTokenParams.setTs(ts);
         pcPairTokenParams.setPassword(pcGetTokenParams.getPassword());
+
         Result result = pcAccountManager.createPairToken(pcPairTokenParams);
         String resStr = "";
         if (result.isSuccess()) {
@@ -135,7 +139,7 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, resultCode, getIp(request));
-        userOperationLog.putOtherMessage("ts", ts);
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return resStr;
@@ -154,24 +158,36 @@ public class PCAccountController extends BaseController {
         }
         String userId = reqParams.getUserid();
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
-        reqParams.setUserid(loginManager.getPassportIdByUsername(userId));
+        reqParams.setUserid(loginManager.getIndividPassportIdByUsername(userId));
+        userId = reqParams.getUserid();
+        String ip = getIp(request);
+        int appid = Integer.parseInt(reqParams.getAppid());
 
-        Result result = pcAccountManager.createPairToken(reqParams);
+        Result result = new APIResultSupport(false);
+        // 手机移动端，取不到用户的真实ip，所以不做安全限制
+        if(!CommonHelper.isIePinyinToken(appid) && loginManager.isLoginUserInBlackList(userId,ip)){
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        }else {
+            result = pcAccountManager.createPairToken(reqParams);
+        }
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 浏览器使用userid，@前半部分作为昵称
-            String uniqname = defaultUniqname(accountToken.getPassportId());
+            // 浏览器sohu接口昵称先从论坛初始化，为空时使用userid，@前半部分作为昵称
+            // 壁纸、游戏用自己存的
+            String uniqname = pcAccountManager.getUniqnameByClientId(accountToken.getPassportId(),appid);
             //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
+            loginManager.doAfterLoginSuccess(userId, ip, userId, appid);
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
+            loginManager.doAfterLoginFailed(reqParams.getUserid(), ip);
         }
 
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
-        userOperationLog.putOtherMessage("ts", reqParams.getTs());
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, ip);
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return getReturnStr(cb, resStr);
@@ -202,7 +218,7 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(reqParams.getUserid(), request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
-        userOperationLog.putOtherMessage("ts", reqParams.getTs());
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return getReturnStr(cb, resStr);
@@ -224,7 +240,7 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
-        userOperationLog.putOtherMessage("ts", authPcTokenParams.getTs());
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie
@@ -232,7 +248,7 @@ public class PCAccountController extends BaseController {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
             createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
-            if (authPcTokenParams.getLivetime() > 0) {
+            if (!"0".equals(authPcTokenParams.getLivetime())) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
             createCookieUrlApiParams.setDomain("sogou.com");
@@ -241,10 +257,10 @@ public class PCAccountController extends BaseController {
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                String passport = (String) getCookieValueResult.getModels().get("passport");
-                ServletUtil.setCookie(response, "ppinf", ppinf, 0, CommonConstant.SOHU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "pprdig", pprdig, 0, CommonConstant.SOHU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "passport", passport, 0, CommonConstant.SOHU_ROOT_DOMAIN);  // 浏览器移动端需要此cookie
+                String passport = (String) getCookieValueResult.getModels().get("passport");   // 手机浏览器需要此cookie
+                ServletUtil.setHttpOnlyCookie(response, "ppinf", ppinf , CommonConstant.SOGOU_ROOT_DOMAIN);   //浏览器移动端要求返回cookie以HttpOnly结尾
+                ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig , CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setHttpOnlyCookie(response, "passport", passport , CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
@@ -267,10 +283,6 @@ public class PCAccountController extends BaseController {
         }
         String cleanValue = Jsoup.clean(cb, Whitelist.none());
         return cleanValue.equals(cb);
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
     }
 
     private String getReturnStr(String cb, String resStr) {

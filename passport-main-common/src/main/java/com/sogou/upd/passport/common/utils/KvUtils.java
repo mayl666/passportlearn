@@ -26,7 +26,7 @@ public class KvUtils {
 
     private final static String KV_PERF4J_LOGGER = "kvTimingLogger";
 
-    private static RedisTemplate kvTemplate;
+    private RedisTemplate kvTemplate;
 
 //    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
     public void set(String key, String value) {

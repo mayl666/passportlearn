@@ -40,11 +40,14 @@ public interface PCAccountManager {
     public Result authToken(PcAuthTokenParams authPcTokenParams);
 
     /**
-     * 验证refreshtoken是否正确
-     * @param pcRefreshTokenParams
+     *验证refreshtoken是否正确
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
      * @return
      */
-    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams);
+    public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken);
 
     /**
      * 获取sig
@@ -63,4 +66,20 @@ public interface PCAccountManager {
      * @return
      */
     public Result createConnectToken(int clientId, String passportId, String instanceId);
+
+    /**
+     * 从浏览器论坛获取用户昵称
+     * 如果为空，则返回用户名@前面一段
+     * @param passportId
+     * @return
+     */
+    public String getBrowserBbsUniqname(String passportId);
+
+    /**
+     * 通过clientId获取不同的昵称
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    public String getUniqnameByClientId(String passportId,int clientId);
 }

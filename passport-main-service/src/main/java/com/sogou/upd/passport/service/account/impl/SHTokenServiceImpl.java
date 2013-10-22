@@ -103,24 +103,23 @@ public class SHTokenServiceImpl implements SHTokenService {
     @Override
     public boolean verifyShAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
         String storeAccessToken = queryAccessToken(passportId, clientId, instanceId);
-        return accessToken.equals(storeAccessToken);
+        if(accessToken.equals(storeAccessToken)){
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
-            if (!StringUtils.isEmpty(actualRefreshToken)) {
-                if (actualRefreshToken.equals(refreshToken)) {
-                    return true;
-                }
+            if(refreshToken.equals(actualRefreshToken)){
+                return true;
             }
 
             String actualOldRefreshToken = queryOldRefreshToken(passportId, clientId, instanceId);
-            if (!StringUtils.isEmpty(actualOldRefreshToken)) {
-                if (actualOldRefreshToken.equals(refreshToken)) {
-                    return true;
-                }
+            if(refreshToken.equals(actualOldRefreshToken)){
+                return true;
             }
             return false;
         } catch (Exception e) {
@@ -130,16 +129,26 @@ public class SHTokenServiceImpl implements SHTokenService {
     }
 
     @Override
-    public AccountToken initialOrUpdateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
+    public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException{
         final int clientId = appConfig.getClientId();
         try {
-            AccountToken accountToken = PCAccountServiceImpl.newAccountToken(passportId, instanceId, appConfig);
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
-            aTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_DAY_INSECONDS,accountToken.getAccessToken());
-            rTokenMemUtils.set(key,DateAndNumTimesConstant.TEN_DAY_INSECONDS,accountToken.getRefreshToken());
-            return accountToken;
+            aTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_HOUR_INSECONDS,accountToken.getAccessToken());
+            rTokenMemUtils.set(key,DateAndNumTimesConstant.ONE_MONTH_INSECONDS,accountToken.getRefreshToken());
         } catch (Exception e) {
             logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+    @Override
+    public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {
+        final int clientId = appConfig.getClientId();
+        try {
+            //保存老的token，与sohu保持一致，有效期为1天
+            String key = buildOldRTokenKeyStr(passportId, clientId, instanceId);
+            rTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_DAY_INSECONDS, refreshToken);
+        } catch (Exception e) {
+            logger.error("saveOldRefreshToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
         }
     }

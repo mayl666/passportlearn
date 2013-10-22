@@ -15,16 +15,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class BaseTest extends AbstractJUnit4SpringContextTests {
-    protected static final String userid = "pqmagic20061@sohu.com";
-
+    protected static final String userid = "1747428841@sina.sohu.com";
 
     protected static final String password = "testtest1";
 
     protected static final String uniqname = "你好";
 
-    protected static final int clientId = 1110;
+    protected static final int clientId = 2007;
 
-    protected static final String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
+    protected static final String serverSecret = "udj0D>~Ez`:%Zbj`wFfh8mW`lB[{(]";
 
     protected static final String modifyIp = "10.1.164.160";
 

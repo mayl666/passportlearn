@@ -12,8 +12,13 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.tuple.Pair;
+import org.perf4j.StopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +26,13 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
 public class HttpClientUtil {
+
+    /**
+     * 超过500ms的请求定义为慢请求
+     */
+    private final static int SLOW_TIME = 500;
+
+    private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     public static Pair<Integer, String> get(String url) {
         GetMethod get = new GetMethod(url);
@@ -85,12 +97,33 @@ public class HttpClientUtil {
     }
 
     public static Header[] getResponseHeadersWget(String url) {
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         GetMethod method = new GetMethod(url);
-        Pair<Integer, String> pair = doWget(method);
-        if (pair.getKey() != 0) {
+        try {
+            method.setFollowRedirects(false);
+            method.setDoAuthentication(false);
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
+                    "Sogou Passport Center Notifier");
+            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
+            client.executeMethod(method);
+            String[] urlArray = url.split("[?]");
+            stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
+        } catch (Exception e) {
+            stopWatch(stopWatch, "http request error", "failed");
+            return null;
+        } finally {
+            method.releaseConnection();
         }
-        return null;
+    }
+
+    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+        //无论什么情况都记录下所有的请求数据
+        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
+            tag += "(slow)";
+        }
+        stopWatch.stop(tag, message);
     }
 
     private static Pair<Integer, String> doWget(HttpMethod method, String charset) {
@@ -225,9 +258,15 @@ public class HttpClientUtil {
         postData.put("nickname", "戴菲菲");
 
 
-        Pair<Integer, String> p = HttpClientUtil.post("http://localhost/account/regexpuser",
-                postData);
-        System.out.println(p);
+//        Pair<Integer, String> p = HttpClientUtil.post("http://localhost/account/regexpuser",
+//                postData);
+//        System.out.println(p);
+        String urlStr = "http://passport.sohu.com/act/setcookie?userid=wg494943628@sogou.com&appid=1120&ct=1382384218435&code=ffee354f18ef84cf73b4655a37ddd528&ru=http://profile.pinyin.sogou.com/&persistentcookie=0&domain=sogou.com";
+        URL url = new URL(urlStr);
+        System.out.println("protocol:" + url.getProtocol());
+        System.out.println("host:" + url.getHost());
+        System.out.println("path:" + url.getPath());
+        System.out.println("uri:" + url.toURI().getScheme());
     }
 
 

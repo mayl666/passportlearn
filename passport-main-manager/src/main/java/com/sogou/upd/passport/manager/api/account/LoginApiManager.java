@@ -34,20 +34,23 @@ public interface LoginApiManager {
 
     /**
      * 根据用户信息，生成cookie
+     *
      * @return
      */
     public Result createCookie(CreateCookieApiParams createCookieApiParams);
 
     /**
      * 构造sohu生成并设置cookie的url
+     *
      * @param createCookieUrlApiParams
      * @return
      */
-    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode);
+    public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps);
 
     /**
      * 获取cookie值，包括ppinf、pprdig、passport
      * 只有浏览器老版本PC端才会用到passport
+     *
      * @param createCookieUrlApiParams
      * @return
      */

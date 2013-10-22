@@ -177,7 +177,7 @@ function checkLogin() {
         return;
     }
 
-    var url = "https://account.sogou.com/act/getpairtoken?";
+    var url = "http://account.sogou.com/act/getpairtoken?";
 
     var params = {
         userid: $('loginForm').userid.value,
@@ -225,7 +225,7 @@ function checkLogin() {
 }
 
 function getAutoToken() {
-    var url = "https://account.sogou.com/act/getpairtoken?";
+    var url = "http://account.sogou.com/act/getpairtoken?";
 
     var params = {
         userid: $('autoLoginForm').userid.value,
@@ -254,7 +254,7 @@ function getAutoToken() {
             } else {
                 if (status[0] == '7') {
                     alert('自动登录失败， 请输入帐号密码重新登录');
-                    document.location.href = "https://account.sogou.com/act/pclogin?userid=" + params.userid;
+                    document.location.href = "http://account.sogou.com/act/pclogin?userid=" + params.userid;
                 } else {
                     alert('服务器正在维护，暂时无法登录，请您稍后再试');
                 }

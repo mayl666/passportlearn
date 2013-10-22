@@ -24,8 +24,9 @@ public class ConnectLoginParams {
     private String provider; // provider
 
     @Min(0)
-    @NotBlank(message = "client_id不允许为空!")
     private String client_id; // 应用id
+    @Min(0)
+    private String appid; // 浏览器和输入法会传1044，这个没让搜狐转发时把参数名改了，搜狗做兼容
 
     private String ru = "https://account.sogou.com";  // 回调地址
 
@@ -34,6 +35,11 @@ public class ConnectLoginParams {
     private String type = "web";     // 应用类型
     private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式
     private String ts;
+
+    @AssertTrue(message = "Client_id不允许为空")
+    private boolean isEmptyClientId(){
+        return !Strings.isNullOrEmpty(appid) || !Strings.isNullOrEmpty(client_id);
+    }
 
     @AssertTrue(message = "不支持的第三方")
     private boolean isSupportProvider() {
@@ -124,5 +130,13 @@ public class ConnectLoginParams {
 
     public void setTs(String ts) {
         this.ts = ts;
+    }
+
+    public String getAppid() {
+        return appid;
+    }
+
+    public void setAppid(String appid) {
+        this.appid = appid;
     }
 }

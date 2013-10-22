@@ -59,7 +59,7 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLogUtil.log(userOperationLog);
 
             if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                model.addAttribute("nickname", result.getModels().get("nickname"));
+                model.addAttribute("uniqname", result.getModels().get("uniqname"));
                 model.addAttribute("result", result.getModels().get("result"));
                 return new ModelAndView(viewUrl);
             } else {

@@ -14,8 +14,8 @@ import org.hibernate.validator.constraints.URL;
  */
 public class PcAuthTokenParams extends PcBaseParams {
 
-    private long livetime = 0;  //token的生存期，单位为秒
-    private int authtype = 0;  //0其它，1正常登录，2记住密码登录，3输入法同步信息，4用户点击链接
+    private String livetime = "0";  //token的生存期，单位为秒
+    private String authtype = "0";  //0其它，1正常登录，2记住密码登录，3输入法同步信息，4用户点击链接
 
     @NotBlank(message = "token不允许为空")
     private String token; //用户获取到的token
@@ -24,19 +24,19 @@ public class PcAuthTokenParams extends PcBaseParams {
     @URL
     private String ru; //token正确时的调整地址
 
-    public long getLivetime() {
+    public String getLivetime() {
         return livetime;
     }
 
-    public void setLivetime(long livetime) {
+    public void setLivetime(String livetime) {
         this.livetime = livetime;
     }
 
-    public int getAuthtype() {
+    public String getAuthtype() {
         return authtype;
     }
 
-    public void setAuthtype(int authtype) {
+    public void setAuthtype(String authtype) {
         this.authtype = authtype;
     }
 
