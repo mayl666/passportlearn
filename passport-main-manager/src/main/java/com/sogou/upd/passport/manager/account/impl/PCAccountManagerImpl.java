@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -11,7 +10,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -27,9 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * 桌面端登录流程Manager
@@ -72,7 +67,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
             if (!Strings.isNullOrEmpty(password)) {   //校验用户名和密码
                 AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
                 //根据域名判断是否代理，一期全部走代理
-                Result result = new APIResultSupport(false);
+                Result result;
                 if (ManagerHelper.isInvokeProxyApi(passportId)) {
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
                 } else {
@@ -81,7 +76,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 if (!result.isSuccess()) {
                     return result;
                 }
-                passportId = (String)result.getModels().get("userid");
+                passportId = (String) result.getModels().get("userid");
             } else {    //校验签名
                 String sig = pcTokenParams.getSig();
                 String timestamp = pcTokenParams.getTimestamp();
@@ -118,7 +113,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
             }
             if (CommonHelper.isExplorerToken(clientId)) {
                 pcAccountService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
-                shTokenService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
+//                shTokenService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
             }
             return updateAccountToken(passportId, instanceId, appConfig);
         } catch (Exception e) {
@@ -156,15 +151,15 @@ public class PCAccountManagerImpl implements PCAccountManager {
     @Override
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) {
         try {
-            if(CommonHelper.isExplorerToken(clientId)){
-                return (pcAccountService.verifyRefreshToken(passportId, clientId,instanceId,refreshToken ) ||
-                        pcAccountService.verifyPCOldRefreshToken(passportId,clientId,instanceId,refreshToken) ||
-                        shTokenService.verifyShRefreshToken(passportId, clientId, instanceId, refreshToken));
-            }else if(CommonHelper.isPinyinMACToken(clientId)){
-                return (pcAccountService.verifyRefreshToken(passportId, clientId,instanceId,refreshToken) ||
-                        shTokenService.verifyShRefreshToken(passportId,clientId,instanceId,refreshToken));
-            }else {
-                return  pcAccountService.verifyRefreshToken(passportId, clientId,instanceId,refreshToken);
+            if (CommonHelper.isExplorerToken(clientId)) {
+                return shTokenService.verifyAllShRToken(passportId, clientId, instanceId, refreshToken) ||
+                        pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken) ||
+                        pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            } else if (CommonHelper.isPinyinMACToken(clientId)) {
+                return shTokenService.verifyShRToken(passportId, clientId, instanceId, refreshToken) ||
+                        pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            } else {
+                return pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             }
         } catch (Exception e) {
             logger.error("verifyRefreshToken fail", e);
@@ -178,7 +173,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         if (appConfig == null) {
             return null;
         }
-        return getSig(passportId,clientId,refresh_token,timestamp,appConfig.getClientSecret());
+        return getSig(passportId, clientId, refresh_token, timestamp, appConfig.getClientSecret());
     }
 
     @Override
@@ -215,11 +210,11 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public String getUniqnameByClientId(String passportId,int clientId) {
-         if(CommonHelper.isExplorerToken(clientId)){
-             return  getBrowserBbsUniqname(passportId);
-         }
-         return (passportId.substring(0, passportId.indexOf("@")));
+    public String getUniqnameByClientId(String passportId, int clientId) {
+        if (CommonHelper.isExplorerToken(clientId)) {
+            return getBrowserBbsUniqname(passportId);
+        }
+        return (passportId.substring(0, passportId.indexOf("@")));
     }
 
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {
@@ -256,29 +251,33 @@ public class PCAccountManagerImpl implements PCAccountManager {
         if (curTimestamp > ts + SIG_EXPIRES) {
             return false;
         }
-        if (CommonHelper.isExplorerToken(clientId)) {
-            return (verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
-                    verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
-                    verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
-        } else if (CommonHelper.isPinyinMACToken(clientId)) {
-            return (verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
-                    verifySigByShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
-        } else {
-            return verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+        boolean isPCTokenSig = verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+        if (!isPCTokenSig) {
+            if (CommonHelper.isExplorerToken(clientId)) {
+                return verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
+                        verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+            } else if (CommonHelper.isPinyinMACToken(clientId)) {
+                return verifySigByShRefreshToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+            }
         }
+        return isPCTokenSig;
     }
 
     //通过sh token校验sig
-    private boolean verifySigByShToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
+    private boolean verifySigByAllShToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
         return (isEqualSig(passportId, clientId, shTokenService.queryRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig) ||
                 isEqualSig(passportId, clientId, shTokenService.queryOldRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig));
+    }
 
+    private boolean verifySigByShRefreshToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
+        String refreshToken = shTokenService.queryRefreshToken(passportId, clientId, instanceId);
+        return isEqualSig(passportId, clientId, refreshToken, timestamp, clientSecret, sig);
     }
 
     //通过sh token校验sig
     private boolean verifySigByPCToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
         AccountToken accountToken = pcAccountService.queryAccountToken(passportId, clientId, instanceId);
-        if (accountToken == null){
+        if (accountToken == null) {
             return false;
         }
         if (!isValidToken(accountToken.getRefreshValidTime())) {
@@ -294,7 +293,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     private boolean isEqualSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret, String sig) throws Exception {
-        String actualSig =getSig(passportId, clientId, refreshToken, timestamp,clientSecret);
+        String actualSig = getSig(passportId, clientId, refreshToken, timestamp, clientSecret);
         return actualSig.equalsIgnoreCase(sig);
     }
 
@@ -306,7 +305,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         return tokenValidTime > currentTime;
     }
 
-    private String getSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret) throws Exception{
+    private String getSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret) throws Exception {
         return Coder.encryptMD5(passportId + clientId + refreshToken + timestamp + clientSecret);
     }
 

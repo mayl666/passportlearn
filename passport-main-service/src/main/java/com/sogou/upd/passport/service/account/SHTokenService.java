@@ -60,7 +60,17 @@ public interface SHTokenService {
      * @return
      * @throws ServiceException
      */
-    public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+    public boolean verifyShRToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+    /**
+     *校验refreshtoken和oldrefreshtoken
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
+     * @return
+     * @throws ServiceException
+     */
+    public boolean verifyAllShRToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
     /**
      * 保持sohu 老的refreshtoken
      * @param passportId
