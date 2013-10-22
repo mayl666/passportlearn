@@ -257,7 +257,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             logger.error("handle oauth authroize code error!", ope);
             result = buildErrorResult(type, ru, ope.getError(), ope.getDescription());
         } catch (Exception exp) {
-            logger.error("handle oauth authroize code system error!", exp);
+            //logger.error("handle oauth authroize code system error!", exp);
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
         return result;
