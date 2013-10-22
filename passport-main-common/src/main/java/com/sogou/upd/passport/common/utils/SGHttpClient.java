@@ -153,14 +153,16 @@ public class SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         try {
             HttpParams params = httpClient.getParams();
             params.setParameter(ClientPNames.HANDLE_REDIRECTS, false);
             HttpResponse httpResponse = httpClient.execute(httpRequest);
             Header[] headers = httpResponse.getAllHeaders();
-            //302如何处理
+            stopWatch(stopWatch, requestModel.getUrl(), "success");
             return headers;
         } catch (IOException e) {
+            stopWatch(stopWatch, requestModel.getUrl(), "failed");
             throw new RuntimeException("http request error ", e);
         }
     }
