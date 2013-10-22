@@ -110,7 +110,21 @@ public class SHTokenServiceImpl implements SHTokenService {
     }
 
     @Override
-    public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+    public boolean verifyShRToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+        try {
+            String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
+            if(refreshToken.equals(actualRefreshToken)){
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean verifyAllShRToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
             if(refreshToken.equals(actualRefreshToken)){

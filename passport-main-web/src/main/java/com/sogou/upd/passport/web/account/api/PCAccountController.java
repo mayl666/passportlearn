@@ -76,7 +76,7 @@ public class PCAccountController extends BaseController {
             pcRefreshTokenParams.setAppid(appId);
             pcRefreshTokenParams.setTs(ts);
             int clientId = Integer.parseInt(pcRefreshTokenParams.getAppid());
-            if (pcAccountManager.verifyRefreshToken(pcRefreshTokenParams.getUserid(),clientId,pcRefreshTokenParams.getTs(),pcRefreshTokenParams.getRefresh_token())) {
+            if (pcAccountManager.verifyRefreshToken(pcRefreshTokenParams.getUserid(), clientId, pcRefreshTokenParams.getTs(), pcRefreshTokenParams.getRefresh_token())) {
                 isAuthedUser = true;
             }
         }
@@ -165,23 +165,26 @@ public class PCAccountController extends BaseController {
 
         Result result = new APIResultSupport(false);
         // 手机移动端，取不到用户的真实ip，所以不做安全限制
-        if(!CommonHelper.isIePinyinToken(appid) && loginManager.isLoginUserInBlackList(userId,ip)){
+        if (!CommonHelper.isIePinyinToken(appid) && loginManager.isLoginUserInBlackList(userId, ip)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-        }else {
+        } else {
             result = pcAccountManager.createPairToken(reqParams);
         }
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 浏览器sohu接口昵称先从论坛初始化，为空时使用userid，@前半部分作为昵称
-            // 壁纸、游戏用自己存的
-            String uniqname = pcAccountManager.getUniqnameByClientId(accountToken.getPassportId(),appid);
+            // 浏览器sohu接口昵称先从论坛初始化，为空时使用userid，@前半部分作为昵称, 壁纸、游戏用自己存的
+            String uniqname = pcAccountManager.getUniqnameByClientId(accountToken.getPassportId(), appid);
             //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
-            loginManager.doAfterLoginSuccess(userId, ip, userId, appid);
+            if (!CommonHelper.isIePinyinToken(appid)) {
+                loginManager.doAfterLoginSuccess(userId, ip, userId, appid);
+            }
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
-            loginManager.doAfterLoginFailed(reqParams.getUserid(), ip);
+            if (!CommonHelper.isIePinyinToken(appid)) {
+                loginManager.doAfterLoginFailed(reqParams.getUserid(), ip);
+            }
         }
 
         //用户log
@@ -258,9 +261,9 @@ public class PCAccountController extends BaseController {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
                 String passport = (String) getCookieValueResult.getModels().get("passport");   // 手机浏览器需要此cookie
-                ServletUtil.setHttpOnlyCookie(response, "ppinf", ppinf , CommonConstant.SOGOU_ROOT_DOMAIN);   //浏览器移动端要求返回cookie以HttpOnly结尾
-                ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig , CommonConstant.SOGOU_ROOT_DOMAIN);
-                ServletUtil.setHttpOnlyCookie(response, "passport", passport , CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setHttpOnlyCookie(response, "ppinf", ppinf, CommonConstant.SOGOU_ROOT_DOMAIN);   //浏览器移动端要求返回cookie以HttpOnly结尾
+                ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setHttpOnlyCookie(response, "passport", passport, CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
