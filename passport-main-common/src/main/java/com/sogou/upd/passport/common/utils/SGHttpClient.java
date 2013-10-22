@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -18,16 +16,14 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.params.BasicHttpParams;
 import org.apache.http.util.EntityUtils;
-
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -44,37 +40,35 @@ import java.security.cert.X509Certificate;
 public class SGHttpClient {
 
 
-    private static final HttpClient httpClient;
+    protected static final HttpClient httpClient;
     /**
      * 最大连接数
      */
-    private final static int MAX_TOTAL_CONNECTIONS = 500;
+    protected final static int MAX_TOTAL_CONNECTIONS = 500;
     /**
      * 获取连接的最大等待时间
      */
-    private final static int WAIT_TIMEOUT = 5000;
+    protected final static int WAIT_TIMEOUT = 5000;
     /**
      * 每个路由最大连接数
      */
-    private final static int MAX_ROUTE_CONNECTIONS = 200;
+    protected final static int MAX_ROUTE_CONNECTIONS = 200;
     /**
      * 读取超时时间
      */
-    private final static int READ_TIMEOUT = 5000;
+    protected final static int READ_TIMEOUT = 5000;
 
     /**
      * http返回成功的code
      */
-    private final static int RESPONSE_SUCCESS_CODE = 200;
+    protected final static int RESPONSE_SUCCESS_CODE = 200;
 
     /**
      * 超过500ms的请求定义为慢请求
      */
-    private final static int SLOW_TIME = 500;
+    protected final static int SLOW_TIME = 500;
 
-    private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SGHttpClient.class);
+    protected static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     static {
         HttpParams params = new BasicHttpParams();
@@ -215,7 +209,7 @@ public class SGHttpClient {
      * @param tag
      * @param message
      */
-    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+    protected static void stopWatch(StopWatch stopWatch, String tag, String message) {
         //无论什么情况都记录下所有的请求数据
         if(stopWatch.getElapsedTime() >= SLOW_TIME){
             tag+="(slow)";
