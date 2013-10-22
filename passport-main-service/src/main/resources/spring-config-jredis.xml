@@ -7,7 +7,7 @@
 
 
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="150"/>
+        <property name="maxActive" value="200"/>
         <property name="maxIdle" value="100"/>
         <property name="minIdle" value="50"/>
         <property name="maxWait" value="1000"/>
@@ -61,7 +61,7 @@
 
 
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="150"/>
+        <property name="maxActive" value="200"/>
         <property name="maxIdle" value="100"/>
         <property name="minIdle" value="50"/>
         <property name="maxWait" value="1000"/>
