@@ -106,11 +106,8 @@ public class HttpClientUtil {
             method.setFollowRedirects(false);
             method.setDoAuthentication(false);
             method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-//            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
-//                    "Sogou Passport Center Notifier");
-//            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
             method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
-            client.executeMethod(method);
+            shClient.executeMethod(method);
             String[] urlArray = url.split("[?]");
             stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
@@ -247,14 +244,24 @@ public class HttpClientUtil {
     }
 
     private static HttpClient client;
+    private static HttpClient shClient; //调用搜狐的setcookie接口
 
     static {
         MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
-        manager.getParams().setDefaultMaxConnectionsPerHost(200);
+        manager.getParams().setDefaultMaxConnectionsPerHost(100);
         manager.getParams().setMaxTotalConnections(500);
         manager.getParams().setConnectionTimeout(5000);
         manager.getParams().setSoTimeout(5000);
         client = new HttpClient(manager);
+    }
+
+    static {
+        MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+        manager.getParams().setDefaultMaxConnectionsPerHost(100);
+        manager.getParams().setMaxTotalConnections(500);
+        manager.getParams().setConnectionTimeout(1000);
+        manager.getParams().setSoTimeout(1000);
+        shClient = new HttpClient(manager);
     }
 
     public static void main(String[] args) throws Exception {
