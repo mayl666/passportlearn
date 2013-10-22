@@ -43,7 +43,9 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
+            long start = System.currentTimeMillis();
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
+            CommonHelper.recordTimestamp(start, "initialAccountToken-newAccountToken");
             saveAccountToken(passportId, instanceId, appConfig, accountToken);
             return accountToken;
         } catch (Exception e) {
@@ -85,10 +87,14 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         final int clientId = appConfig.getClientId();
         try {
             String kvKey = buildKeyStr(passportId, clientId, instanceId);
+            long start = System.currentTimeMillis();
             kvUtils.set(kvKey, accountToken);
+            CommonHelper.recordTimestamp(start, "saveAccountToken-kvUtils set");
             //重新设置缓存
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
+            start = System.currentTimeMillis();
             tokenRedisUtils.set(redisKey, accountToken);
+            CommonHelper.recordTimestamp(start, "saveAccountToken-tokenRedisUtils set");
 //            if (CommonHelper.isIePinyinToken(clientId)){
 //                //保存一份在sohu memcache
 //                shTokenService.saveAccountToken(passportId,instanceId,appConfig,accountToken);
@@ -107,15 +113,15 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             long start = System.currentTimeMillis();
             AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey, AccountToken.class);
-            CommonHelper.recordTimestamp(start, "TokenRedies getObject");
+            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies getObject");
             if (accountToken == null) {
                 start = System.currentTimeMillis();
                 accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
-                CommonHelper.recordTimestamp(start, "kvUtils getObject");
+                CommonHelper.recordTimestamp(start, "queryAccountToken-kvUtils getObject");
                 if (accountToken != null) {
                     start = System.currentTimeMillis();
                     tokenRedisUtils.set(tokenRedisKey, accountToken);
-                    CommonHelper.recordTimestamp(start, "tokenRedis set");
+                    CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedis set");
                 }
             }
             return accountToken;
@@ -128,7 +134,10 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     @Override
     public String queryOldPCToken(String passportId, int clientId, String instanceId) throws ServiceException {
         String oldRTokenKey = buildOldRTokenKeyStr(passportId, clientId, instanceId);
-        return tokenRedisUtils.get(oldRTokenKey);
+        long start = System.currentTimeMillis();
+        String oldRToken = tokenRedisUtils.get(oldRTokenKey);
+        CommonHelper.recordTimestamp(start, "queryOldPCToken-tokenRedisUtils get");
+        return oldRToken;
     }
 
     @Override
@@ -169,7 +178,9 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         try {
             //保存老的token，与sohu保持一致，有效期为1天
             String oldRTokenKey = buildOldRTokenKeyStr(passportId, clientId, instanceId);
+            long start = System.currentTimeMillis();
             tokenRedisUtils.setWithinSeconds(oldRTokenKey, refreshToken, DateAndNumTimesConstant.TIME_ONEDAY);
+            CommonHelper.recordTimestamp(start, "saveOldRefreshToken-tokenRedisUtils setWithinSeconds");
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);

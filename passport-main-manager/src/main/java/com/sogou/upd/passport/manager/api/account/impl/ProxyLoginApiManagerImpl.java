@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -143,12 +144,15 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
+        long start = System.currentTimeMillis();
         Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
+        CommonHelper.recordTimestamp(start,"getCookieValue-buildCreateCookieUrl");
         String url = (String) cookieUrlResult.getModels().get("url");
 //        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
 //        Header[] headers = SGHttpClient.executeHeaders(requestModel);
-
+        start = System.currentTimeMillis();
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
+        CommonHelper.recordTimestamp(start,"getCookieValue-getCookieValue Headers");
         Result result = new APIResultSupport(false);
         if (headers != null) {
             String locationKey = "Location";
