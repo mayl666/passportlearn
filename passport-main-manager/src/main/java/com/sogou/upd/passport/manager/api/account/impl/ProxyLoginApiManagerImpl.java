@@ -114,6 +114,16 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             if (isHttps) {
                 shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
             }
+            RequestModel requestModel = new RequestModel(shUrl);
+            requestModel.addParam("userid", userId);
+            requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+            requestModel.addParam("ct", ct);
+            requestModel.addParam("code", code);
+            requestModel.addParam("ru", ru);
+            requestModel.addParam("persistentcookie", createCookieUrlApiParams.getPersistentcookie());
+            requestModel.addParam("domain", createCookieUrlApiParams.getDomain());
+            result.setDefaultModel("requestModel", requestModel);
+
             StringBuilder urlBuilder = new StringBuilder(shUrl);
             urlBuilder.append("?").append("userid=").append(userId)
                     .append("&appid=").append(SHPPUrlConstant.APP_ID)
@@ -135,6 +145,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
         Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
         String url = (String) cookieUrlResult.getModels().get("url");
+//        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
+//        Header[] headers = SGHttpClient.executeHeaders(requestModel);
+
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
         Result result = new APIResultSupport(false);
         if (headers != null) {
