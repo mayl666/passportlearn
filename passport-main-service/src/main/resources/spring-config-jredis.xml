@@ -81,7 +81,7 @@
     <bean id="tokenTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="tokenConnectionFactory"/>
 
-    <bean id="tokenRedisUtils" class="com.sogou.upd.passport.common.utils.TokenRedisUtils">
+    <bean id="tokenRedisUtils" class="com.sogou.upd.passport.common.utils.RedisUtils">
         <property name="redisTemplate" ref="tokenTemplate" />
     </bean>
 
