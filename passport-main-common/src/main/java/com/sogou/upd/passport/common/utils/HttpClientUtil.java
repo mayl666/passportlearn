@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.params.ClientPNames;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ public class HttpClientUtil {
      * 超过500ms的请求定义为慢请求
      */
     private final static int SLOW_TIME = 500;
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
@@ -103,15 +106,17 @@ public class HttpClientUtil {
             method.setFollowRedirects(false);
             method.setDoAuthentication(false);
             method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
-                    "Sogou Passport Center Notifier");
-            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
+//            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
+//                    "Sogou Passport Center Notifier");
+//            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
+            method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
             client.executeMethod(method);
             String[] urlArray = url.split("[?]");
             stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
         } catch (Exception e) {
             stopWatch(stopWatch, "http request error", "failed");
+            logger.error("http request error", e);
             return null;
         } finally {
             method.releaseConnection();
