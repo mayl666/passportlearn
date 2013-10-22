@@ -152,12 +152,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) {
         try {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return shTokenService.verifyAllShRToken(passportId, clientId, instanceId, refreshToken) ||
-                        pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken) ||
-                        pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                return  (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
+                         pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken) ||
+                         shTokenService.verifyAllShRToken(passportId, clientId, instanceId, refreshToken));
             } else if (CommonHelper.isPinyinMACToken(clientId)) {
-                return shTokenService.verifyShRToken(passportId, clientId, instanceId, refreshToken) ||
-                        pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                return (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
+                        shTokenService.verifyShRToken(passportId, clientId, instanceId, refreshToken));
             } else {
                 return pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             }
