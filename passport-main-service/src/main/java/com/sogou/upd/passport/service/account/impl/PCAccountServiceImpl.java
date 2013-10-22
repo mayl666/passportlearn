@@ -14,7 +14,6 @@ import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,16 +58,16 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 //        return initialAccountToken(passportId,instanceId,appConfig);
         final int clientId = appConfig.getClientId();
         try {
-            AccountToken accountToken = queryAccountToken(passportId,clientId,instanceId);
-            if(accountToken == null || !isValidToken(accountToken.getAccessValidTime()) || !isValidToken(accountToken.getRefreshValidTime())){
-                return initialAccountToken(passportId,instanceId,appConfig);
+            AccountToken accountToken = queryAccountToken(passportId, clientId, instanceId);
+            if (accountToken == null || !isValidToken(accountToken.getAccessValidTime()) || !isValidToken(accountToken.getRefreshValidTime())) {
+                return initialAccountToken(passportId, instanceId, appConfig);
             }
-            if(isNeedUpdate(accountToken,appConfig)){
-                if(isNeedExtendTime(accountToken.getAccessValidTime(),appConfig.getAccessTokenExpiresin())){
+            if (isNeedUpdate(accountToken, appConfig)) {
+                if (isNeedExtendTime(accountToken.getAccessValidTime(), appConfig.getAccessTokenExpiresin())) {
                     long newAccessValidTime = DateUtil.generatorVaildTime(appConfig.getAccessTokenExpiresin());
                     accountToken.setAccessValidTime(newAccessValidTime);
                 }
-                if(isNeedExtendTime(accountToken.getRefreshValidTime(),appConfig.getRefreshTokenExpiresin())){
+                if (isNeedExtendTime(accountToken.getRefreshValidTime(), appConfig.getRefreshTokenExpiresin())) {
                     long newRefreshValidTime = DateUtil.generatorVaildTime(appConfig.getRefreshTokenExpiresin());
                     accountToken.setRefreshValidTime(newRefreshValidTime);
                 }
@@ -82,7 +81,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException {
+    public void saveAccountToken(final String passportId, final String instanceId, AppConfig appConfig, AccountToken accountToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
             String kvKey = buildKeyStr(passportId, clientId, instanceId);
@@ -106,11 +105,17 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
-            AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey,AccountToken.class);
-            if(accountToken == null){
+            long start = System.currentTimeMillis();
+            AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey, AccountToken.class);
+            CommonHelper.recordTimestamp(start, "TokenRedies getObject");
+            if (accountToken == null) {
+                start = System.currentTimeMillis();
                 accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
-                if(accountToken != null){
-                    tokenRedisUtils.set(tokenRedisKey,accountToken);
+                CommonHelper.recordTimestamp(start, "kvUtils getObject");
+                if (accountToken != null) {
+                    start = System.currentTimeMillis();
+                    tokenRedisUtils.set(tokenRedisKey, accountToken);
+                    CommonHelper.recordTimestamp(start, "tokenRedis set");
                 }
             }
             return accountToken;
@@ -119,11 +124,13 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             throw new ServiceException(e);
         }
     }
+
     @Override
     public String queryOldPCToken(String passportId, int clientId, String instanceId) throws ServiceException {
         String oldRTokenKey = buildOldRTokenKeyStr(passportId, clientId, instanceId);
         return tokenRedisUtils.get(oldRTokenKey);
     }
+
     @Override
     public boolean verifyAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
         AccountToken accountToken = queryAccountToken(passportId, clientId, instanceId);
@@ -149,8 +156,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
-        if ( CommonHelper.isExplorerToken(clientId)) {
-            String oldRToken = queryOldPCToken(passportId,clientId,instanceId);
+        if (CommonHelper.isExplorerToken(clientId)) {
+            String oldRToken = queryOldPCToken(passportId, clientId, instanceId);
             return refreshToken.equals(oldRToken);
         }
         return false;
@@ -259,11 +266,11 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     /**
      * 验证Token是否失效
      */
-    private boolean isNeedUpdate(AccountToken accountToken,AppConfig appConfig) {
-        if(accountToken == null)
+    private boolean isNeedUpdate(AccountToken accountToken, AppConfig appConfig) {
+        if (accountToken == null)
             return true;
-        return (isNeedExtendTime(accountToken.getAccessValidTime(),appConfig.getAccessTokenExpiresin())
-                || isNeedExtendTime(accountToken.getRefreshValidTime(),appConfig.getRefreshTokenExpiresin()));
+        return (isNeedExtendTime(accountToken.getAccessValidTime(), appConfig.getAccessTokenExpiresin())
+                || isNeedExtendTime(accountToken.getRefreshValidTime(), appConfig.getRefreshTokenExpiresin()));
     }
 
     /**
