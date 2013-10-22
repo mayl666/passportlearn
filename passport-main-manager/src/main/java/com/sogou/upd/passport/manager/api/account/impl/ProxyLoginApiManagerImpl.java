@@ -11,7 +11,6 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -21,7 +20,7 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import org.apache.commons.httpclient.Header;
+import org.apache.http.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -114,6 +113,16 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             if (isHttps) {
                 shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
             }
+            RequestModel requestModel = new RequestModel(shUrl);
+            requestModel.addParam("userid", userId);
+            requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+            requestModel.addParam("ct", ct);
+            requestModel.addParam("code", code);
+            requestModel.addParam("ru", ru);
+            requestModel.addParam("persistentcookie", createCookieUrlApiParams.getPersistentcookie());
+            requestModel.addParam("domain", createCookieUrlApiParams.getDomain());
+            result.setDefaultModel("requestModel", requestModel);
+
             StringBuilder urlBuilder = new StringBuilder(shUrl);
             urlBuilder.append("?").append("userid=").append(userId)
                     .append("&appid=").append(SHPPUrlConstant.APP_ID)
@@ -135,7 +144,10 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
         Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
         String url = (String) cookieUrlResult.getModels().get("url");
-        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
+        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
+        Header[] headers = SGHttpClient.executeHeaders(requestModel);
+
+//        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
         Result result = new APIResultSupport(false);
         if (headers != null) {
             String locationKey = "Location";

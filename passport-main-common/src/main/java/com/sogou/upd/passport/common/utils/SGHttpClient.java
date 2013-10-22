@@ -5,11 +5,13 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -146,6 +148,23 @@ public class SGHttpClient {
         }
     }
 
+    public static Header[] executeHeaders(RequestModel requestModel) {
+        if (requestModel == null) {
+            throw new NullPointerException("requestModel 不能为空");
+        }
+        HttpRequestBase httpRequest = getHttpRequest(requestModel);
+        try {
+            HttpParams params = httpClient.getParams();
+            params.setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+            HttpResponse httpResponse = httpClient.execute(httpRequest);
+            Header[] headers = httpResponse.getAllHeaders();
+            //302如何处理
+            return headers;
+        } catch (IOException e) {
+            throw new RuntimeException("http request error ", e);
+        }
+    }
+
     /**
      * 执行请求并返回请求结果
      *
@@ -211,8 +230,8 @@ public class SGHttpClient {
      */
     protected static void stopWatch(StopWatch stopWatch, String tag, String message) {
         //无论什么情况都记录下所有的请求数据
-        if(stopWatch.getElapsedTime() >= SLOW_TIME){
-            tag+="(slow)";
+        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
+            tag += "(slow)";
         }
         stopWatch.stop(tag, message);
     }
