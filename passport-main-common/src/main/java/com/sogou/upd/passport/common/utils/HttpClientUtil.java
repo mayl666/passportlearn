@@ -245,7 +245,7 @@ public class HttpClientUtil {
 
     static {
         MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
-        manager.getParams().setDefaultMaxConnectionsPerHost(125);
+        manager.getParams().setDefaultMaxConnectionsPerHost(200);
         manager.getParams().setMaxTotalConnections(1000);
         manager.getParams().setConnectionTimeout(5000);
         manager.getParams().setSoTimeout(5000);
