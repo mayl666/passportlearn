@@ -69,9 +69,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 //根据域名判断是否代理，一期全部走代理
                 Result result;
                 if (ManagerHelper.isInvokeProxyApi(passportId)) {
-                    long start = System.currentTimeMillis();
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                    CommonHelper.recordTimestamp(start, "createPairToken-webAuthUser");
                 } else {
                     result = sgLoginApiManager.webAuthUser(authUserApiParams);
                 }
@@ -104,9 +102,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String instanceId = pcRefreshTokenParams.getTs();
         String refreshToken = pcRefreshTokenParams.getRefresh_token();
         try {
-            long start = System.currentTimeMillis();
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            CommonHelper.recordTimestamp(start, "authRefreshToken-queryAppConfigByClientId");
             if (appConfig == null) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
@@ -137,12 +133,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
             String instanceId = authPcTokenParams.getTs();
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
-            } else {
-                if (CommonHelper.isIePinyinToken(clientId)) {
-                    if (shTokenService.verifyShAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
-                        result.setSuccess(true);
-                    }
-                }
             }
         } catch (Exception e) {
             logger.error("authToken fail", e);
@@ -203,12 +193,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
         String uniqname = "";
         try {
             requestModel.addParam("uid", passportId);
-            long start = System.currentTimeMillis();
             uniqname = SGHttpClient.executeStr(requestModel);
             if (Strings.isNullOrEmpty(uniqname)) {
                 uniqname = passportId.substring(0, passportId.indexOf("@"));
             }
-            CommonHelper.recordTimestamp(start, "getBrowserBbsUniqname");
         } catch (Exception e) {
             logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
         }

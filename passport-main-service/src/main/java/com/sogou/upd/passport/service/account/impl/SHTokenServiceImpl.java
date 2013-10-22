@@ -60,9 +60,7 @@ public class SHTokenServiceImpl implements SHTokenService {
     public String queryAccessToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
-            long start =System.currentTimeMillis();
             Object value = aTokenMemUtils.get(key);
-            CommonHelper.recordTimestamp(start, "queryAccessToken-aTokenMemUtils get");
             if (value != null) {
                 return value.toString();
             }
@@ -77,9 +75,7 @@ public class SHTokenServiceImpl implements SHTokenService {
     public String queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
-            long start = System.currentTimeMillis();
             Object value = rTokenMemUtils.get(key);
-            CommonHelper.recordTimestamp(start, "queryRefreshToken-queryRefreshToken-rTokenMemUtils get");
             if (value != null) {
                 return value.toString();
             }
@@ -94,9 +90,7 @@ public class SHTokenServiceImpl implements SHTokenService {
     public String queryOldRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildOldRTokenKeyStr(passportId, clientId, instanceId);
-            long start = System.currentTimeMillis();
             Object value = rTokenMemUtils.get(key);
-            CommonHelper.recordTimestamp(start, "queryOldRefreshToken-rTokenMemUtils get");
             if (value != null) {
                 return value.toString();
             }
