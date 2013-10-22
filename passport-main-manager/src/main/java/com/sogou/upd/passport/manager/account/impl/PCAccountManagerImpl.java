@@ -133,12 +133,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
             String instanceId = authPcTokenParams.getTs();
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
-            } else {
-                if (CommonHelper.isIePinyinToken(clientId)) {
-                    if (shTokenService.verifyShAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
-                        result.setSuccess(true);
-                    }
-                }
             }
         } catch (Exception e) {
             logger.error("authToken fail", e);
