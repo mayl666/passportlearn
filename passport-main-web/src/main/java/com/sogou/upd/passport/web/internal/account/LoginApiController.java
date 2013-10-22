@@ -14,6 +14,7 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ReNewCookieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
