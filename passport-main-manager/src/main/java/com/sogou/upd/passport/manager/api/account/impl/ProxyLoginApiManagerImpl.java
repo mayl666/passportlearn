@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -20,7 +21,7 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import org.apache.http.Header;
+import org.apache.commons.httpclient.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -144,10 +145,10 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
         Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
         String url = (String) cookieUrlResult.getModels().get("url");
-        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
-        Header[] headers = SGHttpClient.executeHeaders(requestModel);
+//        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
+//        Header[] headers = SGHttpClient.executeHeaders(requestModel);
 
-//        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
+        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
         Result result = new APIResultSupport(false);
         if (headers != null) {
             String locationKey = "Location";
