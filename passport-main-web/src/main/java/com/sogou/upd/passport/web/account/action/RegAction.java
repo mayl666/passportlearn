@@ -11,7 +11,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
@@ -73,8 +72,6 @@ public class RegAction extends BaseController {
     private OperateTimesService operateTimesService;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private CookieManager cookieManager;
 
     /**
      * 用户注册检查用户名是否存在
@@ -150,31 +147,32 @@ public class RegAction extends BaseController {
                 if (Strings.isNullOrEmpty(ru)) {
                     ru = LOGIN_INDEX_URL;
                 }
+
                 CookieApiParams cookieApiParams = new CookieApiParams();
                 Object objUserId = result.getModels().get("username");
-                cookieApiParams.setUserid((String) objUserId);   //获取cookie的用户id
+                cookieApiParams.setUserid((String) objUserId);
                 cookieApiParams.setClient_id(Integer.parseInt(regParams.getClient_id()));
                 cookieApiParams.setRu(ru);
-                cookieApiParams.setIp(ip);   //用户的真实ip
-                cookieApiParams.setPersistentcookie("0");//种session级别的cookie
                 Object obj = result.getModels().get("isSetCookie");
                 boolean isSetCookie = (boolean) obj;
                 if (isSetCookie) {  //非外域邮箱种sogou域cookie
                     cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-                    result = cookieManager.setCookie(response, cookieApiParams, -1);
-                    if (!result.isSuccess()) {
-                        result.setMessage("种sogou域cookie失败");
-                        return result;
+                    //TODO sogou域账号迁移后cookie生成问题
+                    Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+                    if (getCookieValueResult.isSuccess()) {
+                        String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+                        String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+                        ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+                        ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                     }
-                    result.setMessage("种sogou域cookie成功");
-                    result.setCode("0");
-                    result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 }
             }
         } catch (Exception e) {
             logger.error("reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
-            String logCode;
+            String logCode = null;
             if (!Strings.isNullOrEmpty(finalCode)) {
                 logCode = finalCode;
             } else {
