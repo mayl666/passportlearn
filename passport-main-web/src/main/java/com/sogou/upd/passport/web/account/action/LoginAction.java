@@ -134,6 +134,7 @@ public class LoginAction extends BaseController {
             cookieApiParams.setUserid((String) objUserId);
             cookieApiParams.setClient_id(Integer.parseInt(loginParams.getClient_id()));
             cookieApiParams.setRu(ru);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
 
             //TODO sogou域账号迁移后cookie生成问题
             Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
