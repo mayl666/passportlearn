@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -228,12 +229,13 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken")
-    public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
+    public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams, RedirectAttributes redirectAttributes) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
+        redirectAttributes.addAttribute("ru", authPcTokenParams.getRu());
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                return "redirect:" + authPcTokenParams.getRu() + "?status=1";   //status=1表示参数错误
+                return "redirect:{ru}?status=1";   //status=1表示参数错误
             }
             return "forward:/act/errorMsg?msg=Error: parameter error!";
         }
@@ -267,11 +269,11 @@ public class PCAccountController extends BaseController {
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
-
-            return "redirect:" + redirectUrl;
+            redirectAttributes.addAttribute("ru", redirectUrl);
+            return "redirect:{ru}";
         }
         //token验证失败
-        return "redirect:" + authPcTokenParams.getRu() + "?status=6";//status=6表示验证失败
+        return "redirect:{ru}?status=6";//status=6表示验证失败
     }
 
     @RequestMapping(value = "/act/errorMsg")
