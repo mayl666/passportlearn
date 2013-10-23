@@ -67,9 +67,12 @@ public class CommonHelper {
         return clientId == CommonConstant.PINYIN_MAC_CLIENTID;
     }
 
-    public static void recordTimestamp(long start, String msg) {
+    /*public static void recordTimestamp(long start, String msg) {
         long end = System.currentTimeMillis();
-        logger.info(msg +" " +(end - start));
-    }
+        long costTime = end -start;
+        if(costTime > 50){
+            logger.info(msg +" " +costTime);
+        }
+    } */
 
 }

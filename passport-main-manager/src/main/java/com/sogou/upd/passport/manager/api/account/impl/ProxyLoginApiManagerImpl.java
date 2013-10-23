@@ -144,16 +144,14 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        long start = System.currentTimeMillis();
         Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
-        CommonHelper.recordTimestamp(start,"getCookieValue-buildCreateCookieUrl");
 
         String url = (String) cookieUrlResult.getModels().get("url");
 //        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
 //        Header[] headers = SGHttpClient.executeHeaders(requestModel);
-        start = System.currentTimeMillis();
+//        start = System.currentTimeMillis();
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
-        CommonHelper.recordTimestamp(start,"getCookieValue-getCookieValue");
+//        CommonHelper.recordTimestamp(start,"getCookieValue-getCookieValue");
 
         Result result = new APIResultSupport(false);
         if (headers != null) {

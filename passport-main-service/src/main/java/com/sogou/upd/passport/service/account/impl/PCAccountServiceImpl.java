@@ -43,10 +43,10 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
-            long start = System.currentTimeMillis();
+//            long start = System.currentTimeMillis();
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             saveAccountToken(passportId, instanceId, appConfig, accountToken);
-            CommonHelper.recordTimestamp(start, "saveAccountToken-newAccountToken");
+//            CommonHelper.recordTimestamp(start, "saveAccountToken-newAccountToken");
 
             return accountToken;
         } catch (Exception e) {
@@ -88,17 +88,17 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         final int clientId = appConfig.getClientId();
         try {
             String kvKey = buildKeyStr(passportId, clientId, instanceId);
-            long start = System.currentTimeMillis();
+//            long start = System.currentTimeMillis();
 
             kvUtils.set(kvKey, accountToken);
-            CommonHelper.recordTimestamp(start, "saveAccountToken-kvUtils");
+//            CommonHelper.recordTimestamp(start, "saveAccountToken-kvUtils");
 
             //重新设置缓存
-            start = System.currentTimeMillis();
+//            start = System.currentTimeMillis();
 
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.set(redisKey, accountToken);
-            CommonHelper.recordTimestamp(start, "saveAccountToken-tokenRedisUtils");
+//            CommonHelper.recordTimestamp(start, "saveAccountToken-tokenRedisUtils");
 
 //            if (CommonHelper.isIePinyinToken(clientId)){
 //                //保存一份在sohu memcache
@@ -116,10 +116,10 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
-            long start = System.currentTimeMillis();
+//            long start = System.currentTimeMillis();
 
             AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey, AccountToken.class);
-            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies");
+//            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies");
 
             if (accountToken == null) {
                 accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
