@@ -256,12 +256,12 @@ public class HttpClientUtil {
     }
 
     static {
-        MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
-        manager.getParams().setDefaultMaxConnectionsPerHost(100);
-        manager.getParams().setMaxTotalConnections(500);
-        manager.getParams().setConnectionTimeout(1000);
-        manager.getParams().setSoTimeout(1000);
-        shClient = new HttpClient(manager);
+        MultiThreadedHttpConnectionManager shManager = new MultiThreadedHttpConnectionManager();
+        shManager.getParams().setDefaultMaxConnectionsPerHost(100);
+        shManager.getParams().setMaxTotalConnections(500);
+        shManager.getParams().setConnectionTimeout(1000);
+        shManager.getParams().setSoTimeout(1000);
+        shClient = new HttpClient(shManager);
     }
 
     public static void main(String[] args) throws Exception {
