@@ -17,10 +17,7 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import org.apache.commons.httpclient.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +134,18 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         } catch (Exception e) {
             log.error("buildCreateCookieUrl error userid:" + createCookieUrlApiParams.getUserid() + " ru=" + createCookieUrlApiParams.getRu(), e);
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+        }
+        return result;
+    }
+
+    @Override
+    public Result getSHCookieValue(CookieApiParams cookieApiParams){
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(cookieApiParams);
+        Result result = executeResult(requestModelXml);
+        if (result.isSuccess()) {
+            result.setMessage("获取cookie成功");
+            result.setDefaultModel("userid", cookieApiParams.getUserid());
         }
         return result;
     }

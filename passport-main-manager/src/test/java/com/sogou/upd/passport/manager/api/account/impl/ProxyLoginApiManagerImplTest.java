@@ -4,10 +4,7 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +29,20 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
             authUserParameters.setClient_id(clientId);
             authUserParameters.setPassword(Coder.encryptMD5("111111"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testGetCookieInfo() {
+        String userId = "testliu94608@sogou.com";
+        try {
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setIp("200.0.98.23");
+            Result result = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
             System.out.println(result);
         } catch (Exception e) {
             e.printStackTrace();
