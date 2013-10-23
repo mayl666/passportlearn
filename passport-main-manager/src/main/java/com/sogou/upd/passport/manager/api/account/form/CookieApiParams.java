@@ -18,11 +18,11 @@ public class CookieApiParams extends BaseApiParams {
 
     @NotBlank(message = "用户id不能为空")
     private String userid;     //用户id
-    private int trust;   //激活：1，未激活：0
+    private int trust;   //激活：1，未激活：0   只外域邮箱用到，其它账号默认为1，激活
     @URL
     private String ru;
-    private String ip;
-    private String persistentcookie;
+    private String ip;                     //用户的机器ip
+    private String persistentcookie;         //是否记住密码（0：否 1：是）或是否使用持久cookie 0:session级别的cookie 1:长时间有效的cookie，目前是两天
 
     public String getUserid() {
         return userid;
