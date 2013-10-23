@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.params.ClientPNames;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ public class HttpClientUtil {
      * 超过500ms的请求定义为慢请求
      */
     private final static int SLOW_TIME = 500;
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
@@ -103,15 +106,14 @@ public class HttpClientUtil {
             method.setFollowRedirects(false);
             method.setDoAuthentication(false);
             method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
-                    "Sogou Passport Center Notifier");
-            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
-            client.executeMethod(method);
+            method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+            shClient.executeMethod(method);
             String[] urlArray = url.split("[?]");
             stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
         } catch (Exception e) {
             stopWatch(stopWatch, "http request error", "failed");
+            logger.error("http request error", e);
             return null;
         } finally {
             method.releaseConnection();
@@ -242,14 +244,24 @@ public class HttpClientUtil {
     }
 
     private static HttpClient client;
+    private static HttpClient shClient; //调用搜狐的setcookie接口
 
     static {
         MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
-        manager.getParams().setDefaultMaxConnectionsPerHost(200);
+        manager.getParams().setDefaultMaxConnectionsPerHost(100);
         manager.getParams().setMaxTotalConnections(500);
         manager.getParams().setConnectionTimeout(5000);
         manager.getParams().setSoTimeout(5000);
         client = new HttpClient(manager);
+    }
+
+    static {
+        MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+        manager.getParams().setDefaultMaxConnectionsPerHost(100);
+        manager.getParams().setMaxTotalConnections(500);
+        manager.getParams().setConnectionTimeout(1000);
+        manager.getParams().setSoTimeout(1000);
+        shClient = new HttpClient(manager);
     }
 
     public static void main(String[] args) throws Exception {
