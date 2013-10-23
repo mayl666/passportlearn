@@ -277,6 +277,7 @@ public class HttpClientUtil {
 //        System.out.println(p);
         String urlStr = "http://passport.sohu.com/act/setcookie?userid=wg494943628@sogou.com&appid=1120&ct=1382384218435&code=ffee354f18ef84cf73b4655a37ddd528&ru=http://profile.pinyin.sogou.com/&persistentcookie=0&domain=sogou.com";
         URL url = new URL(urlStr);
+        Header[] headers = getResponseHeadersWget(urlStr);
         System.out.println("protocol:" + url.getProtocol());
         System.out.println("host:" + url.getHost());
         System.out.println("path:" + url.getPath());
