@@ -19,6 +19,7 @@ import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,9 @@ import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -146,6 +150,22 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         requestModelXml.getParams().put("result_type","json");       //sohu 传 xml参数，返回json
         Result result = executeResult(requestModelXml);
         if (result.isSuccess()) {
+            Object obj= result.getModels().get("data");
+            if(obj!=null && obj instanceof List) {
+                List<Map<String, String>> listMap = (List<Map<String, String>>) obj;
+                if(CollectionUtils.isNotEmpty(listMap)){
+                    for (Map<String,String>map:listMap){
+                         String key=(String)map.get("name");
+                         String value=(String)map.get("value");
+                         if("ppinf".equals(key)){
+                             result.getModels().put("ppinf",value);
+                         }
+                         if("pprdig".equals(key)){
+                             result.getModels().put("pprdig",value);
+                         }
+                    }
+                }
+            }
             result.setMessage("获取cookie成功");
             result.setDefaultModel("userid", cookieApiParams.getUserid());
         }
