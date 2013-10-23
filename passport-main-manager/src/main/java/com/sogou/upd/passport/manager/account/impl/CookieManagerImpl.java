@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
@@ -27,9 +30,11 @@ public class CookieManagerImpl implements CookieManager {
     private String PPINF = "2|1381822290|1383031890|bG9naW5pZDowOnx1c2VyaWQ6MjU6c2dwcm9jZXNzdGVzdDAxQHNvZ291LmNvbXxzZXJ2aWNldXNlOjIwOjAwMTAwMDAwMDAwMDAwMDAwMDAwfGNydDoxMDoyMDEzLTEwLTE1fGVtdDoxOjB8YXBwaWQ6NDoxMTIwfHRydXN0OjE6MXxwYXJ0bmVyaWQ6MTowfHJlbGF0aW9uOjA6fHV1aWQ6MTY6NTNkNmUwNzFmYTk5NDdic3x1aWQ6MTY6NTNkNmUwNzFmYTk5NDdic3x1bmlxbmFtZTowOnw";
     private String PPRDIG = "kOdlRIxptgVY2ZRcjKYchIY9JBWkqGM_MjQy11OTC0fB9ACztDrs0lnjzAgHenjfCb8_Bgc6RAxO15TIaR5DeJTTQQUGiz-afCzDU9dYUUfge_WJLfiXjfR7iEGBDlBIQ5eSTV0oyMdLQHE-8UlVLYjbohSOzVVUPqRfoDvLE0w";
 
+    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+
     @Autowired
     private AppConfigService appConfigService;
-//    @Autowired
+    //    @Autowired
 //    private CookieApiManager proxyCookieApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
@@ -41,37 +46,27 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setCookie(HttpServletResponse response, Result result, CookieApiParams cookieApiParams, int maxAge) {
-        String userid = cookieApiParams.getUserid();
-        if (ManagerHelper.isInvokeProxyApi(userid)) {
+    public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {
+        Result result = new APIResultSupport(false);
+        if (ManagerHelper.isUsedSohuProxyApiToGetCookie()) {  //使用sohu新提供的getcookieinfo接口
+            result = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+        } else {       //使用之前的从location里拿的cookie的接口，为回滚做准备
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(cookieApiParams.getUserid());
+            String ru = Strings.isNullOrEmpty(cookieApiParams.getRu()) ? LOGIN_INDEX_URL : cookieApiParams.getRu();
+            cookieApiParams.setRu(ru);
             createCookieUrlApiParams.setRu(cookieApiParams.getRu());
             createCookieUrlApiParams.setDomain("sogou.com");
-            //从location里拿cookie
             result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-        } else {
-            //todo nginx module升级完成后，sogou自己生成cookie，从sohu获取cookie值，依sohu最终提供的接口
-//            result = proxyCookieApiManager.getCookieValue(cookieApiParams);
-            result.setSuccess(true);
         }
         //获取cookie成功，种sogou域cookie
         if (result.isSuccess()) {
-            String ppinf;
-            String pprdig;
-            if (ManagerHelper.isInvokeProxyApi(userid)) {
-                ppinf = (String) result.getModels().get("ppinf");
-                pprdig = (String) result.getModels().get("pprdig");
-            } else {
-                ppinf = PPINF;
-                pprdig = PPRDIG;
-            }
-            ServletUtil.setCookie(response, "ppinf", ppinf, maxAge);
-            ServletUtil.setCookie(response, "pprdig", pprdig, maxAge);
+            String ppinf = (String) result.getModels().get("ppinf");
+            String pprdig = (String) result.getModels().get("pprdig");
+            ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
             result.setSuccess(true);
-            result.setMessage("种cookie成功");
             result.setDefaultModel("userid", cookieApiParams.getUserid());
-            result.setCode("0");
         }
         return result;
     }
