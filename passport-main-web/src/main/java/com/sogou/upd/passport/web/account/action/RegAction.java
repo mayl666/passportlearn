@@ -153,6 +153,7 @@ public class RegAction extends BaseController {
                 cookieApiParams.setUserid((String) objUserId);
                 cookieApiParams.setClient_id(Integer.parseInt(regParams.getClient_id()));
                 cookieApiParams.setRu(ru);
+                cookieApiParams.setIp(ip);
                 Object obj = result.getModels().get("isSetCookie");
                 boolean isSetCookie = (boolean) obj;
                 if (isSetCookie) {  //非外域邮箱种sogou域cookie
