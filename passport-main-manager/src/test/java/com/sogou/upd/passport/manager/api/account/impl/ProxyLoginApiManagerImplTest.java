@@ -8,6 +8,10 @@ import com.sogou.upd.passport.manager.api.account.form.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-6
@@ -43,7 +47,15 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
             cookieApiParams.setUserid(userId);
             cookieApiParams.setIp("200.0.98.23");
             Result result = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
-            System.out.println(result);
+            Map<String, Object> map = result.getModels();
+            List<Map<String, String>> listString = (List<Map<String, String>>) map.get("data");
+            Map<String, String> mapString = new HashMap<String, String>();
+            for (int i = 0; i < listString.size(); i++) {
+                String key = listString.get(i).get("name").toString();
+                String value = listString.get(i).get("value").toString();
+                mapString.put(key,value);
+            }
+            System.out.println(mapString);
         } catch (Exception e) {
             e.printStackTrace();
         }
