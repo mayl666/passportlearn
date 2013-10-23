@@ -130,8 +130,7 @@ public class LoginAction extends BaseController {
 //            createCookieUrlApiParams.setRu(ru);
 //            createCookieUrlApiParams.setDomain("sogou.com");
             CookieApiParams cookieApiParams = new CookieApiParams();
-            Object objUserId = result.getModels().get("username");
-            cookieApiParams.setUserid((String) objUserId);
+            cookieApiParams.setUserid(userId);
             cookieApiParams.setClient_id(Integer.parseInt(loginParams.getClient_id()));
             cookieApiParams.setRu(ru);
             cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
