@@ -27,6 +27,8 @@ import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -140,16 +142,31 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result getSHCookieValue(CookieApiParams cookieApiParams){
+    public Result getSHCookieValue(CookieApiParams cookieApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(cookieApiParams);
-        requestModelXml.getParams().put("result_type","json");       //sohu 传 xml参数，返回json
+        requestModelXml.getParams().put("result_type", "json");       //sohu 传 xml参数，返回json
         Result result = executeResult(requestModelXml);
         if (result.isSuccess()) {
+            Map<String, String> map = transferJsonToMap(result);
+            result.setDefaultModel("ppinf", map.get("ppinf").toString());
+            result.setDefaultModel("pprdig", map.get("pprdig").toString());
             result.setMessage("获取cookie成功");
             result.setDefaultModel("userid", cookieApiParams.getUserid());
         }
         return result;
+    }
+
+    private Map<String, String> transferJsonToMap(Result result) {
+        Map<String, Object> map = result.getModels();
+        List<Map<String, String>> listJson = (List<Map<String, String>>) map.get("data");
+        Map<String, String> mapString = new HashMap<String, String>();
+        for (int i = 0; i < listJson.size(); i++) {
+            String key = listJson.get(i).get("name").toString();
+            String value = listJson.get(i).get("value").toString();
+            mapString.put(key, value);
+        }
+        return mapString;
     }
 
     @Override
