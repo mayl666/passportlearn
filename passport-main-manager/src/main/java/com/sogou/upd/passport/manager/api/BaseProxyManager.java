@@ -79,7 +79,13 @@ public class BaseProxyManager {
         //设置默认参数同时计算参数的签名
         this.setDefaultParam(requestModel, signVariableStr);
         if (requestModel instanceof RequestModelXml ||requestModel instanceof RequestModelXmlGBK) {
-            return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
+
+            Object result_type=  requestModel.getParams().get("result_type");
+            if(result_type==null){
+                return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
+            } else {
+                return SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            }
         } else {
             return SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         }

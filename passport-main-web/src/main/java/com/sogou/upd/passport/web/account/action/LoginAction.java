@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -118,19 +119,24 @@ public class LoginAction extends BaseController {
 
             userId = result.getModels().get("userid").toString();
 
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(userId);
-
-            //设置来源
+//            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+//            createCookieUrlApiParams.setUserid(userId);
+//
+//            //设置来源
             String ru = loginParams.getRu();
             if (Strings.isNullOrEmpty(ru)) {
                 ru = LOGIN_INDEX_URLSTR;
             }
-            createCookieUrlApiParams.setRu(ru);
-            createCookieUrlApiParams.setDomain("sogou.com");
+//            createCookieUrlApiParams.setRu(ru);
+//            createCookieUrlApiParams.setDomain("sogou.com");
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            Object objUserId = result.getModels().get("username");
+            cookieApiParams.setUserid((String) objUserId);
+            cookieApiParams.setClient_id(Integer.parseInt(loginParams.getClient_id()));
+            cookieApiParams.setRu(ru);
 
             //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+            Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
