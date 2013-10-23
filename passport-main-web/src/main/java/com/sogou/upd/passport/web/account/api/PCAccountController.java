@@ -232,10 +232,10 @@ public class PCAccountController extends BaseController {
     public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams, RedirectAttributes redirectAttributes) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
-        redirectAttributes.addAttribute("ru", authPcTokenParams.getRu());
+        redirectAttributes.addAttribute("authtokenRedirectUrl", authPcTokenParams.getRu());
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                return "redirect:{ru}?status=1";   //status=1表示参数错误
+                return "redirect:{authtokenRedirectUrl}?status=1";   //status=1表示参数错误
             }
             return "forward:/act/errorMsg?msg=Error: parameter error!";
         }
@@ -269,11 +269,11 @@ public class PCAccountController extends BaseController {
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
-            redirectAttributes.addAttribute("ru", redirectUrl);
-            return "redirect:{ru}";
+            redirectAttributes.addAttribute("authtokenRedirectUrl", redirectUrl);
+            return "redirect:{authtokenRedirectUrl}";
         }
         //token验证失败
-        return "redirect:{ru}?status=6";//status=6表示验证失败
+        return "redirect:{authtokenRedirectUrl}?status=6";//status=6表示验证失败
     }
 
     @RequestMapping(value = "/act/errorMsg")
