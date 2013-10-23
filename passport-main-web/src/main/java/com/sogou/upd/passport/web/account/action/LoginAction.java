@@ -145,6 +145,8 @@ public class LoginAction extends BaseController {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
 
+                //0-否  1-真
+                validTime=authLogin==0?-1:(int)DateAndNumTimesConstant.TWO_WEEKS;
 
                 ServletUtil.setCookie(response, "ppinf", ppinf, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setCookie(response, "pprdig", pprdig, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
