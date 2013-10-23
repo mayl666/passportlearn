@@ -153,7 +153,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 //        Header[] headers = SGHttpClient.executeHeaders(requestModel);
         start = System.currentTimeMillis();
         Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
-        CommonHelper.recordTimestamp(start,"getCookieValue-getCookieValue Headers");
+        CommonHelper.recordTimestamp(start,"getCookieValue-getCookieValue");
 
         Result result = new APIResultSupport(false);
         if (headers != null) {

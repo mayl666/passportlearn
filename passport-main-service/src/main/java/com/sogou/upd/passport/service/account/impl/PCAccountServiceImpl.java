@@ -91,14 +91,14 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             long start = System.currentTimeMillis();
 
             kvUtils.set(kvKey, accountToken);
-            CommonHelper.recordTimestamp(start, "saveAccountToken-kvUtils set");
+            CommonHelper.recordTimestamp(start, "saveAccountToken-kvUtils");
 
             //重新设置缓存
             start = System.currentTimeMillis();
 
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.set(redisKey, accountToken);
-            CommonHelper.recordTimestamp(start, "saveAccountToken-tokenRedisUtils set");
+            CommonHelper.recordTimestamp(start, "saveAccountToken-tokenRedisUtils");
 
 //            if (CommonHelper.isIePinyinToken(clientId)){
 //                //保存一份在sohu memcache
@@ -119,7 +119,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             long start = System.currentTimeMillis();
 
             AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey, AccountToken.class);
-            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies getObject");
+            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies");
 
             if (accountToken == null) {
                 accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);

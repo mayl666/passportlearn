@@ -69,7 +69,7 @@ public class CommonHelper {
 
     public static void recordTimestamp(long start, String msg) {
         long end = System.currentTimeMillis();
-        logger.info(msg + " time:" + (end - start) + "ms");
+        logger.info(msg + (end - start));
     }
 
 }
