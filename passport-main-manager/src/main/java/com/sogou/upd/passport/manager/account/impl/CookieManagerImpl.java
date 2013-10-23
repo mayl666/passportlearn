@@ -54,8 +54,7 @@ public class CookieManagerImpl implements CookieManager {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(cookieApiParams.getUserid());
             String ru = Strings.isNullOrEmpty(cookieApiParams.getRu()) ? LOGIN_INDEX_URL : cookieApiParams.getRu();
-            cookieApiParams.setRu(ru);
-            createCookieUrlApiParams.setRu(cookieApiParams.getRu());
+            createCookieUrlApiParams.setRu(ru);
             createCookieUrlApiParams.setDomain("sogou.com");
             result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
         }
