@@ -5,6 +5,8 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -239,6 +241,10 @@ public class PCAccountController extends BaseController {
             return "forward:/act/errorMsg?msg=Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
+        if(AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)){
+            authPcTokenParams.setUserid(userId.toLowerCase());
+            userId = authPcTokenParams.getUserid();
+        }
         Result result = pcAccountManager.authToken(authPcTokenParams);
 
         //用户log
