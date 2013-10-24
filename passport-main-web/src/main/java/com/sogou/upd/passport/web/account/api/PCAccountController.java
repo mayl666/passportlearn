@@ -242,8 +242,8 @@ public class PCAccountController extends BaseController {
         }
         String userId = authPcTokenParams.getUserid();
         if(AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)){
-            authPcTokenParams.setUserid(userId.toLowerCase());
-            userId = authPcTokenParams.getUserid();
+            userId = userId.toLowerCase();
+            authPcTokenParams.setUserid(userId);
         }
         Result result = pcAccountManager.authToken(authPcTokenParams);
 
