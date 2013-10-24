@@ -12,7 +12,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
@@ -30,7 +29,6 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
-import com.sun.corba.se.impl.corba.CORBAObjectImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,26 +146,23 @@ public class RegAction extends BaseController {
                     ru = LOGIN_INDEX_URL;
                 }
 
-                CookieApiParams cookieApiParams = new CookieApiParams();
-                Object objUserId = result.getModels().get("username");
-                cookieApiParams.setUserid((String) objUserId);
-                cookieApiParams.setClient_id(Integer.parseInt(regParams.getClient_id()));
-                cookieApiParams.setRu(ru);
-                cookieApiParams.setIp(ip);
-                Object obj = result.getModels().get("isSetCookie");
-                boolean isSetCookie = (boolean) obj;
-                if (isSetCookie) {  //非外域邮箱种sogou域cookie
-                    cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-                    //TODO sogou域账号迁移后cookie生成问题
-                    Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
-                    if (getCookieValueResult.isSuccess()) {
-                        String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-                        String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                        ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                        ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+                CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
 
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
-                    }
+                Object obj = result.getModels().get("username");
+
+                createCookieUrlApiParams.setUserid((String)obj);
+                createCookieUrlApiParams.setRu(ru);
+                createCookieUrlApiParams.setDomain("sogou.com");
+
+                //TODO sogou域账号迁移后cookie生成问题
+                Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+                if (getCookieValueResult.isSuccess()) {
+                    String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+                    String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+                    ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+                    ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
+
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 }
             }
         } catch (Exception e) {
@@ -207,7 +202,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
     @ResponseBody
-    public Object activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
+    public Object activeEmail(HttpServletRequest request, HttpServletResponse response,ActiveEmailParams activeParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -229,14 +224,16 @@ public class RegAction extends BaseController {
         //邮件激活
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
-            //设置来源
-            CookieApiParams cookieApiParams = new CookieApiParams();
-            Object objUserId = result.getModels().get("userid").toString();
-            cookieApiParams.setUserid((String) objUserId);
-            cookieApiParams.setClient_id(Integer.parseInt(activeParams.getClient_id()));
-            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            // 种sohu域cookie
+            result = commonManager.createCookieUrl(result, activeParams.getPassport_id(), "", 1);
+
+            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+            createCookieUrlApiParams.setUserid(activeParams.getPassport_id());
+            createCookieUrlApiParams.setRu(activeParams.getRu());
+            createCookieUrlApiParams.setDomain("sogou.com");
+
             //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+            Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
