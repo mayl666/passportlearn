@@ -270,7 +270,7 @@ public class PCAccountController extends BaseController {
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
-            return "redirect:" + redirectUrl;
+            return "redirect:"+authPcTokenParams.getRu() +"?status=0";
         }
         //token验证失败
         return "redirect:"+authPcTokenParams.getRu() +"?status=6";//status=6表示验证失败
