@@ -231,7 +231,7 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken")
-    public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams, RedirectAttributes redirectAttributes) throws Exception {
+    public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
