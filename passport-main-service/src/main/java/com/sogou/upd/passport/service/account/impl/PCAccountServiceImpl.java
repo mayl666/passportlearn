@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.TokenRedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -35,9 +36,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     @Autowired
     private KvUtils kvUtils;
     @Autowired
-    private RedisUtils tokenRedisUtils;
-    @Autowired
-    private SHTokenService shTokenService;
+    private TokenRedisUtils tokenRedisUtils;
 
     @Override
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {

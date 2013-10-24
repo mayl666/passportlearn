@@ -239,6 +239,8 @@ public class PCAccountController extends BaseController {
             return "forward:/act/errorMsg?msg=Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
+        authPcTokenParams.setUserid(userId.toLowerCase());
+        userId = authPcTokenParams.getUserid();
         Result result = pcAccountManager.authToken(authPcTokenParams);
 
         //用户log
