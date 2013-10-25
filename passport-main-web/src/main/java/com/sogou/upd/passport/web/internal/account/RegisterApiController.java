@@ -139,7 +139,7 @@ public class RegisterApiController extends BaseController {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
             //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
             UserOperationLogUtil.log(userOperationLog);
         }
         commonManager.incRegTimesForInternal(ip);
