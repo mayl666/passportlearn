@@ -112,7 +112,7 @@
 
     <!-- 配置Velocity视图解析器 -->
     <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-        <property name="cache" value="false"/>
+        <property name="cache" value="true"/>
         <property name="suffix">
             <value>.vm</value>
         </property>

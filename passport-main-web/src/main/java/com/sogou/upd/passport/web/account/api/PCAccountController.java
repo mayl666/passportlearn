@@ -231,14 +231,16 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken")
+    @ResponseBody
     public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                return "redirect:"+authPcTokenParams.getRu() +"?status=1";   //status=1表示参数错误
+                response.sendRedirect(authPcTokenParams.getRu() +"?status=1"); //status=1表示参数错误
+                return "";
             }
-            return "forward:/act/errorMsg?msg=Error: parameter error!";
+            return "Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
         if(AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)){
@@ -274,11 +276,12 @@ public class PCAccountController extends BaseController {
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
             }
             String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
-            return "redirect:" + redirectUrl;
-//            return "redirect:" +authPcTokenParams.getRu() +"?status=0";
+            response.sendRedirect(redirectUrl);
+            return "";  //如果重定向url不是固定的，不可使用springmvc的RedirectView，因为会缓存url
         }
         //token验证失败
-        return "redirect:"+authPcTokenParams.getRu() +"?status=6";//status=6表示验证失败
+        response.sendRedirect(authPcTokenParams.getRu() +"?status=6");  //status=6表示验证失败
+        return "";
     }
 
     @RequestMapping(value = "/act/errorMsg")
