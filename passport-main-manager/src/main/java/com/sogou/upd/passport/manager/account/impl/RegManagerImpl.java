@@ -145,7 +145,9 @@ public class RegManagerImpl implements RegManager {
             return result;
         }
         if (result.isSuccess()) {
+
             result.getModels().put("username",username);            //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
+            //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
             Object obj = result.getModels().get("isSetCookie");
             if (obj != null && (obj instanceof Boolean) && (boolean) obj) {
                 // 种sohu域cookie
@@ -245,6 +247,8 @@ public class RegManagerImpl implements RegManager {
                 Account account = accountService.initialWebAccount(username, ip);
                 if (account != null) {
                     //更新缓存
+                    result.setDefaultModel(account);
+                    result.setDefaultModel("userid", account.getPassportId());
                     result.setSuccess(true);
                     result.setMessage("激活成功！");
                     return result;

@@ -4,10 +4,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +55,11 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result getSHCookieValue(CookieApiParams cookieApiParams) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.manager.api.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 
 /**
  * 登录相关
@@ -55,4 +52,12 @@ public interface LoginApiManager {
      * @return
      */
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams);
+
+    /**
+     * 获取sohu生成的cookie值，包括ppinf,pprdig
+     *
+     * @param cookieApiParams
+     * @return
+     */
+    public Result getSHCookieValue(CookieApiParams cookieApiParams);
 }
