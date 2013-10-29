@@ -242,7 +242,7 @@ public class PCAccountController extends BaseController {
         }
         String userId = authPcTokenParams.getUserid();
         // 其他账号不能转换小写，特别是QQ，转成小写都不可用
-        if (AccountDomainEnum.SOGOU != AccountDomainEnum.getAccountDomain(userId) || AccountDomainEnum.SOHU != AccountDomainEnum.getAccountDomain(userId)) {
+        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
             userId = userId.toLowerCase();
             authPcTokenParams.setUserid(userId);
         }
