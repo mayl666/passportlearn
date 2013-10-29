@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -237,26 +235,27 @@ public class PCAccountController extends BaseController {
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                response.sendRedirect(authPcTokenParams.getRu() +"?status=1"); //status=1表示参数错误
+                response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
                 return "";
             }
             return "Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
-        if(AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)){
+        // 其他账号不能转换小写，特别是QQ，转成小写都不可用
+        if (AccountDomainEnum.SOGOU != AccountDomainEnum.getAccountDomain(userId) || AccountDomainEnum.SOHU != AccountDomainEnum.getAccountDomain(userId)) {
             userId = userId.toLowerCase();
             authPcTokenParams.setUserid(userId);
         }
-        Result result = pcAccountManager.authToken(authPcTokenParams);
+        Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
 
         //用户log
-        String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
+        String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie
-        if (result.isSuccess()) {
+        if (authTokenResult.isSuccess()) {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
             createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
@@ -274,13 +273,14 @@ public class PCAccountController extends BaseController {
                 ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setHttpOnlyCookie(response, "passport", passport, CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
+
+                String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
+                response.sendRedirect(redirectUrl);
+                return "";  //如果重定向url不是固定的，不可使用springmvc的RedirectView，因为会缓存url
             }
-            String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
-            response.sendRedirect(redirectUrl);
-            return "";  //如果重定向url不是固定的，不可使用springmvc的RedirectView，因为会缓存url
         }
         //token验证失败
-        response.sendRedirect(authPcTokenParams.getRu() +"?status=6");  //status=6表示验证失败
+        response.sendRedirect(authPcTokenParams.getRu() + "?status=6");  //status=6表示验证失败
         return "";
     }
 
