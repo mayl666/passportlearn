@@ -29,8 +29,6 @@ public class SHTokenServiceImpl implements SHTokenService {
 
     @Autowired
     private MemcacheUtils rTokenMemUtils;
-    @Autowired
-    private MemcacheUtils aTokenMemUtils;
     /**
      * 构造SHToken的key
      * 格式为：passport|clientId|instanceId
@@ -58,7 +56,7 @@ public class SHTokenServiceImpl implements SHTokenService {
 
     @Override
     public String queryAccessToken(String passportId, int clientId, String instanceId) throws ServiceException {
-        try {
+        /*try {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
             Object value = aTokenMemUtils.get(key);
             if (value != null) {
@@ -68,7 +66,8 @@ public class SHTokenServiceImpl implements SHTokenService {
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
-        }
+        } */
+        return null;
     }
 
     @Override
@@ -145,7 +144,7 @@ public class SHTokenServiceImpl implements SHTokenService {
 
     @Override
     public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException{
-        final int clientId = appConfig.getClientId();
+        /*final int clientId = appConfig.getClientId();
         try {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
             aTokenMemUtils.set(key, DateAndNumTimesConstant.ONE_HOUR_INSECONDS,accountToken.getAccessToken());
@@ -153,7 +152,8 @@ public class SHTokenServiceImpl implements SHTokenService {
         } catch (Exception e) {
             logger.error("Initial Or Update AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
-        }
+        }*/
+
     }
     @Override
     public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {

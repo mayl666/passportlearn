@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.TokenRedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -35,16 +36,17 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     @Autowired
     private KvUtils kvUtils;
     @Autowired
-    private RedisUtils tokenRedisUtils;
-    @Autowired
-    private SHTokenService shTokenService;
+    private TokenRedisUtils tokenRedisUtils;
 
     @Override
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
+//            long start = System.currentTimeMillis();
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             saveAccountToken(passportId, instanceId, appConfig, accountToken);
+//            CommonHelper.recordTimestamp(start, "saveAccountToken-newAccountToken");
+
             return accountToken;
         } catch (Exception e) {
             logger.error("initialAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -85,10 +87,18 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         final int clientId = appConfig.getClientId();
         try {
             String kvKey = buildKeyStr(passportId, clientId, instanceId);
+//            long start = System.currentTimeMillis();
+
             kvUtils.set(kvKey, accountToken);
+//            CommonHelper.recordTimestamp(start, "saveAccountToken-kvUtils");
+
             //重新设置缓存
+//            start = System.currentTimeMillis();
+
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.set(redisKey, accountToken);
+//            CommonHelper.recordTimestamp(start, "saveAccountToken-tokenRedisUtils");
+
 //            if (CommonHelper.isIePinyinToken(clientId)){
 //                //保存一份在sohu memcache
 //                shTokenService.saveAccountToken(passportId,instanceId,appConfig,accountToken);
@@ -105,7 +115,11 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
+//            long start = System.currentTimeMillis();
+
             AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey, AccountToken.class);
+//            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies");
+
             if (accountToken == null) {
                 accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
                 if (accountToken != null) {
