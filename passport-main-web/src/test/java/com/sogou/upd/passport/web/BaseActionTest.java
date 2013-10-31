@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.test;
+package com.sogou.upd.passport.web;
 
 import com.google.common.base.Strings;
 
