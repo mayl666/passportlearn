@@ -119,6 +119,10 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
+        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
+            userId = userId.toLowerCase();
+            pcGetTokenParams.setUserid(userId);
+        }
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
