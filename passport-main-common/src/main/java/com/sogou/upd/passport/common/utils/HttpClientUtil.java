@@ -102,17 +102,17 @@ public class HttpClientUtil {
     public static Header[] getResponseHeadersWget(String url) {
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         GetMethod method = new GetMethod(url);
+        String[] urlArray = url.split("[?]");
         try {
             method.setFollowRedirects(false);
             method.setDoAuthentication(false);
             method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
             shClient.executeMethod(method);
-            String[] urlArray = url.split("[?]");
             stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
         } catch (Exception e) {
-            stopWatch(stopWatch, "http request error", "failed");
+            stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
             logger.error("http request error", e);
             return null;
         } finally {
@@ -123,7 +123,7 @@ public class HttpClientUtil {
     private static void stopWatch(StopWatch stopWatch, String tag, String message) {
         //无论什么情况都记录下所有的请求数据
         if (stopWatch.getElapsedTime() >= SLOW_TIME) {
-            tag += "(slow)";
+            tag += "-slow";
         }
         stopWatch.stop(tag, message);
     }
@@ -256,12 +256,12 @@ public class HttpClientUtil {
     }
 
     static {
-        MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
-        manager.getParams().setDefaultMaxConnectionsPerHost(100);
-        manager.getParams().setMaxTotalConnections(500);
-        manager.getParams().setConnectionTimeout(1000);
-        manager.getParams().setSoTimeout(1000);
-        shClient = new HttpClient(manager);
+        MultiThreadedHttpConnectionManager shManager = new MultiThreadedHttpConnectionManager();
+        shManager.getParams().setDefaultMaxConnectionsPerHost(100);
+        shManager.getParams().setMaxTotalConnections(500);
+        shManager.getParams().setConnectionTimeout(1000);
+        shManager.getParams().setSoTimeout(1000);
+        shClient = new HttpClient(shManager);
     }
 
     public static void main(String[] args) throws Exception {

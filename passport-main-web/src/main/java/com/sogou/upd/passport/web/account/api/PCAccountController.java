@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -118,6 +119,10 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
+        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
+            userId = userId.toLowerCase();
+            pcGetTokenParams.setUserid(userId);
+        }
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
@@ -228,26 +233,33 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken")
+    @ResponseBody
     public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                return "redirect:" + authPcTokenParams.getRu() + "?status=1";   //status=1表示参数错误
+                response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
+                return "";
             }
-            return "forward:/act/errorMsg?msg=Error: parameter error!";
+            return "Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
-        Result result = pcAccountManager.authToken(authPcTokenParams);
+        // 其他账号不能转换小写，特别是QQ，转成小写都不可用
+        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
+            userId = userId.toLowerCase();
+            authPcTokenParams.setUserid(userId);
+        }
+        Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
 
         //用户log
-        String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
+        String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie
-        if (result.isSuccess()) {
+        if (authTokenResult.isSuccess()) {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
             createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
@@ -265,13 +277,15 @@ public class PCAccountController extends BaseController {
                 ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setHttpOnlyCookie(response, "passport", passport, CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
-            }
-            String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
 
-            return "redirect:" + redirectUrl;
+                String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
+                response.sendRedirect(redirectUrl);
+                return "";  //如果重定向url不是固定的，不可使用springmvc的RedirectView，因为会缓存url
+            }
         }
         //token验证失败
-        return "redirect:" + authPcTokenParams.getRu() + "?status=6";//status=6表示验证失败
+        response.sendRedirect(authPcTokenParams.getRu() + "?status=6");  //status=6表示验证失败
+        return "";
     }
 
     @RequestMapping(value = "/act/errorMsg")

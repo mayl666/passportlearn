@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -59,7 +60,7 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLogUtil.log(userOperationLog);
 
             if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                model.addAttribute("uniqname", result.getModels().get("uniqname"));
+                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
                 model.addAttribute("result", result.getModels().get("result"));
                 return new ModelAndView(viewUrl);
             } else {
