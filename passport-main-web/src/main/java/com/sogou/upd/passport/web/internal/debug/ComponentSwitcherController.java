@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import redis.clients.jedis.JedisShardInfo;
 
 /**
  * 依赖模块开关Controller
@@ -25,16 +26,22 @@ public class ComponentSwitcherController {
     @RequestMapping(value = "/internal/debug/tokenRedisSwitch", method = RequestMethod.GET)
     @ResponseBody
     public String tokenRedisSwitch(String host, int port) throws Exception {
+        JedisShardInfo shardInfo = new JedisShardInfo(host, port);
         tokenConnectionFactory.setHostName(host);
         tokenConnectionFactory.setPort(port);
+        tokenConnectionFactory.setShardInfo(shardInfo);
         tokenConnectionFactory.afterPropertiesSet();
         return "OK";
     }
 
     @RequestMapping(value = "/internal/debug/breakRedisSwitch", method = RequestMethod.GET)
     @ResponseBody
-    public String breakRedisSwitch() throws Exception {
-
+    public String breakRedisSwitch(String host, int port) throws Exception {
+        JedisShardInfo shardInfo = new JedisShardInfo(host, port);
+        jedisConnectionFactory.setHostName(host);
+        jedisConnectionFactory.setPort(port);
+        jedisConnectionFactory.setShardInfo(shardInfo);
+        jedisConnectionFactory.afterPropertiesSet();
         return "OK";
     }
 }
