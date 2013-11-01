@@ -25,10 +25,12 @@ public class Monitor {
 
 
     public Monitor(String zks) {
+        SGCompressionProvider compressionProvider=new SGCompressionProvider();
         curatorFramework = CuratorFrameworkFactory.builder()
                 .connectString(zks)
                 .connectionTimeoutMs(5000)
                 .retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 10000))
+                .compressionProvider(compressionProvider)
                 .build();
         curatorFramework.start();
         log.info("zookeeper monitor inti success");
