@@ -29,6 +29,7 @@ public class Monitor {
                 .connectString(zks)
                 .connectionTimeoutMs(5000)
                 .retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 10000))
+                .compressionProvider(null)
                 .build();
         curatorFramework.start();
         log.info("zookeeper monitor inti success");
