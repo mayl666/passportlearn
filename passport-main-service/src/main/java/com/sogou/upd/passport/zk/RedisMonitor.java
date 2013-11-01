@@ -64,7 +64,7 @@ public class RedisMonitor {
         @Override
         public void nodeChanged() throws Exception {
             log.warn("cache redis node changed ");
-            refresh(tokenNodeCache,jedisConnectionFactory);
+            refresh(cacheNodeCache,tokenConnectionFactory);
         }
     }
 
@@ -73,7 +73,7 @@ public class RedisMonitor {
         @Override
         public void nodeChanged() throws Exception {
             log.warn("redis node changed ");
-            refresh(cacheNodeCache,tokenConnectionFactory);
+            refresh(tokenNodeCache,jedisConnectionFactory);
         }
     }
 
