@@ -93,8 +93,8 @@
 
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor" />
-        <constructor-arg name="cachePath" value="${redisZkPath}" />
-        <constructor-arg name="tokenPath" value="${redisZkPath}" />
+        <constructor-arg name="cachePath" value="${cacheRedisZkPath}" />
+        <constructor-arg name="tokenPath" value="${tokenRedisZkPath}" />
     </bean>
 
 </beans>
