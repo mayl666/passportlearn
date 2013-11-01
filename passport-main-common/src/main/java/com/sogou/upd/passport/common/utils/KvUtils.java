@@ -28,7 +28,7 @@ public class KvUtils {
 
     private RedisTemplate kvTemplate;
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
+    //    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_set")
     public void set(String key, String value) {
         String storeKey = key;
         try {
@@ -45,12 +45,12 @@ public class KvUtils {
         }
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public void set(String key, Object obj) throws IOException {
         set(key, JacksonJsonMapperUtil.getMapper().writeValueAsString(obj));
     }
 
-//    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
+    //    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_get")
     public String get(String key) {
         String storeKey = key;
         try {
@@ -62,7 +62,7 @@ public class KvUtils {
         return null;
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public <T> T getObject(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -76,7 +76,7 @@ public class KvUtils {
         return null;
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public void delete(String key) {
         try {
             String storeKey = key;
@@ -88,17 +88,18 @@ public class KvUtils {
 
     /**
      * String：Set的映射中，向Set里新增一个元素
+     *
      * @param key
      * @param value
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet")
-    public void pushToSet(String key, String value){
-        try{
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
+    public void pushToSet(String key, String value) {
+        try {
             Set set = getObject(key, Set.class);
-            if(CollectionUtils.isEmpty(set)){
+            if (CollectionUtils.isEmpty(set)) {
                 set = Sets.newHashSet();
             }
-            if(!set.contains(value)){
+            if (!set.contains(value)) {
                 set.add(value);
                 set(key, jsonMapper.writeValueAsString(set));
             }
@@ -111,11 +112,12 @@ public class KvUtils {
     /**
      * 将value添加到值列表中
      * key：{value1、value2...}
+     *
      * @param key
      * @param value
      * @param maxLen 如果maxLen为-1，则不限制列表长度
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToList", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public void pushWithMaxLen(String key, String value, int maxLen) {
         try {
             LinkedList<String> list;
@@ -141,7 +143,7 @@ public class KvUtils {
         }
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public void pushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
             pushWithMaxLen(key, jsonMapper.writeValueAsString(obj), maxLen);
@@ -153,7 +155,7 @@ public class KvUtils {
     /*
      * 获取list中的第一个成员
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getFirstStringFromList")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getFirstStringFromList", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public <T> T top(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -175,12 +177,12 @@ public class KvUtils {
     }
 
     // 查询键key的列表
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public LinkedList<String> getList(String key) {
         return getObject(key, LinkedList.class);
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<Object>")
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<Object>", timeThreshold = 2, normalAndSlowSuffixesEnabled = true)
     public <T> LinkedList<T> getList(String key, Class returnClass) {
         try {
             LinkedList<T> listObj = new LinkedList<>();
