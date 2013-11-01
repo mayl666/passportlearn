@@ -46,7 +46,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
                 //检测是否慢请求
                 if(stopWatch.getElapsedTime() >= SLOW_TIME){
-                    tagBuilder.append(".slow");
+                    tagBuilder.append("-slow");
                 }
 
                 stopWatch.stop(tagBuilder.toString());

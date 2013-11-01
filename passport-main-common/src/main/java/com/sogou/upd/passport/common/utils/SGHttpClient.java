@@ -233,7 +233,7 @@ public class SGHttpClient {
     protected static void stopWatch(StopWatch stopWatch, String tag, String message) {
         //无论什么情况都记录下所有的请求数据
         if (stopWatch.getElapsedTime() >= SLOW_TIME) {
-            tag += ".slow";
+            tag += "(slow)";
         }
         stopWatch.stop(tag, message);
     }
