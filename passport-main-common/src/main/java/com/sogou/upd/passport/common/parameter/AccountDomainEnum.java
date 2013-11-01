@@ -95,6 +95,14 @@ public enum AccountDomainEnum {
 
     }
 
+    public static String  getInternalCase(String userId){
+        String internalCaseUserId = userId;
+        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
+            internalCaseUserId = userId.toLowerCase();
+        }
+        return internalCaseUserId;
+    }
+
     @Override
     public String toString() {
         return this.name().toLowerCase();
