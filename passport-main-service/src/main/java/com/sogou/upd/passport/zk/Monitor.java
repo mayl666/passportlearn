@@ -6,6 +6,7 @@ import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.RetryNTimes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * 临时redis切换方案，写的代码较搓
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
  * Date: 13-10-31
  * Time: 下午9:56
  */
+@Component
 public class Monitor {
 
     private static final Logger log = LoggerFactory.getLogger(Monitor.class);
@@ -23,10 +25,12 @@ public class Monitor {
 
 
     public Monitor(String zks) {
+        SGCompressionProvider compressionProvider=new SGCompressionProvider();
         curatorFramework = CuratorFrameworkFactory.builder()
                 .connectString(zks)
                 .connectionTimeoutMs(5000)
-                .retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 1000))
+                .retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 10000))
+                .compressionProvider(compressionProvider)
                 .build();
         curatorFramework.start();
         log.info("zookeeper monitor inti success");
@@ -34,6 +38,11 @@ public class Monitor {
 
     public CuratorFramework getCuratorFramework(){
         return curatorFramework;
+    }
+
+
+    public void destory(){
+        curatorFramework.close();
     }
 }
 
