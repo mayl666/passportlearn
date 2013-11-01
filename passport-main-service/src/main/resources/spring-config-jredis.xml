@@ -93,7 +93,7 @@
 
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor">
         <constructor-arg name="monitor" ref="monitor" />
-        <constructor-arg name="path" value="${redisZkPath}}" />
+        <constructor-arg name="path" value="${redisZkPath}" />
     </bean>
 
 </beans>
