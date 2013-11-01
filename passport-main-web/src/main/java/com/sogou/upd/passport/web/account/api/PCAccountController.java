@@ -121,6 +121,7 @@ public class PCAccountController extends BaseController {
         }
         String userId = pcGetTokenParams.getUserid();
         userId = AccountDomainEnum.getInternalCase(userId);
+        pcGetTokenParams.setUserid(userId);
 
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
@@ -162,7 +163,8 @@ public class PCAccountController extends BaseController {
         }
         String userId = reqParams.getUserid();
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
-        userId = AccountDomainEnum.getInternalCase(loginManager.getIndividPassportIdByUsername(userId));
+        userId = loginManager.getIndividPassportIdByUsername(userId);
+        userId = AccountDomainEnum.getInternalCase(userId);
         reqParams.setUserid(userId);
 
         String ip = getIp(request);
