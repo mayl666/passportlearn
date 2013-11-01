@@ -81,7 +81,8 @@ public class SHTokenServiceImpl implements SHTokenService {
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            return null;
         }
     }
 
@@ -96,16 +97,17 @@ public class SHTokenServiceImpl implements SHTokenService {
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            return null;
         }
     }
 
     @Override
     public boolean verifyShAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
-        String storeAccessToken = queryAccessToken(passportId, clientId, instanceId);
+       /* String storeAccessToken = queryAccessToken(passportId, clientId, instanceId);
         if(accessToken.equals(storeAccessToken)){
             return true;
-        }
+        } */
         return false;
     }
 
@@ -119,7 +121,9 @@ public class SHTokenServiceImpl implements SHTokenService {
             return false;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            //memcache宕机后，直接返回false
+            return false;
         }
     }
 
@@ -138,7 +142,9 @@ public class SHTokenServiceImpl implements SHTokenService {
             return false;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            //memcache宕机后，直接返回false
+            return false;
         }
     }
 
@@ -157,7 +163,7 @@ public class SHTokenServiceImpl implements SHTokenService {
     }
     @Override
     public void saveOldRefreshToken(final String passportId, final String instanceId, AppConfig appConfig, String refreshToken) throws ServiceException {
-        final int clientId = appConfig.getClientId();
+       /* final int clientId = appConfig.getClientId();
         try {
             //保存老的token，与sohu保持一致，有效期为1天
             String key = buildOldRTokenKeyStr(passportId, clientId, instanceId);
@@ -165,7 +171,7 @@ public class SHTokenServiceImpl implements SHTokenService {
         } catch (Exception e) {
             logger.error("saveOldRefreshToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
-        }
+        }*/
     }
 
 }
