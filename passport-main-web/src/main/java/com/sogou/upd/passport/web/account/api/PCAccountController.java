@@ -62,6 +62,7 @@ public class PCAccountController extends BaseController {
             throws Exception {
         String refreshToken = pcAccountWebParams.getRefresh_token();
         String userId = pcAccountWebParams.getUserid();
+        userId = AccountDomainEnum.getInternalCase(userId);
         String appId = pcAccountWebParams.getAppid();
         String ts = pcAccountWebParams.getTs();
         //校验非法appid
@@ -119,10 +120,8 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
-        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
-            userId = userId.toLowerCase();
-            pcGetTokenParams.setUserid(userId);
-        }
+        userId = AccountDomainEnum.getInternalCase(userId);
+
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
@@ -163,8 +162,9 @@ public class PCAccountController extends BaseController {
         }
         String userId = reqParams.getUserid();
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
-        reqParams.setUserid(loginManager.getIndividPassportIdByUsername(userId));
-        userId = reqParams.getUserid();
+        userId = AccountDomainEnum.getInternalCase(loginManager.getIndividPassportIdByUsername(userId));
+        reqParams.setUserid(userId);
+
         String ip = getIp(request);
         int appid = Integer.parseInt(reqParams.getAppid());
 
@@ -246,10 +246,8 @@ public class PCAccountController extends BaseController {
         }
         String userId = authPcTokenParams.getUserid();
         // 其他账号不能转换小写，特别是QQ，转成小写都不可用
-        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
-            userId = userId.toLowerCase();
-            authPcTokenParams.setUserid(userId);
-        }
+        userId = AccountDomainEnum.getInternalCase(userId);
+        authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
 
         //用户log
