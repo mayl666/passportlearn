@@ -2,6 +2,8 @@ package com.sogou.upd.passport.zk;
 
 import com.netflix.curator.framework.recipes.cache.NodeCache;
 import com.netflix.curator.framework.recipes.cache.NodeCacheListener;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,7 +29,18 @@ public class RedisMonitor {
             nodeCache.start();
             nodeCache.getListenable().addListener(new NodeCacheListenerImpl());
         } catch (Exception e) {
-            log.error("RedisMonitor start error");
+            log.error("RedisMonitor start error",e);
+        }
+        try {
+            monitor.getCuratorFramework().getData().usingWatcher(new Watcher() {
+                @Override
+                public void process(WatchedEvent watchedEvent) {
+                    log.info("redis node changed data:----------------");
+                }
+            }).inBackground().forPath(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("watch error",e);
         }
     }
 
