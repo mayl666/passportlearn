@@ -1,14 +1,21 @@
 package com.sogou.upd.passport.zk;
 
+import com.alibaba.dubbo.common.json.JSON;
+import com.alibaba.dubbo.common.json.JSONObject;
+import com.alibaba.dubbo.common.json.ParseException;
 import com.netflix.curator.framework.recipes.cache.NodeCache;
 import com.netflix.curator.framework.recipes.cache.NodeCacheListener;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.JedisShardInfo;
 
 /**
+ * 用于监控zookeeper上的redis连接地址
+ * 如果地址变化则动态切换redis链接
  * User: ligang201716@sogou-inc.com
  * Date: 13-10-31
  * Time: 下午11:14
@@ -18,50 +25,107 @@ public class RedisMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(RedisMonitor.class);
 
-    private NodeCache nodeCache;
+    private NodeCache cacheNodeCache;
 
-    private String path;
+    private NodeCache tokenNodeCache;
 
-    public RedisMonitor(Monitor monitor, String path) {
-        this.path = path;
-        nodeCache = new NodeCache(monitor.getCuratorFramework(), path, true);
-        try {
-            nodeCache.start();
-            nodeCache.getListenable().addListener(new NodeCacheListenerImpl());
-        } catch (Exception e) {
-            log.error("RedisMonitor start error",e);
-        }
-        try {
-            monitor.getCuratorFramework().getData().usingWatcher(new Watcher() {
-                @Override
-                public void process(WatchedEvent watchedEvent) {
-                    log.info("redis node changed data:----------------");
-                }
-            }).inBackground().forPath(path);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("watch error",e);
-        }
+    private String cachePath;
+
+    private String tokenPath;
+
+    private Monitor monitor;
+
+    @Autowired
+    private JedisConnectionFactory tokenConnectionFactory; //PC端token存储缓存
+    @Autowired
+    private JedisConnectionFactory jedisConnectionFactory;  //web接口临时信息存储缓存
+
+    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath) {
+        this.monitor = monitor;
+        this.cachePath = cachePath;
+        this.tokenPath = tokenPath;
+        this.addListener(cacheNodeCache, cachePath, new CacheListenerImpl());
+        this.addListener(tokenNodeCache, tokenPath, new TokenListenerImpl());
     }
 
 
-    private class NodeCacheListenerImpl implements NodeCacheListener {
+    private void addListener(NodeCache nodeCache, String path, NodeCacheListener nodeCacheListener) {
+        nodeCache = new NodeCache(monitor.getCuratorFramework(), path, true);
+        try {
+            nodeCache.start();
+            nodeCache.getListenable().addListener(nodeCacheListener);
+        } catch (Exception e) {
+            log.error("RedisMonitor start error", e);
+        }
+    }
+
+    private class CacheListenerImpl implements NodeCacheListener {
+        @Override
+        public void nodeChanged() throws Exception {
+            log.warn("cache redis node changed ");
+            refresh(tokenNodeCache,jedisConnectionFactory);
+        }
+    }
+
+    private class TokenListenerImpl implements NodeCacheListener {
 
         @Override
         public void nodeChanged() throws Exception {
             log.warn("redis node changed ");
-            if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
-                String data = new String(nodeCache.getCurrentData().getData());
-                log.warn("redis node changed data:" + data);
-            } else {
-                log.warn("redis node changed data: is null");
-            }
+            refresh(cacheNodeCache,tokenConnectionFactory);
         }
     }
 
+    /**
+     * 动态刷新redis连接
+     * @param nodeCache
+     * @param jedisConnectionFactory
+     */
+    private void refresh(NodeCache nodeCache, JedisConnectionFactory jedisConnectionFactory) {
+        try {
+            if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
+                String data = new String(nodeCache.getCurrentData().getData());
+                log.warn("cache redis node changed data:" + data);
+
+                JSONObject jsonObject = (JSONObject) JSON.parse(data);
+                if (jsonObject.contains("host") && jsonObject.contains("port")) {
+                    String host = jsonObject.getString("host");
+                    int port = jsonObject.getInt("port", -1);
+                    if (StringUtil.isBlank(host) || port <= 0) {
+                        log.error("redis refresh error host:"+host+" ,port:"+port);
+                        return;
+                    }
+                    if(host.equals(jedisConnectionFactory.getHostName())&&port==jedisConnectionFactory.getPort()){
+                        log.error("redis not need refresh  host:"+host+" ,port:"+port);
+                        return;
+                    }
+
+                    JedisShardInfo shardInfo = new JedisShardInfo(host, port);
+                    jedisConnectionFactory.setHostName(host);
+                    jedisConnectionFactory.setPort(port);
+                    jedisConnectionFactory.setShardInfo(shardInfo);
+                    jedisConnectionFactory.afterPropertiesSet();
+                }
+
+            } else {
+                log.warn(" redis node changed data: is null ,path:"+nodeCache.getCurrentData().getPath());
+            }
+        } catch (ParseException e) {
+            log.error("refresh error",e);
+        }
+    }
+
+    /**
+     * spring销毁Monitor时，关闭对zookeeper的监听
+     */
     public void destroy() {
         try {
-            nodeCache.close();
+            if (cacheNodeCache != null) {
+                cacheNodeCache.close();
+            }
+            if (tokenNodeCache != null) {
+                tokenNodeCache.close();
+            }
         } catch (Exception e) {
             log.error("error when destroy PathChildrenCache in Observer", e);
         }
