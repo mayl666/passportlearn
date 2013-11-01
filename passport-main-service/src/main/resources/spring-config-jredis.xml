@@ -81,8 +81,19 @@
     <bean id="tokenTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="tokenConnectionFactory"/>
 
-    <bean id="tokenRedisUtils" class="com.sogou.upd.passport.common.utils.RedisUtils">
+    <bean id="tokenRedisUtils" class="com.sogou.upd.passport.common.utils.TokenRedisUtils">
         <property name="redisTemplate" ref="tokenTemplate" />
+    </bean>
+
+
+
+    <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor">
+        <constructor-arg name="zks" value="${zks}" />
+    </bean>
+
+    <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor">
+        <constructor-arg name="monitor" ref="monitor" />
+        <constructor-arg name="path" value="${redisZkPath}" />
     </bean>
 
 </beans>

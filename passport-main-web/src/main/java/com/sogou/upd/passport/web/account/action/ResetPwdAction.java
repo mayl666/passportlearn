@@ -1,28 +1,20 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.BaseController;
-import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.account.form.UserCaptchaParams;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 
@@ -51,12 +43,12 @@ public class ResetPwdAction extends BaseController {
     // TODO:暂时不用
 
     @RequestMapping(method = RequestMethod.GET)
-    public String findPwdView(String ru) throws Exception {
+    public String findPwdView(String ru, RedirectAttributes redirectAttributes) throws Exception {
         if (Strings.isNullOrEmpty(ru)) {
-            return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        } else {
-            return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + URLEncoder.encode(ru, "UTF-8");
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
+        redirectAttributes.addAttribute("ru", ru);
+        return "redirect:" + SOHU_FINDPWD_URL + "?ru={ru}";
     }
 
 /*    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
