@@ -303,6 +303,24 @@ public class RedisUtils {
             }
         }
     }
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutExpire")
+    public void hPutExpire(String cacheKey, String key, String value,long times) throws Exception {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.put(key, value);
+            boundHashOperations.expire(times,TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error("[Cache] hPut cache fail, cacheKey:" + cacheKey + " mapKey:" + key
+                    + " mapValue:" + value, e);
+            try {
+                delete(cacheKey);
+            } catch (Exception ex) {
+                logger.error("[Cache] hPut and delete cache fail, cacheKey:" + cacheKey + " mapKey:"
+                        + key + " mapValue:" + value, e);
+                throw e;
+            }
+        }
+    }
 
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hPut(String cacheKey, String key, Object obj) throws Exception {
@@ -375,6 +393,16 @@ public class RedisUtils {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.increment(key, 1);
+        } catch (Exception e) {
+            logger.error("[Cache] hIncr num cache fail, key:" + cacheKey + "value:" + key, e);
+        }
+    }
+
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hIncrByTimes")
+    public void hIncrByTimes(String cacheKey, String key,long time) {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.increment(key, time);
         } catch (Exception e) {
             logger.error("[Cache] hIncr num cache fail, key:" + cacheKey + "value:" + key, e);
         }

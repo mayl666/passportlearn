@@ -20,6 +20,7 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +92,7 @@ public class LoginAction extends BaseController {
      *
      * @param loginParams 传入的参数
      */
+//    @InterfaceLimited
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {

@@ -94,6 +94,14 @@ public enum AccountDomainEnum {
         }
 
     }
+    //转换成内部处理的大小写格式
+    public static String getInternalCase(String userId) {
+        String internalCaseUserId = userId;
+        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
+            internalCaseUserId = userId.toLowerCase();
+        }
+        return internalCaseUserId;
+    }
 
     @Override
     public String toString() {

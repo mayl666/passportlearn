@@ -15,6 +15,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CookieWebParams;
+import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class CookieAction extends BaseController {
      */
     @RequestMapping(value = "/account/setcookie", method = RequestMethod.GET)
     @ResponseBody
+//    @InterfaceLimited
     public String setCookie(HttpServletRequest request, HttpServletResponse response, CookieWebParams cookieWebParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证

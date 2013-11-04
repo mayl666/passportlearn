@@ -12,13 +12,13 @@ public class ZkTest extends BaseTest{
 
     @Test
     public void testA(){
-//         while(true){
-//             try {
-//                 Thread.sleep(10000);
-//                 System.out.println("10000----------");
-//             } catch (InterruptedException e) {
-//                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//             }
-//         }
+         while(true){
+             try {
+                 Thread.sleep(10000);
+                 System.out.println("10000----------");
+             } catch (InterruptedException e) {
+                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+             }
+         }
     }
 }

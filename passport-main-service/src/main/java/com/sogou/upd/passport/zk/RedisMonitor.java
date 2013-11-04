@@ -45,26 +45,27 @@ public class RedisMonitor {
         this.monitor = monitor;
         this.cachePath = cachePath;
         this.tokenPath = tokenPath;
-        this.addListener(cacheNodeCache, cachePath, new CacheListenerImpl());
-        this.addListener(tokenNodeCache, tokenPath, new TokenListenerImpl());
+        cacheNodeCache = this.addListener(cachePath, new CacheListenerImpl());
+        tokenNodeCache = this.addListener(tokenPath, new TokenListenerImpl());
     }
 
 
-    private void addListener(NodeCache nodeCache, String path, NodeCacheListener nodeCacheListener) {
-        nodeCache = new NodeCache(monitor.getCuratorFramework(), path, true);
+    private NodeCache addListener(String path, NodeCacheListener nodeCacheListener) {
+        NodeCache nodeCache = new NodeCache(monitor.getCuratorFramework(), path, true);
         try {
             nodeCache.start();
             nodeCache.getListenable().addListener(nodeCacheListener);
         } catch (Exception e) {
             log.error("RedisMonitor start error", e);
         }
+        return nodeCache;
     }
 
     private class CacheListenerImpl implements NodeCacheListener {
         @Override
         public void nodeChanged() throws Exception {
             log.warn("cache redis node changed ");
-            refresh(tokenNodeCache, jedisConnectionFactory);
+            refresh(cacheNodeCache,tokenConnectionFactory);
         }
     }
 
@@ -73,13 +74,12 @@ public class RedisMonitor {
         @Override
         public void nodeChanged() throws Exception {
             log.warn("redis node changed ");
-            refresh(cacheNodeCache, tokenConnectionFactory);
+            refresh(tokenNodeCache,jedisConnectionFactory);
         }
     }
 
     /**
      * 动态刷新redis连接
-     *
      * @param nodeCache
      * @param jedisConnectionFactory
      */
