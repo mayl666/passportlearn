@@ -73,8 +73,19 @@
     <bean id="tokenTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="tokenConnectionFactory"/>
 
-    <bean id="tokenRedisUtils" class="com.sogou.upd.passport.common.utils.RedisUtils">
+    <bean id="tokenRedisUtils" class="com.sogou.upd.passport.common.utils.TokenRedisUtils">
         <property name="redisTemplate" ref="tokenTemplate" />
     </bean>
+
+    <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor">
+        <constructor-arg name="zks" value="10.16.135.181:2181" />
+    </bean>
+
+    <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
+        <constructor-arg name="monitor" ref="monitor" />
+        <constructor-arg name="cachePath" value="/sogou_passport/redis_info/redis_node/cache" />
+        <constructor-arg name="tokenPath" value="/sogou_passport/redis_info/redis_node/token" />
+    </bean>
+
 
 </beans>

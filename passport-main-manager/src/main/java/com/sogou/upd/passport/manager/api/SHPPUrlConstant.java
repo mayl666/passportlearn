@@ -111,7 +111,7 @@ public class SHPPUrlConstant {
     // 第三方授权通用接口
     public static final String CONNECT_LOGIN_ULR = BASE_URL + "openlogin/request.action";
     // 同步创建第三方账号的接口
-    public static final String CREATE_CONNECT_USER = BASE_URL + "openlogin/non/callback/";
+    public static final String CREATE_CONNECT_USER = "http://passport.sohu.com/openlogin/non/callback/";
     //获取第三方用户信息
     public static final String GET_OPEN_USER_INFO = BASE_OPEN_API_URL + "api/user/info";
     //第三方发图片微博或分享
