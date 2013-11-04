@@ -3,7 +3,6 @@ package com.sogou.upd.passport.zk;
 import com.google.common.base.Strings;
 import com.netflix.curator.framework.recipes.cache.NodeCache;
 import com.netflix.curator.framework.recipes.cache.NodeCacheListener;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +64,7 @@ public class RedisMonitor {
         @Override
         public void nodeChanged() throws Exception {
             log.warn("cache redis node changed ");
-            refresh(cacheNodeCache,tokenConnectionFactory);
+            refresh(cacheNodeCache, tokenConnectionFactory);
         }
     }
 
@@ -74,12 +73,13 @@ public class RedisMonitor {
         @Override
         public void nodeChanged() throws Exception {
             log.warn("redis node changed ");
-            refresh(tokenNodeCache,jedisConnectionFactory);
+            refresh(tokenNodeCache, jedisConnectionFactory);
         }
     }
 
     /**
      * 动态刷新redis连接
+     *
      * @param nodeCache
      * @param jedisConnectionFactory
      */
@@ -91,17 +91,8 @@ public class RedisMonitor {
 
                 Map jsonMap = JsonUtil.jsonToBean(data, Map.class);
                 String host = (String) jsonMap.get("host");
-                String portStr = (String) jsonMap.get("port");
-                if (!Strings.isNullOrEmpty(host) && !Strings.isNullOrEmpty(portStr)) {
-                    int port = Integer.valueOf(portStr);
-//                JSONObject jsonObject = (JSONObject) JSON.parse(data);
-//                if (jsonObject.contains("host") && jsonObject.contains("port")) {
-//                    String host = jsonObject.getString("host");
-//                    int port = jsonObject.getInt("port", -1);
-                    if (StringUtil.isBlank(host) || port <= 0) {
-                        log.error("redis refresh error host:" + host + " ,port:" + port);
-                        return;
-                    }
+                int port = (Integer) jsonMap.get("port");
+                if (!Strings.isNullOrEmpty(host) && port >= 0) {
                     if (host.equals(jedisConnectionFactory.getHostName()) && port == jedisConnectionFactory.getPort()) {
                         log.error("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
@@ -117,8 +108,8 @@ public class RedisMonitor {
             } else {
                 log.warn(" redis node changed data: is null ,path:" + nodeCache.getCurrentData().getPath());
             }
-        } catch (NumberFormatException e) {
-            log.error("port is not number format", e);
+        } catch (Exception e) {
+            log.error("refresh redis error", e);
         }
     }
 
