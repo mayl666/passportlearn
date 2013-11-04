@@ -38,7 +38,7 @@ public class RedisperfController {
         appconfig = appConfigService.queryAppConfigByClientId(1044);
     }
 
-    @RequestMapping(value = "/tokenRedisSwitcherSet", method = RequestMethod.GET)
+    @RequestMapping(value = "/tokenRedisSwitcher", method = RequestMethod.GET)
     @ResponseBody
     public String testTokenRedisSet() throws Exception {
         String passportId = "tokenRedisTest" + new Random().nextInt(1000000) + "@sogou.com";
@@ -51,7 +51,7 @@ public class RedisperfController {
         }
     }
 
-    @RequestMapping(value = "/cacheRedisSwitcherSet", method = RequestMethod.GET)
+    @RequestMapping(value = "/cacheRedisSwitcher", method = RequestMethod.GET)
     @ResponseBody
     public String testCacheRedisSet() throws Exception {
         String passportId = "cacheRedisTest" + new Random().nextInt(1000000) + "@sogou.com";
