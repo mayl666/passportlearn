@@ -2,11 +2,8 @@ package com.sogou.upd.passport.web.internal.debug;
 
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.TokenRedisUtils;
-import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.account.impl.PCAccountServiceImpl;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,24 +38,30 @@ public class RedisperfController {
         appconfig = appConfigService.queryAppConfigByClientId(1044);
     }
 
-    @RequestMapping(value = "/tokenRedisSet", method = RequestMethod.GET)
+    @RequestMapping(value = "/tokenRedisSwitcherSet", method = RequestMethod.GET)
     @ResponseBody
     public String testTokenRedisSet() throws Exception {
         String passportId = "tokenRedisTest" + new Random().nextInt(1000000) + "@sogou.com";
-        String instanceId = RandomStringUtils.randomAlphanumeric(10);
-        int clientId = 1044;
-
-        AccountToken accountToken = PCAccountServiceImpl.newAccountToken(passportId, instanceId, appconfig);
-        tokenRedisUtils.set(passportId, accountToken);
-        return "OK";
+        tokenRedisUtils.set(passportId, "1");
+        String value = tokenRedisUtils.get(passportId);
+        if ("1".equals(value)) {
+            return "OK";
+        } else {
+            return "NO";
+        }
     }
 
-    @RequestMapping(value = "/cacheRedisSet", method = RequestMethod.GET)
+    @RequestMapping(value = "/cacheRedisSwitcherSet", method = RequestMethod.GET)
     @ResponseBody
     public String testCacheRedisSet() throws Exception {
         String passportId = "cacheRedisTest" + new Random().nextInt(1000000) + "@sogou.com";
         cacheRedisUtils.set(passportId, "1");
-        return "OK";
+        String value = cacheRedisUtils.get(passportId);
+        if ("1".equals(value)) {
+            return "OK";
+        } else {
+            return "NO";
+        }
     }
 
 }
