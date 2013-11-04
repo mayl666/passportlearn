@@ -138,7 +138,6 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Map<String, String> map = (Map<String, String>) obj;
             if (map.containsKey(url)) {
                 int value = Integer.parseInt(map.get(url));
-                System.out.println(value);
                 if (value >= 0) {
                     try {
                         lock.lock();
