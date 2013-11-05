@@ -56,7 +56,6 @@ public class CookieAction extends BaseController {
      */
     @RequestMapping(value = "/account/setcookie", method = RequestMethod.GET)
     @ResponseBody
-//    @InterfaceLimited
     public String setCookie(HttpServletRequest request, HttpServletResponse response, CookieWebParams cookieWebParams) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证

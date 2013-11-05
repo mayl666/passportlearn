@@ -19,6 +19,7 @@ import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -118,6 +119,7 @@ public class LoginApiController extends BaseController {
      * @return
      */
     @InterfaceSecurity
+    @InterfaceLimited
     @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
     @ResponseBody
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
