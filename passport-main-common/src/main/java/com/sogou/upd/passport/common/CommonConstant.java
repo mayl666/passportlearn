@@ -46,6 +46,7 @@ public class CommonConstant {
     //在request attribut中存在的用于及时的StopWatch的name
     public static final String STOPWATCH = "stopWatch";
 
+    public static boolean IS_USE_IEBBS_UNIQNAME = true;
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

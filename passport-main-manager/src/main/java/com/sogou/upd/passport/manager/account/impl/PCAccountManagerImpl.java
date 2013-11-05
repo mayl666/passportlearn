@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -205,7 +206,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     @Override
     public String getUniqnameByClientId(String passportId, int clientId) {
-        if (CommonHelper.isExplorerToken(clientId)) {
+        if (CommonConstant.IS_USE_IEBBS_UNIQNAME && CommonHelper.isExplorerToken(clientId)) {
             return getBrowserBbsUniqname(passportId);
         }
         return (passportId.substring(0, passportId.indexOf("@")));
