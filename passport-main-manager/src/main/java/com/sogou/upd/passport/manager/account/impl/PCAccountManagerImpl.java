@@ -133,14 +133,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
             String instanceId = authPcTokenParams.getTs();
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
-            }else {
-                //帮输入法打的补丁，适用于pssportId为小写，但用户输入大写，也要能验证成功
-               if(CommonHelper.isIePinyinToken(clientId)){
-                   passportId = AccountDomainEnum.getInternalCase(passportId);
-                   if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
-                       result.setSuccess(true);
-                   }
-               }
             }
         } catch (Exception e) {
             logger.error("authToken fail", e);
