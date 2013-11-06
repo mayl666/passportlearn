@@ -6,7 +6,6 @@ import com.netflix.curator.framework.recipes.cache.NodeCacheListener;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisShardInfo;
@@ -35,15 +34,16 @@ public class RedisMonitor {
 
     private Monitor monitor;
 
-    @Autowired
     private JedisConnectionFactory tokenConnectionFactory; //PC端token存储缓存
-    @Autowired
-    private JedisConnectionFactory jedisConnectionFactory;  //web接口临时信息存储缓存
 
-    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath) {
+    private JedisConnectionFactory cacheConnectionFactory;  //web接口临时信息存储缓存
+
+    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath, JedisConnectionFactory tokenConnectionFactory, JedisConnectionFactory cacheConnectionFactory) {
         this.monitor = monitor;
         this.cachePath = cachePath;
         this.tokenPath = tokenPath;
+        this.tokenConnectionFactory = tokenConnectionFactory;
+        this.cacheConnectionFactory = cacheConnectionFactory;
         cacheNodeCache = this.addListener(cachePath, new CacheListenerImpl());
         tokenNodeCache = this.addListener(tokenPath, new TokenListenerImpl());
     }
@@ -60,11 +60,12 @@ public class RedisMonitor {
         return nodeCache;
     }
 
+
     private class CacheListenerImpl implements NodeCacheListener {
         @Override
         public void nodeChanged() throws Exception {
             log.warn("cache redis node changed ");
-            refresh(cacheNodeCache, jedisConnectionFactory);
+            refresh(cacheNodeCache, cacheConnectionFactory);
         }
     }
 
@@ -81,9 +82,9 @@ public class RedisMonitor {
      * 动态刷新redis连接
      *
      * @param nodeCache
-     * @param jedisConnectionFactory
+     * @param factory
      */
-    private void refresh(NodeCache nodeCache, JedisConnectionFactory jedisConnectionFactory) {
+    private void refresh(NodeCache nodeCache, JedisConnectionFactory factory) {
         try {
             if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
                 String data = new String(nodeCache.getCurrentData().getData());
@@ -93,16 +94,19 @@ public class RedisMonitor {
                 String host = (String) jsonMap.get("host");
                 int port = (Integer) jsonMap.get("port");
                 if (!Strings.isNullOrEmpty(host) && port >= 0) {
-                    if (host.equals(jedisConnectionFactory.getHostName()) && port == jedisConnectionFactory.getPort()) {
-                        log.error("redis not need refresh  host:" + host + " ,port:" + port);
+                    if (host.equals(factory.getHostName()) && port == factory.getPort()) {
+                        log.warn("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
+                    }
+                    if (factory != null) {
+                        factory.destroy();
                     }
 
                     JedisShardInfo shardInfo = new JedisShardInfo(host, port);
-                    jedisConnectionFactory.setHostName(host);
-                    jedisConnectionFactory.setPort(port);
-                    jedisConnectionFactory.setShardInfo(shardInfo);
-                    jedisConnectionFactory.afterPropertiesSet();
+                    factory.setHostName(host);
+                    factory.setPort(port);
+                    factory.setShardInfo(shardInfo);
+                    factory.afterPropertiesSet();
                 }
 
             } else {
