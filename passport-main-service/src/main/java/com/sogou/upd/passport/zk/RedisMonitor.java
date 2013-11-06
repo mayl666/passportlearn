@@ -98,17 +98,15 @@ public class RedisMonitor {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
                     }
-                    JedisConnectionFactory oldFactory = factory;
+                    if (factory != null) {
+                        factory.destroy();
+                    }
 
                     JedisShardInfo shardInfo = new JedisShardInfo(host, port);
                     factory.setHostName(host);
                     factory.setPort(port);
                     factory.setShardInfo(shardInfo);
                     factory.afterPropertiesSet();
-
-                    if (oldFactory != null) {
-                        oldFactory.destroy();
-                    }
                 }
 
             } else {
