@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -132,6 +133,14 @@ public class PCAccountManagerImpl implements PCAccountManager {
             String instanceId = authPcTokenParams.getTs();
             if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
                 result.setSuccess(true);
+            }else {
+                //帮输入法打的补丁，适用于pssportId为小写，但用户输入大写，也要能验证成功
+               if(CommonHelper.isIePinyinToken(clientId)){
+                   passportId = AccountDomainEnum.getInternalCase(passportId);
+                   if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
+                       result.setSuccess(true);
+                   }
+               }
             }
         } catch (Exception e) {
             logger.error("authToken fail", e);
@@ -247,8 +256,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
         boolean isPCTokenSig = verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
         if (!isPCTokenSig) {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
-                        verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+                return  (verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
+                        verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
             } else if (CommonHelper.isPinyinMACToken(clientId)) {
                 return verifySigByShRefreshToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
             }
