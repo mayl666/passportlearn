@@ -170,6 +170,8 @@ public class ErrorUtil {
     public static final String NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT = "20252";
     // 此账号已经注册或绑定过
     public static final String ACCOUNT_ALREADY_REG_OR_BIND = "20253";
+    // 调用频次超限
+    public static final String ERR_CODE_CLIENT_INBLACKLIST = "20254";
 
     /* ============================================================================ */
     /*  密保方式相关的错误代码                                                       */
@@ -412,6 +414,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_NOT_LOGIN, "您还未登陆，不能提交反馈");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
+
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CLIENT_INBLACKLIST, "服务器处理失败！");
+
+
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

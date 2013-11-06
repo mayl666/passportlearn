@@ -91,7 +91,13 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_USERNAME_AUTHUSER_NUM = "SP.USERNAME:AUTHUSERNNUM_HASH_"; //username连续登陆的次数
     public static final String CACHE_PREFIX_IP_AUTHUSER_NNUM = "SP.IP:AUTHUSERNUM_HASH_"; //IP连续登陆的次数
     public static final String CACHE_PREFIX_USERIP_AUTHUSER_NNUM = "SP.USERIP:AUTHUSERNUM_HASH_"; //user IP连续登陆的次数
-
-
+    /*==================初始化client_id限制接口调用次数========================*/
+    public static final String CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED_INIT = "SP.CLIENTID:INTERFACE_LIMITED_INIT_HASH_"; //client_id与接口限制次数
+    /*==================根据client_id限制接口调用次数========================*/
+    public static final String CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED = "SP.CLIENTID:INTERFACE_LIMITED_HASH_"; //client_id与接口限制次数
+    /*==================级别与接口调用次数映射========================*/
+    public static final String CACHE_PREFIX_LEVEL_INTERFACE_LIMITED = "SP.LEVEL:INTERFACE_LIMITED_HASH_"; //client_id与接口限制次数
+    /*==================级别与接口调用次数映射========================*/
+    public static final String CACHE_PREFIX_CLIENTID = "SP.CLIENTID_SET"; //client_id列表
 
 }

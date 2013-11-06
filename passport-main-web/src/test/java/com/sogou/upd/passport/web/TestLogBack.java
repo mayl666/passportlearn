@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.test;
+package com.sogou.upd.passport.web;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

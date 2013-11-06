@@ -14,6 +14,7 @@ import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -97,7 +98,7 @@ public class RegisterApiController extends BaseController {
             logger.error("regMobileCaptchaUser:Mobile User With Captcha For Internal Is Failed,Mobile is " + params.getMobile(), e);
         } finally {
             //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getIp());
             UserOperationLogUtil.log(userOperationLog);
         }
 
@@ -112,6 +113,7 @@ public class RegisterApiController extends BaseController {
      * @return
      */
     @InterfaceSecurity
+    @InterfaceLimited
     @RequestMapping(value = "/reguser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
@@ -139,7 +141,7 @@ public class RegisterApiController extends BaseController {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
             //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
             UserOperationLogUtil.log(userOperationLog);
         }
         commonManager.incRegTimesForInternal(ip);

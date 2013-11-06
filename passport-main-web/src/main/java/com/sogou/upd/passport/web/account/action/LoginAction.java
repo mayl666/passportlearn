@@ -20,6 +20,7 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +92,10 @@ public class LoginAction extends BaseController {
      *
      * @param loginParams 传入的参数
      */
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, HttpServletResponse response,Model model, WebLoginParams loginParams)
+    @InterfaceLimited
+    public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -130,10 +133,14 @@ public class LoginAction extends BaseController {
 //            createCookieUrlApiParams.setRu(ru);
 //            createCookieUrlApiParams.setDomain("sogou.com");
             CookieApiParams cookieApiParams = new CookieApiParams();
-            Object objUserId = result.getModels().get("username");
-            cookieApiParams.setUserid((String) objUserId);
+            cookieApiParams.setUserid(userId);
             cookieApiParams.setClient_id(Integer.parseInt(loginParams.getClient_id()));
             cookieApiParams.setRu(ru);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            int authLogin = loginParams.getAutoLogin();
+            //0-否  1-真
+            int validTime = authLogin == 0 ? 0 : 1;
+            cookieApiParams.setPersistentcookie(String.valueOf(validTime));
 
             //TODO sogou域账号迁移后cookie生成问题
             Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
@@ -141,9 +148,8 @@ public class LoginAction extends BaseController {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
 
-                int authLogin=loginParams.getAutoLogin();
                 //0-否  1-真
-                int validTime=authLogin==0?-1:(int)DateAndNumTimesConstant.TWO_WEEKS;
+                validTime=authLogin==0?-1:(int)DateAndNumTimesConstant.TWO_WEEKS;
 
                 ServletUtil.setCookie(response, "ppinf", ppinf, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setCookie(response, "pprdig", pprdig, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
@@ -161,7 +167,7 @@ public class LoginAction extends BaseController {
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
-            if(result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)){
+            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
@@ -177,7 +183,7 @@ public class LoginAction extends BaseController {
      * 通过js调用，返回结果
      */
     @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
-    public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="client_id",required=false) String client_id)
+    public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
@@ -200,7 +206,7 @@ public class LoginAction extends BaseController {
      * 页面直接跳转，回跳到之前的地址
      */
     @RequestMapping(value = "/logout_redirect", method = RequestMethod.GET)
-    public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response,@RequestParam(value="ru",required=false) String ru,@RequestParam(value="client_id",required=false) String client_id)
+    public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "ru", required = false) String ru, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
@@ -216,13 +222,13 @@ public class LoginAction extends BaseController {
         userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
         UserOperationLogUtil.log(userOperationLog);
 
-        if(StringUtil.isBlank(ru)){
-            if(StringUtil.isBlank(referer)){
-                referer=CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        if (StringUtil.isBlank(ru)) {
+            if (StringUtil.isBlank(referer)) {
+                referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
-            ru= URLEncoder.encode(referer, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLEncoder.encode(referer, CommonConstant.DEFAULT_CONTENT_CHARSET);
         }
-        StringBuilder url=new StringBuilder(SHPPUrlConstant.CLEAN_COOKIE_REDIRECT);
+        StringBuilder url = new StringBuilder(SHPPUrlConstant.CLEAN_COOKIE_REDIRECT);
         url.append(ru);
 
         return new ModelAndView(new RedirectView(url.toString()));

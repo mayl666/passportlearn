@@ -4,7 +4,7 @@ package com.sogou.upd.passport.mq;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class HelloWorldConfiguration {
 
 //	protected final String helloWorldQueueName = "passport_queue1";

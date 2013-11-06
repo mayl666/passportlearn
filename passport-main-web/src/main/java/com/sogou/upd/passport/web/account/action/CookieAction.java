@@ -15,6 +15,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CookieWebParams;
+import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class CookieAction extends BaseController {
         }
         //是否种持久型cookie，0：否 1：是
         int maxAge = (int) (cookieWebParams.getPersistentcookie() == 0 ? -1 : DateAndNumTimesConstant.TWO_WEEKS);
-        result = cookieManager.setCookie(response, result, cookieApiParams, maxAge);
+        result = cookieManager.setCookie(response, cookieApiParams, maxAge);
         if (result.isSuccess()) {
             //设置来源
             String ru = cookieWebParams.getRu();
