@@ -98,6 +98,7 @@ public class RedisMonitor {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
                     }
+
                     if (factory != null) {
                         factory.destroy();
                     }
