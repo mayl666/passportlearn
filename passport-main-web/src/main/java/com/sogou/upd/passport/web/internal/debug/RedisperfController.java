@@ -31,13 +31,6 @@ public class RedisperfController {
     @Autowired
     private RedisUtils cacheRedisUtils;
 
-    private AppConfig appconfig;
-
-    @PostConstruct
-    private void init() {
-        appconfig = appConfigService.queryAppConfigByClientId(1044);
-    }
-
     @RequestMapping(value = "/tokenRedisSwitcher", method = RequestMethod.GET)
     @ResponseBody
     public String testTokenRedisSet() throws Exception {
