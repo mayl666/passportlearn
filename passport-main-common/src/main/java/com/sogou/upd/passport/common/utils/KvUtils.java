@@ -45,7 +45,7 @@ public class KvUtils {
         }
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_setObject", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public void set(String key, Object obj) throws IOException {
         set(key, JacksonJsonMapperUtil.getMapper().writeValueAsString(obj));
     }
@@ -62,7 +62,7 @@ public class KvUtils {
         return null;
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getObject", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public <T> T getObject(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -76,7 +76,7 @@ public class KvUtils {
         return null;
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_delete", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public void delete(String key) {
         try {
             String storeKey = key;
@@ -92,7 +92,7 @@ public class KvUtils {
      * @param key
      * @param value
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToSet", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public void pushToSet(String key, String value) {
         try {
             Set set = getObject(key, Set.class);
@@ -117,7 +117,7 @@ public class KvUtils {
      * @param value
      * @param maxLen 如果maxLen为-1，则不限制列表长度
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToList", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushStringToList", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public void pushWithMaxLen(String key, String value, int maxLen) {
         try {
             LinkedList<String> list;
@@ -143,7 +143,7 @@ public class KvUtils {
         }
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_pushObjectToList", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public void pushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
             pushWithMaxLen(key, jsonMapper.writeValueAsString(obj), maxLen);
@@ -155,7 +155,7 @@ public class KvUtils {
     /*
      * 获取list中的第一个成员
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getFirstStringFromList", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getFirstStringFromList", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public <T> T top(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -177,12 +177,12 @@ public class KvUtils {
     }
 
     // 查询键key的列表
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<String>", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public LinkedList<String> getList(String key) {
         return getObject(key, LinkedList.class);
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<Object>", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "kv_getList<Object>", timeThreshold = 1, normalAndSlowSuffixesEnabled = true)
     public <T> LinkedList<T> getList(String key, Class returnClass) {
         try {
             LinkedList<T> listObj = new LinkedList<>();
