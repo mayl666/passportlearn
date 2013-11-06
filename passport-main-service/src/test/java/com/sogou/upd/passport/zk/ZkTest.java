@@ -23,7 +23,7 @@ public class ZkTest extends BaseTest {
             try {
                 String key = "aaa" + new Random().nextInt(1000);
                 redisUtils.set(key, "1");
-                Thread.sleep(10);
+                Thread.sleep(1);
                 System.out.println("10000----------");
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
