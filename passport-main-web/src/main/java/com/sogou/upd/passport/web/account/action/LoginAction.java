@@ -92,8 +92,9 @@ public class LoginAction extends BaseController {
      *
      * @param loginParams 传入的参数
      */
-//    @InterfaceLimited
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @InterfaceLimited
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);

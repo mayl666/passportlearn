@@ -24,6 +24,7 @@ import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
 import com.sogou.upd.passport.web.account.form.security.WebMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
+import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
@@ -325,6 +326,7 @@ public class SecureAction extends BaseController {
      */
     @RequestMapping(value = "/updatepwd", method = RequestMethod.POST)
     @ResponseBody
+    @InterfaceLimited
     @LoginRequired
     public Object updatePwd(HttpServletRequest request, UpdatePwdParameters updateParams)
             throws Exception {
