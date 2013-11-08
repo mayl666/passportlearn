@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -247,8 +248,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
         boolean isPCTokenSig = verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
         if (!isPCTokenSig) {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
-                        verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+                return  (verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
+                        verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
             } else if (CommonHelper.isPinyinMACToken(clientId)) {
                 return verifySigByShRefreshToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
             }
