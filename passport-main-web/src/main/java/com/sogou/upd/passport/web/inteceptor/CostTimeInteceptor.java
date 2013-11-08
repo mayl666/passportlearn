@@ -53,21 +53,6 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     private static final float INTERFACE_PERCENT= (float) 0.03;
     private Lock lock=new ReentrantLock();
 
-    static {
-        //受限接口与频次
-//         mapInit.put("/internal/account/reguser", "1500");
-//         mapInit.put("/internal/account/authuser", "800");
-//         mapInit.put("/internal/account/updatepwd", "50");
-//         mapInit.put("/act/getpairtoken", "3000");
-//         mapInit.put("/act/gettoken", "150000");
-//         mapInit.put("/act/refreshtoken", "100000");
-//         mapInit.put("/act/authtoken", "30000");
-//         mapInit.put("/web/login", "2800");
-//         mapInit.put("/web/account/setcookie","1000");
-    }
-
-
-
     @Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);

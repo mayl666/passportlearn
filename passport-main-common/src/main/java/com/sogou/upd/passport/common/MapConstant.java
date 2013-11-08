@@ -19,7 +19,7 @@ public class MapConstant {
     private Map<Integer,Map<String,String>> clientInterfaceMapping = null;
 
     public Map <Integer,Map<String,String>> getClientInterfaceMapping() {
-        if(MapUtils.isEmpty(clientInterfaceMapping)){
+//        if(MapUtils.isEmpty(clientInterfaceMapping)){
             //获取clientId列表
             Set<String> clientIdSet=redisUtils.smember(CacheConstant.CACHE_PREFIX_CLIENTID);
             //获取clientId对应的接口列表
@@ -33,7 +33,7 @@ public class MapConstant {
                      }
                  }
             }
-        }
+//        }
         return clientInterfaceMapping;
     }
 
