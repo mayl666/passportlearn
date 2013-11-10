@@ -33,11 +33,9 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private RedisUtils redisUtils;
-    @Inject
-    private StringRedisTemplate redisTemplate;
 
     @Inject
-    private JedisConnectionFactory jedisConnectionFactory;
+    private JedisConnectionFactory cacheConnectionFactory;
 
     @Before
     public void init() {
@@ -46,9 +44,12 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void test() {
         try {
-            String key="/internal/account/authuser";
-            String appId="1100";
-            getLimitedTimes(key,appId);
+//            String key="/internal/account/authuser";
+//            String appId="1100";
+//            getLimitedTimes(key,appId);
+            redisUtils.set("1112","11123");
+
+            System.out.println(redisUtils.get("1112"));
 
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
