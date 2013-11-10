@@ -49,6 +49,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     private MapConstant mapConstant;
     private Map<Integer,Map<String,String>> clientIntefaceInitMapping = null;
     private static Map clientMapping=Maps.newHashMap();
+    private static boolean isOver=true;//缓存中是否还有剩余的
 
     private static final float INTERFACE_PERCENT= (float) 0.03;
     private Lock lock=new ReentrantLock();
@@ -97,6 +98,12 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                                         response.getWriter().write(result.toString());
                                         return false;
                                     } else {
+                                        //此接口在缓存中还有剩余，初始化内存数据
+                                        Object obj = clientMapping.get(clientId);
+                                        if (obj != null && obj instanceof Map) {
+                                            Map<String, String> map = (Map<String, String>) obj;
+                                            map.put(url, getTimes);
+                                        }
                                         return true;
                                     }
                                 }
@@ -123,7 +130,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Map<String, String> map = (Map<String, String>) obj;
             if (map.containsKey(url)) {
                 int value = Integer.parseInt(map.get(url));
-                if (value >= 0) {
+                if (value > 0) {
                     try {
                         lock.lock();
                         map.put(url, String.valueOf(--value));
@@ -131,7 +138,6 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                         lock.unlock();
                     }
                 } else {
-//                    map.put(url, getTimes);
                     return false;
                 }
             } else {
