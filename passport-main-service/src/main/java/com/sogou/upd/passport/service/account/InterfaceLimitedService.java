@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
+import java.util.Map;
+
 /**
  * 接口频次调用
  * User: mayan
@@ -15,5 +17,5 @@ public interface InterfaceLimitedService {
     /*
     获取限制次数，超限返回false
      */
-    public boolean isObtainLimitedTimesSuccess(String key, int appId,String getTimes,String interfaceTimes);
+    public Map<Object,Object> isObtainLimitedTimesSuccess(int clientId,String url);
 }

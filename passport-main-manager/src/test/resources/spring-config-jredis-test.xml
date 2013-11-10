@@ -86,9 +86,4 @@
         <constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>
     </bean>
 
-    <!--接口频次限制相关mapping-->
-    <bean id="mapConstant" class="com.sogou.upd.passport.common.MapConstant">
-        <property name="redisUtils" ref="redisUtils"/>
-    </bean>
-
 </beans>
