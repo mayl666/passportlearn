@@ -64,7 +64,7 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                 cacheTimes = interfaceTimes;
             }
             long times = Long.parseLong(cacheTimes);
-            if (times <= 0) {
+            if (times < 0) {
                 map.put("flag", false);
                 return map;
             } else {
