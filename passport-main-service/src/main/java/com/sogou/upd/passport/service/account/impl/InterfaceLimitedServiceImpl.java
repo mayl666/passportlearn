@@ -50,7 +50,8 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
         String interfaceTimes = redisUtils.hGet(cacheKey, url);
 
         //在受限制的接口列表内 ，每台机器从缓存中获取3/100的限制数
-        String getTimes = String.valueOf((int) Math.floor(Float.parseFloat(interfaceTimes) * INTERFACE_PERCENT));
+        int getTime = (int) Math.floor(Float.parseFloat(interfaceTimes) * INTERFACE_PERCENT);
+        String getTimes = String.valueOf(getTime == 0 ? 1 : getTime);
         map.put("getTimes", getTimes);
         map.put("interfaceTimes", interfaceTimes);
 
