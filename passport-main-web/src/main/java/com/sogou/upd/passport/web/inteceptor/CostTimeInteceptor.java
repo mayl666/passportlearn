@@ -69,7 +69,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                     if (!processInterfaceLimited(clientId, url)) {
                         //初始化或获取限制的次数
                         Map<Object,Object> mapResult=interfaceLimitedService.isObtainLimitedTimesSuccess(clientId,url);
-                        String getTimes= (String) mapResult.get("getTimes");
+                        int getTimes= (Integer) mapResult.get("getTimes");
                         if (mapResult.get("flag") instanceof Boolean && !(boolean)mapResult.get("flag")) {
                             result.setCode(ErrorUtil.ERR_CODE_CLIENT_INBLACKLIST);
                             response.setContentType(HttpConstant.ContentType.JSON + ";charset=UTF-8");
@@ -79,8 +79,8 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                             //此接口在缓存中还有剩余，初始化内存数据
                             Object obj = clientMapping.get(clientId);
                             if (obj != null && obj instanceof Map) {
-                                Map<String, String> map = (Map<String, String>) obj;
-                                map.put(url, getTimes);
+                                Map<String, Integer> map = (Map<String, Integer>) obj;
+                                map.put(url, getTimes-1);
                             }
                             return true;
                         }
@@ -96,13 +96,13 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     public boolean processInterfaceLimited(int clientId,String url){
         Object obj = clientMapping.get(clientId);
         if (obj != null && obj instanceof Map) {
-            Map<String, String> map = (Map<String, String>) obj;
+            Map<String, Integer> map = (Map<String, Integer>) obj;
             if (map.containsKey(url)) {
-                int value = Integer.parseInt(map.get(url));
+                int value = map.get(url);
                 if (value > 0) {
                     try {
                         lock.lock();
-                        map.put(url, String.valueOf(--value));
+                        map.put(url, --value);
                     } finally {
                         lock.unlock();
                     }
@@ -112,15 +112,15 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             } else {
                 //同一client_id的其他url
                 Map<Object,Object> mapResult=interfaceLimitedService.isObtainLimitedTimesSuccess(clientId,url);
-                map.put(url, (String)mapResult.get("getTimes"));
+                map.put(url, (Integer)mapResult.get("getTimes"));
             }
         } else {
 
             //同一client_id的其他url
             Map<Object,Object> mapResult=interfaceLimitedService.isObtainLimitedTimesSuccess(clientId,url);
             //初始化新的client_id以及从缓存中获取limited
-            Map<String, String> map = Maps.newHashMap();
-            map.put(url, (String)mapResult.get("getTimes"));
+            Map<String, Integer> map = Maps.newHashMap();
+            map.put(url, (Integer)mapResult.get("getTimes")-1);
             clientMapping.put(clientId, map);
         }
         return true;

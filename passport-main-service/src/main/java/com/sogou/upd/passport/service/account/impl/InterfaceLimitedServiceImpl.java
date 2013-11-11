@@ -51,11 +51,11 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
 
         //在受限制的接口列表内 ，每台机器从缓存中获取3/100的限制数
         int getTime = (int) Math.floor(Float.parseFloat(interfaceTimes) * INTERFACE_PERCENT);
-        String getTimes = String.valueOf(getTime == 0 ? 1 : getTime);
+        int getTimes = getTime == 0 ? 1 : getTime;
         map.put("getTimes", getTimes);
         map.put("interfaceTimes", interfaceTimes);
 
-        if (!Strings.isNullOrEmpty(getTimes)) {
+        if (getTimes!=0) {
             cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED + clientId;
             String cacheTimes = redisUtils.hGet(cacheKey, url);
             if (Strings.isNullOrEmpty(cacheTimes)) {
@@ -64,11 +64,11 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                 cacheTimes = interfaceTimes;
             }
             long times = Long.parseLong(cacheTimes);
-            if (times < 0) {
+            if (times <= 0) {
                 map.put("flag", false);
                 return map;
             } else {
-                redisUtils.hIncrByTimes(cacheKey, url, -Integer.parseInt(getTimes));
+                redisUtils.hIncrByTimes(cacheKey, url, -getTimes);
             }
             map.put("flag", true);
             return map;
