@@ -28,29 +28,43 @@
     <div class="inner reg">
         <ul>
             
-            <li ><a href="">首页</a></li>
+            <li ><a href="/">首页</a></li>
             
-            <li ><a href="1">找回密码</a></li>
+            <li class="current"><a href="/web/userinfo/get">个人资料</a></li>
+            
+            <li ><a href="/web/security">帐号安全</a></li>
             
         </ul>
     </div>
     <span class="underline"></span>
 </div>
 
-<div class="main-content one-col">
-    <div class="inner recover" >
-        <div class="title">
-            提示信息
-        </div>
-        <div  class="center">
-            <p class="ctitle">设置新密码链接已发送至您的登录邮箱: <span id="EmailWrp"></span></p>
-            <p class="warn">请您在24小时内登录邮箱，按邮件中的指示完成设置新密码操作</p>
-            <a href="sended.ut" class="long-btn">去邮箱收信</a>
-        </div>
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li style="border:none;" class="person   ">
+       <span>个人资料</span>
+    </li>
+    
+    <li  class="index   small">
+        <a href="/web/userinfo/getuserinfo">基本资料</a>
+    </li>
+    
+    <li  class="avatar current  small">
+        <a href="/web/userinfo/avatarurl">修改头像</a>
+    </li>
+    
+</ul>
+        
+    </div>
+    <div class="col-r">
+      <div id="UploadPhoto"></div>
     </div>
 </div>
 
-
+<script type="text/javascript"></script>
 
         </div>
         
@@ -61,14 +75,14 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2013111216"></script>
+    <script type="text/javascript" src="/./static/js/person.js?t=2013111216"></script>
     
     <script type="text/javascript">
 
 var spb_vars = {
     productid:"passport",
     ptype:"web",
-    pcode:"recover_sended".split('/').join('_')
+    pcode:"person_avatar".split('/').join('_')
 };
 
 (function() {
@@ -85,8 +99,8 @@ require.config({
 });
 
 
-require(['recover'] , function(module){
-    module.init('sended');
+require(['person'] , function(module){
+    module.init('avatar');
 });
 
 

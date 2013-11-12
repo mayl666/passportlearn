@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=393167" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=737819" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -29,6 +29,8 @@
         <ul>
             
             <li ><a href="/">首页</a></li>
+            
+            <li ><a href="/person">个人资料</a></li>
             
             <li class="current"><a href="/web/security">帐号安全</a></li>
             
@@ -155,7 +157,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/safe.js?t=2013082332"></script>
+    <script type="text/javascript" src="/./static/js/safe.js?t=2013111216"></script>
     
     <script type="text/javascript">
 

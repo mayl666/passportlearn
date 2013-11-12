@@ -1,0 +1,14 @@
+.form-item .form-ra{background: none;}
+.form-item .form-ra input{width: auto}
+.form-item .form-ra label{width: 63px;display: inline;text-align: left;border: none;line-height: 1;}
+.person .i{font: italic 16px "Times New Roman",serif;color: #84c30f;padding: 0 0.5em;font-weight: 900;}
+.form-item label{color: #000}
+
+.form select{border: 1px solid #999;}
+
+select.location{width: 89px;}
+
+.form .back{height:27px;background: #adadad url(/./static/img/btn-grey-medium.png?t=) no-repeat 0 0;width: 82px;}
+.form .sub{height: 27px;width: 83px;margin-right: 9px;}
+.form .tip{color:#999;font-size: 14px;}
+.form .s-tip{color:#999;font-size: 12px;float: left;}

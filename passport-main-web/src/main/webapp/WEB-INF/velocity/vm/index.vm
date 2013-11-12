@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=425860" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=462390" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -21,6 +21,7 @@
                     <div class="login-inner">
                         <h2>欢迎登录搜狗通行证</h2>
                         <div id="logdiv" style="display:none;"></div>
+                        <ul class="sugg"></ul>
                         <form method="post" id="Login" action="/web/login">
                                 
                             <p class="username">
@@ -105,7 +106,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
     <script type="text/javascript" src="/./static/api/login.js?t=351247"></script>
-    <script type="text/javascript" src="/./static/js/index.js?t=223673"></script>
+    <script type="text/javascript" src="/./static/js/index.js?t=493656"></script>
     <script type="text/javascript">
 
 var spb_vars = {

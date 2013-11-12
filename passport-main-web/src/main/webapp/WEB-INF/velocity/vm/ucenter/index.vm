@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=393167" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=737819" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -30,6 +30,8 @@
             
             <li class="current"><a href="/">首页</a></li>
             
+            <li class="current"><a href="/web/userinfo/getuserinfo">个人资料</a></li>
+            
             <li ><a href="/web/security">帐号安全</a></li>
             
         </ul>
@@ -45,9 +47,10 @@
             <div class="table">
                 <script type="text/tpl"  id="Target">
                     <p class="item my">
-                        <span class="label">我的帐号</span>
-                        <span class="value"><{username}></span>
-                        <a href="/web/security/password" class="btn medium-btn">修改密码</a>
+                        <span class="label"><img id="avatar" src="" alt="我的头像" width="50" height="50" style="display:none"/></span>
+                        <span class="value"><span class="myacc">我的帐号</span><span class="username"><{username}></span></span>
+                        <span class="btns"><a href="/web/userinfo/getuserinfo" class="btn medium-btn">修改资料</a>
+                            <a href="/web/security/password" class="btn medium-btn">修改密码</a></span>
                     </p>
                     <p class="item level">
                         <span class="label">安全级别</span>
@@ -141,7 +144,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/ucenter.js?t=2013082332"></script>
+    <script type="text/javascript" src="/./static/js/ucenter.js?t=2013111216"></script>
     
     <script type="text/javascript">
 

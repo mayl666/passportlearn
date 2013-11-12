@@ -117,3 +117,10 @@ body{ background:#f9f9f9; }
 .footer .links{ padding:20px 0 5px; }
 .footer a{text-decoration:none; color:#b3b2b2;}
 .footer a:hover{ text-decoration:underline; }
+
+/*Suggestion*/
+/*.login-inner{position: relative;}*/
+.sugg{width: 230px;position: absolute;background: #fff;list-style: none;left:60px;top: 107px;border:1px solid #999;border-top: none;z-index: 100;display: none;}
+.sugg li{display: block;height: 25px;line-height: 25px;font-size: 14px;text-indent: 10px;overflow: hidden;width: 100%;cursor: pointer;}
+.sugg li.focus{background-color: rgb(223,237,189);}
+.sugg li.hover{background-color: rgb(191,220,99);}
