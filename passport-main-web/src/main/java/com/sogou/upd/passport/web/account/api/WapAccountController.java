@@ -7,7 +7,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
-import com.sogou.upd.passport.manager.form.WebLoginParams;
+import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +35,7 @@ public class WapAccountController extends BaseController {
     private WapLoginManager wapLoginManager;
 
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
+    public String login(HttpServletRequest request, HttpServletResponse response, Model model, WapLoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -42,9 +44,7 @@ public class WapAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            result.setDefaultModel("xd", loginParams.getXd());
-            model.addAttribute("data", result.toString());
-            return "/login/api";
+            return "forward:/wap/errorMsg?msg="+result.toString();
         }
 
         result = wapLoginManager.accountLogin(loginParams, ip);
@@ -71,9 +71,13 @@ public class WapAccountController extends BaseController {
                 result.setMessage("密码错误");
             }
         }
-
-        result.setDefaultModel("xd", loginParams.getXd());
-        model.addAttribute("data", result.toString());
-        return "/login/api";
+        return loginParams.getRu();
     }
+
+    @RequestMapping(value = "/wap/errorMsg")
+    @ResponseBody
+    public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
+        return msg;
+    }
+
 }
