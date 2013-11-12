@@ -8,7 +8,7 @@
 .ucenter .table .my  .btns{height: 100%;float: left;position: relative;width: 83px;}
 .ucenter .table .my  .btns .btn{margin-top: 6px;font-size: 12px;}
 .ucenter .table .my  .myacc{font-weight: bold;display: block;height: 30px;}
-.ucenter .table .my .label{ background:url(/./static/img/avatar-min.png?t=935837) no-repeat 80px center; height: 100%}
+.ucenter .table .my .label{ /*background:url(/./static/img/avatar-min.png?t=935837) no-repeat 80px center;*/ height: 100%}
 .ucenter .table .level{ height:64px; line-height:64px;font-size:16px;color:#588700;background:url(/./static/img/star.png?t=011262) no-repeat 80px 24px; }
 .ucenter .table .level-status,
 .ucenter .table .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(/./static/img/line.png?t=049072) no-repeat 0 -26px;position:relative; }
