@@ -134,7 +134,7 @@ public interface ConfigDAO {
      */
     @SQL("update " +
             CLIENTID_LEVEL_TABLE_NAME +
-            "set client_id=:clientIdLevelMapping.clientId,level_info=:clientIdLevelMapping.levelInfo where id=:clientIdLevelMapping.id")
+            "set level_info=:clientIdLevelMapping.levelInfo where client_id=:clientIdLevelMapping.clientId")
     public int updateClientIdAndLevelMapping(@SQLParam("clientIdLevelMapping") ClientIdLevelMapping clientIdLevelMapping) throws DataAccessException;
 
     /**
