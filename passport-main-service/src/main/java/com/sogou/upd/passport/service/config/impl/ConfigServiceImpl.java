@@ -108,8 +108,21 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public boolean deleteInterfaceLevelById(String id) throws ServiceException {
         try {
+            //删除数据库中接口
             int row = configDAO.deleteInterfaceLevelMappingById(id);
             if (row != 0) {
+                //查询接口信息
+                InterfaceLevelMapping ilm = configDAO.findInterfaceById(id);
+                String key = ilm.getInterfaceName();
+                //查询所有应用列表
+                List<ClientIdLevelMapping> listResult = configDAO.findClientIdAndLevelList();
+                if (listResult != null && listResult.size() > 0) {
+                    for (ClientIdLevelMapping clm : listResult) {
+                        String cacheKey = buildCacheKey(clm.getClientId());
+                        //删除缓存中以该接口为key的缓存记录
+                        redisUtils.hDelete(cacheKey, key);
+                    }
+                }
                 return true;
             }
         } catch (Exception e) {
@@ -180,7 +193,7 @@ public class ConfigServiceImpl implements ConfigService {
             //更新数据库中应用与等级映射关系
             int row = configDAO.updateClientIdAndLevelMapping(clientIdLevelMapping);
             if (row != 0) {
-                String hashCacheKey = buildInterAndLevelKey(clientIdLevelMapping.getClientId());
+                String hashCacheKey = buildCacheKey(clientIdLevelMapping.getClientId());
                 String level = clientIdLevelMapping.getLevelInfo();
                 //获取接口列表
                 List<InterfaceLevelMapping> interfaceList = configDAO.getInterfaceListAll();
@@ -208,7 +221,7 @@ public class ConfigServiceImpl implements ConfigService {
      */
     @Override
     public Map<String, String> getMapsFromCacheKey(String clientId) throws ServiceException {
-        String cacheKey = buildInterAndLevelKey(clientId);
+        String cacheKey = buildCacheKey(clientId);
         Map<String, String> maps;
         List<InterfaceLevelMapping> list;
         try {
@@ -287,7 +300,7 @@ public class ConfigServiceImpl implements ConfigService {
         return value;
     }
 
-    private String buildInterAndLevelKey(String clientId) {
+    private String buildCacheKey(String clientId) {
         return CACHE_PREFIX_PASSPORT_INTER_AND_LEVEL + clientId;
     }
 }

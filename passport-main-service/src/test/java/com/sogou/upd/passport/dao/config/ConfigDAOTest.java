@@ -143,7 +143,7 @@ public class ConfigDAOTest extends BaseDAOTest {
     @Test
     public void testGetInterfaceListAll(){
         List<InterfaceLevelMapping> list = configDAO.getInterfaceListAll();
-        if (list != null && list.size() > 0) {
+        if (list != null    && list.size() > 0) {
             System.out.println("########查询成功！");
         } else {
             System.out.println("########查询失败！");
