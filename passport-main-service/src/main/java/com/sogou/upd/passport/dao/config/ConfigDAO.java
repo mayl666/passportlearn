@@ -151,6 +151,19 @@ public interface ConfigDAO {
     public List<ClientIdLevelMapping> getClientIdListByLevel(@SQLParam("level") String level) throws DataAccessException;
 
     /**
+     * 根据应用id查该应用对应的等级
+     *
+     * @param clientId
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select * from " +
+            CLIENTID_LEVEL_TABLE_NAME +
+            "where client_id=:clientId"
+    )
+    public ClientIdLevelMapping getLevelByClientId(@SQLParam("clientId") String clientId) throws DataAccessException;
+
+    /**
      * 查询所有接口与等级的信息
      *
      * @return

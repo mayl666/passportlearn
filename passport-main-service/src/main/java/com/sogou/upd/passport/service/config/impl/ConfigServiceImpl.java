@@ -284,6 +284,20 @@ public class ConfigServiceImpl implements ConfigService {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public ClientIdLevelMapping getLevelByClientId(String clientId) throws ServiceException {
+        ClientIdLevelMapping clm;
+        try {
+            clm = configDAO.getLevelByClientId(clientId);
+            if (clm != null) {
+                return clm;
+            }
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     private String getValue(InterfaceLevelMapping inter, String level) {
         String value = null;
         switch (level) {
