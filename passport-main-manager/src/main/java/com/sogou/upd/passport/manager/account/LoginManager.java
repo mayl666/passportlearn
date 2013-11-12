@@ -41,4 +41,24 @@ public interface LoginManager {
      * @return
      */
     public String getIndividPassportIdByUsername(String username);
+
+    /**
+     * 判断用户名是否在黑名单中，并校验用户名、密码
+     * @param username
+     * @param ip
+     * @param pwdMD5
+     * @return
+     */
+    public Result authUser(String username, String ip, String pwdMD5);
+
+    /**
+     * 验证校验码是否正确
+     * @param username
+     * @param ip
+     * @param clientId
+     * @param captcha
+     * @param token
+     * @return
+     */
+    public Result checkCaptchaVaild(String username, String ip, String clientId,String captcha,String token );
 }
