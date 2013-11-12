@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.dao.config;
 
 import com.sogou.upd.passport.dao.BaseDAOTest;
+import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,112 @@ public class ConfigDAOTest extends BaseDAOTest {
     }
 
     @Test
-    public void testGetInterfaceCount(){
+    public void testGetInterfaceCount() {
         int count = configDAO.getInterfaceCount();
-        System.out.println("" + count);
+        System.out.println("#######记录总条数：" + count);
+    }
+
+    @Test
+    public void testInsertInterfaceLevelMapping() {
+        InterfaceLevelMapping inter = new InterfaceLevelMapping();
+        inter.setInterfaceName("/internal/account/regmobile");
+        int row = configDAO.insertInterfaceLevelMapping(inter);
+        if (row > 0) {
+            System.out.println("########插入成功！");
+        } else {
+            System.out.println("########插入失败！");
+        }
+    }
+
+    @Test
+    public void testDeleteInterfaceLevelMappingById() {
+        int row = configDAO.deleteInterfaceLevelMappingById("11");
+        if (row > 0) {
+            System.out.println("########删除成功！");
+        } else {
+            System.out.println("########删除失败！");
+        }
+    }
+
+    @Test
+    public void testUpdateInterfaceLevelMapping() {
+        long id = 11;
+        String interfaceName = "/internal/account/regmobile/test";
+        InterfaceLevelMapping inter = new InterfaceLevelMapping();
+        inter.setId(id);
+        inter.setInterfaceName(interfaceName);
+        int row = configDAO.updateInterfaceLevelMapping(inter);
+        if (row > 0) {
+            System.out.println("########修改成功！");
+        } else {
+            System.out.println("########修改失败！");
+        }
+    }
+
+    @Test
+    public void testFindClientIdAndLevelList() {
+        List<ClientIdLevelMapping> list = configDAO.findClientIdAndLevelList();
+        if (list != null && list.size() > 0) {
+            System.out.println("######应用与等级列表大小为 ：" + list.size());
+        }
+    }
+
+    @Test
+    public void testFindLevelByClientId() {
+        String clientId = "1001";
+        ClientIdLevelMapping clm = configDAO.findLevelByClientId(clientId);
+        if (clm != null) {
+            System.out.println("########查询成功！");
+        } else {
+            System.out.println("########查询失败！");
+        }
+    }
+
+    @Test
+    public void testInsertClientAndLevel() {
+        ClientIdLevelMapping clm = new ClientIdLevelMapping();
+        clm.setClientId("1044");
+        clm.setLevelInfo("0");
+        int row = configDAO.insertClientIdAndLevel(clm);
+        if (row > 0) {
+            System.out.println("########插入成功！");
+        } else {
+            System.out.println("########插入失败！");
+        }
+    }
+
+    @Test
+    public void testUpdateClientIdAndLevelMapping() {
+        ClientIdLevelMapping clm = new ClientIdLevelMapping();
+        clm.setLevelInfo("1");
+        clm.setClientId("1044");
+        clm.setId(6);
+        int row = configDAO.updateClientIdAndLevelMapping(clm);
+        if (row > 0) {
+            System.out.println("########修改成功！");
+        } else {
+            System.out.println("########修改失败！");
+        }
+    }
+
+    @Test
+    public void testGetClientIdListByLevel() {
+        String level = "1";
+        List<ClientIdLevelMapping> list = configDAO.getClientIdListByLevel(level);
+        if (list != null && list.size() > 0) {
+            System.out.println("########查询成功！");
+        } else {
+            System.out.println("########查询失败！");
+        }
+    }
+
+    @Test
+    public void testGetInterfaceListAll(){
+        List<InterfaceLevelMapping> list = configDAO.getInterfaceListAll();
+        if (list != null && list.size() > 0) {
+            System.out.println("########查询成功！");
+        } else {
+            System.out.println("########查询失败！");
+        }
     }
 }

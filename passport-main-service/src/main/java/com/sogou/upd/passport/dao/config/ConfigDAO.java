@@ -27,7 +27,7 @@ public interface ConfigDAO {
     /**
      * 应用与等级数据库表名称
      */
-    String CLIENTID_LEVEL_TABLE_NAME = "clientid_level_mapping";
+    String CLIENTID_LEVEL_TABLE_NAME = " clientid_level_mapping ";
 
     /**
      * 根据id查询接口信息
@@ -111,6 +111,20 @@ public interface ConfigDAO {
     public ClientIdLevelMapping findLevelByClientId(@SQLParam("clientId") String clientId) throws DataAccessException;
 
     /**
+     * 新增应用与等级关系
+     *
+     * @param clm
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("insert into" +
+            CLIENTID_LEVEL_TABLE_NAME +
+            "(id,client_id,level_info,interface_name)" +
+            "values (:clm.id,:clm.clientId,:clm.levelInfo,:clm.interfaceName)"
+    )
+    public int insertClientIdAndLevel(@SQLParam("clm") ClientIdLevelMapping clm) throws DataAccessException;
+
+    /**
      * 修改应用与等级的映射信息
      *
      * @param clientIdLevelMapping
@@ -133,8 +147,8 @@ public interface ConfigDAO {
      */
     @SQL("select * from " +
             CLIENTID_LEVEL_TABLE_NAME +
-            "where level=:level")
-    public List<InterfaceLevelMapping> getInterfaceListByLevel(@SQLParam("level") String level) throws DataAccessException;
+            "where level_info=:level")
+    public List<ClientIdLevelMapping> getClientIdListByLevel(@SQLParam("level") String level) throws DataAccessException;
 
     /**
      * 查询所有接口与等级的信息
@@ -143,7 +157,7 @@ public interface ConfigDAO {
      * @throws DataAccessException
      */
     @SQL("select * from" +
-            CLIENTID_LEVEL_TABLE_NAME)
+            INTERFACE_LEVEL_TABLE_NAME)
     public List<InterfaceLevelMapping> getInterfaceListAll() throws DataAccessException;
 
 
