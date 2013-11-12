@@ -280,6 +280,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_PROBLEM_NOT_LOGIN = "30604";
     //用户提及反馈的次数超限
     public static final String ERR_CODE_PROBLEM_ADDTIMES_LIMITED = "30605";
+    /* ============================================================================ */
+    /*  接口频次调用相关错误代码                                                     */
+    /* ============================================================================ */
+    public static final String ERR_CODE_INTERFACE_FREQUENCY = "30606";
 
     static {
         // 通用错误
