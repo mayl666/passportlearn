@@ -68,11 +68,18 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
 
         // 授权页面样式
         public AuthenticationRequestBuilder setDisplay(String display, int provider) {
-            if (provider == AccountTypeEnum.TAOBAO.getValue()) {
+            if (AccountTypeEnum.TAOBAO.getValue() == provider) {
                 this.parameters.put(OAuth.OAUTH_TAOBAO_DISPLAY, display);
+            } else if (AccountTypeEnum.QQ.getValue() == provider) {
+                if (display.equals("wap1")) {
+                    this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "1");
+                } else if (display.equals("wap2")) {
+                    this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "2");
+                }
             } else {
                 this.parameters.put(OAuth.OAUTH_DISPLAY, display);
             }
+
             return this;
         }
 

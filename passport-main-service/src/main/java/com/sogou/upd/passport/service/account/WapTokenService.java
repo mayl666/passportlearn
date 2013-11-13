@@ -12,14 +12,15 @@ import com.sogou.upd.passport.exception.ServiceException;
 public interface WapTokenService {
     /**
      * 存储waptoken，有效期为5分钟
-     * @param tokenKey
+     *
      * @param passportId
      * @throws ServiceException
      */
-    public void saveWapToken(String tokenKey,final String passportId) throws ServiceException;
+    public String saveWapToken(String passportId) throws ServiceException;
 
     /**
      * 通过token获取passportId
+     *
      * @param token
      * @return
      * @throws ServiceException

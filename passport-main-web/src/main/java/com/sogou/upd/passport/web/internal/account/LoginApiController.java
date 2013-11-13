@@ -3,14 +3,11 @@ package com.sogou.upd.passport.web.internal.account;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
-import com.sogou.upd.passport.manager.api.account.InternalLoginApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -57,6 +54,7 @@ public class LoginApiController extends BaseController {
 
     /**
      * 续种cookie
+     *
      * @param request
      * @param params
      * @return
@@ -87,7 +85,7 @@ public class LoginApiController extends BaseController {
             ru = LOGIN_INDEX_URL;
         }
 
-        String userid=params.getUserid();
+        String userid = params.getUserid();
 
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(userid);
@@ -101,13 +99,13 @@ public class LoginApiController extends BaseController {
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
 
             result.setSuccess(true);
-            Map<String,String> map= Maps.newHashMap();
-            map.put("userid",userid);
-            map.put("ppinf",ppinf);
-            map.put("pprdig",pprdig);
+            Map<String, String> map = Maps.newHashMap();
+            map.put("userid", userid);
+            map.put("ppinf", ppinf);
+            map.put("pprdig", pprdig);
 
             result.setModels(map);
-        }else {
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result.toString();
@@ -126,17 +124,16 @@ public class LoginApiController extends BaseController {
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
         String createip = params.getCreateip();
-
         try {
-            if(StringUtils.isEmpty(createip)){
-                createip =null;
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            if (StringUtils.isEmpty(createip)) {
+                createip = null;
             }
             if (loginManager.isLoginUserInBlackList(params.getUserid(), createip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
@@ -187,6 +184,10 @@ public class LoginApiController extends BaseController {
 //        // 调用内部接口
 //        result = proxyLoginApiManager.appAuthToken(params);
         result = wapLoginManager.authtoken(params.getToken());
+        // 获取记录UserOperationLog的数据
+        String userid = (String) result.getModels().get("userid");
+        UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 

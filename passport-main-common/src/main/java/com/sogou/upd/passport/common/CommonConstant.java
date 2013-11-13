@@ -33,12 +33,13 @@ public class CommonConstant {
     public static final String SEPARATOR_1 = "|";
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
+    public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
     public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
     //	public static final String API_ID_SOGOU_DOMAIN = "test01.id.sogou.com";
     public static final String API_ID_SOGOU_INTERNAL_DOMAIN = "api.id.sogou.com.z.sogou-op.org";
 
-    public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
+    public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 10; // 默认种cookie的有效期，1小时
 
     //=============缓存相关配置项====================
 //	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time

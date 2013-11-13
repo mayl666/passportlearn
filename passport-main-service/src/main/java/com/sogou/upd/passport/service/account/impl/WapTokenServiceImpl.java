@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.WapTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,13 @@ public class WapTokenServiceImpl implements WapTokenService {
     private RedisUtils redisUtils;
 
     @Override
-    public void saveWapToken(String token,final String passportId) throws ServiceException {
+    public String saveWapToken(String passportId) throws ServiceException {
         try {
+            String token = TokenGenerator.generatorWapToken(passportId);
             redisUtils.setWithinSeconds(token,passportId, DateAndNumTimesConstant.TIME_FIVEMINUTES);
+            return token;
         } catch (Exception e) {
-            logger.error("saveWapToken Fail, token:" + token + ", passportId:" + passportId, e);
+            logger.error("saveWapToken Fail, passportId:" + passportId, e);
             throw new ServiceException(e);
         }
     }

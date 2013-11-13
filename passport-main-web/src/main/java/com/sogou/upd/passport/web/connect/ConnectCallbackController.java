@@ -16,11 +16,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -39,8 +41,9 @@ public class ConnectCallbackController extends BaseConnectController {
     private OAuthAuthLoginManager oAuthAuthLoginManager;
 
     @RequestMapping("/callback/{providerStr}")
-    public ModelAndView handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
-                                               @PathVariable("providerStr") String providerStr, Model model) {
+    @ResponseBody
+    public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
+                                               @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
         try {
@@ -57,21 +60,24 @@ public class ConnectCallbackController extends BaseConnectController {
             String passportId = (String) result.getModels().get("userid");
             //用户第三方登录log
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             UserOperationLogUtil.log(userOperationLog);
 
             if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                 model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
                 model.addAttribute("result", result.getModels().get("result"));
-                return new ModelAndView(viewUrl);
+                return viewUrl;
             } else {
                 // TODO 少了种cookie
-                return new ModelAndView(new RedirectView(viewUrl));
+                res.sendRedirect(viewUrl);
+                return "";
             }
         } else {
             if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                return new ModelAndView(viewUrl);
+                return viewUrl;
             } else {
-                return new ModelAndView(new RedirectView(viewUrl));
+                res.sendRedirect(viewUrl);
+                return "";
             }
         }
 

@@ -19,7 +19,9 @@ public class ConnectDisplay {
     private static final List<String> BAIDU_DISPLAY = Lists.newArrayList();
 
     static {
-        QQ_DISPLAY.add("mobile");
+        QQ_DISPLAY.add("mobile"); //mobile端下的样式,触屏版，适用于支持html5的手机
+        QQ_DISPLAY.add("wap1");  //1：wml版本
+        QQ_DISPLAY.add("wap2");  //2：xhtml版本
     }
 
     static {

@@ -54,8 +54,9 @@ public class BaseConnectController extends BaseController {
     }
 
     /**
-     * 第三方登录接口type=mapp时，需要在ru后追加status和statusText
-     *
+     * 第三方登录接口错误返回结果的跳转url
+     * type=mapp时，需要在ru后追加status和statusText
+     * type=token时，需往错误页面里注入错误参数
      * @param type      /connect/login接口的type参数
      * @param ru        回调url
      * @param errorCode 错误码
@@ -64,7 +65,11 @@ public class BaseConnectController extends BaseController {
      */
     protected String buildAppErrorRu(String type, String ru, String errorCode, String errorText) {
         if (Strings.isNullOrEmpty(ru)) {
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            if (ConnectTypeEnum.isMobileApp(type)) {
+                ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+            } else {
+                ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            }
         }
         if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {
             Map params = Maps.newHashMap();

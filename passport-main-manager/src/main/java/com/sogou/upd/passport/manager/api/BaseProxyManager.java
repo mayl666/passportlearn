@@ -108,7 +108,7 @@ public class BaseProxyManager {
             clientId = String.valueOf(requestModel.getParam(CommonConstant.CLIENT_ID));
         }
         String code;
-        if (isNonPCOpenApiProxy(url, clientId)) {
+        if (isNonSGAppKeyProxyOpenApi(url, clientId)) {
             code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
             requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.DEFAULT_CONNECT_APP_ID));
         } else {
@@ -164,16 +164,26 @@ public class BaseProxyManager {
     }
 
     /*
-     * 第三方代理接口请求中非 client_id=1044和1105 浏览器输入法客户端的
-     * 如果是，访问搜狐时需传appid=9998；
+     * 第三方代理接口是否使用搜狗appkey授权的
+     * 如果是，访问搜狐时需传appid=1110；
      * 如果否，访问搜狐时需传appid=1120；
      */
-    private boolean isNonPCOpenApiProxy(String url, String clientId) {
-        if (url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO)) {
-            if (!clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID))) {
+    private boolean isNonSGAppKeyProxyOpenApi(String url, String clientId) {
+        if (isProxyOpenApi(url) && isNonUseSGAppKey(clientId)) {
                 return true;
-            }
         }
         return false;
+    }
+
+    private boolean isProxyOpenApi(String url){
+       return url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO);
+    }
+
+    /*
+     *  TODO 阅读的移动端和wap使用的type=mapp，用搜狗appkey
+     *  浏览器和输入法PC端使用type=token，用搜狗appkey
+     */
+    private boolean isNonUseSGAppKey(String clientId){
+         return !clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID)) && !clientId.equals("1115");
     }
 }

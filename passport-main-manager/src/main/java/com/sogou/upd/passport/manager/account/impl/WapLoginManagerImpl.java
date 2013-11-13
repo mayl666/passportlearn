@@ -47,8 +47,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
             result = loginManager.authUser(username, ip, pwdMD5);
             if (result.isSuccess()) {
                 String userId = result.getModels().get("userid").toString();
-                String token = TokenGenerator.getWapToken(userId);
-                wapTokenService.saveWapToken(token, userId);
+                String token = wapTokenService.saveWapToken(userId);
                 result.setDefaultModel("token", token);
             }
         } catch (Exception e) {
