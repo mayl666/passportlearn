@@ -7,6 +7,9 @@ import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,9 @@ public class WapLoginManagerImpl implements WapLoginManager {
     @Autowired
     private LoginManager loginManager;
 
+    @Autowired
+    private AppConfigService appConfigService;
+
     @Override
     public Result accountLogin(WapLoginParams loginParams, String ip) {
         Result result = new APIResultSupport(false);
@@ -44,6 +50,15 @@ public class WapLoginManagerImpl implements WapLoginManager {
             result = loginManager.authUser(username,ip,pwdMD5);
             if (result.isSuccess()) {
                 //todo 返回token
+                int clientId = Integer.parseInt(loginParams.getClient_id());
+                AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+                if (appConfig == null) {
+                    result.setCode(ErrorUtil.INVALID_CLIENTID);
+                    result.setSuccess(false);
+                    return result;
+                }
+                String accesstoken = TokenGenerator.generatorPcToken(passportId, appConfig.getAccessTokenExpiresin(), appConfig.getClientSecret());
+                result.setDefaultModel("accesstoken",accesstoken);
             }
         }catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);

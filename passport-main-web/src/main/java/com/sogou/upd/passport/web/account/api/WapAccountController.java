@@ -39,6 +39,7 @@ public class WapAccountController extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
+        int clientId = Integer.parseInt(loginParams.getClient_id());
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -49,15 +50,11 @@ public class WapAccountController extends BaseController {
 
         result = wapLoginManager.accountLogin(loginParams, ip);
         String userId = loginParams.getUsername();
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
+        String accesstoken = "";
 
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
-            int clientId = Integer.parseInt(loginParams.getClient_id());
+            accesstoken =  result.getModels().get("accesstoken").toString();
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
@@ -71,7 +68,13 @@ public class WapAccountController extends BaseController {
                 result.setMessage("密码错误");
             }
         }
-        return loginParams.getRu();
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+        //todo 检查是否有内存泄露问题
+        return loginParams.getRu()+"?accesstoken="+accesstoken;
     }
 
     @RequestMapping(value = "/wap/errorMsg")
