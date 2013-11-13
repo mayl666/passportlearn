@@ -35,16 +35,17 @@ public class TokenRedisperfController {
     private AppConfigService appConfigService;
 
     static {
-        appConfig = new AppConfig();
-        appConfig.setId(8);
-        appConfig.setClientId(1044);
-        appConfig.setSmsText("您的“搜狗通行证”验证码为：%s，30分钟内有效哦");
-        appConfig.setAccessTokenExpiresin(604800);
-        appConfig.setRefreshTokenExpiresin(7776000);
-        appConfig.setClientSecret("=#dW$h%q)6xZB#m#lu'x]]wP=\\FUO7");
-        appConfig.setServerSecret("c1756a351db27d817225e2a4fd7b3f7d");
-        appConfig.setCreateTime(new Date());
-        appConfig.setClientName("浏览器输入法桌面");
+        if(appConfig ==null){
+            appConfig.setId(8);
+            appConfig.setClientId(1044);
+            appConfig.setSmsText("您的“搜狗通行证”验证码为：%s，30分钟内有效哦");
+            appConfig.setAccessTokenExpiresin(604800);
+            appConfig.setRefreshTokenExpiresin(7776000);
+            appConfig.setClientSecret("=#dW$h%q)6xZB#m#lu'x]]wP=\\FUO7");
+            appConfig.setServerSecret("c1756a351db27d817225e2a4fd7b3f7d");
+            appConfig.setCreateTime(new Date());
+            appConfig.setClientName("浏览器输入法桌面");
+        }
     }
 
     @RequestMapping(value = "/internal/tokenredis/get", method = RequestMethod.GET)
