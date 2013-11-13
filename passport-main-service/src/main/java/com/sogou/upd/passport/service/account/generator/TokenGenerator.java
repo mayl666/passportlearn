@@ -124,4 +124,22 @@ public class TokenGenerator {
         return vaildTime;
     }
 
+    /**
+     * 生成Wap端登录流程使用的token 构成格式 MD5(passportID|timestamp)
+     */
+    public static String getWapToken(String passportId)
+            throws Exception {
+        // 过期时间点
+        long curTimestamp = System.currentTimeMillis();
+        String tokenContent = passportId + CommonConstant.SEPARATOR_1 + curTimestamp;
+        String token;
+        try {
+            token =Coder.encryptMD5(tokenContent);
+        } catch (Exception e) {
+            logger.error("Pc Token generator by AES fail, passportId:" + passportId);
+            throw e;
+        }
+        return token;
+    }
+
 }

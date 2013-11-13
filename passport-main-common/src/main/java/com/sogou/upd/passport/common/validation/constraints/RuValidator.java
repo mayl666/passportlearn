@@ -24,6 +24,7 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
         SUPPORT_DOMAIN.add("sogou.com");
         SUPPORT_DOMAIN.add("sohu.com");
         SUPPORT_DOMAIN.add("go2map.com");
+        SUPPORT_DOMAIN.add("soso.com");
     }
 
     @Override

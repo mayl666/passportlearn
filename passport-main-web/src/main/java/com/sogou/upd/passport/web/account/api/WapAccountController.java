@@ -7,11 +7,13 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.form.WapAuthTokenParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,13 +30,17 @@ import javax.servlet.http.HttpServletResponse;
  * Time: 下午12:17
  * To change this template use File | Settings | File Templates.
  */
+@Controller
 public class WapAccountController extends BaseController {
+    private static final String WAP_INDEX = "http://wap.sogou.com/";
+
     @Autowired
     private LoginManager loginManager;
     @Autowired
     private WapLoginManager wapLoginManager;
 
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
+    @ResponseBody
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WapLoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
@@ -45,17 +51,23 @@ public class WapAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return "forward:/wap/errorMsg?msg="+result.toString();
+            response.sendRedirect(getErrorReturnStr(loginParams, result.getMessage()));
+            return "";
         }
 
         result = wapLoginManager.accountLogin(loginParams, ip);
-        String userId = loginParams.getUsername();
-        String accesstoken = "";
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
 
         if (result.isSuccess()) {
-            userId = result.getModels().get("userid").toString();
-            accesstoken =  result.getModels().get("accesstoken").toString();
+            String userId = result.getModels().get("userid").toString();
+            String accesstoken = result.getModels().get("token").toString();
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+            response.sendRedirect(loginParams.getRu() + "?token=" + accesstoken);
+            return "";
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
             //校验是否需要验证码
@@ -67,20 +79,36 @@ public class WapAccountController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
+            response.sendRedirect(getErrorReturnStr(loginParams, result.getMessage()));
+            return "";
         }
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-        //todo 检查是否有内存泄露问题
-        return loginParams.getRu()+"?accesstoken="+accesstoken;
     }
 
-    @RequestMapping(value = "/wap/errorMsg")
+    private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg) {
+        if (!Strings.isNullOrEmpty(loginParams.getRu())) {
+            return (loginParams.getRu() + "?errorMsg=" + errorMsg);
+        }
+        return WAP_INDEX + "?errorMsg=" + errorMsg;
+    }
+
+
+    /*@RequestMapping(value = "/wap/authtoken")
     @ResponseBody
-    public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
-        return msg;
-    }
+    public Object authtoken(HttpServletRequest request, HttpServletResponse response, WapAuthTokenParams wapAuthTokenParams) {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(wapAuthTokenParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return "1";//表示参数填写错误
+        }
 
+        String passportId = wapLoginManager.authtoken(wapAuthTokenParams.getAccesstoken());
+        if (!Strings.isNullOrEmpty(passportId)) {
+            return "0|" + passportId;
+        } else {
+            return "2";//token验证失败
+        }
+    }*/
 }

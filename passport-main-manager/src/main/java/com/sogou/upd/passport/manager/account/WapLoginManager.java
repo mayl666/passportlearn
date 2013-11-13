@@ -11,5 +11,18 @@ import com.sogou.upd.passport.manager.form.WebLoginParams;
  * Time: 下午4:33
  */
 public interface WapLoginManager {
+    /**
+     * wap端校验用户名和密码
+     * @param parameters
+     * @param ip
+     * @return
+     */
     public Result accountLogin(WapLoginParams parameters, String ip);
+
+    /**
+     * wap端校验token，验证成功则返回passportId
+     * @param token
+     * @return
+     */
+    public Result authtoken(String token);
 }

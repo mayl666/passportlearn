@@ -22,6 +22,9 @@ public class DateAndNumTimesConstant {
     public static final int ONE_MONTH_INSECONDS = 60*60*24*30; // 10天,单位,s
     public static final int ONE_DAY_INSECONDS = 60*60*24; // 1天,单位,s
 
+    public static final long TIME_FIVEMINUTES = 5 * 60; // 时间 5分钟,单位s
+
+
 
 
 }

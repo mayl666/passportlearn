@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.account.InternalLoginApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
@@ -43,6 +44,8 @@ import java.util.Map;
 public class LoginApiController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(LoginApiController.class);
 
+    @Autowired
+    private WapLoginManager wapLoginManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
@@ -181,17 +184,9 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        // 调用内部接口
-        result = proxyLoginApiManager.appAuthToken(params);
-/*
-        String userId = (String) result.getModels().get("userid");
-
-        //记录log
-        UserOperationLog userOperationLog=new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
-        userOperationLog.putOtherMessage("token",params.getToken());
-        UserOperationLogUtil.log(userOperationLog);
-*/
-
+//        // 调用内部接口
+//        result = proxyLoginApiManager.appAuthToken(params);
+        result = wapLoginManager.authtoken(params.getToken());
         return result.toString();
     }
 
