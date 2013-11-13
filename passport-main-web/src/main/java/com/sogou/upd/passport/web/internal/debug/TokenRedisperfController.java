@@ -49,7 +49,7 @@ public class TokenRedisperfController {
 
     @RequestMapping(value = "/internal/tokenredis/get", method = RequestMethod.GET)
     @ResponseBody
-    public String get() {
+    public Object get() {
         try {
             _get();
             return "ok";
@@ -68,7 +68,7 @@ public class TokenRedisperfController {
 
     @RequestMapping(value = "/internal/tokenredis/set", method = RequestMethod.GET)
     @ResponseBody
-    public String set() {
+    public Object set() {
         try {
             _set();
             return "ok";
@@ -89,7 +89,7 @@ public class TokenRedisperfController {
 
     @RequestMapping(value = "/internal/tokenredis/getObject", method = RequestMethod.GET)
     @ResponseBody
-    public String getObject() {
+    public Object getObject() {
         try {
             _getObject();
             return "ok";
@@ -108,7 +108,7 @@ public class TokenRedisperfController {
 
     @RequestMapping(value = "/internal/tokenredis/setObject", method = RequestMethod.GET)
     @ResponseBody
-    public String setObject() {
+    public Object setObject() {
         try {
             _setObject();
             return "ok";
@@ -127,7 +127,7 @@ public class TokenRedisperfController {
 
     @RequestMapping(value = "/internal/tokenredis/queryAppConfigByClientId", method = RequestMethod.GET)
     @ResponseBody
-    public String queryAppConfigByClientId() {
+    public Object queryAppConfigByClientId() {
         try {
             _queryAppConfigByClientId();
             return "ok";
