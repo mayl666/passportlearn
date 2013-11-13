@@ -36,6 +36,7 @@ public class TokenRedisperfController {
 
     static {
         if(appConfig ==null){
+            appConfig=new AppConfig();
             appConfig.setId(8);
             appConfig.setClientId(1044);
             appConfig.setSmsText("您的“搜狗通行证”验证码为：%s，30分钟内有效哦");
