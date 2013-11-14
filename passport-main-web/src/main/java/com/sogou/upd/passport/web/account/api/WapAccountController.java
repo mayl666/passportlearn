@@ -48,7 +48,7 @@ public class WapAccountController extends BaseController {
 
         model.addAttribute("ru",ru);
         model.addAttribute("client_id",client_id);
-        return "index";
+        return "wap/index";
     }
 
 
