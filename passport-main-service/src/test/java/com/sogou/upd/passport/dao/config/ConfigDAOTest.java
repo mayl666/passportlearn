@@ -163,11 +163,21 @@ public class ConfigDAOTest extends BaseDAOTest {
     }
 
     @Test
-    public void testGetAppNameByAppId(){
+    public void testGetAppNameByAppId() {
         String clientId = "1001";
         AppConfig appConfig = configDAO.getAppNameByAppId(clientId);
-        if(appConfig != null){
+        if (appConfig != null) {
             System.out.println("########查询成功！" + appConfig.getClientName());
+        } else {
+            System.out.println("########查询失败！");
+        }
+    }
+
+    @Test
+    public void testGetAppList() {
+        List<AppConfig> appConfigList = configDAO.getAppList();
+        if (appConfigList != null && appConfigList.size() > 0) {
+            System.out.println("########查询成功！" + appConfigList.size());
         } else {
             System.out.println("########查询失败！");
         }

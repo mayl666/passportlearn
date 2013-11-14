@@ -195,4 +195,14 @@ public interface ConfigDAO {
     public AppConfig getAppNameByAppId(@SQLParam("appId") String appId) throws DataAccessException;
 
 
+    /**
+     * 获取所有应用的信息，主要是id和name
+     *
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select * from" + APP_CONFIG)
+    public List<AppConfig> getAppList() throws DataAccessException;
+
+
 }

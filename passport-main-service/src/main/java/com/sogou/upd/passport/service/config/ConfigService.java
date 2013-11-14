@@ -121,4 +121,13 @@ public interface ConfigService {
      */
     public AppConfig getAppNameByAppId(String clientId) throws ServiceException;
 
+    /**
+     * 根据应用id查询应用名称
+     *
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public List<AppConfig> getAppList(String clientId) throws ServiceException;
+
 }

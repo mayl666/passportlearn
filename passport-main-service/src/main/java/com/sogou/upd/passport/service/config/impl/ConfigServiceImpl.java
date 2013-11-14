@@ -313,6 +313,20 @@ public class ConfigServiceImpl implements ConfigService {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public List<AppConfig> getAppList(String clientId) throws ServiceException {
+        List<AppConfig> appList;
+        try {
+            appList = configDAO.getAppList();
+            if (appList != null && appList.size() > 0) {
+                return appList;
+            }
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     private String getValue(InterfaceLevelMapping inter, String level) {
         String value = null;
         switch (level) {
