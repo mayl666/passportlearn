@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * User: mayan
@@ -41,39 +43,43 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
     }
 
     @Override
-    public Map<Object, Object> isObtainLimitedTimesSuccess(int clientId, String url) {
+    public Map<Object, Object> initInterfaceTimes(int clientId, String url) {
 
-        Map map = Maps.newHashMap();
+        Map map =null;
 
-        //获取接口初始化限制次数
+        //从缓存中获取接口初始化限制次数
         String cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED_INIT + clientId;
         String interfaceTimes = redisUtils.hGet(cacheKey, url);
 
-        //在受限制的接口列表内 ，每台机器从缓存中获取3/100的限制数
-        int getTime = (int) Math.floor(Float.parseFloat(interfaceTimes) * INTERFACE_PERCENT);
-        int getTimes = getTime == 0 ? 1 : getTime;
-        map.put("getTimes", getTimes);
-        map.put("interfaceTimes", interfaceTimes);
+        if(!Strings.isNullOrEmpty(interfaceTimes)){
+            map= new ConcurrentHashMap();
+            //在受限制的接口列表内 ，每台机器从缓存中获取3/100的限制数
+            int getTime = (int) Math.floor(Float.parseFloat(interfaceTimes) * INTERFACE_PERCENT);
 
-        if (getTimes!=0) {
-            cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED + clientId;
-            String cacheTimes = redisUtils.hGet(cacheKey, url);
-            if (Strings.isNullOrEmpty(cacheTimes)) {
-                //初始化或者5分钟失效后的初始化
-                initAppLimitedList(cacheKey, url, interfaceTimes); //5分钟限制的次数
-                cacheTimes = interfaceTimes;
-            }
-            long times = Long.parseLong(cacheTimes);
-            if (times <= 0) {
-                map.put("flag", false);
+            AtomicInteger atomicGetTimes = new AtomicInteger(getTime == 0 ? 1 : getTime);
+            map.put("getTimes", atomicGetTimes);     //内存初始化次数
+            map.put("interfaceTimes", interfaceTimes);     //缓存初始化总次数
+            //初始化缓存
+            if (atomicGetTimes != null && atomicGetTimes.get() != 0) {
+                cacheKey = CacheConstant.CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED + clientId;
+                String cacheTimes = redisUtils.hGet(cacheKey, url);
+                if (Strings.isNullOrEmpty(cacheTimes)) {
+                    //初始化或者5分钟失效后的初始化
+                    initAppLimitedList(cacheKey, url, interfaceTimes); //5分钟限制的次数
+                    cacheTimes = interfaceTimes;
+                }
+                long times = Long.parseLong(cacheTimes);
+                if (times <= 0) {
+                    map.put("flag", false);
+                    return map;
+                } else {
+                    redisUtils.hIncrByTimes(cacheKey, url, atomicGetTimes.get());
+                }
+                map.put("flag", true);
                 return map;
-            } else {
-                redisUtils.hIncrByTimes(cacheKey, url, -getTimes);
             }
-            map.put("flag", true);
-            return map;
+            map.put("flag", false);
         }
-        map.put("flag", false);
         return map;
     }
 }
