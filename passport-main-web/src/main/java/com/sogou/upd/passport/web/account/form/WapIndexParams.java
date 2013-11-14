@@ -15,15 +15,15 @@ import javax.validation.constraints.Min;
  * To change this template use File | Settings | File Templates.
  */
 public class WapIndexParams {
-    @NotBlank(message = "v不允许为空!")
+    @NotBlank(message = "v is null")
     @Min(0)
     private String v = WapConstant.WAP_COLOR;//wap版本:0-简易版；1-炫彩版；2-触屏版
 
-    @NotBlank(message = "client_id不允许为空!")
+    @NotBlank(message = "client_id is null")
     @Min(0)
     private String client_id;
 
-    @NotBlank
+    @NotBlank(message = "ru is null")
     @URL
     @Ru
     private String ru;//登陆来源

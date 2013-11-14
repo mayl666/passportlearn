@@ -40,7 +40,7 @@ public class WapAccountController extends BaseController {
     private WapLoginManager wapLoginManager;
 
 
-    @RequestMapping(value = "/wap/index", method = RequestMethod.GET)
+    @RequestMapping(value = { "/wap/index", "/" }, method = RequestMethod.GET)
     public String index(HttpServletRequest request,HttpServletResponse response,Model model,  WapIndexParams wapIndexParams)
             throws Exception {
         Result result = new APIResultSupport(false);
