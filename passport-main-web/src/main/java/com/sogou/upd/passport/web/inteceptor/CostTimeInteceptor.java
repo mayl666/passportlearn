@@ -20,6 +20,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -79,7 +80,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                             //此接口在缓存中还有剩余，初始化内存数据
                             Object obj = clientMapping.get(clientId);
                             if (obj != null && obj instanceof Map) {
-                                Map<String, Integer> map = (Map<String, Integer>) obj;
+                                Map<String, Integer> map = (ConcurrentHashMap<String, Integer>) obj;
                                 map.put(url, getTimes-1);
                             }
                             return true;
@@ -96,7 +97,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     public boolean processInterfaceLimited(int clientId,String url){
         Object obj = clientMapping.get(clientId);
         if (obj != null && obj instanceof Map) {
-            Map<String, Integer> map = (Map<String, Integer>) obj;
+            Map<String, Integer> map = (ConcurrentHashMap<String, Integer>) obj;
             if (map.containsKey(url)) {
                 int value = map.get(url);
                 if (value > 0) {
@@ -119,7 +120,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             //同一client_id的其他url
             Map<Object,Object> mapResult=interfaceLimitedService.isObtainLimitedTimesSuccess(clientId,url);
             //初始化新的client_id以及从缓存中获取limited
-            Map<String, Integer> map = Maps.newHashMap();
+            Map<String, Integer> map = new ConcurrentHashMap();
             map.put(url, (Integer)mapResult.get("getTimes")-1);
             clientMapping.put(clientId, map);
         }
