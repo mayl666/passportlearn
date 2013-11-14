@@ -1,0 +1,44 @@
+html, body, a, ul, li, div, span, h1, h2, h3,h4, p, img, form, input, select, option, table, tbody, td, tr, textarea, dl, dt, dd { margin: 0; padding: 0;}
+ul, li { list-style: none;}
+img { display: block; border:none;}
+body { font: 12px/1.5 tahoma, arial, 'Hiragino Sans GB', \5b8b\4f53, sans-serif;}
+.ct { text-indent: -999px; text-align: left; overflow: hidden; font-size: 0; line-height: 0;}
+.cf:after { content:""; display:table; clear: both; overflow:hidden;}
+.cf { zoom: 1;}
+a { text-decoration: none; outline: none; color: #0051A4;}
+a:hover { text-decoration: underline;}
+a:focus { outline: none;}
+input { outline: none;}
+
+
+body { background: #FAFAFA;}
+.module { width: 246px; margin-left: auto; margin-right: auto;}
+.logo { width: 246px; height: 41px; margin-top: 10px; background: url(/static/img/wap/touch-logo.png?t=281393) no-repeat;}
+.err-msg { color: #f00; padding: 0 0 4px 0;}
+.login-form { margin-top: 18px;}
+.input-wrp { margin-bottom: 12px;}
+.input-wrp input.i-txt { border: 1px solid #DADADA; width: 234px; padding: 5px; border-radius: 5px; height: 24px; line-height: 24px;}
+.input-wrp input.i-txt:focus { /*border: 1px solid #76B2FF; outline: 2px solid #76B2FF;*/}
+.input-wrp input.i-txt.err { border: 1px solid #f00;}
+.input-wrp input.captcha { float: left; width: 60px;}
+.captcha-wrp { /*display: none;*/}
+.captcha-img { float: left; background-color: #ccc; width: 70px; height: 36px; margin-left: 12px; cursor: pointer;}
+.reload-captcha { float: left; margin: 10px 0 0 8px;}
+.login-btn {
+    border: 0;
+    color: #FFF;
+    background-color: #419BFC;
+    width: 246px;
+    height: 34px;
+    border-radius: 5px;
+    background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0, #088AC6),
+    color-stop(1, #017DC0));
+    cursor: pointer;
+}
+.sg-index { text-align: center; margin-top: 30px;}
+.sg-index a { font-size: 14px;}
+.footer { width: 100%; padding: 10px 0; margin-top: 20px; text-align: center;}
