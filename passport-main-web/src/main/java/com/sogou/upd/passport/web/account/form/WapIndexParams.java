@@ -16,7 +16,6 @@ import javax.validation.constraints.Min;
  */
 public class WapIndexParams {
     @NotBlank(message = "v is null")
-    @Min(0)
     private String v = WapConstant.WAP_COLOR;//wap版本:0-简易版；1-炫彩版；2-触屏版
 
     @NotBlank(message = "client_id is null")
@@ -28,6 +27,8 @@ public class WapIndexParams {
     @Ru
     private String ru;//登陆来源
 
+    private String errorMsg;//错误信息
+    private int needCaptcha=0;//是否需要输入验证码:0-不需要；1-需要
     public String getRu() {
         return ru;
     }
@@ -50,5 +51,21 @@ public class WapIndexParams {
 
     public void setV(String v) {
         this.v = v;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    public int getNeedCaptcha() {
+        return needCaptcha;
+    }
+
+    public void setNeedCaptcha(int needCaptcha) {
+        this.needCaptcha = needCaptcha;
     }
 }

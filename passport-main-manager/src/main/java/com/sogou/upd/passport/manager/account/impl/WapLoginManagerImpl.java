@@ -6,7 +6,10 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.WapTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -30,6 +33,10 @@ public class WapLoginManagerImpl implements WapLoginManager {
     private LoginManager loginManager;
     @Autowired
     private WapTokenService wapTokenService;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     @Override
     public Result accountLogin(WapLoginParams loginParams, String ip) {
@@ -40,7 +47,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
         String passportId = username;
         try {
             //验证验证码
-            result = loginManager.checkCaptchaVaild(username, ip, loginParams.getClient_id(), loginParams.getCaptcha(), loginParams.getToken());
+            result = checkCaptchaVaild(username, ip, loginParams.getClient_id(), loginParams.getCaptcha(), loginParams.getToken());
             if (!result.isSuccess()) {
                 return result;
             }
@@ -73,4 +80,28 @@ public class WapLoginManagerImpl implements WapLoginManager {
             return result;
         }
     }
+
+    @Override
+    public Result checkCaptchaVaild(String username, String ip, String clientId,String captchaCode,String token ) {
+        Result result = new APIResultSupport(true);
+        //校验验证码
+        if (needCaptchaCheck(clientId, username, ip)) {
+            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+                logger.info("[checkCaptchaVaild captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                return result;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean needCaptchaCheck(String client_id, String username, String ip) {
+        if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
+            return true;
+        }
+        return false;
+    }
+
 }

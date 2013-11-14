@@ -25,4 +25,24 @@ public interface WapLoginManager {
      * @return
      */
     public Result authtoken(String token);
+
+    /**
+     * wap端应用检查验证码是否正确
+     * @param username
+     * @param ip
+     * @param clientId
+     * @param captchaCode
+     * @param token
+     * @return
+     */
+    public Result checkCaptchaVaild(String username, String ip, String clientId,String captchaCode,String token );
+
+    /**
+     * 判断wap端应用是否需要输入验证码
+     * @param client_id
+     * @param username
+     * @param ip
+     * @return
+     */
+    public boolean needCaptchaCheck(String client_id, String username, String ip);
 }
