@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.dao.config;
 
 import com.sogou.upd.passport.dao.BaseDAOTest;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
 import org.junit.Test;
@@ -156,6 +157,17 @@ public class ConfigDAOTest extends BaseDAOTest {
         ClientIdLevelMapping clm = configDAO.getLevelByClientId(clientId);
         if (clm != null) {
             System.out.println("########查询成功！");
+        } else {
+            System.out.println("########查询失败！");
+        }
+    }
+
+    @Test
+    public void testGetAppNameByAppId(){
+        String clientId = "1001";
+        AppConfig appConfig = configDAO.getAppNameByAppId(clientId);
+        if(appConfig != null){
+            System.out.println("########查询成功！" + appConfig.getClientName());
         } else {
             System.out.println("########查询失败！");
         }

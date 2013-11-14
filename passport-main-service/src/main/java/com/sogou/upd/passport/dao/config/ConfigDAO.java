@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.dao.config;
 
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
 import net.paoding.rose.jade.annotation.DAO;
@@ -28,6 +29,12 @@ public interface ConfigDAO {
      * 应用与等级数据库表名称
      */
     String CLIENTID_LEVEL_TABLE_NAME = " clientid_level_mapping ";
+
+
+    /**
+     * 应用表
+     */
+    String APP_CONFIG = " app_config ";
 
     /**
      * 根据id查询接口信息
@@ -172,6 +179,20 @@ public interface ConfigDAO {
     @SQL("select * from" +
             INTERFACE_LEVEL_TABLE_NAME)
     public List<InterfaceLevelMapping> getInterfaceListAll() throws DataAccessException;
+
+
+    /**
+     * 根据应用id获取应用名称
+     *
+     * @param appId
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select * from" +
+            APP_CONFIG +
+            "where client_id=:appId"
+    )
+    public AppConfig getAppNameByAppId(@SQLParam("appId") String appId) throws DataAccessException;
 
 
 }

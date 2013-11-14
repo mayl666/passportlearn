@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.config.ConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
 import com.sogou.upd.passport.service.config.ConfigService;
@@ -291,6 +292,20 @@ public class ConfigServiceImpl implements ConfigService {
             clm = configDAO.getLevelByClientId(clientId);
             if (clm != null) {
                 return clm;
+            }
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public AppConfig getAppNameByAppId(String clientId) throws ServiceException {
+        AppConfig appConfig;
+        try {
+            appConfig = configDAO.getAppNameByAppId(clientId);
+            if (appConfig != null) {
+                return appConfig;
             }
         } catch (Exception e) {
             throw new ServiceException();

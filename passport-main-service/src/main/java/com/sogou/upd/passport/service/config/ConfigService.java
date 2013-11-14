@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.config;
 
 
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
 
@@ -110,5 +111,14 @@ public interface ConfigService {
      * @throws ServiceException
      */
     public ClientIdLevelMapping getLevelByClientId(String clientId) throws ServiceException;
+
+    /**
+     * 根据应用id查询应用名称
+     *
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public AppConfig getAppNameByAppId(String clientId) throws ServiceException;
 
 }
