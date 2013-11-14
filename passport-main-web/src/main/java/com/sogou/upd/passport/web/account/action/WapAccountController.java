@@ -80,7 +80,6 @@ public class WapAccountController extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-        int clientId = Integer.parseInt(loginParams.getClient_id());
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -99,7 +98,7 @@ public class WapAccountController extends BaseController {
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             String accesstoken = result.getModels().get("token").toString();
-            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(loginParams.getRu() + "?token=" + accesstoken);
             return "empty";
         } else {
