@@ -73,8 +73,10 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
             } else if (AccountTypeEnum.QQ.getValue() == provider) {
                 if (display.equals("wap1")) {
                     this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "1");
+                    this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
                 } else if (display.equals("wap2")) {
                     this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "2");
+                    this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
                 }
             } else {
                 this.parameters.put(OAuth.OAUTH_DISPLAY, display);
