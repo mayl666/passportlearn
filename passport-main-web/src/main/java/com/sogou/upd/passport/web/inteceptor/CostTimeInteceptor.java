@@ -41,7 +41,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     @Autowired
     private InterfaceLimitedService interfaceLimitedService;
 
-    private static Map clientMapping = Maps.newHashMap();
+    private static Map clientMapping = new ConcurrentHashMap();
 
     private Lock lock = new ReentrantLock();
 
