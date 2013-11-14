@@ -314,7 +314,7 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public List<AppConfig> getAppList(String clientId) throws ServiceException {
+    public List<AppConfig> getAppList() throws ServiceException {
         List<AppConfig> appList;
         try {
             appList = configDAO.getAppList();
