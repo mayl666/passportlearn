@@ -1,23 +1,23 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
-import com.sogou.upd.passport.manager.form.WapAuthTokenParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.form.WapIndexParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +39,35 @@ public class WapAccountController extends BaseController {
     @Autowired
     private WapLoginManager wapLoginManager;
 
+
+    @RequestMapping(value = { "/wap/index"}, method = RequestMethod.GET)
+    public String index(HttpServletRequest request,HttpServletResponse response,Model model,  WapIndexParams wapIndexParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(wapIndexParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            response.sendRedirect(getErrorReturnStr(wapIndexParams.getRu(), result.getMessage()));
+            return "";
+        }
+
+        model.addAttribute("v",wapIndexParams.getV());
+        model.addAttribute("ru",wapIndexParams.getRu());
+        model.addAttribute("client_id",wapIndexParams.getClient_id());
+
+        if(WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())){
+            return "wap/index_simple";
+        }else if(WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())){
+            return "wap/index_touch";
+        } else {
+            return "wap/index_color";
+        }
+    }
+
+
+
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
     @ResponseBody
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WapLoginParams loginParams)
@@ -51,8 +80,7 @@ public class WapAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            response.sendRedirect(getErrorReturnStr(loginParams, result.getMessage()));
-            return "";
+            return result.toString();
         }
 
         result = wapLoginManager.accountLogin(loginParams, ip);
@@ -79,36 +107,14 @@ public class WapAccountController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
-            response.sendRedirect(getErrorReturnStr(loginParams, result.getMessage()));
-            return "";
+            return result.toString();
         }
     }
 
-    private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg) {
-        if (!Strings.isNullOrEmpty(loginParams.getRu())) {
-            return (loginParams.getRu() + "?errorMsg=" + errorMsg);
+    private String getErrorReturnStr(String ru, String errorMsg) {
+        if (!Strings.isNullOrEmpty(ru)) {
+            return (ru + "?errorMsg=" + errorMsg);
         }
         return WAP_INDEX + "?errorMsg=" + errorMsg;
     }
-
-
-    /*@RequestMapping(value = "/wap/authtoken")
-    @ResponseBody
-    public Object authtoken(HttpServletRequest request, HttpServletResponse response, WapAuthTokenParams wapAuthTokenParams) {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(wapAuthTokenParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return "1";//表示参数填写错误
-        }
-
-        String passportId = wapLoginManager.authtoken(wapAuthTokenParams.getAccesstoken());
-        if (!Strings.isNullOrEmpty(passportId)) {
-            return "0|" + passportId;
-        } else {
-            return "2";//token验证失败
-        }
-    }*/
 }

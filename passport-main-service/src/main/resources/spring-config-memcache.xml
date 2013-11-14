@@ -9,7 +9,7 @@
     <bean   id="rTokenMemClientBuilder"
             class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
             p:connectionPoolSize="200"
-            p:connectTimeout="500"
+            p:connectTimeout="50"
             p:failureMode="true">
         <constructor-arg>
             <list>
