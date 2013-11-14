@@ -73,7 +73,7 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                     map.put("flag", false);
                     return map;
                 } else {
-                    redisUtils.hIncrByTimes(cacheKey, url, atomicGetTimes.get());
+                    redisUtils.hIncrByTimes(cacheKey, url, -atomicGetTimes.get());
                 }
                 map.put("flag", true);
                 return map;
