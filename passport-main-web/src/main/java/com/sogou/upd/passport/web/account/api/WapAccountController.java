@@ -39,6 +39,20 @@ public class WapAccountController extends BaseController {
     @Autowired
     private WapLoginManager wapLoginManager;
 
+
+    @RequestMapping(value = "/wap/index", method = RequestMethod.GET)
+    public String index(HttpServletRequest request,Model model,
+                        @RequestParam(defaultValue = "") String ru,
+                        @RequestParam(defaultValue = "") String client_id)
+            throws Exception {
+
+        model.addAttribute("ru",ru);
+        model.addAttribute("client_id",client_id);
+        return "index";
+    }
+
+
+
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
     @ResponseBody
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WapLoginParams loginParams)
