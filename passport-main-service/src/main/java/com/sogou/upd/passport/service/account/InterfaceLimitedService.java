@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 接口频次调用
@@ -15,7 +16,7 @@ public interface InterfaceLimitedService {
      */
     public void initAppLimitedList(String cacheKey,String key,String limiTimes);
     /*
-    获取限制次数，超限返回false
+    初始化接口调用频次
      */
-    public Map<Object,Object> isObtainLimitedTimesSuccess(int clientId,String url);
+    public Map<Object,Object> initInterfaceTimes(int clientId, String url);
 }
