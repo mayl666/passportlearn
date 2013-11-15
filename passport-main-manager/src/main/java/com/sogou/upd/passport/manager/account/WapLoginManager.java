@@ -45,4 +45,13 @@ public interface WapLoginManager {
      * @return
      */
     public boolean needCaptchaCheck(String client_id, String username, String ip);
+
+    /**
+     * wap用户登录后操作
+     * @param username
+     * @param ip
+     * @param passportId
+     * @param clientId
+     */
+    public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId);
 }

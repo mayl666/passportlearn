@@ -64,29 +64,12 @@ public class WapAccountController extends BaseController {
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
-//            response.addHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
-//            return "wap/index_simple";
-//            response.sendRedirect("http://wap.sogou.com");
-            return "redirect:/wap/index_simple";
-//            return new ModelAndView(new VelocityLayoutView(""));
-
+            return "redirect:/static/wml/index_simple.wml";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
         } else {
             return "wap/index_color";
         }
-    }
-    @RequestMapping(value = {"/wap/index_simple"})
-    public String index_simple(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams)
-            throws Exception {
-        model.addAttribute("v", wapIndexParams.getV());
-        model.addAttribute("ru", wapIndexParams.getRu());
-        model.addAttribute("client_id", wapIndexParams.getClient_id());
-        model.addAttribute("errorMsg", wapIndexParams.getErrorMsg());
-        model.addAttribute("isNeedCaptcha", wapIndexParams.getNeedCaptcha());
-
-        response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
-        return "wap/index_simple";
     }
 
     private String getIndexErrorReturnStr(String ru, String errorMsg) {
@@ -120,7 +103,7 @@ public class WapAccountController extends BaseController {
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             String accesstoken = result.getModels().get("token").toString();
-            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+            wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(loginParams.getRu() + "?token=" + accesstoken);
             return "empty";
         } else {
@@ -135,7 +118,7 @@ public class WapAccountController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
-            return getErrorReturnStr(loginParams,result.getMessage(), isNeedCaptcha);
+            return getErrorReturnStr(loginParams,"用户名或者密码错误", isNeedCaptcha);
 
         }
     }
