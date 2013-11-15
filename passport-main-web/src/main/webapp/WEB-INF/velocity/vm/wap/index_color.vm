@@ -70,7 +70,7 @@
     <div id="Header" class="header">登录到搜狗通行证</div>
     <div class="logo"></div>
     <form action="/wap/login" method="post" class="login-form module">
-        <p class="error">${errorMsg}</p>
+        <p class="error">$!errorMsg</p>
         <label for="ID" class="f-label">帐号：</label>
         <div class="f-input">
             <input type="text" name="username" id="ID" />
@@ -79,12 +79,15 @@
         <div class="f-input">
             <input type="password" name="password" id="Pass" />
         </div>
+        <div>
+            ${isNeedCaptcha}
+        </div>
         #if($isNeedCaptcha == 1)
         <label for="Captcha" class="f-label">验证码：</label>
         <div class="f-input cf">
             <input type="text" class="captcha" name="" id="Captcha" />
-            <img src="captcha.jpg" alt="" class="captcha-img" id="CaptImg" />
-            <a href="#" class="reload-captcha" id="ReloadCapt">换一张</a>
+            <img src="/captcha" alt="" class="captcha-img" id="CaptImg" />
+            <a href="" class="reload-captcha" id="ReloadCapt">换一张</a>
         </div>
         #end
         <div class="btns">

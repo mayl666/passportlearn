@@ -6,24 +6,25 @@
             <img src="/static/img/wap/logo.gif" alt="" />
             <br/>
         </p>
+        <p>$!errorMsg</p>
         <table>
             <tr>
                 <td>帐号：</td>
                 <td>
-                    <input type="text" name="un" emptyok="false" />
+                    <input type="text" name="un" emptyok="false" size="26" />
                 </td>
             </tr>
             <tr>
                 <td>密码：</td>
                 <td>
-                    <input type="password" name="up" emptyok="false" />
+                    <input type="password" name="up" emptyok="false" size="26" />
                 </td>
             </tr>
             <tr>
                 <td>验证码：</td>
                 <td>
                     <input type="text" name="captcha" emptyok="false" size="4" />
-                    <img src="captcha.jpg" alt="验证码" width="50" hspace="2" height="22" align="top" />
+                    <img src="/captcha" alt="验证码" width="50" hspace="2" height="22" align="top" />
                     <a href="">换一张</a>
                 </td>
             </tr>
@@ -32,9 +33,12 @@
                 <td>
                     <anchor>
                         登录
-                        <go href="" method="post">
+                        <go href="/wap/login" method="post">
                             <postfield name="username" value="$(un)"/>
                             <postfield name="password" value="$(up)"/>
+                            <postfield name="client_id" value="${client_id}"/>
+                            <postfield name="ru" value="${ru}"/>
+                            <postfield name="v" value="${v}"/>
                         </go>
                     </anchor>
                 </td>
