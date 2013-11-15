@@ -107,7 +107,7 @@ public class WapAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return getErrorReturnStr(validateResult, 0);
+            return getErrorReturnStr(loginParams,validateResult, 0);
         }
 
         result = wapLoginManager.accountLogin(loginParams, ip);
@@ -135,18 +135,27 @@ public class WapAccountController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
-            return getErrorReturnStr(result.getMessage(), isNeedCaptcha);
+            return getErrorReturnStr(loginParams,result.getMessage(), isNeedCaptcha);
 
         }
     }
 
-    private String getErrorReturnStr(String errorMsg, int isNeedCaptcha) {
+    private String getErrorReturnStr(WapLoginParams loginParams,String errorMsg, int isNeedCaptcha) {
         StringBuilder returnStr = new StringBuilder();
-        returnStr.append("forward:/wap/index?");
+        returnStr.append("redirect:/wap/index?");
+        if (!Strings.isNullOrEmpty(loginParams.getV())) {
+            returnStr.append("v=" + loginParams.getV());
+        }
+        if (!Strings.isNullOrEmpty(loginParams.getRu())) {
+            returnStr.append("&ru=" + loginParams.getRu());
+        }
+        if (!Strings.isNullOrEmpty(loginParams.getClient_id())) {
+            returnStr.append("&client_id=" + loginParams.getClient_id());
+        }
         if (!Strings.isNullOrEmpty(errorMsg)) {
             returnStr.append("&errorMsg=" + errorMsg);
         }
-        returnStr.append("&isNeedCaptcha=" + isNeedCaptcha);
+        returnStr.append("&needCaptcha=" + isNeedCaptcha);
         return returnStr.toString();
     }
 }
