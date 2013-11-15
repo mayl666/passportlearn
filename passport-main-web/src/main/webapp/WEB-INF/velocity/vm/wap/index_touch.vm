@@ -23,7 +23,7 @@
         <!-- <div>${isNeedCaptcha}</div> -->
         #if($isNeedCaptcha == 1)
         <div class="input-wrp cf captcha-wrp" id="CaptchaWrp">
-            <input type="text" class="i-txt captcha" name="" id="Captcha" placeholder="验证码">
+            <input type="text" class="i-txt captcha" name="captcha" id="Captcha" placeholder="验证码">
             <img src="/captcha?token=${token}" alt="" class="captcha-img" id="CaptImg">
             <a href="#" class="reload-captcha" id="ReloadCapt">看不清，换一张</a>
         </div>
