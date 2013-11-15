@@ -25,7 +25,7 @@
                 <td>验证码：</td>
                 <td>
                     <input type="text" name="cc" emptyok="false" size="4" />
-                    <img src="/captcha?${token}" alt="验证码" width="50" hspace="2" height="22" align="top" />
+                    <img src="/captcha?token=${token}" alt="验证码" width="50" hspace="2" height="22" align="top" />
                     <a href="">换一张</a>
                 </td>
             </tr>

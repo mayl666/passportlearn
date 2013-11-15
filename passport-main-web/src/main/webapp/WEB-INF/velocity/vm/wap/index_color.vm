@@ -84,7 +84,7 @@
         <label for="Captcha" class="f-label">验证码：</label>
         <div class="f-input cf">
             <input type="text" class="captcha" name="captcha" id="Captcha" />
-            <img src="/captcha?${token}" alt="" class="captcha-img" id="CaptImg" />
+            <img src="/captcha?token=${token}" alt="" class="captcha-img" id="CaptImg" />
             <a href="" class="reload-captcha" id="ReloadCapt">换一张</a>
         </div>
         #end
