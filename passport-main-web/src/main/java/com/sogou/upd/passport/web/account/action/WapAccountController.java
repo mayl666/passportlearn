@@ -13,6 +13,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,6 +63,9 @@ public class WapAccountController extends BaseController {
         model.addAttribute("client_id", wapIndexParams.getClient_id());
         model.addAttribute("errorMsg", wapIndexParams.getErrorMsg());
         model.addAttribute("isNeedCaptcha", wapIndexParams.getNeedCaptcha());
+        //生成token
+        String token = RandomStringUtils.randomAlphanumeric(48);
+        model.addAttribute("token", token);
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
