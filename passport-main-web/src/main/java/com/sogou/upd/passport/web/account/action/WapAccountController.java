@@ -13,11 +13,17 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.servlet.view.velocity.VelocityLayoutView;
+import org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver;
+import org.springframework.web.servlet.view.velocity.VelocityView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,8 +63,13 @@ public class WapAccountController extends BaseController {
         model.addAttribute("client_id", wapIndexParams.getClient_id());
         model.addAttribute("errorMsg", wapIndexParams.getErrorMsg());
         model.addAttribute("isNeedCaptcha", wapIndexParams.getNeedCaptcha());
+        //生成token
+        String token = RandomStringUtils.randomAlphanumeric(48);
+        model.addAttribute("token", token);
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
+            response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
+//            return "redirect:/static/wml/index_simple.wml";
             return "wap/index_simple";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
@@ -85,7 +96,7 @@ public class WapAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return getErrorReturnStr(validateResult, 0);
+            return getErrorReturnStr(loginParams,validateResult, 0);
         }
 
         result = wapLoginManager.accountLogin(loginParams, ip);
@@ -98,7 +109,7 @@ public class WapAccountController extends BaseController {
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             String accesstoken = result.getModels().get("token").toString();
-            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+            wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(loginParams.getRu() + "?token=" + accesstoken);
             return "empty";
         } else {
@@ -113,18 +124,27 @@ public class WapAccountController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
-            return getErrorReturnStr(result.getMessage(), isNeedCaptcha);
+            return getErrorReturnStr(loginParams,"用户名或者密码错误", isNeedCaptcha);
 
         }
     }
 
-    private String getErrorReturnStr(String errorMsg, int isNeedCaptcha) {
+    private String getErrorReturnStr(WapLoginParams loginParams,String errorMsg, int isNeedCaptcha) {
         StringBuilder returnStr = new StringBuilder();
-        returnStr.append("forward:/wap/index?");
+        returnStr.append("redirect:/wap/index?");
+        if (!Strings.isNullOrEmpty(loginParams.getV())) {
+            returnStr.append("v=" + loginParams.getV());
+        }
+        if (!Strings.isNullOrEmpty(loginParams.getRu())) {
+            returnStr.append("&ru=" + loginParams.getRu());
+        }
+        if (!Strings.isNullOrEmpty(loginParams.getClient_id())) {
+            returnStr.append("&client_id=" + loginParams.getClient_id());
+        }
         if (!Strings.isNullOrEmpty(errorMsg)) {
             returnStr.append("&errorMsg=" + errorMsg);
         }
-        returnStr.append("&isNeedCaptcha=" + isNeedCaptcha);
+        returnStr.append("&needCaptcha=" + isNeedCaptcha);
         return returnStr.toString();
     }
 }

@@ -28,7 +28,7 @@ public class WapIndexParams {
     private String ru;//登陆来源
 
     private String errorMsg;//错误信息
-    private int needCaptcha=0;//是否需要输入验证码:0-不需要；1-需要
+    private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
     public String getRu() {
         return ru;
     }

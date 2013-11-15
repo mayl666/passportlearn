@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -102,6 +103,12 @@ public class WapLoginManagerImpl implements WapLoginManager {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
+        //记录登陆次数
+        operateTimesService.incLoginTimes(username, ip,true);
     }
 
 }
