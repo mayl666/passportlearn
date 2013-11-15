@@ -13,7 +13,7 @@ input { outline: none;}
 
 body { background: #FAFAFA;}
 .module { width: 246px; margin-left: auto; margin-right: auto;}
-.logo { width: 246px; height: 41px; margin-top: 10px; background: url(/static/img/wap/touch-logo.png?t=281393) no-repeat;}
+.logo { width: 246px; height: 41px; margin-top: 10px; background: url(/static/img/wap/touch-logo.png) no-repeat;}
 .err-msg { color: #f00; padding: 0 0 4px 0;}
 .login-form { margin-top: 18px;}
 .input-wrp { margin-bottom: 12px;}

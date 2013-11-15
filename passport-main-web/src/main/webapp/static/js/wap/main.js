@@ -43,7 +43,7 @@ function updateCaptcha() {
  */
 $$('LoginForm').addEventListener('submit', function(e) {
     var errMsg = '请填写帐号、密码';
-    if (isVisible($$('CaptchaWrp'))) {
+    if ($$('CaptchaWrp')) {
         errMsg += '和验证码'
     }
     if (!trim($$('ID').value) ||
@@ -55,12 +55,15 @@ $$('LoginForm').addEventListener('submit', function(e) {
     }
 }, false);
 
-$$('ReloadCapt').addEventListener('click', function(e) {
-    e.preventDefault();
-    updateCaptcha();
-}, false);
+if (captImg) {
+    $$('ReloadCapt').addEventListener('click', function(e) {
+        e.preventDefault();
+        updateCaptcha();
+    }, false);
 
-captImg.addEventListener('click', function(e) {
-    e.preventDefault();
-    updateCaptcha();
-}, false);
+    captImg.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateCaptcha();
+    }, false);
+}
+
