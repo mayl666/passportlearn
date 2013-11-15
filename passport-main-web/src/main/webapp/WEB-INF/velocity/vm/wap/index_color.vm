@@ -24,7 +24,7 @@
 
         .module { width: 174px;}
         .header { display: none; height: 26px; line-height: 2; text-align: center; color: #fff; background: #7BD3ED; padding: 0 0 0 5px; font-size: 13px;}
-        .logo { width: 174px; height: 29px; margin: 10px auto 0; background: url(/./static/img/wap/color-logo.png) no-repeat 0 0;}
+        .logo { width: 174px; height: 29px; margin: 10px auto 0; background: url(/static/img/wap/color-logo.png) no-repeat 0 0;}
         .login-form { margin: 10px auto 0;}
         .f-label { display: block; height: 22px; line-height: 22px;}
         .f-input { margin-bottom: 5px;}
@@ -70,6 +70,7 @@
     <div id="Header" class="header">登录到搜狗通行证</div>
     <div class="logo"></div>
     <form action="/wap/login" method="post" class="login-form module">
+        <p class="error">${errorMsg}</p>
         <label for="ID" class="f-label">帐号：</label>
         <div class="f-input">
             <input type="text" name="username" id="ID" />
@@ -78,16 +79,20 @@
         <div class="f-input">
             <input type="password" name="password" id="Pass" />
         </div>
+        #if($isNeedCaptcha == 1)
         <label for="Captcha" class="f-label">验证码：</label>
         <div class="f-input cf">
             <input type="text" class="captcha" name="" id="Captcha" />
             <img src="captcha.jpg" alt="" class="captcha-img" id="CaptImg" />
             <a href="#" class="reload-captcha" id="ReloadCapt">换一张</a>
         </div>
+        #end
         <div class="btns">
-            <input type="hidden" name="ru" value="http://m.account.sogou.com:8090/wap/index" />
+            <input type="hidden" name="ru" value="${ru}" />
+            <input type="hidden" name="client_id" value="${client_id}" />
             <input type="submit" value="马上登录" id="Login" class="login-btn" />
             <a href="/">返回</a>
+            <input type="hidden" name="hello" />
         </div>
         <div>
             <a href="http://account.sogou.com/connect/login?client_id=1115&provider=qq&type=mapp&display=wap1&ru=http://yuedu.sogou.com">使用QQ登录</a>

@@ -3,7 +3,7 @@
 <wml>
     <card title="登录到搜狗通行证">
         <p>
-            <img src="/./static/img/wap/logo.gif" alt="" />
+            <img src="/static/img/wap/logo.gif" alt="" />
             <br/>
         </p>
         <table>
