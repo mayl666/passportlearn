@@ -24,7 +24,7 @@
             <tr>
                 <td>验证码：</td>
                 <td>
-                    <input type="text" name="captcha" emptyok="false" size="4" />
+                    <input type="text" name="cc" emptyok="false" size="4" />
                     <img src="/captcha?${token}" alt="验证码" width="50" hspace="2" height="22" align="top" />
                     <a href="">换一张</a>
                 </td>
@@ -38,6 +38,9 @@
                         <go href="/wap/login" method="post">
                             <postfield name="username" value="$(un)"/>
                             <postfield name="password" value="$(up)"/>
+                            #if($isNeedCaptcha == 1)
+                            <postfield name="captcha" value="$(cc)"/>
+                            #end
                             <postfield name="client_id" value="${client_id}"/>
                             <postfield name="ru" value="${ru}"/>
                             <postfield name="v" value="${v}"/>
