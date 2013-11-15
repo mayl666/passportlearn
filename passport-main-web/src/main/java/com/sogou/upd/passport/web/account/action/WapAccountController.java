@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -142,7 +143,7 @@ public class WapAccountController extends BaseController {
             returnStr.append("&client_id=" + loginParams.getClient_id());
         }
         if (!Strings.isNullOrEmpty(errorMsg)) {
-            returnStr.append("&errorMsg=" + errorMsg);
+            returnStr.append("&errorMsg=" + Coder.encodeUTF8(errorMsg));
         }
         returnStr.append("&needCaptcha=" + isNeedCaptcha);
         return returnStr.toString();
