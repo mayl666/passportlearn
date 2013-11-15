@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.view.velocity.VelocityLayoutView;
+import org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver;
 import org.springframework.web.servlet.view.velocity.VelocityView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +65,8 @@ public class WapAccountController extends BaseController {
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
-            return "redirect:/static/wml/index_simple.wml";
+//            return "redirect:/static/wml/index_simple.wml";
+            return "wap/index_simple";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
         } else {
