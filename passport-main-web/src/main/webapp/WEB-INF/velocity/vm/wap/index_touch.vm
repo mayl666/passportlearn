@@ -20,16 +20,19 @@
         <div class="input-wrp">
             <input type="password" class="i-txt" name="password" id="Pass" placeholder="请输入密码">
         </div>
-        <div>${isNeedCaptcha}</div>
+        <!-- <div>${isNeedCaptcha}</div> -->
+        #if($isNeedCaptcha == 1)
         <div class="input-wrp cf captcha-wrp" id="CaptchaWrp">
             <input type="text" class="i-txt captcha" name="" id="Captcha" placeholder="验证码">
-            <img src="/captcha" alt="" class="captcha-img" id="CaptImg">
+            <img src="/captcha?${token}" alt="" class="captcha-img" id="CaptImg">
             <a href="#" class="reload-captcha" id="ReloadCapt">看不清，换一张</a>
         </div>
+        #end
         <div class="input-wrp btns">
             <input type="hidden" name="ru" value="${ru}" />
             <input type="hidden" name="client_id" value="${client_id}" />
             <input type="hidden" name="v" value="${v}" />
+            <input type="hidden" name="token" value="${token}" />
             <input type="submit" value="登录" class="login-btn" id="Login">
         </div>
     </form>

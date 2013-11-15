@@ -20,14 +20,16 @@
                     <input type="password" name="up" emptyok="false" size="26" />
                 </td>
             </tr>
+            #if($isNeedCaptcha == 1)
             <tr>
                 <td>验证码：</td>
                 <td>
                     <input type="text" name="captcha" emptyok="false" size="4" />
-                    <img src="/captcha" alt="验证码" width="50" hspace="2" height="22" align="top" />
+                    <img src="/captcha?${token}" alt="验证码" width="50" hspace="2" height="22" align="top" />
                     <a href="">换一张</a>
                 </td>
             </tr>
+            #end
             <tr>
                 <td></td>
                 <td>
@@ -39,6 +41,7 @@
                             <postfield name="client_id" value="${client_id}"/>
                             <postfield name="ru" value="${ru}"/>
                             <postfield name="v" value="${v}"/>
+                            <postfield name="token" value="${token}"/>
                         </go>
                     </anchor>
                 </td>
