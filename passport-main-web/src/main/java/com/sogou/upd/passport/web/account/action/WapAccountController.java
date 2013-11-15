@@ -18,6 +18,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.servlet.view.velocity.VelocityLayoutView;
+import org.springframework.web.servlet.view.velocity.VelocityView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,12 +63,30 @@ public class WapAccountController extends BaseController {
         model.addAttribute("isNeedCaptcha", wapIndexParams.getNeedCaptcha());
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
-            return "wap/index_simple";
+            response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
+//            response.addHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
+//            return "wap/index_simple";
+//            response.sendRedirect("http://wap.sogou.com");
+            return "redirect:/wap/index_simple";
+//            return new ModelAndView(new VelocityLayoutView(""));
+
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
         } else {
             return "wap/index_color";
         }
+    }
+    @RequestMapping(value = {"/wap/index_simple"})
+    public String index_simple(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams)
+            throws Exception {
+        model.addAttribute("v", wapIndexParams.getV());
+        model.addAttribute("ru", wapIndexParams.getRu());
+        model.addAttribute("client_id", wapIndexParams.getClient_id());
+        model.addAttribute("errorMsg", wapIndexParams.getErrorMsg());
+        model.addAttribute("isNeedCaptcha", wapIndexParams.getNeedCaptcha());
+
+        response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
+        return "wap/index_simple";
     }
 
     private String getIndexErrorReturnStr(String ru, String errorMsg) {
