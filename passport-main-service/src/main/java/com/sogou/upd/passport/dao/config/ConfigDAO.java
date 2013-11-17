@@ -91,7 +91,7 @@ public interface ConfigDAO {
      */
     @SQL("update " +
             INTERFACE_LEVEL_TABLE_NAME +
-            "set" +
+            " set " +
             "#if(:inter.interfaceName != null){interface_name=:inter.interfaceName,}  " +
             "#if(:inter.primaryLevel != null){primary_level=:inter.primaryLevel,}  " +
             "#if(:inter.primaryLevelCount != null){primary_level_count=:inter.primaryLevelCount,}  " +
