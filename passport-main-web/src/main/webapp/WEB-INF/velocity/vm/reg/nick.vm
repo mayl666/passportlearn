@@ -67,22 +67,22 @@
                                        <div class="form-item">
                                            <label for="UsernameIpt">通行证：</label>
                                            <span class="form-el form-el-s">
-                                               <input autocomplete="off" uui-type="require nick" type="text" name="username" id="UsernameIpt" value="" data-desc="" class="nick-holder"/>                                       
+                                               <input autocomplete="off" uui-type="require nick" type="text" name="username" id="UsernameIpt" value="" data-desc="4-16位小写字母开头的数字，字母，下划线组合" class="nick-holder"/>                                       
                                            </span>
                                            <span class="suffix">@sogou.com</span>
-                                           <span class="desc" style="display: none;">小写字母开头的数字、字母、下划线或组合</span>
-                                           <span class="error" style="display: block;">请填写通行证</span>
+                                           <span class="desc" style="display: none;"></span>
+                                           <span class="error" style="display: none;">请填写通行证</span>
                                        </div>
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="6-16位的字母(区分大小写)、数字、符号组成" value=""/>
     </span>
 </div>
                     <div class="form-item">
     <label for="Password2Ipt">确认密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" value=""/>
+        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="输入确认密码" value=""/>
     </span>
 </div>
                     <div class="form-item form-item-vcode">
@@ -118,7 +118,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2013111221"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2013111831"></script>
     
     <script type="text/javascript">
 

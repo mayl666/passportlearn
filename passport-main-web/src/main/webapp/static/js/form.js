@@ -1,11 +1,9 @@
 /*
  * form module script
  * @author zhengxin
+ * @modified yinyong#sogou-inc.com
 */
  
-
-
-
 define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
 
     $.uuiForm.addType('password' , function(value){
@@ -20,11 +18,13 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         return true;
     });
     $.uuiForm.addType('nick' , function(value){
-        return /^[a-z]([a-z0-9_.]{3,15})$/.test(value);
+        //nightyin[2013-11-13 17:06:33]:removed '.'
+        return /^[a-z][a-z0-9_]{3,15}$/.test(value);
     });    
 
     $.uuiForm.addType('uniqname' , function(value){
-        return /^[a-z]([a-zA-Z0-9_.]{3,15})$/.test(value);
+        //nightyin[2013-11-13 17:06:39]:removed '.'
+        return /^[a-z]([a-zA-Z0-9_]{3,15})$/.test(value);
     });
     
     var idTester = {
@@ -90,15 +90,20 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             return '请填写' + label.replace('：', '');
         },
         email: function(){
-            return '邮箱格式不正确';
+            return '请输入合法的邮箱';
         },
-        password: function(){
-            return '密码长度为6-16位';
+        password: function($el){
+            //nightyin[2013-11-13 17:07:37]:Fixed text
+            return '长度必须为6-16位';
         },
         cellphone: function(){
-            return '请输入正确的手机号码';
+            return '请输入正确的手机号';
         },
-        vpasswd: function(){
+        vpasswd: function($el){
+            if(!$.trim($el.val())){
+                //nightyin[2013-11-13 17:09:05]:Added
+                return '确认密码未输入';
+            }
             return '两次密码输入不一致';
         },
         range: function($el){
@@ -111,16 +116,22 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             return '请输入18位有效的身份证号码';
         },
         uniqname: function($el){
-            if( $el.val().length <3 || $el.val().length>16 ){
-                return '个性帐号长度为6-16位';
+            //nightyin[2013-11-13 17:10:09]:Fixed 3 to 4
+            if( $el.val().length <4 || $el.val().length>16 ){
+                return '个性帐号长度为4-16位';
             }
             return '小写字母开头的数字、字母、下划线或组合';
         },
+        //nightyin[2013-11-13 17:02:44]:优化错误反馈
         nick: function($el){
-            if( $el.val().length <3 || $el.val().length>16 ){
-                return '个性帐号长度为6-16位';
+            if( $el.val().length <4 || $el.val().length>16 ){
+                return '请输入账号名长度在4~16位之间';
+            }else if(/^[^a-z]/.test($el.val())){
+                return '请以小写字母开头';
+            }else if(/[A-Z]/.test($el.val())){
+                return '字母请全部小写';
             }
-            return '小写字母、数字、下划线的组合';
+            return '不合法的字符';
         }
     };
 
@@ -167,7 +178,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             return false;
         });
         $el.click(function(){
-            $el.find('.form-error,.form-success').hide();;
+            $el.find('.form-error,.form-success').hide();
         });
     };
 

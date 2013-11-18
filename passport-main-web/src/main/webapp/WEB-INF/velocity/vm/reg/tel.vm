@@ -67,7 +67,7 @@
                     <div class="form-item">
     <label for="UsernameIpt">手机号：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require cellphone" type="text" name="username" id="UsernameIpt" value="" data-desc="" value=""/>
+        <input autocomplete="off" uui-type="require cellphone" type="text" name="username" id="UsernameIpt" value="" data-desc="请输入合法的手机号" value=""/>
     </span>
 </div>
                     <div class="form-item">
@@ -115,7 +115,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2013111221"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2013111831"></script>
     
     <script type="text/javascript">
 
