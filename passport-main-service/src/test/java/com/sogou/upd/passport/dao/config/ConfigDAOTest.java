@@ -7,6 +7,7 @@ import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -71,11 +72,15 @@ public class ConfigDAOTest extends BaseDAOTest {
 
     @Test
     public void testUpdateInterfaceLevelMapping() {
-        long id = 11;
-        String interfaceName = "/internal/account/regmobile/test";
+        long id = 1;
+        String interfaceName = "/internal/account/reguser";
         InterfaceLevelMapping inter = new InterfaceLevelMapping();
         inter.setId(id);
         inter.setInterfaceName(interfaceName);
+        inter.setPrimaryLevel("0");
+        inter.setPrimaryLevelCount("900");
+        //这个时间必须不为空，否则会报语法错误，是个潜在的bug呀。。
+        inter.setCreateTime(new Date());
         int row = configDAO.updateInterfaceLevelMapping(inter);
         if (row > 0) {
             System.out.println("########修改成功！");

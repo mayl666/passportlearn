@@ -87,7 +87,6 @@ public interface ConfigDAO {
 
     /**
      * 修改接口配置信息
-     * primary_level,primary_level_count,middle_level,middle_level_count,high_level,high_level_count
      */
     @SQL("update " +
             INTERFACE_LEVEL_TABLE_NAME +
@@ -98,7 +97,8 @@ public interface ConfigDAO {
             "#if(:inter.middleLevel != null){middle_level=:inter.middleLevel,}  " +
             "#if(:inter.middleLevelCount != null){middle_level_count=:inter.middleLevelCount,}  " +
             "#if(:inter.highLevel != null){high_level=:inter.highLevel,}  " +
-            "#if(:inter.highLevelCount != null){high_level_count=:inter.highLevelCount}  " +
+            "#if(:inter.highLevelCount != null){high_level_count=:inter.highLevelCount,}  " +
+            "#if(:inter.createTime != null){create_time=:inter.createTime}  "  +
             "where id=:inter.id"
     )
     public int updateInterfaceLevelMapping(@SQLParam("inter") InterfaceLevelMapping inter) throws DataAccessException;
