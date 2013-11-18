@@ -32,6 +32,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     private static final String CACHE_PREFIX_PASSPORT_INTER_AND_LEVEL = CacheConstant.CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED_INIT;
 
+    private static final String CACHE_PREFIX_PASSPORT_CLIENT = CacheConstant.CACHE_PREFIX_CLIENTID;
+
+
     /**
      * 修改之前需要读出接口信息
      *
@@ -132,6 +135,12 @@ public class ConfigServiceImpl implements ConfigService {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    /**
+     * 获取接口总数目
+     *
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public int getInterfaceCount() throws ServiceException {
         int count;
@@ -191,10 +200,25 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public boolean saveOrUpdateClientAndLevel(ClientIdLevelMapping clientIdLevelMapping) throws ServiceException {
         try {
-            //更新数据库中应用与等级映射关系
-            int row = configDAO.updateClientIdAndLevelMapping(clientIdLevelMapping);
+            String clientId = clientIdLevelMapping.getClientId();
+            int row;
+            //先查是否存在，确定是新增还是修改
+            ClientIdLevelMapping clmForLevel = configDAO.findLevelByClientId(clientId);
+            if (clmForLevel == null) {
+                //新增应用与等级映射关系
+                row = configDAO.insertClientIdAndLevel(clientIdLevelMapping);
+            } else {
+                //更新数据库中应用与等级映射关系
+                row = configDAO.updateClientIdAndLevelMapping(clientIdLevelMapping);
+            }
             if (row != 0) {
-                String hashCacheKey = buildCacheKey(clientIdLevelMapping.getClientId());
+                //新增应用与等级关系，才写缓存
+                if (clmForLevel == null) {
+                    //将新添等级的产品id写入缓存
+                    String clientHashCacheKey = buildClientHashKey();
+                    redisUtils.sadd(clientHashCacheKey, clientId);
+                }
+                String hashCacheKey = buildCacheKey(clientId);
                 String level = clientIdLevelMapping.getLevelInfo();
                 //获取接口列表
                 List<InterfaceLevelMapping> interfaceList = configDAO.getInterfaceListAll();
@@ -213,8 +237,12 @@ public class ConfigServiceImpl implements ConfigService {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    private String buildClientHashKey() throws ServiceException {
+        return CACHE_PREFIX_PASSPORT_CLIENT;
+    }
+
     /**
-     * 为研总提供的接口
+     * 根据应用id，先读取该应用的等级，再根据此等级，读出该等级下所有接口对应的次数，返回值为map,key为接口名称，value为等级对应的接口限制的次数
      *
      * @param clientId
      * @return
@@ -285,6 +313,13 @@ public class ConfigServiceImpl implements ConfigService {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    /**
+     * 根据应用id查询该应用对应的等级
+     *
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public ClientIdLevelMapping getLevelByClientId(String clientId) throws ServiceException {
         ClientIdLevelMapping clm;
@@ -299,6 +334,13 @@ public class ConfigServiceImpl implements ConfigService {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    /**
+     * 根据该应用id查询该应用名称
+     *
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public AppConfig getAppNameByAppId(String clientId) throws ServiceException {
         AppConfig appConfig;
@@ -313,6 +355,12 @@ public class ConfigServiceImpl implements ConfigService {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    /**
+     * 列表形式获取所有应用
+     *
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public List<AppConfig> getAppList() throws ServiceException {
         List<AppConfig> appList;
