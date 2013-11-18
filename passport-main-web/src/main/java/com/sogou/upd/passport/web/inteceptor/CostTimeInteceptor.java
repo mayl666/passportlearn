@@ -95,6 +95,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Object obj = clientMapping.get(clientId);
             if (obj != null && obj instanceof Map) {
                 Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
+                atomicGetTimes.getAndDecrement();
                 map.put(url,atomicGetTimes);
             }
         }
