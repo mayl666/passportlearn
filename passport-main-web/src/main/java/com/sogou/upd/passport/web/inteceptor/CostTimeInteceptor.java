@@ -107,7 +107,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
             if (map.containsKey(url)) {
                 AtomicInteger atomicGetMemeryTimes = (AtomicInteger) map.get(url);
-                if (atomicGetMemeryTimes != null && atomicGetMemeryTimes.get() > 0) {
+                if (atomicGetMemeryTimes != null && atomicGetMemeryTimes.get() > 1) {
                     atomicGetMemeryTimes.getAndDecrement();
                 } else {
                     //内存中无可用次数
