@@ -22,4 +22,11 @@ public class WapConstant {
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";
 
+    //需要使用第三方用户信息
+    public static final int USE_THIRD_INFO = 1;
+
+    //使用passport用户信息
+    public static final int USE_PASSPORT_INFO = 0;
+
+
 }

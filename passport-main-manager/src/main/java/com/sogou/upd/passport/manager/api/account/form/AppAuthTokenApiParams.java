@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -19,6 +20,8 @@ public class AppAuthTokenApiParams extends BaseApiParams {
     @NotBlank(message = "token不允许为空")
     private String token;  //用户登录成功之后通过302跳转传递给服务器端的token
 
+    private int useThirdInfo = WapConstant.USE_PASSPORT_INFO; //如果是第三方用户，选择是否使用地三方账号信息：1--使用第三方用户信息；0--使用sogou passport用户信息
+
     public int getType() {
         return type;
     }
@@ -35,4 +38,11 @@ public class AppAuthTokenApiParams extends BaseApiParams {
         this.token = token;
     }
 
+    public Integer getUseThirdInfo() {
+        return useThirdInfo;
+    }
+
+    public void setUseThirdInfo(Integer useThirdInfo) {
+        this.useThirdInfo = useThirdInfo;
+    }
 }
