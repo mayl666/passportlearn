@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -23,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 使用perf4j来监控性能
@@ -41,9 +38,8 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     @Autowired
     private InterfaceLimitedService interfaceLimitedService;
 
-    private static Map clientMapping = new ConcurrentHashMap();
 
-    private Lock lock = new ReentrantLock();
+    private static Map clientMapping = new ConcurrentHashMap();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -129,7 +125,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
             if(MapUtils.isNotEmpty(mapResult)){
                 AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
-                atomicGetTimes.getAndDecrement();
+//                atomicGetTimes.getAndDecrement();
                 //初始化新的client_id以及从缓存中获取limited存放内存中
                 Map<String, AtomicInteger> map = new ConcurrentHashMap<String, AtomicInteger>();
                 map.put(url, atomicGetTimes);
