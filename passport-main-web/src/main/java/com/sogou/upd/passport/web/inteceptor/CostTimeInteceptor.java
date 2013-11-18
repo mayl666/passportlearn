@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -23,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 使用perf4j来监控性能
@@ -41,9 +38,8 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     @Autowired
     private InterfaceLimitedService interfaceLimitedService;
 
-    private static Map clientMapping = new ConcurrentHashMap();
 
-    private Lock lock = new ReentrantLock();
+    private static Map clientMapping = new ConcurrentHashMap();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -99,6 +95,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Object obj = clientMapping.get(clientId);
             if (obj != null && obj instanceof Map) {
                 Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
+                atomicGetTimes.getAndDecrement();
                 map.put(url,atomicGetTimes);
             }
         }
@@ -111,7 +108,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
             if (map.containsKey(url)) {
                 AtomicInteger atomicGetMemeryTimes = (AtomicInteger) map.get(url);
-                if (atomicGetMemeryTimes != null && atomicGetMemeryTimes.get() > 0) {
+                if (atomicGetMemeryTimes != null && atomicGetMemeryTimes.get() >= 1) {
                     atomicGetMemeryTimes.getAndDecrement();
                 } else {
                     //内存中无可用次数
