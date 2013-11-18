@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 public class WapAccountController extends BaseController {
-    private static final String WAP_INDEX = "http://wap.sogou.com/";
 
     @Autowired
     private LoginManager loginManager;
@@ -70,7 +69,6 @@ public class WapAccountController extends BaseController {
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
-//            return "redirect:/static/wml/index_simple.wml";
             return "wap/index_simple";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
@@ -83,7 +81,7 @@ public class WapAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(ru)) {
             return (ru + "?errorMsg=" + errorMsg);
         }
-        return WAP_INDEX + "?errorMsg=" + errorMsg;
+        return WapConstant.WAP_INDEX + "?errorMsg=" + errorMsg;
     }
 
 

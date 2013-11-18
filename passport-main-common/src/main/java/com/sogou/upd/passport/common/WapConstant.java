@@ -19,4 +19,7 @@ public class WapConstant {
      */
     public static final String WAP_TOUCH = "2";
 
+    //默认登录来源
+    public static final String WAP_INDEX = "http://wap.sogou.com/";
+
 }
