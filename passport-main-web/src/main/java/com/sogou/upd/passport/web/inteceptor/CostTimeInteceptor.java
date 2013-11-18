@@ -77,7 +77,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                             return false;
                         } else {
                             //在缓存中还有剩余，初始化内存数据
-                            initMemeryTimes(clientId,url,atomicGetTimes);
+                            initMemoryTimes(clientId, url, atomicGetTimes);
                             return true;
                         }
                     }
@@ -90,7 +90,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
         return true;
     }
     //在缓存中还有剩余，初始化内存数据
-    public void initMemeryTimes(int clientId,String url,AtomicInteger atomicGetTimes){
+    public void initMemoryTimes(int clientId, String url, AtomicInteger atomicGetTimes){
         if(MapUtils.isNotEmpty(clientMapping)){
             Object obj = clientMapping.get(clientId);
             if (obj != null && obj instanceof Map) {
