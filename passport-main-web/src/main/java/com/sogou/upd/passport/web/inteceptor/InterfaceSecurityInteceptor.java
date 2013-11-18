@@ -35,7 +35,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(InterfaceSecurityInteceptor.class);
 
-    private static final long API_REQUEST_VAILD_TERM = 500000000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
+    private static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
 
     @Autowired
     private AppConfigService appConfigService;
