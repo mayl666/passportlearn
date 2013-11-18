@@ -60,7 +60,6 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                 int getTime = (int) Math.floor(Float.parseFloat(interfaceTimes) * INTERFACE_PERCENT);
 
                 AtomicInteger atomicGetTimes = new AtomicInteger(getTime == 0 ? 1 : getTime);
-                atomicGetTimes.getAndDecrement();
                 map.put("getTimes", atomicGetTimes);     //内存初始化次数
                 map.put("interfaceTimes", interfaceTimes);     //缓存初始化总次数
                 //初始化缓存
