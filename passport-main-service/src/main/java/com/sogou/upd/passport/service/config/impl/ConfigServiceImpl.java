@@ -32,6 +32,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     private static final String CACHE_PREFIX_PASSPORT_INTER_AND_LEVEL = CacheConstant.CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED_INIT;
 
+    private static final String CACHE_PREFIX_PASSPORT_CLIENT = CacheConstant.CACHE_PREFIX_CLIENTID;
+
+
     /**
      * 修改之前需要读出接口信息
      *
@@ -191,10 +194,25 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public boolean saveOrUpdateClientAndLevel(ClientIdLevelMapping clientIdLevelMapping) throws ServiceException {
         try {
-            //更新数据库中应用与等级映射关系
-            int row = configDAO.updateClientIdAndLevelMapping(clientIdLevelMapping);
+            String clientId = clientIdLevelMapping.getClientId();
+            int row;
+            //先查是否存在，确定是新增还是修改
+            ClientIdLevelMapping clmForLevel = configDAO.findLevelByClientId(clientId);
+            if (clmForLevel == null) {
+                //新增应用与等级映射关系
+                row = configDAO.insertClientIdAndLevel(clientIdLevelMapping);
+            } else {
+                //更新数据库中应用与等级映射关系
+                row = configDAO.updateClientIdAndLevelMapping(clientIdLevelMapping);
+            }
             if (row != 0) {
-                String hashCacheKey = buildCacheKey(clientIdLevelMapping.getClientId());
+                //新增应用与等级关系，才写缓存
+                if (clmForLevel == null) {
+                    //将新添等级的产品id写入缓存
+                    String clientHashCacheKey = buildClientHashKey();
+                    redisUtils.sadd(clientHashCacheKey, clientId);
+                }
+                String hashCacheKey = buildCacheKey(clientId);
                 String level = clientIdLevelMapping.getLevelInfo();
                 //获取接口列表
                 List<InterfaceLevelMapping> interfaceList = configDAO.getInterfaceListAll();
@@ -211,6 +229,10 @@ public class ConfigServiceImpl implements ConfigService {
             throw new ServiceException();
         }
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private String buildClientHashKey() throws ServiceException {
+        return CACHE_PREFIX_PASSPORT_CLIENT;
     }
 
     /**

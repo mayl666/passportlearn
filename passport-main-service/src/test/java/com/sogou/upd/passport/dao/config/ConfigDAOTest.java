@@ -4,6 +4,7 @@ import com.sogou.upd.passport.dao.BaseDAOTest;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
+import com.sogou.upd.passport.service.config.ConfigService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,6 +23,8 @@ public class ConfigDAOTest extends BaseDAOTest {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     private ConfigDAO configDAO;
+    @Autowired
+    private ConfigService configService;
 
 
     @Test
@@ -126,9 +129,8 @@ public class ConfigDAOTest extends BaseDAOTest {
         ClientIdLevelMapping clm = new ClientIdLevelMapping();
         clm.setLevelInfo("1");
         clm.setClientId("1044");
-        clm.setId(6);
-        int row = configDAO.updateClientIdAndLevelMapping(clm);
-        if (row > 0) {
+        boolean row = configService.saveOrUpdateClientAndLevel(clm);
+        if (row) {
             System.out.println("########修改成功！");
         } else {
             System.out.println("########修改失败！");
