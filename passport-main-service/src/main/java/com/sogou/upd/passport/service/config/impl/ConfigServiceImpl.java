@@ -249,7 +249,7 @@ public class ConfigServiceImpl implements ConfigService {
         } catch (Exception e) {
             throw new ServiceException();
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return maps;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**
