@@ -15,7 +15,6 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CookieWebParams;
-import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

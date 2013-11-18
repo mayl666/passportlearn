@@ -14,7 +14,6 @@ import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -113,7 +112,6 @@ public class RegisterApiController extends BaseController {
      * @return
      */
     @InterfaceSecurity
-    @InterfaceLimited
     @RequestMapping(value = "/reguser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
