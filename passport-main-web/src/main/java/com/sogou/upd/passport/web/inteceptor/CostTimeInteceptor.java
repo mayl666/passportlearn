@@ -125,7 +125,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
             if(MapUtils.isNotEmpty(mapResult)){
                 AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
-//                atomicGetTimes.getAndDecrement();
+                atomicGetTimes.getAndDecrement();
                 //初始化新的client_id以及从缓存中获取limited存放内存中
                 Map<String, AtomicInteger> map = new ConcurrentHashMap<String, AtomicInteger>();
                 map.put(url, atomicGetTimes);
