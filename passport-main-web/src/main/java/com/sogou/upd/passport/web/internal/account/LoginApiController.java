@@ -194,7 +194,7 @@ public class LoginApiController extends BaseController {
         if (result.isSuccess()){
             userid = (String) result.getModels().get("userid");
             if(AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userid)
-                 && params.getUseThirdInfo() == WapConstant.USE_THIRD_INFO){
+                 && params.getUsethirdinfo() == WapConstant.USE_THIRD_INFO){
                 //获取第三方用户信息
                 UserOpenApiParams userOpenApiParams = new UserOpenApiParams();
                 userOpenApiParams.setOpenid(userid);
