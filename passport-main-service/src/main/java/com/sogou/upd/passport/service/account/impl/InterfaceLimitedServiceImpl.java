@@ -70,7 +70,7 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                     if (Strings.isNullOrEmpty(cacheTimes)) {
                         //初始化或者5分钟失效后的初始化
                         initAppLimitedList(cacheKey, url, interfaceTimes); //5分钟限制的次数
-                        cacheTimes = interfaceTimes;
+                        cacheTimes = Integer.toString(atomicGetTimes.get());
                     }
                     long times = Long.parseLong(cacheTimes);
                     if (times <= 0) {
