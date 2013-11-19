@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -55,7 +56,13 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 
         Result result = new APIResultSupport(false);
         try {
-            int clientId = Integer.parseInt(request.getParameter(CommonConstant.CLIENT_ID));
+            String client_id=request.getParameter(CommonConstant.CLIENT_ID);
+            //先取client_id，如果没有再获取appid
+            if(Strings.isNullOrEmpty(client_id)){
+                client_id=request.getParameter(CommonConstant.APP_ID);
+            }
+            int clientId = Integer.parseInt(client_id);
+
             //获取url
             String url = request.getRequestURI();
 
