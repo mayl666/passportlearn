@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=232348" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=828214" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -30,7 +30,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/parent.js?t=2013111831"></script>
+    <script type="text/javascript" src="/./static/js/parent.js?t=2013111832"></script>
     
     <script type="text/javascript">
 

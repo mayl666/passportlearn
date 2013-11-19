@@ -2,13 +2,8 @@
 .ucenter .table .label{ float:left; width:170px;padding-right:10px; text-align:right;font-weight:700; }
 .ucenter .table .value{ float:left; width:370px; }
 .ucenter .table .btn{ float:left; position:relative; top:8px; }
-.ucenter .table .my{height: 73px;position: relative;padding-bottom: 13px;}
 .ucenter .table .my span { font-size:16px;font-family:"Microsoft Yahei" , sans-serif;  }
-.ucenter .table .my  .value{height: 100%;}
-.ucenter .table .my  .btns{height: 100%;float: left;position: relative;width: 83px;}
-.ucenter .table .my  .btns .btn{margin-top: 6px;font-size: 12px;}
-.ucenter .table .my  .myacc{font-weight: bold;display: block;height: 30px;}
-.ucenter .table .my .label{ /*background:url(/./static/img/avatar-min.png?t=935837) no-repeat 80px center;*/ height: 100%}
+.ucenter .table .my .label{ background:url(/./static/img/head.png?t=001456) no-repeat 80px center; }
 .ucenter .table .level{ height:64px; line-height:64px;font-size:16px;color:#588700;background:url(/./static/img/star.png?t=011262) no-repeat 80px 24px; }
 .ucenter .table .level-status,
 .ucenter .table .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(/./static/img/line.png?t=049072) no-repeat 0 -26px;position:relative; }
