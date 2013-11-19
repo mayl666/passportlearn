@@ -49,6 +49,40 @@ define(['./utils'],function(utils){
                 }
                 return false;
             });
-        }
+        },
+        /**
+         * [bindResendEmail description]
+         * @author yinyong
+         * @version 0.1
+         */
+        bindResendEmail:function(){
+            var self=this;
+            var count=60;
+            var inter=null;
+            $('#ResendEmail').click(function(e){
+                if(!inter){
+                    var btn=this;
+                    var time=count;
+                
+                    $.ajax({
+                        url:"/web/resendActiveMai",
+                        type:"post",
+                        error:function(xhr,error){
+                            alert("通信错误");
+                        },success:function(){
+                            inter = setInterval(function() {
+                                $(btn).text(time--+"秒后重发");
+                                if (!time) {
+                                    clearInterval(inter);
+                                    inter = null;
+                                    $(btn).text("重发验证邮件");
+                                }
+                            }, 1000);
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+        }//bindResendEmail
     };
 });
