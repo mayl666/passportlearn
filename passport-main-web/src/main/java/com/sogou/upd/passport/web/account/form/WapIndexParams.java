@@ -24,7 +24,7 @@ public class WapIndexParams {
 
     @NotBlank(message = "ru is null")
     @URL
-    @Ru
+//    @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
 
     private String errorMsg;//错误信息
