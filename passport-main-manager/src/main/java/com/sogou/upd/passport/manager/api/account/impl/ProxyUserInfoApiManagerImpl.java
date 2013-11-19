@@ -45,6 +45,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("personalid");//身份证号
         SUPPORT_FIELDS_MAP.add("username"); //用户真实姓名
         SUPPORT_FIELDS_MAP.add("uniqname"); //用户昵称
+        SUPPORT_FIELDS_MAP.add("avatarurl"); //用户头像
+
     }
 
     @Override
@@ -53,7 +55,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         String fields = getUserInfoApiparams.getFields();
         if(StringUtil.isEmpty(fields)){
             //默认获取用户信息的字段；
-            fields = "uniqname,avatarurl,birthday,gender,sec_mobile,sec_email,sec_ques,province,city,personalid,username";
+            fields = "uniqname,avatarurl,birthday,gender,province";
         }
         String[] fieldList = fields.split(",");
         for (String field : fieldList) {

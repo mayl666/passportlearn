@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -10,6 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Calendar;
+import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -24,14 +27,31 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
-//        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
-//                +
-//                "personalid,personalidflag,sec_mobile,sec_email,province," +
-//                "city,createtime,sec_ques,avatarurl,regappid");
-        getUserInfoApiParams.setFields("uniqname");
+//        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
+
+        getUserInfoApiParams.setUserid("1666643531@sina.sohu.com");
+
+//        getUserInfoApiParams.setFields("uniqname");
         Result result= proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiParams);
-        System.out.println(result);
+        String userid = result.getModels().get("userid").toString();
+
+        Result userInfoResult = new APIResultSupport(true);
+        userInfoResult.setCode(result.getCode());
+        userInfoResult.setMessage(result.getMessage());
+
+        Map<String, Object> data = Maps.newHashMap();
+        Map<String, Object> value_data = Maps.newHashMap();
+        value_data.put("id","");
+        value_data.put("birthday",result.getModels().get("birthday").toString());
+        value_data.put("sex",result.getModels().get("gender").toString());
+        value_data.put("nick",result.getModels().get("uniqname").toString());
+        value_data.put("location",result.getModels().get("province").toString());
+        value_data.put("headurl",result.getModels().get("avatarurl").toString());
+        data.put("result",value_data);
+        data.put("userid",userid);
+        userInfoResult.setModels(data);
+
+        System.out.println("############"+userInfoResult.toString());
     }
 
     @Test

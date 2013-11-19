@@ -204,12 +204,33 @@ public class LoginApiController extends BaseController {
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userid);
                 result = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+                //转换结果格式
+                result = changeResult(result);
             }
         }
         // 获取记录UserOperationLog的数据
         UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
+    }
+
+
+    private Result changeResult(Result result) {
+        Result userInfoResult = new APIResultSupport(true);
+        userInfoResult.setCode(result.getCode());
+        userInfoResult.setMessage(result.getMessage());
+        Map<String, Object> data = Maps.newHashMap();
+        Map<String, Object> value_data = Maps.newHashMap();
+        value_data.put("id","");
+        value_data.put("birthday",result.getModels().get("birthday").toString());
+        value_data.put("sex",result.getModels().get("gender").toString());
+        value_data.put("nick",result.getModels().get("uniqname").toString());
+        value_data.put("location",result.getModels().get("province").toString());
+        value_data.put("headurl",result.getModels().get("avatarurl").toString());
+        data.put("result",value_data);
+        data.put("userid",result.getModels().get("userid").toString());
+        userInfoResult.setModels(data);
+        return userInfoResult;
     }
 
 }
