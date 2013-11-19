@@ -13,7 +13,7 @@ import javax.validation.constraints.Min;
 public class WapLoginParams extends BaseLoginParams {
     @NotBlank
     @URL
-    @Ru
+//    @Ru
     private String ru;//登陆来源
 
 
