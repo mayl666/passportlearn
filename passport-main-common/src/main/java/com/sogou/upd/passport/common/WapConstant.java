@@ -7,17 +7,17 @@ public class WapConstant {
     /**
      * 简版页面标识
      */
-    public static final String WAP_SIMPLE = "0";
+    public static final String WAP_SIMPLE = "1";
 
     /**
      * 彩屏版页面标识
      */
-    public static final String WAP_COLOR = "1";
+    public static final String WAP_COLOR = "2";
 
     /**
      * 触摸版页面标识
      */
-    public static final String WAP_TOUCH = "2";
+    public static final String WAP_TOUCH = "5";
 
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";
