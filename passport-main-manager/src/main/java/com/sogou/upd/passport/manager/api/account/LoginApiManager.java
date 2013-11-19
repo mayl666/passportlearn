@@ -33,13 +33,6 @@ public interface LoginApiManager {
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams);
 
     /**
-     * 根据用户信息，生成cookie
-     *
-     * @return
-     */
-    public Result createCookie(CreateCookieApiParams createCookieApiParams);
-
-    /**
      * 构造sohu生成并设置cookie的url
      *
      * @param createCookieUrlApiParams
