@@ -189,4 +189,30 @@ public class ConfigDAOTest extends BaseDAOTest {
             System.out.println("########查询失败！");
         }
     }
+
+    @Test
+    public void testSaveOrUpdateInterfaceLevelMapping() {
+        InterfaceLevelMapping ilm = new InterfaceLevelMapping();
+        String interId = "";
+        String interfaceName = "/internal/account/reguser/test";
+        //修改
+        if (!"".equals(interId) && interId != null) {
+            ilm.setId(Long.parseLong(interId));
+        } else {
+            ilm.setPrimaryLevel("0");
+            ilm.setPrimaryLevelCount("0");
+            ilm.setMiddleLevel("1");
+            ilm.setMiddleLevelCount("0");
+            ilm.setHighLevel("2");
+            ilm.setHighLevelCount("0");
+        }
+        ilm.setInterfaceName(interfaceName);
+        ilm.setCreateTime(new Date());
+        boolean row = configService.saveOrUpdateInterfaceLevelMapping(ilm);
+        if (row) {
+            System.out.println("########保存成功！");
+        } else {
+            System.out.println("########保存失败！");
+        }
+    }
 }
