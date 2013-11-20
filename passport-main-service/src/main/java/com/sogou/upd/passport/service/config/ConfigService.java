@@ -101,7 +101,7 @@ public interface ConfigService {
      * @return
      * @throws ServiceException
      */
-    public Map<String, List<InterfaceLevelMapping>> getInterfaceMapByLevel() throws ServiceException;
+    public List<InterfaceLevelMapping> getInterfaceMapByLevel() throws ServiceException;
 
     /**
      * 根据应用id查询该应用对应的等级

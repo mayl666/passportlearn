@@ -288,30 +288,14 @@ public class ConfigServiceImpl implements ConfigService {
      * @throws ServiceException
      */
     @Override
-    public Map<String, List<InterfaceLevelMapping>> getInterfaceMapByLevel() throws ServiceException {
-        List<InterfaceLevelMapping> interListAll = configDAO.getInterfaceListAll();
-        Map<String, List<InterfaceLevelMapping>> interAndLevelMap = Maps.newHashMap();
-        List<InterfaceLevelMapping> primaryList = new ArrayList<>();
-        List<InterfaceLevelMapping> middleList = new ArrayList<>();
-        List<InterfaceLevelMapping> highList = new ArrayList<>();
-        if (interListAll != null && interListAll.size() > 0) {
-            for (InterfaceLevelMapping inter : interListAll) {
-                if (inter.getPrimaryLevel() != null && "0".equals(inter.getPrimaryLevel())) {
-                    primaryList.add(inter);
-                } else if (inter.getMiddleLevel() != null && "1".equals(inter.getMiddleLevel())) {
-                    middleList.add(inter);
-                } else if (inter.getHighLevel() != null && "2".equals(inter.getHighLevel())) {
-                    highList.add(inter);
-                }
-            }
-            interAndLevelMap.put("primaryList", primaryList);
-            interAndLevelMap.put("middleList", middleList);
-            interAndLevelMap.put("highList", highList);
-            if (!interAndLevelMap.isEmpty()) {
-                return interAndLevelMap;
-            }
+    public List<InterfaceLevelMapping> getInterfaceMapByLevel() throws ServiceException {
+        List<InterfaceLevelMapping> interListAll = null;
+        try {
+            interListAll = configDAO.getInterfaceListAll();
+        } catch (Exception e) {
+            new ServiceException();
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return interListAll;
     }
 
     /**
