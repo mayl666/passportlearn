@@ -87,6 +87,7 @@ public class ConfigServiceImpl implements ConfigService {
         int row;
         try {
             if (interfaceLevelMapping.getId() != 0) {
+                interfaceLevelMapping.setCreateTime(new Date());
                 //修改接口
                 row = configDAO.updateInterfaceLevelMapping(interfaceLevelMapping);
             } else {
