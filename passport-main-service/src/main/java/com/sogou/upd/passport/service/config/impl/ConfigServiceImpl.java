@@ -84,10 +84,10 @@ public class ConfigServiceImpl implements ConfigService {
      */
     @Override
     public boolean saveOrUpdateInterfaceLevelMapping(InterfaceLevelMapping interfaceLevelMapping) throws ServiceException {
+        interfaceLevelMapping.setCreateTime(new Date());
         int row;
         try {
             if (interfaceLevelMapping.getId() != 0) {
-                interfaceLevelMapping.setCreateTime(new Date());
                 //修改接口
                 row = configDAO.updateInterfaceLevelMapping(interfaceLevelMapping);
             } else {
