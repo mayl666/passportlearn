@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -102,9 +104,9 @@ public class WapLoginAction extends BaseController {
 
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
-            String accesstoken = result.getModels().get("token").toString();
+            String token = result.getModels().get("token").toString();
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-            response.sendRedirect(loginParams.getRu() + "?token=" + accesstoken);
+            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(),token));
             return "empty";
         } else {
             int isNeedCaptcha = 0;
@@ -121,6 +123,14 @@ public class WapLoginAction extends BaseController {
             return getErrorReturnStr(loginParams,"用户名或者密码错误", isNeedCaptcha);
 
         }
+    }
+
+    private String getSuccessReturnStr(String ru, String token) {
+        String deRu = Coder.decodeUTF8(ru);
+        if (deRu.contains("?")) {
+            return deRu + "&token=" + token;
+        }
+        return deRu + "?token=" + token;
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams,String errorMsg, int isNeedCaptcha) {
