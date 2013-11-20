@@ -3,13 +3,10 @@ package com.sogou.upd.passport.web.internal.account;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.account.InternalLoginApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -19,7 +16,6 @@ import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -119,7 +115,6 @@ public class LoginApiController extends BaseController {
      * @return
      */
     @InterfaceSecurity
-    @InterfaceLimited
     @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
     @ResponseBody
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {

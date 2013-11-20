@@ -23,7 +23,6 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
-import com.sogou.upd.passport.web.annotation.InterfaceLimited;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
@@ -112,7 +111,6 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/gettoken")
-    @InterfaceLimited
     @ResponseBody
     public Object getToken(HttpServletRequest request, PcGetTokenParams pcGetTokenParams) throws Exception {
         //参数验证
@@ -153,7 +151,6 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/getpairtoken")
-    @InterfaceLimited
     @ResponseBody
     public Object getPairToken(HttpServletRequest request, PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
@@ -205,7 +202,6 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/refreshtoken")
-    @InterfaceLimited
     @ResponseBody
     public Object refreshToken(HttpServletRequest request, PcRefreshTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
         //参数验证
@@ -237,7 +233,6 @@ public class PCAccountController extends BaseController {
     }
 
     @RequestMapping(value = "/act/authtoken")
-    @InterfaceLimited
     @ResponseBody
     public String authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证

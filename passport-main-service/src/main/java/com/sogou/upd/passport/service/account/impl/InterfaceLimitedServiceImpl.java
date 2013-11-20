@@ -53,7 +53,7 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
         //从缓存中获取接口初始化限制次数
         Map<String,String> interfaceTimesMapping=configService.getMapsFromCacheKey(Integer.toString(clientId));
         if(MapUtils.isNotEmpty(interfaceTimesMapping)){
-            String interfaceTimes = (String)interfaceTimesMapping.get(url);
+            String interfaceTimes = interfaceTimesMapping.get(url);
             if(!Strings.isNullOrEmpty(interfaceTimes)){
                 map= new ConcurrentHashMap();
                 //在受限制的接口列表内 ，每台机器从缓存中获取3/100的限制数
