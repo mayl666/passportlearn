@@ -21,3 +21,6 @@
 .checkbox-checked{ background-position:0 0; }
 #ConfirmChb{width:auto;height:auto;width:7px;height:7px;position:relative;top:-3px;visibility:hidden;visibility:visible\9;}
 .form-desc label{padding-left:4px;}
+
+.form-item input.nick-holder{width:81px; }
+.suffix{float: left;line-height: 17px;height: 25px;top: 10px;padding: 4px 0 0 4px;_height:24px;position: relative;}

@@ -93,7 +93,6 @@ public class PCAccountController extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, "0", getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
-        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         //此处是帮浏览器打的个补丁，根据版本号判断
@@ -119,10 +118,8 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
-        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
-            userId = userId.toLowerCase();
-            pcGetTokenParams.setUserid(userId);
-        }
+        pcGetTokenParams.setUserid(userId);
+
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
@@ -144,7 +141,6 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, resultCode, getIp(request));
-        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return resStr;
@@ -163,8 +159,9 @@ public class PCAccountController extends BaseController {
         }
         String userId = reqParams.getUserid();
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
-        reqParams.setUserid(loginManager.getIndividPassportIdByUsername(userId));
-        userId = reqParams.getUserid();
+        userId = loginManager.getIndividPassportIdByUsername(userId);
+        reqParams.setUserid(userId);
+
         String ip = getIp(request);
         int appid = Integer.parseInt(reqParams.getAppid());
 
@@ -195,7 +192,6 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), reqParams.getAppid(), resultCode, ip);
-        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return getReturnStr(cb, resStr);
@@ -226,7 +222,6 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(reqParams.getUserid(), request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
-        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         return getReturnStr(cb, resStr);
@@ -245,17 +240,13 @@ public class PCAccountController extends BaseController {
             return "Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
-        // 其他账号不能转换小写，特别是QQ，转成小写都不可用
-        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
-            userId = userId.toLowerCase();
-            authPcTokenParams.setUserid(userId);
-        }
+        userId = AccountDomainEnum.getInternalCase(userId);
+        authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
 
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
-        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie

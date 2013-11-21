@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -113,7 +115,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
             }
             if (CommonHelper.isExplorerToken(clientId)) {
                 pcAccountService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
-//                shTokenService.saveOldRefreshToken(passportId, instanceId, appConfig, refreshToken);
             }
             return updateAccountToken(passportId, instanceId, appConfig);
         } catch (Exception e) {
@@ -146,12 +147,12 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) {
         try {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return  (shTokenService.verifyAllShRToken(passportId, clientId, instanceId, refreshToken)||
-                         pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
-                         pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken));
+                return  (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
+                         pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken)||
+                         shTokenService.verifyAllShRToken(passportId, clientId, instanceId, refreshToken));
             } else if (CommonHelper.isPinyinMACToken(clientId)) {
-                return (shTokenService.verifyShRToken(passportId, clientId, instanceId, refreshToken) ||
-                        pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken));
+                return (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)||
+                        shTokenService.verifyShRToken(passportId, clientId, instanceId, refreshToken));
             } else {
                 return pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             }
@@ -205,7 +206,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     @Override
     public String getUniqnameByClientId(String passportId, int clientId) {
-        if (CommonHelper.isExplorerToken(clientId)) {
+        if (CommonConstant.IS_USE_IEBBS_UNIQNAME && CommonHelper.isExplorerToken(clientId)) {
             return getBrowserBbsUniqname(passportId);
         }
         return (passportId.substring(0, passportId.indexOf("@")));
@@ -248,8 +249,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
         boolean isPCTokenSig = verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
         if (!isPCTokenSig) {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
-                        verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+                return  (verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
+                        verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
             } else if (CommonHelper.isPinyinMACToken(clientId)) {
                 return verifySigByShRefreshToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
             }

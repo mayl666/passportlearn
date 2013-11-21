@@ -44,11 +44,6 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     }
 
     @Override
-    public Result createCookie(CreateCookieApiParams createCookieApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

@@ -74,15 +74,6 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testCreateCookie() {
-        CreateCookieApiParams createCookieApiParams = new CreateCookieApiParams();
-        createCookieApiParams.setUserid(userid);
-        createCookieApiParams.setIp(modifyIp);
-        Result result = proxyLoginApiManager.createCookie(createCookieApiParams);
-        System.out.println(result);
-    }
-
-    @Test
     public void testGetCookieValue() {
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid("shipengzhi1986@sogou.com");

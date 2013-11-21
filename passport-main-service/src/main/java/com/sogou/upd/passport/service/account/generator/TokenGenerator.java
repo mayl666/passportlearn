@@ -110,8 +110,7 @@ public class TokenGenerator {
     //sohu生成token算法
     public static String generateSoHuPcToken(String passportId, int expiresIn, String clientSecret)
             throws Exception {
-        RandomStr rs = new RandomStr();
-        String refreshToken = rs.getRandomStr(CommonConstant.SOHU_PCTOKEN_LEN);
+        String refreshToken = RandomStringUtils.randomAlphanumeric(CommonConstant.SOHU_PCTOKEN_LEN);
         return refreshToken;
     }
 

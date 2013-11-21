@@ -32,7 +32,7 @@ public class TokenRedisUtils {
     /*
     * 设置缓存内容
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_set", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_set", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void set(String key, String value) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -51,7 +51,7 @@ public class TokenRedisUtils {
     /*
     * 设置缓存内容
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setObject", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void set(String key, Object obj) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -72,12 +72,12 @@ public class TokenRedisUtils {
      * 设置缓存内容及有效期，单位为秒
      * TODO:是否抛出异常及如何处理
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setEx", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setEx", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void setWithinSeconds(String key, String value, long timeout) throws Exception {
         set(key, value, timeout, TimeUnit.SECONDS);
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setObjectEx", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setObjectEx", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void setWithinSeconds(String key, Object obj, long timeout) throws Exception {
         set(key, obj, timeout, TimeUnit.SECONDS);
     }
@@ -85,7 +85,7 @@ public class TokenRedisUtils {
     /*
      * 设置缓存内容
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_multiSet", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_multiSet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public <T> void multiSet(Map<String, T> mapData) throws Exception {
         try {
             Map<String, String> objectMap = Maps.newHashMap();
@@ -112,7 +112,7 @@ public class TokenRedisUtils {
     /*
       * 设置缓存内容
       */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_increment", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_increment", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public long increment(String key) throws Exception {
         long countNum = 0;
         try {
@@ -129,7 +129,7 @@ public class TokenRedisUtils {
     * 设置缓存内容
     * 冲突不覆盖
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setNx", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_setNx", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public boolean setNx(String cacheKey, Object obj) {
         try {
             BoundValueOperations boundValueOperation = redisTemplate.boundValueOps(cacheKey);
@@ -143,7 +143,7 @@ public class TokenRedisUtils {
     /*
    * 根据key取缓存内容
    */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_get", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_get", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public String get(String key) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -161,7 +161,7 @@ public class TokenRedisUtils {
     /*
      * 根据key取缓存内容
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_multiGet", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_multiGet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public List<String> multiGet(List<String> keyList) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -179,7 +179,7 @@ public class TokenRedisUtils {
     /**
      * 根据key取对象
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_getObject", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_getObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public <T> T getObject(String cacheKey, Class returnClass) {
         try {
             String cacheStr = get(cacheKey);
@@ -198,7 +198,7 @@ public class TokenRedisUtils {
     /*
    * 判断key是否存在
    */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_checkKeyIsExist", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_checkKeyIsExist", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public boolean checkKeyIsExist(String key) {
         try {
             boolean res = redisTemplate.hasKey(key);
@@ -215,7 +215,7 @@ public class TokenRedisUtils {
     /*
    * 获取hash中所有的映射关系
    */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hGetAll", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hGetAll", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public Map<String, String> hGetAll(String cacheKey) {
         try {
             BoundHashOperations boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -233,7 +233,7 @@ public class TokenRedisUtils {
     /*
     * 设置hash映射关系
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPutAll", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPutAll", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hPutAll(String cacheKey, Map<String, String> mapData) throws Exception {
         try {
 
@@ -253,7 +253,7 @@ public class TokenRedisUtils {
     /*
     * 设置hash映射关系
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPutAllObject", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPutAllObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public <T> void hPutAllObject(String cacheKey, Map<String, T> mapData) throws Exception {
         try {
             Map<String, String> objectMap = Maps.newHashMap();
@@ -280,7 +280,7 @@ public class TokenRedisUtils {
     /**
      * 记录存在则覆盖，不存在则插入
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPut", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPut", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hPut(String cacheKey, String key, String value) throws Exception {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -298,7 +298,7 @@ public class TokenRedisUtils {
         }
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPutObject", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hPutObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hPut(String cacheKey, String key, Object obj) throws Exception {
         BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
         boundHashOperations.put(key, jsonMapper.writeValueAsString(obj));
@@ -307,7 +307,7 @@ public class TokenRedisUtils {
     /**
      * 获取hash值
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hGet", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hGet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public String hGet(String cacheKey, String key) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -322,7 +322,7 @@ public class TokenRedisUtils {
         return null;
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hGetObject", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hGetObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public <T> T hGetObject(String cacheKey, String key, Class returnClass) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -341,7 +341,7 @@ public class TokenRedisUtils {
     /**
      * 删除Hash键值
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hDelete", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hDelete", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hDelete(String cacheKey, String key) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -364,7 +364,7 @@ public class TokenRedisUtils {
         }
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hIncrBy", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_hIncrBy", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hIncrBy(String cacheKey, String key) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -374,7 +374,7 @@ public class TokenRedisUtils {
         }
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_expire", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_expire", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void expire(String cacheKey, long timeout) {
         try {
             redisTemplate.expire(cacheKey, timeout, TimeUnit.SECONDS);
@@ -383,12 +383,12 @@ public class TokenRedisUtils {
         }
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_delete", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_delete", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void delete(String cacheKey) {
         redisTemplate.delete(cacheKey);
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_multiDelete", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_multiDelete", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void multiDelete(Collection cacheKeyList) {
         redisTemplate.delete(cacheKeyList);
     }
@@ -451,7 +451,7 @@ public class TokenRedisUtils {
      * 假如 key 不存在，则创建一个只包含 member 元素作成员的集合。
      * 当 key 不是集合类型时，返回一个错误。
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_addStringToSet", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_addStringToSet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void sadd(String key, String value) {
         SetOperations operations = redisTemplate.opsForSet();
         operations.add(key, value);
@@ -460,7 +460,7 @@ public class TokenRedisUtils {
     /*
      * 返回集合key中的所有成员，不存在的key视为空集合
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_membersSet", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_membersSet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public Set<String> smember(String key) {
         SetOperations operations = redisTemplate.opsForSet();
         Set<String> resSet = operations.members(key);
@@ -471,7 +471,7 @@ public class TokenRedisUtils {
     }
 
     // 将value添加到键key的列表尾部，超过maxLen则删除头部元素
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_RightPushStringToList", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_RightPushStringToList", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void rPushWithMaxLen(String key, String value, int maxLen) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         valueList.rightPush(key, value);
@@ -484,7 +484,7 @@ public class TokenRedisUtils {
     }
 
     // 将value添加到键key的列表头部，超过maxLen则删除尾部元素
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_LeftPushStringToList", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_LeftPushStringToList", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void lPushWithMaxLen(String key, String value, int maxLen) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         valueList.leftPush(key, value);
@@ -496,7 +496,7 @@ public class TokenRedisUtils {
         }
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_LeftPushObjectToList", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_LeftPushObjectToList", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void lPushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
             lPushWithMaxLen(key, jsonMapper.writeValueAsString(obj), maxLen);
@@ -527,7 +527,7 @@ public class TokenRedisUtils {
     }
 
     // 查询键key的列表
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_getList", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_getList", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public List<String> getList(String key) {
         ListOperations<String, String> valueList = redisTemplate.opsForList();
         long len = valueList.size(key);
@@ -540,7 +540,7 @@ public class TokenRedisUtils {
         return storeList;
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_getListByClass", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "tokenRedies_getListByClass", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public <T> List<T> getList(String key, Class returnClass) {
         try {
             List<String> storeList = getList(key);

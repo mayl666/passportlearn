@@ -69,38 +69,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result createCookie(CreateCookieApiParams createCookieApiParams) {
-        Result result = new APIResultSupport(false);
-
-        RequestModel requestModel = new RequestModel(SHPPUrlConstant.GET_COOKIE_VALUE);
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        requestModel.addParams(createCookieApiParams);
-        if (createCookieApiParams.isAutologin()) {
-            requestModel.addParam("persistentcookie", 1);
-        } else {
-            requestModel.addParam("persistentcookie", 0);
-        }
-        //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
-        this.paramNameAdapter(requestModel);
-        long ct = System.currentTimeMillis();
-        String code = createCookieApiParams.getUserid() + SHPPUrlConstant.COOKIE_KEY + ct;
-        try {
-            code = Coder.encryptMD5(code);
-            requestModel.addParam(CommonConstant.RESQUEST_CT, ct);
-            requestModel.addParam(CommonConstant.RESQUEST_CODE, code);
-            String value = SGHttpClient.executeStr(requestModel);
-            if (StringUtil.isBlank(value) || value.trim().length() < 20) {
-                throw new RuntimeException("获取cookie值失败 userid=" + createCookieApiParams.getUserid() + " value=" + value);
-            }
-            result.setDefaultModel("ppinf", value);
-            result.setSuccess(true);
-        } catch (Exception e) {
-            log.error("获取cookie值失败 userid=" + createCookieApiParams.getUserid(), e);
-        }
-        return result;
-    }
-
-    @Override
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps) {
         Result result = new APIResultSupport(false);
         try {
