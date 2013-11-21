@@ -107,7 +107,7 @@ public class ConnectLoginController extends BaseConnectController {
 
             // 防CRSF攻击
             String uuid = UUID.randomUUID().toString();
-            if (CommonHelper.isIePinyinToken(clientId) || ConnectTypeEnum.isMobileApp(type)) {  // 目前只有浏览器走搜狗流程
+            if (CommonHelper.isIePinyinToken(clientId) || ConnectTypeEnum.isMobileApp(type)) {  // 目前浏览器PC端和mapp走搜狗流程
                 url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
                 writeOAuthStateCookie(res, uuid, providerStr);
             } else {
