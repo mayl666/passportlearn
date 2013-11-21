@@ -95,6 +95,10 @@ public class ConnectLoginController extends BaseConnectController {
 
         String providerStr = connectLoginParams.getProvider();
         int provider = AccountTypeEnum.getProvider(providerStr);
+        // 浏览器、输入法的第三方登录转发需兼容appid参数
+        if(!Strings.isNullOrEmpty(connectLoginParams.getAppid()) && Strings.isNullOrEmpty(connectLoginParams.getClient_id())){
+            connectLoginParams.setClient_id(connectLoginParams.getAppid());
+        }
         int clientId = Integer.parseInt(connectLoginParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
@@ -118,7 +122,7 @@ public class ConnectLoginController extends BaseConnectController {
         //用户登陆log--二期迁移到callback中记录log
         UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
         userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
-        userOperationLog.putOtherMessage("type", type);
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
         UserOperationLogUtil.log(userOperationLog);
 
         return new ModelAndView(new RedirectView(url));

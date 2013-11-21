@@ -53,7 +53,7 @@ public class PCAccountManagerImplTest extends BaseTest {
             PcRefreshTokenParams params = new PcRefreshTokenParams();
             params.setAppid(String.valueOf(1044));
             params.setUserid("tinkame700@sogou.com");
-            params.setAuthtype(0);
+            params.setAuthtype("0");
             params.setRefresh_token(refreshtoken);
             params.setTs("2147483647");
             Result result = pcAccountManager.authRefreshToken(params);
@@ -70,7 +70,7 @@ public class PCAccountManagerImplTest extends BaseTest {
             PcAuthTokenParams params = new PcAuthTokenParams();
             params.setAppid(String.valueOf(1044));
             params.setUserid("tinkame700@sogou.com");
-            params.setAuthtype(0);
+            params.setAuthtype("0");
             params.setToken(accesstoken);
             params.setTs("2147483647");
 
@@ -79,6 +79,16 @@ public class PCAccountManagerImplTest extends BaseTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testGetBrowserBbsUniqname(){
+        String passportId = "shipengzhi1986@sogou.com";
+        String uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
+        System.out.println("passportId:"+passportId + " uniqname:" + uniqname);
+        passportId = "13621009174@sohu.com";
+        uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
+        System.out.println("passportId:"+passportId + " uniqname:" + uniqname);
     }
 
 }

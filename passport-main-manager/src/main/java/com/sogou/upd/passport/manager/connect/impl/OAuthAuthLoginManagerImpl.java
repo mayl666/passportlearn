@@ -171,6 +171,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
             String ip = req.getParameter("ip");
             String instanceId = req.getParameter("ts");
+            String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
             int provider = AccountTypeEnum.getProvider(providerStr);
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
@@ -194,7 +195,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -209,8 +210,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             // 获取第三方个人资料
-            String nickName = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
-            oAuthTokenVO.setNickName(nickName);
+            String uniqname = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
+            oAuthTokenVO.setNickName(uniqname);
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
@@ -223,16 +224,21 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     if (tokenResult.isSuccess()) {
                         String value = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" +
                                 accountToken.getPassportId() + "|";
+                        String responseVm = "/pcaccount/connectlogin";
+                        if (!Strings.isNullOrEmpty(from) && "mob".equals(from)) {
+                            value = "semob://semob/pairtoken?" + value;
+                            responseVm = "/pcaccount/connectmobilelogin";
+                        }
                         result.setSuccess(true);
-                        result.setDefaultModel("nickname", nickName);
+                        result.setDefaultModel("uniqname", uniqname);
                         result.setDefaultModel("result", value);
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, "/pcaccount/connectlogin");
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, responseVm);
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
                     String token = (String) connectAccountResult.getModels().get("token");
-                    String url = buildMAppSuccessRu(ru, userId, token, nickName);
+                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (type.equals(ConnectTypeEnum.PC.toString())) {
@@ -263,13 +269,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             logger.error("handle oauth authroize code error!", ope);
             result = buildErrorResult(type, ru, ope.getError(), ope.getDescription());
         } catch (Exception exp) {
-            logger.error("handle oauth authroize code system error!", exp);
+//            logger.error("handle oauth authroize code system error!", exp);
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
         return result;
     }
 
-    private String buildMAppSuccessRu(String ru, String userid, String token, String nickname) {
+    private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
@@ -279,7 +285,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         params.put("userid", userid);
         params.put("token", token);
-        params.put("uniqname", nickname);
+        params.put("uniqname", uniqname);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

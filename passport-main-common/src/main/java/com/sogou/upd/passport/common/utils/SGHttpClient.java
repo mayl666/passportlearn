@@ -5,11 +5,13 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -40,37 +42,35 @@ import java.security.cert.X509Certificate;
 public class SGHttpClient {
 
 
-    private static final HttpClient httpClient;
+    protected static final HttpClient httpClient;
     /**
      * 最大连接数
      */
-    private final static int MAX_TOTAL_CONNECTIONS = 500;
+    protected final static int MAX_TOTAL_CONNECTIONS = 500;
     /**
      * 获取连接的最大等待时间
      */
-    private final static int WAIT_TIMEOUT = 5000;
+    protected final static int WAIT_TIMEOUT = 5000;
     /**
      * 每个路由最大连接数
      */
-    private final static int MAX_ROUTE_CONNECTIONS = 200;
+    protected final static int MAX_ROUTE_CONNECTIONS = 200;
     /**
      * 读取超时时间
      */
-    private final static int READ_TIMEOUT = 5000;
+    protected final static int READ_TIMEOUT = 5000;
 
     /**
      * http返回成功的code
      */
-    private final static int RESPONSE_SUCCESS_CODE = 200;
+    protected final static int RESPONSE_SUCCESS_CODE = 200;
 
     /**
      * 超过500ms的请求定义为慢请求
      */
-    private final static int SLOW_TIME = 500;
+    protected final static int SLOW_TIME = 500;
 
-    private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SGHttpClient.class);
+    protected static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     static {
         HttpParams params = new BasicHttpParams();
@@ -148,6 +148,25 @@ public class SGHttpClient {
         }
     }
 
+    public static Header[] executeHeaders(RequestModel requestModel) {
+        if (requestModel == null) {
+            throw new NullPointerException("requestModel 不能为空");
+        }
+        HttpRequestBase httpRequest = getHttpRequest(requestModel);
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
+        try {
+            HttpParams params = httpClient.getParams();
+            params.setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+            HttpResponse httpResponse = httpClient.execute(httpRequest);
+            Header[] headers = httpResponse.getAllHeaders();
+            stopWatch(stopWatch, requestModel.getUrl(), "success");
+            return headers;
+        } catch (IOException e) {
+            stopWatch(stopWatch, requestModel.getUrl(), "failed");
+            throw new RuntimeException("http request error ", e);
+        }
+    }
+
     /**
      * 执行请求并返回请求结果
      *
@@ -211,10 +230,10 @@ public class SGHttpClient {
      * @param tag
      * @param message
      */
-    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+    protected static void stopWatch(StopWatch stopWatch, String tag, String message) {
         //无论什么情况都记录下所有的请求数据
-        if(stopWatch.getElapsedTime() >= SLOW_TIME){
-            tag+="(slow)";
+        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
+            tag += "(slow)";
         }
         stopWatch.stop(tag, message);
     }

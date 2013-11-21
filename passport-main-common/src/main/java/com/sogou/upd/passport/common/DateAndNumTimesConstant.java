@@ -7,6 +7,7 @@ package com.sogou.upd.passport.common;
 public class DateAndNumTimesConstant {
 
     public static final long TIME_ONEDAY = 24 * 60 * 60; // 时间 一天 1440分钟 ,单位s
+    public static final long TWO_WEEKS =14 * 24 * 60 * 60; // 时间 一天 1440分钟 ,单位s
     public static final long TIME_TWODAY = 2 * 24 * 60 * 60; // 时间 两天 2880分钟 ,单位s
     public static final long IP_LIMITED = 20; // ip一天限制次数
     public static final int RESETPWD_NUM = 10; // 密码修改一天限制次数
@@ -16,5 +17,11 @@ public class DateAndNumTimesConstant {
     public static final long TIME_ONEHOUR = 60 * 60; // 时间 一小时,单位s
     public static final int BIND_LIMIT = 10;   // 每日绑定限制次数
     public static final int ACTIONRECORD_NUM = 10; // 动作记录条数
-    public static final long MILLTIME_ONE_YEAR = 365 * 24 * 60 * 60 * 1000; // 一年单位 毫秒
+
+    public static final int ONE_HOUR_INSECONDS = 60*60*1; // 1小时,单位,s
+    public static final int ONE_MONTH_INSECONDS = 60*60*24*30; // 10天,单位,s
+    public static final int ONE_DAY_INSECONDS = 60*60*24; // 1天,单位,s
+
+
+
 }

@@ -1,9 +1,15 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.MemcacheUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.AccountToken;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +29,6 @@ public class SHTokenServiceImpl implements SHTokenService {
 
     @Autowired
     private MemcacheUtils rTokenMemUtils;
-    @Autowired
-    private MemcacheUtils aTokenMemUtils;
-
     /**
      * 构造SHToken的key
      * 格式为：passport|clientId|instanceId
@@ -52,21 +55,6 @@ public class SHTokenServiceImpl implements SHTokenService {
     }
 
     @Override
-    public String queryAccessToken(String passportId, int clientId, String instanceId) throws ServiceException {
-        try {
-            String key = buildTokenKeyStr(passportId, clientId, instanceId);
-            Object value = aTokenMemUtils.get(key);
-            if (value != null) {
-                return value.toString();
-            }
-            return null;
-        } catch (Exception e) {
-            logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
     public String queryRefreshToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String key = buildTokenKeyStr(passportId, clientId, instanceId);
@@ -77,7 +65,8 @@ public class SHTokenServiceImpl implements SHTokenService {
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            return null;
         }
     }
 
@@ -92,37 +81,45 @@ public class SHTokenServiceImpl implements SHTokenService {
             return null;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            return null;
         }
     }
 
     @Override
-    public boolean verifyShAccessToken(String passportId, int clientId, String instanceId, String accessToken) throws ServiceException {
-        String storeAccessToken = queryAccessToken(passportId, clientId, instanceId);
-        return accessToken.equals(storeAccessToken);
-    }
-
-    @Override
-    public boolean verifyShRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+    public boolean verifyShRToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         try {
             String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
-            if (!StringUtils.isEmpty(actualRefreshToken)) {
-                if (actualRefreshToken.equals(refreshToken)) {
-                    return true;
-                }
-            }
-
-            String actualOldRefreshToken = queryOldRefreshToken(passportId, clientId, instanceId);
-            if (!StringUtils.isEmpty(actualOldRefreshToken)) {
-                if (actualOldRefreshToken.equals(refreshToken)) {
-                    return true;
-                }
+            if(refreshToken.equals(actualRefreshToken)){
+                return true;
             }
             return false;
         } catch (Exception e) {
             logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            //memcache宕机后，直接返回false
+            return false;
         }
     }
 
+    @Override
+    public boolean verifyAllShRToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
+        try {
+            String actualRefreshToken = queryRefreshToken(passportId, clientId, instanceId);
+            if(refreshToken.equals(actualRefreshToken)){
+                return true;
+            }
+
+            String actualOldRefreshToken = queryOldRefreshToken(passportId, clientId, instanceId);
+            if(refreshToken.equals(actualOldRefreshToken)){
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("Query AccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
+//            throw new ServiceException(e);
+            //memcache宕机后，直接返回false
+            return false;
+        }
+    }
 }

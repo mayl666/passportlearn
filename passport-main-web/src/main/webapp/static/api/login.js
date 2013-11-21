@@ -1,1 +1,457 @@
-(function(){var a={b64_423:function(e){var f=new Array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","-","_");var d=new String();for(var g=0;g<e.length;g++){for(var c=0;c<64;c++){if(e.charAt(g)==f[c]){var h=c.toString(2);d+=("000000"+h).substr(h.length);break}}if(c==64){if(g==2){return d.substr(0,8)}else{return d.substr(0,16)}}}return d},b2i:function(d){var c=0;var f=128;for(var e=0;e<8;e++,f=f/2){if(d.charAt(e)=="1"){c+=f}}return String.fromCharCode(c)},b64_decodex:function(d){var f=new Array();var e;var c="";for(e=0;e<d.length;e+=4){c+=a.b64_423(d.substr(e,4))}for(e=0;e<c.length;e+=8){f+=a.b2i(c.substr(e,8))}return f},utf8to16:function(h){var c,k,l,j,i,d,e,f,g;c=[];j=h.length;k=l=0;while(k<j){i=h.charCodeAt(k++);switch(i>>4){case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:c[l++]=h.charAt(k-1);break;case 12:case 13:d=h.charCodeAt(k++);c[l++]=String.fromCharCode(((i&31)<<6)|(d&63));break;case 14:d=h.charCodeAt(k++);e=h.charCodeAt(k++);c[l++]=String.fromCharCode(((i&15)<<12)|((d&63)<<6)|(e&63));break;case 15:switch(i&15){case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:d=h.charCodeAt(k++);e=h.charCodeAt(k++);f=h.charCodeAt(k++);g=((i&7)<<18)|((d&63)<<12)|((e&63)<<6)|(f&63)-65536;if(0<=g&&g<=1048575){c[l]=String.fromCharCode(((g>>>10)&1023)|55296,(g&1023)|56320)}else{c[l]="?"}break;case 8:case 9:case 10:case 11:k+=4;c[l]="?";break;case 12:case 13:k+=5;c[l]="?";break}}l++}return c.join("")},tmpl:function(e,d){var c=new Function("obj","var p=[],print=function(){p.push.apply(p,arguments);};with(obj){p.push('"+e.replace(/[\r\t\n]/g," ").split("<%").join("\t").replace(/((^|%>)[^\t]*)'/g,"$1\r").replace(/\t=(.*?)%>/g,"',$1,'").split("\t").join("');").split("%>").join("p.push('").split("\r").join("\\'")+"');}return p.join('');");return d?c(d):c},addIframe:function(e,d,f){var c=document.createElement("iframe");c.style.height="1px";c.style.width="1px";c.style.visibility="hidden";c.src=d;if(c.attachEvent){c.attachEvent("onload",function(){f&&f()})}else{c.onload=function(){f&&f()}}e.appendChild(c)},uuid:function(){function c(){return Math.floor((1+Math.random())*65536).toString(16).substring(1)}return c()+c()+c()+c()+c()+c()+c()+c()}};var b=window.PassportSC||{};b._token=a.uuid();b._passhtml='<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe"><input type="hidden" name="username" value="<%=username%>"><input type="hidden" name="password" value="<%=password%>"><input type="hidden" name="captcha" value="<%=vcode%>"><input type="hidden" name="autoLogin" value="<%=isAutoLogin%>"><input type="hidden" name="client_id" value="<%=appid%>"><input type="hidden" name="xd" value="<%=redirectUrl%>"><input type="hidden" name="token" value="<%=token%>"></form><iframe id="_PassportIframe" name="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';b._logincb=function(c){if(!+c.status){b.onsuccess&&b.onsuccess(c)}else{if(+c.status==20231){location.href="https://account.sogou.com/web/remindActivate?email="+encodeURIComponent(b._currentUname)+"&client_id="+b.appid+"&ru="+encodeURIComponent(location.href)}else{b.onfailure&&b.onfailure(c)}}};b.getToken=function(){return b._token};b._checkCommon=function(c){if(!b.redirectUrl&&!c){window.console&&console.log("Must specify redirect url.Exit!");return}if(!b.appid){window.console&&console.log("Must specify appid.Exit!");return}return true};b.loginHandle=function(h,e,i,g,f,d,c){if(arguments.length<7){c=d;d=f;f=g;g=i;i=""}if(!b._checkCommon()){return}if(!f){return}b._currentUname=h;b.onsuccess=c,b.onfailure=d;f.innerHTML=a.tmpl(b._passhtml,{username:h,password:e,vcode:i,isAutoLogin:g,appid:b.appid,redirectUrl:b.redirectUrl,token:b._token});f.getElementsByTagName("form")[0].submit();return false};b.logoutHandle=function(f,d,c){if(!f){return}if(!b._checkCommon(true)){return}var e="https://account.sogou.com/web/logout_js?client_id="+b.appid;a.addIframe(f,e,function(){c&&c()})};b._parsePassportCookie=function(m){var i;var d;var c;this.cookie=new Object;i=0;d=m.indexOf(":",i);while(d!=-1){var e;var f;var j;e=m.substring(i,d);var g=m.indexOf(":",d+1);if(g==-1){break}f=parseInt(m.substring(d+1,g));j=m.substr(g+1,f);if(m.charAt(g+1+f)!="|"){break}this.cookie[e]=j;i=g+2+f;d=m.indexOf(":",i)}var h=this._parserRelation();if(h!=null&&h.length>0){this.cookie[e]=h}try{this.cookie.service=new Object;var k=this.cookie.service;k.mail=0;k.alumni=0;k.chinaren=0;k.blog=0;k.pp=0;k.club=0;k.crclub=0;k.group=0;k.say=0;k.music=0;k.focus=0;k["17173"]=0;k.vip=0;k.rpggame=0;k.pinyin=0;k.relaxgame=0;var l=this.cookie.serviceuse;if(l.charAt(0)==1){k.mail="sohu"}else{if(l.charAt(2)==1){k.mail="sogou"}else{if(this.cookie.userid.indexOf("@chinaren.com")>0){k.mail="chinaren"}}}if(l.charAt(1)==1){k.alumni=1}if(l.charAt(3)==1){k.blog=1}if(l.charAt(4)==1){k.pp=1}if(l.charAt(5)==1){k.club=1}if(l.charAt(7)==1){k.crclub=1}if(l.charAt(8)==1){k.group=1}if(l.charAt(10)==1){k.music=1}if(l.charAt(11)==1||this.cookie.userid.lastIndexOf("@focus.cn")>0){k.focus=1}if(l.charAt(12)==1||this.cookie.userid.indexOf("@17173.com")>0){k["17173"]=1}if(l.charAt(13)==1){k.vip=1}if(l.charAt(14)==1){k.rpggame=1}if(l.charAt(15)==1){k.pinyin=1}if(l.charAt(16)==1){k.relaxgame=1}}catch(n){}};b._parseCookie=function(){var d=document.cookie.split("; ");var g;for(var e=0,c=d.length;e<c;e++){if(d[e].indexOf("ppinf=")==0){g=d[e].substr(6);break}if(d[e].indexOf("ppinfo=")==0){g=d[e].substr(7);break}if(d[e].indexOf("passport=")==0){g=d[e].substr(9);break}}if(!g){this.cookie=false;return}try{g=unescape(g).split("|");if(g[0]=="1"||g[0]=="2"){g=a.utf8to16(a.b64_decodex(g[3]));this._parsePassportCookie(g);return}}catch(f){}};b.cookieHandle=function(){this._parseCookie();if(this.cookie&&this.cookie.userid!=""){return this.cookie.userid}else{return""}};b._authConfig={size:{renren:[880,620],sina:[780,640],qq:[500,300]}};b.authHandle=function(j,i,e,d){if(!b._checkCommon()){return}if(!j){window.console&&console.log("Must specify provider.Exit!");return}i=i||"page";if(i=="page"&&(typeof e=="function"||typeof d=="function")){window.console&&console.log("When display is page, onfailure & onsuccess must be url.Exit!");return}var c=i=="popup"?b.redirectUrl:(d||location.href);var g="http://account.sogou.com/connect/login?client_id="+b.appid+"&provider="+j+"&ru="+encodeURIComponent(c);if(i=="popup"){var f=b._authConfig.size[j];var h=(window.screen.availWidth-f[0])/2;window.open(g,"OPEN_LOGIN","height="+f[1]+",width="+f[0]+",top=80,left="+h+",toolbar=no,menubar=no")}else{if(i=="page"){location.href=g}}};window.PassportSC=b;if(b.onApiLoaded&&typeof b.onApiLoaded=="function"){b.onApiLoaded()}})();
+/*
+ * Sogou Passport Login
+ * @author zhengxin
+ */
+
+
+(function(){
+
+    var utils = {
+        b64_423:function(E) {
+            var D = new Array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "_");
+            var F = new String();
+            for (var C = 0; C < E.length; C++) {
+                for (var A = 0; A < 64; A++) {
+                    if (E.charAt(C) == D[A]) {
+                        var B = A.toString(2);
+                        F += ("000000" + B).substr(B.length);
+                        break
+                    }
+                }
+                if (A == 64) {
+                    if (C == 2) {
+                        return F.substr(0, 8);
+                    } else {
+                        return F.substr(0, 16);
+                    }
+                }
+            }
+            return F;
+        },
+        b2i:function(D) {
+            var A = 0;
+            var B = 128;
+            for (var C = 0; C < 8; C++, B = B / 2) {
+                if (D.charAt(C) == "1") {
+                    A += B;
+                }
+            }
+            return String.fromCharCode(A);
+        },
+
+        
+        b64_decodex:function(D) {
+            var B = new Array();
+            var C;
+            var A = "";
+            for (C = 0; C < D.length; C += 4) {
+                A += utils.b64_423(D.substr(C, 4));
+            }
+            for (C = 0; C < A.length; C += 8) {
+                B += utils.b2i(A.substr(C, 8));
+            }
+            return B;
+        },
+
+        utf8to16: function(I) {
+            var D, F, E, G, H, C, B, A, J;
+            D = [];
+            G = I.length;
+            F = E = 0;
+            while (F < G) {
+                H = I.charCodeAt(F++);
+                switch (H >> 4) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                    D[E++] = I.charAt(F - 1);
+                    break;
+                case 12:
+                case 13:
+                    C = I.charCodeAt(F++);
+                    D[E++] = String.fromCharCode(((H & 31) << 6) | (C & 63));
+                    break;
+                case 14:
+                    C = I.charCodeAt(F++);
+                    B = I.charCodeAt(F++);
+                    D[E++] = String.fromCharCode(((H & 15) << 12) | ((C & 63) << 6) | (B & 63));
+                    break;
+                case 15:
+                    switch (H & 15) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        C = I.charCodeAt(F++);
+                        B = I.charCodeAt(F++);
+                        A = I.charCodeAt(F++);
+                        J = ((H & 7) << 18) | ((C & 63) << 12) | ((B & 63) << 6) | (A & 63) - 65536;
+                        if (0 <= J && J <= 1048575) {
+                            D[E] = String.fromCharCode(((J >>> 10) & 1023) | 55296, (J & 1023) | 56320);
+                        } else {
+                            D[E] = "?";
+                        }
+                        break;
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                        F += 4;
+                        D[E] = "?";
+                        break;
+                    case 12:
+                    case 13:
+                        F += 5;
+                        D[E] = "?";
+                        break;
+                    }
+                }
+                E++;
+            }
+            return D.join("");
+        },
+
+        tmpl:function(str, data){
+            var fn = 
+                    new Function("obj",
+                                 "var p=[],print=function(){p.push.apply(p,arguments);};" +
+                                 "with(obj){p.push('" +
+                                 str
+                                 .replace(/[\r\t\n]/g, " ")
+                                 .split("<%").join("\t")
+                                 .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+                                 .replace(/\t=(.*?)%>/g, "',$1,'")
+                                 .split("\t").join("');")
+                                 .split("%>").join("p.push('")
+                                 .split("\r").join("\\'")
+                                 + "');}return p.join('');");
+            return data ? fn( data ) : fn;
+        },
+        addIframe: function(container ,url,callback){
+            var iframe = document.createElement('iframe');
+            iframe.style.height = '1px';
+            iframe.style.width = '1px';
+            iframe.style.visibility = 'hidden';
+            iframe.src = url;
+            
+            if (iframe.attachEvent){
+                iframe.attachEvent("onload", function(){
+                    callback && callback();
+                });
+            } else {
+                iframe.onload = function(){
+                    callback && callback();
+                };
+            }
+
+            container.appendChild(iframe);
+            
+        },
+        uuid: function(){
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };            
+            return s4() + s4()  + s4()  + s4()  +
+                s4() +  s4() + s4() + s4();
+        }
+    };
+
+
+
+
+    
+    var PassportSC = window['PassportSC'] || {};
+    
+    PassportSC._token = utils.uuid();
+    
+    PassportSC._passhtml = '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
+        +'<input type="hidden" name="username" value="<%=username%>">'
+        +'<input type="hidden" name="password" value="<%=password%>">'
+        +'<input type="hidden" name="captcha" value="<%=vcode%>">'
+        +'<input type="hidden" name="autoLogin" value="<%=isAutoLogin%>">'
+        +'<input type="hidden" name="client_id" value="<%=appid%>">'
+        +'<input type="hidden" name="xd" value="<%=redirectUrl%>">'
+        +'<input type="hidden" name="token" value="<%=token%>">'
+        +'</form>'
+        +'<iframe id="_PassportIframe" name="_PassportIframe" src="about:blank" style="width：1px;height:1px;position:absolute;left:-1000px;"></iframe>';
+
+    PassportSC._logincb = function(data){
+        if( !+data.status ){
+            PassportSC.onsuccess && PassportSC.onsuccess(data);
+        }else if(+data.status == 20231){
+            location.href = 'https://account.sogou.com/web/remindActivate?email=' + encodeURIComponent(PassportSC._currentUname)
+                + '&client_id=' + PassportSC.appid
+                + '&ru=' + encodeURIComponent(location.href);
+        }else{
+            PassportSC.onfailure && PassportSC.onfailure(data);
+        }
+    };
+
+    PassportSC.getToken = function(){
+        return PassportSC._token;
+    };
+
+    PassportSC._checkCommon = function(nore){
+        if( !PassportSC.redirectUrl && !nore ){
+            window['console'] && console.log('Must specify redirect url.Exit!');
+            return;
+        }
+        if( !PassportSC.appid ){
+            window['console'] && console.log('Must specify appid.Exit!');
+            return;
+        }
+        return true;
+    };
+
+    PassportSC.loginHandle = function(username, password , vcode , isAutoLogin , container , onfailure, onsuccess){
+        if( arguments.length < 7 ){
+            onsuccess = onfailure;
+            onfailure = container;
+            container = isAutoLogin;
+            isAutoLogin = vcode;
+            vcode = '';
+        }
+
+        if( !PassportSC._checkCommon() ){
+            return;
+        }
+
+        if(!container)
+            return;
+
+        PassportSC._currentUname = username;
+        PassportSC.onsuccess = onsuccess,
+        PassportSC.onfailure = onfailure;
+        container.innerHTML = utils.tmpl(PassportSC._passhtml , {
+            username:username,
+            password:password,
+            vcode:vcode,
+            isAutoLogin: isAutoLogin,
+            appid: PassportSC.appid,
+            redirectUrl:PassportSC.redirectUrl,
+            token: PassportSC._token
+        });
+        container.getElementsByTagName('form')[0].submit();
+        return false;
+    };
+
+    PassportSC.logoutHandle = function( container , onfailure, onsuccess){
+        if(!container)
+            return;
+
+        if( !PassportSC._checkCommon(true))
+            return;
+
+        var url = 'https://account.sogou.com/web/logout_js?client_id=' + PassportSC.appid;
+        utils.addIframe(container , url , function(){
+            onsuccess && onsuccess();
+        });
+    };
+
+    PassportSC._parsePassportCookie =  function (F) {
+        var J;
+        var C;
+        var D;
+        this.cookie = new Object;
+        J = 0;
+        C = F.indexOf(":", J);
+        while (C != -1) {
+            var B;
+            var A;
+            var I;
+            B = F.substring(J, C);
+            var lenEnd_offset = F.indexOf(":", C + 1);
+            if (lenEnd_offset == -1) {
+                break;
+            }
+            A = parseInt(F.substring(C + 1, lenEnd_offset));
+            I = F.substr(lenEnd_offset + 1, A);
+            if (F.charAt(lenEnd_offset + 1 + A) != "|") {
+                break;
+            }
+            this.cookie[B] = I;
+            J = lenEnd_offset + 2 + A;
+            C = F.indexOf(":", J);
+        }
+        var relation_userid = this._parserRelation();
+        if (relation_userid != null && relation_userid.length > 0) {
+            this.cookie[B] = relation_userid;
+        }
+        try {
+            this.cookie.service = new Object;
+            var H = this.cookie.service;
+            H.mail = 0;
+            H.alumni = 0;
+            H.chinaren = 0;
+            H.blog = 0;
+            H.pp = 0;
+            H.club = 0;
+            H.crclub = 0;
+            H.group = 0;
+            H.say = 0;
+            H.music = 0;
+            H.focus = 0;
+            H["17173"] = 0;
+            H.vip = 0;
+            H.rpggame = 0;
+            H.pinyin = 0;
+            H.relaxgame = 0;
+            var G = this.cookie.serviceuse;
+            if (G.charAt(0) == 1) {
+                H.mail = "sohu";
+            } else {
+                if (G.charAt(2) == 1) {
+                    H.mail = "sogou";
+                } else {
+                    if (this.cookie.userid.indexOf("@chinaren.com") > 0) {
+                        H.mail = "chinaren";
+                    }
+                }
+            } if (G.charAt(1) == 1) {
+                H.alumni = 1;
+            }
+            if (G.charAt(3) == 1) {
+                H.blog = 1;
+            }
+            if (G.charAt(4) == 1) {
+                H.pp = 1;
+            }
+            if (G.charAt(5) == 1) {
+                H.club = 1;
+            }
+            if (G.charAt(7) == 1) {
+                H.crclub = 1;
+            }
+            if (G.charAt(8) == 1) {
+                H.group = 1;
+            }
+            if (G.charAt(10) == 1) {
+                H.music = 1;
+            }
+            if (G.charAt(11) == 1 || this.cookie.userid.lastIndexOf("@focus.cn") > 0) {
+                H.focus = 1;
+            }
+            if (G.charAt(12) == 1 || this.cookie.userid.indexOf("@17173.com") > 0) {
+                H["17173"] = 1;
+            }
+            if (G.charAt(13) == 1) {
+                H.vip = 1;
+            }
+            if (G.charAt(14) == 1) {
+                H.rpggame = 1;
+            }
+            if (G.charAt(15) == 1) {
+                H.pinyin = 1;
+            }
+            if (G.charAt(16) == 1) {
+                H.relaxgame = 1;
+            }
+        } catch (E) {}
+    };
+
+
+    PassportSC._parseCookie = function(){
+        var cookie = document.cookie.split("; ");
+        var result;
+        for (var i = 0 , l=cookie.length; i < l; i++) {
+            if (cookie[i].indexOf("ppinf=") == 0) {
+                result = cookie[i].substr(6);
+                break;
+            }
+            if (cookie[i].indexOf("ppinfo=") == 0) {
+                result = cookie[i].substr(7);
+                break;
+            }
+            if (cookie[i].indexOf("passport=") == 0) {
+                result = cookie[i].substr(9);
+                break;
+            }
+        }
+        if ( !result ) {
+            this.cookie = false;
+            return;
+        }
+        try {
+            result = unescape(result).split("|");
+            if ( result[0] == "1" || result[0] == "2") {
+                result = utils.utf8to16(utils.b64_decodex(result[3]));
+                this._parsePassportCookie(result);
+                return;
+            }
+        } catch (F) {}
+        
+    };
+
+    PassportSC.cookieHandle = function(){
+        this._parseCookie();
+
+        if (this.cookie && this.cookie.userid != "") {
+            return this.cookie.userid;
+        } else {
+            return "";
+        }
+        
+    };
+
+    PassportSC._authConfig = {
+        size:{
+            renren:[880,620],
+            sina:[780,640],
+            qq:[500,300]
+        }
+    };
+
+    PassportSC.authHandle = function( provider , display ,  onfailure, onsuccess ){
+        if( !PassportSC._checkCommon())
+            return;
+        if( !provider ){
+            window['console'] && console.log('Must specify provider.Exit!');
+            return;
+        }
+        display = display || 'page';
+        if( display == 'page' && (typeof onfailure =='function' || typeof onsuccess == 'function') ){
+            window['console'] && console.log('When display is page, onfailure & onsuccess must be url.Exit!');
+            return;
+        }
+
+        var ru = display == 'popup'? PassportSC.redirectUrl : ( onsuccess || location.href );
+        
+        var authUrl = 'http://account.sogou.com/connect/login?client_id='
+                + PassportSC.appid
+                + '&provider=' + provider
+                + '&ru='
+                + encodeURIComponent(ru);//TODO PAGE
+                //+ '&display=' + display;
+
+
+        if( display == 'popup' ){
+            var size = PassportSC._authConfig.size[provider];
+            var left = (window.screen.availWidth-size[0])/2;
+            window.open(authUrl , 'OPEN_LOGIN' , 'height='+ size[1] +',width='+ size[0] +',top=80,left='+left+',toolbar=no,menubar=no');
+        }else if( display == 'page' ){
+            location.href = authUrl;
+        }
+    };
+
+
+    window['PassportSC'] = PassportSC;
+
+
+    if( PassportSC.onApiLoaded && typeof PassportSC.onApiLoaded == 'function' ){
+        PassportSC.onApiLoaded();
+    }
+
+
+
+})();

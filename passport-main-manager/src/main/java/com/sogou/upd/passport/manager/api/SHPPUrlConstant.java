@@ -37,9 +37,9 @@ public class SHPPUrlConstant {
     /*================================登录相关=======================================*/
     public static final String AUTH_USER = BASE_INTERNAL_URL + "authuser"; //检查用户名密码是否正确
     public static final String MOBILE_AUTH_TOKEN = BASE_INTERNAL_URL + "token/auth"; //检查用户名密码是否正确
-    //    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
-    public static final String GET_COOKIE_VALUE = "http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
-    public static final String SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
+    // 手机浏览器/authtoken接口返回结果后会302到setcookie接口，这个必须为http，所以此处也为http，得到location的也为http
+    public static final String HTTPS_SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
+    public static final String HTTP_SET_COOKIE = "http://passport.sohu.com/act/setcookie";//用于前端设置cookie
     public static final String CLEAN_COOKIE = BASE_URL + "act/logout";
 
     public static final String CLEAN_COOKIE_REDIRECT = BASE_URL + "sso/logout_js.jsp?ru=";
@@ -106,7 +106,7 @@ public class SHPPUrlConstant {
     // 第三方授权通用接口
     public static final String CONNECT_LOGIN_ULR = BASE_URL + "openlogin/request.action";
     // 同步创建第三方账号的接口
-    public static final String CREATE_CONNECT_USER = BASE_URL + "openlogin/non/callback/";
+    public static final String CREATE_CONNECT_USER = "http://passport.sohu.com/openlogin/non/callback/";
     //获取第三方用户信息
     public static final String GET_OPEN_USER_INFO = BASE_OPEN_API_URL + "api/user/info";
     //第三方发图片微博或分享

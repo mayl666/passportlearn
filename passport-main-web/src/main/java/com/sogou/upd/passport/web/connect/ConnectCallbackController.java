@@ -1,8 +1,12 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -56,23 +60,15 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLogUtil.log(userOperationLog);
 
             if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                model.addAttribute("nickname", result.getModels().get("nickname"));
+                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
                 model.addAttribute("result", result.getModels().get("result"));
-                return new ModelAndView(viewUrl);
-            } else if (type.equals(ConnectTypeEnum.PC.toString())) {
-                model.addAttribute("sname", result.getModels().get("sname"));
-                model.addAttribute("nick", result.getModels().get("nick"));
-                model.addAttribute("passport", result.getModels().get("passport"));
-                model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
-                model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
-                model.addAttribute("logintype", result.getModels().get("logintype"));
                 return new ModelAndView(viewUrl);
             } else {
                 // TODO 少了种cookie
                 return new ModelAndView(new RedirectView(viewUrl));
             }
         } else {
-            if (type.equals(ConnectTypeEnum.TOKEN.toString()) || type.equals(ConnectTypeEnum.PC.toString())) {
+            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                 return new ModelAndView(viewUrl);
             } else {
                 return new ModelAndView(new RedirectView(viewUrl));

@@ -1,0 +1,9 @@
+<html>
+<head>
+    <script type="text/javascript">
+        var uniqname = decodeURIComponent('${uniqname}');
+        window.location = "${result}" + uniqname;
+
+    </script>
+</head>
+</html>

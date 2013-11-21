@@ -67,20 +67,20 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static byte[] decryptBase64(String key) {
+    public static byte[] decryptBASE64(String key) {
         return Base64.decodeBase64(key);
     }
 
     /**
-     * BASE64加密
-     *
+     * 解码base64
      * @param key
      * @return
-     * @throws Exception
      */
-    public static String encryptBase64(String key) throws UnsupportedEncodingException {
-        return Base64.encodeBase64String(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+    public  static String decodeBASE64(String key){
+        byte[] bytes= Base64.decodeBase64(key);
+        return  new String(bytes);
     }
+
 
     /**
      * BASE64加密
@@ -89,19 +89,8 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String encryptBase64URLSafeString(byte[] key) {
+    public static String encryptBase64URLSafeString(byte[] key) throws Exception {
         return Base64.encodeBase64URLSafeString(key);
-    }
-
-    /**
-     * BASE64加密
-     *
-     * @param str
-     * @return
-     * @throws Exception
-     */
-    public static String encryptBase64URLSafeString(String str) throws UnsupportedEncodingException {
-        return encryptBase64URLSafeString(str.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
     }
 
     /**
@@ -114,7 +103,7 @@ public class Coder {
     public static String encryptMD5(String data) throws Exception {
 
         MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
-        md5.update(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        md5.update(data.getBytes());
 
         return toHexString(md5.digest());
 

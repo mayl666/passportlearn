@@ -16,7 +16,6 @@ public enum ConnectTypeEnum {
     WEB("web"),
     TOKEN("token"),   //桌面应用
     MAPP("mapp"),   //手机app，基于服务器端调用检验token的接口
-    PC("pc"), //pc客户端，地图4.2版本
     MOBILE("mobile");  //仅搜狗地图的移动端使用
 
     private String connectType;
@@ -27,7 +26,6 @@ public enum ConnectTypeEnum {
         TYPE_LIST.add(WEB.toString());
         TYPE_LIST.add(TOKEN.toString());
         TYPE_LIST.add(MAPP.toString());
-        TYPE_LIST.add(PC.toString());
         TYPE_LIST.add(MOBILE.toString());
     }
 

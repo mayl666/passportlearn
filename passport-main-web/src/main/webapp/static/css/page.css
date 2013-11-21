@@ -25,7 +25,7 @@ a:hover{ text-decoration:underline; }
 .nav .current{ background:#fbffeb url(/./static/img/nav-arrow.png?t=447357) no-repeat 195px center; }
 .nav li{ height:45px; line-height:45px;border-top:1px #cdcdcd solid;  font-size:18px; font-family:'Microsoft Yahei', sans-serif; }
 .nav li.small{font-size:16px;}
-.nav li a{ display:block; height:45px;padding-left:25px;color:#333; }
+.nav li a,.nav li span{ display:block; height:45px;padding-left:25px;color:#333; }
 .nav li.current a{ color:#000; }
 .sidebar .head{ height:44px; line-height:44px; background:#fbfbfb;border-bottom:1px #cdcdcd solid;font-size:18px;font-family:"Microsoft Yahei" , sans-serif;padding-left:26px;position:relative; }
 .sidebar .head .box{ position:absolute;background:#84c30f; width:4px; height:19px; left:12px;top:12px; }

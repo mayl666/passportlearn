@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>搜狗通行证--开关设置</title>
+        <link rel="stylesheet" href="/./static/css/main.css?t=334325" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
+        <ul class="info">
+            <li>欢迎您&nbsp;<span class="username"></span></li>
+            <li class="sep">|</li>
+            <li>
+                <a href="http://www.sogou.com">搜狗首页</a>
+            </li>
+            <li class="sep" style="display:none;">|</li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li ><a href="/">开关配置</a></li>
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+            <div class="main-content one-col">
+                <h2>线程池:discardTaskExecutor</h2>
+
+                <form id="switchForm" action="/internal/switchset/savesetvalue" method="post">
+                <table>
+                <tbody>
+                <tr>
+                    <td>开关ID</td>
+                    <td>开关代码</td>
+                    <td>是否打开</td>
+                </tr>
+                <tr>
+                    #if($useIEBBSUniqname)
+                        <td><input type="text"  value="$useIEBBSUniqname.id" name="id"
+                                   disabled="false"/>
+                            <input type="text"  value="$useIEBBSUniqname.id" name="id"
+                                   style="display: none"/>
+                        </td>
+                        <td><input type="text" value="$useIEBBSUniqname.name"
+                                   disabled="false"/>
+                            <input type="text"   name="name"
+                                   value="$useIEBBSUniqname.name" style="display: none"/>
+                        </td>
+                        <td><input type="text" id="useIEBBSUniqname_oldValue"
+                                   value="$useIEBBSUniqname.open" disabled="false"/>
+                            <input type="text" id="useIEBBSUniqname_newValue"  name="open"
+                                   value="$useIEBBSUniqname.open" style="display: none"/>
+                        </td>
+                        <td><input id="oldSwitchBtn" type="button" value="重置" onclick="resetSwitch()"/>
+                            <input id="newSwitchBtn" type="button" value="保存" onclick="saveSwitch()"
+                                   style="display: none"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                    </table>
+                    #end
+                </form>
+            </div>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+    </div>
+</div>
+    </body>
+    
+    <script type="text/javascript">
+        function resetSwitch() {
+            document.getElementById('oldSwitchBtn').style.display = "none";
+            document.getElementById('newSwitchBtn').style.display = "block";
+
+            document.getElementById('useIEBBSUniqname_oldValue').style.display = "none";
+            document.getElementById('useIEBBSUniqname_newValue').style.display = "block"
+        }
+
+        function saveSwitch() {
+            document.getElementById('switchForm').submit();
+        }
+    </script>
+</html>

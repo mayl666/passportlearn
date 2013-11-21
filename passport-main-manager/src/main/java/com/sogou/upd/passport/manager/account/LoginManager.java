@@ -26,4 +26,19 @@ public interface LoginManager {
     public void doAfterLoginSuccess(final String username,final String ip,final String passportId,final int clientId);
 
     public void doAfterLoginFailed(final String username,final String ip);
+
+    /**
+     * 检查username ip是否在黑名单中
+     * @param username
+     * @param ip
+     * @return
+     */
+    public boolean isLoginUserInBlackList(final String username, final String ip);
+
+    /**
+     * 通过username获取passportId
+     * @param username
+     * @return
+     */
+    public String getIndividPassportIdByUsername(String username);
 }

@@ -18,9 +18,10 @@ public class ManagerHelperTest extends BaseTest {
      */
     @Test
     public void testGeneratorCode() {
-        long ct = System.currentTimeMillis();
-        System.out.println("ct:" + ct);
-        String code = ManagerHelper.generatorCode("1666643531@sina.sohu.com", clientId, serverSecret, ct);
+//        long ct = System.currentTimeMillis();
+//        System.out.println("ct:" + ct);
+        String ct =  "1381915491000";
+        String code = ManagerHelper.generatorCodeGBK(userid, clientId, serverSecret, Long.parseLong(ct));
         System.out.println("code:" + code);
 
         /*try {
@@ -59,5 +60,12 @@ public class ManagerHelperTest extends BaseTest {
         System.out.println(str.matches("^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$"));
         //限制输入含有特定字符的
         //System.out.println(str.matches("^(?!.*搜狗)(?!.*sogou)(?!.*sougou).*$"));
+    }
+
+    @Test
+    public void testEmail() {
+        String email = "t5y-.uku@-163.com";
+        String regex = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
+        System.out.println(email.matches(regex));
     }
 }

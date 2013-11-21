@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
@@ -65,20 +66,12 @@ public class LoginManagerImpl implements LoginManager {
                 }
             }
             //校验username是否在账户黑名单中
-            if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
-                //是否在白名单中
-                if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                    return result;
-                }
+            if(isLoginUserInBlackList(username,ip)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result;
             }
 
-            //默认是sogou.com
-            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-                passportId = passportId + "@sogou.com";
-            }
-
+            passportId =  getIndividPassportIdByUsername(username);
             //封装参数
             AuthUserApiParams authUserApiParams = new AuthUserApiParams();
             authUserApiParams.setUserid(passportId);
@@ -93,7 +86,7 @@ public class LoginManagerImpl implements LoginManager {
 
             //记录返回结果
             if (result.isSuccess()) {
-                result = commonManager.createCookieUrl(result, passportId, loginParameters.getAutoLogin());
+                result = commonManager.createCookieUrl(result, passportId,"", loginParameters.getAutoLogin());
                 //设置来源
                 String ru = loginParameters.getRu();
                 if (Strings.isNullOrEmpty(ru)) {
@@ -122,6 +115,18 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
+    public boolean isLoginUserInBlackList(final String username, final String ip) {
+        //校验username是否在账户黑名单中
+        if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
+            //是否在白名单中
+            if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
         //记录登陆次数
         operateTimesService.incLoginTimes(username, ip,true);
@@ -132,6 +137,15 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public void doAfterLoginFailed(final String username, final String ip) {
         operateTimesService.incLoginTimes(username, ip,false);
+    }
+
+    @Override
+    public String getIndividPassportIdByUsername(String username) {
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
+        if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
+            return (username + "@sogou.com");
+        }
+        return username;
     }
 }
 

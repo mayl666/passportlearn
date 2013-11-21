@@ -84,7 +84,7 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createCookieUrl(Result result, String passportId, int autoLogin) {
+    public Result createCookieUrl(Result result, String passportId,String domain, int autoLogin) {
         // 种sohu域cookie
 
         String scheme = "https";
@@ -102,13 +102,37 @@ public class CommonManagerImpl implements CommonManager {
         createCookieUrlApiParams.setUserid(passportIdTmp);
         createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
-        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
+        createCookieUrlApiParams.setDomain(domain);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true,true);
         if (createCookieResult.isSuccess()) {
             result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
+    }
+
+    @Override
+    public Result createCookieUrl(String passportId, int autoLogin){
+        Result result = new APIResultSupport(false);
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu(COOKIE_URL_RU);
+        createCookieUrlApiParams.setPersistentcookie(autoLogin);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true, true);
+        if (createCookieResult.isSuccess()) {
+            result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
+            result.setSuccess(true);
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+        }
+        return result;
+
+    }
+
+    @Override
+    public void incRegTimesForInternal(String ip) {
+        operateTimesService.incRegTimesForInternal(ip);
     }
 
     @Override

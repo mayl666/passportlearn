@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 
@@ -42,12 +43,12 @@ public class ResetPwdAction extends BaseController {
     // TODO:暂时不用
 
     @RequestMapping(method = RequestMethod.GET)
-    public String findPwdView(String ru) throws Exception {
+    public String findPwdView(String ru, RedirectAttributes redirectAttributes) throws Exception {
         if (Strings.isNullOrEmpty(ru)) {
-            return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        } else {
-            return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + URLEncoder.encode(ru, "UTF-8");
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
+        redirectAttributes.addAttribute("ru", ru);
+        return "redirect:" + SOHU_FINDPWD_URL + "?ru={ru}";
     }
 
 /*    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)

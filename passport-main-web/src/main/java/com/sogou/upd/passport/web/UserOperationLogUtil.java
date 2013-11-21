@@ -2,14 +2,17 @@ package com.sogou.upd.passport.web;
 
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ApiGroupUtil;
+
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import org.apache.commons.collections.MapUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +20,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -33,6 +38,9 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLogger = LoggerFactory.getLogger("userLoggerAsync");
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
+
+    private static String NEXTLINE = "%0A"; // \n换行符的UTF-8编码
+    private static String TAB = "%09"; // \t制表符的UTF-8编码
 
     private static final Logger logger = LoggerFactory.getLogger(UserOperationLogUtil.class);
 
@@ -86,7 +94,7 @@ public class UserOperationLogUtil {
             //log.append(timestamp);
             log.append(new SimpleDateFormat("HH:mm:ss").format(date));
             log.append("\t").append(StringUtil.defaultIfEmpty(getLocalIp(request), "-"));
-            log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-").replace("\t", " "));  // 防止恶意用户调用接口输入非法用户名
+            log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-").replace("\t", TAB).replace("\n", NEXTLINE));  // 防止恶意用户调用接口输入非法用户名
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             String domainStr = domain.toString();
@@ -124,11 +132,11 @@ public class UserOperationLogUtil {
                 log.append("\t-\t-");
             } else {
                 String referer = otherMessage.remove("ref");
-                log.append("\t").append(StringUtil.defaultIfEmpty(referer, "-"));
+                log.append("\t").append(StringUtil.defaultIfEmpty(referer, "-").replace("\t", TAB).replace("\n", NEXTLINE));
 
                 String otherMsgJson = null;
                 if (MapUtils.isNotEmpty(otherMessage)) {
-                    otherMsgJson= JacksonJsonMapperUtil.getMapper().writeValueAsString(otherMessage).replace("\t", " ");
+                    otherMsgJson= JacksonJsonMapperUtil.getMapper().writeValueAsString(otherMessage).replace("\t", TAB).replace("\n", NEXTLINE);
                 }
                 log.append("\t").append(StringUtil.defaultIfEmpty(otherMsgJson, "-"));
             }

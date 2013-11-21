@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -47,7 +48,7 @@ public class TokenGenerator {
             throws Exception {
 
         // 过期时间点
-        long vaildTime = generatorVaildTime(expiresIn);
+        long vaildTime = DateUtil.generatorVaildTime(expiresIn);
 
         // 4位随机数
         String random = RandomStringUtils.randomAlphanumeric(4);
@@ -93,27 +94,25 @@ public class TokenGenerator {
      */
     public static String generatorPcToken(String passportId, int expiresIn, String clientSecret)
             throws Exception {
-
         // 过期时间点
-        long vaildTime = generatorVaildTime(expiresIn);
+        long vaildTime = DateUtil.generatorVaildTime(expiresIn);
         String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
         String token;
         try {
-            token = AES.encryptURLSafeString(tokenContent, clientSecret);
+            //加上4为随机数，是为了与sohu+ token长度区别开来
+            token = RandomStringUtils.randomAlphanumeric(4) + AES.encryptURLSafeString(tokenContent, clientSecret);
         } catch (Exception e) {
             logger.error("Pc Token generator by AES fail, passportId:" + passportId);
             throw e;
         }
         return token;
     }
-
-    /**
-     * 生成过期时间点
-     */
-    public static long generatorVaildTime(int expiresIn) {
-        DateTime dateTime = new DateTime();
-        long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
-        return vaildTime;
+    //sohu生成token算法
+    public static String generateSoHuPcToken(String passportId, int expiresIn, String clientSecret)
+            throws Exception {
+        String refreshToken = RandomStringUtils.randomAlphanumeric(CommonConstant.SOHU_PCTOKEN_LEN);
+        return refreshToken;
     }
+
 
 }

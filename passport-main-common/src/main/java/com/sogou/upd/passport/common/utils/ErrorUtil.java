@@ -48,8 +48,8 @@ public class ErrorUtil {
     public static final String UNSUPPORTED_GRANT_TYPE = "103";
     //unsupported_response_type
     public static final String UNSUPPORTED_RESPONSE_TYPE = "104";
-    // invalid_resource_type
-    public static final String INVALID_RESOURCE_TYPE = "105";
+    // invalid_scope
+//    public static final String INVALID_SCOPE = "105";
     // insufficient_scope
 //    public static final String INSUFFICIENT_SCOPE = "106";
     // expired_token
@@ -66,14 +66,8 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
     /* ============================================================================ */
-    //暂不支持邮箱注册
-    public static final String ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED = "20197";
-    //当日用户原密码校验错误次数已达上限
-    public static final String ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD = "20198";
-    //重新发送激活邮件失败
-    public static final String ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED = "20199";
-    //注册失败
-    public static final String ERR_CODE_REGISTER_USER_UNUSUAL = "20200";
+    //注册异常
+    public static final String ERR_CODE_REGISTER_UNUSUAL = "20200";
     // 帐号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
     // 短信发送已达今天的最高上限20条
@@ -216,30 +210,8 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
     /* ============================================================================ */
-    //不支持的图片后缀
-    public static final String ERR_CODE_PHOTO_EXT = "20296";
-    //图片过大
-    public static final String ERR_CODE_PHOTO_TO_LARGE = "20297";
-    //图片上传失败
-    public static final String ERR_CODE_UPLOAD_PHOTO = "20298";
-    //获取图像失败
-    public static final String ERR_CODE_OBTAIN_PHOTO = "20299";
     // 字段非法
     public static final String ERR_CODE_PROFILE_FIELD = "20301";
-    //用户信息获取失败
-    public static final String ERR_CODE_GET_USER_INFO = "20302";
-    //不支持的图片尺寸
-    public static final String ERR_CODE_ERROR_IMAGE_SIZE = "20303";
-
-    //不支持的图片后缀
-    public static final String ERR_PHOTO_EXT = "20296";
-    //图片过大
-    public static final String ERR_PHOTO_TO_LARGE = "20297";
-    //图片上传失败
-    public static final String ERR_UPLOAD_PHOTO = "20298";
-    //获取图像失败
-    public static final String ERR_OBTAIN_PHOTO = "20299";
-
 
     /* ============================================================================ */
     /*  Connect通用的错误代码                                                        */
@@ -307,10 +279,6 @@ public class ErrorUtil {
     //用户提及反馈的次数超限
     public static final String ERR_CODE_PROBLEM_ADDTIMES_LIMITED = "30605";
 
-    public ErrorUtil() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
     static {
         // 通用错误
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
@@ -322,23 +290,19 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_REFRESH_TOKEN, "refresh_token错误");
-        ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN, "签名或token验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN,"签名或token验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
         ERR_CODE_MSG_MAP.put(UNSUPPORTED_GRANT_TYPE, "不支持的grant_type");
-        ERR_CODE_MSG_MAP.put(INVALID_RESOURCE_TYPE, "不支持的resource_type");
         ERR_CODE_MSG_MAP.put(INVALID_REFRESH_TOKEN, "refresh_token不存在或过期");
         ERR_CODE_MSG_MAP.put(AUTHORIZE_FAIL, "授权失败");
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "账号或密码错误");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED, "暂不支持邮箱注册");
 
         // account
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD, "用户当日原密码校验错误次数已达上限!");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED, "重新发送激活邮件失败!");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_USER_UNUSUAL, "注册失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_UNUSUAL, "注册失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");
@@ -416,19 +380,7 @@ public class ErrorUtil {
 
 
         // profile
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_EXT, "不支持的图片后缀");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_TO_LARGE, "上传图片过大，不能超过3M");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_UPLOAD_PHOTO, "上传图片失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_OBTAIN_PHOTO, "获取图像失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_GET_USER_INFO, "用户信息获取失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_IMAGE_SIZE, "不支持的图片尺寸");
-
-        ERR_CODE_MSG_MAP.put(ERR_PHOTO_EXT, "不支持的图片后缀");
-        ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过3M");
-        ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
-        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
-
 
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");

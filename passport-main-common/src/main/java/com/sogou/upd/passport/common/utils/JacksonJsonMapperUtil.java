@@ -4,9 +4,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * Created with IntelliJ IDEA.
- * User: shipengzhi
- * Date: 13-9-14
- * Time: 下午3:51
+ * User: chenjiameng
+ * Date: 13-10-9
+ * Time: 上午11:21
  * To change this template use File | Settings | File Templates.
  */
 public class JacksonJsonMapperUtil {

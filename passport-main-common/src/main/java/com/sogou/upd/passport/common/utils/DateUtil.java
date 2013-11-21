@@ -8,6 +8,7 @@ package com.sogou.upd.passport.common.utils;
  */
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -252,4 +253,13 @@ public class DateUtil {
                 }
             };
     static final Date _emptyDate = new Date(0);
+
+    /**
+     * 生成token过期时间点
+     */
+    public static long generatorVaildTime(int expiresIn) {
+        DateTime dateTime = new DateTime();
+        long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
+        return vaildTime;
+    }
 }

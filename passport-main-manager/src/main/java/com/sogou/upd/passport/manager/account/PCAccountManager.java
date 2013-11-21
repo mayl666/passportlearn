@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 
@@ -39,11 +40,14 @@ public interface PCAccountManager {
     public Result authToken(PcAuthTokenParams authPcTokenParams);
 
     /**
-     * 验证refreshtoken是否正确
-     * @param pcRefreshTokenParams
+     *验证refreshtoken是否正确
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
      * @return
      */
-    public boolean verifyRefreshToken(PcRefreshTokenParams pcRefreshTokenParams);
+    public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken);
 
     /**
      * 获取sig
@@ -64,19 +68,18 @@ public interface PCAccountManager {
     public Result createConnectToken(int clientId, String passportId, String instanceId);
 
     /**
-     * 只生成token
-     * @param clientId
+     * 从浏览器论坛获取用户昵称
+     * 如果为空，则返回用户名@前面一段
      * @param passportId
-     * @param instanceId
      * @return
      */
-    public Result createAccountToken(String passportId, String instanceId,int  clientId);
+    public String getBrowserBbsUniqname(String passportId);
 
     /**
-     *通过token获取passportId
-     * @param token
+     * 通过clientId获取不同的昵称
+     * @param passportId
      * @param clientId
      * @return
      */
-    public Result queryPassportIdByAccessToken(String token,int clientId);
+    public String getUniqnameByClientId(String passportId,int clientId);
 }

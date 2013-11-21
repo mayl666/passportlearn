@@ -1,24 +1,23 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.common.utils.BeanUtil;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
-import org.apache.commons.collections.MapUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,16 +28,10 @@ import java.util.Set;
  * Date: 13-6-13
  * Time: 上午11:20
  */
-@Component("proxyUserInfoApiManager")
+@Component("proxyUserInfoApiManagerImpl")
 public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
     private static Set<String> SUPPORT_FIELDS_MAP = null;
-    @Autowired
-    private RedisUtils redisUtils;
-    @Inject
-    private PhotoUtils photoUtils;
-    @Autowired
-    private AccountInfoManager accountInfoManager;
 
     static {
         SUPPORT_FIELDS_MAP = new HashSet<>(8);
@@ -52,103 +45,25 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("personalid");//身份证号
         SUPPORT_FIELDS_MAP.add("username"); //用户真实姓名
         SUPPORT_FIELDS_MAP.add("uniqname"); //用户昵称
-        SUPPORT_FIELDS_MAP.add("avatarurl"); //用户头像
     }
 
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
-        Result result = null;
-        try {
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            String fields = getUserInfoApiparams.getFields();
-            String[] fieldList = fields.split(",");
-            for (String field : fieldList) {
-                if (SUPPORT_FIELDS_MAP.contains(field)) {
-                    requestModelXml.addParam(field, "");
-                }
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        String fields = getUserInfoApiparams.getFields();
+        String[] fieldList = fields.split(",");
+        for (String field : fieldList) {
+            if (SUPPORT_FIELDS_MAP.contains(field)) {
+                requestModelXml.addParam(field, "");
             }
-            requestModelXml.addParams(getUserInfoApiparams);
-            requestModelXml.deleteParams("imagesize");
-
-            if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
-                requestModelXml.addParam("usertype", 1);
-            }
-            requestModelXml.deleteParams("fields");
-            requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
-            result = this.executeResult(requestModelXml);
-
-            if (result.isSuccess()) {
-                //替换搜狐的个人头像
-                String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
-                String image = Strings.isNullOrEmpty(avatarurl) ? null : avatarurl.replaceAll("\\/\\/", "");
-
-                String passportId = getUserInfoApiparams.getUserid();
-                if(!Strings.isNullOrEmpty(image)){
-                    image=image.substring(image.indexOf("/"),image.length());
-
-                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-
-                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
-                    if (MapUtils.isNotEmpty(map)) {
-                        String shImg = map.get("shImg");
-                        String sgImg = map.get("sgImg");
-
-                        //验证sohu修改图片后，搜狗自动更新
-                        if (!Strings.isNullOrEmpty(shImg) && !shImg.equals(image)) {
-                            //获取图片名
-                            String imgName = photoUtils.generalFileName();
-                            // 上传到OP图片平台   sohu头像暂时用 a1.itc.cn域名
-                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
-                                sgImg = photoUtils.accessURLTemplate(imgName);
-                                Map<String, String> mapResult = Maps.newHashMap();
-                                mapResult.put("shImg", image);
-                                mapResult.put("sgImg", sgImg);
-
-                                redisUtils.hPutAll(cacheKey, mapResult);
-                            } else {
-                                result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
-                                return result;
-                            }
-                        }
-                    } else {
-                        if(!Strings.isNullOrEmpty(image)){
-                            //获取图片名
-                            String imgName = photoUtils.generalFileName();
-                            // 上传到OP图片平台
-                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
-                                String sgImg = photoUtils.accessURLTemplate(imgName);
-                                Map<String, String> mapResult = Maps.newHashMap();
-                                mapResult.put("shImg", image);
-                                mapResult.put("sgImg", sgImg);
-
-                                redisUtils.hPutAll(cacheKey, mapResult);
-                            }
-                        }
-                    }
-                    Result photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
-                    Map photoMap = photoResult.getModels();
-                    result.setDefaultModel("avatarurl", photoMap);
-
-                } else{
-                    //搜狐头像为空返回默认头像
-                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-
-                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
-                    Result photoResult=null;
-                    if(MapUtils.isNotEmpty(map)) {
-                        photoResult = accountInfoManager.obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
-                    } else {
-                        photoResult = accountInfoManager.obtainPhoto(Integer.toString(getUserInfoApiparams.getClient_id()), getUserInfoApiparams.getImagesize());
-                    }
-
-                    Map photoMap = photoResult.getModels();
-                    result.setDefaultModel("avatarurl", photoMap);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        requestModelXml.addParams(getUserInfoApiparams);
+        if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
+            requestModelXml.addParam("usertype", 1);
+        }
+        requestModelXml.deleteParams("fields");
+        requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
+        Result result = this.executeResult(requestModelXml);
         return getUserInfoResultHandel(result);
     }
 
@@ -228,16 +143,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             userid += "@sohu.com";
             updateUserInfoApiParams.setUserid(userid);
         }
-        //
-//        try {
-        if (!Strings.isNullOrEmpty(updateUserInfoApiParams.getUniqname()))
-//            updateUserInfoApiParams.setUniqname(new String(updateUserInfoApiParams.getUniqname().getBytes("UTF-8"),"gbk"));
-            updateUserInfoApiParams.setUniqname(updateUserInfoApiParams.getUniqname());
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-
-//        RequestModelXmlGBK requestModelXml = new RequestModelXmlGBK(SHPPUrlConstant.UPDATE_USER_INFO, "register");
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "info");
         Map<String, Object> fields = BeanUtil.beanDescribe(updateUserInfoApiParams);
         for (Map.Entry<String, Object> entry : fields.entrySet()) {
@@ -270,10 +175,10 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "checkuniqname");
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
         requestModelXml.addParams(updateUserUniqnameApiParams);
         Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
-        if (result.isSuccess()) {
+        if(result.isSuccess()){
             result.setMessage("昵称未被占用");
         }
         return result;

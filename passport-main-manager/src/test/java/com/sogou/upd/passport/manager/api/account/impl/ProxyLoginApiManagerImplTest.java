@@ -51,31 +51,23 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testCreateCookie(){
-        CreateCookieApiParams createCookieApiParams=new CreateCookieApiParams();
-        createCookieApiParams.setUserid(userid);
-        createCookieApiParams.setIp(modifyIp);
-        Result result = proxyLoginApiManager.createCookie(createCookieApiParams);
-        System.out.println(result);
-    }
-
-    @Test
     public void testGetCookieValue() {
-        CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid("shipengzhi1986@sogou.com");
 //        createCookieUrlApiParams.setRu("https://account.sogou.com/login/success");
         createCookieUrlApiParams.setPersistentcookie(1);
+        createCookieUrlApiParams.setDomain("sogou.com");
         Result result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
         System.out.println(result);
     }
 
     @Test
-    public void testBuildCreateCookieUrl(){
-        CreateCookieUrlApiParams createCookieUrlApiParams=new CreateCookieUrlApiParams();
+    public void testBuildCreateCookieUrl() {
+        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(userid);
         createCookieUrlApiParams.setRu("https://account.sogou.com/login/success");
         createCookieUrlApiParams.setPersistentcookie(1);
-        Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams,false);
+        Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, false, true);
         System.out.println(result);
     }
 }

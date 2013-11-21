@@ -96,6 +96,18 @@
         <appender-ref ref="redisMissAppender" />
     </logger>
 
+    <appender name="tokenRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/tokenRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="tokenRedisMissLogger" level="info" additivity="false">
+        <appender-ref ref="tokenRedisMissAppender" />
+    </logger>
+
     <!--start:httpClient性能log-->
     <appender name="httpclientFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -150,6 +162,25 @@
     </appender>
     <logger name="rediesTimingLogger" level="info" additivity="false">
         <appender-ref ref="rediesCoalescingStatistics" />
+    </logger>
+    <!--end:web服务器性能log-->
+
+    <!--start:redies请求log-->
+    <appender name="tokenRediesPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/tokenRedies/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="tokenRediesCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000" />
+        <appender-ref ref="tokenRediesPerfFileAppender" />
+    </appender>
+    <logger name="tokenRediesTimingLogger" level="info" additivity="false">
+        <appender-ref ref="tokenRediesCoalescingStatistics" />
     </logger>
     <!--end:web服务器性能log-->
 

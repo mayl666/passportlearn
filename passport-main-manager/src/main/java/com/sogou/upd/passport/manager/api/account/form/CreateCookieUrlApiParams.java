@@ -22,13 +22,7 @@ public class CreateCookieUrlApiParams {
     //是否使用持久cookie 0:session级别的cookie 1:长时间有效的cookie，目前是两周
     private int persistentcookie;
 
-    public CreateCookieUrlApiParams(){}
-
-    public CreateCookieUrlApiParams(String userid, String ru, int persistentcookie) {
-        this.userid = userid;
-        this.ru = ru;
-        this.persistentcookie = persistentcookie;
-    }
+    private String domain;
 
     public String getUserid() {
         return userid;
@@ -52,5 +46,13 @@ public class CreateCookieUrlApiParams {
 
     public void setPersistentcookie(int persistentcookie) {
         this.persistentcookie = persistentcookie;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 }
