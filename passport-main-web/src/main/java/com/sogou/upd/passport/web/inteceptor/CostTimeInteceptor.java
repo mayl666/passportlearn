@@ -61,7 +61,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             if(Strings.isNullOrEmpty(client_id)){
                 client_id=request.getParameter(CommonConstant.APP_ID);
             }
-            int clientId = Integer.parseInt(client_id);
+            int clientId = Integer.parseInt(Strings.isNullOrEmpty(client_id)?"1120":client_id);
 
             //获取url
             String url = request.getRequestURI();
