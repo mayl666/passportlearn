@@ -170,7 +170,7 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
 
     private Result getAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result result = new APIResultSupport(false);
-        AccountToken accountToken = pcAccountService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
+        AccountToken accountToken = pcAccountService.initialAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
         if (accountToken != null) {
             result.setSuccess(true);
             result.setDefaultModel(accountToken);

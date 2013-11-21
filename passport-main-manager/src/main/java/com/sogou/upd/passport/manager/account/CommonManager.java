@@ -52,6 +52,14 @@ public interface CommonManager {
     public Result createCookieUrl(Result result, String passportId, String domain,int autoLogin);
 
     /**
+     * 用户注册时ip次数的累加
+     *
+     * @param ip
+     * @param uuidName
+     */
+    public void incRegTimes(String ip, String uuidName);
+
+    /**
      * 只根据 passportId和autoLogin生成cookie  URL
      * @param passportId
      * @param autoLogin

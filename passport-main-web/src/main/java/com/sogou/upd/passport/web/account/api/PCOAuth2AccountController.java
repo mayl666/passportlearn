@@ -195,7 +195,7 @@ public class PCOAuth2AccountController extends BaseController {
             if (!result.isSuccess()) {
                 if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
-                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_USER_UNUSUAL);
+                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                     return result.toString();
                 }
             }

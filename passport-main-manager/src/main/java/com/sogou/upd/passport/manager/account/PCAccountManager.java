@@ -82,4 +82,21 @@ public interface PCAccountManager {
      * @return
      */
     public String getUniqnameByClientId(String passportId,int clientId);
+
+    /**
+     * 创建账号account
+     * @param passportId
+     * @param instanceId
+     * @param clientId
+     * @return
+     */
+    public Result createAccountToken(String passportId, String instanceId,int  clientId);
+
+    /**
+     *通过token获取passportId
+     * @param token
+     * @param clientId
+     * @return
+     */
+    public Result queryPassportIdByAccessToken(String token,int clientId);
 }

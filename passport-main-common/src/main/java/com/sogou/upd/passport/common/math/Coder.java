@@ -94,6 +94,17 @@ public class Coder {
     }
 
     /**
+     * BASE64加密
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public static String encryptBase64(String key) throws UnsupportedEncodingException {
+        return Base64.encodeBase64String(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+    }
+
+    /**
      * MD5加密
      *
      * @param data

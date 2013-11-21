@@ -42,7 +42,7 @@ public class RSA extends Coder {
      */
     public static byte[] encryptByPublicKey(byte[] data, String key) throws Exception {
         // 对公钥解密
-        byte[] keyBytes = decryptBase64(key);
+        byte[] keyBytes = decryptBASE64(key);
 
         // 取得公钥
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
@@ -67,7 +67,7 @@ public class RSA extends Coder {
      */
     public static byte[] encryptByPrivateKey(byte[] data, String key) throws Exception {
         // 对密钥解密
-        byte[] keyBytes = decryptBase64(key);
+        byte[] keyBytes = decryptBASE64(key);
 
         // 取得私钥
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
@@ -92,7 +92,7 @@ public class RSA extends Coder {
      */
     public static String decryptByPrivateKey(byte[] data, String key) throws Exception {
         // 对密钥解密
-        byte[] keyBytes = decryptBase64(key);
+        byte[] keyBytes = decryptBASE64(key);
 
         // 取得私钥
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
@@ -119,7 +119,7 @@ public class RSA extends Coder {
      */
     public static String decryptByPublicKey(byte[] data, String key) throws Exception {
         // 对密钥解密
-        byte[] keyBytes = decryptBase64(key);
+        byte[] keyBytes = decryptBASE64(key);
 
         // 取得公钥
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
@@ -140,7 +140,7 @@ public class RSA extends Coder {
      */
     public static String sign(String data, String privateKey) throws Exception {
         // 解密由base64编码的私钥
-        byte[] keyBytes = decryptBase64(privateKey);
+        byte[] keyBytes = decryptBASE64(privateKey);
 
         // 构造PKCS8EncodedKeySpec对象
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
@@ -165,7 +165,7 @@ public class RSA extends Coder {
     public static boolean verify(String data, String publicKey, String sign) throws Exception {
 
         // 解密由base64编码的公钥
-        byte[] keyBytes = decryptBase64(publicKey);
+        byte[] keyBytes = decryptBASE64(publicKey);
 
         // 构造X509EncodedKeySpec对象
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
@@ -181,7 +181,7 @@ public class RSA extends Coder {
         signature.update(data.getBytes());
 
         // 验证签名是否正常
-        return signature.verify(decryptBase64(sign));
+        return signature.verify(decryptBASE64(sign));
     }
 
     /**
@@ -248,7 +248,7 @@ public class RSA extends Coder {
      * @throws Exception
      */
     public static String[] decryptAccessToken(String accessToken) throws Exception {
-        byte[] tokenByte = Coder.decryptBase64(accessToken);
+        byte[] tokenByte = Coder.decryptBASE64(accessToken);
         String decryTokenStr = RSA.decryptByPublicKey(tokenByte, PUBLIC_KEY);
         return decryTokenStr.split("|");
     }

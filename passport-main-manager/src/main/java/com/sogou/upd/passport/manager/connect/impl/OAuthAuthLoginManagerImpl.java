@@ -246,8 +246,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         result.setSuccess(true);
-                        String uniqname = (String) connectAccountResult.getModels().get("uniqname");
-                        ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
+                        String uniqnameTmp = (String) connectAccountResult.getModels().get("uniqname");
+                        ManagerHelper.setModelForOAuthResult(result, uniqnameTmp, accountToken, providerStr);//todo 确认该方法中传入的uniqname是否正确
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");

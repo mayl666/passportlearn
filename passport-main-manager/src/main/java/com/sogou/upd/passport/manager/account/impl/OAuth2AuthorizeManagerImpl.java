@@ -146,7 +146,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
-            renewAccountToken = pcAccountTokenService.initialOrUpdateAccountToken(passportId, instanceId, appConfig);
+            renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());

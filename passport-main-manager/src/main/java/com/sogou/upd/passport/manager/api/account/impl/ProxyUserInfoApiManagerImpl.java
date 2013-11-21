@@ -28,7 +28,7 @@ import java.util.Set;
  * Date: 13-6-13
  * Time: 上午11:20
  */
-@Component("proxyUserInfoApiManagerImpl")
+@Component("proxyUserInfoApiManager")
 public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
     private static Set<String> SUPPORT_FIELDS_MAP = null;

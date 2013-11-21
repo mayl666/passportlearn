@@ -136,24 +136,6 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createCookieUrl(String passportId, int autoLogin){
-        Result result = new APIResultSupport(false);
-        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-        createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu(COOKIE_URL_RU);
-        createCookieUrlApiParams.setPersistentcookie(autoLogin);
-        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true);
-        if (createCookieResult.isSuccess()) {
-            result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
-            result.setSuccess(true);
-        } else {
-            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-        }
-        return result;
-
-    }
-
-    @Override
     public void incRegTimes(String ip, String cookieStr) {
         operateTimesService.incRegTimes(ip, cookieStr);
     }

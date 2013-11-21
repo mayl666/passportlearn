@@ -106,7 +106,12 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result cookieResult;
         Map resourceMap = Maps.newHashMap();
         try {
-            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            String passportId = null;
+            try {
+                passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             if (!Strings.isNullOrEmpty(passportId)) {
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams(passportId,
                         CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1);
@@ -151,7 +156,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new OAuthResultSupport(false);
         Map resourceMap = Maps.newHashMap();
         try {
-            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            String passportId="";
+            try {
+                passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
+            }catch (Exception ex){
+
+            }
+
             if (!Strings.isNullOrEmpty(passportId)) {
                 String fields = "sec_email,uniqname,avatarurl";
                 String imagesize = "180,55";

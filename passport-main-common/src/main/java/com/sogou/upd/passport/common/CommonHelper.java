@@ -67,6 +67,24 @@ public class CommonHelper {
         return clientId == CommonConstant.PINYIN_MAC_CLIENTID;
     }
 
+    /**
+     * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
+     * @param passportId passport内部传输的用户id
+     * @return
+     */
+    public static boolean isInvokeProxyApi(String passportId){
+        return true;
+//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
+    }
+
+    /**
+     * 是否生成搜狗新cookie
+     * @return
+     */
+    public static boolean isBuildNewCookie(){
+        return false;
+    }
+
     /*public static void recordTimestamp(long start, String msg) {
         long end = System.currentTimeMillis();
         long costTime = end -start;
