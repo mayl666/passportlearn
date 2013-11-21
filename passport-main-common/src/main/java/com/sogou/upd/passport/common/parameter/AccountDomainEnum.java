@@ -94,15 +94,6 @@ public enum AccountDomainEnum {
         }
 
     }
-    //转换成内部处理的大小写格式
-    public static String getInternalCase(String userId) {
-        String internalCaseUserId = userId;
-        if (AccountDomainEnum.THIRD != AccountDomainEnum.getAccountDomain(userId)) {
-            internalCaseUserId = userId.toLowerCase();
-        }
-        return internalCaseUserId;
-    }
-
     //获取内部大小写的处理方式：第三方除外，其他账号都按小写处理
     public static String  getInternalCase(String userId){
         if (userId.endsWith("@focus.cn")){

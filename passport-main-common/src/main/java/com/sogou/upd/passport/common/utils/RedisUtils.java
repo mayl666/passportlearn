@@ -54,6 +54,15 @@ public class RedisUtils {
         }
     }
 
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hIncrByTimes", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    public void hIncrByTimes(String cacheKey, String key,long time) {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.increment(key, time);
+        } catch (Exception e) {
+            logger.error("[Cache] hIncr num cache fail, key:" + cacheKey + "value:" + key, e);
+        }
+    }
     /*
     * 设置缓存内容
     */
