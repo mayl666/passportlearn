@@ -87,6 +87,22 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private HostHolder hostHolder;
 
+
+    //https://plus.sohu.com/sogou/fastreg?instanceid=220946462
+    @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
+    public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
+        model.addAttribute("instanceid", instanceid);
+        model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
+        return "/oauth2pc/fastreg";
+    }
+    //https://plus.sohu.com/sogou/mobilereg?instanceid=220946462
+    @RequestMapping(value = "/sogou/mobilereg", method = RequestMethod.GET)
+    public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
+        model.addAttribute("instanceid", instanceid);
+        model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
+        return "/oauth2pc/mobilereg";
+    }
+
     /**
      * sohu+登录注册主窗口
      *
