@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.action;
+package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.WapConstant;
@@ -20,14 +20,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.servlet.view.velocity.VelocityLayoutView;
-import org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver;
-import org.springframework.web.servlet.view.velocity.VelocityView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,8 +34,7 @@ import javax.servlet.http.HttpServletResponse;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-public class WapAccountController extends BaseController {
-    private static final String WAP_INDEX = "http://wap.sogou.com/";
+public class WapLoginAction extends BaseController {
 
     @Autowired
     private LoginManager loginManager;
@@ -70,7 +66,6 @@ public class WapAccountController extends BaseController {
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type","text/vnd.wap.wml;charset=utf-8");
-//            return "redirect:/static/wml/index_simple.wml";
             return "wap/index_simple";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
@@ -83,7 +78,7 @@ public class WapAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(ru)) {
             return (ru + "?errorMsg=" + errorMsg);
         }
-        return WAP_INDEX + "?errorMsg=" + errorMsg;
+        return WapConstant.WAP_INDEX + "?errorMsg=" + errorMsg;
     }
 
 
@@ -109,9 +104,9 @@ public class WapAccountController extends BaseController {
 
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
-            String accesstoken = result.getModels().get("token").toString();
+            String token = result.getModels().get("token").toString();
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-            response.sendRedirect(loginParams.getRu() + "?token=" + accesstoken);
+            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(),token));
             return "empty";
         } else {
             int isNeedCaptcha = 0;
@@ -128,6 +123,14 @@ public class WapAccountController extends BaseController {
             return getErrorReturnStr(loginParams,"用户名或者密码错误", isNeedCaptcha);
 
         }
+    }
+
+    private String getSuccessReturnStr(String ru, String token) {
+        String deRu = Coder.decodeUTF8(ru);
+        if (deRu.contains("?")) {
+            return deRu + "&token=" + token;
+        }
+        return deRu + "?token=" + token;
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams,String errorMsg, int isNeedCaptcha) {

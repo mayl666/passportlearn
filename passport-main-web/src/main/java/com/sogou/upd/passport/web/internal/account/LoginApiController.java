@@ -2,17 +2,19 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.api.account.form.ReNewCookieApiParams;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
+import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -49,6 +51,10 @@ public class LoginApiController extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private ConfigureManager configureManager;
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    @Autowired
+    private UserOpenApiManager proxyUserOpenApiManager;
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
@@ -182,13 +188,49 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
 //        // 调用内部接口
-//        result = proxyLoginApiManager.appAuthToken(params);
         result = wapLoginManager.authtoken(params.getToken());
+
+        String userid = "";
+        if (result.isSuccess()){
+            userid = (String) result.getModels().get("userid");
+            if(AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userid)
+                 && params.getUsethirdinfo() == WapConstant.USE_THIRD_INFO){
+                //获取第三方用户信息
+                UserOpenApiParams userOpenApiParams = new UserOpenApiParams();
+                userOpenApiParams.setOpenid(userid);
+                userOpenApiParams.setUserid(userid);
+                result = proxyUserOpenApiManager.getUserInfo(userOpenApiParams);
+            }else {
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userid);
+                result = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+                //转换结果格式
+                result = changeResult(result);
+            }
+        }
         // 获取记录UserOperationLog的数据
-        String userid = (String) result.getModels().get("userid");
         UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
+    }
+
+
+    private Result changeResult(Result result) {
+        Result userInfoResult = new APIResultSupport(true);
+        userInfoResult.setCode(result.getCode());
+        userInfoResult.setMessage(result.getMessage());
+        Map<String, Object> data = Maps.newHashMap();
+        Map<String, Object> value_data = Maps.newHashMap();
+        value_data.put("id","");
+        value_data.put("birthday",result.getModels().get("birthday").toString());
+        value_data.put("sex",result.getModels().get("gender").toString());
+        value_data.put("nick",result.getModels().get("uniqname").toString());
+        value_data.put("location",result.getModels().get("province").toString());
+        value_data.put("headurl",result.getModels().get("avatarurl").toString());
+        data.put("result",value_data);
+        data.put("userid",result.getModels().get("userid").toString());
+        userInfoResult.setModels(data);
+        return userInfoResult;
     }
 
 }
