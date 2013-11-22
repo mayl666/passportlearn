@@ -16,6 +16,8 @@ public class PCOAuth2LoginParams {
     @NotBlank(message = "密码不能为空")
     private String pwd;
 
+    private int pwdtype = CommonConstant.PWD_TYPE_CIPHER; //密码类型，1为md5后的口令，缺省为密文
+
     private int rememberMe=0;
     private String instanceid = "";  //客户端的实例id
     private int client_id= CommonConstant.PC_CLIENTID;
@@ -77,5 +79,13 @@ public class PCOAuth2LoginParams {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public int getPwdtype() {
+        return pwdtype;
+    }
+
+    public void setPwdtype(int pwdtype) {
+        this.pwdtype = pwdtype;
     }
 }

@@ -300,6 +300,7 @@ public class PCOAuth2AccountController extends BaseController {
         WebLoginParams webLoginParams = new WebLoginParams();
         webLoginParams.setUsername(username);
         webLoginParams.setPassword(loginParams.getPwd());
+        webLoginParams.setPwdtype(loginParams.getPwdtype());
         webLoginParams.setCaptcha(loginParams.getCaptcha());
         webLoginParams.setToken(loginParams.getToken());
         webLoginParams.setClient_id(String.valueOf(loginParams.getClient_id()));

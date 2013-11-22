@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
@@ -34,7 +35,7 @@ public class WebLoginParams {
     @NotBlank(message = "请输入密码！")
     private String password;
 
-
+    private int pwdtype = CommonConstant.PWD_TYPE_EXPRESS; //密码类型，1为md5后的口令，缺省为明文密码
     /**
      * 是否自动登陆，自动登陆cookie时长设置两周
      */
@@ -43,9 +44,7 @@ public class WebLoginParams {
     /**
      * 验证码 用户连续3次登陆失败需要输入验证码
      */
-//  @NotBlank(message = "验证码不允许为空!")
     private String captcha;//验证码
-    //  @NotBlank(message = "标识码不允许为空!")
     private String token;//标识码
     @URL
     @Ru
@@ -56,27 +55,6 @@ public class WebLoginParams {
     private String client_id;
 
     private String xd; // 跨域通信所用字段，直接返回
-
-    /*@AssertTrue(message = "用户账号格式错误")
-    public boolean isCheckAccount() {
-        if (Strings.isNullOrEmpty(username)) {
-            return true;
-        }
-        if (username.indexOf("@") == -1) {
-            if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                //个性账号格式是否拼配
-                String regx = "[a-z]([a-zA-Z0-9_.-]{4,16})";
-                if (!username.matches(regx)) {
-                    return false;
-                }
-            }
-        } else {
-            //邮箱格式
-            String regex = "(\\w)+(\\.\\w+)*@([\\w_\\-])+((\\.\\w+)+)";
-            return username.matches(regex);
-        }
-        return true;
-    }*/
 
     public String getUsername() {
         return username;
@@ -147,5 +125,13 @@ public class WebLoginParams {
 
     public void setXd(String xd) {
         this.xd = xd;
+    }
+
+    public int getPwdtype() {
+        return pwdtype;
+    }
+
+    public void setPwdtype(int pwdtype) {
+        this.pwdtype = pwdtype;
     }
 }

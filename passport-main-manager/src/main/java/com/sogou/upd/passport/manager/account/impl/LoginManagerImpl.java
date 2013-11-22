@@ -52,7 +52,10 @@ public class LoginManagerImpl implements LoginManager {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();
-        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+        String pwdMD5 = password;
+        if(loginParameters.getPwdtype() == CommonConstant.PWD_TYPE_EXPRESS){
+            pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+        }
         String passportId = username;
         try {
             //校验验证码
