@@ -107,7 +107,7 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
                         $('div.vcode-area').show()
                     } else {
                         //TODO : In order to facilitate the test there used show-method which  should use hide-method
-                        $('div.vcode-area').show()
+                        $('div.vcode-area').hide()
                     }
 
                 })
