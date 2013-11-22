@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'/>
+    <title>搜狗浏览器</title>
+    <meta name="description" content="搜狗浏览器登录注册框">
+    <meta name="author" content="yinyong@sogou-inc.com">
+    <link href="/./static/css/oauth2pc/login.css?t=904135" rel="stylesheet" />
+    <!--[if IE 6]>
+    <link href="/./static/css/oauth2pc/ie6.css?t=301171" rel="stylesheet" />
+    <![endif]-->
+    <!--[if lte IE 9]>
+    <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
+    <![endif]-->
+    <script type="text/javascript" charset = "utf-8">
+var splus = {};
+splus.pwd_token = "e073fa1dd6f40445a4d0940b58828793";
+splus.bru = "";
+splus.login_history="";
+splus.instanceid="$instanceid";
+splus._timestamp="201306052045";
+</script>
+    <script src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
+    <!--[if IE 6]>
+    <script src="/./static/js/lib/almond/js/ie6.js?t="></script>
+    <![endif]-->
+    <script src="/./static/js/oauth2pc/sdk.js?appkey=21556307"></script>
+</head>
+<body>
+    
+    <div class="login-wrap">
+        <div class="login-ad"></div>
+        <div class="login-con">
+            <form id="fast_reg_form">
+                <fieldset>
+                    <legend>注册搜狗浏览器</legend>
+                    <div class="control-group">
+                        <div class="controls user-id">
+                            <input type="text" class="" placeholder="设置账号" name="sname" autocomplete="off" disableautocomplete>
+                            <span class="position-tips"></span>
+
+                        </div>
+                        <div class="controls">
+                            <input type="password" class="" placeholder="设置密码" name="password">
+                            <span class="position-tips"></span>
+                        </div>
+                    </div>
+                    <div class="control-group vcode-area" >
+                        <div class="controls">
+                            <div class="chkinput">
+                                <input type="text" name="vcode" maxlength="5" autocomplete="off" disableautocomplete/>
+                                <span class="position-tips"></span>
+                            </div>
+                            <div class="chkPic">
+                                <img width="100" src="/captcha">
+                                <span>
+                                    <a href="javascript:void(0);" class="blue">换一张</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="control-group reg-button clearfix">
+                    <div class="controls">
+                        <button class="btn btn-g" type="button">快速注册</button>
+                        <span class="reg-switch">
+                            <a href="/sogou/mobilereg?instanceid=${instanceid}">或用手机注册账号</a>
+                        </span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <p class="red out-error" style="display:none"></p>
+                    </div>
+                    <div class="controls position-bottom" style="display:">
+                        <div class="fr"> <i class="left-arrow"></i>
+                            <a href="/sogou/flogon?instanceid=${instanceid}" class="blue">已有账号直接登录</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>require(['pages/reg'])</script>
+
+</body>
+</html>

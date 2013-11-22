@@ -1,197 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset='utf-8'/>
     <title>搜狗浏览器</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <link href="//s5.suc.itc.cn/ux_sogou_member/v201308061701/asset/sogou/login.css?t=" rel="stylesheet" />
+    <meta name="description" content="搜狗浏览器登录注册框">
+    <meta name="author" content="yinyong@sogou-inc.com">
+    <link href="/./static/css/oauth2pc/login.css?t=904135" rel="stylesheet" />
     <!--[if IE 6]>
-    <link href="//s5.suc.itc.cn/ux_sogou_member/v201308061701/asset/sogou/ie6.css?t=" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc/ie6.css?t=301171" rel="stylesheet" />
     <![endif]-->
     <!--[if lte IE 9]>
-    <script src="//s5.suc.itc.cn/ux_sogou_member/v201308061701/js/html5.js?t="></script>
+    <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
     <![endif]-->
     <script type="text/javascript" charset = "utf-8">
 var splus = {};
 splus.pwd_token = "e073fa1dd6f40445a4d0940b58828793";
 splus.bru = "";
 splus.login_history="";
-splus.instanceid="${instanceid}";
-splus._timestamp="201308061701";
-splus.client_id="${client_id}";
+splus.instanceid="$instanceid";
+splus._timestamp="201306052045";
 </script>
     <script src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
-    <script src="//s5.suc.itc.cn/ux_sogou_member/js/lib/almond/js/ie6.js?t="></script>
+    <script src="/./static/js/lib/almond/js/ie6.js?t="></script>
     <![endif]-->
     <script src="/./static/js/oauth2pc/sdk.js?appkey=21556307"></script>
 </head>
 <body>
-    <div class="dl-wrap" >
-        <div class="login-wrap" style="display: none;">
-            <form id="login_form" autocomplete="off" disableautocomplete>
+    
+    <div class="login-wrap">
+        <div class="login-ad"></div>
+        <div class="login-con">
+            <form>
                 <fieldset>
                     <legend>搜狗账号登录</legend>
-                    <div class="error-tips" style="display: none;">您输入的账号有问题</div>
-                    <div class="login-control">
-                        <div class="user-id">
-                            <input type="text"  class="" placeholder="账号/手机/邮箱" id="user_acc" name="user_acc" tabindex="1">
-
-                            <a href="#" class="select-btn " onclick="this.className='select-btn selected'" style="display:none"></a>
-                            <div class="ppselecter" style="display:none"></div>
-
+                    <div class="control-group">
+                        <div class="controls user-id">
+                            <input type="text" placeholder="账号/手机/邮箱" name="account" autocomplete="off" disableautocomplete acceessKey='a' tabindex="1"/>
+                            <span class="position-tips"></span>
+                            <div class="ppselecter" style="display:none">
+                                <ul>
+                                    <li class="hover">
+                                        <div class="photo">
+                                            <img src="/./static/css/oauth2pc/img_defaultAvatar55.jpg"></div>
+                                        <div class="caption">
+                                            <p class="id">@myid</p>
+                                        </div>
+                                        <a href="#" class="del" title="删除">×</a>
+                                    </li>
+                                    <li class="">
+                                        <div class="photo">
+                                            <img src="/./static/css/oauth2pc/img_defaultAvatar55.jpg"></div>
+                                        <div class="caption">
+                                            <p class="id">@myid</p>
+                                        </div>
+                                        <a href="#" class="del" title="删除">×</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="user-pw">
-                            <input type="password"  class="" placeholder="请输入密码" id="user_pwd" name="user_pwd" tabindex="2"></div>
-                    </div>
-
-                    <div class="control-group clearfix vcode" style="display:none">
-                        <label>验证码</label>
                         <div class="controls">
-                            <input type="text" style="width:50px;" name="vcode" tabindex="3" >
+                            <input type="password"  placeholder="请输入密码" name="password" accessKey='p' tabindex="2"/>
+                            <span class="position-tips"></span>
+                        </div>
+                    </div>
+                    <div class="control-group vcode-area" style="display:none" >
+                        <div class="controls">
+                            <div class="chkinput">
+                                <input type="text" name="vcode" maxlength="5" accessKey='v' tabindex="3"/>
+                                <span class="position-tips"></span>
+                            </div>
                             <div class="chkPic">
-                                <img id="loginCapt" class="captcha" width="100" src="/captcha?t=2013092503"/>
+                                <img width="100" src="/captcha">
                                 <span>
-                                    <a class="refreshCapt" href="javascript:void(0);" data-target="loginCapt">换一张</a>
+                                    <a href="javascript:void(0);" class="blue">换一张</a>
                                 </span>
                             </div>
                         </div>
                     </div>
-
                 </fieldset>
-
-                <div class="checkbox-wrap">
-
-                    <input type="checkbox" checked id="forget_pw" name="forget_pw"/>
-                    <label for="forget_pw">
-                        <span></span>
-                        自动登录
-                    </label>
-                    <!--<a href="#">忘记密码</a>
-                -->
-            </div>
-            <div class="btn-wrap">
-                <a class="btn-login form-submit-a">登录</a>
-                <span>
-                    <a href="javascript:void(0)" id="to_reg">立即注册</a>
-                </span>
-            </div>
-        </form>
-    </div>
-    <div class="outside-login" style=" display: none;">
-        <h2 class="">使用您常用的账号登录</h2>
-        <div class="outside-list">
-            <ul>
-                <li>
-                    <a id="oauth_sina_login" href="//account.sogou.com/connect/login?provider=sina&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"> <i class="icon-weibo-25-1"></i>
-                        <span>新浪微博</span>
-                    </a>
-                </li>
-                <li>
-                    <a id="oauth_renren_login" href="//account.sogou.com/connect/login?provider=renren&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"> <i class="icon-renren-25-1"></i>
-                        <span>人人网</span>
-                    </a>
-                </li>
-                <li>
-                    <a id="oauth_qq_login" href="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
-                        <i class="icon-qq-25-1"></i>
-                        <span>QQ</span>
-                    </a>
-                </li>
-                <li>
-                    <a id="oauth_taobao_login" href="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
-                        <i class="icon-taobao-25-1"></i>
-                        <span>淘宝</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="dl-bottom" style=" display: none;">
-        <h3>合作账号登录</h3>
-
-        <a id="oauth_qq_reg" href="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
-            <i class="icon-qq-30-1"></i>
-        </a>
-        <a id="oauth_sina_reg" href="//account.sogou.com/connect/login?provider=sina&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
-            <i class="icon-weibo-30-1"></i>
-        </a>
-        <a id="oauth_renren_reg" href="//account.sogou.com/connect/login?provider=renren&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
-            <i class="icon-renren-30-1"></i>
-        </a>
-        <a id="oauth_taobao_reg" href="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}">
-            <i class="icon-taobao-30-1"></i>
-        </a>
-    </div>
-
-    <div class="reg-wrap"  style=" display: none;">
-        <form id="common_reg">
-            <fieldset>
-                <legend>快速注册</legend>
-                <div class="error-tips" style=" display: none;"></div>
-
-                <div class="control-group clearfix">
-                    <label>登录账号</label>
-                    <div class="controls">
-                        <input type="text" id="reg_acc" name="reg_acc" placeholder="账号"></div>
-                </div>
-                <div class="control-group clearfix">
-                    <label>设置密码</label>
-                    <div class="controls">
-                        <input type="password" id="reg_pwd1" name="reg_pwd1" placeholder="密码"></div>
-                </div>
-            <div class="control-group clearfix vcode">
-                <label>验证码</label>
-                <div class="controls">
-                    <input type="text" style="width:50px;" name="vcode">
-                    <div class="chkPic">
-                        <img id="commonRegCapt" class="captcha" width="100" src="/captcha?t=2013092503">
-                        <span>
-                            <a class="refreshCapt" href="javascript:void(0);" data-target="commonRegCapt">换一张</a>
-                        </span>
+                <div class="control-group">
+                    <div class="controls checkbox">
+                        <input type="checkbox" checked="" id="forget_pw" tabindex="4">
+                        <label for="forget_pw">
+                            <span></span>
+                            自动登录
+                        </label>
                     </div>
                 </div>
-            </div>
-        </fieldset>
-
-        <div class="btn-wrap">
-            <a class="btn-reg-big form-submit-a">注册</a>
-            <span>
-                <a href="javascript:void(0)" id ="to_login">登录</a>
-            </span>
-        </div>
-    </form>
-</div>
-<div class="reg-phone"  style=" display: none;">
-    <h2 class="">手机快速注册</h2>
-    <form id="phone_reg">
-        <div class="error-tips" style="display: none;">您输入的账号有问题</div>
-        <fieldset>
-
-            <div class="control-group clearfix">
-                <div class="controls">
-                    <input type="text" placeholder="手机号" id="reg_phone" name="reg_phone"></div>
-                <div class="controls">
-                    <input type="text" class="num" placeholder="输入验证码" id="reg_vcode" name="reg_vcode">
-                    <span id="phone_code_msg" style="color: rgb(145, 145, 145);">
-                        <a href="javascript:" id="get_vcode">获取验证码</a>
-                    </span>
-
+                <div class="control-group login-btn clearfix">
+                    <div class="controls">
+                        <button class="btn" type="button" tabindex="5">登录</button>
+                    </div>
+                    <div class="controls">
+                        <div class="dropdown">
+                            <div class="selected" oauth-type="qq"> <i class="outside-qq"  oauth="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"></i>
+                                <span>使用QQ登录</span> <i class="outside-arrow"></i>
+                            </div>
+                            <ul class="outside-list" style="display:none">
+                                <li oauth-type="weibo">
+                                    <i class="outside-weibo" oauth="//account.sogou.com/connect/login?provider=sina&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"></i>
+                                    <span >微博帐号登录</span>
+                                </li>
+                                <li oauth-type="renren">
+                                    <i class="outside-renren" oauth="//account.sogou.com/connect/login?provider=renren&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"></i>
+                                    <span >人人帐号登录</span>
+                                </li>
+                                <li oauth-type="taobao">
+                                    <i class="outside-tb" oauth="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"></i>
+                                    <span>淘宝帐号登录</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="controls">
-                    <input type="password" placeholder="密码" id="reg_pwd2" name="reg_pwd2"></div>
-            </div>
-        </fieldset>
-
-        <div class="btn-wrap">
-            <a class="btn-reg form-submit-a">注册</a>
+                <div class="control-group">
+                    <div class="controls" >
+                        <p  style="display:none" class="red" id="out_error"></p>
+                    </div>
+                    <div class="controls position-bottom" style="display:">
+                        <div class="fr">
+                            还没有账号
+                            <a href="/sogou/fastreg?instanceid=${instanceid}" class="blue">快速注册</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
+    </div>
+    <script>require(['pages/login'])</script>
 
-</div>
-<script>require(['pages/accountV2'])</script>
 </body>
 </html>

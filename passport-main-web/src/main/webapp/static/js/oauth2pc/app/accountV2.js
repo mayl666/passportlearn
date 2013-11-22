@@ -2,7 +2,7 @@
  * @adapt yinyong#sogou-inc.com
  */
 ;
-define(['jquery','lib/utils', 'lib/placeholder'], function($, utils) {
+define(['lib/utils', 'lib/placeholder'], function(utils) {
     var _g_client_id=splus._client_id||1044;
     var _g_instance_id=splus.instanceid||"";
     //user login and register

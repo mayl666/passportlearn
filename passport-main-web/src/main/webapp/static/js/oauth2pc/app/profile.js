@@ -1,9 +1,17 @@
 /**
- * @adapt yinyong#sogou-inc.com
- */
+  * profile.js
+  *
+  * changelog
+  * 2013-11-22[13:43:19]:modified to sohu+2
+  *
+  * @info yinyong,osx-x64,UTF-8,10.129.173.11,js,/Volumes/yinyong/sohuplus/static/js/oauth2pc/app
+  * @author yinyong#sogou-inc.com
+  * @version 0.0.2
+  * @since 0.0.1
+  */
 ;
-define(['jquery', 'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib/fileupload'], function($, md5, dialog, upload) {
-    var _g_client_id=splus.client_id||1044;
+define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 'lib/fileupload'], function(/*$,*/ md5, dialog, upload) {
+    var _g_client_id=(window.splus&&splus.client_id)||1044;
     function Profile() {};
     Profile.prototype = {
         sogouBaseurl: "//account.sogou.com",
