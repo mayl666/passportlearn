@@ -31,12 +31,12 @@ splus._timestamp="201306052045";
 <div class="login-wrap">
     <div class="login-ad"></div>
     <div class="login-con">
-        <form id="mobile_reg_form" onsubmit="javascript:return false;">
+        <form id="mobile_reg_form" onsubmit="return false;">
             <fieldset>
                 <legend>手机注册用户</legend>
                 <div class="control-group">
                     <div class="controls user-id">
-                        <input type="text" class="" placeholder="输入手机号" name="account">
+                        <input type="text" class="" placeholder="输入手机号" name="account" autocomplete="off" disableautocomplete/>
                         <span class="position-tips"></span>
                     </div>
                     <div class="controls">

@@ -49,15 +49,16 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         initEvents: function() {
             var self = this;
             //表单提交时默认事件
-            $('form').on('submit', function(e) {
+            $('form').on('click','button' ,function(e) {
                 var $form = $(e.delegateTarget),
                     formId = $form.attr('id');
                 if (formId == 'fast_reg_form') {
-                    self.doFastReg($form)
+                    self.doFastReg($form);
                 }
                 if (formId == 'mobile_reg_form') {
-                    self.doMobileReg($form)
+                   self.doMobileReg($form);
                 }
+                e.preventDefault();
                 return false;
             })
             //鼠标点击输入框 所有错误提示及样式清除
@@ -73,7 +74,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 //清除公共区域错误提示
                 $('p.out-error', $form).empty().hide();
             })
-            //点击提交按钮
+            /*//点击提交按钮
             .on('click', 'button.btn', function(e) {
                 $(e.delegateTarget).trigger('submit')
                 return false
@@ -82,7 +83,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
             .on('click', 'button', function(e) {
                 e.preventDefault();
 
-            })
+            })*/
             //点击获取手机验证码按钮
             .on('click', 'button.chkbtn', function(e) {
                 var $btn = $(this),
@@ -136,6 +137,10 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         }
                 })
 
+            })//yinyong@sogou-inc.com,2013-11-23[16:27:25]
+            //error msg unclickable
+            .on('click','.position-tips',function(e){
+                $(e.target).hide().empty().prev('input').removeClass('error').focus();
             })
             //检验是否需要验证码
             .on('blur', 'input', function(e) {
@@ -325,7 +330,11 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break; 
                     default:
-                     $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
+                    //yinyong@sogou-inc.com,2013-11-23[16:31:57]
+                        if(/20221|20214/.test(code)){
+                            $vcode.addClass('error');
+                        }
+                        $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         $vcode.val("");
                         if (hasVcode) {
                             self.refreshVcode($img);
@@ -366,7 +375,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
             this.countdownOver($vcodeBtn);
             //yinyong@sogou-inc.com,2013-11-21[17:24:47]
             //fixed url
-            var url = this.sogouBaseurl +self.interfaces.mobileRegister,// "/a/sogou/mobileregister",
+            var url = this.sogouBaseurl +this.interfaces.mobileRegister,// "/a/sogou/mobileregister",
                 self = this,
                 instanceid = splus ? splus.instanceid : ""
 
@@ -413,15 +422,18 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         $error.show().html("参数错误")
                         break*/
                     default:
+                        if (/20221|20214/.test(code)) {
+                            $vcode.addClass('error');
+                        }
                         $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
-                        $vcode.addClass("error");
+                        $vcode.val("");
                         $password.val("");
                         break
                 }
-                self.submited = false
+                self.submited = false;
             }).fail(function() {
                 // console.log("error happens in http request : a/sogou/mobileregister")
-                self.submited = false
+                self.submited = false;
             })
         },
         //校验是否为空
