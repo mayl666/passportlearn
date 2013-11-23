@@ -71,12 +71,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             }
             String clientSecret = appConfig.getClientSecret();
             String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
-            if (!Strings.isNullOrEmpty(passportId)) {
-                //校验accessToken
-                if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
-                    result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
-                    return result;
-                }
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return result;
+
             }
 
             String resourceType = params.getResource_type();
@@ -156,10 +154,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new OAuthResultSupport(false);
         Map resourceMap = Maps.newHashMap();
         try {
-            String passportId="";
+            String passportId = "";
             try {
                 passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
-            }catch (Exception ex){
+            } catch (Exception ex) {
 
             }
 
@@ -211,6 +209,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
         return result;
     }
+
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
     }

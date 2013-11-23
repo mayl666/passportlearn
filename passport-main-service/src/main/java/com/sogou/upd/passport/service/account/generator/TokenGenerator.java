@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
@@ -97,16 +98,16 @@ public class TokenGenerator {
         // 过期时间点
         long vaildTime = DateUtil.generatorVaildTime(expiresIn);
         String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
-        String token;
+        String token = null;
         try {
-            //加上4为随机数，是为了与sohu+ token长度区别开来
-            token = RandomStringUtils.randomAlphanumeric(4) + AES.encryptURLSafeString(tokenContent, clientSecret);
+            token = AES.encryptURLSafeString(tokenContent, clientSecret);
         } catch (Exception e) {
             logger.error("Pc Token generator by AES fail, passportId:" + passportId);
             throw e;
         }
         return token;
     }
+
     //sohu生成token算法
     public static String generateSoHuPcToken(String passportId, int expiresIn, String clientSecret)
             throws Exception {
@@ -114,5 +115,13 @@ public class TokenGenerator {
         return refreshToken;
     }
 
+    /**
+     * 生成过期时间点
+     */
+    public static long generatorVaildTime(int expiresIn) {
+        DateTime dateTime = new DateTime();
+        long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
+        return vaildTime;
+    }
 
 }
