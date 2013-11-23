@@ -104,10 +104,10 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
                     //fixed validate method
                     if (result.data && result.data.needCaptcha/*result.code !== 0*/) {
 
-                        $('div.vcode-area').show()
+                        $('div.vcode-area').show();
                     } else {
                         //TODO : In order to facilitate the test there used show-method which  should use hide-method
-                        $('div.vcode-area').hide()
+                        $('div.vcode-area').hide();
                     }
 
                 })
@@ -489,8 +489,12 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
                             $bottomError.html(self.retStatus.login[code] || result.statusText || "未知错误").show();
                          
                          $password.val('');
-                         hasVcode&&$vcode.val('');
-                         hasVcode&&self.refreshVcode($img);
+                         //yinyong@sogou-inc.com,2013-11-23[16:42:42]
+                         if(result.data&&result.data.needCaptcha){
+                                $('div.vcode-area').show();
+                                $vcode.val('');
+                                self.refreshVcode($img);
+                         }
                         break;
                 }
 
