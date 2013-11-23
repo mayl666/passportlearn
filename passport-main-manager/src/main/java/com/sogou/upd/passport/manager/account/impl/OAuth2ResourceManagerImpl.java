@@ -112,7 +112,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             }
             if (!Strings.isNullOrEmpty(passportId)) {
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams(passportId,
-                        CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1);
+                        CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1,"sogou.com");
                 if (CommonHelper.isBuildNewCookie()) {
                     cookieResult = sgLoginApiManager.getCookieValue(createCookieUrlApiParams);
                 } else {

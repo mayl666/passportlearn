@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -54,7 +55,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testGetCookieValue() {
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid("shipengzhi1986@sogou.com");
-//        createCookieUrlApiParams.setRu("https://account.sogou.com/login/success");
+        createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
         createCookieUrlApiParams.setPersistentcookie(1);
         createCookieUrlApiParams.setDomain("sogou.com");
         Result result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
