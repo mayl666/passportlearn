@@ -31,7 +31,7 @@ splus._timestamp="201306052045";
 <div class="login-wrap">
     <div class="login-ad"></div>
     <div class="login-con">
-        <form id="mobile_reg_form" >
+        <form id="mobile_reg_form" onsubmit="javascript:return false;">
             <fieldset>
                 <legend>手机注册用户</legend>
                 <div class="control-group">
@@ -54,9 +54,9 @@ splus._timestamp="201306052045";
         </fieldset>
         <div class="control-group reg-button clearfix">
             <div class="controls">
-                <button class="btn btn-g">手机注册</button>
+                <button class="btn btn-g" type="button">手机注册</button>
                 <span class="reg-switch">
-                    <a href="/sogou/fastreg?instanceid=122348417">或快速注册</a>
+                    <a href="/sogou/fastreg?instanceid=${instanceid}">或快速注册</a>
                 </span>
             </div>
         </div>
@@ -66,7 +66,7 @@ splus._timestamp="201306052045";
             </div>
             <div class="controls position-bottom" style="display:">
                 <div class="fr"> <i class="left-arrow"></i>
-                    <a href="/sogou/flogon?instanceid=122348417" class="blue">已有账号直接登录</a>
+                    <a href="/sogou/flogon?instanceid=${instanceid}" class="blue">已有账号直接登录</a>
                 </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ splus._timestamp="201306052045";
     <div class="login-wrap">
         <div class="login-ad"></div>
         <div class="login-con">
-            <form>
+            <form  onsubmit="javascript:return false;">
                 <fieldset>
                     <legend>搜狗账号登录</legend>
                     <div class="control-group">
