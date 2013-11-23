@@ -106,10 +106,10 @@ splus._timestamp="201306052045";
                                     <i class="outside-renren" oauth="//account.sogou.com/connect/login?provider=renren&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"></i>
                                     <span >人人帐号登录</span>
                                 </li>
-                                <li oauth-type="taobao">
+<!--                                 <li oauth-type="taobao">
                                     <i class="outside-tb" oauth="//account.sogou.com/connect/login?provider=taobao&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}"></i>
                                     <span>淘宝帐号登录</span>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>
