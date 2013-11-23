@@ -11,7 +11,8 @@ public class GetUserInfoApiparams extends BaseUserApiParams {
 
     @NotBlank(message = "需要返回的参数列表（fields）不能为空")
     private String fields;
-    private String imagesize;
+    //不注释掉，getuserinfo不成功
+    //private String imagesize;
 
     public GetUserInfoApiparams() {
     }
@@ -27,13 +28,5 @@ public class GetUserInfoApiparams extends BaseUserApiParams {
 
     public void setFields(String fields) {
         this.fields = fields;
-    }
-
-    public String getImagesize() {
-        return imagesize;
-    }
-
-    public void setImagesize(String imagesize) {
-        this.imagesize = imagesize;
     }
 }

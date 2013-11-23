@@ -47,7 +47,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 //        System.out.println("nick result:" + result);
         //获取图片
         getUserInfoApiParams.setFields("sec_mobile,sec_email,uniqname,avatarurl");
-        getUserInfoApiParams.setImagesize("180");
+//        getUserInfoApiParams.setImagesize("180");
         Result result1 = proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
         String bindMobile = (String) result1.getModels().get("sec_mobile");
         String bindEmail =(String)result1.getModels().get("sec_email");

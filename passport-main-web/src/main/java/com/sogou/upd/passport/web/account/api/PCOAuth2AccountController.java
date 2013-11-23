@@ -389,7 +389,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
         getUserInfoApiparams.setClient_id(oauth2PcIndexParams.getClient_id());
-        getUserInfoApiparams.setImagesize("180");
+//        getUserInfoApiparams.setImagesize("180");
         Result getUserInfoResult;
         if (CommonHelper.isInvokeProxyApi(passportId)) {
             getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);

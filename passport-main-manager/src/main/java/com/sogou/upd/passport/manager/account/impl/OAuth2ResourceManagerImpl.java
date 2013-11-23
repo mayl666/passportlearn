@@ -166,7 +166,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String imagesize = "180,55";
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, fields);
                 getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setImagesize(imagesize);
+//                getUserInfoApiparams.setImagesize(imagesize);
                 Result userInfoResult;
                 if (CommonHelper.isInvokeProxyApi(passportId)) {
                     userInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
