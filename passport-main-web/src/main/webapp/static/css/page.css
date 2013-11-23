@@ -52,14 +52,14 @@ a:hover{ text-decoration:underline; }
 .form-tall{ height:auto; }
 .form-item:after{ content:""; display:block;clear:both;visible:hidden;height:0; }
 .form-item label{ float:left; line-height:48px;width:180px;padding-right:5px;text-align:right; }
-.form-item .form-el{ float:left; width:180px;height:25px;_height:24px;background:url(/./static/img/input.png?t=660470) no-repeat 0 0;position:relative;top:10px;padding:4px 0 0 4px;}
+.form-item .form-el{ float:left; width:180px;height:25px;_height:24px;background:#fff url(/./static/img/input.png?t=660470) no-repeat 0 0;position:relative;top:10px;padding:4px 0 0 4px;}
 .form-item .form-text{ float:left; position:relative;padding:0 0 0 4px;line-height:48px;}
 .form-item .form-select{ float:left; position:relative; top:12px; left:-2px;_left:0; }
 .form-item .form-select select{ height:24px;font-size:14px;  }
 .form-item .form-textarea{ float:left; padding-top:12px; }
 .form-item .form-textarea textarea{ width:300px;height:100px; border:1px #ccc solid; }  
 .form-item .form-el-none{ padding:0;background:none; }
-.form-item .form-el-s{ width:89px;background:url(/./static/img/input-s.png?t=280018) no-repeat 0 0;}
+.form-item .form-el-s{ width:89px;background:#fff url(/./static/img/input-s.png?t=280018) no-repeat 0 0;}
 .form-item .form-el-focus{ background-position:0 -32px; }
 .form-item input{ width:172px;border:none;outline:none; }
 .form-item .form-el-s input{ width:81px;border:none;outline:none; }

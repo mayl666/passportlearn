@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=828214" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=014776" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -28,9 +28,9 @@
     <div class="inner reg">
         <ul>
             
-            <li ><a href="">首页</a></li>
+            <li ><a href="/">首页</a></li>
             
-            <li ><a href="1">找回密码</a></li>
+            <li class="current"><a href="/web/findpwd/">找回密码</a></li>
             
         </ul>
     </div>
@@ -40,22 +40,20 @@
 <div class="main-content one-col">
     <div class="inner recover" >
         <div class="title">
-            提示信息
+            找回密码
         </div>
         <div  class="form">
             <form method="post" id="" action="">
                 <script type="text/tpl" id="Target">
-                    <p class="ptitle">您正要找回的账户是 </p>
+                    <p class="ptitle">您正要找回的账户是 <{ uname }></p>
                     <p class="type-title">请选择验证方式</p>
                     <ul class="type-list">
-                        <% set names={email:"注册邮箱",vemail:"绑定邮箱",phone:"绑定手机",question:"通过密码提示问题找回"} %>
-                        
-                        <% for key,value in names %>
+                        <% for key,value in verify %>
                         <li>
                             <span class="type">
-                                <{ value }><% if key != 'question' %>：<span class="name"><{ verify_type[key] }></span><%endif%>
+                                <{ key }><% if value.val %>：<span class="name" title="<{ value.val }>"><{ value.val }></span><%endif%>
                             </span>
-                            <a href="/recover/<{key}>.ut" class="btn short-btn">去验证</a>
+                            <a href="<{ value.link }>?client_id=1120&userid=<{ uname }>&type=<{ value.tag }>" class="btn short-btn">去验证</a>
                         </li>
                         <% endfor %>
                     </ul>
@@ -77,8 +75,9 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2013111832"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2013112327"></script>
     
+    <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
 
 var spb_vars = {
@@ -93,11 +92,14 @@ var spb_vars = {
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
 })();
 
-
-var server_data = '${data}';
+//Prevent syntax error leads to undefined.
+var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
         
 require.config({
-    baseUrl:"/./static/js"
+    baseUrl:"/./static/js",
+    shim:{
+        'uuiForm':{deps:['uuibase']}//not AMD style...
+    }
 });
 
 

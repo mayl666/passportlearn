@@ -286,7 +286,9 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     return  this.submited = false;
                 }
             }
-            if (!this.check($password, passwordObj) || !this.isSimple($password, '密码过于简单')) {
+            //yinyong@sogou-inc.com,2013-11-23[15:49:07]
+            //removed simple check
+            if (!this.check($password, passwordObj)/* || !this.isSimple($password, '密码过于简单')*/) {
                 return this.submited = false;
             }
             var data,
@@ -326,14 +328,14 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                      $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         $vcode.val("");
                         if (hasVcode) {
-                            self.refreshVcode($img)
+                            self.refreshVcode($img);
                         }
                         break;
                 }
-                self.submited = false
+                self.submited = false;
             }).fail(function() {
                 // console.log("error happens in http request : a/sogou/mobileregister")
-                self.submited = false
+                self.submited = false;
             })
         },
         //手机注册
@@ -349,15 +351,17 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 vcodeObj = this.validObj.vcode;
 
             if (!this.check($input, phoneObj)) {
-                return this.submited = false
+                return this.submited = false;
 
             }
             if (!this.check($vcode, vcodeObj)) {
-                return this.submited = false
+                return this.submited = false;
 
             }
-            if (!this.check($password, passwordObj) || !this.isSimple($password, "密码过于简单")) {
-                return this.submited = false
+            //yinyong@sogou-inc.com,2013-11-23[15:48:44]
+            //removed simple check
+            if (!this.check($password, passwordObj) /*|| !this.isSimple($password, "密码过于简单")*/) {
+                return this.submited = false;
             }
             this.countdownOver($vcodeBtn);
             //yinyong@sogou-inc.com,2013-11-21[17:24:47]
@@ -439,8 +443,10 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 url = self.sogouBaseurl + '/vcode/register/?nocache=' + ts
                 $img.attr('src', url)*/
         },
+        //yinyong@sogou-inc.com,2013-11-23[15:49:21]
+        //removed
         //校验密码是否过于简单
-        isSimple: function($input, msg) {
+/*        isSimple: function($input, msg) {
             var self = this,
                 inputValue = $input.val(),
                 flag = true,
@@ -458,7 +464,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
             }
 
             return flag
-        },
+        },*/
         //短信验证码倒计时
         countdown: function($btn) {
             var self = this,

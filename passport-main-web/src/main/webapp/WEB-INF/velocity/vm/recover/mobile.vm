@@ -28,52 +28,46 @@
     <div class="inner reg">
         <ul>
             
-            <li ><a href="/">登录</a></li>
+            <li ><a href="/">首页</a></li>
             
-            <li class="current"><a href="/web/reg/email">搜狗通行证注册</a></li>
+            <li class="current"><a href="/web/findpwd">找回密码</a></li>
             
         </ul>
     </div>
     <span class="underline"></span>
 </div>
-
-<div class="main-content two-col-r">
-    <div class="col-l">
-        
-        <ul class="nav">
-    
-    <li style="border:none;" class="email current  ">
-        <a href="/web/reg/email">邮箱注册</a>
-    </li>
-    
-    <li  class="tel   ">
-        <a href="/web/reg/mobile">手机注册</a>
-    </li>
-    
-    <li  class="nick   ">
-        <a href="/web/reg/nick">个性帐号</a>
-    </li>
-    
-</ul>
-    </div>
-    <div class="col-r">
-        <div class="inner reg-email">
-            <div class="step step2">
-                <span ></span>
-            </div>
-            <div  class="form">
-                <div class="binding">
-                    <p>您的搜狗通行证还没有被激活<span id="JumpTarget" style="display:none;"></span></p>
-                    <p class="warn">请登录您的邮箱进行激活操作</p>
-                    <a id="JumpToUrl" href="#" class="long-btn">去邮箱激活</a>
-                    <a id="ResendEmail" href="#" class="long-btn">重发验证邮件</a>
-                </div>
-            </div>
+<div class="main-content one-col">
+    <div class="inner recover" >
+        <div class="title">用手机找回密码</div>
+        <div  class="form">
+            <form method="post" id="" action="/web/findpwd/checksms" class="form2">
+                
+                           <div class="form-item">
+    <label for="Ipt">手机号：</label>
+    <span class="form-text">
+        请输入您要绑定的手机号码
+    </span>
+</div>
+                           <div class="form-item">
+    <label >&nbsp;</label>
+    <span class="form-el form-el-none">
+        <span class="tel-valid-btn" action="/web/findpwd/sendsms" >免费获取短信验证码</span>
+        <span class="tel-valid-error error"></span>
+        <span class="tel-valid-hr" ></span>
+    </span>
+</div>
+                           <div class="form-item">
+    <label for="TelvIpt">短信验证码：</label>
+    <span class="form-el"><input  autocomplete="off" type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
+</div>
+                <input type="hidden" name="userid"/>        
+                <div class="form-btn">
+    <button type="submit">确定</button>
+</div>
+            </form>
         </div>
     </div>
 </div>
-
-
 
         </div>
         
@@ -84,7 +78,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2013112327"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2013112327"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
@@ -92,7 +86,7 @@
 var spb_vars = {
     productid:"passport",
     ptype:"web",
-    pcode:"reg_remind".split('/').join('_')
+    pcode:"recover_mobile".split('/').join('_')
 };
 
 (function() {
@@ -112,8 +106,8 @@ require.config({
 });
 
 
-require(['reg'] , function(module){
-    module.init('remind');
+require(['recover'] , function(module){
+    module.init('mobile');
 });
 
 

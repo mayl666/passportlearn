@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=828214" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=014776" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -67,13 +67,13 @@
                     <div class="form-item">
     <label for="UsernameIpt">邮箱：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require email" type="text" name="username" id="UsernameIpt" value="" data-desc="请输入您常用的外域邮箱" value=""/>
+        <input autocomplete="off" uui-type="require email" type="text" name="username" id="UsernameIpt" value="" data-desc="" value="" class="" placeholder=""/>
     </span>
 </div>
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value="" class="" placeholder=""/>
     </span>
 </div>
                     <div class="form-item form-item-vcode">
@@ -119,8 +119,9 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2013111832"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2013112327"></script>
     
+    <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
 
 var spb_vars = {
@@ -135,11 +136,14 @@ var spb_vars = {
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
 })();
 
-
-var server_data = '${data}';
+//Prevent syntax error leads to undefined.
+var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
         
 require.config({
-    baseUrl:"/./static/js"
+    baseUrl:"/./static/js",
+    shim:{
+        'uuiForm':{deps:['uuibase']}//not AMD style...
+    }
 });
 
 

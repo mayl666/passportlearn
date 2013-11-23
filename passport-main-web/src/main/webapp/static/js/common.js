@@ -37,8 +37,8 @@ define(['./utils'],function(utils){
             }
         },
         parseHeader: function(data){
-            $('#Header .username').html(data.username);
-            if( data.username ){
+            $('#Header .username').html(data.uniqname||data.username);
+            if( data.username||data.uniqname ){
                 $('#Header .info').show();
             }
         },
@@ -55,7 +55,7 @@ define(['./utils'],function(utils){
          * @author yinyong
          * @version 0.1
          */
-        bindResendEmail:function(){
+        bindResendEmail:function(data){
             var self=this;
             var count=60;
             var inter=null;
@@ -65,7 +65,11 @@ define(['./utils'],function(utils){
                     var time=count;
                 
                     $.ajax({
-                        url:"/web/resendActiveMai",
+                        url:"/web/resendActiveMail",
+                        data:{
+                            client_id:1120,
+                            username:data.email
+                        },
                         type:"post",
                         error:function(xhr,error){
                             alert("通信错误");

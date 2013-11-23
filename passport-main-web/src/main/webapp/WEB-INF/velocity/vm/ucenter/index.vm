@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=828214" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=014776" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -45,15 +45,16 @@
             <div class="table">
                 <script type="text/tpl"  id="Target">
                     <p class="item my">
-                        <span class="label">我的帐号</span>
-                        <span class="value"><{username}></span>
-                        <a href="/web/security/password" class="btn medium-btn">修改密码</a>
+                        <span class="label"><img id="avatar" src="/./static/img/avatar-min.png" alt="我的头像"/></span>
+                        <span class="value"><span class="myacc">我的帐号</span><span class="username"><{uniqname|default("未知")}></span></span>
+                        <span class="btns"><a href="/web/userinfo/getuserinfo" class="btn medium-btn">修改资料</a>
+                            <a href="/web/security/password" class="btn medium-btn">修改密码</a></span>
                     </p>
                     <p class="item level">
                         <span class="label">安全级别</span>
                         <span class="value">
                             <span class="level-status"><b></b></span>
-                            <span href="#" class="level-num"><{sec_score}>分</span>
+                            <span href="#" class="level-num"><{sec_score|default(0)}>分</span>
                         </span>
                     </p>
                     <p>
@@ -141,8 +142,9 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/ucenter.js?t=2013111832"></script>
+    <script type="text/javascript" src="/./static/js/ucenter.js?t=2013112328"></script>
     
+    <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
 
 var spb_vars = {
@@ -157,11 +159,14 @@ var spb_vars = {
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
 })();
 
-
-var server_data = '${data}';
+//Prevent syntax error leads to undefined.
+var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
         
 require.config({
-    baseUrl:"/./static/js"
+    baseUrl:"/./static/js",
+    shim:{
+        'uuiForm':{deps:['uuibase']}//not AMD style...
+    }
 });
 
 

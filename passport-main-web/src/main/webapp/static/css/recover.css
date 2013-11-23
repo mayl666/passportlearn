@@ -1,10 +1,11 @@
 .recover .form{ padding:20px 0 40px 150px; font-size:14px;color:#000; }
 .recover .ptitle{ height:50px; line-height:50px; font-weight:700; padding-left:122px; }
 .recover .type-title{ line-height:36px; border-bottom:1px #ccc dotted;width:400px;margin-left:122px; }
-.recover .type-list li { height:28px;line-height:28px;margin:18px 0 0 122px; padding-left:66px; background:url(/./static/img/desc-arrow.png?t=707808) no-repeat 50px center; }
-.recover .type-list .type{ display:inline-block; *display:inline; *zoom:1; height:100%; width:238px; padding-left:8px;background:#f3f3f3; }
+.recover .type-list{width: 530px;}
+.recover .type-list li {position: relative; line-height:28px;margin:18px 0 0 122px; padding-left:66px; background:url(/./static/img/desc-arrow.png?t=707808) no-repeat 50px center; }
+.recover .type-list .type{ display:inline-block; *display:inline; *zoom:1; height:100%; width:238px; padding-left:8px;background:#f3f3f3; white-space: nowrap;overflow: hidden;text-overflow:ellipsis;}
 .recover .type-list .name{ color:#666; padding-left:18px; }
-.recover .type-list .btn{ width:69px; height:27px; background:url(/./static/img/btn-short.png?t=624000) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; margin-left:9px;text-align:center; color:#fff;text-decoration:none; }
+.recover .type-list .btn{ display: block;position: absolute;right: 0;top: 0;width:69px; height:27px; background:url(/./static/img/btn-short.png?t=624000) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; margin-left:9px;text-align:center; color:#fff;text-decoration:none; }
 .recover .center{text-align:center;color:#000;padding-bottom:40px;}
 .recover .ctitle{ font-size:16px; padding:35px 0; }
 .recover .warn{ position:relative;top:-26px;color:red; }
