@@ -13,12 +13,10 @@
     <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
     <![endif]-->
     <script type="text/javascript" charset = "utf-8">
-var splus = {};
-splus.pwd_token = "e073fa1dd6f40445a4d0940b58828793";
-splus.bru = "";
-splus.login_history="";
-splus.instanceid="$instanceid";
-splus._timestamp="201306052045";
+var splus = {
+    login_history:"",
+    instanceid:"$instanceid"
+};
 </script>
     <script src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
     <!--[if IE 6]>
