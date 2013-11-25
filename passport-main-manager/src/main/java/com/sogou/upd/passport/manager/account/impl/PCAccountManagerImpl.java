@@ -126,14 +126,15 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     @Override
     public Result authToken(PcAuthTokenParams authPcTokenParams) {
-        Result result = new APIResultSupport(false);
+        Result result = new APIResultSupport(true);
         try {
             //验证accessToken
             int clientId = Integer.parseInt(authPcTokenParams.getAppid());
             String passportId = authPcTokenParams.getUserid();
             String instanceId = authPcTokenParams.getTs();
-            if (pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
-                result.setSuccess(true);
+            if (!pcAccountService.verifyAccessToken(passportId, clientId, instanceId, authPcTokenParams.getToken())) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
             }
         } catch (Exception e) {
             logger.error("authToken fail", e);
