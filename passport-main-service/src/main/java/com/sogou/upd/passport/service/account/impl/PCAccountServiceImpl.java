@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
  * Time: 上午11:54
  * To change this template use File | Settings | File Templates.
  */
-@Service
+//@Service
 public class PCAccountServiceImpl implements PCAccountTokenService {
     private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
