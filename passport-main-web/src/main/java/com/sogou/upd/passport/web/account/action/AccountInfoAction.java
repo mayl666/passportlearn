@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -55,6 +56,8 @@ public class AccountInfoAction extends BaseController {
     private AccountInfoManager accountInfoManager;
     @Autowired
     private ConfigureManager configureManager;
+    @Autowired
+    private SecureManager secureManager;
 
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
@@ -250,11 +253,40 @@ public class AccountInfoAction extends BaseController {
     }
 
 
+    //头像上传
+    @RequestMapping(value = "/userinfo/avatarurl", method = RequestMethod.GET)
+    @LoginRequired(resultType = ResponseResultType.redirect)
+    public String uploadAvatarurl(HttpServletRequest request, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+
+        if (hostHolder.isLogin()) {
+
+            String userId = hostHolder.getPassportId();
+
+            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId))){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
+                result.setDefaultModel("uniqname",(String)result1.getModels().get("uniqname"));
+            }else {
+                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
+            }
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            if (domain == AccountDomainEnum.THIRD) {
+                result.setDefaultModel("disable", true);
+            }
+            model.addAttribute("data", result.toString());
+        }else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+        }
+        return "/person/avatar";
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseBody
     public String maxUploadSizeExceeded(){
         Result result = new APIResultSupport(false);
-        result.setCode(ErrorUtil.ERR_CODE_PHOTO_TO_LARGE);
+        result.setCode(ErrorUtil.ERR_PHOTO_TO_LARGE);
         return result.toString();
     }
 
