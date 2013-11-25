@@ -101,13 +101,12 @@ public class AccountInfoAction extends BaseController {
 
     //获取用户信息
     @RequestMapping(value = "/userinfo/getuserinfo", method = RequestMethod.GET)
-    @LoginRequired(resultType = ResponseResultType.redirect)
+//    @LoginRequired(resultType = ResponseResultType.redirect)
     public String obtainUserinfo(HttpServletRequest request,
                                  ObtainAccountInfoParams params,
                                  Model model) {
         Result result = new APIResultSupport(false);
         if (hostHolder.isLogin()) {
-
             //参数验证
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
