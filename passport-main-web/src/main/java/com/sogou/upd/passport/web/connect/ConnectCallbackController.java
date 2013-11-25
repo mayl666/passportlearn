@@ -60,7 +60,7 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLogUtil.log(userOperationLog);
 
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
-                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
+                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
                 return new ModelAndView(viewUrl);
             } else if (ConnectTypeEnum.PC.toString().equals(type)){
