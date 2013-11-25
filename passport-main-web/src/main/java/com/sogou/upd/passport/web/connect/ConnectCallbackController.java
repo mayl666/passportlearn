@@ -59,16 +59,18 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);
 
-            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
                 model.addAttribute("result", result.getModels().get("result"));
                 return new ModelAndView(viewUrl);
-            } else {
+            } else if (ConnectTypeEnum.PC.toString().equals(type)){
                 // TODO 少了种cookie
+                return new ModelAndView(new RedirectView(viewUrl));
+            } else {
                 return new ModelAndView(new RedirectView(viewUrl));
             }
         } else {
-            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 return new ModelAndView(viewUrl);
             } else {
                 return new ModelAndView(new RedirectView(viewUrl));
