@@ -83,7 +83,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             }
         }
         requestModelXml.addParams(getUserInfoApiparams);
-            requestModelXml.deleteParams("imagesize");
+        requestModelXml.deleteParams("imagesize");
 
         if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
             requestModelXml.addParam("usertype", 1);
