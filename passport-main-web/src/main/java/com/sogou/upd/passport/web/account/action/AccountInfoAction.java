@@ -267,6 +267,7 @@ public class AccountInfoAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
                 Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
                 result.setDefaultModel("uniqname",(String)result1.getModels().get("uniqname"));
+                result.setDefaultModel("disable", true);
             }else {
                 result = secureManager.queryAccountSecureInfo(userId, 1120, false);
             }
