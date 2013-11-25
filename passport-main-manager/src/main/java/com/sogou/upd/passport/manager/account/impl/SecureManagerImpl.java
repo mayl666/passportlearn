@@ -26,6 +26,7 @@ import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.ActionRecord;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -272,6 +273,12 @@ public class SecureManagerImpl implements SecureManager {
     public Result queryAccountSecureInfo(String userId, int clientId, boolean doProcess) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
+
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
 
@@ -280,7 +287,7 @@ public class SecureManagerImpl implements SecureManager {
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                getUserInfoApiparams.setFields(SECURE_FIELDS +",uniqname,avatarurl");
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             } else {
                 GetSecureInfoApiParams params = new GetSecureInfoApiParams();
@@ -290,7 +297,7 @@ public class SecureManagerImpl implements SecureManager {
             }
 
             Map<String, String> map = result.getModels();
-            result.setModels(Maps.newHashMap());
+            result.setModels(map);
 
             if (!result.isSuccess()) {
                 return result;

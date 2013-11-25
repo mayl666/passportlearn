@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
@@ -26,6 +27,8 @@ public class IndexAction extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @RequestMapping(value = { "/index", "/" })
     @LoginRequired(value = false)
@@ -42,18 +45,21 @@ public class IndexAction extends BaseController {
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                result.setDefaultModel("disable", true);
-                result.setSuccess(true);
-            } else {
-                result = secureManager.queryAccountSecureInfo(userId, clientId, true);
-            }
 
+            //获取昵称
             String nickName = hostHolder.getNickName();
             if (Strings.isNullOrEmpty(nickName)) {
                 nickName = userId;
             }
 
             result.setDefaultModel("username", nickName);
+
+            result.setDefaultModel("disable", true);
+            result.setSuccess(true);
+            } else {
+                result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+            }
+
             if (domain == AccountDomainEnum.PHONE) {
                 result.setDefaultModel("actype", "phone");
             }
