@@ -387,7 +387,7 @@ public class PCOAuth2AccountController extends BaseController {
         //判断cookie中的passportId与token解密出来的passportId是否相等
         if(!Strings.isNullOrEmpty(cookieUserId) ){
             if(!cookieUserId.equals(passportId)){
-                return "redirect:/logout_redirect";
+                return "redirect:/web/logout_redirect";
             }
             return "redirect:/index";
         }
