@@ -424,44 +424,6 @@ public class PCOAuth2AccountController extends BaseController {
         return msg;
     }
 
-    private void handleBindAndPwd(String passportId, String bindMobile, String bindEmail, Model model) throws Exception {
-        AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
-        switch (accountDomain) {
-            case SOHU:
-                model.addAttribute("isSohuAccount", 1);
-                model.addAttribute("sohuBindUrl", "https://passport.sohu.com/web/requestBindMobileAction.action");
-                model.addAttribute("sohuUpdatepwdUrl", "https://passport.sohu.com/web/updateInfo.action?modifyType=password");
-                break;
-            case THIRD:
-                model.addAttribute("isBindEmailUsable", 0);
-                model.addAttribute("isBindMobileUsable", 0);
-                model.addAttribute("isUpdatepwdUsable", 0);
-                break;
-            case PHONE:
-                if (StringUtils.isEmpty(bindEmail)) {
-                    model.addAttribute("isBindEmailUsable", 1);
-                } else {
-                    model.addAttribute("isBindEmailUsable", 0);
-                }
-                model.addAttribute("isBindMobileUsable", 0);
-                model.addAttribute("isUpdatepwdUsable", 1);
-                break;
-            default:
-                if (StringUtils.isEmpty(bindEmail)) {
-                    model.addAttribute("isBindEmailUsable", 1);
-                } else {
-                    model.addAttribute("isBindEmailUsable", 0);
-                }
-                if (StringUtils.isEmpty(bindMobile)) {
-                    model.addAttribute("isBindMobileUsable", 1);
-                } else {
-                    model.addAttribute("isBindMobileUsable", 0);
-                }
-                model.addAttribute("isUpdatepwdUsable", 1);
-                break;
-        }
-    }
-
     private String getUniqname(String passportId) {
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
         Result getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
