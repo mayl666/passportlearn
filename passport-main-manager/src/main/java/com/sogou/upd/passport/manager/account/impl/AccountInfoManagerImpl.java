@@ -8,7 +8,15 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
+import com.sogou.upd.passport.manager.form.AccountInfoParams;
+import com.sogou.upd.passport.manager.form.CheckNickNameParams;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -16,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.Map;
 
 /**
@@ -31,6 +40,10 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private PhotoUtils photoUtils;
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
 
     public Result uploadImg(byte[] byteArr,String passportId,String type) {
         Result result = new APIResultSupport(false);
@@ -145,5 +158,124 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             return result;
         }
         return result;
+    }
+    @Override
+    public Result checkNickName(CheckNickNameParams params) {
+
+        UpdateUserUniqnameApiParams updateUserUniqnameApiParams=buildUpdateUserUniqnameApiParams(params);
+        // 调用内部接口
+        Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+//        //先检查sohu昵称是否存在，然后检查sogou昵称
+//        if(result.isSuccess()){
+//            result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+//        }
+
+        return result;
+    }
+
+    @Override
+    public Result updateUserInfo(AccountInfoParams infoParams,String ip) {
+
+        Result result = new APIResultSupport(false);
+
+        UpdateUserInfoApiParams updateUserInfoApiParams = null;
+        // 调用内部接口
+        if (ManagerHelper.isInvokeProxyApi(infoParams.getUsername())) {
+            updateUserInfoApiParams = new UpdateUserInfoApiParams();
+            updateUserInfoApiParams.setUserid(infoParams.getUsername());
+            updateUserInfoApiParams.setGender(infoParams.getGender());
+            updateUserInfoApiParams.setClient_id(Integer.parseInt(infoParams.getClient_id()));
+
+            //替换sohu日期
+            String birthday= !Strings.isNullOrEmpty(infoParams.getBirthday()) ?infoParams.getBirthday():null;
+            if (!Strings.isNullOrEmpty(birthday)){
+                String []birthdayArr=birthday.split("-");
+                String month=birthdayArr[1];
+                if(month.startsWith("0")){
+                    month="0"+String.valueOf(Integer.parseInt(month)+1);
+                } else{
+                    month=String.valueOf(Integer.parseInt(month)+1);
+                }
+                if("010".equals(month)){
+                    month="10";
+                }
+                birthday=birthdayArr[0]+"-"+month+"-"+birthdayArr[2];
+            }
+
+            updateUserInfoApiParams.setBirthday(birthday);
+            updateUserInfoApiParams.setUniqname(infoParams.getNickname());
+            updateUserInfoApiParams.setUsername(infoParams.getFullname());
+
+            updateUserInfoApiParams.setProvince(infoParams.getProvince());
+
+            updateUserInfoApiParams.setCity(infoParams.getCity());
+            updateUserInfoApiParams.setPersonalId(infoParams.getPersonalid());
+            updateUserInfoApiParams.setModifyip(ip);
+            result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+        } else {
+            updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
+            result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result getUserInfo(ObtainAccountInfoParams params) {
+        Result result = new APIResultSupport(false);
+
+        GetUserInfoApiparams infoApiparams=buildGetUserInfoApiparams(params);
+
+        // 调用内部接口
+        if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
+            result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
+        } else {
+            result = sgUserInfoApiManager.getUserInfo(infoApiparams);
+        }
+        return result;
+    }
+
+    private GetUserInfoApiparams buildGetUserInfoApiparams(ObtainAccountInfoParams params) {
+        GetUserInfoApiparams infoApiparams=new GetUserInfoApiparams();
+        infoApiparams.setFields(params.getFields());
+        infoApiparams.setUserid(params.getUsername());
+//        infoApiparams.setClient_id(Integer.parseInt(params.getClient_id()));
+        return infoApiparams;
+    }
+
+    private UpdateUserInfoApiParams buildUpdateUserInfoApiParams(AccountInfoParams infoParams,String ip){
+        UpdateUserInfoApiParams updateUserInfoApiParams=new UpdateUserInfoApiParams();
+        try {
+            updateUserInfoApiParams.setClient_id(Integer.parseInt(infoParams.getClient_id()));
+            updateUserInfoApiParams.setUniqname(infoParams.getNickname());
+            updateUserInfoApiParams.setUserid(infoParams.getUsername());
+
+            String []birthday=!Strings.isNullOrEmpty(infoParams.getBirthday())?infoParams.getBirthday().split("-"):null;
+            Calendar calendar=Calendar.getInstance();
+            if(birthday!=null){
+                calendar.set(Calendar.YEAR,Integer.valueOf(birthday[0]));
+                calendar.set(Calendar.MONTH,Integer.valueOf(birthday[1])-1);
+                calendar.set(Calendar.DATE,Integer.valueOf(birthday[2]));
+            }
+
+            updateUserInfoApiParams.setBirthday(infoParams.getBirthday());
+            updateUserInfoApiParams.setCity(infoParams.getCity());
+            updateUserInfoApiParams.setGender(infoParams.getGender());
+            updateUserInfoApiParams.setProvince(infoParams.getProvince());
+            updateUserInfoApiParams.setFullname(infoParams.getFullname());
+            updateUserInfoApiParams.setPersonalId(infoParams.getPersonalid());
+            updateUserInfoApiParams.setModifyip(ip);
+
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+        }
+        return updateUserInfoApiParams;
+    }
+
+    private UpdateUserUniqnameApiParams buildUpdateUserUniqnameApiParams(CheckNickNameParams params){
+        UpdateUserUniqnameApiParams updateUserUniqnameApiParams=new UpdateUserUniqnameApiParams();
+        updateUserUniqnameApiParams.setUniqname(params.getNickname());
+        updateUserUniqnameApiParams.setClient_id(Integer.parseInt(params.getClient_id()));
+        return updateUserUniqnameApiParams;
     }
 }

@@ -1,16 +1,20 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.AccountInfoParams;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
@@ -21,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,6 +56,8 @@ public class AccountInfoAction extends BaseController {
     private AccountInfoManager accountInfoManager;
     @Autowired
     private ConfigureManager configureManager;
+    @Autowired
+    private SecureManager secureManager;
 
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
@@ -94,6 +101,86 @@ public class AccountInfoAction extends BaseController {
         result = proxyUserInfoApiManager.updateUserInfo(params);
         return result.toString();
 
+    }
+
+    //获取用户信息
+    @RequestMapping(value = "/userinfo/getuserinfo", method = RequestMethod.GET)
+//    @LoginRequired(resultType = ResponseResultType.redirect)
+    public String obtainUserinfo(HttpServletRequest request,
+                                 ObtainAccountInfoParams params,
+                                 Model model) {
+        Result result = new APIResultSupport(false);
+        if (hostHolder.isLogin()) {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                model.addAttribute("data", result.toString());
+                return "/person/index";
+            }
+
+            String userId = hostHolder.getPassportId();
+            //验证client_id是否存在
+            int clientId = Integer.parseInt(params.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                model.addAttribute("data", result.toString());
+                return "/person/index";
+            }
+
+            if (Strings.isNullOrEmpty(params.getFields())) {
+                params.setFields("province,city,uniqname,gender,birthday,fullname,personalid");
+            }
+
+            params.setUsername(userId);
+            result = accountInfoManager.getUserInfo(params);
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+
+            if (result.isSuccess()) {
+                if (domain == AccountDomainEnum.THIRD) {
+                    result.setDefaultModel("disable", true);
+                }
+                model.addAttribute("data", result.toString());
+                result.setMessage("获取个人信息成功");
+                return "/person/index";
+            }
+        }
+        return "redirect:/web/webLogin";
+    }
+    //设置或修改个人信息
+    @RequestMapping(value = "/userinfo/update", method = RequestMethod.POST)
+    @LoginRequired(resultType = ResponseResultType.redirect)
+    @ResponseBody
+    public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams)
+    {
+        Result result = new APIResultSupport(false);
+        if (hostHolder.isLogin()) {
+
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(infoParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id是否存在
+            int clientId = Integer.parseInt(infoParams.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+
+            String ip = getIp(request);
+            String userId = hostHolder.getPassportId();
+
+            infoParams.setUsername(userId);
+            result = accountInfoManager.updateUserInfo(infoParams, ip);
+
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+        }
+        return result.toString();
     }
 
     //头像上传
@@ -166,11 +253,40 @@ public class AccountInfoAction extends BaseController {
     }
 
 
+    //头像上传
+    @RequestMapping(value = "/userinfo/avatarurl", method = RequestMethod.GET)
+    @LoginRequired(resultType = ResponseResultType.redirect)
+    public String uploadAvatarurl(HttpServletRequest request, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+
+        if (hostHolder.isLogin()) {
+
+            String userId = hostHolder.getPassportId();
+
+            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId))){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
+                result.setDefaultModel("uniqname",(String)result1.getModels().get("uniqname"));
+            }else {
+                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
+            }
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            if (domain == AccountDomainEnum.THIRD) {
+                result.setDefaultModel("disable", true);
+            }
+            model.addAttribute("data", result.toString());
+        }else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+        }
+        return "/person/avatar";
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseBody
     public String maxUploadSizeExceeded(){
         Result result = new APIResultSupport(false);
-        result.setCode(ErrorUtil.ERR_CODE_PHOTO_TO_LARGE);
+        result.setCode(ErrorUtil.ERR_PHOTO_TO_LARGE);
         return result.toString();
     }
 

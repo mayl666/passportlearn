@@ -72,7 +72,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         updateUserInfoApiParams.setGender("2");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 1988);
-        updateUserInfoApiParams.setBirthday(calendar.getTime());
+        updateUserInfoApiParams.setBirthday("2012-01-01");
         updateUserInfoApiParams.setProvince(530000);
         updateUserInfoApiParams.setCity(532401);
         updateUserInfoApiParams.setUniqname("111");
