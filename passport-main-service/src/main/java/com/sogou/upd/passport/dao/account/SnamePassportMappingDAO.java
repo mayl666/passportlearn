@@ -25,65 +25,55 @@ public interface SnamePassportMappingDAO {
      */
     String ALL_FIELD = " id, sname, passport_id, update_time ";
 
-    /**
-     * 值列表
-     */
-    String VALUE_FIELD = " :mobilePassportidMapping.id, :mobilePassportidMapping.mobile, :mobilePassportidMapping.passportId, :mobilePassportidMapping.updateTime ";
-
-    /**
-     * 修改字段列表
-     */
-    String UPDATE_FIELD = " mobile = :mobilePassportidMapping.mobile, passport_id = :mobilePassportidMapping.passportId, update_time = :mobilePassportidMapping.updateTime ";
 
     /**
      * 根据手机号码获取passportId
      *
-     * @param mobile
+     * @param sname
      * @return 获取不到则抛出异常
      * @throws org.springframework.dao.DataAccessException
      */
     @SQL("select passport_id from " +
             TABLE_NAME +
-            " where mobile=:mobile")
-    public String getPassportIdByMobile(@SQLParam("mobile") String mobile) throws DataAccessException;
+            " where sname=:sname")
+    public String getPassportIdBySname(@SQLParam("sname") String sname) throws DataAccessException;
 
     /**
-     * 插入一条mobile和passportId的映射关系
+     * 插入一条sname和passportId的映射关系
      *
-     * @param mobile
+     * @param sname
      * @param passport_id
      * @return
      * @throws org.springframework.dao.DataAccessException
      */
-    @SQL("insert into " +
-            "mobile_passportid" +
-            "_mapping(mobile, passport_id) values (:mobile, :passport_id)")
-    public int insertMobilePassportMapping(@SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
+    @SQL("insert into " + TABLE_NAME +
+            "(sname, passport_id) values (:sname, :passport_id)")
+    public int insertSnamePassportMapping(@SQLParam("sname") String sname, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
     /**
-     * 更新mobile和passportId的映射关系
+     * 更新sname和passportId的映射关系
      *
-     * @param mobile
+     * @param sname
      * @param passport_id
      * @return
      * @throws org.springframework.dao.DataAccessException
      */
     @SQL("update " +
             TABLE_NAME +
-            " set passport_id=:passport_id where mobile=:mobile")
-    public int updateMobilePassportMapping(@SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
+            " set passport_id=:passport_id where sname=:sname")
+    public int updateSnamePassportMapping(@SQLParam("sname") String sname, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
     /**
-     * 删除mobile和passportId的映射关系
+     * 删除sname和passportId的映射关系
      *
-     * @param mobile
+     * @param sname
      * @return
      * @throws org.springframework.dao.DataAccessException
      */
     @SQL("delete from " +
             TABLE_NAME +
-            " where mobile=:mobile")
-    public int deleteMobilePassportMapping(@SQLParam("mobile") String mobile) throws DataAccessException;
+            " where sname=:sname")
+    public int deleteSnamePassportMapping(@SQLParam("sname") String sname) throws DataAccessException;
 }
