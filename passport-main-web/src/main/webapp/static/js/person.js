@@ -48,7 +48,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
             cb && cb(1);
             return;
         }
-        $.post('/web/userinfo/checknickname', {
+        $.get('/web/userinfo/checknickname', {
             nickname: ipt.val(),
             client_id: $("[name='client_id']").val(),
             t: +new Date()
