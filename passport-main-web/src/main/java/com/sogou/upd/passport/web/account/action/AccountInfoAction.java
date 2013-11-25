@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -143,6 +144,40 @@ public class AccountInfoAction extends BaseController {
             }
         }
         return "redirect:/web/webLogin";
+    }
+    //设置或修改个人信息
+    @RequestMapping(value = "/userinfo/update", method = RequestMethod.POST)
+    @LoginRequired(resultType = ResponseResultType.redirect)
+    @ResponseBody
+    public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams)
+    {
+        Result result = new APIResultSupport(false);
+        if (hostHolder.isLogin()) {
+
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(infoParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id是否存在
+            int clientId = Integer.parseInt(infoParams.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+
+            String ip = getIp(request);
+            String userId = hostHolder.getPassportId();
+
+            infoParams.setUsername(userId);
+            result = accountInfoManager.updateUserInfo(infoParams, ip);
+
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+        }
+        return result.toString();
     }
 
     //头像上传

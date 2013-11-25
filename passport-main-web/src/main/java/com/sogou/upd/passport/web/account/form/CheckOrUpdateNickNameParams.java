@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.form;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +13,7 @@ import javax.validation.constraints.AssertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class CheckOrUpdateNickNameParams {
+
     @NotBlank(message = "用户昵称不能为空")
     private String nickname;
     private String sname = "";  //账号，sohu+继承而来，这里不做处理
@@ -58,4 +60,5 @@ public class CheckOrUpdateNickNameParams {
     public void setSname(String sname) {
         this.sname = sname;
     }
+
 }
