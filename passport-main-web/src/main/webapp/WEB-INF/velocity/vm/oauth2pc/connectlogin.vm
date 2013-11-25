@@ -30,7 +30,7 @@
         splus.sp_status = "1";
         splus.sname = '${sname}';
         splus.nick = '${nick}';
-        splus.sid = "0";
+        splus.sid = "${passport}";
         splus.passport = '${passport}';
         splus.accesstoken = '${accesstoken}';
         splus.refreshtoken = '${refreshtoken}';
