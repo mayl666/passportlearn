@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -11,6 +12,7 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -94,6 +97,53 @@ public class AccountInfoAction extends BaseController {
         result = proxyUserInfoApiManager.updateUserInfo(params);
         return result.toString();
 
+    }
+
+    //获取用户信息
+    @RequestMapping(value = "/userinfo/getuserinfo", method = RequestMethod.GET)
+    @LoginRequired(resultType = ResponseResultType.redirect)
+    public String obtainUserinfo(HttpServletRequest request,
+                                 ObtainAccountInfoParams params,
+                                 Model model) {
+        Result result = new APIResultSupport(false);
+        if (hostHolder.isLogin()) {
+
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                model.addAttribute("data", result.toString());
+                return "/person/index";
+            }
+
+            String userId = hostHolder.getPassportId();
+            //验证client_id是否存在
+            int clientId = Integer.parseInt(params.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                model.addAttribute("data", result.toString());
+                return "/person/index";
+            }
+
+            if (Strings.isNullOrEmpty(params.getFields())) {
+                params.setFields("province,city,uniqname,gender,birthday,fullname,personalid");
+            }
+
+            params.setUsername(userId);
+            result = accountInfoManager.getUserInfo(params);
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+
+            if (result.isSuccess()) {
+                if (domain == AccountDomainEnum.THIRD) {
+                    result.setDefaultModel("disable", true);
+                }
+                model.addAttribute("data", result.toString());
+                result.setMessage("获取个人信息成功");
+                return "/person/index";
+            }
+        }
+        return "redirect:/web/webLogin";
     }
 
     //头像上传
