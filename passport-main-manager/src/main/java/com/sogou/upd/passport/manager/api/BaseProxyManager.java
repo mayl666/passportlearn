@@ -78,7 +78,7 @@ public class BaseProxyManager {
 
         //设置默认参数同时计算参数的签名
         this.setDefaultParam(requestModel, signVariableStr);
-        if (requestModel instanceof RequestModelXml ||requestModel instanceof RequestModelXmlGBK) {
+        if (requestModel instanceof RequestModelXml || requestModel instanceof RequestModelXmlGBK) {
             return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
         } else {
             return SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
@@ -108,12 +108,12 @@ public class BaseProxyManager {
             clientId = String.valueOf(requestModel.getParam(CommonConstant.CLIENT_ID));
         }
         String code;
-        if (isNonSGAppKeyProxyOpenApi(url, clientId)) {
-            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
-            requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.DEFAULT_CONNECT_APP_ID));
-        } else {
+        if (isSGAppKeyProxyOpenApi(url, clientId)) {
             code = ManagerHelper.generatorCodeGBK(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
             requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.APP_ID));
+        } else {
+            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
+            requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.DEFAULT_CONNECT_APP_ID));
         }
         requestModel.addParam(CommonConstant.RESQUEST_CODE, code);
         requestModel.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
@@ -165,25 +165,25 @@ public class BaseProxyManager {
 
     /*
      * 第三方代理接口是否使用搜狗appkey授权的
-     * 如果是，访问搜狐时需传appid=1110；
-     * 如果否，访问搜狐时需传appid=1120；
+     * 如果是，访问搜狐时需传appid=1120；
+     * 如果否，访问搜狐时需传appid=1110；
      */
-    private boolean isNonSGAppKeyProxyOpenApi(String url, String clientId) {
-        if (isProxyOpenApi(url) && isNonUseSGAppKey(clientId)) {
-                return true;
+    private boolean isSGAppKeyProxyOpenApi(String url, String clientId) {
+        if (isProxyOpenApi(url) && isUseSGAppKey(clientId)) {
+            return true;
         }
         return false;
     }
 
-    private boolean isProxyOpenApi(String url){
-       return url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO);
+    private boolean isProxyOpenApi(String url) {
+        return url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO);
     }
 
     /*
      *  TODO 阅读的移动端和wap使用的type=mapp，用搜狗appkey
      *  浏览器和输入法PC端使用type=token，用搜狗appkey
      */
-    private boolean isNonUseSGAppKey(String clientId){
-         return !clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID)) && !clientId.equals("1115");
+    private boolean isUseSGAppKey(String clientId) {
+        return clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) || clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID)) || clientId.equals("1115");
     }
 }
