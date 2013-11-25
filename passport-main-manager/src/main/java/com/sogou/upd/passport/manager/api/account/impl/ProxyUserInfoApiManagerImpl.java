@@ -2,11 +2,14 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -14,6 +17,7 @@ import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +29,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+
+
 /**
  * User: ligang201716@sogou-inc.com
+ * edit: mayan
  * Date: 13-6-13
  * Time: 上午11:20
  */
@@ -39,6 +46,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
     private RedisUtils redisUtils;
     @Inject
     private PhotoUtils photoUtils;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     static {
         SUPPORT_FIELDS_MAP = new HashSet<>(8);
@@ -74,6 +83,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             }
         }
         requestModelXml.addParams(getUserInfoApiparams);
+            requestModelXml.deleteParams("imagesize");
+
         if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
             requestModelXml.addParam("usertype", 1);
         }
@@ -91,62 +102,126 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                 }
 
                 //替换搜狐的个人头像
-                String avatarurl= result.getModels().get("avatarurl")!=null ?(String)result.getModels().get("avatarurl"):null;
-                String image= Strings.isNullOrEmpty(avatarurl)?null:avatarurl.replaceAll("\\/\\/","");
-                String passportId= getUserInfoApiparams.getUserid();
+                String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
+                String image = Strings.isNullOrEmpty(avatarurl) ? null : avatarurl.replaceAll("\\/\\/", "");
+
+                String passportId = getUserInfoApiparams.getUserid();
 
                 if(!Strings.isNullOrEmpty(image)){
-                    String cacheKey="SP.PASSPORTID:IMAGE_"+passportId;
+                    image=image.substring(image.indexOf("/"),image.length());
+                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
 
-                    Map<String,String> map=redisUtils.hGetAll(cacheKey) ;
+                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
                     if(MapUtils.isNotEmpty(map)){
-                        String shImg=map.get("shImg");
-                        String sgImg=map.get("sgImg");
-                        if(!shImg.equals(image)){
+                        String shImg = map.get("shImg");
+                        String sgImg = map.get("sgImg");
+
+                        //验证sohu修改图片后，搜狗自动更新
+                        if (!Strings.isNullOrEmpty(shImg) && !shImg.equals(image)) {
                             //获取图片名
                             String imgName = photoUtils.generalFileName();
-                            // 上传到OP图片平台
-                            if (photoUtils.uploadImg(imgName, null,image,"1")) {
+                            // 上传到OP图片平台   sohu头像暂时用 a1.itc.cn域名
+                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
                                 sgImg = photoUtils.accessURLTemplate(imgName);
-                                Map<String,String> mapResult= Maps.newHashMap();
-                                mapResult.put("shImg",image);
-                                mapResult.put("sgImg",sgImg);
+                                Map<String, String> mapResult = Maps.newHashMap();
+                                mapResult.put("shImg", image);
+                                mapResult.put("sgImg", sgImg);
 
-                                redisUtils.hPutAll(cacheKey,mapResult);
+                                redisUtils.hPutAll(cacheKey, mapResult);
                             } else {
                                 result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
                                 return result;
                             }
                         }
-                        result.setDefaultModel("image",obtainPhoto(sgImg,"50"));
-                        result.getModels().remove("avatarurl");
                     } else {
-                        //获取图片名
-                        String imgName = photoUtils.generalFileName();
-                        // 上传到OP图片平台
-                        if (photoUtils.uploadImg(imgName, null,image,"1")) {
-                            String sgImg = photoUtils.accessURLTemplate(imgName);
-                            Map<String,String> mapResult= Maps.newHashMap();
-                            mapResult.put("shImg",image);
-                            mapResult.put("sgImg",sgImg);
+                        if(!Strings.isNullOrEmpty(image)){
+                            //获取图片名
+                            String imgName = photoUtils.generalFileName();
+                            // 上传到OP图片平台
+                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
+                                String sgImg = photoUtils.accessURLTemplate(imgName);
+                                Map<String, String> mapResult = Maps.newHashMap();
+                                mapResult.put("shImg", image);
+                                mapResult.put("sgImg", sgImg);
 
-                            redisUtils.hPutAll(cacheKey,mapResult);
+                                redisUtils.hPutAll(cacheKey, mapResult);
+                            }
+                        }
                     }
+                    Result photoResult = obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+                    Map photoMap = photoResult.getModels();
+                    result.setDefaultModel("avatarurl", photoMap);
+
+                } else{
+                    //搜狐头像为空返回默认头像
+                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+
+                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
+                    Result photoResult=null;
+                    if(MapUtils.isNotEmpty(map)) {
+                        photoResult = obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+                    } else {
+                        photoResult = obtainPhoto(Integer.toString(getUserInfoApiparams.getClient_id()), getUserInfoApiparams.getImagesize());
+                    }
+
+                    Map photoMap = photoResult.getModels();
+                    result.setDefaultModel("avatarurl", photoMap);
                 }
-            }
             }
         }catch (Exception e){
              e.printStackTrace();
         }
-        return result;
+        return getUserInfoResultHandel(result);
     }
 
-    public String obtainPhoto(String imgURL,String size){
-            String clientId=photoUtils.getAppIdBySize(size);
+    public Result obtainPhoto(String passportId, String size) {
+        Result result = new APIResultSupport(false);
+        try {
+            String []sizeArry=null;
+            //获取size对应的appId
+            if(!Strings.isNullOrEmpty(size)){
+                //检测是否是支持的尺寸
+                sizeArry=size.split(",");
 
-            //随机获取cdn域名
-            String cdnUrl=photoUtils.getCdnURL();
-            return  String.format(imgURL,cdnUrl, clientId);
+                if(ArrayUtils.isNotEmpty(sizeArry)){
+                    for(int i=0;i<sizeArry.length;i++){
+                        if(Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))){
+                            result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
+                            return result;
+                        }
+                    }
+                } else {
+                    //为空获取所有的尺寸
+                    sizeArry=photoUtils.getAllImageSize();
+                }
+
+                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+                String image=redisUtils.hGet(cacheKey,"sgImg");
+
+                if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
+                    result.setSuccess(true);
+                    for (int i=0;i<sizeArry.length;i++){
+                        //随机获取cdn域名
+                        String cdnUrl=photoUtils.getCdnURL();
+                        //获取图片尺寸
+                        String clientId=photoUtils.getAppIdBySize(sizeArry[i]);
+
+                        String photoURL =String.format(image, cdnUrl, clientId);
+                        if(!Strings.isNullOrEmpty(photoURL)){
+                            result.setDefaultModel("img_"+sizeArry[i],photoURL);
+                        }
+                    }
+                    return result;
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
+                    return result;
+                }
+            }
+        }catch (Exception e){
+            result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
+            return result;
+        }
+        return result;
     }
 
     /**
