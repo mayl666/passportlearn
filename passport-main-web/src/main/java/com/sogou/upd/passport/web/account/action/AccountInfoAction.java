@@ -263,11 +263,10 @@ public class AccountInfoAction extends BaseController {
 
             String userId = hostHolder.getPassportId();
 
-            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId))){
+            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId)) ||AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))){
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
                 Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
                 result.setDefaultModel("uniqname",(String)result1.getModels().get("uniqname"));
-                result.setDefaultModel("disable", true);
             }else {
                 result = secureManager.queryAccountSecureInfo(userId, 1120, false);
             }
