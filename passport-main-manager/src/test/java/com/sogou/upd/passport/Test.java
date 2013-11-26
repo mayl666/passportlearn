@@ -1,8 +1,5 @@
 package com.sogou.upd.passport;
 
-import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.manager.ManagerHelper;
-
 import java.security.MessageDigest;
 
 /**
@@ -17,16 +14,17 @@ public class Test {
     private static char[] HEXCHAR = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     public static void  main(String args[]) throws Exception{
-        long ct = System.currentTimeMillis();
-        System.out.println("ct:" + ct);
+//        long ct = System.currentTimeMillis();
+//        System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
+        long ct =  1381915491000l;
         String token ="7faada06773b30155f7eb93955845dfb";
         String code = generatorCodeGBK(token, 1115, "RBCqf6a448Wj5a8#KF&POL75*5GBQ5", ct);
         System.out.println("code:" + code);
 
         try {
-            String pwdMD5 = Coder.encryptMD5("111111");
-            System.out.println("pwdMD5:" + pwdMD5);
+//            String pwdMD5 = Coder.encryptMD5("111111");
+//            System.out.println("pwdMD5:" + pwdMD5);
         } catch (Exception e) {
             e.printStackTrace();
         }
