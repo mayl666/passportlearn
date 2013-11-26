@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 
 /**
  * Passport访问开放平台进行OAuth授权请求类，包括：
@@ -71,10 +72,10 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
             if (AccountTypeEnum.TAOBAO.getValue() == provider) {
                 this.parameters.put(OAuth.OAUTH_TAOBAO_DISPLAY, display);
             } else if (AccountTypeEnum.QQ.getValue() == provider) {
-                if (display.equals("wap1")) {
+                if (QQOAuth.WML_DISPLAY.equals(display)) {
                     this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "1");
                     this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
-                } else if (display.equals("wap2")) {
+                } else if (QQOAuth.XHTML_DISPLAY.equals(display)) {
                     this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "2");
                     this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
                 }
