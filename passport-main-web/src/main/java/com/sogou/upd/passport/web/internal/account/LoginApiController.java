@@ -199,10 +199,14 @@ public class LoginApiController extends BaseController {
                 UserOpenApiParams userOpenApiParams = new UserOpenApiParams();
                 userOpenApiParams.setOpenid(userid);
                 userOpenApiParams.setUserid(userid);
+                //必须得传client_id
+                userOpenApiParams.setClient_id(params.getClient_id());
                 result = proxyUserOpenApiManager.getUserInfo(userOpenApiParams);
             }else {
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userid);
+                //必须得传client_id
+                getUserInfoApiparams.setClient_id(params.getClient_id());
                 result = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
                 //转换结果格式
                 result = changeResult(result);
