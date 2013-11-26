@@ -53,8 +53,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private SHPlusTokenService shPlusTokenService;
-    @Autowired
-    private PCAccountTokenService pcAccountTokenService;
 
     @Override
     public Result resource(PCOAuth2ResourceParams params) {
