@@ -91,7 +91,7 @@ public class CookieAction extends BaseController {
         }
         //是否种持久型cookie，0：否 1：是
         int maxAge = (int) (cookieWebParams.getPersistentcookie() == 0 ? -1 : DateAndNumTimesConstant.TWO_WEEKS);
-        result = cookieManager.setCookie(response, result, cookieApiParams, maxAge);
+        result = cookieManager.setCookie(response, cookieApiParams, maxAge);
         if (result.isSuccess()) {
             //设置来源
             String ru = cookieWebParams.getRu();

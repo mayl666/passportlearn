@@ -32,13 +32,6 @@ public class KvperfController {
     @Autowired
     private KvUtils kvUtils;
 
-    private AppConfig appconfig;
-
-    @PostConstruct
-    private void init() {
-        appconfig = appConfigService.queryAppConfigByClientId(1044);
-    }
-
     @RequestMapping(value = "/internal/debug/kvset", method = RequestMethod.GET)
     @ResponseBody
     public String testKvSet() throws Exception {
@@ -46,6 +39,7 @@ public class KvperfController {
         String instanceId = RandomStringUtils.randomAlphanumeric(10);
         int clientId = 1044;
 
+        AppConfig appconfig = appConfigService.queryAppConfigByClientId(1044);
         AccountToken accountToken = PCAccountServiceImpl.newAccountToken(passportId, instanceId, appconfig);
         String key = PCAccountServiceImpl.buildKeyStr(passportId, clientId, instanceId);
         kvUtils.set(key, accountToken);
@@ -58,6 +52,7 @@ public class KvperfController {
         String passportId = RandomStringUtils.randomAlphanumeric(8) + "@sogou.com";
         String instanceId = RandomStringUtils.randomAlphanumeric(10);
 
+        AppConfig appconfig = appConfigService.queryAppConfigByClientId(1044);
         pcAccountTokenService.updateAccountToken(passportId, instanceId, appconfig);
         return "OK";
     }
@@ -77,6 +72,7 @@ public class KvperfController {
     public String testKvSet_Get() throws Exception {
         String passportId = RandomStringUtils.randomAlphanumeric(8) + "@sogou.com";
         String instanceId = RandomStringUtils.randomAlphanumeric(10);
+        AppConfig appconfig = appConfigService.queryAppConfigByClientId(1044);
         pcAccountTokenService.updateAccountToken(passportId, instanceId, appconfig);
         AccountToken accountToken = pcAccountTokenService.queryAccountToken(passportId, 1044, instanceId);
         return "OK";

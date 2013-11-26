@@ -1,6 +1,6 @@
-package com.sogou.upd.passport.web.test.account.controller;
+package com.sogou.upd.passport.web.account.controller;
 
-import com.sogou.upd.passport.web.test.BaseActionTest;
+import com.sogou.upd.passport.web.BaseActionTest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
