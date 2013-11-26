@@ -81,4 +81,26 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         Result result = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, false, true);
         System.out.println(result);
     }
+
+    @Test
+    public void testGetCookieInfo() {
+        String userId = "testliu94608@sogou.com";
+        try {
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setIp("200.0.98.23");
+            Result result = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+//            Map<String, Object> map = result.getModels();
+//            List<Map<String, String>> listString = (List<Map<String, String>>) map.get("data");
+//            Map<String, String> mapString = new HashMap<String, String>();
+//            for (int i = 0; i < listString.size(); i++) {
+//                String key = listString.get(i).get("name").toString();
+//                String value = listString.get(i).get("value").toString();
+//                mapString.put(key,value);
+//            }
+            System.out.println(result.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
