@@ -42,7 +42,7 @@ public class OAuthConsumerFactory {
         properties.load(input);
 
         OAuthConsumer oAuthConsumer = new OAuthConsumer();
-        oAuthConsumer.setWebUserAuthzUrl(getURL("web_userAuthzUrl", providerStr));
+        oAuthConsumer.setWebUserAuthzUrl(getURL("userAuthzUrl", providerStr));
         oAuthConsumer.setAccessTokenUrl(getURL("accessTokenUrl", providerStr));
         oAuthConsumer.setRefreshAccessTokenUrl(getURL("refreshAccessTokenUrl", providerStr));
         oAuthConsumer.setOpenIdUrl(getURL("openIdUrl", providerStr));

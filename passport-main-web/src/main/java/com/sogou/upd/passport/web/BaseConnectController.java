@@ -4,10 +4,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -83,6 +85,10 @@ public class BaseConnectController extends BaseController {
             ru = "/pcaccount/connectlogin";
         }
         return ru;
+    }
+
+    protected static boolean isWapQQ(int provider, String display) {
+        return provider == AccountTypeEnum.QQ.getValue() && (QQOAuth.WML_DISPLAY.equals(display) || QQOAuth.XHTML_DISPLAY.equals(display));
     }
 
 
