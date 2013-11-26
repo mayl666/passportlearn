@@ -15,7 +15,7 @@ public class Test {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String token ="f03ff71938f38d55eca0069936633416";
+        String token ="7faada06773b30155f7eb93955845dfb";
         String code = ManagerHelper.generatorCodeGBK(token, 1115, "RBCqf6a448Wj5a8#KF&POL75*5GBQ5", ct);
         System.out.println("code:" + code);
 
