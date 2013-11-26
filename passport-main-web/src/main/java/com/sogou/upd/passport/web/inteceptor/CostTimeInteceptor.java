@@ -4,10 +4,12 @@ package com.sogou.upd.passport.web.inteceptor;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.service.account.InterfaceLimitedService;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.apache.commons.collections.MapUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -54,14 +56,15 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 //        InterfaceLimited interfaceLimited = handlerMethod.getMethodAnnotation(InterfaceLimited.class);
         //检查是否加@InterfaceLimited注解，如果没加不需要验证
 
-        Result result = new APIResultSupport(false);
+        Result result = new APIResultSupport(true);
+        int clientId=0;
         try {
             String client_id=request.getParameter(CommonConstant.CLIENT_ID);
             //先取client_id，如果没有再获取appid
             if(Strings.isNullOrEmpty(client_id)){
                 client_id=request.getParameter(CommonConstant.APP_ID);
             }
-            int clientId = Integer.parseInt(Strings.isNullOrEmpty(client_id)?"1120":client_id);
+            clientId = Integer.parseInt(Strings.isNullOrEmpty(client_id)?"1120":client_id);
 
             //获取url
             String url = request.getRequestURI();
@@ -75,7 +78,8 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                     AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
                     //flag为false 代表缓存中次数已经消耗完，接口频次受限
                     if (mapResult.get("flag") instanceof Boolean && !(boolean) mapResult.get("flag")) {
-                        result.setCode(ErrorUtil.ERR_CODE_CLIENT_INBLACKLIST);
+                        result.setSuccess(false);
+                        result.setCode(ErrorUtil.INVOKE_BEYOND_FREQUENCY_LIMIT);
                         response.setContentType(HttpConstant.ContentType.JSON + ";charset=UTF-8");
                         response.getWriter().write(result.toString());
                         return false;
@@ -88,7 +92,15 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             }
             return true;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("CostTimeInteceptor error:" + clientId+" "+request.getRequestURI(), e);
+        } finally {
+            if(!result.isSuccess()){
+                String errorCode=result.getCode();
+                UserOperationLog userOperationLog = new UserOperationLog("", request.getRequestURI(), Integer.toString(clientId), errorCode, getIp(request));
+                String referer = request.getHeader("referer");
+                userOperationLog.putOtherMessage("ref", referer);
+                UserOperationLogUtil.log(userOperationLog);
+            }
         }
         return true;
     }
@@ -140,6 +152,19 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             }
         }
         return true;
+    }
+
+    private String getIp(HttpServletRequest request) {
+        String sff = request.getHeader("X-Forwarded-For");// 根据nginx的配置，获取相应的ip
+        if (Strings.isNullOrEmpty(sff)) {
+            sff = request.getHeader("X-Real-IP");
+        }
+        if (Strings.isNullOrEmpty(sff)) {
+            return Strings.isNullOrEmpty(request.getRemoteAddr()) ? "" : request.getRemoteAddr();
+        }
+        String[] ips = sff.split(",");
+        String realip = ips[0];
+        return realip;
     }
 
     @Override
