@@ -5,10 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,6 +46,19 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         params.setCt(1160703204);
         Result result = proxyLoginApiManager.appAuthToken(params);
         System.out.println(result);
+    }
+    @Test
+    public void testgetSHCookieValue() {
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid("tinkame710@sogou.com");
+        cookieApiParams.setClient_id(1044);
+        cookieApiParams.setRu("https://account.sogou.com/");
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+
+        //TODO sogou域账号迁移后cookie生成问题
+        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+        System.out.println(getCookieValueResult.toString());
     }
 
     @Test

@@ -389,7 +389,7 @@ public class PCOAuth2AccountController extends BaseController {
             if(!cookieUserId.equals(passportId)){
                 return "redirect:/web/logout_redirect";
             }
-            return "redirect:/index";
+            return "redirect:/web/userinfo/getuserinfo";
         }
         //生成cookie
         /*CookieApiParams cookieApiParams = new CookieApiParams();
@@ -415,7 +415,7 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
-        return  "redirect:/index";
+        return  "redirect:/web/userinfo/getuserinfo";
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")
