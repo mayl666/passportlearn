@@ -104,8 +104,6 @@ public class ManagerHelper {
         result.setDefaultModel("nick", Coder.encryptBase64(uniqName));
         result.setDefaultModel("sname", Coder.encryptBase64(accountToken.getPassportId()));
         result.setDefaultModel("passport", Coder.encryptBase64(accountToken.getPassportId()));
-        result.setDefaultModel("result", 0);
-        result.setDefaultModel("sid", 0);
         result.setDefaultModel("logintype", loginType);
         return result;
     }

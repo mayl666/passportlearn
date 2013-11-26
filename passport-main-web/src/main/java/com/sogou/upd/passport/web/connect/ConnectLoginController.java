@@ -111,7 +111,7 @@ public class ConnectLoginController extends BaseConnectController {
         try {
             if (CommonHelper.isIePinyinToken(clientId) || type.equals(ConnectTypeEnum.PC.toString())) {  // 目前只有浏览器走搜狗流程
                 url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-                writeOAuthStateCookie(res, uuid, providerStr); // TODO 第一阶段先注释掉，没用到
+                writeOAuthStateCookie(res, uuid, providerStr);
             } else {
                 url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
             }
