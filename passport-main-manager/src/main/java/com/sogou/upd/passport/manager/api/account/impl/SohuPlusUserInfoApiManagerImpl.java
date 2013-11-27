@@ -92,18 +92,31 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
         Result result = getUserInfo(infoApiparams);
         if(result.isSuccess()){
             Object obj=result.getModels().get("baseInfo");
+            AccountBaseInfo accountBaseInfo=null;
             if(obj!=null){
-                AccountBaseInfo accountBaseInfo= (AccountBaseInfo) obj;
+                accountBaseInfo= (AccountBaseInfo) obj;
                 boolean flag=updateUserInfo(accountBaseInfo,updateUserInfoApiParams.getUniqname());
                 if(flag){
                     result.setSuccess(true);
                     result.setMessage("修改成功");
                     return result;
                 }
+            } else {
+                String passportId=updateUserInfoApiParams.getUserid();
+
+                accountBaseInfo=new AccountBaseInfo();
+                accountBaseInfo.setUniqname(updateUserInfoApiParams.getUniqname());
+                accountBaseInfo.setAvatar("");
+                accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
+                String cacheKey = buildAccountKey(passportId);
+                //初始化
+                redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
+                result.setSuccess(true);
+                result.setMessage("修改成功");
+                return result;
             }
         }
-
-        return null;
+        return result;
     }
 
     public boolean updateUserInfo(AccountBaseInfo baseInfo,String uniqname) {

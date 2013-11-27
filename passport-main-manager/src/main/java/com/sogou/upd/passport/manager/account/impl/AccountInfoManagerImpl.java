@@ -71,17 +71,24 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 Result resultUserInfo = shPlusUserInfoApiManager.getUserInfo(apiparams);
                 if (resultUserInfo.isSuccess()) {
                     Object obj = resultUserInfo.getModels().get("baseInfo");
+                    AccountBaseInfo baseInfo=null;
                     if (obj != null) {
-                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
+                        baseInfo = (AccountBaseInfo) obj;
                         //更新数据库
                         int rows = accountBaseInfoDAO.updateAvatarByPassportId(imgURL, passportId);
                         if (rows != 0) {
                             //更新缓存
                             baseInfo.setAvatar(imgURL);
-                            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                            redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                         }
+                    }else {
+                        //新添加记录
+                        baseInfo=new AccountBaseInfo();
+                        baseInfo.setPassportId(passportId);
+                        baseInfo.setAvatar(imgURL);
+                        baseInfo.setUniqname("");
                     }
+                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
+                    redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                 }
                 result.setSuccess(true);
                 result.setDefaultModel("image", imgURL);
