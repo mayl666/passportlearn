@@ -109,25 +109,27 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
     public boolean updateUserInfo(AccountBaseInfo baseInfo,String uniqname) {
         String oldUniqName = baseInfo.getUniqname();
         String passportId = baseInfo.getPassportId();
-        //更新数据库
-        int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
-        if (row > 0) {
-            String cacheKey = buildAccountKey(passportId);
-            baseInfo.setUniqname(uniqname);
-            redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+        if(!Strings.isNullOrEmpty(oldUniqName) && !oldUniqName.equals(uniqname)){
+            //更新数据库
+            int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
+            if (row > 0) {
+                String cacheKey = buildAccountKey(passportId);
+                baseInfo.setUniqname(uniqname);
+                redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
 
-            //移除原来映射表
-            if (removeUniqName(oldUniqName)) {
-                //更新新的映射表
-                row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                if (row > 0) {
-                    cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                    redisUtils.set(cacheKey, passportId);
+                //移除原来映射表
+                if (removeUniqName(oldUniqName)) {
+                    //更新新的映射表
+                    row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                    if (row > 0) {
+                        cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                        redisUtils.set(cacheKey, passportId);
+                    }
+                    return true;
                 }
-                return true;
             }
         }
-        return false;
+        return true;
     }
 
     //缓存中移除原来昵称
