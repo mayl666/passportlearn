@@ -43,10 +43,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
     private static Set<String> SUPPORT_FIELDS_MAP = null;
 
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
     private AccountInfoManager accountInfoManager;
 
     static {

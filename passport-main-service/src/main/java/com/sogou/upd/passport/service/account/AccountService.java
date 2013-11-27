@@ -132,14 +132,14 @@ public interface AccountService {
     /*
        *检查昵称是否存在
        */
-    public String checkNickName(String nickname) throws Exception;
+    public String checkUniqName(String nickname) throws Exception;
     /*
      *更新个人信息
      */
-    public boolean updateNickName(/*Account account,*/String passportId,String oldNickName, String nickname);
+    public boolean updateUniqName(/*Account account,*/String passportId,String oldNickName, String nickname);
     /*
     *删除昵称
     */
-    public boolean removeNickName(String nickname) throws ServiceException;
+    public boolean removeUniqName(String nickname) throws ServiceException;
 
 }

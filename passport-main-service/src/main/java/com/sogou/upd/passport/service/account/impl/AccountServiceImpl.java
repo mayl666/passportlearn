@@ -467,7 +467,7 @@ public class AccountServiceImpl implements AccountService {
   }
 
     @Override
-    public String checkNickName(String nickname) throws ServiceException {
+    public String checkUniqName(String nickname) throws ServiceException {
         String passportId = null;
         try {
             String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
@@ -485,7 +485,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean updateNickName(/*Account account,*/String passportId,String oldNickName, String nickname)  throws ServiceException{
+    public boolean updateUniqName(/*Account account,*/String passportId,String oldNickName, String nickname)  throws ServiceException{
         try {
             //sogou分支需要修改此逻辑，在account主表中修改昵称
 //            String oldNickName = account.getNickname();
@@ -498,7 +498,7 @@ public class AccountServiceImpl implements AccountService {
 //                redisUtils.set(cacheKey, account);
 
                 //移除原来映射表
-                if (removeNickName(oldNickName)) {
+                if (removeUniqName(oldNickName)) {
                     //更新新的映射表
                     int row = nickNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
                     if (row > 0) {
@@ -519,7 +519,7 @@ public class AccountServiceImpl implements AccountService {
 
     //缓存中移除原来昵称
     @Override
-    public boolean removeNickName(String nickname) throws ServiceException {
+    public boolean removeUniqName(String nickname) throws ServiceException {
         try {
             if (!Strings.isNullOrEmpty(nickname)) {
                 //更新映射

@@ -4,15 +4,19 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
+import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
+import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,12 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
     private AccountBaseInfoDAO accountBaseInfoDAO;
     @Autowired
     private TaskExecutor uploadImgExecutor;
+    @Autowired
+    private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
+
+    private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
+    private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
+
     private static final Logger logger = LoggerFactory.getLogger(SohuPlusUserInfoApiManagerImpl.class);
 
 
@@ -76,7 +86,71 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
 
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams updateUserInfoApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+        GetUserInfoApiparams infoApiparams= new GetUserInfoApiparams();
+        infoApiparams.setUserid(updateUserInfoApiParams.getUserid());
+        Result result = getUserInfo(infoApiparams);
+        if(result.isSuccess()){
+            Object obj=result.getModels().get("baseInfo");
+            if(obj!=null){
+                AccountBaseInfo accountBaseInfo= (AccountBaseInfo) obj;
+                boolean flag=updateUserInfo(accountBaseInfo,updateUserInfoApiParams.getUniqname());
+                if(flag){
+                    result.setSuccess(true);
+                    result.setMessage("修改成功");
+                    return result;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public boolean updateUserInfo(AccountBaseInfo baseInfo,String uniqname) {
+        String oldUniqName = baseInfo.getUniqname();
+        String passportId = baseInfo.getPassportId();
+        //更新数据库
+        int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
+        if (row > 0) {
+            String cacheKey = buildAccountKey(passportId);
+            baseInfo.setUniqname(uniqname);
+            redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+
+            //移除原来映射表
+            if (removeUniqName(oldUniqName)) {
+                //更新新的映射表
+                row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                if (row > 0) {
+                    cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                    redisUtils.set(cacheKey, passportId);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //缓存中移除原来昵称
+    public boolean removeUniqName(String uniqname) throws ServiceException {
+        try {
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                //更新映射
+                int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
+                if (row > 0) {
+                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                    redisUtils.delete(cacheKey);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("removeUniqName fail", e);
+            return false;
+        }
+        return false;
+    }
+
+    private String buildAccountKey(String passportId) {
+        return CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
     }
 
     @Override

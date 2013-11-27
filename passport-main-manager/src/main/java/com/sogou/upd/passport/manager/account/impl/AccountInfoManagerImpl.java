@@ -198,7 +198,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             }
 
             updateUserInfoApiParams.setBirthday(birthday);
-            updateUserInfoApiParams.setUniqname(infoParams.getNickname());
             updateUserInfoApiParams.setUsername(infoParams.getFullname());
 
             updateUserInfoApiParams.setProvince(infoParams.getProvince());
@@ -207,6 +206,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             updateUserInfoApiParams.setPersonalId(infoParams.getPersonalid());
             updateUserInfoApiParams.setModifyip(ip);
             result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+
+            //更新昵称
+            if(result.isSuccess()){
+                updateUserInfoApiParams.setUniqname(infoParams.getNickname());
+                result=shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+            }
         } else {
             updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
             result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);

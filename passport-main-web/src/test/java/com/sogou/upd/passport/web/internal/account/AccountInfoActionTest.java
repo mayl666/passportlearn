@@ -74,7 +74,7 @@ public class AccountInfoActionTest extends BaseActionTest {
         params.put("client_id", String.valueOf(clientId));
         params.put("userid",userId);
 //        params.put("fields","avatarurl,personalid,province,city,username,sec_mobile,sec_email,sec_ques") ;
-        params.put("fields","avatarurl") ;
+        params.put("fields","avatarurl,uniqname") ;
         params.put("imagesize","30,55");
         params.put("modifyip","192.168.1.1");
 //

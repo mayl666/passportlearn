@@ -33,7 +33,7 @@ public class RedisUtils {
     * 设置缓存内容
     */
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_set", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    public void set(String key, String value) throws Exception {
+    public void set(String key, String value)  {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value);
@@ -606,7 +606,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    public void set(String key, Object obj, long timeout, TimeUnit timeUnit) throws Exception {
+    public void set(String key, Object obj, long timeout, TimeUnit timeUnit)  {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, jsonMapper.writeValueAsString(obj), timeout, timeUnit);

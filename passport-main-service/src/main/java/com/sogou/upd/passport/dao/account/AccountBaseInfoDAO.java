@@ -38,13 +38,23 @@ public interface AccountBaseInfoDAO {
     public AccountBaseInfo getAccountBaseInfoByPassportId(@SQLParam("passport_id") String passport_id) throws DataAccessException;
 
     /**
-     * 修改用户信息
+     * 修改头像信息
      */
     @SQL("update " +
             TABLE_NAME +
             " set avatar=:avatar where passport_id=:passport_id")
     public int updateAvatarByPassportId(@SQLParam("avatar") String avatar,
                               @SQLParam("passport_id") String passport_id) throws
+            DataAccessException;
+
+    /**
+     * 修改昵称信息
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set uniqname=:uniqname where passport_id=:passport_id")
+    public int updateUniqnameByPassportId(@SQLParam("uniqname") String uniqname,
+                                        @SQLParam("passport_id") String passport_id) throws
             DataAccessException;
 
 }
