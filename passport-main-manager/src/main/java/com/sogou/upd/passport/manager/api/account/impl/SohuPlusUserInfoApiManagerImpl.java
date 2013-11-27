@@ -107,6 +107,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                 accountBaseInfo=new AccountBaseInfo();
                 accountBaseInfo.setUniqname(updateUserInfoApiParams.getUniqname());
                 accountBaseInfo.setAvatar("");
+                accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
                 accountBaseInfoDAO.insertAccountBaseInfo(passportId,accountBaseInfo);
 
                 String cacheKey = buildAccountKey(passportId);

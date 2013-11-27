@@ -83,6 +83,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     }else {
                         //新添加记录
                         baseInfo=new AccountBaseInfo();
+                        baseInfo.setPassportId(passportId);
                         baseInfo.setAvatar(imgURL);
                         baseInfo.setUniqname("");
                         accountBaseInfoDAO.insertAccountBaseInfo(passportId,baseInfo);
