@@ -73,6 +73,7 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
                     result = sgBindApiManager.getPassportIdByMobile(params);
                 }
                 if (result.isSuccess()) {
+                    result = new APIResultSupport(false);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                     return result;
                 }
