@@ -18,6 +18,7 @@ import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.impl.PCAccountServiceImpl;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +131,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             AccountToken renewAccountToken;
             if (GrantTypeEnum.HEART_BEAT.toString().equals(grantType)) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                boolean isRightPcRToken = pcAccountTokenService.verifyNoStoreToken(refreshToken,appConfig.getClientSecret());
                 if (!isRightPcRToken) {
                     String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
                     if (accessToken == null) {
@@ -146,7 +147,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
-            renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
+            renewAccountToken = PCAccountServiceImpl.newNoStoreAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());

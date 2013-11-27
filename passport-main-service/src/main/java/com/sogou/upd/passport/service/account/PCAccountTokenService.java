@@ -106,4 +106,13 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+
+    /**
+     * 验证非存储型refreshToken
+     * @param token
+     * @param clientSecret
+     * @return
+     * @throws ServiceException
+     */
+    public boolean verifyNoStoreToken(String token,String clientSecret) throws ServiceException;
 }

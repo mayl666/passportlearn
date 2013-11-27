@@ -48,6 +48,7 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             //yinyong@sogou-inc.com,2013-11-21[16:29:48]
             //init vcode img
             this.refreshVcode($('.chkPic img'));
+            $('[name=account]').focus();
         },
         sogouBaseurl: location.origin,//'//account.sogou.com',
         //事件代理
@@ -500,6 +501,7 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
 
 
             }).fail(function(data) {
+                $bottomError.html('网络异常，请稍后尝试注册').show();
                 self.submited = false
             })
         },
