@@ -45,19 +45,23 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
     }
 
     @Override
-    public boolean initialSnamePassportMapping(String sname, String passportId) throws ServiceException {
+    public String queryPassportIdBySid(String sid) throws ServiceException {
+        String passportId;
         try {
-            long id = snamePassportMappingDAO.insertSnamePassportMapping(sname, passportId);
-            if (id != 0) {
-                String cacheKey = buildSnamePassportMappingKey(sname);
-                redisUtils.set(cacheKey, passportId);
-                return true;
+            String cacheKey = buildSnamePassportMappingKey(sid);
+            passportId = redisUtils.get(cacheKey);
+            if (Strings.isNullOrEmpty(passportId)) {
+                passportId = snamePassportMappingDAO.getPassportIdBySid(sid);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    redisUtils.set(cacheKey, passportId);
+                }
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return false;
+        return passportId;
     }
+
 
 
     @Override
