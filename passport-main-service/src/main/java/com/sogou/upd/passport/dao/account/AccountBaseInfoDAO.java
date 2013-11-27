@@ -64,7 +64,7 @@ public interface AccountBaseInfoDAO {
             "insert into " +
                     TABLE_NAME +
                     "(passport_id,uniqname,avatar) "
-                    + "values (baseInfo:passport_id,:baseInfo.uniqname,:baseInfo.avatar)")
+                    + "values (:baseInfo.passport_id,:baseInfo.uniqname,:baseInfo.avatar)")
     public int insertAccountBaseInfo(@SQLParam("baseInfo") AccountBaseInfo baseInfo) throws DataAccessException;
 
 }
