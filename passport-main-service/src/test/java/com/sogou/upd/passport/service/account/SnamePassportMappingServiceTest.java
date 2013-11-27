@@ -24,19 +24,11 @@ public class SnamePassportMappingServiceTest extends AbstractJUnit4SpringContext
     // Account Test Constant
     public static final String PASSPORT_ID = "13600000000@sohu.com";
     public static final String SNAME = "sohuplus_name";
+    public static final String SID = "11111111111";
 
     /**
      * 测试初始化非第三方用户账号
      */
-    @Test
-    public void testInitialAccount() throws Exception {
-        boolean res = snamePassportMappingService.initialSnamePassportMapping(SNAME,PASSPORT_ID);
-        if (res) {
-            System.out.println("插入account表成功...");
-        } else {
-            System.out.println("插入account表不成功!!!");
-        }
-    }
 
     @Test
     public void queryPassportIdBySname() throws Exception {

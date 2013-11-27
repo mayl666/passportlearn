@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -247,7 +248,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     if (tokenResult.isSuccess()) {
                         result.setSuccess(true);
                         String uniqnameTmp = (String) connectAccountResult.getModels().get("uniqname");
-                        ManagerHelper.setModelForOAuthResult(result, uniqnameTmp, accountToken, providerStr);//todo 确认该方法中传入的uniqname是否正确
+                        // TODO 昵称需处理
+                        ManagerHelper.setModelForOAuthResult(result, uniqnameTmp, accountToken, providerStr);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");

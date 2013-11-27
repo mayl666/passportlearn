@@ -29,7 +29,7 @@ public class PCAccountManagerImplTest extends BaseTest {
             PcPairTokenParams params = new PcPairTokenParams();
             params.setAppid(String.valueOf(1044));
             params.setUserid("tinkame700@sogou.com");
-            params.setPassword(Coder.encryptMD5("123456789"));
+            params.setPassword(Coder.encryptMD5("123456"));
             params.setTs("2147483647");
 
             Result result = pcAccountManager.createPairToken(params);

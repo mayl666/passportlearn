@@ -50,6 +50,8 @@ public class AccountInfoAction extends BaseController {
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
+    @Autowired
     private HostHolder hostHolder;
 
     @Autowired
@@ -73,7 +75,7 @@ public class AccountInfoAction extends BaseController {
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(checkOrUpdateNickNameParams.getNickname());
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-        result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+        result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
         return result.toString();
     }
 
@@ -129,7 +131,7 @@ public class AccountInfoAction extends BaseController {
             }
 
             if (Strings.isNullOrEmpty(params.getFields())) {
-                params.setFields("province,city,uniqname,gender,birthday,fullname,personalid");
+                params.setFields("province,city,gender,birthday,fullname,personalid");
             }
 
             params.setUsername(userId);

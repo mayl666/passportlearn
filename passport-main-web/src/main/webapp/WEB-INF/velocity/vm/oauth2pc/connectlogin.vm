@@ -7,17 +7,39 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
     <script type="text/javascript">
         var splus = {};
+<<<<<<< HEAD
         splus.bru = "";
         splus.sp_status = "1";
+=======
+
+        //        splus.bru = "";
+        //        splus.sp_status = "1";
+        //        splus.sname = "c2hpcGVuZ3poaTAx";
+        //        splus.nick = "ZGFz5paH5qGI";
+        //        splus.sid = "2941705";
+        //        splus.passport = "RDZCRERFRERBOEE5QzA5QzdCMjJBN0Q3MTQwQ0MxNjdAcXEuc29odS5jb20=";
+        //        splus.accesstoken = "cbf8ced6f1a7bb91f24b11fc804144e165e95bf257a7083ca25a7bcdd7e9d0eb";
+        //        splus.refreshtoken = "52893cd5afe9cb4095e9a4098b035254b08792bbe894c47c57ebf3be023cc606";
+        //        splus.result = "0";
+        //        splus.logintype = "qq";
+
+//        splus.bru = "";
+//        splus.sp_status = "1";
+>>>>>>> 5a861ce729fac69252f65ec289f94d5042548633
         splus.sname = '${sname}';
         splus.nick = '${nick}';
-        splus.sid = "0";
+        splus.sid = "${passport}";
         splus.passport = '${passport}';
         splus.accesstoken = '${accesstoken}';
         splus.refreshtoken = '${refreshtoken}';
         splus.result = "0";
         splus.logintype = '${logintype}';
+<<<<<<< HEAD
         splus._timestamp = "201308061701";
+=======
+
+//        splus._timestamp = "201308061701";
+>>>>>>> 5a861ce729fac69252f65ec289f94d5042548633
     </script>
     <script src="/./static/js/oauth2pc/require-jquery.js?t=168932"
             data-main="/./static/js/oauth2pc/main.js"></script>

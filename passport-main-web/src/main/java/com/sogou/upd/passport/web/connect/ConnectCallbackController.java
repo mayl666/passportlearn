@@ -59,16 +59,25 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);
 
-            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
+            if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
+                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
+                return new ModelAndView(viewUrl);
+            } else if (ConnectTypeEnum.PC.toString().equals(type)){
+                model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
+                model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
+                model.addAttribute("nick", result.getModels().get("nick"));
+                model.addAttribute("sname", result.getModels().get("sname"));
+                model.addAttribute("passport", result.getModels().get("passport"));
+                model.addAttribute("result", 0);
+                model.addAttribute("logintype", result.getModels().get("logintype"));
                 return new ModelAndView(viewUrl);
             } else {
                 // TODO 少了种cookie
                 return new ModelAndView(new RedirectView(viewUrl));
             }
         } else {
-            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 return new ModelAndView(viewUrl);
             } else {
                 return new ModelAndView(new RedirectView(viewUrl));

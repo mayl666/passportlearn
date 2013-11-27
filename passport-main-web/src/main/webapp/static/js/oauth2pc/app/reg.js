@@ -49,7 +49,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         initEvents: function() {
             var self = this;
             //表单提交时默认事件
-            $('form').on('click','button' ,function(e) {
+            $('form').on('click','button.btn' ,function(e) {
                 var $form = $(e.delegateTarget),
                     formId = $form.attr('id');
                 if (formId == 'fast_reg_form') {
@@ -150,16 +150,16 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     
 
                     inputName = $account.attr('name'),
-                    snameObj = self.validObj.account,
+                    snameObj = self.validObj.regaccount,
                     passwordObj = self.validObj.password,
                     phoneObj = self.validObj.phone;
                 
                     if(inputName == 'sname'){
                         if(!self.check($account,snameObj))  {
                             //隐藏上次操作显示的验证码区域
-                            if($vcodeArea.is(':visible')){
+                           /* if($vcodeArea.is(':visible')){
                                 $vcodeArea.hide()
-                            }
+                            }*/
                             snameObj.legal = false;
                             return 
                         }
@@ -181,7 +181,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                                     $account.removeClass("error").next('span.position-tips').empty().hide();
                                     break;
                                 default:
-                                    $account.addClass("error").next('span.position-tips')
+                                    $account.addClass("error").next('span.position-tips').show()
                                     //self.refreshVcode($img);
                                     .html(self.retStatus.checkSname[code] || result.statusText || "未知错误");;
                             }
@@ -245,7 +245,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
 
                     if(inputName == 'password'){
                         if(!self.check($account,passwordObj))   {
-                            $account.addClass("error").next('span.position-tips').html('请用6-16位字符')
+                           // $account.addClass("error").next('span.position-tips').html('请用6-16位字符')
                             return passwordObj.legal = false;
                         }
                         else{
@@ -423,9 +423,9 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         break*/
                     default:
                         if (/20221|20214/.test(code)) {
-                            $vcode.addClass('error');
-                        }
-                        $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
+                            $vcode.addClass('error').next('span.chkbtn-wrap').find('span.chktext').show().html(self.retStatus.register[code] || result.statusText || "未知错误");
+                        }else
+                            $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         $vcode.val("");
                         $password.val("");
                         break

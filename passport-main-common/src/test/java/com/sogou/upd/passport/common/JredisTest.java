@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import junit.framework.Assert;
@@ -29,11 +30,9 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
 
     @Inject
     private RedisUtils redisUtils;
-    @Inject
-    private StringRedisTemplate redisTemplate;
 
     @Inject
-    private JedisConnectionFactory jedisConnectionFactory;
+    private JedisConnectionFactory cacheConnectionFactory;
 
     @Before
     public void init() {
@@ -42,25 +41,40 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void test() {
         try {
-            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.set("nimei204", "nimei204");
+//            String key="/internal/account/authuser";
+//            String appId="1100";
+//            getLimitedTimes(key,appId);
+            redisUtils.set("1112","11123");
 
-            JedisShardInfo shardInfo=new JedisShardInfo("10.12.139.205",6379);
+            System.out.println(redisUtils.get("1112"));
 
-            jedisConnectionFactory.setShardInfo(shardInfo);
-            jedisConnectionFactory.afterPropertiesSet();
-
-
-            redisTemplate.setConnectionFactory(jedisConnectionFactory);
-            valueOperations = redisTemplate.opsForValue();
-
-            valueOperations.set("nimei205","nimei205");
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-
     }
+    public void getLimitedTimes(String key,String appId) throws Exception {
+        String cacheKey="SP.CLIENTID:INTERFACE_LIMITED_"+appId;
+        String cacheTimes=redisUtils.hGet(cacheKey,key);
+        if(Strings.isNullOrEmpty(cacheTimes)){
+            //初始化或者5分钟失效后的初始化
+            initAppLimitedList(cacheKey,key,"30"); //30接口5分钟限制的次数
+            cacheTimes="30";
+        }
+        long times=Long.parseLong(cacheTimes);
+        if(times<=0){
+            System.out.println("超限");
+        }else {
+            redisUtils.hIncrByTimes(cacheKey,key,-10);
+        }
+    }
+    public void initAppLimitedList(String cacheKey,String key,String limiTimes) throws Exception {
+        if(Strings.isNullOrEmpty(redisUtils.hGet(cacheKey,key))){
+            redisUtils.hPutExpire(cacheKey, key, limiTimes, DateAndNumTimesConstant.TIME_FIVE_MINITUES);
+        }
+    }
+
+
 
     @Test
     public void testPutAll() throws Exception {

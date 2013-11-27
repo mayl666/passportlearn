@@ -53,8 +53,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private SHPlusTokenService shPlusTokenService;
-    @Autowired
-    private PCAccountTokenService pcAccountTokenService;
 
     @Override
     public Result resource(PCOAuth2ResourceParams params) {
@@ -70,13 +68,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
             String clientSecret = appConfig.getClientSecret();
-            String passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
-            if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
-                return result;
-
-            }
-
             String resourceType = params.getResource_type();
             if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
                 result = getCookieValue(accessToken, clientSecret, instanceId);
@@ -192,6 +183,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 data.put("large_avatar", largeAvatar);
                 data.put("mid_avatar", midAvatar);
                 data.put("tiny_avatar", tinyAvatar);
+                data.put("sid",passportId);
                 resourceMap.put("data", data);
                 resourceMap.put("msg", "get full user info success");
                 resourceMap.put("code", 0);

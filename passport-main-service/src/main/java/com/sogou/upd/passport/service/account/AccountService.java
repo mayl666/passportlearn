@@ -7,8 +7,8 @@ import com.sogou.upd.passport.model.account.Account;
 import java.util.Map;
 
 /**
- * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File
- * Templates.
+ * User: mayan
+ * Date: 13-3-22 Time: 下午3:38
  */
 public interface AccountService {
 
@@ -128,4 +128,18 @@ public interface AccountService {
    *检查验证码
    */
   public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
+
+    /*
+       *检查昵称是否存在
+       */
+    public String checkNickName(String nickname) throws Exception;
+    /*
+     *更新个人信息
+     */
+    public boolean updateNickName(/*Account account,*/String passportId,String oldNickName, String nickname);
+    /*
+    *删除昵称
+    */
+    public boolean removeNickName(String nickname) throws ServiceException;
+
 }

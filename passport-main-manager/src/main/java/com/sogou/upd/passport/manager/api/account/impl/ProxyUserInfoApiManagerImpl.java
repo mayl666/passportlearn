@@ -44,7 +44,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Autowired
     private RedisUtils redisUtils;
-    @Inject
+    @Autowired
     private PhotoUtils photoUtils;
     @Autowired
     private AccountInfoManager accountInfoManager;
@@ -103,70 +103,72 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
                 //替换搜狐的个人头像
                 String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
-                String image = Strings.isNullOrEmpty(avatarurl) ? null : avatarurl.replaceAll("\\/\\/", "");
+//                String image = Strings.isNullOrEmpty(avatarurl) ? null : avatarurl.replaceAll("\\/\\/", "");
 
-                String passportId = getUserInfoApiparams.getUserid();
+//                String passportId = getUserInfoApiparams.getUserid();
+                result.setDefaultModel("avatarurl", avatarurl);
 
-                if(!Strings.isNullOrEmpty(image)){
-                    image=image.substring(image.indexOf("/"),image.length());
-                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
 
-                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
-                    if(MapUtils.isNotEmpty(map)){
-                        String shImg = map.get("shImg");
-                        String sgImg = map.get("sgImg");
-
-                        //验证sohu修改图片后，搜狗自动更新
-                        if (!Strings.isNullOrEmpty(shImg) && !shImg.equals(image)) {
-                            //获取图片名
-                            String imgName = photoUtils.generalFileName();
-                            // 上传到OP图片平台   sohu头像暂时用 a1.itc.cn域名
-                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
-                                sgImg = photoUtils.accessURLTemplate(imgName);
-                                Map<String, String> mapResult = Maps.newHashMap();
-                                mapResult.put("shImg", image);
-                                mapResult.put("sgImg", sgImg);
-
-                                redisUtils.hPutAll(cacheKey, mapResult);
-                            } else {
-                                result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
-                                return result;
-                            }
-                        }
-                    } else {
-                        if(!Strings.isNullOrEmpty(image)){
-                            //获取图片名
-                            String imgName = photoUtils.generalFileName();
-                            // 上传到OP图片平台
-                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
-                                String sgImg = photoUtils.accessURLTemplate(imgName);
-                                Map<String, String> mapResult = Maps.newHashMap();
-                                mapResult.put("shImg", image);
-                                mapResult.put("sgImg", sgImg);
-
-                                redisUtils.hPutAll(cacheKey, mapResult);
-                            }
-                        }
-                    }
-                    Result photoResult = obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
-                    Map photoMap = photoResult.getModels();
-                    result.setDefaultModel("avatarurl", photoMap);
-
-                } else{
-                    //搜狐头像为空返回默认头像
-                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-
-                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
-                    Result photoResult=null;
-                    if(MapUtils.isNotEmpty(map)) {
-                        photoResult = obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
-                    } else {
-                        photoResult = obtainPhoto(Integer.toString(getUserInfoApiparams.getClient_id()), getUserInfoApiparams.getImagesize());
-                    }
-
-                    Map photoMap = photoResult.getModels();
-                    result.setDefaultModel("avatarurl", photoMap);
-                }
+//                if(!Strings.isNullOrEmpty(image)){
+//                    image=image.substring(image.indexOf("/"),image.length());
+//                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+//
+//                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
+//                    if(MapUtils.isNotEmpty(map)){
+//                        String shImg = map.get("shImg");
+//                        String sgImg = map.get("sgImg");
+//
+//                        //验证sohu修改图片后，搜狗自动更新
+//                        if (!Strings.isNullOrEmpty(shImg) && !shImg.equals(image)) {
+//                            //获取图片名
+//                            String imgName = photoUtils.generalFileName();
+//                            // 上传到OP图片平台   sohu头像暂时用 a1.itc.cn域名
+//                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
+//                                sgImg = photoUtils.accessURLTemplate(imgName);
+//                                Map<String, String> mapResult = Maps.newHashMap();
+//                                mapResult.put("shImg", image);
+//                                mapResult.put("sgImg", sgImg);
+//
+//                                redisUtils.hPutAll(cacheKey, mapResult);
+//                            } else {
+//                                result.setCode(ErrorUtil.ERR_UPLOAD_PHOTO);
+//                                return result;
+//                            }
+//                        }
+//                    } else {
+//                        if(!Strings.isNullOrEmpty(image)){
+//                            //获取图片名
+//                            String imgName = photoUtils.generalFileName();
+//                            // 上传到OP图片平台
+//                            if (photoUtils.uploadImg(imgName, null, "a1.itc.cn"+image, "1")) {
+//                                String sgImg = photoUtils.accessURLTemplate(imgName);
+//                                Map<String, String> mapResult = Maps.newHashMap();
+//                                mapResult.put("shImg", image);
+//                                mapResult.put("sgImg", sgImg);
+//
+//                                redisUtils.hPutAll(cacheKey, mapResult);
+//                            }
+//                        }
+//                    }
+//                    Result photoResult = obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+//                    Map photoMap = photoResult.getModels();
+//                    result.setDefaultModel("avatarurl", photoMap);
+//
+//                } else{
+//                    //搜狐头像为空返回默认头像
+//                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+//
+//                    Map<String, String> map = redisUtils.hGetAll(cacheKey);
+//                    Result photoResult=null;
+//                    if(MapUtils.isNotEmpty(map)) {
+//                        photoResult = obtainPhoto(passportId, getUserInfoApiparams.getImagesize());
+//                    } else {
+//                        photoResult = obtainPhoto(Integer.toString(getUserInfoApiparams.getClient_id()), getUserInfoApiparams.getImagesize());
+//                    }
+//
+//                    Map photoMap = photoResult.getModels();
+//                    result.setDefaultModel("avatarurl", photoMap);
+//                }
             }
         }catch (Exception e){
              e.printStackTrace();
@@ -174,55 +176,55 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         return getUserInfoResultHandel(result);
     }
 
-    public Result obtainPhoto(String passportId, String size) {
-        Result result = new APIResultSupport(false);
-        try {
-            String []sizeArry=null;
-            //获取size对应的appId
-            if(!Strings.isNullOrEmpty(size)){
-                //检测是否是支持的尺寸
-                sizeArry=size.split(",");
-
-                if(ArrayUtils.isNotEmpty(sizeArry)){
-                    for(int i=0;i<sizeArry.length;i++){
-                        if(Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))){
-                            result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
-                            return result;
-                        }
-                    }
-                } else {
-                    //为空获取所有的尺寸
-                    sizeArry=photoUtils.getAllImageSize();
-                }
-
-                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-                String image=redisUtils.hGet(cacheKey,"sgImg");
-
-                if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
-                    result.setSuccess(true);
-                    for (int i=0;i<sizeArry.length;i++){
-                        //随机获取cdn域名
-                        String cdnUrl=photoUtils.getCdnURL();
-                        //获取图片尺寸
-                        String clientId=photoUtils.getAppIdBySize(sizeArry[i]);
-
-                        String photoURL =String.format(image, cdnUrl, clientId);
-                        if(!Strings.isNullOrEmpty(photoURL)){
-                            result.setDefaultModel("img_"+sizeArry[i],photoURL);
-                        }
-                    }
-                    return result;
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
-                    return result;
-                }
-            }
-        }catch (Exception e){
-            result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
-            return result;
-        }
-        return result;
-    }
+//    public Result obtainPhoto(String passportId, String size) {
+//        Result result = new APIResultSupport(false);
+//        try {
+//            String []sizeArry=null;
+//            //获取size对应的appId
+//            if(!Strings.isNullOrEmpty(size)){
+//                //检测是否是支持的尺寸
+//                sizeArry=size.split(",");
+//
+//                if(ArrayUtils.isNotEmpty(sizeArry)){
+//                    for(int i=0;i<sizeArry.length;i++){
+//                        if(Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))){
+//                            result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
+//                            return result;
+//                        }
+//                    }
+//                } else {
+//                    //为空获取所有的尺寸
+//                    sizeArry=photoUtils.getAllImageSize();
+//                }
+//
+//                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+//                String image=redisUtils.hGet(cacheKey,"sgImg");
+//
+//                if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
+//                    result.setSuccess(true);
+//                    for (int i=0;i<sizeArry.length;i++){
+//                        //随机获取cdn域名
+//                        String cdnUrl=photoUtils.getCdnURL();
+//                        //获取图片尺寸
+//                        String clientId=photoUtils.getAppIdBySize(sizeArry[i]);
+//
+//                        String photoURL =String.format(image, cdnUrl, clientId);
+//                        if(!Strings.isNullOrEmpty(photoURL)){
+//                            result.setDefaultModel("img_"+sizeArry[i],photoURL);
+//                        }
+//                    }
+//                    return result;
+//                } else {
+//                    result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
+//                    return result;
+//                }
+//            }
+//        }catch (Exception e){
+//            result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
+//            return result;
+//        }
+//        return result;
+//    }
 
     /**
      * SHPP参数名和SGPP参数名不一样，在这里做了相关的转换

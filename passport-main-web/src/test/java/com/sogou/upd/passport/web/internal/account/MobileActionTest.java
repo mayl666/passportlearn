@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.web.test.BaseActionTest;
+import com.sogou.upd.passport.web.BaseActionTest;
 import org.junit.Test;
 
 import java.io.IOException;
