@@ -302,6 +302,7 @@ public class SecureManagerImpl implements SecureManager {
                     Object obj= shPlusResult.getModels().get("baseInfo");
                     if(obj!=null){
                         AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
+                        result.getModels().put("uniqname",baseInfo.getUniqname());
                         Result photoResult= photoUtils.obtainPhoto(baseInfo.getAvatar(),"50");
                         if(photoResult.isSuccess()){
                             result.getModels().put("avatarurl",photoResult.getModels());
