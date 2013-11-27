@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * User: mayan
@@ -47,6 +49,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
+    @Autowired
+    private AccountBaseInfoDAO accountBaseInfoDAO;
 
     public Result uploadImg(byte[] byteArr,String passportId,String type) {
         Result result = new APIResultSupport(false);
@@ -59,16 +63,28 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             //获取图片名
             String imgName = photoUtils.generalFileName();
             // 上传到OP图片平台
-            if (photoUtils.uploadImg(imgName, byteArr,null,type)) {
+            if (photoUtils.uploadImg(imgName, byteArr, null, type)) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
                 //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-
-                redisUtils.hPut(cacheKey,"sgImg",imgURL);
-
-
+                GetUserInfoApiparams apiparams = new GetUserInfoApiparams();
+                apiparams.setUserid(passportId);
+                Result resultUserInfo = shPlusUserInfoApiManager.getUserInfo(apiparams);
+                if (resultUserInfo.isSuccess()) {
+                    Object obj = resultUserInfo.getModels().get("baseInfo");
+                    if (obj != null) {
+                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
+                        //更新数据库
+                        int rows = accountBaseInfoDAO.updateAvatarByPassportId(imgURL, passportId);
+                        if (rows != 0) {
+                            //更新缓存
+                            baseInfo.setAvatar(imgURL);
+                            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
+                            redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                        }
+                    }
+                }
                 result.setSuccess(true);
-                result.setDefaultModel("image",imgURL);
+                result.setDefaultModel("image", imgURL);
                 result.setMessage("头像设置成功");
                 return result;
             } else {
