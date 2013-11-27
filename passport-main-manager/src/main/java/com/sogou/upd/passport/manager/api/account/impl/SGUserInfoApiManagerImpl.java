@@ -66,7 +66,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         try {
             nickname=new String(updateUserUniqnameApiParams.getUniqname());
 
-            String passportId= accountService.checkNickName(nickname);
+            String passportId= accountService.checkUniqName(nickname);
              if(!Strings.isNullOrEmpty(passportId)){
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
                 result.setDefaultModel("userid",passportId);
