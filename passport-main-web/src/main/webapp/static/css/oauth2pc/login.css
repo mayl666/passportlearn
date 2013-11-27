@@ -68,16 +68,16 @@ a{
 a:hover{
 	text-decoration: underline;
 }
-a.blue{
+.blue{
 	color: #2b97df;
 }
-a.blue:active{
+.blue:active{
 	color: #7a7a7a;
 }
-a.gray{
+.gray{
 	color: #7a7a7a
 }
-a.gray:active{
+.gray:active{
 	color: #000;
 }
 input,a,textarea{
@@ -218,6 +218,7 @@ input[type="text"].error,input[type="password"].error{
 .position-tips{
 	display: inline-block;
 	position: absolute;
+	display: none;
 	right: 2px;
 	top: 1px;
 	height: 26px;

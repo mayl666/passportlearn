@@ -49,7 +49,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         initEvents: function() {
             var self = this;
             //表单提交时默认事件
-            $('form').on('click','button.btn' ,function(e) {
+            $('form').on('submit' ,function(e) {
                 var $form = $(e.delegateTarget),
                     formId = $form.attr('id');
                 if (formId == 'fast_reg_form') {
@@ -135,7 +135,9 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                                 $error.html(self.retStatus.sendSms[code] || result.statusText || "未知错误").show();
                                 break
                         }
-                })
+                }).fail(function(jqXHR,error){
+                    $error.html('网络异常，请稍后重试').show();
+                });
 
             })//yinyong@sogou-inc.com,2013-11-23[16:27:25]
             //error msg unclickable
@@ -261,7 +263,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
             })
             //点击"换一张"切换验证码
             .on('click', 'div.chkPic>span>a', function(e) {
-                $('div.chkPic>img', $form).trigger('click');
+                $('div.chkPic>img'/*, $form*/).trigger('click');
             })
 
         },
@@ -343,6 +345,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 }
                 self.submited = false;
             }).fail(function() {
+                $error.show().html('网络异常，请稍后尝试注册');
                 // console.log("error happens in http request : a/sogou/mobileregister")
                 self.submited = false;
             })
@@ -432,6 +435,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 }
                 self.submited = false;
             }).fail(function() {
+                $error.show().html('网络异常，请稍后尝试注册');
                 // console.log("error happens in http request : a/sogou/mobileregister")
                 self.submited = false;
             })
