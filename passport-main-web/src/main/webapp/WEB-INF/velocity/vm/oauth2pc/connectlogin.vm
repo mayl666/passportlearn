@@ -26,18 +26,18 @@
         //        splus.result = "0";
         //        splus.logintype = "qq";
 
-        splus.bru = "";
-        splus.sp_status = "1";
+//        splus.bru = "";
+//        splus.sp_status = "1";
         splus.sname = '${sname}';
         splus.nick = '${nick}';
-        splus.sid = "0";
+        splus.sid = "${passport}";
         splus.passport = '${passport}';
         splus.accesstoken = '${accesstoken}';
         splus.refreshtoken = '${refreshtoken}';
         splus.result = "0";
         splus.logintype = '${logintype}';
 
-        splus._timestamp = "201308061701";
+//        splus._timestamp = "201308061701";
     </script>
     <script src="//s5.suc.itc.cn/ux_sogou_member/js/lib/requirejs/require-jquery.js"
             data-main="//s5.suc.itc.cn/ux_sogou_member/v201308061701/js/main.js"></script>

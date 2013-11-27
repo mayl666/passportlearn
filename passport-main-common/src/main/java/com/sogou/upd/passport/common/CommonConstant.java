@@ -22,6 +22,7 @@ public class CommonConstant {
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
 
     public static final String CLIENT_ID = "client_id";
+    public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
     public static final String UNIQNAME = "uniqname";

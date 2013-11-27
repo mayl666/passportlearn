@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * File | Settings | File Templates.
  */
 @Controller
-@RequestMapping(value = "/internal/threadPoolSize")
+@RequestMapping(value = "/internal/debug/threadPoolSize")
 public class ThreadPoolSizeAction {
     @Autowired
     private ThreadPoolTaskExecutor discardTaskExecutor;

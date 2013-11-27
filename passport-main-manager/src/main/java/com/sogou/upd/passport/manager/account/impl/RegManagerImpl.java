@@ -235,6 +235,8 @@ public class RegManagerImpl implements RegManager {
                 Account account = accountService.initialWebAccount(username, ip);
                 if (account != null) {
                     //更新缓存
+                    result.setDefaultModel(account);
+                    result.setDefaultModel("userid", account.getPassportId());
                     result.setSuccess(true);
                     result.setMessage("激活成功！");
                     return result;

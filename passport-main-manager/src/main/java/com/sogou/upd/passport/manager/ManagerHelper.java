@@ -52,12 +52,22 @@ public class ManagerHelper {
 
     /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
-     *
      * @param passportId passport内部传输的用户id
      * @return
      */
-    public static boolean isInvokeProxyApi(String passportId) {
-        return CommonHelper.isInvokeProxyApi(passportId);
+    public static boolean isInvokeProxyApi(String passportId){
+        return true;//
+//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
+    }
+
+    /**
+     * 是否使用sohu提供的getcookiinfo接口；返回true代表调用getcookieinfo接口，false代表调用之前的从location拿的接口，为回滚做准备
+     *
+     * @return
+     */
+    public static boolean isUsedSohuProxyApiToGetCookie() {
+        return true;
+//        return false;
     }
 
     /**
@@ -78,7 +88,6 @@ public class ManagerHelper {
         }
         return code;
     }
-
     /**
      * 内部接口方法签名生成
      *
@@ -104,8 +113,6 @@ public class ManagerHelper {
         result.setDefaultModel("nick", Coder.encryptBase64(uniqName));
         result.setDefaultModel("sname", Coder.encryptBase64(accountToken.getPassportId()));
         result.setDefaultModel("passport", Coder.encryptBase64(accountToken.getPassportId()));
-        result.setDefaultModel("result", 0);
-        result.setDefaultModel("sid", 0);
         result.setDefaultModel("logintype", loginType);
         return result;
     }

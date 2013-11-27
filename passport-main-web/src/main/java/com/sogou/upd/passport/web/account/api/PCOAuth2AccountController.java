@@ -18,6 +18,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -371,64 +372,42 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return "forward:/oauth2/errorMsg?msg=" + result.toString();
         }
+
+        //当前页面cookie
+        String cookieUserId ="";
+        if (hostHolder.isLogin()) {
+            cookieUserId = hostHolder.getPassportId();
+        }
+
         Result queryPassportIdResult = pcAccountManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), oauth2PcIndexParams.getClient_id());
         if (!queryPassportIdResult.isSuccess()) {
             return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
-        //校验token有效期
-        PcAuthTokenParams authPcTokenParams = new PcAuthTokenParams();
-        authPcTokenParams.setToken(oauth2PcIndexParams.getAccesstoken());
-        authPcTokenParams.setAppid(String.valueOf(oauth2PcIndexParams.getClient_id()));
-        authPcTokenParams.setTs(oauth2PcIndexParams.getInstanceid());
-        authPcTokenParams.setUserid(passportId);
-        Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
-        if (!authTokenResult.isSuccess()) {
-            result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
-            return "forward:/oauth2/errorMsg?msg=" + result.toString();
-        }
-        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname,avatarurl,sec_mobile,sec_email");
-        getUserInfoApiparams.setClient_id(oauth2PcIndexParams.getClient_id());
-//        getUserInfoApiparams.setImagesize("180");
-        Result getUserInfoResult;
-        if (CommonHelper.isInvokeProxyApi(passportId)) {
-            getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-        } else {
-            getUserInfoResult = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-        }
-        String uniqname = "", imageUrl = "", bindMobile = "", bindEmail = "";
-        if (getUserInfoResult.isSuccess()) {
-            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-            uniqname = URLDecoder.decode(uniqname, CommonConstant.DEFAULT_CONTENT_CHARSET); //淘宝的昵称需要urldecoder
-            bindMobile = (String) getUserInfoResult.getModels().get("sec_mobile");
-            bindMobile = Strings.isNullOrEmpty(bindMobile) ? "" : bindMobile;
-            bindEmail = (String) getUserInfoResult.getModels().get("sec_email");
-            bindEmail = Strings.isNullOrEmpty(bindEmail) ? "" : bindEmail;
-            String avatarStr = getUserInfoResult.getModels().get("avatarurl").toString();
-            if (!StringUtils.isEmpty(avatarStr)) {
-                Map map = (Map) getUserInfoResult.getModels().get("avatarurl");
-                imageUrl = (String) map.get("img_180");
+        //判断cookie中的passportId与token解密出来的passportId是否相等
+        if(!Strings.isNullOrEmpty(cookieUserId) ){
+            if(!cookieUserId.equals(passportId)){
+                return "redirect:/web/logout_redirect";
             }
-        } else {
-            uniqname = defaultUniqname(passportId);
+            return "redirect:/web/userinfo/getuserinfo";
         }
-        model.addAttribute("uniqname", uniqname);
-        model.addAttribute("imageUrl", StringUtil.defaultIfEmpty(imageUrl, "http://imgstore01.cdn.sogou.com/app/a/100140008/1065_1379399471998"));
-        model.addAttribute("bindMobile", bindMobile);
-        model.addAttribute("bindEmail", bindEmail);
-        model.addAttribute("userid", passportId);
-        model.addAttribute("instanceid", oauth2PcIndexParams.getInstanceid());
-        model.addAttribute("client_id", oauth2PcIndexParams.getClient_id());
-        //判断绑定手机或者绑定邮箱是否可用;获取绑定手机，绑定邮箱
-        handleBindAndPwd(passportId, bindMobile, bindEmail, model);
-
         //生成cookie
-        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(passportId);
+        cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
+        cookieApiParams.setRu("https://account.sogou.com");
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        cookieApiParams.setIp(getIp(request));
+        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+
+        //生成cookie--之前写法
+        /*CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu("https://account.sogou.com");
-        //TODO sogou域账号迁移后cookie生成问题
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+        createCookieUrlApiParams.setPersistentcookie(1);
+        createCookieUrlApiParams.setDomain("sogou.com");
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);*/
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -436,51 +415,13 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
-        return "/oauth2pc/pcindex";
+        return  "redirect:/web/userinfo/getuserinfo";
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
-    }
-
-    private void handleBindAndPwd(String passportId, String bindMobile, String bindEmail, Model model) throws Exception {
-        AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
-        switch (accountDomain) {
-            case SOHU:
-                model.addAttribute("isSohuAccount", 1);
-                model.addAttribute("sohuBindUrl", "https://passport.sohu.com/web/requestBindMobileAction.action");
-                model.addAttribute("sohuUpdatepwdUrl", "https://passport.sohu.com/web/updateInfo.action?modifyType=password");
-                break;
-            case THIRD:
-                model.addAttribute("isBindEmailUsable", 0);
-                model.addAttribute("isBindMobileUsable", 0);
-                model.addAttribute("isUpdatepwdUsable", 0);
-                break;
-            case PHONE:
-                if (StringUtils.isEmpty(bindEmail)) {
-                    model.addAttribute("isBindEmailUsable", 1);
-                } else {
-                    model.addAttribute("isBindEmailUsable", 0);
-                }
-                model.addAttribute("isBindMobileUsable", 0);
-                model.addAttribute("isUpdatepwdUsable", 1);
-                break;
-            default:
-                if (StringUtils.isEmpty(bindEmail)) {
-                    model.addAttribute("isBindEmailUsable", 1);
-                } else {
-                    model.addAttribute("isBindEmailUsable", 0);
-                }
-                if (StringUtils.isEmpty(bindMobile)) {
-                    model.addAttribute("isBindMobileUsable", 1);
-                } else {
-                    model.addAttribute("isBindMobileUsable", 0);
-                }
-                model.addAttribute("isUpdatepwdUsable", 1);
-                break;
-        }
     }
 
     private String getUniqname(String passportId) {

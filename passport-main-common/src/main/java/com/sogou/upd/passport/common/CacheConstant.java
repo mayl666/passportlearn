@@ -94,7 +94,17 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_USERNAME_AUTHUSER_NUM = "SP.USERNAME:AUTHUSERNNUM_HASH_"; //username连续登陆的次数
     public static final String CACHE_PREFIX_IP_AUTHUSER_NNUM = "SP.IP:AUTHUSERNUM_HASH_"; //IP连续登陆的次数
     public static final String CACHE_PREFIX_USERIP_AUTHUSER_NNUM = "SP.USERIP:AUTHUSERNUM_HASH_"; //user IP连续登陆的次数
-
-
+    /*==================初始化client_id限制接口的调用次数========================*/
+    public static final String CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED_INIT = "SP.CLIENTID:INTERFACE_LIMITED_INIT_HASH_"; //client_id与接口初始限制次数，其中包含了应用所对应的接口及其初始限制次数
+    /*==================根据client_id修改限制接口的调用次数========================*/
+    public static final String CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED = "SP.CLIENTID:INTERFACE_LIMITED_HASH_"; //client_id与接口限制修改次数,其中包含了应用目前接口限制次数的大小
+    /*==================级别与接口调用次数映射========================*/
+    public static final String CACHE_PREFIX_LEVEL_INTERFACE_LIMITED = "SP.LEVEL:INTERFACE_LIMITED_HASH_"; //级别与接口的映射hash表,比如初，中，高三级别各包含哪些接口，这些接口不同级别的频次限制
+    /*==================应用与级别映射==============================*/
+    public static final String CACHE_PREFIX_CLIENT_LEVEL = "SP.LEVEL:CLIENTID_HASH_"; //应用与级别的映射
+    /*==================client_id列表========================*/
+    public static final String CACHE_PREFIX_CLIENTID = "SP.CLIENTID_SET"; //client_id列表
+    /*==================接口列表=====================================*/
+    public static final String CACHE_PREFIX_INTERFACE = "SP.INTERFACE_SET";  //接口列表
 
 }

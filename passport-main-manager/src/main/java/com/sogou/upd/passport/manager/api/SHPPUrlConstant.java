@@ -52,6 +52,9 @@ public class SHPPUrlConstant {
     public static final String WEB_EMAIL_REG = BASE_INTERNAL_URL + "reguser";  //web端邮箱注册
     public static final String REG_MOBILE_NOCAPTCHA = BASE_INTERNAL_URL + "regmobiled";
 
+    //todo 这个地方的接口名sohu接口开发完会提供，暂时命名
+    public static final String GET_COOKIE_VALUE_FROM_SOHU =  BASE_INTERNAL_URL + "getcookieinfo";
+
 
     /*================================手机绑定相关=======================================*/
     //绑定手机号
