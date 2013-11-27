@@ -6,9 +6,6 @@
     <meta name="description" content="搜狗浏览器登录注册框">
     <meta name="author" content="yinyong@sogou-inc.com">
     <link href="/./static/css/oauth2pc/login.css?t=904135" rel="stylesheet" />
-    <!--[if IE 6]>
-    <link href="/./static/css/oauth2pc/ie6.css?t=301171" rel="stylesheet" />
-    <![endif]-->
     <!--[if lte IE 9]>
     <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
     <![endif]-->
@@ -19,9 +16,6 @@ var splus = {
 };
 </script>
     <script src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
-    <!--[if IE 6]>
-    <script src="/./static/js/lib/almond/js/ie6.js?t="></script>
-    <![endif]-->
     <script src="/./static/js/oauth2pc/sdk.js?appkey=21556307"></script>
 </head>
 <body>

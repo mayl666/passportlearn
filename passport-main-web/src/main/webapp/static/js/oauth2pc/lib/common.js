@@ -30,7 +30,7 @@ define([], function() {
         },
         retStatus: {
             checkSname: {
-                "10002": "必填参数错误",
+               // "10002": "必填参数错误",
                 "20201": "此帐号已注册，请直接登录",
                 "20217": "暂不支持邮箱注册",
                 "20225": "该手机号已注册或已绑定，请直接登录",
@@ -62,14 +62,14 @@ define([], function() {
                 "20213": "手机验证码发送"
             },
             register: {
-                "10002": "必填参数错误",
+               // "10002": "必填参数错误",
                 "20199": "当前注册ip次数已达上限或该ip已在黑名单中",
                 "20227": "密码必须为字母和数字且长度大于6位 ",
                 "20224": "当日注册次数已达上",
                 "20221": "验证码验证失败",
                 "10001": "未知错误",
                 "10010": "client_id不存在 ",
-                "20214": "用户注册失败",
+                "20214": "验证码错误或已过期",
                 "20201": "此帐号已注册，请直接登录",
                 "20230": "前账号或者IP操作存在异常"
             }
@@ -81,6 +81,17 @@ define([], function() {
                 defaultMsg: "帐号/手机号/邮箱",
                 errMsg: '该登录名不存在',
                 emptyMsg: '请填写登录名',
+                nullable: false,
+                regStr: /^\S{4,50}$/
+            },
+            regaccount:{
+                defaultMsg: "帐号/手机号/邮箱",
+                errMsg: function(val){
+                    if(!val)return this.emptyMsg;
+                    else if(val.length<4||val.length>50)return "长度必须为4-50个字符";
+                    else return "注册用户名非法";
+                },
+                emptyMsg: '请填写注册用户名',
                 nullable: false,
                 regStr: /^\S{4,50}$/
             },
@@ -97,7 +108,11 @@ define([], function() {
                 regStr: /^(\w)+(\.\w+)*@([\w_\-])+((\.\w+)+)$/
             },
             password: {
-                errMsg: '密码必须是6-16位字母、数字、下划线的组合',
+                errMsg:function(val){
+                    if(!val)return this.emptyMsg;
+                    if(val.length<6||val.length>16)return "长度必须为6-16位";
+                    else return '密码必须字母、数字、下划线的组合';
+                },
                 emptyMsg: '请输入6-16位密码',
                 nullable: false,
                 regStr: /^\w{6,16}$/
@@ -158,7 +173,7 @@ define([], function() {
             } else {
                 if (!regrex.test(inputValue)) {
                     $input.addClass("error");
-                    $error.html(errMsg).show();
+                    $error.html(typeof errMsg==='function'?errMsg.call(valid,inputValue):errMsg).show();
                     return false;
                 } else {
                     $input.removeClass("error");

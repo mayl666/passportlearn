@@ -1,54 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <title>正在登录</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="搜狗浏览器第三方登录中间页">
+    <meta name="author" content="yinyong@sogou-inc.com">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-    <link href="//s5.suc.itc.cn/ux_sogou_member/v201308061701/asset/sogou/login.css" rel="stylesheet"/>
-    <!--[if IE 6]>
-    <link href="//s5.suc.itc.cn/ux_sogou_member/v201308061701/asset/sogou/ie6.css" rel="stylesheet"/>
-    <![endif]-->
-    <!--[if lte IE 9]>
-    <script src="//s5.suc.itc.cn/ux_sogou_member/v201308061701/js/html5.js"></script>
-    <![endif]-->
-    <script type="text/javascript" charset="utf-8">
+    <script type="text/javascript">
         var splus = {};
-
-        //        splus.bru = "";
-        //        splus.sp_status = "1";
-        //        splus.sname = "c2hpcGVuZ3poaTAx";
-        //        splus.nick = "ZGFz5paH5qGI";
-        //        splus.sid = "2941705";
-        //        splus.passport = "RDZCRERFRERBOEE5QzA5QzdCMjJBN0Q3MTQwQ0MxNjdAcXEuc29odS5jb20=";
-        //        splus.accesstoken = "cbf8ced6f1a7bb91f24b11fc804144e165e95bf257a7083ca25a7bcdd7e9d0eb";
-        //        splus.refreshtoken = "52893cd5afe9cb4095e9a4098b035254b08792bbe894c47c57ebf3be023cc606";
-        //        splus.result = "0";
-        //        splus.logintype = "qq";
-
-//        splus.bru = "";
-//        splus.sp_status = "1";
+        splus.bru = "";
+        splus.sp_status = "1";
         splus.sname = '${sname}';
         splus.nick = '${nick}';
-        splus.sid = "${passport}";
+        splus.sid = "0";
         splus.passport = '${passport}';
         splus.accesstoken = '${accesstoken}';
         splus.refreshtoken = '${refreshtoken}';
         splus.result = "0";
         splus.logintype = '${logintype}';
-
-//        splus._timestamp = "201308061701";
+        splus._timestamp = "201308061701";
     </script>
-    <script src="//s5.suc.itc.cn/ux_sogou_member/js/lib/requirejs/require-jquery.js"
-            data-main="//s5.suc.itc.cn/ux_sogou_member/v201308061701/js/main.js"></script>
-    <!--[if IE 6]>
-    <script src="//s5.suc.itc.cn/ux_sogou_member/js/lib/almond/js/ie6.js"></script>
-    <![endif]-->
-    <script src="https://s.tbcdn.cn/apps/top/x/sdk.js?appkey=21556307"></script>
+    <script src="/./static/js/oauth2pc/require-jquery.js?t=168932"
+            data-main="/./static/js/oauth2pc/main.js"></script>
+    <script src="/./static/js/oauth2pc/sdk.js?appkey=21556307"></script>
 </head>
-<script src="//s5.suc.itc.cn/ux_sogou_member/js/lib/requirejs/require-jquery.js"
-        data-main="//s5.suc.itc.cn/ux_sogou_member/js/main.js"></script>
-<body>
 <script>require(['pages/oauth_login'])</script>
 </body>
 </html>
