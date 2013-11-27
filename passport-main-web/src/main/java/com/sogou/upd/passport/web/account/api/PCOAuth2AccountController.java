@@ -163,7 +163,7 @@ public class PCOAuth2AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/oauth2/checkregname", method = RequestMethod.POST)
+    @RequestMapping(value = "/oauth2/checkregname")
     @ResponseBody
     public String checkRegisterName(CheckUserNameExistParameters checkParam)
             throws Exception {
