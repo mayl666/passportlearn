@@ -83,10 +83,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     }else {
                         //新添加记录
                         baseInfo=new AccountBaseInfo();
-                        baseInfo.setPassportId(passportId);
                         baseInfo.setAvatar(imgURL);
                         baseInfo.setUniqname("");
-                        accountBaseInfoDAO.insertAccountBaseInfo(baseInfo);
+                        accountBaseInfoDAO.insertAccountBaseInfo(passportId,baseInfo);
                     }
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
                     redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
