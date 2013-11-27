@@ -163,12 +163,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     public Result checkNickName(CheckNickNameParams params) {
 
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams=buildUpdateUserUniqnameApiParams(params);
-        // 调用内部接口
-        Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
-//        //先检查sohu昵称是否存在，然后检查sogou昵称
-//        if(result.isSuccess()){
-//            result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
-//        }
+        Result result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
 
         return result;
     }
@@ -228,6 +223,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
         // 调用内部接口
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
+            //其中昵称是获取的account_base_info
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);

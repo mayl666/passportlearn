@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.utils.UniqNameUtil;
 import com.sogou.upd.passport.common.validation.constraints.UniqName;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
@@ -20,28 +21,17 @@ public class UpdateUserUniqnameApiParams extends BaseApiParams {
     private String uniqname;
 
     @AssertTrue(message = "昵称长度不符合规则，长度应该在2——12字符之间")
-    private boolean isCheckLength() {
+    private boolean isCheckUinqName() {
         if (Strings.isNullOrEmpty(uniqname)) {
             return true;
         }
-        if (!(uniqname.length() >= 2 && uniqname.length() <= 12)) {
+        UniqNameUtil uniqNameUtil = new UniqNameUtil();
+        if (!uniqNameUtil.checkUniqNameIsCorrect(uniqname)) {
             return false;
-        }
-        return true;
-    }
-
-    @AssertTrue(message = "昵称格式不正确")
-    private boolean isCheckSensitive() {
-        if (Strings.isNullOrEmpty(uniqname)) {
+        } else {
             return true;
         }
-        String regx = "^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!.*搜狐)(?!.*sohu)(?!.*souhu)(?!.*搜狐微博)[a-zA-Z0-9\\u4e00-\\u9fa5]+$";
-        if (!uniqname.matches(regx)) {
-            return false;
-        }
-        return true;
     }
-
 
     public String getUniqname() {
         return uniqname;

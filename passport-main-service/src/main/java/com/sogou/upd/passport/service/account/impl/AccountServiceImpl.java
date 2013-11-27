@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.dao.account.NickNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountHelper;
@@ -38,6 +39,7 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
     private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
+    private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
 
@@ -45,6 +47,9 @@ public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
     private AccountDAO accountDAO;
+
+    @Autowired
+    private NickNamePassportMappingDAO nickNamePassportMappingDAO;
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
@@ -460,4 +465,75 @@ public class AccountServiceImpl implements AccountService {
     }
     return true;
   }
+
+    @Override
+    public String checkNickName(String nickname) throws ServiceException {
+        String passportId = null;
+        try {
+            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
+            passportId = redisUtils.get(cacheKey);
+            if (Strings.isNullOrEmpty(passportId)) {
+                passportId = nickNamePassportMappingDAO.getPassportIdByNickName(nickname);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    redisUtils.set(cacheKey, passportId);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("checkUniqName fail", e);
+        }
+        return passportId;
+    }
+
+    @Override
+    public boolean updateNickName(/*Account account,*/String passportId,String oldNickName, String nickname)  throws ServiceException{
+        try {
+            //sogou分支需要修改此逻辑，在account主表中修改昵称
+//            String oldNickName = account.getNickname();
+//            String passportId = account.getPassportId();
+//            //更新数据库
+//            int row = accountDAO.updateNickName(nickname, passportId);
+//            if (row > 0) {
+//                String cacheKey = buildAccountKey(passportId);
+//                account.setNickname(nickname);
+//                redisUtils.set(cacheKey, account);
+
+                //移除原来映射表
+                if (removeNickName(oldNickName)) {
+                    //更新新的映射表
+                    int row = nickNamePassportMappingDAO.insertNickNamePassportMapping(nickname, passportId);
+                    if (row > 0) {
+                        String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
+                        redisUtils.set(cacheKey, passportId);
+                        return true;
+                    }
+                }else {
+                    return false;
+                }
+
+//            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    //缓存中移除原来昵称
+    @Override
+    public boolean removeNickName(String nickname) throws ServiceException {
+        try {
+            if (!Strings.isNullOrEmpty(nickname)) {
+                //更新映射
+                int row = nickNamePassportMappingDAO.deleteNickNamePassportMapping(nickname);
+                if (row > 0) {
+                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
+                    redisUtils.delete(cacheKey);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("removeUniqName fail", e);
+            return false;
+        }
+        return false;
+    }
 }
