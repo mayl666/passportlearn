@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * sohu+个人资料获取
  * User: mayan
@@ -37,29 +39,38 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
     private AccountBaseInfoDAO accountBaseInfoDAO;
     @Autowired
     private TaskExecutor uploadImgExecutor;
+    private static final Logger logger = LoggerFactory.getLogger(SohuPlusUserInfoApiManagerImpl.class);
 
 
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
         Result result = new APIResultSupport(false);
-        final String passportId = getUserInfoApiparams.getUserid();
-        String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-        AccountBaseInfo baseInfo = redisUtils.getObject(cacheKey, AccountBaseInfo.class);
+        AccountBaseInfo baseInfo=null;
+        try {
+            final String passportId = getUserInfoApiparams.getUserid();
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
+            baseInfo = redisUtils.getObject(cacheKey, AccountBaseInfo.class);
 
-        if (baseInfo == null) {
-            baseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
-            if (baseInfo != null) {
-                final String imgUrl = baseInfo.getAvatar();
-                //非搜狗图片，重新上传到搜狗op
-                if (!Strings.isNullOrEmpty(imgUrl) && !imgUrl.matches("http://imgstore\\d\\d.cdn.sogou.com")) {
-                    //获取图片名
-                    final String imgName = photoUtils.generalFileName();
-                    // 上传到OP图片平台 ，更新数据库，更新缓存
-                    uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(photoUtils, imgName, imgUrl, passportId, accountBaseInfoDAO, baseInfo, redisUtils));
+            if (baseInfo == null) {
+                baseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
+                if (baseInfo != null) {
+                    final String imgUrl = baseInfo.getAvatar();
+                    //非搜狗图片，重新上传到搜狗op
+                    if (!Strings.isNullOrEmpty(imgUrl) && !imgUrl.matches("http://imgstore\\d\\d.cdn.sogou.com")) {
+                        //获取图片名
+                        final String imgName = photoUtils.generalFileName();
+                        // 上传到OP图片平台 ，更新数据库，更新缓存
+                        uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(photoUtils, imgName, imgUrl, passportId, accountBaseInfoDAO, baseInfo, redisUtils));
+                    }else{
+                        redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                    }
                 }
+                result.setSuccess(true);
+                result.getModels().put("baseInfo",baseInfo);
             }
+        }catch (Exception e){
+            logger.error("SohuPlusUserInfoApiManagerImpl error",e);
         }
-        result.setDefaultModel("baseInfo",baseInfo);
         return result;
     }
 
@@ -106,7 +117,7 @@ class UpdateAccountBaseInfoTask implements Runnable{
                     //更新缓存
                     baseInfo.setAvatar(imgUrl);
                     String cacheKey= CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    redisUtils.set(cacheKey,baseInfo);
+                    redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                 }
             }
         }catch (Exception e){
