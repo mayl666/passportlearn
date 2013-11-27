@@ -233,7 +233,7 @@ public class PCOAuth2AccountController extends BaseController {
             if (result.isSuccess()) {
                 String userId = result.getModels().get("userid").toString();
                 String instanceId = pcoAuth2RegisterParams.getInstance_id();
-                result = pcAccountManager.createAccountToken(userId, instanceId, clientId);
+                result = pcAccountManager.createNoStoreAccountToken(userId, instanceId, clientId);
                 if (result.isSuccess()) {
                     AccountToken accountToken = (AccountToken) result.getDefaultModel();
                     result = new APIResultSupport(true);
@@ -307,7 +307,7 @@ public class PCOAuth2AccountController extends BaseController {
             int clientId = loginParams.getClient_id();
             //构造成功返回结果
             result = new APIResultSupport(true);
-            Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
+            Result tokenResult = pcAccountManager.createNoStoreAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
             ManagerHelper.setModelForOAuthResult(result, getUniqname(userId), accountToken, "sogou");

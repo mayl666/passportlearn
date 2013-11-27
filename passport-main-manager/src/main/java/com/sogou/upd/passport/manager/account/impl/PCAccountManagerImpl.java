@@ -23,6 +23,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
+import com.sogou.upd.passport.service.account.impl.PCAccountServiceImpl;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -207,6 +208,31 @@ public class PCAccountManagerImpl implements PCAccountManager {
             return finalResult;
         }
     }
+
+    @Override
+    public Result createNoStoreAccountToken(String passportId, String instanceId,int  clientId) {
+        Result finalResult = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            AccountToken accountToken = PCAccountServiceImpl.newNoStoreAccountToken(passportId, instanceId, appConfig);
+            if (accountToken != null) {
+                finalResult.setSuccess(true);
+                finalResult.setDefaultModel(accountToken);
+            } else {
+                finalResult.setCode(ErrorUtil.CREATE_TOKEN_FAIL);
+            }
+            return finalResult;
+        } catch (ServiceException e) {
+            logger.error("createToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
+
 
     @Override
     public String getBrowserBbsUniqname(String passportId) {
