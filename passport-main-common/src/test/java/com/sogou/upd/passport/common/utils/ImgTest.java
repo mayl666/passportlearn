@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.sogou.upd.passport.common.result.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,14 +31,15 @@ public class ImgTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void test() {
-            File file=new File("d:/1.jpg");
-            try {
-                boolean flag=photoUtils.uploadImg(UUID.randomUUID().toString(), IOUtils.toByteArray(new FileInputStream(file)),"http://a2.itc.cn/passport/avatar/9/4c/4/ece78d5a416548es_1378111902014_130_130.jpg","1");
-                System.out.println(flag);
-            } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-
+//            File file=new File("d:/1.jpg");
+//            try {
+//                boolean flag=photoUtils.uploadImg(UUID.randomUUID().toString(), IOUtils.toByteArray(new FileInputStream(file)),"http://a2.itc.cn/passport/avatar/9/4c/4/ece78d5a416548es_1378111902014_130_130.jpg","1");
+//                System.out.println(flag);
+//            } catch (Exception e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+        com.sogou.upd.passport.common.result.Result result=photoUtils.uploadAvatar("http://sucimg.itc.cn/avatarimg/100315067_1384172991517_c175");
+        System.out.println(result.toString());
     }
 
 }
