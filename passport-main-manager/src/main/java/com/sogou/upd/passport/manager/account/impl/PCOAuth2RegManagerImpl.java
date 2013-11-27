@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -19,6 +20,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
+import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,47 +52,47 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
-
+    @Autowired
+    SnamePassportMappingService snamePassportMappingService;
 
     @Override
     public Result isPcAccountNotExists(String username, boolean type) {
         Result result = new APIResultSupport(false);
-        //TODO sohu+添加接口：根据注册名获取passportId的方法
-        //TODO result = proxyPcRegApiManager.proxyGetPassportIdByUserName(String username);
-        if (result.isSuccess()) {
+        String sohuPassportId = snamePassportMappingService.queryPassportIdBySname(username);
+        if (!Strings.isNullOrEmpty(sohuPassportId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             return result;
-        } else {
-            //如果sohu+库里没有，说明用户名肯定不会与老用户重复,再验证sohu库里有没有该用户
-            if (type) {
-                //手机号判断绑定账户
-                BaseMoblieApiParams params = new BaseMoblieApiParams();
-                params.setMobile(username);
-                //TODO 目前及搜狗账号迁移完成，手机注册都需要查sohu库；全部账号迁移完成后，手机注册查sogou库，不需要查sohu库了
-                if (ManagerHelper.isInvokeProxyApi(username)) {
-                    result = proxyBindApiManager.getPassportIdByMobile(params);
-                } else {
-                    result = sgBindApiManager.getPassportIdByMobile(params);
-                }
-                if (result.isSuccess()) {
-                    result = new APIResultSupport(false);
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                    return result;
-                }
+        }
+
+        //如果sohu+库里没有，说明用户名肯定不会与老用户重复,再验证sohu库里有没有该用户
+        if (type) {
+            //手机号判断绑定账户
+            BaseMoblieApiParams params = new BaseMoblieApiParams();
+            params.setMobile(username);
+            //TODO 目前及搜狗账号迁移完成，手机注册都需要查sohu库；全部账号迁移完成后，手机注册查sogou库，不需要查sohu库了
+            if (ManagerHelper.isInvokeProxyApi(username)) {
+                result = proxyBindApiManager.getPassportIdByMobile(params);
             } else {
-                //个性账号注册
-                username = username + "@sogou.com";
-                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
-                //TODO 目前，查sohu库，搜狗账号迁移完成后，查sogou库
-                if (ManagerHelper.isInvokeProxyApi(username)) {
-                    result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-                } else {
-                    result = sgRegisterApiManager.checkUser(checkUserApiParams);
-                }
-                if (!result.isSuccess()) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                    return result;
-                }
+                result = sgBindApiManager.getPassportIdByMobile(params);
+            }
+            if (result.isSuccess()) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                return result;
+            }
+        } else {
+            //个性账号注册
+            username = username + "@sogou.com";
+            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+            //TODO 目前，查sohu库，搜狗账号迁移完成后，查sogou库
+            if (ManagerHelper.isInvokeProxyApi(username)) {
+                result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+            } else {
+                result = sgRegisterApiManager.checkUser(checkUserApiParams);
+            }
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                return result;
             }
         }
         result.setSuccess(true);
