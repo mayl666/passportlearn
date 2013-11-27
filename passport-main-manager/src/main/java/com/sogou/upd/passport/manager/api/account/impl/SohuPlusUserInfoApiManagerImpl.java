@@ -56,7 +56,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                 if (baseInfo != null) {
                     final String imgUrl = baseInfo.getAvatar();
                     //非搜狗图片，重新上传到搜狗op
-                    if (!Strings.isNullOrEmpty(imgUrl) && !imgUrl.matches("http://imgstore\\d\\d.cdn.sogou.com")) {
+                    if (!Strings.isNullOrEmpty(imgUrl) && !imgUrl.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
                         //获取图片名
                         final String imgName = photoUtils.generalFileName();
                         // 上传到OP图片平台 ，更新数据库，更新缓存
