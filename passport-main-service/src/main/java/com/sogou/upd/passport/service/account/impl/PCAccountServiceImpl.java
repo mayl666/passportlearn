@@ -165,6 +165,19 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
+    public String getPassportIdByToken(String token,String clientSecret) throws ServiceException{
+        String passportId = null;
+        try {
+            passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
+            return  passportId;
+        } catch (Exception e) {
+            logger.error("getPassportIdByToken:" + token, e);
+            return null;
+        }
+    }
+
+
+    @Override
     public boolean verifyNoStoreToken(String token,String clientSecret) throws ServiceException {
         boolean res = false;
         try {

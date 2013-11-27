@@ -52,7 +52,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
+    private UserInfoApiManager shPlusUserInfoApiManager;
+    @Autowired
     private SHPlusTokenService shPlusTokenService;
+    @Autowired
+    private PCAccountTokenService pcAccountTokenService;
 
     @Override
     public Result resource(PCOAuth2ResourceParams params) {
@@ -95,12 +99,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result cookieResult;
         Map resourceMap = Maps.newHashMap();
         try {
-            String passportId = null;
-            try {
-                passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
-            } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
+            String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, clientSecret);
             if (!Strings.isNullOrEmpty(passportId)) {
                 CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams(passportId,
                         CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1,"sogou.com");
@@ -145,13 +144,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new OAuthResultSupport(false);
         Map resourceMap = Maps.newHashMap();
         try {
-            String passportId = "";
-            try {
-                passportId = TokenDecrypt.decryptPcToken(accessToken, clientSecret);
-            } catch (Exception ex) {
-
-            }
-
+            String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, clientSecret);
             if (!Strings.isNullOrEmpty(passportId)) {
                 String fields = "sec_email,uniqname,avatarurl";
                 String imagesize = "180,55";

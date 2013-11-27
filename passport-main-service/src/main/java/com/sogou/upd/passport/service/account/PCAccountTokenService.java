@@ -115,4 +115,14 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public boolean verifyNoStoreToken(String token,String clientSecret) throws ServiceException;
+
+    /**
+     * 根据token来获取passportId
+     * @param token
+     * @param clientSecret
+     * @return
+     * @throws ServiceException
+     */
+    public String getPassportIdByToken(String token,String clientSecret) throws ServiceException;
+
 }
