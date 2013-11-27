@@ -57,7 +57,6 @@ public class PhotoUtils {
          * 30x30     100140006
          * 50x50     100140007
          * 180x180   100140008
-         * 55x55     100140010
          */
         sizeToAppIdMap = new HashMap<String, String>();
         sizeToAppIdMap.put("30", "100140006");

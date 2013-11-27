@@ -28,7 +28,7 @@ public class AccountInfoActionTest extends BaseActionTest {
         params.put("uniqname", uniqname);
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        String result = sendPost("http://10.11.196.173:8090/internal/account/checkuniqname", params);
+        String result = sendPost("http://10.11.211.152:8090/internal/account/checkuniqname", params);
         System.out.println(result);
     }
 
@@ -80,7 +80,7 @@ public class AccountInfoActionTest extends BaseActionTest {
 //
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        String result = sendPost("http://127.0.0.1/internal/account/userinfo", params);
+        String result = sendPost("http://10.11.211.152:8090/internal/account/userinfo", params);
         System.out.println(result);
     }
 }
