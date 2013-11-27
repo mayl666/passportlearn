@@ -17,6 +17,7 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiPara
 import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.CheckNickNameParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     }
 
     @Override
-    public Result obtainPhoto(String passportId, String size) {
+    public Result obtainPhoto(String imageUrl, String size) {
         Result result = new APIResultSupport(false);
         try {
             String []sizeArry=null;
@@ -132,10 +133,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                    sizeArry=photoUtils.getAllImageSize();
                 }
 
-                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-                String image=redisUtils.hGet(cacheKey,"sgImg");
-
-                if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
+                if(!Strings.isNullOrEmpty(imageUrl) && ArrayUtils.isNotEmpty(sizeArry)){
                     result.setSuccess(true);
                     for (int i=0;i<sizeArry.length;i++){
                         //随机获取cdn域名
@@ -143,7 +141,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         //获取图片尺寸
                         String clientId=photoUtils.getAppIdBySize(sizeArry[i]);
 
-                        String photoURL =String.format(image, cdnUrl, clientId);
+                        String photoURL =String.format(imageUrl, cdnUrl, clientId);
                         if(!Strings.isNullOrEmpty(photoURL)){
                             result.setDefaultModel("img_"+sizeArry[i],photoURL);
                         }
@@ -227,12 +225,26 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
             //其中昵称是获取的account_base_info
-            shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+            Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+            if(shPlusResult.isSuccess()){
+                Object obj= shPlusResult.getModels().get("baseInfo");
+                if(obj!=null){
+                    AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
+                    result.getModels().put("uniqname",baseInfo.getUniqname());
+
+                    Result photoResult=obtainPhoto(baseInfo.getAvatar(),"50") ;
+                    if(photoResult.isSuccess()){
+                        result.getModels().put("avatarurl",photoResult.getModels());
+                    }
+                }
+
+            }
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
         return result;
     }
+
 
     private GetUserInfoApiparams buildGetUserInfoApiparams(ObtainAccountInfoParams params) {
         GetUserInfoApiparams infoApiparams=new GetUserInfoApiparams();
