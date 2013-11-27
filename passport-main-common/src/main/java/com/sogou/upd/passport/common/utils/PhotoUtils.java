@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.JVMRandom;

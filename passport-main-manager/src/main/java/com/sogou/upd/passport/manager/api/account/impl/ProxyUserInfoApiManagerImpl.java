@@ -44,7 +44,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Autowired
     private RedisUtils redisUtils;
-    @Inject
+    @Autowired
     private PhotoUtils photoUtils;
     @Autowired
     private AccountInfoManager accountInfoManager;
