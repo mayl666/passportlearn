@@ -108,6 +108,8 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                 accountBaseInfo.setUniqname(updateUserInfoApiParams.getUniqname());
                 accountBaseInfo.setAvatar("");
                 accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
+                accountBaseInfoDAO.insertAccountBaseInfo(passportId,accountBaseInfo);
+
                 String cacheKey = buildAccountKey(passportId);
                 //初始化
                 redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);

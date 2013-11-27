@@ -57,4 +57,15 @@ public interface AccountBaseInfoDAO {
                                         @SQLParam("passport_id") String passport_id) throws
             DataAccessException;
 
+    /**
+     * 新添用户
+     */
+    @SQL(
+            "insert into " +
+                    TABLE_NAME +
+                    "(passport_id,uniqname,avatar) "
+                    + "values (:passport_id,:baseInfo.uniqname,:baseInfo.avatar)")
+    public int insertAccountBaseInfo(@SQLParam("passport_id") String passport_id,
+                                     @SQLParam("baseInfo") AccountBaseInfo baseInfo) throws DataAccessException;
+
 }
