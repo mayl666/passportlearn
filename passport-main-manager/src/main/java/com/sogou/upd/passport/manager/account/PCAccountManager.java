@@ -93,15 +93,6 @@ public interface PCAccountManager {
     public Result createAccountToken(String passportId, String instanceId,int  clientId);
 
     /**
-     * 生成不能存储的token
-     * @param passportId
-     * @param instanceId
-     * @param clientId
-     * @return
-     */
-    public Result createNoStoreAccountToken(String passportId, String instanceId,int  clientId);
-
-    /**
      *通过token获取passportId
      * @param token
      * @param clientId

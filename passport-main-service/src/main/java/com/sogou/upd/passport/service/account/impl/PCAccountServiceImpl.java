@@ -179,7 +179,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public boolean verifyNoStoreToken(String token,String clientSecret) throws ServiceException {
-        boolean res = false;
         try {
             String passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
             if(!Strings.isNullOrEmpty(passportId)){
@@ -293,33 +292,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
         return accountToken;
     }
-
-    public static AccountToken newNoStoreAccountToken(String passportId, String instanceId, AppConfig appConfig) {
-        AccountToken accountToken = new AccountToken();
-        int accessTokenExpiresIn = appConfig.getAccessTokenExpiresin();
-        int refreshTokenExpiresIn = appConfig.getRefreshTokenExpiresin();
-        int clientId = appConfig.getClientId();
-        String clientSecret = appConfig.getClientSecret();
-
-        String accessToken;
-        String refreshToken;
-        try {
-            accessToken = TokenGenerator.generatorPcToken(passportId, accessTokenExpiresIn, clientSecret);
-            refreshToken = TokenGenerator.generatorPcToken(passportId, refreshTokenExpiresIn, clientSecret);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        accountToken.setPassportId(passportId);
-        accountToken.setClientId(clientId);
-        accountToken.setAccessToken(accessToken);
-        accountToken.setAccessValidTime(DateUtil.generatorVaildTime(accessTokenExpiresIn));
-        accountToken.setRefreshToken(refreshToken);
-        accountToken.setRefreshValidTime(DateUtil.generatorVaildTime(refreshTokenExpiresIn));
-        accountToken.setInstanceId(instanceId);
-
-        return accountToken;
-    }
-
 
     /**
      * 验证Token是否失效
