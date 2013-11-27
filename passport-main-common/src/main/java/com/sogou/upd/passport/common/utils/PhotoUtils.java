@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import net.sf.json.JSONArray;
@@ -116,6 +115,22 @@ public class PhotoUtils {
     public int getImgSizeCount(){
         return sizeToAppIdMap.size();
     }
+
+    /**
+     * 根据网络图片的Url，切割图片并上传图片平台
+     * @param webUrl 网络图片的url
+     * @return imgUrl sg图片Url
+     */
+    public String uploadWebImg(String webUrl){
+        String imgName = generalFileName();
+        String imgURL = "";
+        // 上传到OP图片平台
+        if (uploadImg(imgName, null, webUrl, "1")) {
+            imgURL = accessURLTemplate(imgName);
+        }
+        return imgURL;
+    }
+
     public boolean uploadImg(String picNameInURL, byte[] picBytes,String webUrl,String uploadType){
 
         MultipartEntity reqEntity = new MultipartEntity();

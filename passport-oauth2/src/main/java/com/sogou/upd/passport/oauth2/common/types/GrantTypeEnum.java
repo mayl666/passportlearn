@@ -29,7 +29,7 @@ public enum GrantTypeEnum {
     PASSWORD("password"),
     REFRESH_TOKEN("refresh_token"),
     CLIENT_CREDENTIALS("client_credentials"),
-    HEART_BEAT("heartbeat");   //为sogou客户端开设的刷新令牌接口，所需参数与refresh_token保持一致
+    HEART_BEAT("heartbeat");   //为sogou客户端开设的刷新令牌接口，sohu+历史遗留问题，逻辑和refresh_token一致
 
     private String grantType;
 

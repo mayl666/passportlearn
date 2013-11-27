@@ -252,6 +252,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
             //其中昵称是获取的account_base_info
+            // TODO 搜狗账号迁移后，搜狗账号的昵称从account表里拿，其他账号昵称从account_base_info里拿
             Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
             if(shPlusResult.isSuccess()){
                 Object obj= shPlusResult.getModels().get("baseInfo");
