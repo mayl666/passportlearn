@@ -12,7 +12,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
-import com.sogou.upd.passport.dao.account.NickNamePassportMappingDAO;
+import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountHelper;
@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountDAO accountDAO;
 
     @Autowired
-    private NickNamePassportMappingDAO nickNamePassportMappingDAO;
+    private UniqNamePassportMappingDAO nickNamePassportMappingDAO;
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
@@ -473,7 +473,7 @@ public class AccountServiceImpl implements AccountService {
             String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
             passportId = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
-                passportId = nickNamePassportMappingDAO.getPassportIdByNickName(nickname);
+                passportId = nickNamePassportMappingDAO.getPassportIdByUniqName(nickname);
                 if (!Strings.isNullOrEmpty(passportId)) {
                     redisUtils.set(cacheKey, passportId);
                 }
@@ -500,7 +500,7 @@ public class AccountServiceImpl implements AccountService {
                 //移除原来映射表
                 if (removeNickName(oldNickName)) {
                     //更新新的映射表
-                    int row = nickNamePassportMappingDAO.insertNickNamePassportMapping(nickname, passportId);
+                    int row = nickNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
                     if (row > 0) {
                         String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
                         redisUtils.set(cacheKey, passportId);
@@ -523,7 +523,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             if (!Strings.isNullOrEmpty(nickname)) {
                 //更新映射
-                int row = nickNamePassportMappingDAO.deleteNickNamePassportMapping(nickname);
+                int row = nickNamePassportMappingDAO.deleteUniqNamePassportMapping(nickname);
                 if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
                     redisUtils.delete(cacheKey);

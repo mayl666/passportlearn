@@ -101,6 +101,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                     result.getModels().remove("username");
                 }
 
+                //从account_base_info获取sohu+头像和昵称
+
                 //替换搜狐的个人头像
                 String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
                 String image = Strings.isNullOrEmpty(avatarurl) ? null : avatarurl.replaceAll("\\/\\/", "");

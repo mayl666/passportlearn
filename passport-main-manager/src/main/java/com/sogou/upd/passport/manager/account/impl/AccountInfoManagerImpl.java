@@ -223,8 +223,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
         // 调用内部接口
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
-            //其中昵称是获取的account_base_info
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
+            //其中昵称是获取的account_base_info
+
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
