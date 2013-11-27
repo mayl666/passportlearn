@@ -44,7 +44,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Autowired
     private RedisUtils redisUtils;
-    @Inject
+    @Autowired
     private PhotoUtils photoUtils;
     @Autowired
     private AccountInfoManager accountInfoManager;
@@ -100,8 +100,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                     result.setDefaultModel("fullname",fullname);
                     result.getModels().remove("username");
                 }
-
-                //从account_base_info获取sohu+头像和昵称
 
                 //替换搜狐的个人头像
                 String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;

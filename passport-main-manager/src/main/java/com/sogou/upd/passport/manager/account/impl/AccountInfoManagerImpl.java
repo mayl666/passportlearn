@@ -44,6 +44,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager shPlusUserInfoApiManager;
 
     public Result uploadImg(byte[] byteArr,String passportId,String type) {
         Result result = new APIResultSupport(false);
@@ -225,7 +227,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
             //其中昵称是获取的account_base_info
-
+            shPlusUserInfoApiManager.getUserInfo(infoApiparams);
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
