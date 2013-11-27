@@ -18,7 +18,7 @@ public class PCOAuth2LoginParams {
 
     private int pwdtype = CommonConstant.PWD_TYPE_CIPHER; //密码类型，1为md5后的口令，缺省为密文
 
-    private int rememberMe=0;
+    private int rememberMe=1;
     private String instanceid = "";  //客户端的实例id
     private int client_id= CommonConstant.PC_CLIENTID;
 

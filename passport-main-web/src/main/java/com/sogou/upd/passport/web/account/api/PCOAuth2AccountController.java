@@ -23,6 +23,7 @@ import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.*;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -86,6 +87,8 @@ public class PCOAuth2AccountController extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private PCOAuth2LoginManager pcOAuth2LoginManager;
+    @Autowired
+    private UserInfoApiManager shPlusUserInfoApiManager;
 
 
     //https://plus.sohu.com/sogou/fastreg?instanceid=220946462
@@ -411,14 +414,21 @@ public class PCOAuth2AccountController extends BaseController {
     }
 
     private String getUniqname(String passportId) {
-        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams(passportId, "uniqname");
-        Result getUserInfoResult = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-        String uniqname;
+        GetUserInfoApiparams infoApiparams= new GetUserInfoApiparams();
+        infoApiparams.setUserid(passportId);
+        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+        String uniqname = null;
         if (getUserInfoResult.isSuccess()) {
-            uniqname = (String) getUserInfoResult.getModels().get("uniqname");
-            uniqname = Strings.isNullOrEmpty(uniqname) ? defaultUniqname(passportId) : uniqname;
-        } else {
-            uniqname = defaultUniqname(passportId);
+            Object obj=getUserInfoResult.getModels().get("baseInfo");
+            AccountBaseInfo accountBaseInfo=null;
+            if(obj!=null){
+                accountBaseInfo= (AccountBaseInfo) obj;
+                uniqname = accountBaseInfo.getUniqname();
+            }
+        }
+
+        if(Strings.isNullOrEmpty(uniqname)){
+            return defaultUniqname(passportId);
         }
         return uniqname;
     }
