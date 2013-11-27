@@ -234,7 +234,7 @@ public class PCOAuth2AccountController extends BaseController {
                     result = new APIResultSupport(true);
                     result.setCode("0");
                     String passportId = accountToken.getPassportId();
-                    ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+                    ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
                 }
             }
         } catch (Exception e) {
@@ -305,7 +305,7 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, getUniqname(userId), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(username, ip);
@@ -406,30 +406,6 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
-    }
-
-    private String getUniqname(String passportId) {
-        GetUserInfoApiparams infoApiparams= new GetUserInfoApiparams();
-        infoApiparams.setUserid(passportId);
-        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-        String uniqname = null;
-        if (getUserInfoResult.isSuccess()) {
-            Object obj=getUserInfoResult.getModels().get("baseInfo");
-            AccountBaseInfo accountBaseInfo=null;
-            if(obj!=null){
-                accountBaseInfo= (AccountBaseInfo) obj;
-                uniqname = accountBaseInfo.getUniqname();
-            }
-        }
-
-        if(Strings.isNullOrEmpty(uniqname)){
-            return defaultUniqname(passportId);
-        }
-        return uniqname;
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
     }
 
     /**

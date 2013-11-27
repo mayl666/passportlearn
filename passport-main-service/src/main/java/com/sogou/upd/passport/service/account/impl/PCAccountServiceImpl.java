@@ -13,6 +13,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -150,6 +151,34 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
+    public String getPassportIdByToken(String token,String clientSecret) throws ServiceException{
+        String passportId = null;
+        try {
+            passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
+            return  passportId;
+        } catch (Exception e) {
+            logger.error("getPassportIdByToken:" + token, e);
+            return null;
+        }
+    }
+
+
+    @Override
+    public boolean verifyNoStoreToken(String token,String clientSecret) throws ServiceException {
+        try {
+            String passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
+            if(!Strings.isNullOrEmpty(passportId)){
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            logger.error("verifyNoStoreRefreshToken:" + token, e);
+            return false;
+        }
+    }
+
+
+    @Override
     public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         if (CommonHelper.isExplorerToken(clientId)) {
             String oldRToken = queryOldPCToken(passportId, clientId, instanceId);
@@ -234,8 +263,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         String accessToken;
         String refreshToken;
         try {
-            accessToken = TokenGenerator.generatorPcToken(passportId, accessTokenExpiresIn, clientSecret);
-            refreshToken = TokenGenerator.generatorPcToken(passportId, refreshTokenExpiresIn, clientSecret);
+            accessToken = TokenGenerator.generateSoHuPcToken(passportId, accessTokenExpiresIn, clientSecret);
+            refreshToken = TokenGenerator.generateSoHuPcToken(passportId, refreshTokenExpiresIn, clientSecret);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

@@ -101,6 +101,7 @@ public class PhotoUtils {
         return imgSize;
     }
 
+
     //获取所有appId
     public Map<String, String> getAllAppId() {
         return sizeToAppIdMap;
@@ -229,38 +230,51 @@ public class PhotoUtils {
         return false;
     }
 
+    public Result uploadAvatar(String imgUrl){
+        Result result = new APIResultSupport(false);
+        String imgName = generalFileName();
+        if (uploadImg(imgName, null, imgUrl, "1")) {
+            String[] imgSize=getAllImageSize();
+            StringBuilder sb=new StringBuilder();
+            for (String imgsize:imgSize){
+                sb.append(imgsize+",");
+            }
+            result=obtainPhoto(accessURLTemplate(imgName), sb.toString());
+        }
+        return result;
+    }
+
     public Result obtainPhoto(String imageUrl, String size) {
         Result result = new APIResultSupport(false);
         try {
-            String []sizeArry=null;
+            String[] sizeArry = null;
             //获取size对应的appId
-            if(!Strings.isNullOrEmpty(size)){
+            if (!Strings.isNullOrEmpty(size)) {
                 //检测是否是支持的尺寸
-                sizeArry=size.split(",");
+                sizeArry = size.split(",");
 
-                if(ArrayUtils.isNotEmpty(sizeArry)){
-                    for(int i=0;i<sizeArry.length;i++){
-                        if(Strings.isNullOrEmpty(getAppIdBySize(sizeArry[i]))){
+                if (ArrayUtils.isNotEmpty(sizeArry)) {
+                    for (int i = 0; i < sizeArry.length; i++) {
+                        if (Strings.isNullOrEmpty(getAppIdBySize(sizeArry[i]))) {
                             result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
                             return result;
                         }
                     }
                 } else {
                     //为空获取所有的尺寸
-                    sizeArry=getAllImageSize();
+                    sizeArry = getAllImageSize();
                 }
-
-                if(!Strings.isNullOrEmpty(imageUrl) && ArrayUtils.isNotEmpty(sizeArry)){
+                if (!Strings.isNullOrEmpty(imageUrl) && ArrayUtils.isNotEmpty(sizeArry)) {
                     result.setSuccess(true);
-                    for (int i=0;i<sizeArry.length;i++){
+                    for (int i = 0; i < sizeArry.length; i++) {
                         //随机获取cdn域名
-                        String cdnUrl=getCdnURL();
+                        String cdnUrl = getCdnURL();
                         //获取图片尺寸
-                        String clientId=getAppIdBySize(sizeArry[i]);
+                        String clientId = getAppIdBySize(sizeArry[i]);
 
-                        String photoURL =String.format(imageUrl, cdnUrl, clientId);
-                        if(!Strings.isNullOrEmpty(photoURL)){
-                            result.setDefaultModel("img_"+sizeArry[i],photoURL);
+                        String photoURL = String.format(imageUrl, cdnUrl, clientId);
+                        if (!Strings.isNullOrEmpty(photoURL)) {
+                            result.setDefaultModel("img_" + sizeArry[i], photoURL);
                         }
                     }
                     return result;
@@ -269,8 +283,8 @@ public class PhotoUtils {
                     return result;
                 }
             }
-        }catch (Exception e){
-            logger.error(e.getMessage(),e);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
             return result;
         }

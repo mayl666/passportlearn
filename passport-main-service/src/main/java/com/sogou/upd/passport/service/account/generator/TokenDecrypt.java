@@ -73,21 +73,13 @@ public class TokenDecrypt {
      */
     public static String decryptPcToken(String token, String clientSecret) throws Exception {
         try {
-
-            String decryptStr = AES.decryptURLSafeString(token, clientSecret);
-            String expireInStr = null;
             String passportId = null;
+            String decryptStr = AES.decryptURLSafeString(token, clientSecret);
             if (!Strings.isNullOrEmpty(decryptStr)) {
-                String[] strArray = decryptStr.split("\\" + CommonConstant.SEPARATOR_1);
+                String[] strArray = decryptStr.split("\\"+CommonConstant.SEPARATOR_1);
                 passportId = strArray[0];
-                expireInStr = strArray[1];
-                Long expireIn = new Long(expireInStr);
-                long currentTime = System.currentTimeMillis();
-                if (expireIn > currentTime) {
-                    return passportId;
-                }
             }
-            return null;
+            return passportId;
         } catch (Exception e) {
             logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", token);
             throw e;

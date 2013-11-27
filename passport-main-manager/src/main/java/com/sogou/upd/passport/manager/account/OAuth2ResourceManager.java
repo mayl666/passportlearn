@@ -23,12 +23,19 @@ public interface OAuth2ResourceManager {
      * 获取cookie值
      * @return
      */
-    public Result getCookieValue(String accessToken, String clientSecret, String instanceId);
+    public Result getCookieValue(String accessToken,int clientId, String clientSecret, String instanceId);
 
     /**
      * 获取完整的个人信息
      * @return
      */
-    public Result getFullUserInfo(int clientId, String accessToken, String clientSecret, String instanceId);
+    public Result getFullUserInfo(String accessToken,int clientId, String clientSecret, String instanceId);
+
+    /**
+     * 根据passportId获取昵称
+     * @param passportId
+     * @return
+     */
+    public String getUniqname(String passportId);
 
 }
