@@ -131,7 +131,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             AccountToken renewAccountToken;
             if (GrantTypeEnum.HEART_BEAT.toString().equals(grantType)) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                boolean isRightPcRToken = pcAccountTokenService.verifyNoStoreToken(refreshToken,appConfig.getClientSecret());
                 if (!isRightPcRToken) {
                     String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
                     if (accessToken == null) {
