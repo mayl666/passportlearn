@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
@@ -16,7 +15,6 @@ import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
-import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,15 +101,23 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                 }
             } else {
                 String passportId=updateUserInfoApiParams.getUserid();
+                String uniqname=updateUserInfoApiParams.getUniqname();
 
                 accountBaseInfo=new AccountBaseInfo();
-                accountBaseInfo.setUniqname(updateUserInfoApiParams.getUniqname());
+                accountBaseInfo.setUniqname(uniqname);
                 accountBaseInfo.setAvatar("");
                 accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
+                //初始化accountBaseInfo
                 accountBaseInfoDAO.insertAccountBaseInfo(passportId,accountBaseInfo);
-
-                String cacheKey = buildAccountKey(passportId);
-                //初始化
+                //初始化昵称映射表
+                int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                String cacheKey =null;
+                if (row > 0) {
+                    cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                    redisUtils.set(cacheKey, passportId);
+                }
+                //初始化缓存
+                cacheKey = buildAccountBaseInfoKey(passportId);
                 redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
                 result.setSuccess(true);
                 result.setMessage("修改成功");
@@ -128,7 +134,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
             //更新数据库
             int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
             if (row > 0) {
-                String cacheKey = buildAccountKey(passportId);
+                String cacheKey = buildAccountBaseInfoKey(passportId);
                 baseInfo.setUniqname(uniqname);
                 redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
 
@@ -166,7 +172,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
         return false;
     }
 
-    private String buildAccountKey(String passportId) {
+    private String buildAccountBaseInfoKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
     }
 
