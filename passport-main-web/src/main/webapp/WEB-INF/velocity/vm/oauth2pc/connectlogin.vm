@@ -11,15 +11,13 @@
         splus.sp_status = "1";
         splus.sname = '${sname}';
         splus.nick = '${nick}';
-        splus.sid = "${passport}";
+        splus.sid = "0";
         splus.passport = '${passport}';
         splus.accesstoken = '${accesstoken}';
         splus.refreshtoken = '${refreshtoken}';
         splus.result = "0";
         splus.logintype = '${logintype}';
-
         splus._timestamp = "201308061701";
-
     </script>
     <script src="/./static/js/oauth2pc/require-jquery.js?t=168932"
             data-main="/./static/js/oauth2pc/main.js"></script>
