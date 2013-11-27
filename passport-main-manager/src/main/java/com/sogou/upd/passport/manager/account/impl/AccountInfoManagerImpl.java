@@ -231,13 +231,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 if(obj!=null){
                     AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
                     result.getModels().put("uniqname",baseInfo.getUniqname());
-
-                    Result photoResult=obtainPhoto(baseInfo.getAvatar(),"50") ;
-                    if(photoResult.isSuccess()){
-                        result.getModels().put("avatarurl",photoResult.getModels());
-                    }
                 }
-
             }
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);

@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -25,6 +26,7 @@ import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.*;
@@ -82,6 +84,10 @@ public class SecureManagerImpl implements SecureManager {
     private BindApiManager proxyBindApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private PhotoUtils photoUtils;
+    @Autowired
+    private UserInfoApiManager shPlusUserInfoApiManager;
 
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
@@ -288,8 +294,20 @@ public class SecureManagerImpl implements SecureManager {
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setImagesize("50");
-                getUserInfoApiparams.setFields(SECURE_FIELDS +",uniqname,avatarurl");
+                getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+
+                Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                if(shPlusResult.isSuccess()){
+                    Object obj= shPlusResult.getModels().get("baseInfo");
+                    if(obj!=null){
+                        AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
+                        Result photoResult= photoUtils.obtainPhoto(baseInfo.getAvatar(),"50");
+                        if(photoResult.isSuccess()){
+                            result.getModels().put("avatarurl",photoResult.getModels());
+                        }
+                    }
+                }
             } else {
                 GetSecureInfoApiParams params = new GetSecureInfoApiParams();
                 params.setUserid(userId);
