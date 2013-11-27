@@ -293,7 +293,7 @@ public class SecureManagerImpl implements SecureManager {
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setImagesize("50");
+//                getUserInfoApiparams.setImagesize("50");
                 getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
 

@@ -65,12 +65,12 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                         redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                     }
                 }
-                result.setSuccess(true);
-                result.getModels().put("baseInfo",baseInfo);
             }
         }catch (Exception e){
             logger.error("SohuPlusUserInfoApiManagerImpl error",e);
         }
+        result.setSuccess(true);
+        result.getModels().put("baseInfo",baseInfo);
         return result;
     }
 
