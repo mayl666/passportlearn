@@ -276,7 +276,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 $error = $('.out-error', $form),
                 $img = $('div.chkPic>img', $form),
                 $vcodeError = $vcode.next('span.position-tips'),
-                accountObj = this.validObj.account,
+                accountObj = this.validObj.regaccount,
                 vcodeObj = this.validObj.vcodeObj,
                 passwordObj = this.validObj.password;
             
