@@ -12,6 +12,7 @@ import java.util.Date;
 public class SnamePassportMapping {
 
     private long id;
+    private String sid;
     private String sname;
     private String passportId;
     private Date updateTime;
@@ -46,5 +47,13 @@ public class SnamePassportMapping {
 
     public void setSname(String sname) {
         this.sname = sname;
+    }
+
+    public String getSid() {
+        return sid;
+    }
+
+    public void setSid(String sid) {
+        this.sid = sid;
     }
 }

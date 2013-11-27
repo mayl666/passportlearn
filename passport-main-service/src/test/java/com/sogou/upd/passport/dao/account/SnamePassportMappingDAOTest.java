@@ -21,7 +21,7 @@ public class SnamePassportMappingDAOTest extends BaseDAOTest {
 
     @Before
     public void init() {
-        int row = snamePassportMappingDAO.insertSnamePassportMapping(SNAME, PASSPORT_ID);
+        int row = snamePassportMappingDAO.insertSnamePassportMapping(SID,SNAME, PASSPORT_ID);
         Assert.assertEquals(row, 1);
     }
 

@@ -21,15 +21,12 @@ public interface SnamePassportMappingService {
     public String queryPassportIdBySname(String sname) throws ServiceException;
 
     /**
-     * 插入一条sname和passportId的映射关系
-     *
-     * @param sname
-     * @param passportId
+     * 根据sid获取passportId
+     * @param sid
      * @return
-     * @throws com.sogou.upd.passport.exception.ServiceException
+     * @throws ServiceException
      */
-    public boolean initialSnamePassportMapping(String sname, String passportId) throws ServiceException;
-
+    public String queryPassportIdBySid(String sid) throws ServiceException;
     /**
      * 更新sname和passportId的映射关系
      *
