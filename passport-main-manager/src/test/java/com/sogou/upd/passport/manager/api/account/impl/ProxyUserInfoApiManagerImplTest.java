@@ -22,7 +22,6 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
-
     @Test
     public void testGetUserInfo2() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
