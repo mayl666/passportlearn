@@ -19,13 +19,14 @@ public class SnamePassportMappingDAOTest extends BaseDAOTest {
     @Autowired
     private SnamePassportMappingDAO snamePassportMappingDAO;
 
-    @Before
+//    @Before
+    @Test
     public void init() {
         int row = snamePassportMappingDAO.insertSnamePassportMapping(SID,SNAME, PASSPORT_ID);
         Assert.assertEquals(row, 1);
     }
 
-    @After
+//    @After
 //    @Test
     public void end() {
         int row = snamePassportMappingDAO.deleteSnamePassportMapping(SNAME);
@@ -34,7 +35,7 @@ public class SnamePassportMappingDAOTest extends BaseDAOTest {
 
     @Test
     public void testGetPassportIdByMobile() {
-        String passportId = snamePassportMappingDAO.getPassportIdBySname(SNAME);
+        String passportId = snamePassportMappingDAO.getPassportIdBySname("tinkame710");
         Assert.assertEquals(passportId, PASSPORT_ID);
     }
 

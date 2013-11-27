@@ -9,6 +9,8 @@ import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -28,14 +30,14 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
 
     @Override
     public String queryPassportIdBySname(String sname) throws ServiceException {
-        String passportId;
+        String passportId = null;
         try {
             String cacheKey = buildSnamePassportMappingKey(sname);
             passportId = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySname(sname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId);
+                    redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
                 }
             }
         } catch (Exception e) {
@@ -53,7 +55,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySid(sid);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId);
+                    redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
                 }
             }
         } catch (Exception e) {
@@ -70,7 +72,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             int accountRow = snamePassportMappingDAO.updateSnamePassportMapping(sname, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildSnamePassportMappingKey(sname);
-                redisUtils.set(cacheKey, passportId);
+                redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
                 return true;
             }
         } catch (Exception e) {

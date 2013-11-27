@@ -32,7 +32,6 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
-import com.sogou.upd.passport.web.account.form.PCOAuth2LoginParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -66,8 +65,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
-    private UserInfoApiManager sgUserInfoApiManager;
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private OAuth2AuthorizeManager oAuth2AuthorizeManager;
@@ -87,6 +84,8 @@ public class PCOAuth2AccountController extends BaseController {
     private CommonManager commonManager;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private PCOAuth2LoginManager pcOAuth2LoginManager;
 
 
     //https://plus.sohu.com/sogou/fastreg?instanceid=220946462
@@ -290,22 +289,9 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //默认是sogou.com
-        String username = loginParams.getLoginname();
-        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(loginParams.getLoginname());
-        if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-            //TODO 去sohu+取该个性账号的@sohu账号   搜狗个性账号  sohu+个性账号只能取一个
-        }
-        //TODO sohu+注册手机号  sogou 手机号登陆
 
-        WebLoginParams webLoginParams = new WebLoginParams();
-        webLoginParams.setUsername(username);
-        webLoginParams.setPassword(loginParams.getPwd());
-        webLoginParams.setPwdtype(loginParams.getPwdtype());
-        webLoginParams.setCaptcha(loginParams.getCaptcha());
-        webLoginParams.setToken(loginParams.getToken());
-        webLoginParams.setClient_id(String.valueOf(loginParams.getClient_id()));
-        result = loginManager.accountLogin(webLoginParams, ip, request.getScheme());
+        String username = loginParams.getLoginname();
+        result = pcOAuth2LoginManager.accountLogin(loginParams,getIp(request),request.getScheme());
 
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
