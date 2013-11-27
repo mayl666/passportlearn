@@ -208,10 +208,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
 
             //更新昵称
-            if(result.isSuccess()){
-                updateUserInfoApiParams.setUniqname(infoParams.getNickname());
-                result=shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-            }
+            updateUserInfoApiParams.setUniqname(infoParams.getNickname());
+            result=shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
         } else {
             updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
             result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
