@@ -227,14 +227,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             result=getUserInfo(passportId);
             Map data = Maps.newHashMap();
             data.put("nick", getUniqname(passportId));
-            data.put("large_avatar", (String)result.getModels().get("img_30"));
+            data.put("large_avatar", (String)result.getModels().get("img_180"));
             data.put("mid_avatar", (String)result.getModels().get("img_50"));
-            data.put("tiny_avatar", (String)result.getModels().get("img_180"));
+            data.put("tiny_avatar", (String)result.getModels().get("img_30"));
             data.put("sid", passportId);
             resourceMap.put("data", data);
             resourceMap.put("msg", "get full user info success");
             resourceMap.put("code", 0);
-            result.setDefaultModel(RESOURCE, resourceMap);
             result.setSuccess(true);
             result.setDefaultModel(RESOURCE, resourceMap);
         } catch (ServiceException e) {
