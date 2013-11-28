@@ -186,7 +186,15 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId) {
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
-        if (accessToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {
+        if (accessToken.startsWith(CommonConstant.SG_TOKEN_START)) {
+            passportId = pcAccountTokenService.getPassportIdByToken(accessToken, clientSecret);
+            if (!Strings.isNullOrEmpty(passportId)) {
+                //校验accessToken
+                if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
+                    return null;
+                }
+            }
+        } else {
             //sohu+token，获取passportId
             Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
             if (SHPlusConstant.AUTH_TOKEN_SUCCESS.equals(map.get("result"))) {
@@ -196,14 +204,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 passportId = snamePassportMappingService.queryPassportIdBySid(sid);
             }
             shPlusTokenLog.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
-        } else {
-            passportId = pcAccountTokenService.getPassportIdByToken(accessToken, clientSecret);
-            if (!Strings.isNullOrEmpty(passportId)) {
-                //校验accessToken
-                if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
-                    return null;
-                }
-            }
         }
         return passportId;
     }

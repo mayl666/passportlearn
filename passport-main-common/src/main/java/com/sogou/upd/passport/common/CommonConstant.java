@@ -20,6 +20,7 @@ public class CommonConstant {
     public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
     public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
+    public static final String SG_TOKEN_START = "SG_PASSPORT_"; //4.2版本浏览器token开始标志
 
     public static final String CLIENT_ID = "client_id";
     public static final String APP_ID = "appid";

@@ -74,7 +74,7 @@ public class TokenDecrypt {
     public static String decryptPcToken(String token, String clientSecret) throws Exception {
         try {
             String passportId = null;
-            String tokenContent = token.substring(4,token.length());
+            String tokenContent = token.substring(CommonConstant.SG_TOKEN_START.length(),token.length());
             String decryptStr = AES.decryptURLSafeString(tokenContent, clientSecret);
             if (!Strings.isNullOrEmpty(decryptStr)) {
                 String[] strArray = decryptStr.split("\\"+CommonConstant.SEPARATOR_1);

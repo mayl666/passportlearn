@@ -139,13 +139,17 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                     result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
                     return result;
                 }
-
+                if(refreshToken.startsWith(CommonConstant.SG_TOKEN_START)){
+                    renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
+                }else {
+                    //非4.2版本的sogou token要重新生成token
+                    renewAccountToken = pcAccountTokenService.initialAccountToken(passportId,instanceId,appConfig);
+                }
             } else {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
 
-            renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());
@@ -166,7 +170,10 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     }
 
     private boolean isRightPcRToken(String passportId, int clientId, String instanceId, String refreshToken) throws Exception {
-        if (refreshToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {
+        if (refreshToken.startsWith(CommonConstant.SG_TOKEN_START)) {
+            boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            return isRightPcRToken;
+        } else {
             String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
             if (accessToken != null) {
                 // 记录log，等以后不再验证sohuplus的token了去掉这段逻辑
@@ -174,9 +181,6 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                 return true;
             }
             return false;
-        } else {
-            boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
-            return isRightPcRToken;
         }
     }
 }

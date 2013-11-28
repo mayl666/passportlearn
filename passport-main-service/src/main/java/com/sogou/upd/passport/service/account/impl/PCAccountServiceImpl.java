@@ -45,7 +45,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         try {
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             saveAccountToken(passportId, instanceId, appConfig, accountToken);
-
             return accountToken;
         } catch (Exception e) {
             logger.error("initialAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -55,8 +54,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public AccountToken updateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
-        //todo 暂时每次都返回新的token
-//        return initialAccountToken(passportId,instanceId,appConfig);
         final int clientId = appConfig.getClientId();
         try {
             AccountToken accountToken = queryAccountToken(passportId, clientId, instanceId);
