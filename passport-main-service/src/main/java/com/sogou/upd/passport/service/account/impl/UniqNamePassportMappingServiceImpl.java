@@ -64,4 +64,56 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         }
         return false;
     }
+
+    @Override
+    public boolean updateUniqName(/*Account account,*/String passportId,String oldNickName, String nickname)  throws ServiceException{
+        try {
+            //sogou分支需要修改此逻辑，在account主表中修改昵称
+//            String oldNickName = account.getNickname();
+//            String passportId = account.getPassportId();
+//            //更新数据库
+//            int row = accountDAO.updateNickName(nickname, passportId);
+//            if (row > 0) {
+//                String cacheKey = buildAccountKey(passportId);
+//                account.setNickname(nickname);
+//                redisUtils.set(cacheKey, account);
+
+            //移除原来映射表
+            if (removeUniqName(oldNickName)) {
+                //更新新的映射表
+                int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
+                if (row > 0) {
+                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
+                    redisUtils.set(cacheKey, passportId);
+                    return true;
+                }
+            }else {
+                return false;
+            }
+
+//            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeUniqName(String nickname) throws ServiceException {
+        try {
+            if (!Strings.isNullOrEmpty(nickname)) {
+                //更新映射
+                int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(nickname);
+                if (row > 0) {
+                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
+                    redisUtils.delete(cacheKey);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("removeUniqName fail", e);
+            return false;
+        }
+        return false;
+    }
 }

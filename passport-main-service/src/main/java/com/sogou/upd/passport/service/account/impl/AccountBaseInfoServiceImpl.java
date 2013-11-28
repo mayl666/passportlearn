@@ -57,11 +57,13 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
                 return true;
             }
-            String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
-            if (!Strings.isNullOrEmpty(existPassportId)) {
-                uniqname = "";      // 如果第三方昵称重复则默认为空
-            } else {
-                isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
+                if (!Strings.isNullOrEmpty(existPassportId)) {
+                    uniqname = "";      // 如果第三方昵称重复则默认为空
+                } else {
+                    isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                }
             }
             if (isInertMapping) {
                 AccountBaseInfo accountBaseInfo = newAccountBaseInfo(passportId, uniqname, avatar);
