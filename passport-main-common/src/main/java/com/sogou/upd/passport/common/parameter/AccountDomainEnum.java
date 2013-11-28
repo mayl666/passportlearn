@@ -109,7 +109,7 @@ public enum AccountDomainEnum {
     }
 
     public static boolean isIndivid(String username) {
-        return  !username.contains("@");
+        return  (!username.contains("@"))&& !isPhone(username);
     }
 
     @Override
