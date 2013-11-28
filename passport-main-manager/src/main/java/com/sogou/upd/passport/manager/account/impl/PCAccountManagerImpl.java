@@ -210,31 +210,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public Result createNoStoreAccountToken(String passportId, String instanceId,int  clientId) {
-        Result finalResult = new APIResultSupport(false);
-        try {
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
-                return finalResult;
-            }
-            AccountToken accountToken = PCAccountServiceImpl.newNoStoreAccountToken(passportId, instanceId, appConfig);
-            if (accountToken != null) {
-                finalResult.setSuccess(true);
-                finalResult.setDefaultModel(accountToken);
-            } else {
-                finalResult.setCode(ErrorUtil.CREATE_TOKEN_FAIL);
-            }
-            return finalResult;
-        } catch (ServiceException e) {
-            logger.error("createToken fail", e);
-            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return finalResult;
-        }
-    }
-
-
-    @Override
     public String getBrowserBbsUniqname(String passportId) {
         RequestModel requestModel = new RequestModel(BROWSER_BBS_UNIQNAME_URL);
         String uniqname = "";

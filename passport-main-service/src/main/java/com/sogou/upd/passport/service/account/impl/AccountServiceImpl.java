@@ -43,11 +43,9 @@ public class AccountServiceImpl implements AccountService {
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
 
-
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
     private AccountDAO accountDAO;
-
     @Autowired
     private UniqNamePassportMappingDAO nickNamePassportMappingDAO;
     @Autowired
@@ -466,23 +464,7 @@ public class AccountServiceImpl implements AccountService {
     return true;
   }
 
-    @Override
-    public String checkUniqName(String nickname) throws ServiceException {
-        String passportId = null;
-        try {
-            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-            passportId = redisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(passportId)) {
-                passportId = nickNamePassportMappingDAO.getPassportIdByUniqName(nickname);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("checkUniqName fail", e);
-        }
-        return passportId;
-    }
+
 
     @Override
     public boolean updateUniqName(/*Account account,*/String passportId,String oldNickName, String nickname)  throws ServiceException{

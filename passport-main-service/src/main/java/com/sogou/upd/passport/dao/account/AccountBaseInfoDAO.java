@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.dao.account;
 
-import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
@@ -44,7 +43,7 @@ public interface AccountBaseInfoDAO {
             TABLE_NAME +
             " set avatar=:avatar where passport_id=:passport_id")
     public int updateAvatarByPassportId(@SQLParam("avatar") String avatar,
-                              @SQLParam("passport_id") String passport_id) throws
+                                        @SQLParam("passport_id") String passport_id) throws
             DataAccessException;
 
     /**
@@ -54,7 +53,7 @@ public interface AccountBaseInfoDAO {
             TABLE_NAME +
             " set uniqname=:uniqname where passport_id=:passport_id")
     public int updateUniqnameByPassportId(@SQLParam("uniqname") String uniqname,
-                                        @SQLParam("passport_id") String passport_id) throws
+                                          @SQLParam("passport_id") String passport_id) throws
             DataAccessException;
 
     /**
@@ -67,5 +66,17 @@ public interface AccountBaseInfoDAO {
                     + "values (:passport_id,:baseInfo.uniqname,:baseInfo.avatar)")
     public int insertAccountBaseInfo(@SQLParam("passport_id") String passport_id,
                                      @SQLParam("baseInfo") AccountBaseInfo baseInfo) throws DataAccessException;
+
+    /**
+     * 往用户状态表中插入一条记录
+     * 有多个唯一索引时不要使用，存在则更新，不存在则插入
+     */
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(passport_id,uniqname,avatar) values (:passport_id,:baseInfo.uniqname,:baseInfo.avatar) "
+            + "ON DUPLICATE KEY UPDATE "
+            + "passport_id=:passport_id,uniqname=:baseInfo.uniqname,avatar=:baseInfo.avatar")
+    public int saveAccountBaseInfo(@SQLParam("passport_id") String passport_id, @SQLParam("baseInfo") AccountBaseInfo baseInfo) throws
+            DataAccessException;
 
 }

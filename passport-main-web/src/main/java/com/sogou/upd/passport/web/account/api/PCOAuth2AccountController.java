@@ -2,11 +2,8 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -19,10 +16,12 @@ import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.*;
+import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
+import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
+import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
+import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
@@ -34,7 +33,6 @@ import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +46,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
-import java.util.Map;
 import java.util.UUID;
 
 
@@ -63,8 +60,6 @@ import java.util.UUID;
 @Controller
 public class PCOAuth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PCOAuth2AccountController.class);
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
@@ -87,8 +82,6 @@ public class PCOAuth2AccountController extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private PCOAuth2LoginManager pcOAuth2LoginManager;
-    @Autowired
-    private UserInfoApiManager shPlusUserInfoApiManager;
 
 
     //https://plus.sohu.com/sogou/fastreg?instanceid=220946462
@@ -233,13 +226,13 @@ public class PCOAuth2AccountController extends BaseController {
             if (result.isSuccess()) {
                 String userId = result.getModels().get("userid").toString();
                 String instanceId = pcoAuth2RegisterParams.getInstance_id();
-                result = pcAccountManager.createNoStoreAccountToken(userId, instanceId, clientId);
+                result = pcAccountManager.createAccountToken(userId, instanceId, clientId);
                 if (result.isSuccess()) {
                     AccountToken accountToken = (AccountToken) result.getDefaultModel();
                     result = new APIResultSupport(true);
                     result.setCode("0");
                     String passportId = accountToken.getPassportId();
-                    ManagerHelper.setModelForOAuthResult(result, getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+                    ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
                 }
             }
         } catch (Exception e) {
@@ -307,10 +300,10 @@ public class PCOAuth2AccountController extends BaseController {
             int clientId = loginParams.getClient_id();
             //构造成功返回结果
             result = new APIResultSupport(true);
-            Result tokenResult = pcAccountManager.createNoStoreAccountToken(userId, loginParams.getInstanceid(), clientId);
+            Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, getUniqname(userId), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(username, ip);
@@ -411,30 +404,6 @@ public class PCOAuth2AccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
-    }
-
-    private String getUniqname(String passportId) {
-        GetUserInfoApiparams infoApiparams= new GetUserInfoApiparams();
-        infoApiparams.setUserid(passportId);
-        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-        String uniqname = null;
-        if (getUserInfoResult.isSuccess()) {
-            Object obj=getUserInfoResult.getModels().get("baseInfo");
-            AccountBaseInfo accountBaseInfo=null;
-            if(obj!=null){
-                accountBaseInfo= (AccountBaseInfo) obj;
-                uniqname = accountBaseInfo.getUniqname();
-            }
-        }
-
-        if(Strings.isNullOrEmpty(uniqname)){
-            return defaultUniqname(passportId);
-        }
-        return uniqname;
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
     }
 
     /**

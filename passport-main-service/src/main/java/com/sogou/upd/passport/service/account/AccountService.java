@@ -129,10 +129,7 @@ public interface AccountService {
    */
   public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
 
-    /*
-       *检查昵称是否存在
-       */
-    public String checkUniqName(String nickname) throws Exception;
+
     /*
      *更新个人信息
      */

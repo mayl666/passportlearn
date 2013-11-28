@@ -36,6 +36,7 @@ import java.util.Map;
 public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2AuthorizeManagerImpl.class);
+    private static final Logger shPlusTokenLog = LoggerFactory.getLogger("shPlusTokenLogger");
 
     @Autowired
     private AppConfigService appConfigService;
@@ -131,7 +132,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             AccountToken renewAccountToken;
             if (GrantTypeEnum.HEART_BEAT.toString().equals(grantType)) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                boolean isRightPcRToken = pcAccountTokenService.verifyNoStoreToken(refreshToken,appConfig.getClientSecret());
+                boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
                 if (!isRightPcRToken) {
                     String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
                     if (accessToken == null) {
@@ -139,15 +140,13 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                         return result;
                     }
                     // 记录log，等以后不再验证sohuplus的token了去掉这段逻辑
-                    logger.info("[SHPlusToken] verify shplus refreshtoken，refreshtoken：" + refreshToken);
-                    // 迁移sohu+的图片到本地
-                    shPlusTokenService.copyAvatarToLocal(passportId, instanceId, accessToken);
+                    shPlusTokenLog.info("[SHPlusToken] verify shplus refreshtoken，refreshtoken：" + refreshToken);
                 }
             } else {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
-            renewAccountToken = PCAccountServiceImpl.newNoStoreAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
+            renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());
