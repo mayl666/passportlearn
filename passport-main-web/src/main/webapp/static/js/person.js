@@ -707,6 +707,12 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                 $(":radio[name='gender']").eq(0).prop('checked', true);
 
             } else {
+                window.as2js=function(msg){
+                    if('goodluck'==msg){
+                        try{window.external.passport("onProfileChanged");}catch(e){}
+                        location.assign('/');
+                    }
+                };
                 //avatar page,just show the flash
                 $('#UploadPhoto').size()&&require(["/./static/js/lib/jquery.flash.js"], function() {
                     $('#UploadPhoto').flash({

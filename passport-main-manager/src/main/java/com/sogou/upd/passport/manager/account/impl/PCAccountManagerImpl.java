@@ -325,35 +325,4 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private String getSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret) throws Exception {
         return Coder.encryptMD5(passportId + clientId + refreshToken + timestamp + clientSecret);
     }
-
-    @Override
-    public Result queryPassportIdByAccessToken(String token,int clientId){
-        Result finalResult = new APIResultSupport(false);
-        try {
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
-                return finalResult;
-            }
-            String passportId = TokenDecrypt.decryptPcToken(token, appConfig.getClientSecret());
-            if(StringUtils.isEmpty(passportId)){
-                if(clientId == CommonConstant.BROWSER_CLIENTID){
-                    //TODO 通过sohu+ token获取userid
-                    passportId="";
-                }
-            }
-            if(StringUtils.isEmpty(passportId)){
-                finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
-                return finalResult;
-            }
-            finalResult.setSuccess(true);
-            finalResult.setDefaultModel(passportId);
-            return finalResult;
-        } catch (Exception e) {
-            logger.error("createToken fail", e);
-            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return finalResult;
-        }
-    }
-
 }

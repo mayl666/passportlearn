@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -25,6 +26,7 @@ import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,7 +160,30 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId) {
+    public Result queryPassportIdByAccessToken(String token,int clientId,String instanceId){
+        Result finalResult = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            String passportId = getPassportIdByToken(token,clientId,appConfig.getClientSecret(),instanceId);
+            if(Strings.isNullOrEmpty(passportId)){
+                finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return finalResult;
+            }
+            finalResult.setSuccess(true);
+            finalResult.setDefaultModel(passportId);
+            return finalResult;
+        } catch (Exception e) {
+            log.error("createToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
+
+    private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId) {
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
         if (accessToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {
@@ -199,17 +224,27 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            result=getUserInfo(passportId);
+            Result getUserInfoResult = getUserInfo(passportId);
+            String uniqname = "";
+            String large_avatar ="";
+            String mid_avatar ="";
+            String tiny_avatar ="";
+            if(getUserInfoResult.isSuccess()){
+                uniqname =(String)getUserInfoResult.getModels().get("uniqname");
+                large_avatar = (String)getUserInfoResult.getModels().get("img_180");
+                mid_avatar =  (String)getUserInfoResult.getModels().get("img_50");
+                tiny_avatar = (String)getUserInfoResult.getModels().get("img_30");
+            }
+
             Map data = Maps.newHashMap();
-            data.put("nick", getUniqname(passportId));
-            data.put("large_avatar", (String)result.getModels().get("img_30"));
-            data.put("mid_avatar", (String)result.getModels().get("img_50"));
-            data.put("tiny_avatar", (String)result.getModels().get("img_180"));
+            data.put("nick",uniqname);
+            data.put("large_avatar",large_avatar );
+            data.put("mid_avatar",mid_avatar);
+            data.put("tiny_avatar", tiny_avatar);
             data.put("sid", passportId);
             resourceMap.put("data", data);
             resourceMap.put("msg", "get full user info success");
             resourceMap.put("code", 0);
-            result.setDefaultModel(RESOURCE, resourceMap);
             result.setSuccess(true);
             result.setDefaultModel(RESOURCE, resourceMap);
         } catch (ServiceException e) {
@@ -234,10 +269,17 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private Result getUserInfo(String passportId) {
-        Result result = new OAuthResultSupport(false);
+        Result result = new APIResultSupport(false);
+        String uniqname = null;
         AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
         if (accountBaseInfo != null) {
+            result.setSuccess(true);
             result = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
+            uniqname = accountBaseInfo.getUniqname();
+            if (Strings.isNullOrEmpty(uniqname)) {
+                uniqname = defaultUniqname(passportId);
+            }
+            result.setDefaultModel("uniqname",uniqname);
         }
         return result;
     }
