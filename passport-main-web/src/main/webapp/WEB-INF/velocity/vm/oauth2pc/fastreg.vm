@@ -56,7 +56,7 @@ var splus = {
                     <div class="controls">
                         <button class="btn btn-g" type="submit">快速注册</button>
                         <span class="reg-switch">
-                            <a href="/sogou/mobilereg?instanceid=${instanceid}">或用手机注册账号</a>
+                            <a href="/sogou/mobilereg?instanceid=${instanceid}" class="blue">用手机注册</a>
                         </span>
                     </div>
                 </div>

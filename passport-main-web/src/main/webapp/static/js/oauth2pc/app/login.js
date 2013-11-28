@@ -60,13 +60,14 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             this.$form = $form;
             //禁止form默认提交
             $form.on('submit', function(e) {
+                 self.doLogin()
                 return false
             })
             //点击登录按钮进行登录操作
-            .on('click', 'button.btn', function(e) {
+            /*.on('click', 'button.btn', function(e) {
                 self.doLogin()
                 return false
-            })
+            })*/
             //鼠标点击输入框 所有错误提示及样式清除
             .on('focus', 'input', function(e) {
                 var $input = $(e.target);
@@ -508,7 +509,7 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
         //校验是否为空
         checkEmpty: function($input, $error) {
 
-            return $input.val() == '' ? ($input.addClass('error'), $error.html('不能为空'), false) : true
+            return $input.val() == '' ? ($input.addClass('error'), $error.html('不能为空').show(), false) : true
 
         },
         //刷新验证码

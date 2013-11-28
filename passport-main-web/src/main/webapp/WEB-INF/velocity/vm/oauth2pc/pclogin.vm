@@ -23,7 +23,7 @@ var splus = {
     <div class="login-wrap">
         <div class="login-ad"></div>
         <div class="login-con">
-            <form  onsubmit="javascript:return false;">
+            <form >
                 <fieldset>
                     <legend>搜狗账号登录</legend>
                     <div class="control-group">
@@ -82,7 +82,7 @@ var splus = {
                 </div>
                 <div class="control-group login-btn clearfix">
                     <div class="controls">
-                        <button class="btn" type="button" tabindex="5">登录</button>
+                        <button class="btn" type="submit" tabindex="5">登录</button>
                     </div>
                     <div class="controls">
                         <div class="dropdown">
