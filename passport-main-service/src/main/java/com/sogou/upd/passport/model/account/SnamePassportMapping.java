@@ -15,6 +15,7 @@ public class SnamePassportMapping {
     private String sid;
     private String sname;
     private String passportId;
+    private String mobile;
     private Date updateTime;
 
     public long getId() {
@@ -55,5 +56,13 @@ public class SnamePassportMapping {
 
     public void setSid(String sid) {
         this.sid = sid;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }
