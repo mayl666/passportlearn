@@ -82,8 +82,6 @@ public class PCOAuth2AccountController extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private PCOAuth2LoginManager pcOAuth2LoginManager;
-    @Autowired
-    private UserInfoApiManager shPlusUserInfoApiManager;
 
 
     //https://plus.sohu.com/sogou/fastreg?instanceid=220946462

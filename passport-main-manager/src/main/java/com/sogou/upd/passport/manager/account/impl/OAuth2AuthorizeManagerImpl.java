@@ -36,6 +36,7 @@ import java.util.Map;
 public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2AuthorizeManagerImpl.class);
+    private static final Logger shPlusTokenLog = LoggerFactory.getLogger("shPlusTokenLogger");
 
     @Autowired
     private AppConfigService appConfigService;
@@ -139,7 +140,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                         return result;
                     }
                     // 记录log，等以后不再验证sohuplus的token了去掉这段逻辑
-                    logger.info("[SHPlusToken] verify shplus refreshtoken，refreshtoken：" + refreshToken);
+                    shPlusTokenLog.info("[SHPlusToken] verify shplus refreshtoken，refreshtoken：" + refreshToken);
                 }
             } else {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
