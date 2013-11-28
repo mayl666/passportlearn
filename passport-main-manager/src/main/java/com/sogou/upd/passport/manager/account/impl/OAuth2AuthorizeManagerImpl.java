@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.account.vo.OAuth2TokenVO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -50,6 +51,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
+    @Autowired
+    private PCAccountManager pcAccountManager;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -146,7 +149,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
-            renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
+
+            renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());

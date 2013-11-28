@@ -245,7 +245,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
         return finalResult;
     }
 
-    private Result updateAccountToken(String passportId, String instanceId, AppConfig appConfig) {
+    @Override
+    public Result updateAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
         AccountToken accountToken = pcAccountService.updateAccountToken(passportId, instanceId, appConfig);
         if (accountToken != null) {

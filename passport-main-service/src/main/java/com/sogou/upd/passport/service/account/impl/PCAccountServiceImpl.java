@@ -162,22 +162,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         }
     }
 
-
-    @Override
-    public boolean verifyNoStoreToken(String token,String clientSecret) throws ServiceException {
-        try {
-            String passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
-            if(!Strings.isNullOrEmpty(passportId)){
-                return true;
-            }
-            return false;
-        }catch (Exception e){
-            logger.error("verifyNoStoreRefreshToken:" + token, e);
-            return false;
-        }
-    }
-
-
     @Override
     public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         if (CommonHelper.isExplorerToken(clientId)) {
