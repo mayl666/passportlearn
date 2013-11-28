@@ -308,6 +308,8 @@ public class SecureManagerImpl implements SecureManager {
                         if(photoResult.isSuccess()){
                             result.getModels().put("avatarurl",photoResult.getModels());
                         }
+                    } else {
+                        result.getModels().put("uniqname",userId);
                     }
                 }
             } else {
