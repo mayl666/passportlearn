@@ -230,10 +230,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             String mid_avatar ="";
             String tiny_avatar ="";
             if(getUserInfoResult.isSuccess()){
-                uniqname =(String)result.getModels().get("uniqname");
-                large_avatar = (String)result.getModels().get("img_180");
-                mid_avatar =  (String)result.getModels().get("img_50");
-                tiny_avatar = (String)result.getModels().get("img_30");
+                uniqname =(String)getUserInfoResult.getModels().get("uniqname");
+                large_avatar = (String)getUserInfoResult.getModels().get("img_180");
+                mid_avatar =  (String)getUserInfoResult.getModels().get("img_50");
+                tiny_avatar = (String)getUserInfoResult.getModels().get("img_30");
             }
 
             Map data = Maps.newHashMap();
