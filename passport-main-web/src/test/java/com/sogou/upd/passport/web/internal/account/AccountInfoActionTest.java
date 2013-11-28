@@ -74,13 +74,13 @@ public class AccountInfoActionTest extends BaseActionTest {
         params.put("client_id", String.valueOf(clientId));
         params.put("userid",userId);
 //        params.put("fields","avatarurl,personalid,province,city,username,sec_mobile,sec_email,sec_ques") ;
-        params.put("fields","avatarurl,uniqname") ;
+        params.put("fields","avatarurl") ;
         params.put("imagesize","30,55");
         params.put("modifyip","192.168.1.1");
 //
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        String result = sendPost("http://10.11.211.152:8090/internal/account/userinfo", params);
+        String result = sendPost("http://10.11.196.173:8090/internal/account/userinfo", params);
         System.out.println(result);
     }
 }
