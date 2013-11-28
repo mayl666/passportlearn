@@ -63,6 +63,9 @@ public class IndexAction extends BaseController {
                         AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
                         String uniqname=baseInfo.getUniqname();
                         result.setDefaultModel("username", Strings.isNullOrEmpty(uniqname)?userId:uniqname);
+                    } else {
+                        result.setDefaultModel("username", nickName);
+
                     }
                 }
             result.setDefaultModel("disable", true);

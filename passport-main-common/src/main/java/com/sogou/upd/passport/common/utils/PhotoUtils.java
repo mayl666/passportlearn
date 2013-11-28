@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import net.sf.json.JSONArray;
@@ -37,7 +38,7 @@ public class PhotoUtils {
 
     private String cdnURL = "http://imgstore.cdn.sogou.com";
     private String storageEngineURL ;
-    private int timeout;               // timeout毫秒数
+    private int timeout=5000;               // timeout毫秒数
     private String appid;
     private Map<String, String> sizeToAppIdMap = null;
     private List<String> listCDN=null;
@@ -101,7 +102,6 @@ public class PhotoUtils {
         return imgSize;
     }
 
-
     //获取所有appId
     public Map<String, String> getAllAppId() {
         return sizeToAppIdMap;
@@ -116,22 +116,6 @@ public class PhotoUtils {
     public int getImgSizeCount(){
         return sizeToAppIdMap.size();
     }
-
-    /**
-     * 根据网络图片的Url，切割图片并上传图片平台
-     * @param webUrl 网络图片的url
-     * @return imgUrl sg图片Url
-     */
-    public String uploadWebImg(String webUrl){
-        String imgName = generalFileName();
-        String imgURL = "";
-        // 上传到OP图片平台
-        if (uploadImg(imgName, null, webUrl, "1")) {
-            imgURL = accessURLTemplate(imgName);
-        }
-        return imgURL;
-    }
-
     public boolean uploadImg(String picNameInURL, byte[] picBytes,String webUrl,String uploadType){
 
         MultipartEntity reqEntity = new MultipartEntity();
@@ -228,20 +212,6 @@ public class PhotoUtils {
             return true;
         }
         return false;
-    }
-
-    public Result uploadAvatar(String imgUrl){
-        Result result = new APIResultSupport(false);
-        String imgName = generalFileName();
-        if (uploadImg(imgName, null, imgUrl, "1")) {
-            String[] imgSize=getAllImageSize();
-            StringBuilder sb=new StringBuilder();
-            for (String imgsize:imgSize){
-                sb.append(imgsize+",");
-            }
-            result=obtainPhoto(accessURLTemplate(imgName), sb.toString());
-        }
-        return result;
     }
 
     public Result obtainPhoto(String imageUrl, String size) {
