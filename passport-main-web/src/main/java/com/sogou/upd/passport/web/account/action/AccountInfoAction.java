@@ -265,13 +265,14 @@ public class AccountInfoAction extends BaseController {
 
             String userId = hostHolder.getPassportId();
 
-            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId)) ||AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
-                result.setDefaultModel("uniqname",(String)result1.getModels().get("uniqname"));
-            }else {
-                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
-            }
+//            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId)) ||AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))){
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
+//                result.setDefaultModel("uniqname",(String)result1.getModels().get("uniqname"));
+//            }else {
+//                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
+//            }
+            result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {

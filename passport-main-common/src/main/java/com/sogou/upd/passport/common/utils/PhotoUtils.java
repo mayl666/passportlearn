@@ -36,8 +36,8 @@ public class PhotoUtils {
     private HttpClient httpClient;
 
     private String cdnURL = "http://imgstore.cdn.sogou.com";
-    private String storageEngineURL;
-    private int timeout;               // timeout毫秒数
+    private String storageEngineURL ;
+    private int timeout=5000;               // timeout毫秒数
     private String appid;
     private Map<String, String> sizeToAppIdMap = null;
     private List<String> listCDN = null;
@@ -75,7 +75,6 @@ public class PhotoUtils {
         listCDN.add("http://imgstore03.cdn.sogou.com");
         listCDN.add("http://imgstore04.cdn.sogou.com");
     }
-
     //图片名生成
     public String generalFileName() {
         StringBuilder sb = new StringBuilder();
@@ -101,7 +100,6 @@ public class PhotoUtils {
         return imgSize;
     }
 
-
     //获取所有appId
     public Map<String, String> getAllAppId() {
         return sizeToAppIdMap;
@@ -119,7 +117,6 @@ public class PhotoUtils {
 
     /**
      * 根据网络图片的Url，切割图片并上传图片平台
-     *
      * @param webUrl 网络图片的url
      * @return imgUrl sg图片Url
      */
@@ -160,6 +157,7 @@ public class PhotoUtils {
                 }
                 break;
         }
+
 
         HttpPost httpPost = new HttpPost(storageEngineURL);
         httpPost.setEntity(reqEntity);

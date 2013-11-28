@@ -52,6 +52,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
+    @Autowired
+    private PCAccountManager pcAccountManager;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -139,13 +141,17 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                     result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
                     return result;
                 }
-
+                if (refreshToken.startsWith(CommonConstant.SG_TOKEN_START)) {
+                    renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
+                } else {
+                    //非4.2版本的sogou token要重新生成token
+                    renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig);
+                }
             } else {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
 
-            renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());
@@ -175,7 +181,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             }
             return false;
         } else {
-            boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            boolean isRightPcRToken = pcAccountManager.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             return isRightPcRToken;
         }
     }

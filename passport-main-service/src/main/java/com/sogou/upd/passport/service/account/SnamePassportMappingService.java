@@ -12,6 +12,13 @@ import com.sogou.upd.passport.exception.ServiceException;
 public interface SnamePassportMappingService {
 
     /**
+     * 根据 snameOrPhone来查询passportId
+     * @param snameOrPhone
+     * @return
+     * @throws ServiceException
+     */
+    public String queryPassportIdBySnameOrPhone(String snameOrPhone) throws ServiceException;
+    /**
      * 根据sname获取passportId
      *
      * @param sname

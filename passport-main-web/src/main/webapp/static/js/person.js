@@ -709,7 +709,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
             } else {
                 window.as2js=function(msg){
                     if('goodluck'==msg){
-                        try{window.external.passport("onProfileChanged");}catch(e){}
+                        try{window.external.passport("onProfileChange");}catch(e){}
                         location.assign('/');
                     }
                 };
