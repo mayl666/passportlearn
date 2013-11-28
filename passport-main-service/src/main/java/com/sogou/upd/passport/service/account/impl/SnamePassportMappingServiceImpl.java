@@ -64,7 +64,23 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return passportId;
     }
 
-
+    @Override
+    public String queryPassportIdByMobile(String mobile) throws ServiceException {
+        String passportId;
+        try {
+            String cacheKey = buildSnamePassportMappingKey(mobile);
+            passportId = redisUtils.get(cacheKey);
+            if (Strings.isNullOrEmpty(passportId)) {
+                passportId = snamePassportMappingDAO.getPassportIdByMobile(mobile);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return passportId;
+    }
 
     @Override
     public boolean updateSnamePassportMapping(String sname, String passportId) throws ServiceException {

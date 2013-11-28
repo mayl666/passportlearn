@@ -17,16 +17,28 @@ public interface SnamePassportMappingService {
      * @param sname
      * @return 获取不到则抛出异常
      * @throws com.sogou.upd.passport.exception.ServiceException
+     *
      */
     public String queryPassportIdBySname(String sname) throws ServiceException;
 
     /**
      * 根据sid获取passportId
+     *
      * @param sid
      * @return
      * @throws ServiceException
      */
     public String queryPassportIdBySid(String sid) throws ServiceException;
+
+    /**
+     * 根据mobile获取passportId
+     *
+     * @param mobile
+     * @return
+     * @throws ServiceException
+     */
+    public String queryPassportIdByMobile(String mobile) throws ServiceException;
+
     /**
      * 更新sname和passportId的映射关系
      *
@@ -34,6 +46,7 @@ public interface SnamePassportMappingService {
      * @param passportId
      * @return
      * @throws com.sogou.upd.passport.exception.ServiceException
+     *
      */
     public boolean updateSnamePassportMapping(String sname, String passportId) throws ServiceException;
 
@@ -43,6 +56,7 @@ public interface SnamePassportMappingService {
      * @param sname
      * @return
      * @throws com.sogou.upd.passport.exception.ServiceException
+     *
      */
     public boolean deleteSnamePassportMapping(String sname) throws ServiceException;
 }
