@@ -104,9 +104,12 @@ public enum AccountDomainEnum {
         return userId.toLowerCase();
     }
 
-    //判断是否为手机号或者无@账号，以判断sohu+
-    public static boolean isPhoneOrIndivid(String username) {
-        return PhoneUtil.verifyPhoneNumberFormat(username) || !username.contains("@");
+    public static boolean isPhone(String username) {
+        return PhoneUtil.verifyPhoneNumberFormat(username);
+    }
+
+    public static boolean isIndivid(String username) {
+        return  !username.contains("@");
     }
 
     @Override
