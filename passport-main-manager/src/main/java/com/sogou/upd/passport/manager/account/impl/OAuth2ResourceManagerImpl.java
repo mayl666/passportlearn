@@ -112,8 +112,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
         try {
-
-
+            passportId = getPassportIdByToken(accessToken, clientId, clientSecret, instanceId);
             if (Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return result;
@@ -159,16 +158,16 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId){
+    public String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId) {
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
         if (accessToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {
             //sohu+token，获取passportId
             Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_COOKIE);
-            if(SHPlusConstant.AUTH_TOKEN_SUCCESS.equals(resourceMap.get("result"))){
+            if (SHPlusConstant.AUTH_TOKEN_SUCCESS.equals(resourceMap.get("result"))) {
                 resourceMap = (Map) map.get(RESOURCE);
-                Map dataMap =(Map) resourceMap.get(DATA);
-                String sid = (String)dataMap.get(SID);
+                Map dataMap = (Map) resourceMap.get(DATA);
+                String sid = (String) dataMap.get(SID);
                 passportId = snamePassportMappingService.queryPassportIdBySid(sid);
             }
             shPlusTokenLog.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
@@ -183,6 +182,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
         return passportId;
     }
+
     /**
      * 获取完整的个人信息
      *
@@ -193,29 +193,21 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new OAuthResultSupport(false);
         Map resourceMap = Maps.newHashMap();
         try {
-            String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, clientSecret);
-            if (!Strings.isNullOrEmpty(passportId)) {
-                //校验accessToken
-                if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
-                    result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
-                    return result;
-                }
-
-                Map data = Maps.newHashMap();
-                data.put("nick", getUniqname(passportId));
-                data.put("large_avatar", "");
-                data.put("mid_avatar", "");
-                data.put("tiny_avatar", "");
-                data.put("sid", passportId);
-                resourceMap.put("data", data);
-                resourceMap.put("msg", "get full user info success");
-                resourceMap.put("code", 0);
-                result.setDefaultModel(RESOURCE, resourceMap);
-            } else {
-                Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
-                resourceMap = (Map) map.get(RESOURCE);
-                shPlusTokenLog.info("[SHPlusToken] get shplus userinfo by accesstoken,accessToken：" + accessToken);
+            String passportId = getPassportIdByToken(accessToken, clientId, clientSecret, instanceId);
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return result;
             }
+            Map data = Maps.newHashMap();
+            data.put("nick", getUniqname(passportId));
+            data.put("large_avatar", "");
+            data.put("mid_avatar", "");
+            data.put("tiny_avatar", "");
+            data.put("sid", passportId);
+            resourceMap.put("data", data);
+            resourceMap.put("msg", "get full user info success");
+            resourceMap.put("code", 0);
+            result.setDefaultModel(RESOURCE, resourceMap);
             result.setSuccess(true);
             result.setDefaultModel(RESOURCE, resourceMap);
         } catch (ServiceException e) {
