@@ -231,14 +231,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             String tiny_avatar ="";
             if(getUserInfoResult.isSuccess()){
                 uniqname =(String)getUserInfoResult.getModels().get("uniqname");
-                if (Strings.isNullOrEmpty(uniqname)) {
-                    uniqname = defaultUniqname(passportId);
-                }
                 large_avatar = (String)getUserInfoResult.getModels().get("img_180");
                 mid_avatar =  (String)getUserInfoResult.getModels().get("img_50");
                 tiny_avatar = (String)getUserInfoResult.getModels().get("img_30");
             }
-
+            if (Strings.isNullOrEmpty(uniqname)) {
+                uniqname = defaultUniqname(passportId);
+            }
             Map data = Maps.newHashMap();
             data.put("nick",uniqname);
             data.put("large_avatar",large_avatar );
