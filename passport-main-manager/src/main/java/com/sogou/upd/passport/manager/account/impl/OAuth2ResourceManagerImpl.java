@@ -163,8 +163,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         String passportId = null;
         if (accessToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {
             //sohu+token，获取passportId
-            Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_COOKIE);
-            if (SHPlusConstant.AUTH_TOKEN_SUCCESS.equals(resourceMap.get("result"))) {
+            Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
+            if (SHPlusConstant.AUTH_TOKEN_SUCCESS.equals(map.get("result"))) {
                 resourceMap = (Map) map.get(RESOURCE);
                 Map dataMap = (Map) resourceMap.get(DATA);
                 String sid = (String) dataMap.get(SID);
