@@ -237,7 +237,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new OAuthResultSupport(false);
         AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
         if (accountBaseInfo != null) {
-            String uniqname = accountBaseInfo.getUniqname();
             result = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
         }
         return result;
