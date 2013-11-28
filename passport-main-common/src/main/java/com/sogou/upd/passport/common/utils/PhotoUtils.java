@@ -116,6 +116,22 @@ public class PhotoUtils {
     public int getImgSizeCount(){
         return sizeToAppIdMap.size();
     }
+
+    /**
+     * 根据网络图片的Url，切割图片并上传图片平台
+     * @param webUrl 网络图片的url
+     * @return imgUrl sg图片Url
+     */
+    public String uploadWebImg(String webUrl){
+        String imgName = generalFileName();
+        String imgURL = "";
+        // 上传到OP图片平台
+        if (uploadImg(imgName, null, webUrl, "1")) {
+            imgURL = accessURLTemplate(imgName);
+        }
+        return imgURL;
+    }
+
     public boolean uploadImg(String picNameInURL, byte[] picBytes,String webUrl,String uploadType){
 
         MultipartEntity reqEntity = new MultipartEntity();
@@ -212,6 +228,20 @@ public class PhotoUtils {
             return true;
         }
         return false;
+    }
+
+    public Result uploadAvatar(String imgUrl){
+        Result result = new APIResultSupport(false);
+        String imgName = generalFileName();
+        if (uploadImg(imgName, null, imgUrl, "1")) {
+            String[] imgSize=getAllImageSize();
+            StringBuilder sb=new StringBuilder();
+            for (String imgsize:imgSize){
+                sb.append(imgsize+",");
+            }
+            result=obtainPhoto(accessURLTemplate(imgName), sb.toString());
+        }
+        return result;
     }
 
     public Result obtainPhoto(String imageUrl, String size) {
