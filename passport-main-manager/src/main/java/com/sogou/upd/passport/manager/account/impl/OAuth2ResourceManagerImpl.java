@@ -198,11 +198,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return result;
             }
+
+            result=getUserInfo(passportId);
             Map data = Maps.newHashMap();
             data.put("nick", getUniqname(passportId));
-            data.put("large_avatar", "");
-            data.put("mid_avatar", "");
-            data.put("tiny_avatar", "");
+            data.put("large_avatar", (String)result.getModels().get("img_30"));
+            data.put("mid_avatar", (String)result.getModels().get("img_50"));
+            data.put("tiny_avatar", (String)result.getModels().get("img_180"));
             data.put("sid", passportId);
             resourceMap.put("data", data);
             resourceMap.put("msg", "get full user info success");
@@ -236,7 +238,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
         if (accountBaseInfo != null) {
             String uniqname = accountBaseInfo.getUniqname();
-            Result photoResult = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
+            result = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
         }
         return result;
     }
