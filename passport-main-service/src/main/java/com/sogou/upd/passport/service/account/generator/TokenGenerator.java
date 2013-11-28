@@ -100,7 +100,7 @@ public class TokenGenerator {
         String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
         String token = null;
         try {
-            //加上4为随机数，是为了与sohu+ token长度区别开来
+            //特殊标识，是为了与sohu+ token长度区别开来
             token = CommonConstant.SG_TOKEN_START + AES.encryptURLSafeString(tokenContent, clientSecret);
         } catch (Exception e) {
             logger.error("Pc Token generator by AES fail, passportId:" + passportId);
