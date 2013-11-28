@@ -224,12 +224,23 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            result=getUserInfo(passportId);
+            Result getUserInfoResult = getUserInfo(passportId);
+            String uniqname = "";
+            String large_avatar ="";
+            String mid_avatar ="";
+            String tiny_avatar ="";
+            if(getUserInfoResult.isSuccess()){
+                uniqname =(String)result.getModels().get("uniqname");
+                large_avatar = (String)result.getModels().get("img_180");
+                mid_avatar =  (String)result.getModels().get("img_50");
+                tiny_avatar = (String)result.getModels().get("img_30");
+            }
+
             Map data = Maps.newHashMap();
-            data.put("nick", getUniqname(passportId));
-            data.put("large_avatar", (String)result.getModels().get("img_180"));
-            data.put("mid_avatar", (String)result.getModels().get("img_50"));
-            data.put("tiny_avatar", (String)result.getModels().get("img_30"));
+            data.put("nick",uniqname);
+            data.put("large_avatar",large_avatar );
+            data.put("mid_avatar",mid_avatar);
+            data.put("tiny_avatar", tiny_avatar);
             data.put("sid", passportId);
             resourceMap.put("data", data);
             resourceMap.put("msg", "get full user info success");
@@ -258,10 +269,17 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private Result getUserInfo(String passportId) {
-        Result result = new OAuthResultSupport(false);
+        Result result = new APIResultSupport(false);
+        String uniqname = null;
         AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
         if (accountBaseInfo != null) {
+            result.setSuccess(true);
             result = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
+            uniqname = accountBaseInfo.getUniqname();
+            if (Strings.isNullOrEmpty(uniqname)) {
+                uniqname = defaultUniqname(passportId);
+            }
+            result.setDefaultModel("uniqname",uniqname);
         }
         return result;
     }
