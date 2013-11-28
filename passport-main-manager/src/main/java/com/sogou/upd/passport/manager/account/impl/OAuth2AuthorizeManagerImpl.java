@@ -52,6 +52,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
+    @Autowired
+    private PCAccountManager pcAccountManager;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -139,11 +141,11 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                     result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
                     return result;
                 }
-                if(refreshToken.startsWith(CommonConstant.SG_TOKEN_START)){
+                if (refreshToken.startsWith(CommonConstant.SG_TOKEN_START)) {
                     renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
-                }else {
+                } else {
                     //非4.2版本的sogou token要重新生成token
-                    renewAccountToken = pcAccountTokenService.initialAccountToken(passportId,instanceId,appConfig);
+                    renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig);
                 }
             } else {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
@@ -170,10 +172,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     }
 
     private boolean isRightPcRToken(String passportId, int clientId, String instanceId, String refreshToken) throws Exception {
-        if (refreshToken.startsWith(CommonConstant.SG_TOKEN_START)) {
-            boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
-            return isRightPcRToken;
-        } else {
+        if (refreshToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {
             String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
             if (accessToken != null) {
                 // 记录log，等以后不再验证sohuplus的token了去掉这段逻辑
@@ -181,6 +180,9 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                 return true;
             }
             return false;
+        } else {
+            boolean isRightPcRToken = pcAccountManager.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            return isRightPcRToken;
         }
     }
 }
