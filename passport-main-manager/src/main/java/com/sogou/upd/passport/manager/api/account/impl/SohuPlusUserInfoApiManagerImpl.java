@@ -130,7 +130,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
     public boolean updateUserInfo(AccountBaseInfo baseInfo,String uniqname) {
         String oldUniqName = baseInfo.getUniqname();
         String passportId = baseInfo.getPassportId();
-        if(!Strings.isNullOrEmpty(oldUniqName) && !oldUniqName.equals(uniqname)){
+        if(!oldUniqName.equals(uniqname)){
             //更新数据库
             int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
             if (row > 0) {

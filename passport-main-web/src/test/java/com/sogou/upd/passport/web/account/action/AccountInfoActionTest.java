@@ -62,16 +62,18 @@ public class AccountInfoActionTest extends BaseActionTest {
         int clientId = 1110;
         String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
         long ct = System.currentTimeMillis();
-        String code = ManagerHelper.generatorCode("mayan@sogou.com", clientId, serverSecret, ct) ;
+
+        String passportId="caomingming1234@chinaren.com";
+        String code = ManagerHelper.generatorCode(passportId, clientId, serverSecret, ct) ;
         System.out.println("code:" + code);
         params.put("client_id", String.valueOf(clientId));
-        params.put("userid","mayan@sogou.com");
+        params.put("userid",passportId);
         params.put("fields","uniqname,personalid,province,city,username,sec_mobile,sec_email,sec_ques") ;
         params.put("modifyip","192.168.1.1");
 //
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        String result = sendPost("http://127.0.0.1/internal/account/userinfo", params);
+        String result = sendPost("http://10.11.198.180:8090/internal/account/userinfo", params);
         System.out.println(result);
     }
 }
