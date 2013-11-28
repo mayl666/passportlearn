@@ -258,7 +258,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 Object obj= shPlusResult.getModels().get("baseInfo");
                 if(obj!=null){
                     AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
-                    result.getModels().put("uniqname",baseInfo.getUniqname());
+                    String uniqname= baseInfo.getUniqname();
+                    result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?params.getUsername():uniqname);
                 }
             }
         } else {
