@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -25,6 +26,7 @@ import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,7 +160,30 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId) {
+    public Result queryPassportIdByAccessToken(String token,int clientId,String instanceId){
+        Result finalResult = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            String passportId = getPassportIdByToken(token,clientId,appConfig.getClientSecret(),instanceId);
+            if(Strings.isNullOrEmpty(passportId)){
+                finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return finalResult;
+            }
+            finalResult.setSuccess(true);
+            finalResult.setDefaultModel(passportId);
+            return finalResult;
+        } catch (Exception e) {
+            log.error("createToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
+
+    private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId) {
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
         if (accessToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {

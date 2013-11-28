@@ -91,6 +91,7 @@ public class PCOAuth2AccountController extends BaseController {
         model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
         return "/oauth2pc/fastreg";
     }
+
     //https://plus.sohu.com/sogou/mobilereg?instanceid=220946462
     @RequestMapping(value = "/sogou/mobilereg", method = RequestMethod.GET)
     public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
@@ -287,7 +288,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         String username = loginParams.getLoginname();
-        result = pcOAuth2LoginManager.accountLogin(loginParams,getIp(request),request.getScheme());
+        result = pcOAuth2LoginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
@@ -356,19 +357,19 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         //当前页面cookie
-        String cookieUserId ="";
+        String cookieUserId = "";
         if (hostHolder.isLogin()) {
             cookieUserId = hostHolder.getPassportId();
         }
 
-        Result queryPassportIdResult = pcAccountManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), oauth2PcIndexParams.getClient_id());
+        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), oauth2PcIndexParams.getClient_id(), oauth2PcIndexParams.getInstanceid());
         if (!queryPassportIdResult.isSuccess()) {
             return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         //判断cookie中的passportId与token解密出来的passportId是否相等
-        if(!Strings.isNullOrEmpty(cookieUserId) ){
-            if(!cookieUserId.equals(passportId)){
+        if (!Strings.isNullOrEmpty(cookieUserId)) {
+            if (!cookieUserId.equals(passportId)) {
                 return "redirect:/web/logout_redirect";
             }
             return "redirect:/web/userinfo/getuserinfo";
@@ -397,7 +398,7 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
-        return  "redirect:/web/userinfo/getuserinfo";
+        return "redirect:/web/userinfo/getuserinfo";
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")
