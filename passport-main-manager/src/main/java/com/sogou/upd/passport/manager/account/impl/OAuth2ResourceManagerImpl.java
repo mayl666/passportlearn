@@ -231,6 +231,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             String tiny_avatar ="";
             if(getUserInfoResult.isSuccess()){
                 uniqname =(String)getUserInfoResult.getModels().get("uniqname");
+                if (Strings.isNullOrEmpty(uniqname)) {
+                    uniqname = defaultUniqname(passportId);
+                }
                 large_avatar = (String)getUserInfoResult.getModels().get("img_180");
                 mid_avatar =  (String)getUserInfoResult.getModels().get("img_50");
                 tiny_avatar = (String)getUserInfoResult.getModels().get("img_30");
@@ -276,9 +279,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             result.setSuccess(true);
             result = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
             uniqname = accountBaseInfo.getUniqname();
-            if (Strings.isNullOrEmpty(uniqname)) {
-                uniqname = defaultUniqname(passportId);
-            }
             result.setDefaultModel("uniqname",uniqname);
         }
         return result;
