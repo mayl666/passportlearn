@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 
 /**
@@ -17,6 +19,14 @@ public interface AccountBaseInfoService {
      * @param connectUserInfoVO
      */
     public void asyncUpdateAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO);
+
+    /**
+     * 未检查昵称是否唯一，默认是唯一的
+     * 更新昵称表，更新映射表
+     * @param baseInfo
+     * @param uniqname
+     */
+    public boolean updateUniqname(AccountBaseInfo baseInfo,String uniqname) throws ServiceException;
 
     /**
      * 存在则插入，不存在则更新AccountBaseInfo

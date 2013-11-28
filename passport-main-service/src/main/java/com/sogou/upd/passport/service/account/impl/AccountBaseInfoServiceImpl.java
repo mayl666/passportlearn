@@ -40,6 +40,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     private TaskExecutor uploadImgExecutor;
 
     private static final Logger logger = LoggerFactory.getLogger(AccountBaseInfoService.class);
+    private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
     @Override
     public void asyncUpdateAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
@@ -47,6 +48,32 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(passportId, connectUserInfoVO));
         }
         return;
+    }
+
+    @Override
+    public boolean updateUniqname(AccountBaseInfo baseInfo, String uniqname) {
+        String oldUniqName = baseInfo.getUniqname();
+        String passportId = baseInfo.getPassportId();
+        try {
+            if (!oldUniqName.equals(uniqname)) {
+                //更新数据库
+                int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
+                if (row > 0) {
+                    String cacheKey = buildAccountBaseInfoKey(passportId);
+                    baseInfo.setUniqname(uniqname);
+                    redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                    //移除原来映射表
+                    if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
+                        boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                        return isInsert;
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return false;
+        }
     }
 
 
@@ -60,7 +87,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             if (!Strings.isNullOrEmpty(uniqname)) {
                 String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(existPassportId)) {
-                    uniqname = "";      // 如果第三方昵称重复则默认为空
+                    uniqname = "";      // 如果昵称重复则置为空
                 } else {
                     isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
                 }
@@ -77,7 +104,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             return false;
         } catch (Exception e) {
             logger.error("insertOrUpdateAccountBaseInfo fail", e);
-            throw new ServiceException(e);
+            return false;
         }
     }
 
@@ -106,5 +133,9 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             String avatar = photoUtils.uploadWebImg(connectAvatarUrl);
             insertOrUpdateAccountBaseInfo(passportId, uniqname, avatar);
         }
+    }
+
+    private String buildAccountBaseInfoKey(String passportId) {
+        return CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
     }
 }
