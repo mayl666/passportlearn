@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
@@ -58,9 +59,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
-    private UserInfoApiManager sgUserInfoApiManager;
+    private PCAccountManager pcAccountManager;
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
@@ -278,6 +277,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             result.setSuccess(true);
             result = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
             uniqname = accountBaseInfo.getUniqname();
+            if(Strings.isNullOrEmpty(uniqname)){
+                //从论坛获取昵称
+                uniqname =pcAccountManager.getBrowserBbsUniqname(passportId);
+                if(!Strings.isNullOrEmpty(uniqname)){
+                    //todo 存入base_info表
+                }
+            }
             result.setDefaultModel("uniqname",uniqname);
         }
         return result;

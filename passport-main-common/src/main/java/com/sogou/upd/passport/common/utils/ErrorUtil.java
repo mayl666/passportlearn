@@ -311,6 +311,12 @@ public class ErrorUtil {
     /* ============================================================================ */
     public static final String ERR_CODE_INTERFACE_FREQUENCY = "30606";
 
+
+    /* ============================================================================ */
+    /*  sohu+接口相关错误代码                                                            */
+    /* ============================================================================ */
+    public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
+
     public ErrorUtil() {
         super();    //To change body of overridden methods use File | Settings | File Templates.
     }
@@ -467,6 +473,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_CLIENT_INBLACKLIST, "服务器处理失败！");
+
+        //sohu+相关接口
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号冲突或者异常，请到论坛问题反馈区找回账号");
 
 
     }
