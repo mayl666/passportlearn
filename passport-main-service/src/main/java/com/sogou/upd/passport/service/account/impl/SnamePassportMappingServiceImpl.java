@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -28,6 +29,15 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
     @Autowired
     private RedisUtils redisUtils;
 
+    @Override
+    public String queryPassportIdBySnameOrPhone(String snameOrPhone) throws ServiceException{
+        if(AccountDomainEnum.isIndivid(snameOrPhone)){
+            return queryPassportIdBySname(snameOrPhone);
+        }else if(AccountDomainEnum.isPhone(snameOrPhone)){
+            return queryPassportIdByMobile(snameOrPhone);
+        }
+        return null;
+    }
     @Override
     public String queryPassportIdBySname(String sname) throws ServiceException {
         String passportId = null;

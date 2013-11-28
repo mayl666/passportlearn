@@ -29,11 +29,8 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
     public Result accountLogin(PCOAuth2LoginParams loginParams, String ip, String scheme){
         String passportId = loginParams.getLoginname();
         //可能存在冲突账号，特殊处理
-        if(AccountDomainEnum.isPhoneOrIndivid(passportId)){
-            //todo 判断是否在冲突表中，相关处理
-
-            //查询映射关系
-            String sohuPassportId = snamePassportMappingService.queryPassportIdBySname(passportId);
+        if(AccountDomainEnum.isIndivid(passportId)){
+            String sohuPassportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(passportId);
             if(!Strings.isNullOrEmpty(sohuPassportId)){
                 passportId =  sohuPassportId;
             }
