@@ -6,6 +6,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -28,7 +31,7 @@ public class IndexAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
-    private AccountInfoManager accountInfoManager;
+    private UserInfoApiManager shPlusUserInfoApiManager;
 
     @RequestMapping(value = { "/index", "/" })
     @LoginRequired(value = false)
@@ -51,9 +54,17 @@ public class IndexAction extends BaseController {
             if (Strings.isNullOrEmpty(nickName)) {
                 nickName = userId;
             }
-
-            result.setDefaultModel("username", nickName);
-
+                GetUserInfoApiparams infoApiparams=new GetUserInfoApiparams();
+                infoApiparams.setUserid(userId);
+                Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+                if(shPlusResult.isSuccess()){
+                    Object obj= shPlusResult.getModels().get("baseInfo");
+                    if(obj!=null){
+                        AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
+                        String uniqname=baseInfo.getUniqname();
+                        result.setDefaultModel("username", Strings.isNullOrEmpty(uniqname)?userId:uniqname);
+                    }
+                }
             result.setDefaultModel("disable", true);
             result.setSuccess(true);
             } else {
