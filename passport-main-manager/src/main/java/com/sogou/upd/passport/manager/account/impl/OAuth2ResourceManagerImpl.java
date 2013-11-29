@@ -124,7 +124,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             if (CommonHelper.isBuildNewCookie()) {
                 cookieResult = sgLoginApiManager.getCookieValue(createCookieUrlApiParams);
             } else {
-//                cookieResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
                 //生成cookie
                 CookieApiParams cookieApiParams = new CookieApiParams();
                 cookieApiParams.setUserid(passportId);
@@ -132,7 +131,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
                 cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
                 cookieApiParams.setPersistentcookie(String.valueOf(1));
-//                cookieApiParams.setIp();
                 cookieResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
 
             }
