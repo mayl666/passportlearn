@@ -63,7 +63,6 @@ public class PhotoUtils {
         sizeToAppIdMap = new HashMap<String, String>();
         sizeToAppIdMap.put("30", "100140006");
         sizeToAppIdMap.put("50", "100140007");
-        sizeToAppIdMap.put("55", "100140010");
         sizeToAppIdMap.put("180", "100140008");
 
         //初始化cdn列表
