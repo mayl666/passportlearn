@@ -5,7 +5,7 @@
     <title>搜狗浏览器</title>
     <meta name="description" content="搜狗浏览器登录注册框">
     <meta name="author" content="yinyong@sogou-inc.com">
-    <link href="/./static/css/oauth2pc/login.css?t=958405" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc/login.css?t=562165" rel="stylesheet" />
     <!--[if lte IE 9]>
     <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
     <![endif]-->
@@ -28,31 +28,15 @@ var splus = {
                     <legend>搜狗账号登录</legend>
                     <div class="control-group">
                         <div class="controls user-id">
-                            <input type="text" placeholder="账号/手机/邮箱" name="account" autocomplete="off" disableautocomplete acceessKey='a' tabindex="1"/>
+                            <input type="text" placeholder="搜狗账号/手机/邮箱" name="account" autocomplete="off" disableautocomplete acceessKey='a' tabindex="1"/>
                             <span class="position-tips"></span>
                             <div class="ppselecter" style="display:none">
                                 <ul>
-                                    <li class="hover">
-                                        <div class="photo">
-                                            <img src="/./static/css/oauth2pc/img_defaultAvatar55.jpg"></div>
-                                        <div class="caption">
-                                            <p class="id">@myid</p>
-                                        </div>
-                                        <a href="#" class="del" title="删除">×</a>
-                                    </li>
-                                    <li class="">
-                                        <div class="photo">
-                                            <img src="/./static/css/oauth2pc/img_defaultAvatar55.jpg"></div>
-                                        <div class="caption">
-                                            <p class="id">@myid</p>
-                                        </div>
-                                        <a href="#" class="del" title="删除">×</a>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
                         <div class="controls">
-                            <input type="password"  placeholder="请输入密码" name="password" accessKey='p' tabindex="2"/>
+                            <input type="password"  placeholder="密码" name="password" accessKey='p' tabindex="2"/>
                             <span class="position-tips"></span>
                         </div>
                     </div>
@@ -112,7 +96,7 @@ var splus = {
                     </div>
                     <div class="controls position-bottom" style="display:">
                         <div class="fr">
-                            <span class="blue" style="vertical-align:baseline">还没有账号?</span>
+                            <span>还没有账号?</span>
                             <a href="/sogou/fastreg?instanceid=${instanceid}" class="blue">快速注册</a>
                         </div>
                     </div>

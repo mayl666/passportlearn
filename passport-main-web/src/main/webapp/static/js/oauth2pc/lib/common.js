@@ -79,8 +79,8 @@ define([], function() {
         validObj: {
             account: {
                 defaultMsg: "帐号/手机号/邮箱",
-                errMsg: '该登录名不存在',
-                emptyMsg: '请填写登录名',
+                errMsg: '账号不存在',
+                emptyMsg: '请填写账号',
                 nullable: false,
                 regStr: /^\S{4,50}$/
             },
@@ -91,7 +91,7 @@ define([], function() {
                     else if(val.length<4||val.length>50)return "长度必须为4-50个字符";
                     else return "注册用户名非法";
                 }*/,
-                emptyMsg: '请填写注册用户名',
+                emptyMsg: '不能为空',
                 nullable: false,
                 regStr:/^[a-z]([a-zA-Z0-9_.]{3,15})$/
             },
@@ -163,25 +163,60 @@ define([], function() {
             }
 
             if (!nullable && inputValue == "") {
-                $input.addClass("error");
+/*                $input.addClass("error");
                 $error.html(emptyMsg).show();
+*/              
+                self.showTips($input,$error,emptyMsg); 
                 return false;
             } else if (nullable && inputValue == "") {
-                $input.removeClass("error");
-                $error.html('').hide();
+                //$input.removeClass("error");
+               // $error.html('').hide();
+                this.showTips($input,$error,'',true);
                 return true;
             } else {
                 if (!regrex.test(inputValue)) {
-                    $input.addClass("error");
-                    $error.html(typeof errMsg==='function'?errMsg.call(valid,inputValue):errMsg).show();
+                   /* $input.addClass("error");
+                    $error.html(typeof errMsg==='function'?errMsg.call(valid,inputValue):errMsg).show();*/
+                    self.showTips($input,$error,typeof errMsg==='function'?errMsg.call(valid,inputValue):errMsg);
                     return false;
                 } else {
-                    $input.removeClass("error");
-                    $error.html('').hide();
+                    //$input.removeClass("error");
+                    //$error.html('').hide();
+                    this.showTips($input,$error,'',true);
                     return true;
                 }
             }
-        } //check
+        } ,//check
+        showTips:function($input,$error,msg,normal){
+            normal?$input.removeClass('error'):$input.addClass('error');
+            $error.html(msg+(!normal?"<span class='x'>x</span>":'<span class="r"></span>')).show();
+        },
+        saveHistory:function(uname){
+            if(!uname||'undefined'===typeof localStorage)return false;
+            var LH=localStorage.getItem('login_history')||"";
+            var arr=LH.split('|');
+            if(!~arr.indexOf(uname)){
+               try{
+                arr.push(uname);
+                 localStorage.setItem('login_history',arr.join('|'));
+             }catch(e){
+                console.log(e);
+                return false;
+             }
+            }
+            return true;
+        },//saveHistory
+        delHistory:function(uname){
+             if(!uname||'undefined'===typeof localStorage)return false;
+              var LH=localStorage.getItem('login_history')||"";
+             var arr=LH.split('|');
+             var na=arr.filter(function(v,k){
+                return v!=uname;
+             });
 
+             localStorage.setItem('login_history',na.join('|'));
+
+             return true;
+        }//delHistory
     }
 });

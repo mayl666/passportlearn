@@ -66,7 +66,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 var $form = $(e.delegateTarget),
                     $input = $(e.target);
                 //清除输入框后错误提示
-                $input.removeClass('error').next('span.position-tips').html('');
+                $input.removeClass('error').next('span.position-tips').empty();
                 //验证码特殊处理
                 if($input.attr('name')=='vcode'){
                     $input.next('span.chkbtn-wrap').find('span.chktext').empty()
@@ -96,9 +96,9 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     vcodeUrl = self.sogouBaseurl +self.interfaces.sendSms,// '/a/sogou/sendsms',
                     phoneObj = self.validObj.phone;
 
-                if ($btn.hasClass('chkbtn-disable'))  return 
+                if ($btn.hasClass('chkbtn-disable'))  return ;
             
-                if (!self.check($phone, phoneObj)) return
+                if (!self.check($phone, phoneObj)) return;
 
                 $.ajax({
                     url: vcodeUrl,
@@ -119,7 +119,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         switch (code) {
                             case 0:
                                 self.countdown($btn)
-                                $error.empty().hide()
+                                //$error.empty().hide()
                                 break
                                 //yinyong@sogou-inc.com,2013-11-21[17:10:30]
 /*                            case 3:
@@ -142,14 +142,13 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
             })//yinyong@sogou-inc.com,2013-11-23[16:27:25]
             //error msg unclickable
             .on('click','.position-tips',function(e){
-                $(e.target).hide().empty().prev('input').removeClass('error').focus();
+                $(this).hide().empty().prev('input').removeClass('error').focus();
             })
             //检验是否需要验证码
             .on('blur', 'input', function(e) {
                 var $account = $(e.target),
                     $form = $(e.delegateTarget),
                     $vcodeArea = $('div.vcode-area',$form),
-                    
 
                     inputName = $account.attr('name'),
                     snameObj = self.validObj.regaccount,
@@ -180,12 +179,13 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                             var code = result.status;
                             switch (true) {
                                 case (0 == code):
-                                    $account.removeClass("error").next('span.position-tips').empty().hide();
+                                   // $account.removeClass("error").next('span.position-tips').empty().hide();
                                     break;
                                 default:
-                                    $account.addClass("error").next('span.position-tips').show()
+                                self.showTips($account,$account.next('span.position-tips'),self.retStatus.checkSname[code] || result.statusText || "未知错误");
+//                                    $account.addClass("error").next('span.position-tips').show()
                                     //self.refreshVcode($img);
-                                    .html(self.retStatus.checkSname[code] || result.statusText || "未知错误");;
+   //                                 .html(self.retStatus.checkSname[code] || result.statusText || "未知错误");;
                             }
                             
                           /*  if (result.regstatus !== 0) {
@@ -229,9 +229,10 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                             result=getJSON(result);
                              var code = result.status;
                             if (code != 0) {
-                                $account.addClass("error").next('span.position-tips').show().html(self.retStatus.checkSname[code] || result.statusText || "未知错误")
+                                self.showTips($account,$account.next('.span.position-tips'),self.retStatus.checkSname[code] || result.statusText || "未知错误");
+//                                $account.addClass("error").next('span.position-tips').show().html(self.retStatus.checkSname[code] || result.statusText || "未知错误")
                             } else {
-                                $account.removeClass("error").next('span.position-tips').empty().hide()
+                              //  $account.removeClass("error").next('span.position-tips').empty().hide()
                             }
                             //yinyong@sogou-inc.com,2013-11-21[17:16:00]
                             //fixed
@@ -251,7 +252,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                             return passwordObj.legal = false;
                         }
                         else{
-                            $account.removeClass("error").next('span.position-tips').html('')
+                            //$account.removeClass("error").next('span.position-tips').html('')
                             passwordObj.legal = true;
                         }
                     }
@@ -330,6 +331,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname||data.uniqname)+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport + '|' + '1';
                         console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
+                        self.saveHistory($input.val());
                         break; 
                     default:
                     //yinyong@sogou-inc.com,2013-11-23[16:31:57]
@@ -401,7 +403,8 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     case (0 == code):
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname )+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport+ '|' + '1';
                         console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
-                        window.external && window.external.passport && window.external.passport('result', msg)
+                        window.external && window.external.passport && window.external.passport('result', msg);
+                        self.saveHistory($input.val());
                         break;
 /*                var code = result.code
                 switch (code) {
@@ -426,6 +429,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         break*/
                     default:
                         if (/20221|20214/.test(code)) {
+//                            self.showTips($vcode,$vcode.next('.chkbtn-wrap').find('span.chktext'),self.retStatus.register[code] || result.statusText || "未知错误");
                             $vcode.addClass('error').next('span.chkbtn-wrap').find('span.chktext').show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         }else
                             $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
@@ -442,9 +446,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         },
         //校验是否为空
         checkEmpty: function($input, $error) {
-
-            return $input.val() == '' ? ($input.addClass('error'), $error.html('不能为空'), false) : true
-
+            return $input.val() == '' ? self.showTips($input,$error,'不能为空')&&false/*($input.addClass('error'), $error.html('不能为空'), false)*/ : true;
         },
         //刷新验证码
         refreshVcode: function($img) {
