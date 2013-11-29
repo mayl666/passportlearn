@@ -124,16 +124,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             if (CommonHelper.isBuildNewCookie()) {
                 cookieResult = sgLoginApiManager.getCookieValue(createCookieUrlApiParams);
             } else {
-                cookieResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
                 //生成cookie
-               /* CookieApiParams cookieApiParams = new CookieApiParams();
+                CookieApiParams cookieApiParams = new CookieApiParams();
                 cookieApiParams.setUserid(passportId);
                 cookieApiParams.setClient_id(clientId);
-                cookieApiParams.setRu("https://account.sogou.com");
+                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
                 cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
                 cookieApiParams.setPersistentcookie(String.valueOf(1));
-                cookieApiParams.setIp(getIp(request));
-                Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);*/
+                cookieResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
 
             }
             if (!cookieResult.isSuccess()) {
@@ -201,6 +199,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 Map dataMap = (Map) resourceMap.get(DATA);
                 String sid = (String) dataMap.get(SID);
                 passportId = snamePassportMappingService.queryPassportIdBySid(sid);
+                //todo 这里需要修改sohu+新版上线后未导入的情况
             }
             shPlusTokenLog.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
         }
