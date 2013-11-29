@@ -60,6 +60,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
             baseInfo = redisUtils.getObject(cacheKey, AccountBaseInfo.class);
 
             if (baseInfo == null) {
+                //todo manager不能直接调用dao!!!
                 baseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
                 if (baseInfo != null) {
                     final String imgUrl = baseInfo.getAvatar();

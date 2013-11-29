@@ -10,10 +10,12 @@ import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+import net.paoding.rose.jade.annotation.SQLParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -42,9 +44,19 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     private static final Logger logger = LoggerFactory.getLogger(AccountBaseInfoService.class);
     private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
+    public AccountBaseInfo getAccountBaseInfoByPassportId(String passport_id) throws ServiceException {
+        AccountBaseInfo accountBaseInfo =  accountBaseInfoDAO.getAccountBaseInfoByPassportId(passport_id);
+        return accountBaseInfo;
+    }
+
     @Override
     public void asyncUpdateAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
         if (connectUserInfoVO != null) {
+            //检查昵称是否存在
+             if(isUniqNameExist(connectUserInfoVO.getNickname())){
+
+             }
+            //检查头像url是否存在
             uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(passportId, connectUserInfoVO));
         }
         return;
@@ -106,6 +118,16 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             logger.error("insertOrUpdateAccountBaseInfo fail", e);
             return false;
         }
+    }
+
+    public boolean isUniqNameExist(String uniqname) {
+        if (!Strings.isNullOrEmpty(uniqname)) {
+            String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
+            if (Strings.isNullOrEmpty(existPassportId)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private AccountBaseInfo newAccountBaseInfo(String passportId, String uniqname, String avatar) {
