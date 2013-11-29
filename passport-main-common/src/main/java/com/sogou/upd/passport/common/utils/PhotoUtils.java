@@ -54,9 +54,7 @@ public class PhotoUtils {
     static final Logger logger = LoggerFactory.getLogger(PhotoUtils.class);
 
     public void init() {
-        httpClient = new DefaultHttpClient();
-        httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
-        httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
+        httpClient = SGHttpClient.WebClientDevWrapper.wrapClient(new DefaultHttpClient());
         /**
          * 30x30     100140006
          * 50x50     100140007
