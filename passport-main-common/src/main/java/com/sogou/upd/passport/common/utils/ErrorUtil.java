@@ -318,7 +318,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
 
     public ErrorUtil() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
+        super();
     }
 
     static {
