@@ -31,7 +31,7 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
     public Result accountLogin(PCOAuth2LoginParams loginParams, String ip, String scheme) {
         String sogou_passportId = loginParams.getLoginname();
         Result sohu_result = null;
-        if (AccountDomainEnum.isIndivid(sogou_passportId)) {
+        if (AccountDomainEnum.isPhoneOrIndivid(sogou_passportId)) {
             String sohu_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(sogou_passportId);
             if (!Strings.isNullOrEmpty(sohu_passportId)) {
                 //避免sname为abc,passportId为sname@sogou.com情况
