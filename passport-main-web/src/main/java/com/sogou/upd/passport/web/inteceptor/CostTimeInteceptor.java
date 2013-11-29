@@ -4,6 +4,7 @@ package com.sogou.upd.passport.web.inteceptor;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -95,8 +96,9 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             logger.error("CostTimeInteceptor error:" + clientId+" "+request.getRequestURI(), e);
         } finally {
             if(!result.isSuccess()){
+                String passportId=this.getPassportId(request);
                 String errorCode=result.getCode();
-                UserOperationLog userOperationLog = new UserOperationLog("", request.getRequestURI(), Integer.toString(clientId), errorCode, getIp(request));
+                UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), Integer.toString(clientId), errorCode, getIp(request));
                 String referer = request.getHeader("referer");
                 userOperationLog.putOtherMessage("ref", referer);
                 UserOperationLogUtil.log(userOperationLog);
@@ -116,6 +118,25 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
             }
         }
     }
+
+    private String getPassportId(HttpServletRequest request){
+         try{
+             String passportId=request.getParameter("username");
+             if(!StringUtil.isBlank(passportId)){
+                return passportId;
+             }
+             passportId=request.getParameter("userid");
+             if(!StringUtil.isBlank(passportId)){
+                 return passportId;
+             }
+             return "";
+         }catch (Exception e){
+             logger.error("",e);
+             return "";
+         }
+    }
+
+
 
     public boolean obtainInterfaceLimited(int clientId, String url) {
         //读取内存中限制次数
