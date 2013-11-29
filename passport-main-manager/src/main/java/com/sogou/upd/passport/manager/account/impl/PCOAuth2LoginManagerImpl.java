@@ -28,21 +28,25 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
     SnamePassportMappingService snamePassportMappingService;
 
     @Override
-    public Result accountLogin(PCOAuth2LoginParams loginParams, String ip, String scheme){
+    public Result accountLogin(PCOAuth2LoginParams loginParams, String ip, String scheme) {
         String sogou_passportId = loginParams.getLoginname();
-        Result sohu_result=null;
-        if(AccountDomainEnum.isIndivid(sogou_passportId)){
+        Result sohu_result = null;
+        if (AccountDomainEnum.isIndivid(sogou_passportId)) {
             String sohu_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(sogou_passportId);
-            if(!Strings.isNullOrEmpty(sohu_passportId)){
-                sohu_result =  authuser(loginParams,ip,scheme,sohu_passportId);
+            if (!Strings.isNullOrEmpty(sohu_passportId)) {
+                //避免sname为abc,passportId为sname@sogou.com情况
+                String individPassportId = loginManager.getIndividPassportIdByUsername(sogou_passportId);
+                if(!sohu_passportId.equals(sogou_passportId) && !sohu_passportId.equals(individPassportId)){
+                    sohu_result = authuser(loginParams, ip, scheme, sohu_passportId);
+                }
             }
         }
-        Result sogou_result = authuser(loginParams,ip,scheme,sogou_passportId);
-        if(sohu_result == null || !sohu_result.isSuccess()){
-             return sogou_result;
-        }else if(sohu_result.isSuccess() && !sogou_result.isSuccess()) {
+        Result sogou_result = authuser(loginParams, ip, scheme, sogou_passportId);
+        if (sohu_result == null || !sohu_result.isSuccess()) {
+            return sogou_result;
+        } else if (sohu_result.isSuccess() && !sogou_result.isSuccess()) {
             return sohu_result;
-        }else {
+        } else {
             //二者都能验证成功，产生账号冲突，人工解决
             Result error_result = new APIResultSupport(false);
             error_result.setCode(ErrorUtil.ERR_CODE_ERROR_ACCOUNT);
@@ -51,7 +55,7 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
         }
     }
 
-    private Result authuser(PCOAuth2LoginParams loginParams, String ip, String scheme,String passportId){
+    private Result authuser(PCOAuth2LoginParams loginParams, String ip, String scheme, String passportId) {
         WebLoginParams webLoginParams = new WebLoginParams();
         webLoginParams.setUsername(passportId);
         webLoginParams.setPassword(loginParams.getPwd());
