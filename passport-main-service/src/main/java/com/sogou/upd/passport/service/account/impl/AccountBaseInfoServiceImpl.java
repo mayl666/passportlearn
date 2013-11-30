@@ -13,7 +13,6 @@ import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -36,22 +35,37 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     private UniqNamePassportMappingService uniqNamePassportMappingService;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
-    @Autowired
-    private TaskExecutor uploadImgExecutor;
 
     private static final Logger logger = LoggerFactory.getLogger(AccountBaseInfoService.class);
     private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
     @Override
-    public void initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO, boolean isAsync) {
-        if (connectUserInfoVO != null) {
-            if (isAsync) { // 异步
-                initConnectAccountBaseInfo(passportId, connectUserInfoVO.getNickname(), connectUserInfoVO.getImageURL());
-            } else { // 同步
-                uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(passportId, connectUserInfoVO));
-            }
+    public boolean initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
+        String uniqname = connectUserInfoVO.getNickname();
+        String avatar = connectUserInfoVO.getImageURL();
+        if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
+            return true;
         }
-        return;
+        if (!Strings.isNullOrEmpty(avatar)) {
+            avatar = photoUtils.uploadWebImg(avatar);
+        }
+        try {
+            AccountBaseInfo accountBaseInfo = queryAccountBaseInfo(passportId);
+            if (accountBaseInfo == null) { // 原来该用户无昵称头像
+                return insertAccountBaseInfo(passportId, uniqname, avatar);
+            } else {
+                String oldUniqname = accountBaseInfo.getUniqname();
+                String oldAvatar = accountBaseInfo.getAvatar();
+                if (!Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(oldAvatar)) {
+                    return true;
+                } else {
+                    return insertAccountBaseInfo(passportId, uniqname, avatar);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return false;
+        }
     }
 
     @Override
@@ -170,70 +184,6 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         accountBaseInfo.setUniqname(uniqname);
         accountBaseInfo.setAvatar(avatar);
         return accountBaseInfo;
-    }
-
-    class UpdateAccountBaseInfoTask implements Runnable {
-
-        private String passportId;
-        private ConnectUserInfoVO connectUserInfoVO;
-
-        UpdateAccountBaseInfoTask(String passportId, ConnectUserInfoVO connectUserInfoVO) {
-            this.passportId = passportId;
-            this.connectUserInfoVO = connectUserInfoVO;
-        }
-
-        @Override
-        public void run() {
-            initConnectAccountBaseInfo(passportId, connectUserInfoVO.getNickname(), connectUserInfoVO.getImageURL());
-        }
-    }
-
-    private boolean initConnectAccountBaseInfo(String passportId, String uniqname, String avatar) {
-        if (!Strings.isNullOrEmpty(avatar)) {
-            avatar = photoUtils.uploadWebImg(avatar);
-        }
-        try {
-            if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-                return true;
-            }
-            AccountBaseInfo accountBaseInfo = queryAccountBaseInfo(passportId);
-            boolean isInsertAccountBaseInfo = false;    // 是否需要插入AccountBaseInfo
-            boolean isInsertUniqMapping = false;        // 是否需要插入昵称映射表
-            if (accountBaseInfo != null) {  // 已经存在昵称头像、需对比是否更新昵称或头像
-                String oldUniqname = accountBaseInfo.getUniqname();
-                String oldAvatar = accountBaseInfo.getAvatar();
-                if (Strings.isNullOrEmpty(oldUniqname)) {
-                    accountBaseInfo.setUniqname(uniqname);
-                    isInsertUniqMapping = true;
-                    isInsertAccountBaseInfo = true;
-                }
-                if (Strings.isNullOrEmpty(oldAvatar)) {
-                    accountBaseInfo.setAvatar(avatar);
-                    isInsertAccountBaseInfo = true;
-                }
-            } else {   // 原先没有昵称头像，则不用对比直接插入
-                accountBaseInfo = newAccountBaseInfo(passportId, uniqname, avatar);
-                if (!Strings.isNullOrEmpty(uniqname)) {
-                    isInsertUniqMapping = true;
-                }
-                isInsertAccountBaseInfo = true;
-            }
-            String insertUniqname = accountBaseInfo.getUniqname(); // 需要插入的昵称
-            boolean isInsertUniqname = true;
-            if (isInsertUniqMapping && !Strings.isNullOrEmpty(insertUniqname)) {  // 先插入昵称头像映射表
-                isInsertUniqname = uniqNamePassportMappingService.checkAndInsertUniqName(passportId, insertUniqname);
-            }
-            if (isInsertAccountBaseInfo) {
-                if (!Strings.isNullOrEmpty(insertUniqname) && !isInsertUniqname) {
-                    return false;
-                }
-                return simpleSaveAccountBaseInfo(accountBaseInfo);
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error("insertOrUpdateAccountBaseInfo fail", e);
-            return false;
-        }
     }
 
     private String buildAccountBaseInfoKey(String passportId) {

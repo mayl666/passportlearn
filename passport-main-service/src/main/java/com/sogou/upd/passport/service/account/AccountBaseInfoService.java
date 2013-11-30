@@ -18,9 +18,8 @@ public interface AccountBaseInfoService {
      *
      * @param passportId
      * @param connectUserInfoVO
-     * @param isAsync           是否异步
      */
-    public void initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO, boolean isAsync);
+    public boolean initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO);
 
     /**
      * 获取个人资料
