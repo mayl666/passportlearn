@@ -133,12 +133,16 @@ public class PCOAuth2AccountController extends BaseController {
 
         result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest);
 
+        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(),oauthRequest.getGrantType(),String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
+        userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
     @RequestMapping(value = "/oauth2/resource/")
     @ResponseBody
-    public Object resource(PCOAuth2ResourceParams params) throws Exception {
+    public Object resource(HttpServletRequest request,PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(params);
@@ -149,6 +153,10 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         result = oAuth2ResourceManager.resource(params);
+
+        UserOperationLog userOperationLog = new UserOperationLog(params.getAccess_token(),params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -245,8 +253,6 @@ public class PCOAuth2AccountController extends BaseController {
 
         //注册添加log
         UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), ip);
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -321,8 +327,6 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -370,10 +374,8 @@ public class PCOAuth2AccountController extends BaseController {
 
         Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), oauth2PcIndexParams.getClient_id(), oauth2PcIndexParams.getInstanceid());
 
-        /*UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);*/
+        UserOperationLog userOperationLog = new UserOperationLog(oauth2PcIndexParams.getAccesstoken(), request.getRequestURI(), String.valueOf(oauth2PcIndexParams.getClient_id()), queryPassportIdResult.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
 
         if (!queryPassportIdResult.isSuccess()) {
             return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
