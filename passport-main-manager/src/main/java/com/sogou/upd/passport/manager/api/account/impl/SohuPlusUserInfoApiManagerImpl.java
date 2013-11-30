@@ -40,8 +40,6 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
     @Autowired
-    private TaskExecutor uploadImgExecutor;
-    @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
     @Autowired
     private AccountBaseInfoService accountBaseInfoService;
@@ -55,17 +53,27 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
         Result result = new APIResultSupport(false);
         AccountBaseInfo baseInfo = null;
         try {
-            final String passportId = getUserInfoApiparams.getUserid();
+            String passportId = getUserInfoApiparams.getUserid();
             baseInfo = accountBaseInfoService.queryAccountBaseInfo(passportId);
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
             if (baseInfo != null) {
-                final String imgUrl = baseInfo.getAvatar();
+                String imgUrl = baseInfo.getAvatar();
                 //非搜狗图片，重新上传到搜狗op
                 if (!Strings.isNullOrEmpty(imgUrl) && !imgUrl.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
                     //获取图片名
-                    final String imgName = photoUtils.generalFileName();
+                    String imgName = photoUtils.generalFileName();
                     // 上传到OP图片平台 ，更新数据库，更新缓存
-                    uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(photoUtils, imgName, imgUrl, passportId, accountBaseInfoDAO, baseInfo, redisUtils));
+                    if (photoUtils.uploadImg(imgName, null, imgUrl, "1")) {
+                        imgUrl = photoUtils.accessURLTemplate(imgName);
+                        //更新数据库
+                        int rows = accountBaseInfoDAO.updateAvatarByPassportId(imgUrl, passportId);
+                        if (rows != 0) {
+                            //更新缓存
+                            baseInfo.setAvatar(imgUrl);
+                            cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
+                            redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                        }
+                    }
                 } else {
                     redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                 }
