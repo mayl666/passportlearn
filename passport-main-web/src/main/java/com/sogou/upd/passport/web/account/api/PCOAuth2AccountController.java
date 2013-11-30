@@ -242,6 +242,12 @@ public class PCOAuth2AccountController extends BaseController {
             writeUserLogForRegister(finalCode, result, request, pcoAuth2RegisterParams);
         }
         commonManager.incRegTimes(ip, uuidName);
+
+        //注册添加log
+        UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), ip);
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -291,11 +297,6 @@ public class PCOAuth2AccountController extends BaseController {
         result = pcOAuth2LoginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 
         //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             int clientId = loginParams.getClient_id();
@@ -318,6 +319,11 @@ public class PCOAuth2AccountController extends BaseController {
                 result.setMessage("密码错误");
             }
         }
+
+        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -363,6 +369,12 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), oauth2PcIndexParams.getClient_id(), oauth2PcIndexParams.getInstanceid());
+
+        /*UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);*/
+
         if (!queryPassportIdResult.isSuccess()) {
             return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
         }
@@ -372,7 +384,7 @@ public class PCOAuth2AccountController extends BaseController {
             if (!cookieUserId.equals(passportId)) {
                 return "redirect:/web/logout_redirect";
             }
-            return "redirect:/web/userinfo/getuserinfo";
+            return "redirect:/web/userinfo/getuserinfo?client_id="+oauth2PcIndexParams.getClient_id();
         }
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
@@ -383,14 +395,6 @@ public class PCOAuth2AccountController extends BaseController {
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(getIp(request));
         Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
-
-        //生成cookie--之前写法
-        /*CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-        createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-        createCookieUrlApiParams.setPersistentcookie(1);
-        createCookieUrlApiParams.setDomain("sogou.com");
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);*/
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -398,7 +402,7 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
-        return "redirect:/web/userinfo/getuserinfo";
+        return "redirect:/web/userinfo/getuserinfo?client_id="+oauth2PcIndexParams.getClient_id();
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")
