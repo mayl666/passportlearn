@@ -2,11 +2,8 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.BaseTest;
 import junit.framework.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.validation.constraints.AssertTrue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +26,7 @@ public class AccountBaseInfoServiceTest extends BaseTest {
      */
     @Test
     public void testFirstInsertAccountBaseInfo(){
-        boolean success = accountBaseInfoService.initAccountBaseInfo(passportId, uniqname_1, avatar_1);
+        boolean success = accountBaseInfoService.initAccountUniqNameAndAvatar(passportId, uniqname_1, avatar_1);
         Assert.assertTrue(success);
     }
 
@@ -38,7 +35,7 @@ public class AccountBaseInfoServiceTest extends BaseTest {
      */
     @Test
     public void testFirstInsertUniqname(){
-        boolean success = accountBaseInfoService.initAccountBaseInfo(passportId, "rostan", "");
+        boolean success = accountBaseInfoService.initAccountUniqNameAndAvatar(passportId, "rostan", "");
         Assert.assertTrue(success);
     }
 
@@ -47,7 +44,7 @@ public class AccountBaseInfoServiceTest extends BaseTest {
      */
     @Test
     public void testFirstInsertAvatar(){
-        boolean success = accountBaseInfoService.initAccountBaseInfo(passportId, "", avatar_1);
+        boolean success = accountBaseInfoService.initAccountUniqNameAndAvatar(passportId, "", avatar_1);
         Assert.assertTrue(success);
     }
 
@@ -56,7 +53,7 @@ public class AccountBaseInfoServiceTest extends BaseTest {
      */
     @Test
     public void testInsertNoUniq(){
-        boolean success = accountBaseInfoService.initAccountBaseInfo(passportId, uniqname_1, avatar_1);
+        boolean success = accountBaseInfoService.initAccountUniqNameAndAvatar(passportId, uniqname_1, avatar_1);
         Assert.assertTrue(success);
     }
 
