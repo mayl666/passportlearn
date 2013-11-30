@@ -22,6 +22,7 @@ import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.SHPlusConstant;
+import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
@@ -50,7 +51,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     public static final String DATA = "data";
     public static final String RESOURCE = "resource";
-    public static final String SID = "sid";
     public static final String SNAME = "sname";
 
     @Autowired
@@ -71,6 +71,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private PhotoUtils photoUtils;
     @Autowired
     SnamePassportMappingService snamePassportMappingService;
+    @Autowired
+    private AccountBaseInfoService accountBaseInfoService;
 
     @Override
     public Result resource(PCOAuth2ResourceParams params) {
@@ -227,18 +229,12 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             }
 
             Result getUserInfoResult = getUserInfo(passportId);
-            String uniqname = "";
-            String large_avatar ="";
-            String mid_avatar ="";
-            String tiny_avatar ="";
+            String uniqname = "",large_avatar ="",mid_avatar ="", tiny_avatar ="";
             if(getUserInfoResult.isSuccess()){
                 uniqname =(String)getUserInfoResult.getModels().get("uniqname");
                 large_avatar = (String)getUserInfoResult.getModels().get("img_180");
                 mid_avatar =  (String)getUserInfoResult.getModels().get("img_50");
                 tiny_avatar = (String)getUserInfoResult.getModels().get("img_30");
-            }
-            if (Strings.isNullOrEmpty(uniqname)) {
-                uniqname = defaultUniqname(passportId);
             }
             Map data = Maps.newHashMap();
             data.put("nick",uniqname);
@@ -266,29 +262,47 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         if (accountBaseInfo != null) {
             uniqname = accountBaseInfo.getUniqname();
         }
+        if(Strings.isNullOrEmpty(uniqname)){
+            //从论坛获取昵称
+            uniqname =pcAccountManager.getBrowserBbsUniqname(passportId);
+            if(!Strings.isNullOrEmpty(uniqname)){
+                accountBaseInfoService.updateUniqname(accountBaseInfo,uniqname);
+            }
+        }
         if (Strings.isNullOrEmpty(uniqname)) {
-            return defaultUniqname(passportId);
+            uniqname = defaultUniqname(passportId);
         }
         return uniqname;
     }
 
     private Result getUserInfo(String passportId) {
         Result result = new APIResultSupport(false);
-        String uniqname = null;
+        String uniqname = "", large_avatar ="", mid_avatar ="",tiny_avatar ="";
         AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
         if (accountBaseInfo != null) {
-            result.setSuccess(true);
-            result = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
             uniqname = accountBaseInfo.getUniqname();
-            if(Strings.isNullOrEmpty(uniqname)){
-                //从论坛获取昵称
-                uniqname =pcAccountManager.getBrowserBbsUniqname(passportId);
-                if(!Strings.isNullOrEmpty(uniqname)){
-                    //todo 存入base_info表
-                }
-            }
-            result.setDefaultModel("uniqname",uniqname);
+            Result getPhotoResult = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
+            large_avatar = (String)getPhotoResult.getModels().get("img_180");
+            mid_avatar =  (String)getPhotoResult.getModels().get("img_50");
+            tiny_avatar = (String)getPhotoResult.getModels().get("img_30");
         }
+
+        if(Strings.isNullOrEmpty(uniqname)){
+            //从论坛获取昵称
+            uniqname =pcAccountManager.getBrowserBbsUniqname(passportId);
+            if(!Strings.isNullOrEmpty(uniqname)){
+                accountBaseInfoService.updateUniqname(accountBaseInfo,uniqname);
+            }
+        }
+        if (StringUtils.isBlank(uniqname)) {
+            uniqname = defaultUniqname(passportId);
+        }
+
+        result.setSuccess(true);
+        result.setDefaultModel("uniqname",uniqname);
+        result.setDefaultModel("img_30",tiny_avatar);
+        result.setDefaultModel("img_50",mid_avatar);
+        result.setDefaultModel("img_180",large_avatar);
         return result;
     }
 

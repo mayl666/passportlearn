@@ -92,4 +92,11 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         System.out.println("result输出结果为:" + result.toString());
     }
 
+    @Test
+    public void testDefaultPhoto() {
+//       Result photoResult = proxyUserInfoApiManager.obtainPhoto(Integer.toString(1044), "30,50,180");
+//       System.out.println(photoResult.toString());
+
+    }
+
 }
