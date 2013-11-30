@@ -294,7 +294,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 if (accountBaseInfo != null) {
                     accountBaseInfoService.updateUniqname(accountBaseInfo, uniqname);
                 } else {
-                    accountBaseInfoService.insertOrUpdateAccountBaseInfo(passportId, uniqname, "");
+                    accountBaseInfoService.insertAccountBaseInfo(passportId, uniqname, "");
                 }
             }
         }
