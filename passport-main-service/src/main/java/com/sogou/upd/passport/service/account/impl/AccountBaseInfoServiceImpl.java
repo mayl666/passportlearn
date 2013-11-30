@@ -107,21 +107,21 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     @Override
     public boolean insertAccountBaseInfo(String passportId, String uniqname, String avatar) throws ServiceException {
         try {
-            boolean isInertMapping = true;
+            boolean isInertUniqnameMapping = true;  // 是否插入UniqnameMapping表
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-                return false;
+                return true;
             }
             if (!Strings.isNullOrEmpty(uniqname)) {
                 if (isUniqNameExist(uniqname)) {
                     uniqname = "";      // 如果昵称重复则置为空
                 } else {
-                    isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                    isInertUniqnameMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
                 }
             }
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-                return false;
+                return true;
             }
-            if (isInertMapping) {
+            if (isInertUniqnameMapping) {
                 AccountBaseInfo accountBaseInfo = newAccountBaseInfo(passportId, uniqname, avatar);
                 int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
                 if (accountBaseInfoRow > 0) {
@@ -188,10 +188,9 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
-    private boolean initConnectAccountBaseInfo(String passportId, String uniqname, String connectAvatar) {
-        String avatar = "";
-        if (!Strings.isNullOrEmpty(connectAvatar)) {
-            avatar = photoUtils.uploadWebImg(connectAvatar);
+    private boolean initConnectAccountBaseInfo(String passportId, String uniqname, String avatar) {
+        if (!Strings.isNullOrEmpty(avatar)) {
+            avatar = photoUtils.uploadWebImg(avatar);
         }
         try {
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
