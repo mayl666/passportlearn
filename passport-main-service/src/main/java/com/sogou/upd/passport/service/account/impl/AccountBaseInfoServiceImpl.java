@@ -167,6 +167,16 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
+    public boolean isUniqNameExist(String uniqname) {
+        if (!Strings.isNullOrEmpty(uniqname)) {
+            String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
+            if (Strings.isNullOrEmpty(existPassportId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private AccountBaseInfo newAccountBaseInfo(String passportId, String uniqname, String avatar) {
         AccountBaseInfo accountBaseInfo = new AccountBaseInfo();
         accountBaseInfo.setPassportId(passportId);
