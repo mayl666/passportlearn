@@ -68,6 +68,10 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         String passportId = baseInfo.getPassportId();
         try {
             if (!oldUniqName.equals(uniqname)) {
+                //检查昵称是否存在
+                if(isUniqNameExist(uniqname)){
+                   return false;
+                }
                 //更新数据库
                 int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
                 if (row > 0) {
