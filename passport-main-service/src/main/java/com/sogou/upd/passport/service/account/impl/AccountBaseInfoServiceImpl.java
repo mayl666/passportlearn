@@ -109,7 +109,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         try {
             boolean isInertMapping = true;
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-                return true;
+                return false;
             }
             if (!Strings.isNullOrEmpty(uniqname)) {
                 String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
@@ -118,6 +118,9 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 } else {
                     isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
                 }
+            }
+            if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
+                return false;
             }
             if (isInertMapping) {
                 AccountBaseInfo accountBaseInfo = newAccountBaseInfo(passportId, uniqname, avatar);

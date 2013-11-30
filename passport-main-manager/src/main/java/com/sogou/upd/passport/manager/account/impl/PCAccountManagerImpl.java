@@ -216,9 +216,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
         try {
             requestModel.addParam("uid", passportId);
             uniqname = SGHttpClient.executeStr(requestModel);
-            if (Strings.isNullOrEmpty(uniqname)) {
-                uniqname = passportId.substring(0, passportId.indexOf("@"));
-            }
         } catch (Exception e) {
             logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
         }
@@ -228,7 +225,11 @@ public class PCAccountManagerImpl implements PCAccountManager {
     @Override
     public String getUniqnameByClientId(String passportId, int clientId) {
         if (CommonConstant.IS_USE_IEBBS_UNIQNAME && CommonHelper.isExplorerToken(clientId)) {
-            return getBrowserBbsUniqname(passportId);
+            String uniqname = getBrowserBbsUniqname(passportId);
+            if (Strings.isNullOrEmpty(uniqname)) {
+                uniqname = passportId.substring(0, passportId.indexOf("@"));
+            }
+            return uniqname;
         }
         return (passportId.substring(0, passportId.indexOf("@")));
     }
