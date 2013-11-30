@@ -56,23 +56,18 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
         AccountBaseInfo baseInfo = null;
         try {
             final String passportId = getUserInfoApiparams.getUserid();
+            baseInfo = accountBaseInfoService.queryAccountBaseInfo(passportId);
             String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-            baseInfo = redisUtils.getObject(cacheKey, AccountBaseInfo.class);
-
-            if (baseInfo == null) {
-                //todo manager不能直接调用dao!!!
-                baseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
-                if (baseInfo != null) {
-                    final String imgUrl = baseInfo.getAvatar();
-                    //非搜狗图片，重新上传到搜狗op
-                    if (!Strings.isNullOrEmpty(imgUrl) && !imgUrl.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
-                        //获取图片名
-                        final String imgName = photoUtils.generalFileName();
-                        // 上传到OP图片平台 ，更新数据库，更新缓存
-                        uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(photoUtils, imgName, imgUrl, passportId, accountBaseInfoDAO, baseInfo, redisUtils));
-                    } else {
-                        redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
-                    }
+            if (baseInfo != null) {
+                final String imgUrl = baseInfo.getAvatar();
+                //非搜狗图片，重新上传到搜狗op
+                if (!Strings.isNullOrEmpty(imgUrl) && !imgUrl.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
+                    //获取图片名
+                    final String imgName = photoUtils.generalFileName();
+                    // 上传到OP图片平台 ，更新数据库，更新缓存
+                    uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(photoUtils, imgName, imgUrl, passportId, accountBaseInfoDAO, baseInfo, redisUtils));
+                } else {
+                    redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                 }
             }
         } catch (Exception e) {
@@ -135,7 +130,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
 
     @Override
     public Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }
 

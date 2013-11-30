@@ -14,12 +14,23 @@ public interface UniqNamePassportMappingService {
     /*
      * 检查昵称是否存在
      */
-    public String checkUniqName(String nickname) throws ServiceException;
+    public String checkUniqName(String uniqname) throws ServiceException;
+
+    /**
+     * 检查昵称唯一性，并且插入昵称映射表
+     * 如果昵称不唯一，则返回false，不插入表中
+     * 反之返回true插入表中
+     * @param passportId
+     * @param uniqname
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkAndInsertUniqName(String passportId, String uniqname) throws ServiceException;
 
     /*
      * 插入昵称映射表
      */
-    public boolean insertUniqName(String passportId, String uniqName) throws ServiceException;
+    public boolean insertUniqName(String passportId, String uniqname) throws ServiceException;
 
     /*
      * 更新个人信息
@@ -30,6 +41,6 @@ public interface UniqNamePassportMappingService {
     /*
      * 删除昵称映射关系
      */
-    public boolean removeUniqName(String nickname) throws ServiceException;
+    public boolean removeUniqName(String uniqname) throws ServiceException;
 
 }

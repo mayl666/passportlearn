@@ -31,13 +31,13 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
     @Override
-    public String checkUniqName(String nickname) throws ServiceException {
+    public String checkUniqName(String uniqname) throws ServiceException {
         String passportId = null;
         try {
-            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
+            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
             passportId = redisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
-                passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(nickname);
+                passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
                     redisUtils.set(cacheKey, passportId);
                 }
@@ -50,11 +50,21 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     }
 
     @Override
-    public boolean insertUniqName(String passportId, String uniqName) throws ServiceException {
+    public boolean checkAndInsertUniqName(String passportId, String uniqname) throws ServiceException {
+        String existPassportId = checkUniqName(uniqname);
+        if (!Strings.isNullOrEmpty(existPassportId)) {
+            return false;      // 如果昵称重复则置为空
+        } else {
+            return insertUniqName(passportId, uniqname);
+        }
+    }
+
+    @Override
+    public boolean insertUniqName(String passportId, String uniqname) throws ServiceException {
         try {
-            int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqName, passportId);
+            int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
             if (row > 0) {
-                String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqName;
+                String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                 redisUtils.set(cacheKey, passportId);
                 return true;
             }
@@ -66,7 +76,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     }
 
     @Override
-    public boolean updateUniqName(/*Account account,*/String passportId,String oldNickName, String nickname)  throws ServiceException{
+    public boolean updateUniqName(/*Account account,*/String passportId, String oldNickName, String nickname) throws ServiceException {
         try {
             //sogou分支需要修改此逻辑，在account主表中修改昵称
 //            String oldNickName = account.getNickname();
@@ -87,7 +97,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                     redisUtils.set(cacheKey, passportId);
                     return true;
                 }
-            }else {
+            } else {
                 return false;
             }
 
@@ -99,13 +109,13 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     }
 
     @Override
-    public boolean removeUniqName(String nickname) throws ServiceException {
+    public boolean removeUniqName(String uniqname) throws ServiceException {
         try {
-            if (!Strings.isNullOrEmpty(nickname)) {
+            if (!Strings.isNullOrEmpty(uniqname)) {
                 //更新映射
-                int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(nickname);
+                int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
                 if (row >= 0) {
-                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
+                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                     redisUtils.delete(cacheKey);
                     return true;
                 }

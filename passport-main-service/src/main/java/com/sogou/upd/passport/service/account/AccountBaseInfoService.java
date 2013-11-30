@@ -14,28 +14,50 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 public interface AccountBaseInfoService {
 
     /**
-     * 异步更新第三方个人资料
+     * 初始化第三方个人资料
+     *
      * @param passportId
      * @param connectUserInfoVO
+     * @param isAsync           是否异步
      */
-    public void asyncUpdateAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO);
+    public void initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO, boolean isAsync);
+
+    /**
+     * 获取个人资料
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public AccountBaseInfo queryAccountBaseInfo(String passportId) throws ServiceException;
 
     /**
      * 未检查昵称是否唯一，默认是唯一的
      * 更新昵称表，更新映射表
+     *
      * @param baseInfo
      * @param uniqname
      */
-    public boolean updateUniqname(AccountBaseInfo baseInfo,String uniqname) throws ServiceException;
+    public boolean updateUniqname(AccountBaseInfo baseInfo, String uniqname);
 
     /**
-     * 存在则插入，不存在则更新AccountBaseInfo
-     * 写AccountBaseInfo缓存和数据库
-     * 写uniqname_passportid_mapping缓存和数据库
-     * @param passportId
-     * @param uniqname
-     * @param avatar
+     * 插入昵称和头像
+     * 不做任何昵称和头像逻辑判断，只是存在则更新，不存在则插入
+     *
+     * @param accountBaseInfo
      * @return
+     * @throws ServiceException
      */
-    public boolean insertOrUpdateAccountBaseInfo(String passportId, String uniqname, String avatar);
+    public boolean simpleSaveAccountBaseInfo(AccountBaseInfo accountBaseInfo);
+
+    /**
+     * 初始化AccountBaseInfo
+     * 如果昵称和头像均没有，则插入新的
+     * 如果昵称或头像有一项存在，则不更新存在的，只更新不存在的
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public boolean initAccountBaseInfo(String passportId, String uniqname, String avatar);
+
 }

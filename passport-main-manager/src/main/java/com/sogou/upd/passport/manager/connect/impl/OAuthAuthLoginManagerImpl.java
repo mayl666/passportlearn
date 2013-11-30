@@ -226,7 +226,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
             String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
-            accountBaseInfoService.asyncUpdateAccountBaseInfo(passportId, connectUserInfoVO);// TODO 昵称头像更新至数据库，后续更新其他个人资料，并移至buildConnectAccount()里
+            accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO, true);// TODO 昵称头像更新至数据库，后续更新其他个人资料，并移至buildConnectAccount()里
             // TODO 在第三方账号迁移前，第三方的昵称和头像均写在account_base_info表里
             if (connectAccountResult.isSuccess()) {
                 result.setDefaultModel("userid", connectAccountResult.getModels().get("userid"));
@@ -287,7 +287,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         return result;
     }
-
 
 
     private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
