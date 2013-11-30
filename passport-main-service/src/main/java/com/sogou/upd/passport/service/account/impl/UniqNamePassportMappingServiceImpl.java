@@ -79,13 +79,13 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     public boolean updateUniqName(/*Account account,*/String passportId, String oldNickName, String nickname) throws ServiceException {
         try {
             //sogou分支需要修改此逻辑，在account主表中修改昵称
-//            String oldNickName = account.getNickname();
+//            String oldNickName = account.getUniqname();
 //            String passportId = account.getPassportId();
 //            //更新数据库
 //            int row = accountDAO.updateNickName(nickname, passportId);
 //            if (row > 0) {
 //                String cacheKey = buildAccountKey(passportId);
-//                account.setNickname(nickname);
+//                account.setUniqname(nickname);
 //                redisUtils.set(cacheKey, account);
 
             //移除原来映射表

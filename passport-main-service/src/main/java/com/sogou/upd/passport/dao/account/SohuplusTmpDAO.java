@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.dao.account;
 
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.SohuplusTmp;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
+import net.paoding.rose.jade.annotation.SQLParam;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
@@ -38,6 +40,13 @@ public interface SohuplusTmpDAO {
             "from" +
             TABLE_NAME +
             " where (uniqname!= '' OR avatar != '') AND uniqname NOT LIKE '%搜狐网友%' AND uniqname NOT LIKE '%在搜狐%' AND uniqname NOT LIKE '%的blog%' ")
-    public List<SohuplusTmp> listSohuplusTmpDO() throws DataAccessException;
+    public List<SohuplusTmp> listSohuplusTmp() throws DataAccessException;
+
+    @SQL("select" +
+            ALL_FIELD +
+            "from" +
+            TABLE_NAME +
+            " where passport_id=:passport_id")
+    public SohuplusTmp getSohuplusTmpByPassportId(@SQLParam("passport_id") String passport_id) throws DataAccessException;
 
 }

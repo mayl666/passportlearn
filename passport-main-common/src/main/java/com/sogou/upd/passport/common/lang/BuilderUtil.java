@@ -69,4 +69,17 @@ public class BuilderUtil {
             to.remove(key);
     }
 
+    public static <T> List<List<T>> groupingItemList(List<T> itemList, int groupSize) {
+        List<List<T>> groupedItemList = new ArrayList<List<T>>();
+        List<T> temp = null;
+        for (int i = 0; i < itemList.size(); i++) {
+            if (i % groupSize == 0) {
+                temp = new ArrayList<T>();
+                groupedItemList.add(temp);
+            }
+            temp.add(itemList.get(i));
+        }
+        return groupedItemList;
+    }
+
 }

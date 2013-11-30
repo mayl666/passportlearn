@@ -8,10 +8,10 @@ import java.util.Date;
  * Date: 13-8-7
  * Time: 下午6:40
  */
-public class NicknamePassportMapping {
+public class UniqnamePassportMapping {
 
     private long id;
-    private String nickname;
+    private String uniqname;
     private String passportId;
     private Date updateTime;
 
@@ -23,12 +23,12 @@ public class NicknamePassportMapping {
         this.id = id;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getUniqname() {
+        return uniqname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUniqname(String uniqname) {
+        this.uniqname = uniqname;
     }
 
     public String getPassportId() {

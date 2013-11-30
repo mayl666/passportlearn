@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.dao.account;
 
+import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import org.springframework.dao.DataAccessException;
+
+import java.util.List;
 
 /**
  * User: mayan
@@ -39,11 +42,18 @@ public interface UniqNamePassportMappingDAO {
      * @param uniqname
      * @return 获取不到则抛出异常
      * @throws org.springframework.dao.DataAccessException
+     *
      */
     @SQL("select passport_id from " +
             TABLE_NAME +
             " where uniqname=:uniqname")
     public String getPassportIdByUniqName(@SQLParam("uniqname") String uniqname) throws DataAccessException;
+
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME)
+    public List<UniqnamePassportMapping> lisPassportIdByUniqName() throws DataAccessException;
 
     /**
      * 插入一条mobile和passportId的映射关系
@@ -52,6 +62,7 @@ public interface UniqNamePassportMappingDAO {
      * @param passport_id
      * @return
      * @throws org.springframework.dao.DataAccessException
+     *
      */
     @SQL("insert into " +
             "uniqname_passportid_mapping(uniqname, passport_id) values (:uniqname, :passport_id)")
@@ -65,6 +76,7 @@ public interface UniqNamePassportMappingDAO {
      * @param passport_id
      * @return
      * @throws org.springframework.dao.DataAccessException
+     *
      */
     @SQL("update " +
             TABLE_NAME +
@@ -78,6 +90,7 @@ public interface UniqNamePassportMappingDAO {
      * @param uniqname
      * @return
      * @throws org.springframework.dao.DataAccessException
+     *
      */
     @SQL("delete from " +
             TABLE_NAME +
