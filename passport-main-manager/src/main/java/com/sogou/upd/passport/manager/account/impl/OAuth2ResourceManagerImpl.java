@@ -262,8 +262,15 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         if (accountBaseInfo != null) {
             uniqname = accountBaseInfo.getUniqname();
         }
+        if(Strings.isNullOrEmpty(uniqname)){
+            //从论坛获取昵称
+            uniqname =pcAccountManager.getBrowserBbsUniqname(passportId);
+            if(!Strings.isNullOrEmpty(uniqname)){
+                accountBaseInfoService.updateUniqname(accountBaseInfo,uniqname);
+            }
+        }
         if (Strings.isNullOrEmpty(uniqname)) {
-            return defaultUniqname(passportId);
+            uniqname = defaultUniqname(passportId);
         }
         return uniqname;
     }
@@ -289,10 +296,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
         if (StringUtils.isBlank(uniqname)) {
             uniqname = defaultUniqname(passportId);
-        }
-        if(StringUtils.isBlank(tiny_avatar)){
-            //取默认头像
-
         }
 
         result.setSuccess(true);

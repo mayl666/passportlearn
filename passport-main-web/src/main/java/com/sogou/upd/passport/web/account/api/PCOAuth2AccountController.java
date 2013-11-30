@@ -83,8 +83,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private PCOAuth2LoginManager pcOAuth2LoginManager;
 
-
-    //https://plus.sohu.com/sogou/fastreg?instanceid=220946462
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
     public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
         model.addAttribute("instanceid", instanceid);
@@ -92,7 +90,6 @@ public class PCOAuth2AccountController extends BaseController {
         return "/oauth2pc/fastreg";
     }
 
-    //https://plus.sohu.com/sogou/mobilereg?instanceid=220946462
     @RequestMapping(value = "/sogou/mobilereg", method = RequestMethod.GET)
     public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
         model.addAttribute("instanceid", instanceid);
@@ -241,7 +238,7 @@ public class PCOAuth2AccountController extends BaseController {
                     result = new APIResultSupport(true);
                     result.setCode("0");
                     String passportId = accountToken.getPassportId();
-                    ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+                    ManagerHelper.setModelForOAuthResult(result, defaultUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
                 }
             }
         } catch (Exception e) {
@@ -425,6 +422,10 @@ public class PCOAuth2AccountController extends BaseController {
             uuidName = UUID.randomUUID().toString().replaceAll("-", "");
             ServletUtil.setCookie(response, "uuidName", uuidName, (int) DateAndNumTimesConstant.TIME_ONEDAY);
         }
+    }
+
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
     }
 
 }
