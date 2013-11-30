@@ -101,7 +101,7 @@ public class LoginAction extends BaseController {
             result.setSuccess(true);
             result.setDefaultModel("needCaptcha", needCaptcha);
         }else {
-            result.setSuccess(false);
+            result= new APIResultSupport(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
         }
 
