@@ -51,6 +51,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     public static final String DATA = "data";
     public static final String RESOURCE = "resource";
     public static final String SID = "sid";
+    public static final String SNAME = "sname";
 
     @Autowired
     private AppConfigService appConfigService;
@@ -197,9 +198,12 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             if (SHPlusConstant.AUTH_TOKEN_SUCCESS.equals(map.get("result"))) {
                 resourceMap = (Map) map.get(RESOURCE);
                 Map dataMap = (Map) resourceMap.get(DATA);
-                String sid = (String) dataMap.get(SID);
-                passportId = snamePassportMappingService.queryPassportIdBySid(sid);
-                //todo 这里需要修改sohu+新版上线后未导入的情况
+                String sname = (String) dataMap.get(SNAME);
+                passportId = snamePassportMappingService.queryPassportIdBySname(sname);
+                //处理11.26号数据迁移以后注册的账号
+                if(StringUtils.isBlank(passportId)){
+                    passportId = sname +"@sogou.com";
+                }
             }
             shPlusTokenLog.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
         }
