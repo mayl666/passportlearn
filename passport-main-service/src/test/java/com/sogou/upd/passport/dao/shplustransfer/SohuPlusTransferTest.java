@@ -49,7 +49,7 @@ public class SohuPlusTransferTest extends BaseDAOTest {
                 }
             }
             try {
-                accountBaseInfoService.initAccountUniqNameAndAvatar(passportId, uniqname, avatar);
+                accountBaseInfoService.insertAccountBaseInfo(passportId, uniqname, avatar);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("uploadWebImg fail, passportId:" + passportId);
