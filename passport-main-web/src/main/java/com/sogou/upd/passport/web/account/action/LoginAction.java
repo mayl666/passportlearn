@@ -94,7 +94,7 @@ public class LoginAction extends BaseController {
         } else {
             result = regManager.isAccountNotExists(username, false);
         }
-        if(result.isSuccess()){
+        if(!result.isSuccess()){
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
 
