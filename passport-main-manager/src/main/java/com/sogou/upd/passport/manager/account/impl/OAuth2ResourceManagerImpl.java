@@ -160,7 +160,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public Result queryPassportIdByAccessToken(String token,int clientId,String instanceId){
+    public Result queryPassportIdByAccessToken(String token, int clientId, String instanceId) {
         Result finalResult = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -168,8 +168,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
                 return finalResult;
             }
-            String passportId = getPassportIdByToken(token,clientId,appConfig.getClientSecret(),instanceId);
-            if(Strings.isNullOrEmpty(passportId)){
+            String passportId = getPassportIdByToken(token, clientId, appConfig.getClientSecret(), instanceId);
+            if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
             }
@@ -203,8 +203,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 String sname = (String) dataMap.get(SNAME);
                 passportId = snamePassportMappingService.queryPassportIdBySname(sname);
                 //处理11.26号数据迁移以后注册的账号
-                if(StringUtils.isBlank(passportId)){
-                    passportId = sname +"@sogou.com";
+                if (StringUtils.isBlank(passportId)) {
+                    passportId = sname + "@sogou.com";
                 }
             }
             shPlusTokenLog.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
@@ -229,17 +229,17 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             }
 
             Result getUserInfoResult = getUserInfo(passportId);
-            String uniqname = "",large_avatar ="",mid_avatar ="", tiny_avatar ="";
-            if(getUserInfoResult.isSuccess()){
-                uniqname =(String)getUserInfoResult.getModels().get("uniqname");
-                large_avatar = (String)getUserInfoResult.getModels().get("img_180");
-                mid_avatar =  (String)getUserInfoResult.getModels().get("img_50");
-                tiny_avatar = (String)getUserInfoResult.getModels().get("img_30");
+            String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
+            if (getUserInfoResult.isSuccess()) {
+                uniqname = (String) getUserInfoResult.getModels().get("uniqname");
+                large_avatar = (String) getUserInfoResult.getModels().get("img_180");
+                mid_avatar = (String) getUserInfoResult.getModels().get("img_50");
+                tiny_avatar = (String) getUserInfoResult.getModels().get("img_30");
             }
             Map data = Maps.newHashMap();
-            data.put("nick",uniqname);
-            data.put("large_avatar",large_avatar );
-            data.put("mid_avatar",mid_avatar);
+            data.put("nick", uniqname);
+            data.put("large_avatar", large_avatar);
+            data.put("mid_avatar", mid_avatar);
             data.put("tiny_avatar", tiny_avatar);
             data.put("sid", passportId);
             resourceMap.put("data", data);
@@ -262,48 +262,46 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         if (accountBaseInfo != null) {
             uniqname = accountBaseInfo.getUniqname();
         }
-        if(Strings.isNullOrEmpty(uniqname)){
-            //从论坛获取昵称
-            uniqname =pcAccountManager.getBrowserBbsUniqname(passportId);
-            if(!Strings.isNullOrEmpty(uniqname)){
-                accountBaseInfoService.updateUniqname(accountBaseInfo,uniqname);
-            }
-        }
-        if (Strings.isNullOrEmpty(uniqname)) {
-            uniqname = defaultUniqname(passportId);
-        }
+        uniqname = getAndUpdateUniqname(passportId,accountBaseInfo,uniqname);
         return uniqname;
     }
 
     private Result getUserInfo(String passportId) {
         Result result = new APIResultSupport(false);
-        String uniqname = "", large_avatar ="", mid_avatar ="",tiny_avatar ="";
+        String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
         AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
         if (accountBaseInfo != null) {
             uniqname = accountBaseInfo.getUniqname();
             Result getPhotoResult = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
-            large_avatar = (String)getPhotoResult.getModels().get("img_180");
-            mid_avatar =  (String)getPhotoResult.getModels().get("img_50");
-            tiny_avatar = (String)getPhotoResult.getModels().get("img_30");
+            large_avatar = (String) getPhotoResult.getModels().get("img_180");
+            mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+            tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
         }
+        uniqname = getAndUpdateUniqname(passportId,accountBaseInfo,uniqname);
+        result.setSuccess(true);
+        result.setDefaultModel("uniqname", uniqname);
+        result.setDefaultModel("img_30", tiny_avatar);
+        result.setDefaultModel("img_50", mid_avatar);
+        result.setDefaultModel("img_180", large_avatar);
+        return result;
+    }
 
-        if(Strings.isNullOrEmpty(uniqname)){
+    private String getAndUpdateUniqname(String passportId,AccountBaseInfo accountBaseInfo,String uniqname){
+        if (Strings.isNullOrEmpty(uniqname)) {
             //从论坛获取昵称
-            uniqname =pcAccountManager.getBrowserBbsUniqname(passportId);
-            if(!Strings.isNullOrEmpty(uniqname)){
-                accountBaseInfoService.updateUniqname(accountBaseInfo,uniqname);
+            uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                if (accountBaseInfo != null) {
+                    accountBaseInfoService.updateUniqname(accountBaseInfo, uniqname);
+                } else {
+                    accountBaseInfoService.insertOrUpdateAccountBaseInfo(passportId, uniqname, "");
+                }
             }
         }
         if (StringUtils.isBlank(uniqname)) {
             uniqname = defaultUniqname(passportId);
         }
-
-        result.setSuccess(true);
-        result.setDefaultModel("uniqname",uniqname);
-        result.setDefaultModel("img_30",tiny_avatar);
-        result.setDefaultModel("img_50",mid_avatar);
-        result.setDefaultModel("img_180",large_avatar);
-        return result;
+        return uniqname;
     }
 
     private AccountBaseInfo getBaseInfo(String passportId) {
