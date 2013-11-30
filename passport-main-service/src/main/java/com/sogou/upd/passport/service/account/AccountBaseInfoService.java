@@ -40,6 +40,14 @@ public interface AccountBaseInfoService {
      */
     public boolean updateUniqname(AccountBaseInfo baseInfo, String uniqname);
 
+    /**
+     * 插入昵称和头像，默认用户原来不存在昵称头像
+     *
+     * @param passportId
+     * @param uniqname
+     * @param avatar
+     * @return
+     */
     public boolean insertAccountBaseInfo(String passportId, String uniqname, String avatar);
 
     /**
@@ -51,15 +59,5 @@ public interface AccountBaseInfoService {
      * @throws ServiceException
      */
     public boolean simpleSaveAccountBaseInfo(AccountBaseInfo accountBaseInfo);
-
-    /**
-     * 初始化AccountBaseInfo
-     * 如果昵称和头像均没有，则插入新的
-     * 如果昵称或头像有一项存在，则不更新存在的，只更新不存在的
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public boolean initAccountUniqNameAndAvatar(String passportId, String uniqname, String avatar);
 
 }

@@ -112,8 +112,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 return false;
             }
             if (!Strings.isNullOrEmpty(uniqname)) {
-                String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
-                if (!Strings.isNullOrEmpty(existPassportId)) {
+                if (isUniqNameExist(uniqname)) {
                     uniqname = "";      // 如果昵称重复则置为空
                 } else {
                     isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
@@ -155,8 +154,45 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
-    @Override
-    public boolean initAccountUniqNameAndAvatar(String passportId, String uniqname, String avatar) {
+    public boolean isUniqNameExist(String uniqname) {
+        if (!Strings.isNullOrEmpty(uniqname)) {
+            String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
+            if (Strings.isNullOrEmpty(existPassportId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private AccountBaseInfo newAccountBaseInfo(String passportId, String uniqname, String avatar) {
+        AccountBaseInfo accountBaseInfo = new AccountBaseInfo();
+        accountBaseInfo.setPassportId(passportId);
+        accountBaseInfo.setUniqname(uniqname);
+        accountBaseInfo.setAvatar(avatar);
+        return accountBaseInfo;
+    }
+
+    class UpdateAccountBaseInfoTask implements Runnable {
+
+        private String passportId;
+        private ConnectUserInfoVO connectUserInfoVO;
+
+        UpdateAccountBaseInfoTask(String passportId, ConnectUserInfoVO connectUserInfoVO) {
+            this.passportId = passportId;
+            this.connectUserInfoVO = connectUserInfoVO;
+        }
+
+        @Override
+        public void run() {
+            initConnectAccountBaseInfo(passportId, connectUserInfoVO.getNickname(), connectUserInfoVO.getImageURL());
+        }
+    }
+
+    private boolean initConnectAccountBaseInfo(String passportId, String uniqname, String connectAvatar) {
+        String avatar = "";
+        if (!Strings.isNullOrEmpty(connectAvatar)) {
+            avatar = photoUtils.uploadWebImg(connectAvatar);
+        }
         try {
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
                 return true;
@@ -199,48 +235,6 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             logger.error("insertOrUpdateAccountBaseInfo fail", e);
             return false;
         }
-    }
-
-    public boolean isUniqNameExist(String uniqname) {
-        if (!Strings.isNullOrEmpty(uniqname)) {
-            String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
-            if (Strings.isNullOrEmpty(existPassportId)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private AccountBaseInfo newAccountBaseInfo(String passportId, String uniqname, String avatar) {
-        AccountBaseInfo accountBaseInfo = new AccountBaseInfo();
-        accountBaseInfo.setPassportId(passportId);
-        accountBaseInfo.setUniqname(uniqname);
-        accountBaseInfo.setAvatar(avatar);
-        return accountBaseInfo;
-    }
-
-    class UpdateAccountBaseInfoTask implements Runnable {
-
-        private String passportId;
-        private ConnectUserInfoVO connectUserInfoVO;
-
-        UpdateAccountBaseInfoTask(String passportId, ConnectUserInfoVO connectUserInfoVO) {
-            this.passportId = passportId;
-            this.connectUserInfoVO = connectUserInfoVO;
-        }
-
-        @Override
-        public void run() {
-            initConnectAccountBaseInfo(passportId, connectUserInfoVO.getNickname(), connectUserInfoVO.getImageURL());
-        }
-    }
-
-    private boolean initConnectAccountBaseInfo(String passportId, String connectNickName, String connectAvatar) {
-        String avatar = "";
-        if (!Strings.isNullOrEmpty(connectAvatar)) {
-            avatar = photoUtils.uploadWebImg(connectAvatar);
-        }
-        return initAccountUniqNameAndAvatar(passportId, connectNickName, avatar);
     }
 
     private String buildAccountBaseInfoKey(String passportId) {
