@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import junit.framework.Assert;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -17,7 +20,18 @@ public class AccountBaseInfoServiceTest extends BaseTest {
 
     private String passportId = "shipengzhi@qq.sohu.com";
     private String uniqname_1 = "shipengzhi";
-    private String avatar_1 = "%s/app/a/%s/VjtZWqsEPEAvAOIX_1385635650505";
+    private String avatar_1 = "http://sucimg.itc.cn/avatarimg/100054944_1384153927685_c175";
+
+    @Test
+    public void testInitConnectAccountBaseInfo() {
+        ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
+        connectUserInfoVO.setNickname(uniqname_1);
+        connectUserInfoVO.setImageURL(avatar_1);
+
+        boolean success = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);
+        Assert.assertTrue(success);
+
+    }
 
 
 }

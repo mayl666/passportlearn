@@ -124,6 +124,6 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             logger.error("removeUniqName fail", e);
             return false;
         }
-        return false;
+        return true;
     }
 }

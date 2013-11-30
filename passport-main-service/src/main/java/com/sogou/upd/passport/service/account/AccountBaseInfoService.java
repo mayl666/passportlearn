@@ -31,13 +31,22 @@ public interface AccountBaseInfoService {
     public AccountBaseInfo queryAccountBaseInfo(String passportId) throws ServiceException;
 
     /**
+     * 先昵称是否唯一
+     * 更新昵称表，更新映射表
+     *
+     * @param oldBaseInfo
+     * @param uniqname 更新的昵称
+     */
+    public boolean updateUniqname(AccountBaseInfo oldBaseInfo, String uniqname);
+
+    /**
      * 未检查昵称是否唯一，默认是唯一的
      * 更新昵称表，更新映射表
      *
-     * @param baseInfo
-     * @param uniqname
+     * @param oldBaseInfo
+     * @param avatar 更新的头像
      */
-    public boolean updateUniqname(AccountBaseInfo baseInfo, String uniqname);
+    public boolean updateAvatar(AccountBaseInfo oldBaseInfo, String avatar);
 
     /**
      * 插入昵称和头像，默认用户原来不存在昵称头像

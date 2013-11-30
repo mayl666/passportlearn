@@ -36,6 +36,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
 
+    private static final long ONE_MONTH = 30;
     private static final Logger logger = LoggerFactory.getLogger(AccountBaseInfoService.class);
     private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
@@ -46,7 +47,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
             return true;
         }
-        if (!Strings.isNullOrEmpty(avatar)) {
+        if (!Strings.isNullOrEmpty(avatar) && !avatar.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
             avatar = photoUtils.uploadWebImg(avatar);
         }
         try {
@@ -58,6 +59,10 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 String oldAvatar = accountBaseInfo.getAvatar();
                 if (!Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(oldAvatar)) {
                     return true;
+                } else if (Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(uniqname)) {
+                    return updateUniqname(accountBaseInfo, uniqname);
+                } else if (Strings.isNullOrEmpty(oldAvatar) && !Strings.isNullOrEmpty(avatar)) {
+                    return updateAvatar(accountBaseInfo, avatar);
                 } else {
                     return insertAccountBaseInfo(passportId, uniqname, avatar);
                 }
@@ -89,9 +94,9 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     }
 
     @Override
-    public boolean updateUniqname(AccountBaseInfo baseInfo, String uniqname) {
-        String oldUniqName = baseInfo.getUniqname();
-        String passportId = baseInfo.getPassportId();
+    public boolean updateUniqname(AccountBaseInfo oldBaseInfo, String uniqname) {
+        String oldUniqName = oldBaseInfo.getUniqname();
+        String passportId = oldBaseInfo.getPassportId();
         try {
             if (!oldUniqName.equals(uniqname)) {
                 //检查昵称是否存在
@@ -102,13 +107,33 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
-                    baseInfo.setUniqname(uniqname);
-                    redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                    oldBaseInfo.setUniqname(uniqname);
+                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                     //移除原来映射表
                     if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
                         boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
                         return isInsert;
                     }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateAvatar(AccountBaseInfo oldBaseInfo, String avatar) {
+        String passportId = oldBaseInfo.getPassportId();
+        try {
+            //更新数据库
+            if (!avatar.equals(oldBaseInfo.getAvatar())) {
+                int row = accountBaseInfoDAO.updateAvatarByPassportId(avatar, passportId);
+                if (row > 0) {
+                    String cacheKey = buildAccountBaseInfoKey(passportId);
+                    oldBaseInfo.setAvatar(avatar);
+                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                 }
             }
             return true;
@@ -140,7 +165,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
                 if (accountBaseInfoRow > 0) {
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
+                    redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                     return true;
                 }
             }
@@ -158,7 +183,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
             if (accountBaseInfoRow > 0) {
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
+                redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                 return true;
             }
             return false;
