@@ -225,11 +225,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
-            if (connectUserInfoVO != null && type.equals(ConnectTypeEnum.PC.toString())) {
-                String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
-                accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 昵称头像更新至数据库，后续更新其他个人资料，并移至buildConnectAccount()里
-            }
-            // TODO 在第三方账号迁移前，第三方的昵称和头像均写在account_base_info表里
+
             if (connectAccountResult.isSuccess()) {
                 result.setDefaultModel("userid", connectAccountResult.getModels().get("userid"));
                 String userId = (String) connectAccountResult.getModels().get("userid");
@@ -261,6 +257,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         result.setSuccess(true);
+                        if (connectUserInfoVO != null) {
+                            String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
+                            accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
+                        }
                         uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
@@ -350,7 +350,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         return passportId;
     }
-
 
     private String obtainPassportId(Map<String, ConnectRelation> connectRelations) {
         String passportId = "";
