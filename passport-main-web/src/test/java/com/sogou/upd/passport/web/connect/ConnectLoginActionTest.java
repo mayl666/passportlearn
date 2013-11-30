@@ -1,19 +1,11 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.LoginConstant;
-import com.sogou.upd.passport.common.utils.URLBuilderUtil;
 import com.sogou.upd.passport.web.BaseActionTest;
-import com.sogou.upd.passport.web.JUnitActionBase;
-import junit.framework.Assert;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,20 +26,7 @@ public class ConnectLoginActionTest extends BaseActionTest {
 //        System.out.println(result);
     }
 
-    /* ------------------------- 第三方登录相关 ------------------------- */
 
-    public String genThirdLoginURL(String thirdParty, String ru, String cb) {
-        String url = "https://account.sogou.com/connect/login";
-        String enru = "";
-        try {
-            cb = URLEncoder.encode(cb, "GBK");
-            enru = ru + "?cb=" + cb;
-            enru = URLEncoder.encode(enru, "GBK");
-        } catch (Exception e) {
-        }
-        return URLBuilderUtil.addParameters(url, "provider", thirdParty, "client_id", "1100", "ru",
-                enru);
-    }
 
 
 
