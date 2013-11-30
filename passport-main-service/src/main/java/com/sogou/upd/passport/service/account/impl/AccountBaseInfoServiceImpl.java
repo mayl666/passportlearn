@@ -81,8 +81,8 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         try {
             if (!oldUniqName.equals(uniqname)) {
                 //检查昵称是否存在
-                if(isUniqNameExist(uniqname)){
-                   return false;
+                if (isUniqNameExist(uniqname)) {
+                    return false;
                 }
                 //更新数据库
                 int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
@@ -98,6 +98,37 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 }
             }
             return true;
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean insertAccountBaseInfo(String passportId, String uniqname, String avatar) throws ServiceException {
+        try {
+            boolean isInertMapping = true;
+            if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
+                return true;
+            }
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
+                if (!Strings.isNullOrEmpty(existPassportId)) {
+                    uniqname = "";      // 如果昵称重复则置为空
+                } else {
+                    isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                }
+            }
+            if (isInertMapping) {
+                AccountBaseInfo accountBaseInfo = newAccountBaseInfo(passportId, uniqname, avatar);
+                int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
+                if (accountBaseInfoRow > 0) {
+                    String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
+                    redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
+                    return true;
+                }
+            }
+            return false;
         } catch (Exception e) {
             logger.error("insertOrUpdateAccountBaseInfo fail", e);
             return false;
@@ -122,7 +153,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     }
 
     @Override
-    public boolean initAccountBaseInfo(String passportId, String uniqname, String avatar) {
+    public boolean initAccountUniqNameAndAvatar(String passportId, String uniqname, String avatar) {
         try {
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
                 return true;
@@ -206,7 +237,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         if (!Strings.isNullOrEmpty(connectAvatar)) {
             avatar = photoUtils.uploadWebImg(connectAvatar);
         }
-        return initAccountBaseInfo(passportId, connectNickName, avatar);
+        return initAccountUniqNameAndAvatar(passportId, connectNickName, avatar);
     }
 
     private String buildAccountBaseInfoKey(String passportId) {

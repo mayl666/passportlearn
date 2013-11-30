@@ -40,6 +40,8 @@ public interface AccountBaseInfoService {
      */
     public boolean updateUniqname(AccountBaseInfo baseInfo, String uniqname);
 
+    public boolean insertAccountBaseInfo(String passportId, String uniqname, String avatar);
+
     /**
      * 插入昵称和头像
      * 不做任何昵称和头像逻辑判断，只是存在则更新，不存在则插入
@@ -58,6 +60,6 @@ public interface AccountBaseInfoService {
      * @return
      * @throws ServiceException
      */
-    public boolean initAccountBaseInfo(String passportId, String uniqname, String avatar);
+    public boolean initAccountUniqNameAndAvatar(String passportId, String uniqname, String avatar);
 
 }
