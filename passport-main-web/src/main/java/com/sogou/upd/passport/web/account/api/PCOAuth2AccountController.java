@@ -130,7 +130,7 @@ public class PCOAuth2AccountController extends BaseController {
 
         result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest);
 
-        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(),oauthRequest.getGrantType(),String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
         userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
         UserOperationLogUtil.log(userOperationLog);
@@ -139,7 +139,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/oauth2/resource/")
     @ResponseBody
-    public Object resource(HttpServletRequest request,PCOAuth2ResourceParams params) throws Exception {
+    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(params);
@@ -151,7 +151,7 @@ public class PCOAuth2AccountController extends BaseController {
 
         result = oAuth2ResourceManager.resource(params);
 
-        UserOperationLog userOperationLog = new UserOperationLog(params.getAccess_token(),params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(params.getAccess_token(), params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
@@ -288,6 +288,7 @@ public class PCOAuth2AccountController extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
+        int clientId = pcOAuth2LoginManager.getClientId(loginParams.getClient_id());
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -302,7 +303,6 @@ public class PCOAuth2AccountController extends BaseController {
         //用户登录log
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
-            int clientId = loginParams.getClient_id();
             //构造成功返回结果
             result = new APIResultSupport(true);
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
@@ -313,7 +313,7 @@ public class PCOAuth2AccountController extends BaseController {
         } else {
             loginManager.doAfterLoginFailed(username, ip);
             //校验是否需要验证码
-            boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(loginParams.getClient_id()), username, ip);
+            boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(clientId), username, ip);
             if (needCaptcha) {
                 result.setDefaultModel("needCaptcha", true);
             }
@@ -323,7 +323,7 @@ public class PCOAuth2AccountController extends BaseController {
             }
         }
 
-        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(loginParams.getClient_id()), result.getCode(), ip);
+        UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(clientId), result.getCode(), ip);
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -368,8 +368,8 @@ public class PCOAuth2AccountController extends BaseController {
         if (hostHolder.isLogin()) {
             cookieUserId = hostHolder.getPassportId();
         }
-
-        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), oauth2PcIndexParams.getClient_id(), oauth2PcIndexParams.getInstanceid());
+        int clientId = pcOAuth2LoginManager.getClientId(oauth2PcIndexParams.getClient_id());
+        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid());
 
         UserOperationLog userOperationLog = new UserOperationLog(oauth2PcIndexParams.getAccesstoken(), request.getRequestURI(), String.valueOf(oauth2PcIndexParams.getClient_id()), queryPassportIdResult.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
@@ -383,7 +383,7 @@ public class PCOAuth2AccountController extends BaseController {
             if (!cookieUserId.equals(passportId)) {
                 return "redirect:/web/logout_redirect";
             }
-            return "redirect:/web/userinfo/getuserinfo?client_id="+oauth2PcIndexParams.getClient_id();
+            return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
         }
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
@@ -401,7 +401,7 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
-        return "redirect:/web/userinfo/getuserinfo?client_id="+oauth2PcIndexParams.getClient_id();
+        return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")

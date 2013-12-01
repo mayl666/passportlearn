@@ -15,10 +15,19 @@ public interface PCOAuth2LoginManager {
 
     /**
      * 登陆接口
+     *
      * @param parameters
      * @param ip
      * @param scheme
      * @return
      */
-    public Result accountLogin(PCOAuth2LoginParams parameters,String ip,String scheme);
+    public Result accountLogin(PCOAuth2LoginParams parameters, String ip, String scheme);
+
+    /**
+     * //兼容浏览器PC端sohu+接口
+     *
+     * @param clientId
+     * @return
+     */
+    public int getClientId(int clientId);
 }

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -36,7 +37,7 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
             if (!Strings.isNullOrEmpty(sohu_passportId)) {
                 //避免sname为abc,passportId为sname@sogou.com情况
                 String individPassportId = loginManager.getIndividPassportIdByUsername(sogou_passportId);
-                if(!sohu_passportId.equals(sogou_passportId) && !sohu_passportId.equals(individPassportId)){
+                if (!sohu_passportId.equals(sogou_passportId) && !sohu_passportId.equals(individPassportId)) {
                     sohu_result = authuser(loginParams, ip, scheme, sohu_passportId);
                 }
             }
@@ -62,8 +63,14 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
         webLoginParams.setPwdtype(loginParams.getPwdtype());
         webLoginParams.setCaptcha(loginParams.getCaptcha());
         webLoginParams.setToken(loginParams.getToken());
-        webLoginParams.setClient_id(String.valueOf(loginParams.getClient_id()));
+        webLoginParams.setClient_id(String.valueOf(getClientId(loginParams.getClient_id())));
         Result result = loginManager.accountLogin(webLoginParams, ip, scheme);
         return result;
+    }
+
+    @Override
+    public int getClientId(int clientId) {
+        clientId = clientId == 30000004 ? CommonConstant.PC_CLIENTID : clientId;  //兼容浏览器PC端sohu+接口
+        return clientId;
     }
 }
