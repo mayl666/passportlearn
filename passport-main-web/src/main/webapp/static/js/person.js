@@ -550,6 +550,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                                         if (!+data.status) {
                                             //Go to main page if saved successfully.
                                             window.location = "/";
+                                            try{window.external.passport("onProfileChange");}catch(e){}
                                         } else {
                                             form.showFormError(data.statusText);
                                         }
@@ -564,6 +565,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                                 if (!+data.status) {
                                     //Go to main page if saved successfully.
                                     window.location = "/";
+                                    try{window.external.passport("onProfileChange");}catch(e){}
                                 } else {
                                     form.showFormError(data.statusText);
                                 }
