@@ -12,9 +12,9 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class PCOAuth2LoginParams {
     @NotBlank(message = "登陆名不能为空")
-    private String loginname;
+    private String username;
     @NotBlank(message = "密码不能为空")
-    private String pwd;
+    private String password;
 
     private int pwdtype = CommonConstant.PWD_TYPE_CIPHER; //密码类型，1为md5后的口令，缺省为密文
 
@@ -41,13 +41,6 @@ public class PCOAuth2LoginParams {
         this.client_id = client_id;
     }
 
-    public String getLoginname() {
-        return loginname;
-    }
-
-    public void setLoginname(String loginname) {
-        this.loginname = loginname;
-    }
 
     public int getRememberMe() {
         return rememberMe;
@@ -55,14 +48,6 @@ public class PCOAuth2LoginParams {
 
     public void setRememberMe(int rememberMe) {
         this.rememberMe = rememberMe;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
     }
 
     public String getCaptcha() {
@@ -87,5 +72,21 @@ public class PCOAuth2LoginParams {
 
     public void setPwdtype(int pwdtype) {
         this.pwdtype = pwdtype;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

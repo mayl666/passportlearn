@@ -29,7 +29,7 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
 
     @Override
     public Result accountLogin(PCOAuth2LoginParams loginParams, String ip, String scheme) {
-        String sogou_passportId = loginParams.getLoginname();
+        String sogou_passportId = loginParams.getUsername();
         Result sohu_result = null;
         if (AccountDomainEnum.isPhoneOrIndivid(sogou_passportId)) {
             String sohu_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(sogou_passportId);
@@ -58,7 +58,7 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
     private Result authuser(PCOAuth2LoginParams loginParams, String ip, String scheme, String passportId) {
         WebLoginParams webLoginParams = new WebLoginParams();
         webLoginParams.setUsername(passportId);
-        webLoginParams.setPassword(loginParams.getPwd());
+        webLoginParams.setPassword(loginParams.getPassword());
         webLoginParams.setPwdtype(loginParams.getPwdtype());
         webLoginParams.setCaptcha(loginParams.getCaptcha());
         webLoginParams.setToken(loginParams.getToken());

@@ -296,7 +296,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
 
-        String username = loginParams.getLoginname();
+        String username = loginParams.getUsername();
         result = pcOAuth2LoginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 
         //用户登录log
