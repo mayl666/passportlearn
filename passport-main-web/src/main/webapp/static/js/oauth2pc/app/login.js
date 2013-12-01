@@ -5,11 +5,8 @@
  * 2013-11-21[15:11:34]:copied
  * 2013-11-29[18:12:03]:what a mess....
  *
- * This is a realy stupid project ,as a FE I got PSD last.
- * DO NOT call me,I do not maintain it ANY MORE!
- *
  * @adapt someone#sogou-inc.com
- * @version 0.0.1
+ * @version 0.0.2
  * @since 0.0.1
  */
 
@@ -33,13 +30,9 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
         }
         return {};
     }
-    // function Login() {};
-    var Login /*.prototype*/ = {
-
+    var Login= {
         constructor: Login,
-
         submited: false,
-
         firstVisit: true,
 
         init: function() {
@@ -48,12 +41,10 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             this.initEvents()
             this.initLoginHistory();
             this.initDropdownEvents();
-            //,2013-11-21[16:29:48]
-            //init vcode img
             this.refreshVcode($('.chkPic img'));
             $('[name=account]').focus();
         },
-        sogouBaseurl: location.origin, //'//account.sogou.com',
+        sogouBaseurl: location.origin, 
         //事件代理
         initEvents: function() {
             var self = this,
@@ -66,11 +57,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 self.doLogin()
                 return false
             })
-            //点击登录按钮进行登录操作
-            /*.on('click', 'button.btn', function(e) {
-                self.doLogin()
-                return false
-            })*/
             //鼠标点击输入框 所有错误提示及样式清除
             .on('focus', 'input', function(e) {
                 var $input = $(e.target);
@@ -83,34 +69,35 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 var $account = $(e.target);
                 //如果用户未输入账号,不进行校验
                 if (!$account.val()||$('.ppselecter').is(':visible')) return;
-                //,2013-11-21[20:58:12]
                 if (!self.check($account, self.validObj.account)) {
                     self.submited = false;
                     return;
                 }
                 $.ajax({
-                    //,2013-11-21[15:53:52]
-                    //fixed url
-                    url: self.sogouBaseurl + self.interfaces.checkNeedCaptcha, // '/a/sogou/checkLoginName',
+                    url: self.sogouBaseurl + self.interfaces.checkNeedCaptcha, 
                     data: {
-                        //,2013-11-21[15:55:38]
-                        //fixed param name
-                        username /*loginName*/ : $account.val(),
+                        username : $account.val(),
                         client_id: _g_client_id
                     },
-                    type: 'get' /* 'post'*/ , //,2013-11-21[15:56:02],fixed method
+                    type: 'get',
                     dataType: 'json'
                 }).done(function(result) {
 
                     result = getJSON(result);
-                    //,2013-11-21[15:57:45]
-                    //fixed validate method
-                    if (result.data && result.data.needCaptcha /*result.code !== 0*/ ) {
+
+                    if (result.data && result.data.needCaptcha) {
 
                         $('div.vcode-area').show();
                     } else {
-                        //TODO : In order to facilitate the test there used show-method which  should use hide-method
                         $('div.vcode-area').hide();
+                    }
+
+                    switch(true){
+                        case result.status==0:break;
+                        case result.status!=0:
+                            self.showTips($account,$account.next('.position-tips'),result.statusText);
+                            break;
+                        default:;
                     }
 
                 })
@@ -168,13 +155,11 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
 
                 }
             })
-            //,2013-11-22[11:13:08]
             //error msg unclickable
             .on('click', '.position-tips', function(e) {
                 $(this).hide().empty().prev('input').removeClass('error').focus();
             });
 
-            //,2013-11-21[16:24:21]
             $(document).click(function(e) {
                 $('i.outside-arrow').closest('div.selected').next('ul.outside-list').hide();
             });
@@ -183,9 +168,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             var self = this,
                 list = self.list,
                 index = -1,
-                //,2013-11-21[15:59:09],
-                //fixed url
-                // delUrl = self.sogouBaseurl + self.interfaces.deleteLoginHistory,//"/a/sogou/loginhistory/delete",
                 $form = self.$form,
                 $mail = $('input[name=account]', $form),
                 $selectBox = $("div.ppselecter");
@@ -262,13 +244,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                             sname = $.trim(obj).replace(/<b>(\S*)<\/b>/, "$1"),
                             index = sname.indexOf(val);
                         if (index > -1) {
-                            return sname; //{
-                            /* img: obj.img,*/
-                            /*sname:*/ // sname.substr(0, index) + "<b>" + val + "</b>" + sname.substr(index + val.length)//,
-                            /* nick: obj.nick,
-                                type: obj.type,
-                                sid: obj.sid*/
-                            //}
+                            return sname; 
                         }
                         return null;
                     })
@@ -304,26 +280,11 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 var $ele = $(e.target);
                 if ($ele.is('.del')) {
                     var sid = $ele.attr("sname");
-                    /*$.post(delUrl, {
-                                sid: sid
-                            }).done(function(result) {*/
                     $ele.parents('li').remove();
                     self.delHistory(sid);
                     self.list= self.list.filter(function(v){return sid!=v});
                     if(!self.list.length){$selectBox.hide();}
-                   /* var _tempList = []
-                    $.each(list, function(index, val) {
-                        if (val.sid != sid) {
-                            _tempList.push(val)
-                        }
-                    });*/
-                    //self.list = _tempList;
-                   // $selectBox.hide(function() {
-                     //   $("ul>li", $selectBox).removeClass("hover")
-                   // });
                     $mail.focus();
-                    //self.getHistorySelect();
-                    //})
                     return;
                 }else
                 if ($ele.closest('[sname]').length < 1 && $ele.closest('li').length > 0) {
@@ -352,8 +313,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 exPassport = self.exPassport,
                 hasVcode = false,
                 $form = self.$form,
-                // $btn = $('button.btn',$form),
-
 
                 $account = $('input[name=account]', $form),
                 $accError = $account.next('span.position-tips'),
@@ -405,106 +364,44 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 password = md5($password.val()),
                 checked = +$checked.is(':checked');
             data = {
-                loginname: $account.val(),
-                pwd: password,
+                username: $account.val(),
+                password: password,
                 rememberMe: 　checked,
-                //,2013-11-21[16:01:55]
-                //add client_id
                 client_id: _g_client_id,
                 instanceid: instanceid,
                 token: $img.attr('data-token')
             };
             if (hasVcode) {
-                //,2013-11-21[16:02:44]
-                //fixed param name
                 data. /*vcode*/ captcha = $vcode.val();
             }
             $.ajax({
-                //,2013-11-21[16:00:49]
-                //fixed url
-                url: self.sogouBaseurl + self.interfaces.login, //'/a/sogou/login?_input_encode=utf-8',
+                url: self.sogouBaseurl + self.interfaces.login, 
                 data: data,
                 type: 'post',
                 dataType: 'json'
             }).done(function(result) {
                 self.submited = false;
-                result = getJSON(result); //,2013-11-21[16:05:31]
-                var code = result.status /*code*/ , //,2013-11-21[16:05:41]
+                result = getJSON(result); 
+                var code = result.status, 
                     data = result.data;
-                switch ( /*code*/ true) { //,2013-11-21[16:06:10]
-                    case (0 == code): //,2013-11-21[16:06:23]
-                        /*var sname = data.sname,
-                            nick = data.nick,
-                            sid = data.sid,
-                            autoLogin = data.autologin,
-                            // passport = Base64.encode(data.passport)
-                            passport = data.passport
-                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + sname + '|' + nick + '|' + sid + '|' + passport + '|' + autoLogin
-                        // console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
-                        exPassport('result', msg)*/
-                        self.saveHistory($account.val()); //2013-11-29[16:41:35],,save login name
+                switch (true) { 
+                    case (0 == code):
+                        self.saveHistory($account.val()); 
                         var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname || data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin || 1)
                         console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
-                        //,2013-11-21[16:07:11]
-                        //use retStatus object&array
-                        /*                    case 1:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-                        $accError.html('登录名不存在')
-                        $account.addClass('error')
-                        break
-                    case 2:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-                        $bottomError.html('登录名和密码不匹配').show()
-
-                        break
-                    case 3:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-
-                        $vcodeError.html('验证码错误')
-                        $vcode.addClass('error')
-
-
-                        break
-                    case 4:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-
-                        $bottomError.html('登录行为异常，请稍候尝试登录').show()
-                        break*/
                     default:
-                        /* if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-
-                        $bottomError.html('网络异常，请稍后尝试登录').show()*/
                         if (/(10009|20205)/.test(code))
                             self.showTips($account,$account.next('.position-tips'),self.retStatus[code]);
-                            //$account.addClass('error').next('.position-tips').html(self.retStatus[code]).show();
                         else if (20206 == code)
                             self.showTips($password,$password.next('.position-tips'),self.retStatus.login[code]);
-                            //$password.addClass('error').next('.position-tips').text(self.retStatus.login[code]).show();
                         else if (20221 == code)
                             self.showTips($vcode,$vcode.next('.position-tips'),self.retStatus.login[code]);
-                            //$vcode.addClass('error').next('.position-tips').text(self.retStatus.login[code]).show();
                         else
                             $bottomError.html(self.retStatus.login[code] || result.statusText || "未知错误").show();
 
-                        $password.val('');
-                        //,2013-11-23[16:42:42]
+                        $password.val('').next('.position-tips').hide();
                         if (result.data && result.data.needCaptcha) {
                             $('div.vcode-area').show();
                             $vcode.val('');
@@ -525,12 +422,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
         },
         //刷新验证码
         refreshVcode: function($img) {
-            //,2013-11-21[16:09:05]
-            //Fixed
-            /* var self = this,
-                ts = new Date().getTime(),
-                url = self.sogouBaseurl + '/vcode/register/?nocache=' + ts
-                $img.attr('src', url)*/
             var ts = +new Date,
                 token = utils.uuid(),
                 url = '/captcha?token=' + token + '&t=' + ts;
@@ -564,9 +455,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             $.each(list, function(index, obj) {
                 var liHtml = [
                     '<li index="' + index + '">',
-                    /*  '   <div class="photo">',
-                    '       <img src="' + obj.img + '">',
-                    '   </div>',*/
                     '   <div class="caption">',
                     '       <p class="id">' + obj + '</p>',
                     '   </div>',
@@ -587,20 +475,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     list = login_arr.filter(function(k) {
                         return !!k;
                     });
-                    // $.each(login_arr, function(index, val) {
-                    /*       var _tempObj,
-                        _arr = val.split(",")
-                        for (var i = 0; i < _arr.length; i++) {
-                            _tempObj = {
-                                img: _arr[3],
-                                sname: _arr[1],
-                                nick: _arr[2],
-                                type: _arr[4],
-                                sid: _arr[0]
-                            }
-                        }*/
-                    //   list.push(/*_tempObj*/val)
-                    //});
                 }
             }
             this.list = list
