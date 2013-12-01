@@ -48,6 +48,21 @@
         <appender-ref ref="userOperationAppender" />
     </logger>
 
+
+    <appender name="interfaceLimitedAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/interfaceLimited/interfaceLimited.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="interfaceLimitedLogger" level="info" additivity="false">
+        <appender-ref ref="interfaceLimitedAppender" />
+    </logger>
+
+
     <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
         <host>10.146.32.57</host>
         <port>5672</port>
