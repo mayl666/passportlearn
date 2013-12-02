@@ -279,7 +279,7 @@ public class RegManagerImpl implements RegManager {
 
     @Override
     public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception {
-        Result result = new APIResultSupport(false);
+        Result result;
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
             if (ManagerHelper.isInvokeProxyApi(username)) {
