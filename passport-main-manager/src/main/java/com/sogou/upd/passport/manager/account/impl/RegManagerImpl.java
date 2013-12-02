@@ -316,7 +316,7 @@ public class RegManagerImpl implements RegManager {
                     result = sgRegisterApiManager.checkUser(checkUserApiParams);
                 }
             }
-            if (!result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+            if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
                 result = isSohuplusUser(username, clientId);
             }
         } catch (ServiceException e) {
