@@ -266,6 +266,10 @@ public class ErrorUtil {
     public static final String CONNECT_USER_DEFINED_ERROR = "30011";
     //第三方openid获取失败,没有此用户
     public static final String ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR = "30013";
+    //当opt为set时，value值必须有，且为0或1
+    public static final String ERR_CODE_CONNECT_OPT_VALUE_ERROR = "30014";
+    //当opt为set时，请求方式必须为post
+    public static final String ERR_CODE_CONNECT_SET_POST_ERROR = "30015";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -451,6 +455,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPT_VALUE_ERROR,"当opt为set时，value值必须要有，且为0或1，其它值非法");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SET_POST_ERROR,"当opt值为set时，请求方式必须为post");
 
         // info
         ERR_CODE_MSG_MAP.put(PIC_URL_NOT_NULL, "图片url不能为空");
