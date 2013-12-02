@@ -122,13 +122,15 @@ public class SohuPlusTransferTest extends BaseDAOTest {
             String passportId = sohuplusTmp.getPassportId();
             String uniqname = sohuplusTmp.getUniqname();
             String otherUniqname = baseInfoMap.get(passportId);
-            if (Strings.isNullOrEmpty(otherUniqname) || !otherUniqname.equals(uniqname)) {
-                String mappingPassportid = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
-                if (Strings.isNullOrEmpty(mappingPassportid)) {
-                    bw.write(passportId);
-                    bw.flush();
-                    bw.write("\n");
-                    bw.flush();
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                if (Strings.isNullOrEmpty(otherUniqname) || !otherUniqname.equals(uniqname)) {
+                    String mappingPassportid = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
+                    if (Strings.isNullOrEmpty(mappingPassportid)) {
+                        bw.write(passportId);
+                        bw.flush();
+                        bw.write("\n");
+                        bw.flush();
+                    }
                 }
             }
         }

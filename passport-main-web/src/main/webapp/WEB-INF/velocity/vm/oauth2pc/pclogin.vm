@@ -5,7 +5,7 @@
     <title>搜狗浏览器</title>
     <meta name="description" content="搜狗浏览器登录注册框">
     <meta name="author" content="yinyong@sogou-inc.com">
-    <link href="/./static/css/oauth2pc/login.css?t=562165" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc/login.css?t=219131" rel="stylesheet" />
     <!--[if lte IE 9]>
     <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
     <![endif]-->
@@ -30,6 +30,7 @@ var splus = {
                         <div class="controls user-id">
                             <input type="text" placeholder="搜狗账号/手机/邮箱" name="account" autocomplete="off" disableautocomplete acceessKey='a' tabindex="1"/>
                             <span class="position-tips"></span>
+                            <span class="select-btn"></span>
                             <div class="ppselecter" style="display:none">
                                 <ul>
                                 </ul>

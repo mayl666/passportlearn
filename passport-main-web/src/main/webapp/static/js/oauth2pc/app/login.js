@@ -186,8 +186,9 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                                 e.preventDefault();
                             case 9:
                                 if ($selectBox.is(":visible")) {
-                                    $("ul>li[class=hover]", $selectBox).trigger("click");
+                                    $("ul>li.hover", $selectBox).trigger("click");
                                 }
+                                $selectBox.hide();
                                 break
                             case 38:
                                 e.preventDefault();
@@ -238,7 +239,12 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     e.stopPropagation()
                 }).on("input", function(e) {
                     e.stopPropagation()
-                    var val = $.trim($(this).val())
+                    var val = $.trim($(this).val());
+                    if(val){
+                        $('.select-btn').hide()
+                    }else{
+                        $('.select-btn').show();
+                    }
                     var _list = $.map(list, function(obj) {
                         var temp,
                             sname = $.trim(obj).replace(/<b>(\S*)<\/b>/, "$1"),
@@ -262,6 +268,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 e.stopPropagation();
                 $mail.focus();
                 $selectBox.toggle();
+                self.toggleArrDirection();
             })
             //鼠标点击页面其他地方,dropdown消失
             $(window).on("click", function(e) {
@@ -296,10 +303,11 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                         sname = snameStr.replace(/<b>(\S*)<\/b>/, "$1");
 
                     $mail.val(sname);
+                    $('.select-btn').hide();
                     $selectBox.hide(function() {
                         $("ul>li", $selectBox).removeClass("hover")
                     });
-                    $password.focus();
+                    $mail.focus();
                 }
             })
         },
@@ -392,8 +400,16 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                     default:
+                        if (result.data && result.data.needCaptcha) {
+                            $('div.vcode-area').show();
+                            $vcode.val('').next('.position-tips').hide();
+                            self.refreshVcode($img);
+                        }
+                        
+                        $password.val('').next('.position-tips').hide();
+
                         if (/(10009|20205)/.test(code))
-                            self.showTips($account,$account.next('.position-tips'),self.retStatus[code]);
+                            self.showTips($account,$account.next('.position-tips'),self.retStatus.login[code]);
                         else if (20206 == code)
                             self.showTips($password,$password.next('.position-tips'),self.retStatus.login[code]);
                         else if (20221 == code)
@@ -401,12 +417,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                         else
                             $bottomError.html(self.retStatus.login[code] || result.statusText || "未知错误").show();
 
-                        $password.val('').next('.position-tips').hide();
-                        if (result.data && result.data.needCaptcha) {
-                            $('div.vcode-area').show();
-                            $vcode.val('');
-                            self.refreshVcode($img);
-                        }
                         break;
                 }
 
@@ -426,6 +436,14 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 token = utils.uuid(),
                 url = '/captcha?token=' + token + '&t=' + ts;
             $img.attr("src", url).attr("data-token", token);
+        },
+        toggleArrDirection:function(){
+            var $btn=$('.select-btn'),$selectBox=$('.ppselecter');
+            if ($selectBox.is(':visible')) {
+                $btn.addClass('up');
+            } else {
+                $btn.removeClass('up');
+            }
         },
         initLoginHistory: function() {
 

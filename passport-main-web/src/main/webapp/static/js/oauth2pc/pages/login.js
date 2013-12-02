@@ -10,5 +10,8 @@
   * @since 0.0.1
   */
 require(['app/login'], function(Login) {
-    /*new*/ Login/*()*/.init(); 
+  if(/#register/.test(location.hash)){
+    return location.assign('/sogou/fastreg?instanceid='+(window.splus&&window.splus.instanceid||''));
+  }
+  Login.init(); 
 });
