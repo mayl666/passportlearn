@@ -425,5 +425,43 @@ input[type="text"].error,input[type="password"].error{
 	right: 20px;
 	bottom: 18px;
 }
-.position-tips span.r{margin-left: 2px;display: inline-block;width: 20px;height: 20px;background: url(/static/img/r.png?t=511036) 2px 8px no-repeat;}
-.position-tips span.x{margin-left: 2px;display: inline-block;width: 20px;height: 20px;border-radius: 999em;background: red;color: white;vertical-align: middle; line-height: 18px; cursor: pointer;text-align: center; font-size: 18px;}
+.chkbtn-wrap span.x{display: none;}
+.position-tips span.r{
+	margin-left: 2px;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background: url(/static/img/r.png?t=511036) 2px 8px no-repeat;
+}
+.position-tips span.x{
+	margin-left: 2px;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 999em;
+	background: red;
+	color: white;
+	vertical-align: middle;
+	line-height: 18px;
+	cursor: pointer;
+	text-align: center;
+	font-size: 18px;
+}
+.select-btn{
+	display: none;
+}
+.select-btn:before{
+	content: '';
+	display: inline-block;
+	width: 7px;
+	height: 4px;
+	background: url(/static/img/arr.png?t=859233);
+	margin-left: -18px;
+}
+.select-btn.up:before{
+   -webkit-transform:rotate(180deg);
+   -moz-transform:rotate(180deg);
+   -ms-transform:rotate(180deg);
+   -o-transform:rotate(180deg);
+   transform:rotate(180deg);
+}
