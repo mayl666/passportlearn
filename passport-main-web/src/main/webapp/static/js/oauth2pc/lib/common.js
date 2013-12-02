@@ -189,7 +189,7 @@ define([], function() {
         } ,//check
         showTips:function($input,$error,msg,normal){
             normal?$input.removeClass('error'):$input.addClass('error');
-            $error.html(msg+(!normal?"<span class='x'>x</span>":'<span class="r"></span>')).show();
+            $error.html(msg+((!normal)?"<span class='x'>x</span>":'<span class="r"></span>')).show();
         },
         saveHistory:function(uname){
             if(!uname||'undefined'===typeof localStorage)return false;

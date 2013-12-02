@@ -177,7 +177,7 @@ function checkLogin() {
         return;
     }
 
-    var url = "http://account.sogou.com/act/getpairtoken?";
+    var url = "/act/getpairtoken?";
 
     var params = {
         userid: $('loginForm').userid.value,
