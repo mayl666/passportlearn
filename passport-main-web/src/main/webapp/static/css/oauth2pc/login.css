@@ -435,6 +435,7 @@ input[type="text"].error,input[type="password"].error{
 }
 .position-tips span.x{
 	margin-left: 2px;
+	margin-top: -5px;
 	display: inline-block;
 	width: 20px;
 	height: 20px;
@@ -455,7 +456,7 @@ input[type="text"].error,input[type="password"].error{
 	display: inline-block;
 	width: 7px;
 	height: 4px;
-	background: url(/static/img/arr.png?t=859233);
+	background: url(outside.png?t=386738) -5px -166px no-repeat;
 	margin-left: -18px;
 }
 .select-btn.up:before{

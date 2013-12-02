@@ -400,8 +400,16 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                     default:
+                        if (result.data && result.data.needCaptcha) {
+                            $('div.vcode-area').show();
+                            $vcode.val('').next('.position-tips').hide();
+                            self.refreshVcode($img);
+                        }
+                        
+                        $password.val('').next('.position-tips').hide();
+
                         if (/(10009|20205)/.test(code))
-                            self.showTips($account,$account.next('.position-tips'),self.retStatus[code]);
+                            self.showTips($account,$account.next('.position-tips'),self.retStatus.login[code]);
                         else if (20206 == code)
                             self.showTips($password,$password.next('.position-tips'),self.retStatus.login[code]);
                         else if (20221 == code)
@@ -409,12 +417,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                         else
                             $bottomError.html(self.retStatus.login[code] || result.statusText || "未知错误").show();
 
-                        $password.val('').next('.position-tips').hide();
-                        if (result.data && result.data.needCaptcha) {
-                            $('div.vcode-area').show();
-                            $vcode.val('');
-                            self.refreshVcode($img);
-                        }
                         break;
                 }
 
