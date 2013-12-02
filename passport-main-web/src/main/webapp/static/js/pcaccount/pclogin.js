@@ -177,7 +177,7 @@ function checkLogin() {
         return;
     }
 
-    var url = "http://account.sogou.com/act/getpairtoken?";
+    var url = "/act/getpairtoken?";
 
     var params = {
         userid: $('loginForm').userid.value,
@@ -225,7 +225,7 @@ function checkLogin() {
 }
 
 function getAutoToken() {
-    var url = "http://account.sogou.com/act/getpairtoken?";
+    var url = "/act/getpairtoken?";
 
     var params = {
         userid: $('autoLoginForm').userid.value,
@@ -475,4 +475,4 @@ function showAllSuggest() {
         acc[i].style.display = "block";
     }
 }
-document.getElementById("userid").focus();
+document.getElementsByName("userid")[0].focus();

@@ -5,7 +5,7 @@
   * 2013-11-21[16:37:53]:copied
   *
   * @info yinyong,osx-x64,UTF-8,10.129.173.11,js,/Volumes/yinyong/sohuplus/static/js/oauth2pc/app
-  * @author yinyong#sogou-inc.com
+  * @author sb
   * @version 0.0.1
   * @since 0.0.1
   */
@@ -28,13 +28,9 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         }
         return {};
     }
-  //  function Reg() {};
-    var Reg/*.prototype*/ = {
-
+    var Reg = {
         constructor: Reg,
-
         submited: false,
-
         init: function() {
 
             this.exPassport("size", "604", "360")
@@ -42,9 +38,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
 
             this.refreshVcode($('.chkPic img'));
         },
-
         sogouBaseurl: location.origin,
-
         //事件代理
         initEvents: function() {
             var self = this;
@@ -66,34 +60,21 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 var $form = $(e.delegateTarget),
                     $input = $(e.target);
                 //清除输入框后错误提示
-                $input.removeClass('error').next('span.position-tips').empty();
+                $input.removeClass('error').next('span.position-tips').hide();
                 //验证码特殊处理
                 if($input.attr('name')=='vcode'){
-                    $input.next('span.chkbtn-wrap').find('span.chktext').empty()
+                    $input.next('span.chkbtn-wrap').find('span.chktext').hide()
                 }
                 //清除公共区域错误提示
                 $('p.out-error', $form).empty().hide();
             })
-            /*//点击提交按钮
-            .on('click', 'button.btn', function(e) {
-                $(e.delegateTarget).trigger('submit')
-                return false
-            })
-            //阻止button按钮默认行为
-            .on('click', 'button', function(e) {
-                e.preventDefault();
-
-            })*/
-            //点击获取手机验证码按钮
             .on('click', 'button.chkbtn', function(e) {
                 var $btn = $(this),
                     $form = $(e.delegateTarget),
                     $phone = $('input[name=account]', $form),
                     $vcode = $('input[name=vcode]', $form),
                     phoneValue = $phone.val(),
-                    //yinyong@sogou-inc.com,2013-11-21[17:05:44]
-                    //fixed url
-                    vcodeUrl = self.sogouBaseurl +self.interfaces.sendSms,// '/a/sogou/sendsms',
+                    vcodeUrl = self.sogouBaseurl +self.interfaces.sendSms,
                     phoneObj = self.validObj.phone;
 
                 if ($btn.hasClass('chkbtn-disable'))  return ;
@@ -105,32 +86,17 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     data: {
                         client_id:_g_client_id,
                         mobile:phoneValue
-                        //yinyong@sogou-inc.com,2013-11-21[17:07:26]
-                        //fixed params
-                       /* smstype: 0,
-                        phonenumber: phoneValue*/
                     },
-                    type:'get' /*"post"*/,
+                    type:'get',
                     dataType: "json"
                 }).done(function(result) {
                     result=getJSON(result);
-                    var code = +result.status/*code*/,
+                    var code = +result.status,
                         $error = $('.out-error', $form)
                         switch (code) {
                             case 0:
                                 self.countdown($btn)
-                                //$error.empty().hide()
                                 break
-                                //yinyong@sogou-inc.com,2013-11-21[17:10:30]
-/*                            case 3:
-                                $phone.next('span.position-tips').html("手机号有误").show()
-                                break
-                            case 4:
-                                $error.html("系统繁忙,请稍后发送").show()
-                                break
-                            case 5:
-                                $error.html("请等待60秒后重新发送").show()
-                                break*/
                             default:
                                 $error.html(self.retStatus.sendSms[code] || result.statusText || "未知错误").show();
                                 break
@@ -139,8 +105,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     $error.html('网络异常，请稍后重试').show();
                 });
 
-            })//yinyong@sogou-inc.com,2013-11-23[16:27:25]
-            //error msg unclickable
+            })
             .on('click','.position-tips',function(e){
                 $(this).hide().empty().prev('input').removeClass('error').focus();
             })
@@ -153,21 +118,15 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     inputName = $account.attr('name'),
                     snameObj = self.validObj.regaccount,
                     passwordObj = self.validObj.password,
-                    phoneObj = self.validObj.phone;
+                    phoneObj = self.validObj.phones;
                 
                     if(inputName == 'sname'){
                         if(!self.check($account,snameObj))  {
-                            //隐藏上次操作显示的验证码区域
-                           /* if($vcodeArea.is(':visible')){
-                                $vcodeArea.hide()
-                            }*/
                             snameObj.legal = false;
                             return 
                         }
                         $.ajax({
-                            //yinyong@sogou-inc.com,2013-11-21[17:11:17]
-                            //fixed url
-                            url: self.sogouBaseurl + self.interfaces.checkSname,//"/a/sogou/check/sname/" + $account.val(),
+                            url: self.sogouBaseurl + self.interfaces.checkSname,
                             type: 'post',/*"get",*/
                             dataType: "json",
                             data:{
@@ -179,35 +138,11 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                             var code = result.status;
                             switch (true) {
                                 case (0 == code):
-                                   // $account.removeClass("error").next('span.position-tips').empty().hide();
                                     break;
                                 default:
                                 self.showTips($account,$account.next('span.position-tips'),self.retStatus.checkSname[code] || result.statusText || "未知错误");
-//                                    $account.addClass("error").next('span.position-tips').show()
-                                    //self.refreshVcode($img);
-   //                                 .html(self.retStatus.checkSname[code] || result.statusText || "未知错误");;
                             }
-                            
-                          /*  if (result.regstatus !== 0) {
-                                $vcodeArea.show()
-                            }                               
-                            //TODO  : vcodeArea not show here
-                            // $vcodeArea.show()
 
-                            switch(result.code){
-                                case 0  :   $account.removeClass("error").next('span.position-tips').html('');
-                                        snameObj.legal = true;
-                                        break;
-                                case 1  :   $account.addClass("error").next('span.position-tips').html('账号已被占用');
-                                        snameObj.legal = false;
-                                        break;
-                                case 3  :   $account.addClass("error").next('span.position-tips').html('请用6-16位字符或"-"');
-                                        snameObj.legal = false;
-                                        break;
-                                default :   $account.addClass("error").next('span.position-tips').html('账号不可用');
-                                        snameObj.legal = false;
-                                        break;
-                            }*/
                         })
                     }
                     if(inputName == 'account'){
@@ -215,13 +150,9 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                             return phoneObj.legal = false;
                         }
                         $.ajax({
-                            //yinyong@sogou-inc.com,2013-11-21[17:14:55]
-                            //fixed url
-                            url: self.sogouBaseurl + self.interfaces.checkMobile,//"/a/sogou/check/mobile/" + $account.val(),
-                            type:/* "get",*/'post',
+                            url: self.sogouBaseurl + self.interfaces.checkMobile,
+                            type:'post',
                             dataType: "json",
-                            //2013-11-21[17:15:30],yinyong@sogou-inc.com
-                            //add
                             data:{
                                 username:$account.val()
                             }
@@ -229,30 +160,17 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                             result=getJSON(result);
                              var code = result.status;
                             if (code != 0) {
-                                self.showTips($account,$account.next('.span.position-tips'),self.retStatus.checkSname[code] || result.statusText || "未知错误");
-//                                $account.addClass("error").next('span.position-tips').show().html(self.retStatus.checkSname[code] || result.statusText || "未知错误")
+                                self.showTips($account,$account.next('span.position-tips'),self.retStatus.checkSname[code] || result.statusText || "未知错误");
                             } else {
-                              //  $account.removeClass("error").next('span.position-tips').empty().hide()
                             }
-                            //yinyong@sogou-inc.com,2013-11-21[17:16:00]
-                            //fixed
-                           /* if (result.code !== 0) {
-                                phoneObj.legal = false;
-                                $account.addClass("error").next('span.position-tips').html('该手机已经注册过')
-                            } else {
-                                phoneObj.legal = true;
-                                $account.removeClass("error").next('span.position-tips').html('')
-                            }*/
                         });
                     }
 
                     if(inputName == 'password'){
                         if(!self.check($account,passwordObj))   {
-                           // $account.addClass("error").next('span.position-tips').html('请用6-16位字符')
                             return passwordObj.legal = false;
                         }
                         else{
-                            //$account.removeClass("error").next('span.position-tips').html('')
                             passwordObj.legal = true;
                         }
                     }
@@ -282,7 +200,6 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 accountObj = this.validObj.regaccount,
                 vcodeObj = this.validObj.vcodeObj,
                 passwordObj = this.validObj.password;
-            
 
             if (!this.check($input, accountObj) ) {
                 return this.submited = false;
@@ -294,26 +211,23 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     return  this.submited = false;
                 }
             }
-            //yinyong@sogou-inc.com,2013-11-23[15:49:07]
-            //removed simple check
+
             if (!this.check($password, passwordObj)/* || !this.isSimple($password, '密码过于简单')*/) {
                 return this.submited = false;
             }
             var data,
-            //yinyong@sogou-inc.com,2013-11-21[17:21:31]
-            //fixed url
-                url = this.sogouBaseurl + self.interfaces.register,//"/sogou/register",
+                url = this.sogouBaseurl + self.interfaces.register,
                 splus = window.splus;
                 
             data = {
-                /*sname*/username: $input.val(),
-                /*pwd*/password: $password.val(),
+                username: $input.val(),
+                password: $password.val(),
                 instance_id: splus ? splus.instanceid : "",
                 client_id:_g_client_id,
                 token:$img.attr('data-token')
             }
             if (hasVcode) {
-                data./*vcode*/captcha = $vcode.val();
+                data.captcha = $vcode.val();
             }
 
             $.ajax({
@@ -334,11 +248,11 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         self.saveHistory($input.val());
                         break; 
                     default:
-                    //yinyong@sogou-inc.com,2013-11-23[16:31:57]
                         if(/20221|20214/.test(code)){
-                            $vcode.addClass('error');
-                        }
-                        $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
+                            //$vcode.addClass('error').;
+                            self.showTips($vcode,$vcode.next('.position-tips'),self.retStatus.register[code]);
+                        }else
+                            $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         $vcode.val("");
                         if (hasVcode) {
                             self.refreshVcode($img);
@@ -348,7 +262,6 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 self.submited = false;
             }).fail(function() {
                 $error.show().html('网络异常，请稍后尝试注册');
-                // console.log("error happens in http request : a/sogou/mobileregister")
                 self.submited = false;
             })
         },
@@ -372,15 +285,11 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 return this.submited = false;
 
             }
-            //yinyong@sogou-inc.com,2013-11-23[15:48:44]
-            //removed simple check
             if (!this.check($password, passwordObj) /*|| !this.isSimple($password, "密码过于简单")*/) {
                 return this.submited = false;
             }
             this.countdownOver($vcodeBtn);
-            //yinyong@sogou-inc.com,2013-11-21[17:24:47]
-            //fixed url
-            var url = this.sogouBaseurl +this.interfaces.mobileRegister,// "/a/sogou/mobileregister",
+            var url = this.sogouBaseurl +this.interfaces.mobileRegister,
                 self = this,
                 instanceid = splus ? splus.instanceid : ""
 
@@ -388,10 +297,10 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 url: url,
                 type: "post",
                 data: {
-                    /*phonenumber*/username: $input.val(),
-                    /*smscode*/captcha: $vcode.val(),
-                    /*pwd*/password: $password.val(),
-                    /*instanceid*/instance_id: instanceid,
+                    username: $input.val(),
+                    captcha: $vcode.val(),
+                    password: $password.val(),
+                    instance_id: instanceid,
                     client_id:_g_client_id,
                     token:$vcode.attr('data-token')
                 },
@@ -406,46 +315,24 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         window.external && window.external.passport && window.external.passport('result', msg);
                         self.saveHistory($input.val());
                         break;
-/*                var code = result.code
-                switch (code) {
-                    case 0:
-                        var data = result.data,
-                            sname = data.sname,
-                            nick = data.nick,
-                            sid = data.sid,
-                            passport = data.passport
-                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + sname + '|' + nick + '|' + sid + '|' + passport + '|1'
-                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
-                        self.exPassport('result ', msg)
-                        break
-                    case 1:
-                        $input.addClass('error').next('span.position-tips').html('该手机已注册')
-                        break
-                    case 3:
-                        $vcode.addClass('error').next('span.chkbtn-wrap').find('>span.chktext').html('验证码错误')
-                        break
-                    case 4:
-                        $error.show().html("参数错误")
-                        break*/
                     default:
                         if (/20221|20214/.test(code)) {
-//                            self.showTips($vcode,$vcode.next('.chkbtn-wrap').find('span.chktext'),self.retStatus.register[code] || result.statusText || "未知错误");
                             $vcode.addClass('error').next('span.chkbtn-wrap').find('span.chktext').show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         }else
                             $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         $vcode.val("");
-                        $password.val("");
+                        $password.val("").next('span.position-tips').hide();
                         break
                 }
                 self.submited = false;
             }).fail(function() {
                 $error.show().html('网络异常，请稍后尝试注册');
-                // console.log("error happens in http request : a/sogou/mobileregister")
                 self.submited = false;
             })
         },
         //校验是否为空
         checkEmpty: function($input, $error) {
+            var self=this;
             return $input.val() == '' ? self.showTips($input,$error,'不能为空')&&false/*($input.addClass('error'), $error.html('不能为空'), false)*/ : true;
         },
         //刷新验证码
@@ -456,33 +343,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 token = utils.uuid(),
                 url = '/captcha?token=' + token + '&t=' + ts;
             $img.attr("src", url).attr("data-token", token);
-          /*  var self = this,
-                ts = new Date().getTime(),
-                url = self.sogouBaseurl + '/vcode/register/?nocache=' + ts
-                $img.attr('src', url)*/
         },
-        //yinyong@sogou-inc.com,2013-11-23[15:49:21]
-        //removed
-        //校验密码是否过于简单
-/*        isSimple: function($input, msg) {
-            var self = this,
-                inputValue = $input.val(),
-                flag = true,
-                simpleMial = ['123456', '12345678', 'qwerty', 'qwaszx', 'qazwsx', 'password', 'abc123'];
-            $.each(simpleMial, function(index, val) {
-                if (inputValue == val) {
-                    flag = false;
-                }
-            })
-            if (flag) {
-                $input.removeClass("error").next('span.position-tips').empty()
-
-            } else {
-                $input.addClass("error").next('span.position-tips').html(msg)
-            }
-
-            return flag
-        },*/
         //短信验证码倒计时
         countdown: function($btn) {
             var self = this,
@@ -504,53 +365,6 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         }
 
         }
-        //校验规则及错误提示
-/*        validObj: {
-            account: {
-                defaultMsg: "帐号/手机号/邮箱",
-                errMsg: '请用6-16位字符或"-"',
-                emptyMsg: '不能为空',
-                nullable: false,
-                legal : true,
-                regStr: /^\S{6,50}$/
-            },
-            phone: {
-                errMsg: '手机号有误',
-                emptyMsg: '不能为空',
-                nullable: false,
-                legal : true,
-                regStr: /^1\d{10,13}$/
-            },
-            email: {
-                errMsg: '请正确输入邮箱（非必填）',
-                emptyMsg: '',
-                nullable: true
-                // regStr: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/
-            },
-            password: {
-                errMsg: '请用6-16位字符',
-                emptyMsg: '不能为空',
-                nullable: false,
-                legal : true,
-                regStr: /^\S{6,20}$/
-            },
-            vcode: {
-                errMsg: '请正确输入验证码',
-                emptyMsg: '不能为空',
-                nullable: false,
-                legal : true,
-                regStr: /^\w*$/
-            },
-            regacc: {
-                errMsg: '仅支持4-16位字母、数字及“-”',
-                emptyMsg: '请填写帐号',
-                nullable: false,
-                legal : true,
-                regStr: /^[a-zA-Z0-9-]{4,20}$/
-                // regStr: /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/
-            }
-        }*/
-    //}
     $.extend(Reg,common);
     return Reg;
 });

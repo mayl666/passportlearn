@@ -88,8 +88,8 @@ public class LoginAction extends BaseController {
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                 result = regManager.isAccountNotExists(username, true);
             } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false);
+                String tmpUsername = username + "@sogou.com";
+                result = regManager.isAccountNotExists(tmpUsername, false);
             }
         } else {
             result = regManager.isAccountNotExists(username, false);

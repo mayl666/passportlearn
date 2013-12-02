@@ -5,7 +5,7 @@
     <title>搜狗浏览器</title>
     <meta name="description" content="搜狗浏览器登录注册框">
     <meta name="author" content="yinyong@sogou-inc.com">
-    <link href="/./static/css/oauth2pc/login.css?t=562165" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc/login.css?t=402789" rel="stylesheet" />
     <!--[if lte IE 9]>
     <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
     <![endif]-->
@@ -25,7 +25,7 @@ var splus = {
     <div class="login-con">
         <form id="mobile_reg_form" >
             <fieldset>
-                <legend>手机注册用户</legend>
+                <legend>用手机注册用户</legend>
                 <div class="control-group">
                     <div class="controls user-id">
                         <input type="text" class="" placeholder="输入手机号" name="account" autocomplete="off" disableautocomplete/>
@@ -56,10 +56,9 @@ var splus = {
             <div class="controls">
                 <p class="red out-error" style="display:"></p>
             </div>
-            <hr height="4px" color="#eee"/>
             <div class="controls position-bottom" style="right:auto;left:20px;">
                 <div class="fr"> <i class="left-arrow"></i>
-                    <a href="/sogou/flogon?instanceid=${instanceid}" class="blue">已有账号直接登录</a>
+                    <a href="/sogou/flogon?instanceid=${instanceid}" class="blue">已有账号 直接登录</a>
                 </div>
             </div>
         </div>
