@@ -389,7 +389,7 @@ public class PCOAuth2AccountController extends BaseController {
             return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
         }
         //生成cookie
-        /*CookieApiParams cookieApiParams = new CookieApiParams();
+        CookieApiParams cookieApiParams = new CookieApiParams();
         String utfUserId = URLEncoder.encode(passportId,"utf-8");
         cookieApiParams.setUserid(utfUserId);
         cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
@@ -397,14 +397,14 @@ public class PCOAuth2AccountController extends BaseController {
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(getIp(request));
-        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);*/
+        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
         //生成cookie--之前写法
-        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        /*CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
         createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
         createCookieUrlApiParams.setPersistentcookie(1);
         createCookieUrlApiParams.setDomain("sogou.com");
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams); */
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
