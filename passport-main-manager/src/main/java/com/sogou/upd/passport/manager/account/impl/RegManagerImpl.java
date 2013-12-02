@@ -375,7 +375,7 @@ public class RegManagerImpl implements RegManager {
      */
     private Result isSohuplusUser(String username, int clientId) {
         Result result = new APIResultSupport(false);
-        if (!username.contains("@")) {
+        if (username.contains("@")) {
             username = username.substring(0, username.indexOf("@"));
         }
         String sohuplus_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(username);
