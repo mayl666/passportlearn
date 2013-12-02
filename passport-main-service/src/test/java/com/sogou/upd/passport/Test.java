@@ -16,7 +16,8 @@ public class Test {
         int expiresIn = 604800;
         String clientSecret = "c1756a351db27d817225e2a4fd7b3f7d";
         String genToken = TokenGenerator.generatorPcToken(passportId,expiresIn,clientSecret);
-        String dePassportId = TokenDecrypt.decryptPcToken(genToken,clientSecret);
+        String token ="SG_wPJM2wG8ePMeYR8ZCIytNvnCw3wKFq5rKyng3cWbwWfEN1jJE84GWBoaghfM0g9-";
+        String dePassportId = TokenDecrypt.decryptPcToken(token,clientSecret);
 
         System.out.println("genToken:"+genToken);
         System.out.println(dePassportId);

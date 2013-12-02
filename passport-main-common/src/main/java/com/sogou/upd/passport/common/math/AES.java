@@ -52,7 +52,7 @@ public class AES {
         byte[] decordedValue = Base64.decodeBase64(encryptedData);
         byte[] decValue = c.doFinal(decordedValue);
 
-        String decryptedValue = new String(decValue);
+        String decryptedValue = new String(decValue,"utf-8");
         return decryptedValue;
     }
 
