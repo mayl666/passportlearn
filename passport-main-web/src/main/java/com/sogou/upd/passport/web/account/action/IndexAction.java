@@ -62,15 +62,15 @@ public class IndexAction extends BaseController {
                     if(obj!=null){
                         AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
                         String uniqname=baseInfo.getUniqname();
-                        if(! Strings.isNullOrEmpty(uniqname)){
-                            //防止有特殊字符'，导致前段解析错误
-                            if(uniqname.indexOf("'")!=-1){
-                                uniqname.replaceAll("'","\\'");
-                            }
-                        }else {
-                            uniqname=userId;
-                        }
-                        result.setDefaultModel("username", uniqname);
+//                        if(! Strings.isNullOrEmpty(uniqname)){
+//                            //防止有特殊字符'，导致前段解析错误
+//                            if(uniqname.indexOf("'")!=-1){
+//                                uniqname.replaceAll("'","\\'");
+//                            }
+//                        }else {
+//                            uniqname=userId;
+//                        }
+                        result.setDefaultModel("username", Strings.isNullOrEmpty(uniqname)?userId:uniqname);
                     } else {
                         result.setDefaultModel("username", nickName);
 
