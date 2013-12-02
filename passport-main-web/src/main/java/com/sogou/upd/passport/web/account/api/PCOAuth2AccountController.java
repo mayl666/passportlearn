@@ -375,7 +375,8 @@ public class PCOAuth2AccountController extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
 
         if (!queryPassportIdResult.isSuccess()) {
-            return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
+            //token 验证出错，跳出到登录页
+            return "redirect:/web/webLogin";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         //判断cookie中的passportId与token解密出来的passportId是否相等

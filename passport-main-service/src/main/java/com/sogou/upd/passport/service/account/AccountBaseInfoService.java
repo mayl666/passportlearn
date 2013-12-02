@@ -19,7 +19,7 @@ public interface AccountBaseInfoService {
      * @param passportId
      * @param connectUserInfoVO
      */
-    public boolean initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO);
+    public AccountBaseInfo initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO);
 
     /**
      * 获取个人资料
@@ -56,7 +56,7 @@ public interface AccountBaseInfoService {
      * @param avatar
      * @return
      */
-    public boolean insertAccountBaseInfo(String passportId, String uniqname, String avatar);
+    public AccountBaseInfo insertAccountBaseInfo(String passportId, String uniqname, String avatar);
 
     /**
      * 插入昵称和头像
