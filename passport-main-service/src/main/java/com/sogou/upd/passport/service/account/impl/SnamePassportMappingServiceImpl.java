@@ -40,7 +40,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
     }
     @Override
     public String queryPassportIdBySname(String sname) throws ServiceException {
-        String passportId = null;
+        String passportId;
         try {
             String cacheKey = buildSnamePassportMappingKey(sname);
             passportId = redisUtils.get(cacheKey);

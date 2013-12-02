@@ -282,11 +282,11 @@ public class RegManagerImpl implements RegManager {
         Result result;
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+            BaseMoblieApiParams params = new BaseMoblieApiParams();
+            params.setMobile(username);
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 if (type) {
                     //手机号 判断绑定账户
-                    BaseMoblieApiParams params = new BaseMoblieApiParams();
-                    params.setMobile(username);
                     result = proxyBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
@@ -300,10 +300,6 @@ public class RegManagerImpl implements RegManager {
                 }
             } else {
                 if (type) {
-                    //手机号 判断绑定账户
-                    BaseMoblieApiParams params = new BaseMoblieApiParams();
-                    params.setMobile(username);
-
                     result = sgBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
@@ -325,7 +321,6 @@ public class RegManagerImpl implements RegManager {
         }
         return result;
     }
-
 
 
     @Override
@@ -376,9 +371,13 @@ public class RegManagerImpl implements RegManager {
     /*
      * client=1044的username为个性域名或手机号
      * 都有可能是sohuplus的账号，需要判断sohuplus映射表
+     * 如果username包含@，则取@前面的
      */
     private Result isSohuplusUser(String username, int clientId) {
         Result result = new APIResultSupport(false);
+        if (!username.contains("@")) {
+            username = username.substring(0, username.indexOf("@"));
+        }
         String sohuplus_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(username);
         if (!Strings.isNullOrEmpty(sohuplus_passportId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
