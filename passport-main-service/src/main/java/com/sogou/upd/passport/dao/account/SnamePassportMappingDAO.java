@@ -1,9 +1,13 @@
 package com.sogou.upd.passport.dao.account;
 
+import com.sogou.upd.passport.model.account.SnamePassportMapping;
+import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import org.springframework.dao.DataAccessException;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,6 +29,17 @@ public interface SnamePassportMappingDAO {
      */
     String ALL_FIELD = " id, sid, sname, passport_id, mobile, update_time ";
 
+
+    /**
+     * 获取所有记录
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME)
+    public List<SnamePassportMapping> listPassportIdMapping() throws DataAccessException;
 
     /**
      * 根据sohu+个性账号或者手机号码获取passportId
