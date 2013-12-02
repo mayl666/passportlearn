@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -11,23 +10,22 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.form.ActiveEmailParams;
-import com.sogou.upd.passport.manager.form.WebRegisterParams;
-import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.manager.form.ActiveEmailParams;
+import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-
+import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +36,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.net.URLDecoder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 
 /**
  * web注册 User: mayan Date: 13-6-7 Time: 下午5:48
@@ -88,7 +85,8 @@ public class RegAction extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        result = checkAccountNotExists(username);
+        int clientId = Integer.valueOf(checkParam.getClient_id());
+        result = checkAccountNotExists(username, clientId);
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
             result.setMessage("此手机号已注册或已绑定，请直接登录");
         }
@@ -133,7 +131,8 @@ public class RegAction extends BaseController {
 
             //检验用户名是否存在
             String username = regParams.getUsername();
-            result = checkAccountNotExists(username);
+            int clientId = Integer.valueOf(regParams.getClient_id());
+            result = checkAccountNotExists(username, clientId);
             if (!result.isSuccess()) {
                 return result.toString();
             }
@@ -150,7 +149,7 @@ public class RegAction extends BaseController {
 
                 Object obj = result.getModels().get("username");
 
-                createCookieUrlApiParams.setUserid((String)obj);
+                createCookieUrlApiParams.setUserid((String) obj);
                 createCookieUrlApiParams.setRu(ru);
                 createCookieUrlApiParams.setDomain("sogou.com");
 
@@ -202,7 +201,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
     @ResponseBody
-    public Object activeEmail(HttpServletRequest request, HttpServletResponse response,ActiveEmailParams activeParams)
+    public Object activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -291,7 +290,7 @@ public class RegAction extends BaseController {
     }
 
     //检查用户是否存在
-    private Result checkAccountNotExists(String username) throws Exception {
+    private Result checkAccountNotExists(String username, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //校验是否是搜狐域内用户
 
@@ -309,13 +308,13 @@ public class RegAction extends BaseController {
         if (username.indexOf("@") == -1) {
             //判断是否是手机号注册
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true);
+                result = regManager.isAccountNotExists(username, true, clientId);
             } else {
                 username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false);
+                result = regManager.isAccountNotExists(username, false, clientId);
             }
         } else {
-            result = regManager.isAccountNotExists(username, false);
+            result = regManager.isAccountNotExists(username, false, clientId);
         }
         return result;
     }
