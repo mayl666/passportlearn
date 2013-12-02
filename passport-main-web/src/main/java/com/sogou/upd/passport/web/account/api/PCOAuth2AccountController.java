@@ -360,7 +360,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return "forward:/oauth2/errorMsg?msg=" + result.toString();
+            return "tokenerror";
         }
 
         //当前页面cookie
@@ -376,7 +376,7 @@ public class PCOAuth2AccountController extends BaseController {
 
         if (!queryPassportIdResult.isSuccess()) {
             //token 验证出错，跳出到登录页
-            return "redirect:/web/webLogin";
+            return "tokenerror";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         //判断cookie中的passportId与token解密出来的passportId是否相等
