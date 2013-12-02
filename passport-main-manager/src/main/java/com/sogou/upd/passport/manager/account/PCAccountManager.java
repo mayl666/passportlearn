@@ -5,6 +5,7 @@ import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.model.app.AppConfig;
 
 /**
  * 桌面端登录流程Manager
@@ -93,10 +94,11 @@ public interface PCAccountManager {
     public Result createAccountToken(String passportId, String instanceId,int  clientId);
 
     /**
-     *通过token获取passportId
-     * @param token
-     * @param clientId
+     * 更新AccountToken
+     * @param passportId
+     * @param instanceId
+     * @param appConfig
      * @return
      */
-    public Result queryPassportIdByAccessToken(String token,int clientId);
+    public Result updateAccountToken(String passportId, String instanceId, AppConfig appConfig);
 }

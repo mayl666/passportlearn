@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import com.sogou.upd.passport.common.validation.constraints.UserName;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -22,6 +23,7 @@ import javax.validation.constraints.Min;
 public class PCOAuth2RegisterParams {
 
     @NotBlank(message = "注册账号不允许为空!")
+    @UserName
     private String username;
     @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     @NotBlank(message = "请输入密码!")

@@ -2,8 +2,6 @@ package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.dao.BaseDAOTest;
 import junit.framework.Assert;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,14 +17,14 @@ public class SnamePassportMappingDAOTest extends BaseDAOTest {
     @Autowired
     private SnamePassportMappingDAO snamePassportMappingDAO;
 
-//    @Before
+    //    @Before
     @Test
     public void init() {
-        int row = snamePassportMappingDAO.insertSnamePassportMapping(SID,SNAME, PASSPORT_ID);
+        int row = snamePassportMappingDAO.insertSnamePassportMapping(SID, SNAME, PASSPORT_ID, "13621009174");
         Assert.assertEquals(row, 1);
     }
 
-//    @After
+    //    @After
 //    @Test
     public void end() {
         int row = snamePassportMappingDAO.deleteSnamePassportMapping(SNAME);
@@ -34,8 +32,14 @@ public class SnamePassportMappingDAOTest extends BaseDAOTest {
     }
 
     @Test
-    public void testGetPassportIdByMobile() {
+    public void testGetPassportIdBySname() {
         String passportId = snamePassportMappingDAO.getPassportIdBySname("tinkame710");
+        Assert.assertEquals(passportId, PASSPORT_ID);
+    }
+
+    @Test
+    public void testGetPassportIdByMobile() {
+        String passportId = snamePassportMappingDAO.getPassportIdByMobile("13621009174");
         Assert.assertEquals(passportId, PASSPORT_ID);
     }
 

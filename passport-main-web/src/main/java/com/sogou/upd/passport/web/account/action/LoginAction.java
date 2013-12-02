@@ -9,8 +9,10 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
@@ -50,6 +52,8 @@ public class LoginAction extends BaseController {
 
     @Autowired
     private LoginManager loginManager;
+    @Autowired
+    private RegManager regManager;
 
     @Autowired
     private HostHolder hostHolder;
@@ -77,11 +81,30 @@ public class LoginAction extends BaseController {
         }
 
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        //校验是否需要验证码
-        boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
+        int clientId = Integer.valueOf(checkParam.getClient_id());
+        //判断账号是否存在
+        if (username.indexOf("@") == -1) {
+            //判断是否是手机号注册
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                result = regManager.isAccountNotExists(username, true, clientId);
+            } else {
+                String tmpUsername = username + "@sogou.com";
+                result = regManager.isAccountNotExists(tmpUsername, false, clientId);
+            }
+        } else {
+            result = regManager.isAccountNotExists(username, false, clientId);
+        }
+        if(!result.isSuccess()){
+            //校验是否需要验证码
+            boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
 
-        result.setSuccess(true);
-        result.setDefaultModel("needCaptcha", needCaptcha);
+            result.setSuccess(true);
+            result.setDefaultModel("needCaptcha", needCaptcha);
+        }else {
+            result= new APIResultSupport(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        }
+
         return result.toString();
     }
 

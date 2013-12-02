@@ -58,7 +58,7 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
     @Override
     public Result isPcAccountNotExists(String username, boolean type) {
         Result result = new APIResultSupport(false);
-        String sohuPassportId = snamePassportMappingService.queryPassportIdBySname(username);
+        String sohuPassportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(username);
         if (!Strings.isNullOrEmpty(sohuPassportId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
             return result;

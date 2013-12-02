@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -51,6 +52,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     public Result uploadImg(byte[] byteArr,String passportId,String type) {
         Result result = new APIResultSupport(false);
@@ -253,14 +256,16 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
             //其中昵称是获取的account_base_info
             // TODO 搜狗账号迁移后，搜狗账号的昵称从account表里拿，其他账号昵称从account_base_info里拿
-            Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-            if(shPlusResult.isSuccess()){
-                Object obj= shPlusResult.getModels().get("baseInfo");
-                if(obj!=null){
-                    AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
-                    result.getModels().put("uniqname",baseInfo.getUniqname());
-                }
-            }
+//            Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+//            if(shPlusResult.isSuccess()){
+//                Object obj= shPlusResult.getModels().get("baseInfo");
+//                if(obj!=null){
+//                    AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
+//                    String uniqname= baseInfo.getUniqname();
+//                    result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?params.getUsername():uniqname);
+//                }
+//            }
+             result.getModels().put("uniqname",oAuth2ResourceManager.getUniqname(params.getUsername()));
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }

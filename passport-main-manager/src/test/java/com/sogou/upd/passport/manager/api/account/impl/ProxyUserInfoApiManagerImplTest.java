@@ -38,7 +38,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams = new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("tinkame700@sogou.com");
+        getUserInfoApiParams.setUserid("573582495@qq.com");
         //获取昵称
 //        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
 //        getUserInfoApiParams.setFields("uniqname");
@@ -48,20 +48,21 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         getUserInfoApiParams.setFields("sec_mobile,sec_email,uniqname,avatarurl");
 //        getUserInfoApiParams.setImagesize("180");
         Result result1 = proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
-        String bindMobile = (String) result1.getModels().get("sec_mobile");
-        String bindEmail =(String)result1.getModels().get("sec_email");
-
-        String imgurl="";
-        String avaterMap =  result1.getModels().get("avatarurl").toString();
-        if(!StringUtils.isEmpty(avaterMap)){
-
-            Map map = (Map)result1.getModels().get("avatarurl");
-            imgurl =(String)map.get("img_180");
-        }
-
-        System.out.println("bindMobile:"+bindMobile);
-        System.out.println("bindEmail:"+bindEmail);
-        System.out.println("avatar result:" + result1);
+        System.out.println(result1.toString());
+//        String bindMobile = (String) result1.getModels().get("sec_mobile");
+//        String bindEmail =(String)result1.getModels().get("sec_email");
+//
+//        String imgurl="";
+//        String avaterMap =  result1.getModels().get("avatarurl").toString();
+//        if(!StringUtils.isEmpty(avaterMap)){
+//
+//            Map map = (Map)result1.getModels().get("avatarurl");
+//            imgurl =(String)map.get("img_180");
+//        }
+//
+//        System.out.println("bindMobile:"+bindMobile);
+//        System.out.println("bindEmail:"+bindEmail);
+//        System.out.println("avatar result:" + result1);
     }
 
     @Test
@@ -89,6 +90,13 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         updateUserUniqnameApiParams.setUniqname(name);
         Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
         System.out.println("result输出结果为:" + result.toString());
+    }
+
+    @Test
+    public void testDefaultPhoto() {
+//       Result photoResult = proxyUserInfoApiManager.obtainPhoto(Integer.toString(1044), "30,50,180");
+//       System.out.println(photoResult.toString());
+
     }
 
 }

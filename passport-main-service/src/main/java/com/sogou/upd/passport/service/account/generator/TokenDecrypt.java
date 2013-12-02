@@ -74,7 +74,8 @@ public class TokenDecrypt {
     public static String decryptPcToken(String token, String clientSecret) throws Exception {
         try {
             String passportId = null;
-            String decryptStr = AES.decryptURLSafeString(token, clientSecret);
+            String tokenContent = token.substring(CommonConstant.SG_TOKEN_START.length(),token.length());
+            String decryptStr = AES.decryptURLSafeString(tokenContent, clientSecret);
             if (!Strings.isNullOrEmpty(decryptStr)) {
                 String[] strArray = decryptStr.split("\\"+CommonConstant.SEPARATOR_1);
                 passportId = strArray[0];
@@ -82,7 +83,7 @@ public class TokenDecrypt {
             return passportId;
         } catch (Exception e) {
             logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", token);
-            throw e;
+            return null;
         }
     }
 

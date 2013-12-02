@@ -32,6 +32,14 @@ public interface OAuth2ResourceManager {
     public Result getFullUserInfo(String accessToken,int clientId, String clientSecret, String instanceId);
 
     /**
+     *通过token来获取passportId
+     * @param token
+     * @param clientId
+     * @param instanceId
+     * @return
+     */
+    public Result queryPassportIdByAccessToken(String token,int clientId,String instanceId);
+    /**
      * 根据passportId获取昵称
      * @param passportId
      * @return

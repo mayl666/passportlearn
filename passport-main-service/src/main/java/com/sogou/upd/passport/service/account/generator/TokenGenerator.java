@@ -100,12 +100,20 @@ public class TokenGenerator {
         String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
         String token = null;
         try {
-            token = AES.encryptURLSafeString(tokenContent, clientSecret);
+            //特殊标识，是为了与sohu+ token长度区别开来
+            token = CommonConstant.SG_TOKEN_START + AES.encryptURLSafeString(tokenContent, clientSecret);
         } catch (Exception e) {
             logger.error("Pc Token generator by AES fail, passportId:" + passportId);
             throw e;
         }
         return token;
+    }
+
+    public static void main(String args[]) throws Exception{
+        String passportId ="C8FB68EC3C5C62D21A8774B2870E79BC@qq.sohu.com";
+        int expiresIn = 604800;
+        String clientSecret="c1756a351db27d817225e2a4fd7b3f7d";
+        System.out.print(generatorPcToken(passportId,expiresIn,clientSecret));
     }
 
     //sohu生成token算法

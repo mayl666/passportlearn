@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.account.vo.OAuth2TokenVO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -17,6 +18,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
+import com.sogou.upd.passport.service.SHPlusConstant;
 import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.impl.PCAccountServiceImpl;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -36,6 +38,7 @@ import java.util.Map;
 public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2AuthorizeManagerImpl.class);
+    private static final Logger shPlusTokenLog = LoggerFactory.getLogger("shPlusTokenLogger");
 
     @Autowired
     private AppConfigService appConfigService;
@@ -49,6 +52,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
     private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
+    @Autowired
+    private PCAccountManager pcAccountManager;
 
     @Override
     public Result authorize(OAuthTokenASRequest oauthRequest) {
@@ -131,21 +136,22 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             AccountToken renewAccountToken;
             if (GrantTypeEnum.HEART_BEAT.toString().equals(grantType)) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                boolean isRightPcRToken = pcAccountTokenService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                boolean isRightPcRToken = isRightPcRToken(passportId, clientId, instanceId, refreshToken);
                 if (!isRightPcRToken) {
-                    String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
-                    if (accessToken == null) {
-                        result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
-                        return result;
-                    }
-                    // 记录log，等以后不再验证sohuplus的token了去掉这段逻辑
-                    logger.info("[SHPlusToken] verify shplus refreshtoken，refreshtoken：" + refreshToken);
+                    result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
+                    return result;
+                }
+                if (refreshToken.startsWith(CommonConstant.SG_TOKEN_START)) {
+                    renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
+                } else {
+                    //非4.2版本的sogou token要重新生成token
+                    renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig);
                 }
             } else {
                 result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
                 return result;
             }
-            renewAccountToken = pcAccountTokenService.initialAccountToken(passportId, instanceId, appConfig); //该接口之前调用 initialOrUpdateAccountToken
+
             if (renewAccountToken != null) { // 登录成功
                 OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());
@@ -165,6 +171,20 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
         }
     }
 
+    private boolean isRightPcRToken(String passportId, int clientId, String instanceId, String refreshToken) throws Exception {
+        if (refreshToken.length() == SHPlusConstant.SHPl_TOKEN_LEN) {
+            String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
+            if (accessToken != null) {
+                // 记录log，等以后不再验证sohuplus的token了去掉这段逻辑
+                shPlusTokenLog.info("[SHPlusToken] verify shplus refreshtoken，refreshtoken：" + refreshToken);
+                return true;
+            }
+            return false;
+        } else {
+            boolean isRightPcRToken = pcAccountManager.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+            return isRightPcRToken;
+        }
+    }
 }
 
 

@@ -216,9 +216,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
         try {
             requestModel.addParam("uid", passportId);
             uniqname = SGHttpClient.executeStr(requestModel);
-            if (Strings.isNullOrEmpty(uniqname)) {
-                uniqname = passportId.substring(0, passportId.indexOf("@"));
-            }
         } catch (Exception e) {
             logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
         }
@@ -228,7 +225,11 @@ public class PCAccountManagerImpl implements PCAccountManager {
     @Override
     public String getUniqnameByClientId(String passportId, int clientId) {
         if (CommonConstant.IS_USE_IEBBS_UNIQNAME && CommonHelper.isExplorerToken(clientId)) {
-            return getBrowserBbsUniqname(passportId);
+            String uniqname = getBrowserBbsUniqname(passportId);
+            if (Strings.isNullOrEmpty(uniqname)) {
+                uniqname = passportId.substring(0, passportId.indexOf("@"));
+            }
+            return uniqname;
         }
         return (passportId.substring(0, passportId.indexOf("@")));
     }
@@ -245,7 +246,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
         return finalResult;
     }
 
-    private Result updateAccountToken(String passportId, String instanceId, AppConfig appConfig) {
+    @Override
+    public Result updateAccountToken(String passportId, String instanceId, AppConfig appConfig) {
         Result finalResult = new APIResultSupport(false);
         AccountToken accountToken = pcAccountService.updateAccountToken(passportId, instanceId, appConfig);
         if (accountToken != null) {
@@ -324,35 +326,4 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private String getSig(String passportId, int clientId, String refreshToken, String timestamp, String clientSecret) throws Exception {
         return Coder.encryptMD5(passportId + clientId + refreshToken + timestamp + clientSecret);
     }
-
-    @Override
-    public Result queryPassportIdByAccessToken(String token,int clientId){
-        Result finalResult = new APIResultSupport(false);
-        try {
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
-                return finalResult;
-            }
-            String passportId = TokenDecrypt.decryptPcToken(token, appConfig.getClientSecret());
-            if(StringUtils.isEmpty(passportId)){
-                if(clientId == CommonConstant.BROWSER_CLIENTID){
-                    //TODO 通过sohu+ token获取userid
-                    passportId="";
-                }
-            }
-            if(StringUtils.isEmpty(passportId)){
-                finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
-                return finalResult;
-            }
-            finalResult.setSuccess(true);
-            finalResult.setDefaultModel(passportId);
-            return finalResult;
-        } catch (Exception e) {
-            logger.error("createToken fail", e);
-            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return finalResult;
-        }
-    }
-
 }

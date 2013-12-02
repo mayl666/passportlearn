@@ -7,17 +7,17 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
     <script type="text/javascript">
         var splus = {};
-//        splus.bru = "";
-//        splus.sp_status = "1";
-##        splus.sname = '${sname}';
+        splus.bru = "";
+        splus.sp_status = "1";
+        splus.sname = '${sname}';
         splus.nick = '${nick}';
-//        splus.sid = "0";
+        splus.sid = "0";
         splus.passport = '${passport}';
         splus.accesstoken = '${accesstoken}';
         splus.refreshtoken = '${refreshtoken}';
         splus.result = "0";
         splus.logintype = '${logintype}';
-//        splus._timestamp = "201308061701";
+        splus._timestamp = "201308061701";
     </script>
     <script src="/./static/js/oauth2pc/require-jquery.js?t=168932"
             data-main="/./static/js/oauth2pc/main.js"></script>

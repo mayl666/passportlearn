@@ -32,7 +32,7 @@ public class AES {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encVal = c.doFinal(data.getBytes());
+        byte[] encVal = c.doFinal(data.getBytes("utf-8"));
         String encryptedValue = Coder.encryptBase64URLSafeString(encVal);
         return encryptedValue;
     }
@@ -52,7 +52,7 @@ public class AES {
         byte[] decordedValue = Base64.decodeBase64(encryptedData);
         byte[] decValue = c.doFinal(decordedValue);
 
-        String decryptedValue = new String(decValue);
+        String decryptedValue = new String(decValue,"utf-8");
         return decryptedValue;
     }
 

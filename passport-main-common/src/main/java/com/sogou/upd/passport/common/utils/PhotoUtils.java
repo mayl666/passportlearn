@@ -37,26 +37,24 @@ public class PhotoUtils {
 
     private String cdnURL = "http://imgstore.cdn.sogou.com";
     private String storageEngineURL ;
-    private int timeout;               // timeout毫秒数
+    private int timeout=5000;               // timeout毫秒数
     private String appid;
     private Map<String, String> sizeToAppIdMap = null;
-    private List<String> listCDN=null;
+    private List<String> listCDN = null;
 
     //图片名生成规则
     private static Random random = new JVMRandom();
-    private static char [] chs = new char[]{
-            '0','1','2','3','4','5','6','7','8','9',
-            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-            'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
+    private static char[] chs = new char[]{
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     };
 
 
     static final Logger logger = LoggerFactory.getLogger(PhotoUtils.class);
 
     public void init() {
-        httpClient = new DefaultHttpClient();
-        httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
-        httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
+        httpClient = SGHttpClient.WebClientDevWrapper.wrapClient(new DefaultHttpClient());
         /**
          * 30x30     100140006
          * 50x50     100140007
@@ -65,42 +63,39 @@ public class PhotoUtils {
         sizeToAppIdMap = new HashMap<String, String>();
         sizeToAppIdMap.put("30", "100140006");
         sizeToAppIdMap.put("50", "100140007");
-        sizeToAppIdMap.put("55", "100140010");
         sizeToAppIdMap.put("180", "100140008");
 
         //初始化cdn列表
-        listCDN=new ArrayList<String>();
+        listCDN = new ArrayList<String>();
         listCDN.add("http://imgstore01.cdn.sogou.com");
         listCDN.add("http://imgstore02.cdn.sogou.com");
         listCDN.add("http://imgstore03.cdn.sogou.com");
         listCDN.add("http://imgstore04.cdn.sogou.com");
     }
     //图片名生成
-    public String generalFileName()
-    {
+    public String generalFileName() {
         StringBuilder sb = new StringBuilder();
-        for(int i=0;i<16;i++)
-        {
+        for (int i = 0; i < 16; i++) {
             sb.append(chs[random.nextInt(62)]);
         }
         sb.append("_");
         sb.append(System.currentTimeMillis());
         return sb.toString();
     }
+
     //获取size对应的appId
     public String getAppIdBySize(String size) {
         return sizeToAppIdMap.get(size);
     }
 
     //获取所有图片尺寸
-    public String[] getAllImageSize(){
-        Map<String,String> map=getAllAppId();
+    public String[] getAllImageSize() {
+        Map<String, String> map = getAllAppId();
 
-        String []imgSize=map.keySet().toArray(new String[map.size()]);
+        String[] imgSize = map.keySet().toArray(new String[map.size()]);
 
         return imgSize;
     }
-
 
     //获取所有appId
     public Map<String, String> getAllAppId() {
@@ -108,12 +103,12 @@ public class PhotoUtils {
     }
 
     //随机获取cdn域名
-    public String getCdnURL(){
+    public String getCdnURL() {
         return listCDN.get(new Random().nextInt(listCDN.size()));
     }
 
     //获取图片尺寸个数
-    public int getImgSizeCount(){
+    public int getImgSizeCount() {
         return sizeToAppIdMap.size();
     }
 
@@ -122,9 +117,9 @@ public class PhotoUtils {
      * @param webUrl 网络图片的url
      * @return imgUrl sg图片Url
      */
-    public String uploadWebImg(String webUrl){
-        String imgName = generalFileName();
+    public String uploadWebImg(String webUrl) {
         String imgURL = "";
+        String imgName = generalFileName();
         // 上传到OP图片平台
         if (uploadImg(imgName, null, webUrl, "1")) {
             imgURL = accessURLTemplate(imgName);
@@ -132,11 +127,11 @@ public class PhotoUtils {
         return imgURL;
     }
 
-    public boolean uploadImg(String picNameInURL, byte[] picBytes,String webUrl,String uploadType){
+    public boolean uploadImg(String picNameInURL, byte[] picBytes, String webUrl, String uploadType) {
 
         MultipartEntity reqEntity = new MultipartEntity();
 
-        switch (Integer.parseInt(uploadType)){
+        switch (Integer.parseInt(uploadType)) {
             case 0://本地文件上传
                 ByteArrayBody byteArrayBody = new ByteArrayBody(picBytes, picNameInURL);
                 reqEntity.addPart("f1", byteArrayBody);
@@ -193,7 +188,6 @@ public class PhotoUtils {
                         return false;
                     }
                 }
-
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             } finally {
@@ -206,13 +200,16 @@ public class PhotoUtils {
         }
         return true;
     }
+
     public static <T> Set<T> asSet(T... args) {
         return new HashSet<T>(Arrays.asList(args));
     }
+
     //拼接url
     public String accessURLTemplate(String picNameInURL) {
         return new StringBuilder("%s").append("/app/a/%s").append("/").append(picNameInURL).toString();
     }
+
     //判断后缀
     public static boolean checkPhotoExt(byte[] buf) {
         String str = bytesToHexString(buf);
@@ -230,16 +227,16 @@ public class PhotoUtils {
         return false;
     }
 
-    public Result uploadAvatar(String imgUrl){
+    public Result uploadAvatar(String imgUrl) {
         Result result = new APIResultSupport(false);
         String imgName = generalFileName();
         if (uploadImg(imgName, null, imgUrl, "1")) {
-            String[] imgSize=getAllImageSize();
-            StringBuilder sb=new StringBuilder();
-            for (String imgsize:imgSize){
-                sb.append(imgsize+",");
+            String[] imgSize = getAllImageSize();
+            StringBuilder sb = new StringBuilder();
+            for (String imgsize : imgSize) {
+                sb.append(imgsize + ",");
             }
-            result=obtainPhoto(accessURLTemplate(imgName), sb.toString());
+            result = obtainPhoto(accessURLTemplate(imgName), sb.toString());
         }
         return result;
     }

@@ -4,8 +4,9 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -28,7 +29,7 @@ public class IndexAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
-    private AccountInfoManager accountInfoManager;
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     @RequestMapping(value = { "/index", "/" })
     @LoginRequired(value = false)
@@ -45,17 +46,28 @@ public class IndexAction extends BaseController {
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
+                //获取昵称
+//                String nickName = hostHolder.getNickName();
+//                if (Strings.isNullOrEmpty(nickName)) {
+//                    nickName = userId;
+//                }
+//                GetUserInfoApiparams infoApiparams=new GetUserInfoApiparams();
+//                infoApiparams.setUserid(userId);
+//                Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+//                if(shPlusResult.isSuccess()){
+//                    Object obj= shPlusResult.getModels().get("baseInfo");
+//                    if(obj!=null){
+//                        AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
+//                        String uniqname=baseInfo.getUniqname();
+//                        result.setDefaultModel("username", Strings.isNullOrEmpty(uniqname)?userId:uniqname);
+//                    } else {
+//                        result.setDefaultModel("username", nickName);
+//                    }
+//                }
 
-            //获取昵称
-            String nickName = hostHolder.getNickName();
-            if (Strings.isNullOrEmpty(nickName)) {
-                nickName = userId;
-            }
-
-            result.setDefaultModel("username", nickName);
-
-            result.setDefaultModel("disable", true);
-            result.setSuccess(true);
+                result.setDefaultModel("username", oAuth2ResourceManager.getUniqname(userId));
+                result.setDefaultModel("disable", true);
+                result.setSuccess(true);
             } else {
                 result = secureManager.queryAccountSecureInfo(userId, clientId, true);
             }

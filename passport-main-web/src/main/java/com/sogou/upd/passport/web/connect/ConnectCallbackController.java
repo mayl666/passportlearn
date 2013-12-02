@@ -79,7 +79,9 @@ public class ConnectCallbackController extends BaseConnectController {
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 return new ModelAndView(viewUrl);
-            } else {
+            } else if(ConnectTypeEnum.PC.toString().equals(type)){
+                return new ModelAndView(viewUrl);
+            }else {
                 return new ModelAndView(new RedirectView(viewUrl));
             }
         }

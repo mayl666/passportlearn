@@ -1,19 +1,19 @@
 /**
-  * login.js
-  *
-  * changelog
-  * 2013-11-21[15:11:34]:copied
-  *
-  * @info yinyong,osx-x64,UTF-8,10.129.173.11,js,/Volumes/yinyong/sohuplus/static/js/oauth2pc/app
-  * @author yinyong#sogou-inc.com
-  * @version 0.0.1
-  * @since 0.0.1
-  */
+ * login.js
+ *
+ * changelog
+ * 2013-11-21[15:11:34]:copied
+ * 2013-11-29[18:12:03]:what a mess....
+ *
+ * @adapt someone#sogou-inc.com
+ * @version 0.0.2
+ * @since 0.0.1
+ */
 
 ;
-define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], function(md5,utils,common) {
+define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], function(md5, utils, common) {
     //user login and register
-    var _g_client_id=(window.splus&&splus._client_id)||1044;
+    var _g_client_id = (window.splus && splus._client_id) || 1044;
     /**
      * Fixed JSON
      * @param  {[type]} result [description]
@@ -30,13 +30,9 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
         }
         return {};
     }
-   // function Login() {};
-    var Login/*.prototype*/ = {
-
+    var Login= {
         constructor: Login,
-
         submited: false,
-
         firstVisit: true,
 
         init: function() {
@@ -45,12 +41,10 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             this.initEvents()
             this.initLoginHistory();
             this.initDropdownEvents();
-            //yinyong@sogou-inc.com,2013-11-21[16:29:48]
-            //init vcode img
             this.refreshVcode($('.chkPic img'));
             $('[name=account]').focus();
         },
-        sogouBaseurl: location.origin,//'//account.sogou.com',
+        sogouBaseurl: location.origin, 
         //事件代理
         initEvents: function() {
             var self = this,
@@ -60,10 +54,6 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             this.$form = $form;
             //禁止form默认提交
             $form.on('submit', function(e) {
-                return false
-            })
-            //点击登录按钮进行登录操作
-            .on('click', 'button.btn', function(e) {
                 self.doLogin()
                 return false
             })
@@ -71,55 +61,54 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             .on('focus', 'input', function(e) {
                 var $input = $(e.target);
                 $input.removeClass('error');
-                $input.next('span.position-tips').html('');
-
+                $input.next('span.position-tips').empty();
                 $('#out_error').empty().hide();
-
             })
             //检验是否需要验证码
             .on('blur', 'input[name=account]', function(e) {
                 var $account = $(e.target);
                 //如果用户未输入账号,不进行校验
-                if (!$account.val()) return;
-                //yinyong@sogou-inc.com,2013-11-21[20:58:12]
+                if (!$account.val()||$('.ppselecter').is(':visible')) return;
                 if (!self.check($account, self.validObj.account)) {
                     self.submited = false;
                     return;
                 }
                 $.ajax({
-                    //yinyong@sogou-inc.com,2013-11-21[15:53:52]
-                    //fixed url
-                    url: self.sogouBaseurl + self.interfaces.checkNeedCaptcha,// '/a/sogou/checkLoginName',
+                    url: self.sogouBaseurl + self.interfaces.checkNeedCaptcha, 
                     data: {
-                        //yinyong@sogou-inc.com,2013-11-21[15:55:38]
-                        //fixed param name
-                        username/*loginName*/: $account.val(),
+                        username : $account.val(),
                         client_id: _g_client_id
                     },
-                    type:'get'/* 'post'*/,//yinyong@sogou-inc.com,2013-11-21[15:56:02],fixed method
+                    type: 'get',
                     dataType: 'json'
                 }).done(function(result) {
 
-                    result=getJSON(result);
-                    //yinyong@sogou-inc.com,2013-11-21[15:57:45]
-                    //fixed validate method
-                    if (result.data && result.data.needCaptcha/*result.code !== 0*/) {
+                    result = getJSON(result);
+
+                    if (result.data && result.data.needCaptcha) {
 
                         $('div.vcode-area').show();
                     } else {
-                        //TODO : In order to facilitate the test there used show-method which  should use hide-method
                         $('div.vcode-area').hide();
+                    }
+
+                    switch(true){
+                        case result.status==0:break;
+                        case result.status!=0:
+                            self.showTips($account,$account.next('.position-tips'),result.statusText);
+                            break;
+                        default:;
                     }
 
                 })
             })
-            //yinyong@sogou-inc.com,2013-11-22[11:04:43]
+            //,2013-11-22[11:04:43]
             //valid password on blur
-            .on('blur','[name=password]',function(e){
-                var $pwd=$(e.target);
-                if(!$pwd.val())return;//ignore empty
-                if(!self.check($pwd,self.validObj.password)){
-                    self.submited=false;
+            .on('blur', '[name=password]', function(e) {
+                var $pwd = $(e.target);
+                if (!$pwd.val()) return; //ignore empty
+                if (!self.check($pwd, self.validObj.password)) {
+                    self.submited = false;
                     return;
                 }
             })
@@ -166,169 +155,159 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
 
                 }
             })
-            //yinyong@sogou-inc.com,2013-11-22[11:13:08]
             //error msg unclickable
-            .on('click','.position-tips',function(e){
-                $(e.target).hide().empty().prev('input').removeClass('error').focus();
+            .on('click', '.position-tips', function(e) {
+                $(this).hide().empty().prev('input').removeClass('error').focus();
             });
-        //yinyong@sogou-inc.com,2013-11-21[16:24:21]
-        $(document).click(function(e){
-            $('i.outside-arrow').closest('div.selected').next('ul.outside-list').hide();
-        });
+
+            $(document).click(function(e) {
+                $('i.outside-arrow').closest('div.selected').next('ul.outside-list').hide();
+            });
         },
-        initDropdownEvents : function(){
+        initDropdownEvents: function() {
             var self = this,
                 list = self.list,
-                index = -1 ,
-                //yinyong@sogou-inc.com,2013-11-21[15:59:09],
-                //fixed url
-                delUrl = self.sogouBaseurl + self.interfaces.deleteLoginHistory,//"/a/sogou/loginhistory/delete",
+                index = -1,
                 $form = self.$form,
-                $mail = $('input[name=account]',$form),
-                $selectBox = $("div.ppselecter") ;
+                $mail = $('input[name=account]', $form),
+                $selectBox = $("div.ppselecter");
 
-            $mail.on("blur", function(e) {
+                $mail.on("blur", function(e) {
+    
+                })
+                .on("keydown", function(e) {
+                    var $this = $(e.delegateTarget),
 
-            })
-            .on("keydown", function(e) {
-                var $this = $(e.delegateTarget),
+                        $lis = $selectBox.find("ul>li"),
+                        $btn = $(".select-btn");
 
-                    $lis = $selectBox.find("ul>li"),
-                    $btn = $(".select-btn")
+                        switch (e.keyCode) {
+                            case 13:
+                                e.preventDefault();
+                            case 9:
+                                if ($selectBox.is(":visible")) {
+                                    $("ul>li.hover", $selectBox).trigger("click");
+                                }
+                                $selectBox.hide();
+                                break
+                            case 38:
+                                e.preventDefault();
 
-                    switch (e.keyCode) {
-                        case 9:
-                            if ($selectBox.is(":visible")) {
-                                $("ul>li[class=hover]", $selectBox).trigger("click")
-                            }
-                            break
-                        case 38:
-                            e.preventDefault()
+                                if ($selectBox.is(":visible")) {
 
-                            if ($selectBox.is(":visible")) {
-
-                                if (index <= 0) {
-                                    $lis.removeClass("hover")
-                                    index = $lis.length
-                                    $this.val("")
-                                } else {
-                                    var $li = $("ul>li[index=" + (--index) + "]", $selectBox)
-                                    $li.addClass("hover")
-                                    $li.siblings().removeClass("hover")
-                                    var sname = $li.find("div.caption>p.id").html()
-                                    if (sname) {
-                                        sname = sname.replace(/<b>(\S*)<\/b>/, "$1")
-                                        $this.val(sname)
+                                    if (index <= 0) {
+                                        $lis.removeClass("hover");
+                                        index = $lis.length;
+                                        $this.val("");
+                                    } else {
+                                        var $li = $("ul>li[index=" + (--index) + "]", $selectBox)
+                                        $li.addClass("hover");
+                                        $li.siblings().removeClass("hover");
+                                        var sname = $li.find("div.caption>p.id").html();
+                                        if (sname) {
+                                            sname = sname.replace(/<b>(\S*)<\/b>/, "$1");
+                                            $this.val(sname);
+                                        }
                                     }
                                 }
-                            }
-                            break
-                        case 40:
+                                break
+                            case 40:
 
-                            e.preventDefault()
-                            if (!$selectBox.is(":visible")) {
-                                $selectBox.show()
-                            }
-                            if (index >= $lis.length - 1) {
-                                $this.val("")
-                                $lis.removeClass("hover")
-                                index = -1
-                            } else {
-                                var $li = $("ul>li[index=" + (++index) + "]", $selectBox)
-                                $li.addClass("hover")
-                                $li.siblings().removeClass("hover")
-
-                                var sname = $li.find("div.caption>p.id").html()
-                                if (sname) {
-                                    sname = sname.replace(/<b>(\S*)<\/b>/, "$1")
-                                    $this.val(sname)
+                                e.preventDefault()
+                                if (!$selectBox.is(":visible")) {
+                                    $selectBox.show()
                                 }
-                            }
-                            break
-                    }
-            })
-            .on("click", function(e) {
-                e.stopPropagation()
-            }).on("input", function(e) {
-                e.stopPropagation()
-                var val = $.trim($(this).val())
-                var _list = $.map(list, function(obj) {
-                    var temp,
-                    sname = $.trim(obj.sname).replace(/<b>(\S*)<\/b>/, "$1"),
-                        index = sname.indexOf(val)
-                        if (index > -1) {
-                            return {
-                                img: obj.img,
-                                sname: sname.substr(0, index) + "<b>" + val + "</b>" + sname.substr(index + val.length),
-                                nick: obj.nick,
-                                type: obj.type,
-                                sid: obj.sid
-                            }
+                                if (index >= $lis.length - 1) {
+                                    $this.val("")
+                                    $lis.removeClass("hover")
+                                    index = -1
+                                } else {
+                                    var $li = $("ul>li[index=" + (++index) + "]", $selectBox);
+                                    $li.addClass("hover");
+                                    $li.siblings().removeClass("hover");
+
+                                    var sname = $li.find("div.caption>p.id").html();
+                                    if (sname) {
+                                        sname = sname.replace(/<b>(\S*)<\/b>/, "$1");
+                                        $this.val(sname);
+                                    }
+                                }
+                                break;
                         }
-                    return null
                 })
-                if (_list.length < 1) {
-                    $selectBox.hide()
-                    return
-                } else {
-                    self.renderSelect($selectBox, _list)
-                    $selectBox.show()
-                }
-            })
+                .on("click", function(e) {
+                    e.stopPropagation()
+                }).on("input", function(e) {
+                    e.stopPropagation()
+                    var val = $.trim($(this).val());
+                    if(val){
+                        $('.select-btn').hide()
+                    }else{
+                        $('.select-btn').show();
+                    }
+                    var _list = $.map(self.list, function(obj) {
+                        var temp,
+                            sname = $.trim(obj).replace(/<b>(\S*)<\/b>/, "$1"),
+                            index = sname.indexOf(val);
+                        if (index > -1) {
+                            return sname; 
+                        }
+                        return null;
+                    })
+                    if (_list.length < 1) {
+                        $selectBox.hide();
+                        return;
+                    } else {
+                        self.renderSelect($selectBox, _list);
+                        $selectBox.show();
+                    }
+                })
 
             //点击小箭头dropdown显示
-            $form.on("click",".select-btn", function(e) {
-                e.stopPropagation()
-                $mail.focus()
-                $selectBox.toggle()
+            $form.on("click", ".select-btn", function(e) {
+                e.stopPropagation();
+                $mail.focus();
+                $selectBox.toggle();
+                self.toggleArrDirection();
             })
             //鼠标点击页面其他地方,dropdown消失
             $(window).on("click", function(e) {
                 $selectBox.hide(function() {
-                    $("ul>li", $selectBox).removeClass("hover")
+                    $("ul>li", $selectBox).removeClass("hover");
                 })
-                e.stopPropagation()
+                e.stopPropagation();
             })
 
             $selectBox.on("mouseenter", "ul li", function(e) {
-                $(this).addClass("hover")
-                $(this).siblings().removeClass("hover")
-            }).on("click",'ul', function(e) {
-                e.stopPropagation()
+                $(this).addClass("hover");
+                $(this).siblings().removeClass("hover");
+            }).on("click", 'ul', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
                 var $ele = $(e.target);
-                    if ($ele.closest('[sid]').length > 0) {
-
-                        var $sid = $ele.closest('[sid]'),
-                            sid = $sid.attr("sid")
-                            $.post(delUrl, {
-                                sid: sid
-                            }).done(function(result) {
-                                var _tempList = []
-                                $.each(list, function(index, val) {
-                                    if (val.sid != sid) {
-                                        _tempList.push(val)
-                                    }
-                                })
-                                self.list = _tempList
-                                $selectBox.hide(function() {
-                                    $("ul>li", $selectBox).removeClass("hover")
-                                })
-                                $mail.focus()
-                                self.getHistorySelect()
-                            })
-                    }
-                if ($ele.closest('[sid]').length < 1 && $ele.closest('li').length > 0) {
+                if ($ele.is('.del')) {
+                    var sid = $ele.attr("sname");
+                    $ele.parents('li').remove();
+                    self.delHistory(sid);
+                    self.list= self.list.filter(function(v){return sid!=v});
+                    if(!self.list.length){$selectBox.hide();}
+                    $mail.focus();
+                    return;
+                }else
+                if ($ele.closest('[sname]').length < 1 && $ele.closest('li').length > 0) {
 
                     var $li = $ele.closest('li'),
                         $password = $("input[name=password]", $form),
                         snameStr = $("p.id", $li).html(),
 
-                        sname = snameStr.replace(/<b>(\S*)<\/b>/, "$1")
-                    
-                        $mail.val(sname)
-                        $selectBox.hide(function() {
-                            $("ul>li", $selectBox).removeClass("hover")
-                        })
+                        sname = snameStr.replace(/<b>(\S*)<\/b>/, "$1");
+
+                    $mail.val(sname);
+                    $('.select-btn').hide();
+                    $selectBox.hide(function() {
+                        $("ul>li", $selectBox).removeClass("hover")
+                    });
+                    $mail.focus();
                 }
             })
         },
@@ -342,8 +321,6 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
                 exPassport = self.exPassport,
                 hasVcode = false,
                 $form = self.$form,
-                // $btn = $('button.btn',$form),
-
 
                 $account = $('input[name=account]', $form),
                 $accError = $account.next('span.position-tips'),
@@ -363,10 +340,10 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
                 this.submited = false;
                 return false
             }
-            //yinyong@sogou-inc.com,2013-11-22[11:03:15]
+            //,2013-11-22[11:03:15]
             //check again
-            if(!self.check($account,self.validObj.account)){
-                this.submited=false;
+            if (!self.check($account, self.validObj.account)) {
+                this.submited = false;
                 return false;
             }
 
@@ -375,10 +352,10 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
                 return false
             }
 
-            //yinyong@sogou-inc.com,2013-11-22[11:03:55]
+            //,2013-11-22[11:03:55]
             //check pwd
-            if(!self.check($password,self.validObj.password)){
-                this.submited=false;
+            if (!self.check($password, self.validObj.password)) {
+                this.submited = false;
                 return;
             }
 
@@ -391,111 +368,55 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             }
 
             var data,
-            instanceid = splus ? splus.instanceid : '',
+                instanceid = splus ? splus.instanceid : '',
                 password = md5($password.val()),
-                checked = $checked.is(':checked') ? 1 : 0;
+                checked = +$checked.is(':checked');
             data = {
-                loginname: $account.val(),
-                pwd: password,
+                username: $account.val(),
+                password: password,
                 rememberMe: 　checked,
-                //yinyong@sogou-inc.com,2013-11-21[16:01:55]
-                //add client_id
-                client_id:_g_client_id,
+                client_id: _g_client_id,
                 instanceid: instanceid,
-                token:$img.attr('data-token')
+                token: $img.attr('data-token')
             };
             if (hasVcode) {
-                //yinyong@sogou-inc.com,2013-11-21[16:02:44]
-                //fixed param name
-                data./*vcode*/captcha = $vcode.val();
+                data. /*vcode*/ captcha = $vcode.val();
             }
             $.ajax({
-                //yinyong@sogou-inc.com,2013-11-21[16:00:49]
-                //fixed url
-                url: self.sogouBaseurl + self.interfaces.login,//'/a/sogou/login?_input_encode=utf-8',
+                url: self.sogouBaseurl + self.interfaces.login, 
                 data: data,
                 type: 'post',
                 dataType: 'json'
             }).done(function(result) {
                 self.submited = false;
-                result=getJSON(result);//yinyong@sogou-inc.com,2013-11-21[16:05:31]
-                var code = result.status/*code*/,//yinyong@sogou-inc.com,2013-11-21[16:05:41]
+                result = getJSON(result); 
+                var code = result.status, 
                     data = result.data;
-                switch (/*code*/true) {//yinyong@sogou-inc.com,2013-11-21[16:06:10]
-                    case (0==code)://yinyong@sogou-inc.com,2013-11-21[16:06:23]
-                        /*var sname = data.sname,
-                            nick = data.nick,
-                            sid = data.sid,
-                            autoLogin = data.autologin,
-                            // passport = Base64.encode(data.passport)
-                            passport = data.passport
-                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + sname + '|' + nick + '|' + sid + '|' + passport + '|' + autoLogin
-                        // console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
-                        exPassport('result', msg)*/
-                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname||data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin||1)
+                switch (true) { 
+                    case (0 == code):
+                        self.saveHistory($account.val()); 
+                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname || data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin || 1)
                         console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
-                        //yinyong@sogou-inc.com,2013-11-21[16:07:11]
-                        //use retStatus object&array
-/*                    case 1:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-                        $accError.html('登录名不存在')
-                        $account.addClass('error')
-                        break
-                    case 2:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-                        $bottomError.html('登录名和密码不匹配').show()
-
-                        break
-                    case 3:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-
-                        $vcodeError.html('验证码错误')
-                        $vcode.addClass('error')
-
-
-                        break
-                    case 4:
-                        if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
-                        }
-
-                        $bottomError.html('登录行为异常，请稍候尝试登录').show()
-                        break*/
                     default:
-                       /* if (hasVcode) {
-                            self.refreshVcode($img)
-                            $vcode.val('')
+                        if (result.data && result.data.needCaptcha) {
+                            $('div.vcode-area').show();
+                            $vcode.val('').next('.position-tips').hide();
+                            self.refreshVcode($img);
                         }
+                        
+                        $password.val('').next('.position-tips').hide();
 
-                        $bottomError.html('网络异常，请稍后尝试登录').show()*/
                         if (/(10009|20205)/.test(code))
-                            $account.addClass('error').next('.position-tips').html(self.retStatus[code]).show();
-                        else if (20206==code)
-                            $password.addClass('error').next('.position-tips').text(self.retStatus.login[code]).show();
-                        else if (20221==code)
-                            $vcode.addClass('error').next('.position-tips').text(self.retStatus.login[code]).show();
+                            self.showTips($account,$account.next('.position-tips'),self.retStatus.login[code]);
+                        else if (20206 == code)
+                            self.showTips($password,$password.next('.position-tips'),self.retStatus.login[code]);
+                        else if (20221 == code)
+                            self.showTips($vcode,$vcode.next('.position-tips'),self.retStatus.login[code]);
                         else
                             $bottomError.html(self.retStatus.login[code] || result.statusText || "未知错误").show();
-                         
-                         $password.val('');
-                         //yinyong@sogou-inc.com,2013-11-23[16:42:42]
-                         if(result.data&&result.data.needCaptcha){
-                                $('div.vcode-area').show();
-                                $vcode.val('');
-                                self.refreshVcode($img);
-                         }
+
                         break;
                 }
 
@@ -507,41 +428,43 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
         },
         //校验是否为空
         checkEmpty: function($input, $error) {
-
-            return $input.val() == '' ? ($input.addClass('error'), $error.html('不能为空'), false) : true
-
+            return $input.val() == '' ?this.showTips($input,$error,'不能为空')&&false : true
         },
         //刷新验证码
         refreshVcode: function($img) {
-            //yinyong@sogou-inc.com,2013-11-21[16:09:05]
-            //Fixed
-           /* var self = this,
-                ts = new Date().getTime(),
-                url = self.sogouBaseurl + '/vcode/register/?nocache=' + ts
-                $img.attr('src', url)*/
-             var ts = +new Date,
+            var ts = +new Date,
                 token = utils.uuid(),
                 url = '/captcha?token=' + token + '&t=' + ts;
             $img.attr("src", url).attr("data-token", token);
         },
+        toggleArrDirection:function(){
+            var $btn=$('.select-btn'),$selectBox=$('.ppselecter');
+            if ($selectBox.is(':visible')) {
+                $btn.addClass('up');
+            } else {
+                $btn.removeClass('up');
+            }
+        },
         initLoginHistory: function() {
 
-            var login_arr = [],
-                login_history = splus ? 　splus.login_history : null;
+            var login_history = "";
+            try {
+                login_history = localStorage.getItem('login_history')
+            } catch (e) {}
 
-            this.formatHistoryData(login_history)
-            this.getHistorySelect()
+            this.formatHistoryData(login_history);
+            this.getHistorySelect();
         },
         getHistorySelect: function() {
             var $container = $("div.ppselecter"),
                 self = this,
                 list = this.list
-                if (list && list.length && list.length > 0) {
-                    $(".select-btn").show()
-                } else {
-                    $(".select-btn").hide()
-                }
-                self.renderSelect($container, list)
+            if (list && list.length && list.length > 0) {
+                $(".select-btn").show()
+            } else {
+                $(".select-btn").hide()
+            }
+            self.renderSelect($container, list)
         },
         renderSelect: function($container, list) {
             var self = this
@@ -550,14 +473,12 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             $.each(list, function(index, obj) {
                 var liHtml = [
                     '<li index="' + index + '">',
-                    '   <div class="photo">',
-                    '       <img src="' + obj.img + '">',
-                    '   </div>',
                     '   <div class="caption">',
-                    '       <p class="id">' + obj.sname + '</p>',
+                    '       <p class="id">' + obj + '</p>',
                     '   </div>',
-                    '   <a href="javascript:" class="del" sid="' + obj.sid + '" title="删除">×</a>',
-                    '</li>'].join("")
+                    '   <span class="del" sname="' + obj + '" title="删除">×</span>',
+                    '</li>'
+                ].join("")
                 $ul.append(liHtml)
             })
             $container.append($ul)
@@ -569,26 +490,15 @@ define(['lib/md5','lib/utils','lib/common', 'lib/placeholder', 'lib/base64'], fu
             if (login_history) {　
                 login_arr = login_history.split("|")
                 if (login_arr.length > 0) {
-                    $.each(login_arr, function(index, val) {
-                        var _tempObj,
-                        _arr = val.split(",")
-                        for (var i = 0; i < _arr.length; i++) {
-                            _tempObj = {
-                                img: _arr[3],
-                                sname: _arr[1],
-                                nick: _arr[2],
-                                type: _arr[4],
-                                sid: _arr[0]
-                            }
-                        }
-                        list.push(_tempObj)
-                    })
+                    list = login_arr.filter(function(k) {
+                        return !!k;
+                    });
                 }
             }
             this.list = list
         }
 
-    }
-    $.extend(Login,common)
+    };
+    $.extend(Login, common)
     return Login;
 });

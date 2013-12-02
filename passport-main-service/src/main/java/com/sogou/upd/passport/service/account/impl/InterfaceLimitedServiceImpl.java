@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,20 +30,21 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Service
 public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
-    private static final Logger logger = LoggerFactory.getLogger(InterfaceLimitedServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger("interfaceLimitedLogger");
 
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
     private ConfigDAO configDAO;
 
-    private static final float INTERFACE_PERCENT = (float) 0.03;
+    private static final float INTERFACE_PERCENT = (float) 0.01;
 
     @Override
     public void initAppLimitedList(String cacheKey, String key, String limiTimes) throws ServiceException {
         try {
             if (Strings.isNullOrEmpty(redisUtils.hGet(cacheKey, key))) {
                 redisUtils.hPutExpire(cacheKey, key, limiTimes, DateAndNumTimesConstant.TIME_FIVE_MINITUES);
+                logger.info("initAppLimited:"+ cacheKey + "," + key +","+limiTimes);
             }
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -132,7 +135,9 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                         map.put("flag", false);
                         return map;
                     } else {
+                        logger.info("ClientId:"+clientId +",Url:"+url+",Time:"+new SimpleDateFormat("HH:mm:ss").format(new Date())+",redis Surplus before:"+cacheTimes);
                         redisUtils.hIncrByTimes(cacheKey, url, -atomicGetTimes.get());
+                        logger.info("ClientId:"+clientId +",Url:"+url+",Time:"+new SimpleDateFormat("HH:mm:ss").format(new Date())+",redis Surplus after:"+redisUtils.hGet(cacheKey,url));
                     }
                     map.put("flag", true);
                     return map;

@@ -13,7 +13,6 @@ import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -36,47 +35,174 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     private UniqNamePassportMappingService uniqNamePassportMappingService;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
-    @Autowired
-    private TaskExecutor uploadImgExecutor;
 
+    private static final long ONE_MONTH = 30;
     private static final Logger logger = LoggerFactory.getLogger(AccountBaseInfoService.class);
+    private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
     @Override
-    public void asyncUpdateAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
-        if (connectUserInfoVO != null) {
-            uploadImgExecutor.execute(new UpdateAccountBaseInfoTask(passportId, connectUserInfoVO));
+    public AccountBaseInfo initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
+        String uniqname = connectUserInfoVO.getNickname();
+        String avatar = connectUserInfoVO.getImageURL();
+        if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
+            return null;
         }
-        return;
+        if (!Strings.isNullOrEmpty(avatar) && !avatar.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
+            avatar = photoUtils.uploadWebImg(avatar);
+        }
+        try {
+            AccountBaseInfo accountBaseInfo = queryAccountBaseInfo(passportId);
+            if (accountBaseInfo == null) { // 原来该用户无昵称头像
+                return insertAccountBaseInfo(passportId, uniqname, avatar);
+            } else {
+                String oldUniqname = accountBaseInfo.getUniqname();
+                String oldAvatar = accountBaseInfo.getAvatar();
+                if (!Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(oldAvatar)) {
+                    return null;
+                } else if (Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(uniqname)) {
+                    updateUniqname(accountBaseInfo, uniqname);
+                    return accountBaseInfo;
+                } else if (Strings.isNullOrEmpty(oldAvatar) && !Strings.isNullOrEmpty(avatar)) {
+                    updateAvatar(accountBaseInfo, avatar);
+                    return accountBaseInfo;
+                } else {
+                    return insertAccountBaseInfo(passportId, uniqname, avatar);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return null;
+        }
     }
 
+    @Override
+    public AccountBaseInfo queryAccountBaseInfo(String passportId) throws ServiceException {
+
+        String cacheKey = buildAccountBaseInfoKey(passportId);
+        AccountBaseInfo accountBaseInfo;
+        try {
+            accountBaseInfo = redisUtils.getObject(cacheKey, AccountBaseInfo.class);
+            if (accountBaseInfo == null) {
+                accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
+                if (accountBaseInfo != null) {
+                    redisUtils.set(cacheKey, accountBaseInfo);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("queryAccountBaseInfo fail!", e);
+            throw new ServiceException();
+        }
+        return accountBaseInfo;
+    }
 
     @Override
-    public boolean insertOrUpdateAccountBaseInfo(String passportId, String uniqname, String avatar) throws ServiceException {
+    public boolean updateUniqname(AccountBaseInfo oldBaseInfo, String uniqname) {
+        String oldUniqName = oldBaseInfo.getUniqname();
+        String passportId = oldBaseInfo.getPassportId();
         try {
-            boolean isInertMapping = true;
+            if (!oldUniqName.equals(uniqname)) {
+                //检查昵称是否存在
+                if (isUniqNameExist(uniqname)) {
+                    return false;
+                }
+                //更新数据库
+                int row = accountBaseInfoDAO.updateUniqnameByPassportId(uniqname, passportId);
+                if (row > 0) {
+                    String cacheKey = buildAccountBaseInfoKey(passportId);
+                    oldBaseInfo.setUniqname(uniqname);
+                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    //移除原来映射表
+                    if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
+                        boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                        return isInsert;
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateAvatar(AccountBaseInfo oldBaseInfo, String avatar) {
+        String passportId = oldBaseInfo.getPassportId();
+        try {
+            //更新数据库
+            if (!avatar.equals(oldBaseInfo.getAvatar())) {
+                int row = accountBaseInfoDAO.updateAvatarByPassportId(avatar, passportId);
+                if (row > 0) {
+                    String cacheKey = buildAccountBaseInfoKey(passportId);
+                    oldBaseInfo.setAvatar(avatar);
+                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return false;
+        }
+    }
+
+    @Override
+    public AccountBaseInfo insertAccountBaseInfo(String passportId, String uniqname, String avatar) throws ServiceException {
+        try {
+            boolean isInertUniqnameMapping = true;  // 是否插入UniqnameMapping表
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-                return true;
+                return null;
             }
-            String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
-            if (!Strings.isNullOrEmpty(existPassportId)) {
-                uniqname = "";      // 如果第三方昵称重复则默认为空
-            } else {
-                isInertMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                if (isUniqNameExist(uniqname)) {
+                    uniqname = "";      // 如果昵称重复则置为空
+                } else {
+                    isInertUniqnameMapping = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                }
             }
-            if (isInertMapping) {
+            if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
+                return null;
+            }
+            if (isInertUniqnameMapping) {
                 AccountBaseInfo accountBaseInfo = newAccountBaseInfo(passportId, uniqname, avatar);
                 int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
                 if (accountBaseInfoRow > 0) {
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
-                    return true;
+                    redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    return accountBaseInfo;
                 }
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            return null;
+        }
+    }
+
+    @Override
+    public boolean simpleSaveAccountBaseInfo(AccountBaseInfo accountBaseInfo) {
+        String passportId = accountBaseInfo.getPassportId();
+        try {
+            int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
+            if (accountBaseInfoRow > 0) {
+                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
+                redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                return true;
             }
             return false;
         } catch (Exception e) {
-            logger.error("insertOrUpdateAccountBaseInfo fail", e);
-            throw new ServiceException(e);
+            logger.error("simpleSaveAccountBaseInfo fail", e);
+            return false;
         }
+    }
+
+    public boolean isUniqNameExist(String uniqname) {
+        if (!Strings.isNullOrEmpty(uniqname)) {
+            String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);
+            if (Strings.isNullOrEmpty(existPassportId)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private AccountBaseInfo newAccountBaseInfo(String passportId, String uniqname, String avatar) {
@@ -87,22 +213,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         return accountBaseInfo;
     }
 
-    class UpdateAccountBaseInfoTask implements Runnable {
-
-        private String passportId;
-        private ConnectUserInfoVO connectUserInfoVO;
-
-        UpdateAccountBaseInfoTask(String passportId, ConnectUserInfoVO connectUserInfoVO) {
-            this.passportId = passportId;
-            this.connectUserInfoVO = connectUserInfoVO;
-        }
-
-        @Override
-        public void run() {
-            String uniqname = connectUserInfoVO.getNickname();
-            String connectAvatarUrl = connectUserInfoVO.getImageURL();
-            String avatar = photoUtils.uploadWebImg(connectAvatarUrl);
-            insertOrUpdateAccountBaseInfo(passportId, uniqname, avatar);
-        }
+    private String buildAccountBaseInfoKey(String passportId) {
+        return CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
     }
 }

@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 
 /**
@@ -12,20 +14,58 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 public interface AccountBaseInfoService {
 
     /**
-     * 异步更新第三方个人资料
+     * 初始化第三方个人资料
+     *
      * @param passportId
      * @param connectUserInfoVO
      */
-    public void asyncUpdateAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO);
+    public AccountBaseInfo initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO);
 
     /**
-     * 存在则插入，不存在则更新AccountBaseInfo
-     * 写AccountBaseInfo缓存和数据库
-     * 写uniqname_passportid_mapping缓存和数据库
+     * 获取个人资料
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public AccountBaseInfo queryAccountBaseInfo(String passportId) throws ServiceException;
+
+    /**
+     * 先昵称是否唯一
+     * 更新昵称表，更新映射表
+     *
+     * @param oldBaseInfo
+     * @param uniqname 更新的昵称
+     */
+    public boolean updateUniqname(AccountBaseInfo oldBaseInfo, String uniqname);
+
+    /**
+     * 未检查昵称是否唯一，默认是唯一的
+     * 更新昵称表，更新映射表
+     *
+     * @param oldBaseInfo
+     * @param avatar 更新的头像
+     */
+    public boolean updateAvatar(AccountBaseInfo oldBaseInfo, String avatar);
+
+    /**
+     * 插入昵称和头像，默认用户原来不存在昵称头像
+     *
      * @param passportId
      * @param uniqname
      * @param avatar
      * @return
      */
-    public boolean insertOrUpdateAccountBaseInfo(String passportId, String uniqname, String avatar);
+    public AccountBaseInfo insertAccountBaseInfo(String passportId, String uniqname, String avatar);
+
+    /**
+     * 插入昵称和头像
+     * 不做任何昵称和头像逻辑判断，只是存在则更新，不存在则插入
+     *
+     * @param accountBaseInfo
+     * @return
+     * @throws ServiceException
+     */
+    public boolean simpleSaveAccountBaseInfo(AccountBaseInfo accountBaseInfo);
+
 }

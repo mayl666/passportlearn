@@ -15,8 +15,8 @@
     </bean>
     <bean id="cacheConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="${passport.redis.url}"/>-->
-        <!--<property name="port" value="${passport.redis.port}"/>-->
+        <property name="hostName" value="10.12.139.204"/>
+        <property name="port" value="6379"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
@@ -38,7 +38,7 @@
     </bean>
     <bean id="kvConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="10.12.139.205"/>
+        <property name="hostName" value="tair.store.z.sogou-op.org"/>
         <property name="port" value="6379"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
@@ -61,8 +61,8 @@
     </bean>
     <bean id="tokenConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="${passport.tokenRedis.url}"/>-->
-        <!--<property name="port" value="${passport.tokenRedis.port}"/>-->
+        <property name="hostName" value="10.12.139.205"/>
+        <property name="port" value="6379"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
@@ -76,12 +76,12 @@
 
     <!--热切换redis-->
     <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <constructor-arg name="zks" value="10.16.135.181:2181,10.16.135.181:3181"/>
+        <constructor-arg name="zks" value="10.16.135.181:2181"/>
     </bean>
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor"/>
-        <constructor-arg name="cachePath" value="/sogou_passport/redis_info/redis_node/cache"/>
-        <constructor-arg name="tokenPath" value="/sogou_passport/redis_info/redis_node/token"/>
+        <constructor-arg name="cachePath" value="/sogou_passport/redis_info/redis_node/cache" />
+        <constructor-arg name="tokenPath" value="/sogou_passport/redis_info/redis_node/token" />
         <constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>
         <constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>
     </bean>

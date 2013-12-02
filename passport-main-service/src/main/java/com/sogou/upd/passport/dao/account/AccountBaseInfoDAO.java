@@ -6,6 +6,8 @@ import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import org.springframework.dao.DataAccessException;
 
+import java.util.List;
+
 /**
  * User: mayan
  * Date: 13-11-27
@@ -35,6 +37,15 @@ public interface AccountBaseInfoDAO {
             TABLE_NAME +
             " where passport_id=:passport_id")
     public AccountBaseInfo getAccountBaseInfoByPassportId(@SQLParam("passport_id") String passport_id) throws DataAccessException;
+
+    /**
+     * 根据passportId获取Account
+     */
+    @SQL("select" +
+            ALL_FIELD +
+            "from" +
+            TABLE_NAME )
+    public List<AccountBaseInfo> listAccountBaseInfo() throws DataAccessException;
 
     /**
      * 修改头像信息

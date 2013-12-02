@@ -31,17 +31,17 @@ define([], function() {
         retStatus: {
             checkSname: {
                // "10002": "必填参数错误",
-                "20201": "此帐号已注册，请直接登录",
+                "20201": "此账号已注册，请直接登录",
                 "20217": "暂不支持邮箱注册",
-                "20225": "该手机号已注册或已绑定，请直接登录",
+                "20225": "该手机已注册",
                 "20241": " 暂不支持sohu域内邮箱注册 "
             },
             login: {
                 "10001": "系统级错误",
                 "10002": "参数错误,请输入必填的参数或参数验证失败",
-                "10009": "帐号不存在",
+                "10009": "账号不存在",
                 "20205": "账号不存在",
-                "20221": " 验证码验证失败",
+                "20221": " 验证码错误",
                 "20231": "登陆账号未激活",
                 "20232": "登陆账号被封杀",
                 "20230": "当前账号或者IP登陆操作存在异常",
@@ -66,11 +66,11 @@ define([], function() {
                 "20199": "当前注册ip次数已达上限或该ip已在黑名单中",
                 "20227": "密码必须为字母和数字且长度大于6位 ",
                 "20224": "当日注册次数已达上",
-                "20221": "验证码验证失败",
+                "20221": "验证码错误",
                 "10001": "未知错误",
                 "10010": "client_id不存在 ",
                 "20214": "验证码错误或已过期",
-                "20201": "此帐号已注册，请直接登录",
+                "20201": "此账号已注册，请直接登录",
                 "20230": "前账号或者IP操作存在异常"
             }
         },
@@ -78,22 +78,28 @@ define([], function() {
         //added
         validObj: {
             account: {
-                defaultMsg: "帐号/手机号/邮箱",
-                errMsg: '该登录名不存在',
-                emptyMsg: '请填写登录名',
+                defaultMsg: "账号/手机号/邮箱",
+                errMsg: '账号不存在',
+                emptyMsg: '请填写账号',
                 nullable: false,
                 regStr: /^\S{4,50}$/
             },
             regaccount:{
-                defaultMsg: "帐号/手机号/邮箱",
+                defaultMsg: "账号/手机号/邮箱",
                 errMsg: function(val){
                     if(!val)return this.emptyMsg;
                     else if(val.length<4||val.length>50)return "长度必须为4-50个字符";
-                    else return "注册用户名非法";
+                    else if(/^[^a-z]/.test(val)){
+                        return "首字符必须为小写字母";
+                    }
+                    else if(/^\d+$/.test(val)){
+                        return '不能全为数字';
+                    }
+                    else return '请用4-16位字母、数字或"-"';
                 },
-                emptyMsg: '请填写注册用户名',
+                emptyMsg: '不能为空',
                 nullable: false,
-                regStr: /^\S{4,50}$/
+                regStr:/^[a-z]([a-zA-Z0-9_.]{3,15})$/
             },
             phone: {
                 errMsg: '请正确填写手机号',
@@ -110,10 +116,10 @@ define([], function() {
             password: {
                 errMsg:function(val){
                     if(!val)return this.emptyMsg;
-                    if(val.length<6||val.length>16)return "长度必须为6-16位";
+                    if(val.length<6||val.length>16)return "请输入6-16位密码";
                     else return '密码必须字母、数字、下划线的组合';
                 },
-                emptyMsg: '请输入6-16位密码',
+                emptyMsg: '不能为空',
                 nullable: false,
                 regStr: /^\w{6,16}$/
             },
@@ -125,7 +131,7 @@ define([], function() {
             },
             regacc: {
                 errMsg: '必须是小写字母开头的4-16位字母、数字、“.”及“-”的组合',
-                emptyMsg: '请填写帐号',
+                emptyMsg: '请填写账号',
                 nullable: false,
                 regStr: /^[a-z][a-zA-Z0-9-\.]{3,15}$/
             },
@@ -163,25 +169,51 @@ define([], function() {
             }
 
             if (!nullable && inputValue == "") {
-                $input.addClass("error");
-                $error.html(emptyMsg).show();
+                self.showTips($input,$error,emptyMsg); 
                 return false;
             } else if (nullable && inputValue == "") {
-                $input.removeClass("error");
-                $error.html('').hide();
+                this.showTips($input,$error,'',true);
                 return true;
             } else {
                 if (!regrex.test(inputValue)) {
-                    $input.addClass("error");
-                    $error.html(typeof errMsg==='function'?errMsg.call(valid,inputValue):errMsg).show();
+                    self.showTips($input,$error,typeof errMsg==='function'?errMsg.call(valid,inputValue):errMsg);
                     return false;
                 } else {
-                    $input.removeClass("error");
-                    $error.html('').hide();
+                    this.showTips($input,$error,'',true);
                     return true;
                 }
             }
-        } //check
+        } ,//check
+        showTips:function($input,$error,msg,normal){
+            normal?$input.removeClass('error'):$input.addClass('error');
+            $error.show().html(msg+((!normal)?"<span class='x'>x</span>":'<span class="r"></span>'));
+        },
+        saveHistory:function(uname){
+            if(!uname||'undefined'===typeof localStorage)return false;
+            var LH=localStorage.getItem('login_history')||"";
+            var arr=LH.split('|');
+            if(!~arr.indexOf(uname)){
+               try{
+                arr.push(uname);
+                 localStorage.setItem('login_history',arr.join('|'));
+             }catch(e){
+                console.log(e);
+                return false;
+             }
+            }
+            return true;
+        },//saveHistory
+        delHistory:function(uname){
+             if(!uname||'undefined'===typeof localStorage)return false;
+              var LH=localStorage.getItem('login_history')||"";
+             var arr=LH.split('|');
+             var na=arr.filter(function(v,k){
+                return v!=uname;
+             });
 
+             localStorage.setItem('login_history',na.join('|'));
+
+             return true;
+        }//delHistory
     }
 });
