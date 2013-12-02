@@ -300,7 +300,12 @@ input[type="text"].error,input[type="password"].error{
 	background-position: 0 -120px;
 }
 .outside-arrow{
-	background-position: 0 -160px;
+	background-position: 12px -148px;
+	height: 34px;
+position: absolute;
+width: 34px;
+right: 0;
+left: auto;
 }
 .left-arrow{
 	background-position: 0 -202px;
@@ -451,15 +456,15 @@ input[type="text"].error,input[type="password"].error{
 .select-btn{
 	display: none;
 }
-.select-btn:before{
-	content: '';
-	display: inline-block;
-	width: 7px;
-	height: 4px;
-	background: url(outside.png?t=386738) -5px -166px no-repeat;
-	margin-left: -18px;
+.select-btn{
+	position: absolute;
+	width: 28px;
+	height: 28px;
+	background: url(outside.png?t=386738) 6px -152px no-repeat;
+	right: 0;
+	top: 0;
 }
-.select-btn.up:before{
+.select-btn.up{
    -webkit-transform:rotate(180deg);
    -moz-transform:rotate(180deg);
    -ms-transform:rotate(180deg);

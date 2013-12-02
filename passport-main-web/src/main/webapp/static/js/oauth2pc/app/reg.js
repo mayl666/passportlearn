@@ -29,11 +29,8 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         return {};
     }
     var Reg = {
-
         constructor: Reg,
-
         submited: false,
-
         init: function() {
 
             this.exPassport("size", "604", "360")
@@ -41,9 +38,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
 
             this.refreshVcode($('.chkPic img'));
         },
-
         sogouBaseurl: location.origin,
-
         //事件代理
         initEvents: function() {
             var self = this;
@@ -65,10 +60,10 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 var $form = $(e.delegateTarget),
                     $input = $(e.target);
                 //清除输入框后错误提示
-                $input.removeClass('error').next('span.position-tips').empty();
+                $input.removeClass('error').next('span.position-tips').hide();
                 //验证码特殊处理
                 if($input.attr('name')=='vcode'){
-                    $input.next('span.chkbtn-wrap').find('span.chktext').empty()
+                    $input.next('span.chkbtn-wrap').find('span.chktext').hide()
                 }
                 //清除公共区域错误提示
                 $('p.out-error', $form).empty().hide();
@@ -123,7 +118,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     inputName = $account.attr('name'),
                     snameObj = self.validObj.regaccount,
                     passwordObj = self.validObj.password,
-                    phoneObj = self.validObj.phone;
+                    phoneObj = self.validObj.phones;
                 
                     if(inputName == 'sname'){
                         if(!self.check($account,snameObj))  {
@@ -254,9 +249,10 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         break; 
                     default:
                         if(/20221|20214/.test(code)){
-                            $vcode.addClass('error');
-                        }
-                        $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
+                            //$vcode.addClass('error').;
+                            self.showTips($vcode,$vcode.next('.position-tips'),self.retStatus.register[code]);
+                        }else
+                            $error.show().html(self.retStatus.register[code] || result.statusText || "未知错误");
                         $vcode.val("");
                         if (hasVcode) {
                             self.refreshVcode($img);
@@ -336,6 +332,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         },
         //校验是否为空
         checkEmpty: function($input, $error) {
+            var self=this;
             return $input.val() == '' ? self.showTips($input,$error,'不能为空')&&false/*($input.addClass('error'), $error.html('不能为空'), false)*/ : true;
         },
         //刷新验证码

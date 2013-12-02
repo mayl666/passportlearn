@@ -179,7 +179,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     var $this = $(e.delegateTarget),
 
                         $lis = $selectBox.find("ul>li"),
-                        $btn = $(".select-btn")
+                        $btn = $(".select-btn");
 
                         switch (e.keyCode) {
                             case 13:
@@ -245,7 +245,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     }else{
                         $('.select-btn').show();
                     }
-                    var _list = $.map(list, function(obj) {
+                    var _list = $.map(self.list, function(obj) {
                         var temp,
                             sname = $.trim(obj).replace(/<b>(\S*)<\/b>/, "$1"),
                             index = sname.indexOf(val);
