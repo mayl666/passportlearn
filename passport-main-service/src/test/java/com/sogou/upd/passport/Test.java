@@ -19,7 +19,9 @@ public class Test {
         String token ="SG_wPJM2wG8ePMeYR8ZCIytNvnCw3wKFq5rKyng3cWbwWfEN1jJE84GWBoaghfM0g9-";
         String dePassportId = TokenDecrypt.decryptPcToken(token,clientSecret);
 
-        System.out.println("genToken:"+genToken);
+        String passportStr ="￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
+
+        System.out.println("genToken:"+new String(passportStr.getBytes("utf-8"),"gbk"));
         System.out.println(dePassportId);
     }
 }
