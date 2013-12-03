@@ -76,7 +76,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     @Test
     public void testgetSHCookieValue() {
         CookieApiParams cookieApiParams = new CookieApiParams();
-        cookieApiParams.setUserid("tinkame710@sogou.com");
+        cookieApiParams.setUserid("大大大31231@focus.cn");
         cookieApiParams.setClient_id(1044);
         cookieApiParams.setRu("https://account.sogou.com/");
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
