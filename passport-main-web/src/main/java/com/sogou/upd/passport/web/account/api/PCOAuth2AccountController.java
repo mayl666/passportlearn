@@ -406,10 +406,12 @@ public class PCOAuth2AccountController extends BaseController {
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
 
-        String xd ="http://account.sogou.com/static/api/jump.htm";
+        String xd ="https://account.sogou.com/static/api/jump.htm";
         result = commonManager.createCookieUrl(passportId,1);
         result.setSuccess(true);
+        result.setDefaultModel("ru","https://account.sogou.com");
         result.setDefaultModel("xd", xd);
+        result.setDefaultModel("userid",passportId);
         model.addAttribute("data", result.toString());
         return "/login/api";
        // return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
