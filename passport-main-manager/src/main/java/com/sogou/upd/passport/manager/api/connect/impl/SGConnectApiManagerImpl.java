@@ -63,6 +63,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             display = Strings.isNullOrEmpty(display) ? fillDisplay(connectType, connectLoginParams.getFrom(), provider) : display;
 
             String requestUrl;
+            //判断display  xhtml\wml调用wap接口
             // 采用Authorization Code Flow流程
             requestUrl = oAuthConsumer.getWebUserAuthzUrl();
             request = OAuthAuthzClientRequest
