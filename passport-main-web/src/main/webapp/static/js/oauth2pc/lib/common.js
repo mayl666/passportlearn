@@ -125,7 +125,7 @@ define([], function() {
             },
             vcode: {
                 errMsg: '请正确输入验证码',
-                emptyMsg: '验证码不能为空',
+                emptyMsg: '不能为空',
                 nullable: false,
                 regStr: /^\w*$/
             },
