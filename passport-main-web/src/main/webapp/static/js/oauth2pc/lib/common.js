@@ -119,7 +119,7 @@ define([], function() {
                 },
                 emptyMsg: '不能为空',
                 nullable: false,
-                regStr: /^\w{6,16}$/
+                regStr: /^\S{6,16}$/
             },
             vcode: {
                 errMsg: '请正确输入验证码',
