@@ -274,10 +274,10 @@ public class AccountInfoAction extends BaseController {
 //            }
             result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 
-//            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-//            if (domain == AccountDomainEnum.THIRD) {
-//                result.setDefaultModel("disable", true);
-//            }
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            if (domain == AccountDomainEnum.THIRD) {
+                result.setDefaultModel("disable", true);
+            }
             model.addAttribute("data", result.toString());
         }else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
