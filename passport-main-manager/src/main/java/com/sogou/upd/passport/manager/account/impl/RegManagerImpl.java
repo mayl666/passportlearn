@@ -289,6 +289,7 @@ public class RegManagerImpl implements RegManager {
                     //手机号 判断绑定账户
                     result = proxyBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
+                        result = new APIResultSupport(false);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                         return result;
                     } else if (CommonHelper.isExplorerToken(clientId)) {
@@ -307,6 +308,7 @@ public class RegManagerImpl implements RegManager {
                 if (type) {
                     result = sgBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
+                        result = new APIResultSupport(false);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                         return result;
                     } else if (CommonHelper.isExplorerToken(clientId)) {
