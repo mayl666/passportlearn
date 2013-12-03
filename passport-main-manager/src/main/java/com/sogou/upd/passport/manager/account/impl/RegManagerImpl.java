@@ -290,7 +290,6 @@ public class RegManagerImpl implements RegManager {
                     result = proxyBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
                     } else {
                         result.setSuccess(true);
                         result.setMessage("账户未被占用");
@@ -303,7 +302,6 @@ public class RegManagerImpl implements RegManager {
                     result = sgBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
                     } else {
                         result.setSuccess(true);
                         result.setMessage("账户未被占用");
