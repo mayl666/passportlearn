@@ -20,8 +20,10 @@ public class Test {
         String dePassportId = TokenDecrypt.decryptPcToken(token,clientSecret);
 
         String passportStr ="￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
+        String userid = new String(passportStr.getBytes("ISO-8859-1"), "UTF-8");
 
-        System.out.println("genToken:"+new String(passportStr.getBytes("utf-8"),"gbk"));
-        System.out.println(dePassportId);
+
+//        System.out.println("genToken:"+new String(passportStr.getBytes("utf-8"),"gbk"));
+        System.out.println("userid:"+userid);
     }
 }
