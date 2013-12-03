@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -266,6 +267,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return uniqname;
     }
 
+    @Override
+    public String defaultUniqname(String passportId) {
+        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
+            return "搜狗用户";
+        }
+        return passportId.substring(0, passportId.indexOf("@"));
+    }
+
     private Result getUserInfo(String passportId) {
         Result result = new APIResultSupport(false);
         String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
@@ -317,10 +326,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             return accountBaseInfo;
         }
         return null;
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
     }
 
 }

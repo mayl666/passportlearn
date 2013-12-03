@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
@@ -83,6 +84,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private ConnectApiManager proxyConnectApiManager;
     @Autowired
     private PCAccountManager pcAccountManager;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     @Override
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
@@ -265,7 +268,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                             accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
                         }
                         if(accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())){
-                            uniqname = defaultUniqname(userId);
+                            uniqname = oAuth2ResourceManager.defaultUniqname(userId);
                         }
                         uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
@@ -363,10 +366,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             return connectRelations.get(key).getPassportId();
         }
         return passportId;
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
     }
 
 }
