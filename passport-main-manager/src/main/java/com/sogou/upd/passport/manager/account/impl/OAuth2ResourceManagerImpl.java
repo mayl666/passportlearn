@@ -296,7 +296,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private String getAndUpdateUniqname(String passportId,AccountBaseInfo accountBaseInfo,String uniqname){
-        if (Strings.isNullOrEmpty(uniqname)) {
+        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(defaultUniqname(passportId))){
             //从论坛获取昵称
             uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(defaultUniqname(passportId))) {
