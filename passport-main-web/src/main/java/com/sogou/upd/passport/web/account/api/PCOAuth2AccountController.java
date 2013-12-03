@@ -391,7 +391,8 @@ public class PCOAuth2AccountController extends BaseController {
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
 //        String utfUserId = URLEncoder.encode(passportId,"utf-8");
-        cookieApiParams.setUserid(passportId);
+        String utfUserId = new String(passportId.getBytes(),"gbk");
+        cookieApiParams.setUserid(utfUserId);
         cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
         cookieApiParams.setRu("https://account.sogou.com");
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
