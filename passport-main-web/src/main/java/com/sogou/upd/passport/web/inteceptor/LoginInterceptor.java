@@ -42,11 +42,11 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     public boolean setPassportId(HttpServletRequest request) {
         try {
             String passportId = request.getHeader(LoginConstant.USER_ID_HEADER);
-            String tmpPassportId =  new String(passportId.getBytes("ISO-8859-1"), "UTF-8");
-            if (StringUtil.isBlank(tmpPassportId)) {
+//            String tmpPassportId =  new String(passportId.getBytes("ISO-8859-1"), "UTF-8");
+            if (StringUtil.isBlank(passportId)) {
                 return false;
             }
-            hostHolder.setPassportId(tmpPassportId);
+            hostHolder.setPassportId(passportId);
             return true;
         }catch (Exception ex){
             return false;

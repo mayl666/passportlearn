@@ -34,6 +34,7 @@ import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -390,8 +391,6 @@ public class PCOAuth2AccountController extends BaseController {
         }
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
-//        String utfUserId = URLEncoder.encode(passportId,"utf-8");
-        String utfUserId = new String(passportId.getBytes(),"gbk");
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
         cookieApiParams.setRu("https://account.sogou.com");
@@ -399,13 +398,6 @@ public class PCOAuth2AccountController extends BaseController {
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(getIp(request));
         Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
-        //生成cookie--之前写法
-        /*CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-        createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-        createCookieUrlApiParams.setPersistentcookie(1);
-        createCookieUrlApiParams.setDomain("sogou.com");
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);  */
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -413,7 +405,16 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
-        return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+
+        String xd ="https://account.sogou.com/static/api/jump.htm";
+        result = commonManager.createCookieUrl(passportId,1);
+        result.setSuccess(true);
+        result.setDefaultModel("ru","https://account.sogou.com");
+        result.setDefaultModel("xd", xd);
+        result.setDefaultModel("userid",passportId);
+        model.addAttribute("data", result.toString());
+        return "/login/api";
+       // return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")

@@ -46,4 +46,11 @@ public interface OAuth2ResourceManager {
      */
     public String getUniqname(String passportId);
 
+    /**
+     * 获取账号默认昵称
+     * @param passportId
+     * @return
+     */
+    public String defaultUniqname(String passportId);
+
 }
