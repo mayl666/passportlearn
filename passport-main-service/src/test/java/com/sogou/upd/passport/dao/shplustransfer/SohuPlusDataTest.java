@@ -24,6 +24,8 @@ import org.springframework.core.task.TaskExecutor;
 
 import java.io.*;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -59,11 +61,17 @@ public class SohuPlusDataTest extends BaseDAOTest {
     private int THREADS = 10;
     String secret = "59be99d1f5e957ba5a20e8d9b4d76df6";
     String appkey = "30000004";
-    String ip = "10.129.192.245";
+    String ip = "127.0.0.1";
 
     @Test
     public void testSnamePassportidMapping() {
         try {
+            try {
+                ip = InetAddress.getLocalHost().getHostAddress()
+            } catch (UnknownHostException e) {
+                ip = "127.0.0.1";
+            }
+
             // dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("/search/result.log")));
             printWriter = new PrintWriter(new BufferedOutputStream(new FileOutputStream("/search/result.log")), true);
             objectMapper.set(new ObjectMapper());
@@ -491,14 +499,22 @@ public class SohuPlusDataTest extends BaseDAOTest {
 
 
         private String compareNickAndAvator(AccountBaseInfo accountBaseInfo, SohuPassportSidMapping sohuPassportSidMapping) {
+            String flag = ":"+accountBaseInfo.getUniqname()+"|"+accountBaseInfo.getAvatar()+"|"+sohuPassportSidMapping.getNick()+"|"+sohuPassportSidMapping.getLarge_avator();
             if (accountBaseInfo == null) {
                 if (sohuPassportSidMapping != null && (sohuPassportSidMapping.getLarge_avator() != null || sohuPassportSidMapping.getNick() != null)) {
-                    return "local-no-avatorOrnick";
+                    if (sohuPassportSidMapping.getLarge_avator() != null) {
+                        return "local-no-avator"+flag;
+                    }
+                    String nick = sohuPassportSidMapping.getNick();
+                    if (nick != null && nick.indexOf("搜狐网友") != -1
+                            && nick.indexOf("在搜狐") != -1 && nick.indexOf("的blog") != -1) {
+                        return "local-no-nick"+flag;
+                    }
                 }
-                return "ok";
+                return "ok"+flag;
             }
             if (sohuPassportSidMapping == null) {
-                return "sohu-no";
+                return "sohu-no"+flag;
             }
             String nickSohu = sohuPassportSidMapping.getNick();
             String avatarSohu = sohuPassportSidMapping.getLarge_avator();
@@ -507,7 +523,7 @@ public class SohuPlusDataTest extends BaseDAOTest {
 
             if (nick == null) {
                 if (nickSohu != null) {
-                    return "local-no-nick";
+                    return "local-no-nick"+flag;
                 }
 
             } else {
@@ -515,23 +531,23 @@ public class SohuPlusDataTest extends BaseDAOTest {
                     return "diff-nick";
                 }*/
                 if (nickSohu == null) {
-                    return "sohu-no-nick";
+                    return "sohu-no-nick"+flag;
                 }
             }
             if (avatar == null) {
                 if (avatarSohu != null) {
-                    return "local-no-avatar";
+                    return "local-no-avatar"+flag;
                 }
             } else {
                 /*if (!avatar.equals(avatarSohu)) {
                     return "diff-avatar";
                 }*/
                 if (avatarSohu == null) {
-                    return "sohu-no-avatar";
+                    return "sohu-no-avatar"+flag;
                 }
             }
 
-            return "ok";
+            return "ok"+flag;
         }
     }
 
