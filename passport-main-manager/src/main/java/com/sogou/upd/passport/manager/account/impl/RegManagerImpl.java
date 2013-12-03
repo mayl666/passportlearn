@@ -290,6 +290,7 @@ public class RegManagerImpl implements RegManager {
                     result = proxyBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                        return result;
                     } else if (CommonHelper.isExplorerToken(clientId)) {
                         result = isSohuplusUser(username, clientId);
                     } else {
@@ -307,7 +308,7 @@ public class RegManagerImpl implements RegManager {
                     result = sgBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-
+                        return result;
                     } else if (CommonHelper.isExplorerToken(clientId)) {
                         result = isSohuplusUser(username, clientId);
                     } else {
