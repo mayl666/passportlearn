@@ -74,7 +74,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED = "20199";
     //注册异常
     public static final String ERR_CODE_REGISTER_UNUSUAL = "20200";
-    // 帐号已经注册，请直接登录
+    // 账号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
     // 短信发送已达今天的最高上限20条
     public static final String ERR_CODE_ACCOUNT_CANTSENTSMS = "20202";
@@ -82,7 +82,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONEERROR = "20203";
     // 一分钟内只能发一条短信
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
-    // 帐号不存在
+    // 账号不存在
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
     // 用户名密码不正确
     public static final String ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR = "20206";
@@ -250,7 +250,7 @@ public class ErrorUtil {
     public static final String CONNECT_USER_DENIED_LOGIN = "30002";
     // 第三方授权的state被篡改
     public static final String OAUTH_AUTHZ_STATE_INVALID = "30003";
-    // 第三方登录帐号Token过期，请重新登录
+    // 第三方登录账号Token过期，请重新登录
     public static final String CONNECT_TOKEN_INVALID = "30004";
     // 刷新第三方accessToken失败
     public static final String CONNECT_REFRESH_TOKEN_FAIL = "30005";
@@ -286,7 +286,7 @@ public class ErrorUtil {
     public static final String PIC_URL_NOT_NULL = "30401";
     // 发送失败
     public static final String ADD_SHARE_FAIL = "30402";
-    // QQ帐号未开通微博
+    // QQ账号未开通微博
     public static final String NO_OPEN_BLOG = "30403";
     // 上传的图片不能为空
     public static final String PIC_NOT_NULL = "30404";
@@ -359,7 +359,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "该手机号当日短信发送次数超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "账号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR, "密码错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_BIND_NOTEXIST, "手机号绑定的账号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
@@ -449,7 +449,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
         ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
         ERR_CODE_MSG_MAP.put(OAUTH_AUTHZ_STATE_INVALID, "第三方授权的state被篡改");
-        ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方帐号Token过期，请重新登录");
+        ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方账号Token过期，请重新登录");
         ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");
         ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
@@ -468,7 +468,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(REPEAT_CONTENT, "同样的内容请勿重复发送");
 
         // friend
-        ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过帐号");
+        ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过账号");
         ERR_CODE_MSG_MAP.put(ALREADY_FOLLOWED, "已经关注此用户");
 
         //反馈相关
