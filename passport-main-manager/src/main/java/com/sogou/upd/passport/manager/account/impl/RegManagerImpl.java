@@ -301,6 +301,9 @@ public class RegManagerImpl implements RegManager {
                     }
                 } else {
                     result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
+                    }
                 }
             } else {
                 if (type) {
@@ -318,9 +321,11 @@ public class RegManagerImpl implements RegManager {
                     }
                 } else {
                     result = sgRegisterApiManager.checkUser(checkUserApiParams);
+                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
+                    }
                 }
             }
-
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
             throw new Exception(e);
