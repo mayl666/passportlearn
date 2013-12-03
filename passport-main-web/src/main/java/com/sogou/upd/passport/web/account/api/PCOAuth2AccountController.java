@@ -412,7 +412,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         String ru ="https://account.sogou.com/web/userinfo/getuserinfo?client_id="+ oauth2PcIndexParams.getClient_id();
-        result = commonManager.createCookieUrl(passportId,CommonConstant.SOHU_ROOT_DOMAIN,ru,1);
+        result = commonManager.createCookieUrl(passportId,"",ru,1);
         if(result.isSuccess()) {
             response.sendRedirect((String)result.getModels().get("cookieUrl"));
             return "";
