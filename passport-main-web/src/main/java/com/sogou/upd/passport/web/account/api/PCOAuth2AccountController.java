@@ -16,6 +16,7 @@ import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
@@ -46,6 +47,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 
@@ -360,7 +362,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return "forward:/oauth2/errorMsg?msg=" + result.toString();
+            return "tokenerror";
         }
 
         //当前页面cookie
@@ -375,7 +377,8 @@ public class PCOAuth2AccountController extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
 
         if (!queryPassportIdResult.isSuccess()) {
-            return "forward:/oauth2/errorMsg?msg=" + queryPassportIdResult.toString();
+            //token 验证出错，跳出到登录页
+            return "tokenerror";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         //判断cookie中的passportId与token解密出来的passportId是否相等
@@ -394,6 +397,13 @@ public class PCOAuth2AccountController extends BaseController {
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(getIp(request));
         Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+        //生成cookie--之前写法
+        /*CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+        createCookieUrlApiParams.setUserid(passportId);
+        createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+        createCookieUrlApiParams.setPersistentcookie(1);
+        createCookieUrlApiParams.setDomain("sogou.com");
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);  */
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");

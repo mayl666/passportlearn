@@ -75,16 +75,23 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     }
     @Test
     public void testgetSHCookieValue() {
-        CookieApiParams cookieApiParams = new CookieApiParams();
-        cookieApiParams.setUserid("tinkame710@sogou.com");
-        cookieApiParams.setClient_id(1044);
-        cookieApiParams.setRu("https://account.sogou.com/");
-        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-        cookieApiParams.setPersistentcookie(String.valueOf(1));
+       try {
+           String userid =  "大大大31231@focus.cn";
+//           String utfUserId = new String(userid.getBytes(),"gbk");
+           CookieApiParams cookieApiParams = new CookieApiParams();
+           cookieApiParams.setUserid(userid);
+           cookieApiParams.setClient_id(1044);
+           cookieApiParams.setRu("https://account.sogou.com/");
+           cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+           cookieApiParams.setPersistentcookie(String.valueOf(1));
 
-        //TODO sogou域账号迁移后cookie生成问题
-        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
-        System.out.println(getCookieValueResult.toString());
+           //TODO sogou域账号迁移后cookie生成问题
+           Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+           System.out.println(getCookieValueResult.toString());
+       }catch (Exception ex){
+
+       }
+
     }
 
     @Test

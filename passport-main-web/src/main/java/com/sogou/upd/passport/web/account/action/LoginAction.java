@@ -81,18 +81,18 @@ public class LoginAction extends BaseController {
         }
 
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-
+        int clientId = Integer.valueOf(checkParam.getClient_id());
         //判断账号是否存在
         if (username.indexOf("@") == -1) {
             //判断是否是手机号注册
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true);
+                result = regManager.isAccountNotExists(username, true, clientId);
             } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false);
+                String tmpUsername = username + "@sogou.com";
+                result = regManager.isAccountNotExists(tmpUsername, false, clientId);
             }
         } else {
-            result = regManager.isAccountNotExists(username, false);
+            result = regManager.isAccountNotExists(username, false, clientId);
         }
         if(!result.isSuccess()){
             //校验是否需要验证码

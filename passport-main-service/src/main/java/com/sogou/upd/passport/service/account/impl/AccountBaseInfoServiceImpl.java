@@ -41,11 +41,11 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
     @Override
-    public boolean initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
+    public AccountBaseInfo initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
         String uniqname = connectUserInfoVO.getNickname();
         String avatar = connectUserInfoVO.getImageURL();
         if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-            return true;
+            return null;
         }
         if (!Strings.isNullOrEmpty(avatar) && !avatar.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
             avatar = photoUtils.uploadWebImg(avatar);
@@ -58,18 +58,20 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 String oldUniqname = accountBaseInfo.getUniqname();
                 String oldAvatar = accountBaseInfo.getAvatar();
                 if (!Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(oldAvatar)) {
-                    return true;
+                    return null;
                 } else if (Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(uniqname)) {
-                    return updateUniqname(accountBaseInfo, uniqname);
+                    updateUniqname(accountBaseInfo, uniqname);
+                    return accountBaseInfo;
                 } else if (Strings.isNullOrEmpty(oldAvatar) && !Strings.isNullOrEmpty(avatar)) {
-                    return updateAvatar(accountBaseInfo, avatar);
+                    updateAvatar(accountBaseInfo, avatar);
+                    return accountBaseInfo;
                 } else {
                     return insertAccountBaseInfo(passportId, uniqname, avatar);
                 }
             }
         } catch (Exception e) {
             logger.error("insertOrUpdateAccountBaseInfo fail", e);
-            return false;
+            return null;
         }
     }
 
@@ -144,11 +146,11 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     }
 
     @Override
-    public boolean insertAccountBaseInfo(String passportId, String uniqname, String avatar) throws ServiceException {
+    public AccountBaseInfo insertAccountBaseInfo(String passportId, String uniqname, String avatar) throws ServiceException {
         try {
             boolean isInertUniqnameMapping = true;  // 是否插入UniqnameMapping表
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-                return true;
+                return null;
             }
             if (!Strings.isNullOrEmpty(uniqname)) {
                 if (isUniqNameExist(uniqname)) {
@@ -158,7 +160,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 }
             }
             if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
-                return true;
+                return null;
             }
             if (isInertUniqnameMapping) {
                 AccountBaseInfo accountBaseInfo = newAccountBaseInfo(passportId, uniqname, avatar);
@@ -166,13 +168,13 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (accountBaseInfoRow > 0) {
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
                     redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
-                    return true;
+                    return accountBaseInfo;
                 }
             }
-            return false;
+            return null;
         } catch (Exception e) {
             logger.error("insertOrUpdateAccountBaseInfo fail", e);
-            return false;
+            return null;
         }
     }
 

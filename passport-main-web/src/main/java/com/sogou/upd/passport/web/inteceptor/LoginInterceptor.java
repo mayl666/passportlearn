@@ -40,12 +40,18 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     }
 
     public boolean setPassportId(HttpServletRequest request) {
-        String passportId = request.getHeader(LoginConstant.USER_ID_HEADER);
-        if (StringUtil.isBlank(passportId)) {
+        try {
+            String passportId = request.getHeader(LoginConstant.USER_ID_HEADER);
+            String tmpPassportId =  new String(passportId.getBytes("ISO-8859-1"), "UTF-8");
+            if (StringUtil.isBlank(tmpPassportId)) {
+                return false;
+            }
+            hostHolder.setPassportId(tmpPassportId);
+            return true;
+        }catch (Exception ex){
             return false;
         }
-        hostHolder.setPassportId(passportId);
-        return true;
+
     }
 
     public boolean setNickname(HttpServletRequest request) {

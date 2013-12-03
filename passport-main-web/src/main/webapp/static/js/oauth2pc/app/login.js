@@ -61,7 +61,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             .on('focus', 'input', function(e) {
                 var $input = $(e.target);
                 $input.removeClass('error');
-                $input.next('span.position-tips').empty();
+                $input.next('span.position-tips').hide();
                 $('#out_error').empty().hide();
             })
             //检验是否需要验证码
@@ -157,6 +157,8 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             })
             //error msg unclickable
             .on('click', '.position-tips', function(e) {
+                 if($(e.target).is('span.x'))
+                        $(this).prev('input').val('');
                 $(this).hide().empty().prev('input').removeClass('error').focus();
             });
 
@@ -179,7 +181,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     var $this = $(e.delegateTarget),
 
                         $lis = $selectBox.find("ul>li"),
-                        $btn = $(".select-btn")
+                        $btn = $(".select-btn");
 
                         switch (e.keyCode) {
                             case 13:
@@ -189,6 +191,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                                     $("ul>li.hover", $selectBox).trigger("click");
                                 }
                                 $selectBox.hide();
+                                self.toggleArrDirection();
                                 break
                             case 38:
                                 e.preventDefault();
@@ -240,12 +243,12 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 }).on("input", function(e) {
                     e.stopPropagation()
                     var val = $.trim($(this).val());
-                    if(val){
+                    /*if(val){
                         $('.select-btn').hide()
                     }else{
                         $('.select-btn').show();
-                    }
-                    var _list = $.map(list, function(obj) {
+                    }*/
+                    var _list = $.map(self.list, function(obj) {
                         var temp,
                             sname = $.trim(obj).replace(/<b>(\S*)<\/b>/, "$1"),
                             index = sname.indexOf(val);
@@ -260,6 +263,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     } else {
                         self.renderSelect($selectBox, _list);
                         $selectBox.show();
+                        self.toggleArrDirection();
                     }
                 })
 
@@ -290,7 +294,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     $ele.parents('li').remove();
                     self.delHistory(sid);
                     self.list= self.list.filter(function(v){return sid!=v});
-                    if(!self.list.length){$selectBox.hide();}
+                    if(!self.list.length){$selectBox.hide();$('.select-btn').hide()}
                     $mail.focus();
                     return;
                 }else
@@ -395,13 +399,21 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                 switch (true) { 
                     case (0 == code):
                         self.saveHistory($account.val()); 
-                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname || data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin || 1)
+                        var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname || data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin)
                         console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                     default:
+                        if (result.data && result.data.needCaptcha) {
+                            $('div.vcode-area').show();
+                            $vcode.val('').next('.position-tips').hide();
+                            self.refreshVcode($img);
+                        }
+                        
+                        $password.val('').next('.position-tips').hide();
+
                         if (/(10009|20205)/.test(code))
-                            self.showTips($account,$account.next('.position-tips'),self.retStatus[code]);
+                            self.showTips($account,$account.next('.position-tips'),self.retStatus.login[code]);
                         else if (20206 == code)
                             self.showTips($password,$password.next('.position-tips'),self.retStatus.login[code]);
                         else if (20221 == code)
@@ -409,12 +421,6 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                         else
                             $bottomError.html(self.retStatus.login[code] || result.statusText || "未知错误").show();
 
-                        $password.val('').next('.position-tips').hide();
-                        if (result.data && result.data.needCaptcha) {
-                            $('div.vcode-area').show();
-                            $vcode.val('');
-                            self.refreshVcode($img);
-                        }
                         break;
                 }
 
@@ -436,11 +442,17 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             $img.attr("src", url).attr("data-token", token);
         },
         toggleArrDirection:function(){
-            var $btn=$('.select-btn'),$selectBox=$('.ppselecter');
+            var $btn=$('.select-btn'),$selectBox=$('.ppselecter'),self=this;
             if ($selectBox.is(':visible')) {
                 $btn.addClass('up');
             } else {
                 $btn.removeClass('up');
+            }
+
+            if($('[name=account]').next('.position-tips').is(':visible')){
+                $btn.hide();
+            }else if(self.list.length){
+                $btn.show();
             }
         },
         initLoginHistory: function() {
@@ -456,7 +468,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
         getHistorySelect: function() {
             var $container = $("div.ppselecter"),
                 self = this,
-                list = this.list
+                list = this.list;
             if (list && list.length && list.length > 0) {
                 $(".select-btn").show()
             } else {

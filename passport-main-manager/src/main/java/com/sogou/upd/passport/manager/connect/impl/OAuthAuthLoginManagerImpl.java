@@ -19,6 +19,7 @@ import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
@@ -257,9 +258,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         result.setSuccess(true);
+
+                        AccountBaseInfo accountBaseInfo = null;
                         if (connectUserInfoVO != null) {
                             String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
-                            accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
+                            accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
+                        }
+                        if(accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())){
+                            uniqname = defaultUniqname(userId);
                         }
                         uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
@@ -358,4 +364,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         return passportId;
     }
+
+    private String defaultUniqname(String passportId) {
+        return passportId.substring(0, passportId.indexOf("@"));
+    }
+
 }

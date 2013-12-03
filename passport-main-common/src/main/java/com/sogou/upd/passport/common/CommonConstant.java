@@ -22,6 +22,15 @@ public class CommonConstant {
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
     public static final String SG_TOKEN_START = "SG_"; //4.2版本浏览器token开始标志
 
+    public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
+    public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
+    public static final String HTTP = "http";  //http请求方式
+    public static final String HTTPS = "https";//https请求方式
+    public static final String CONNECT_METHOD_GET = "get";//method=get请求方式
+    public static final String CONNECT_METHOD_POST = "post";//method=post请求方式
+    public static final String QQ_SERVER_IP = "119.147.19.43";         //测试环境ip：
+    public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //正式环境可以使用域名
+
     public static final String CLIENT_ID = "client_id";
     public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";
