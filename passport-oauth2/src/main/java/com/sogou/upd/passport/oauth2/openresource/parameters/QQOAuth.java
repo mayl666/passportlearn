@@ -10,7 +10,7 @@ public class QQOAuth {
 	/* 用户类API请求 */
 	/* 用户类API响应 */
 	public static final String NICK_NAME = "nickname"; // 昵称
-	public static final String FIGURE_URL_2 = "figureurl_2"; // 头像url，尺寸100*100
+	public static final String FIGURE_URL_2 = "figureurl_qq_2"; // 头像url，尺寸100*100
 	public static final String GENDER = "gender"; // 性别
 
 	/* 信息类API请求参数 */
