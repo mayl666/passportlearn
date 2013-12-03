@@ -289,12 +289,9 @@ public class RegManagerImpl implements RegManager {
                     //手机号 判断绑定账户
                     result = proxyBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
-                        if (CommonHelper.isExplorerToken(clientId)) {
-                            result = isSohuplusUser(username, clientId);
-                        } else {
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        }
-                        return result;
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    } else if (CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
                     } else {
                         result.setSuccess(true);
                         result.setMessage("账户未被占用");
@@ -309,12 +306,10 @@ public class RegManagerImpl implements RegManager {
                 if (type) {
                     result = sgBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
-                        if (CommonHelper.isExplorerToken(clientId)) {
-                            result = isSohuplusUser(username, clientId);
-                        } else {
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        }
-                        return result;
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+
+                    } else if (CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
                     } else {
                         result.setSuccess(true);
                         result.setMessage("账户未被占用");
