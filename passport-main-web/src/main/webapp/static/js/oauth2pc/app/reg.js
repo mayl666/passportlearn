@@ -107,7 +107,9 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
 
             })
             .on('click','.position-tips',function(e){
-                $(this).hide().empty().prev('input').removeClass('error').focus();
+                    if($(e.target).is('span.x'))
+                        $(this).prev('input').val('');
+                    $(this).hide().empty().prev('input').removeClass('error').focus();
             })
             //检验是否需要验证码
             .on('blur', 'input', function(e) {
@@ -118,7 +120,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     inputName = $account.attr('name'),
                     snameObj = self.validObj.regaccount,
                     passwordObj = self.validObj.password,
-                    phoneObj = self.validObj.phones;
+                    phoneObj = self.validObj.phone;
                 
                     if(inputName == 'sname'){
                         if(!self.check($account,snameObj))  {

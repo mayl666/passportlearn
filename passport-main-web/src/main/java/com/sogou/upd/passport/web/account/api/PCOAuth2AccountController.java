@@ -391,6 +391,7 @@ public class PCOAuth2AccountController extends BaseController {
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
 //        String utfUserId = URLEncoder.encode(passportId,"utf-8");
+        String utfUserId = new String(passportId.getBytes(),"gbk");
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
         cookieApiParams.setRu("https://account.sogou.com");
@@ -404,7 +405,7 @@ public class PCOAuth2AccountController extends BaseController {
         createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
         createCookieUrlApiParams.setPersistentcookie(1);
         createCookieUrlApiParams.setDomain("sogou.com");
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams); */
+        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);  */
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
