@@ -296,10 +296,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private String getAndUpdateUniqname(String passportId,AccountBaseInfo accountBaseInfo,String uniqname){
-        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))){
+        if (!isValidUniqname(passportId,uniqname)){
             //从论坛获取昵称
             uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-            if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(defaultUniqname(passportId))) {
+            if (isValidUniqname(passportId,uniqname)) {
                 if (accountBaseInfo != null) {
                     accountBaseInfoService.updateUniqname(accountBaseInfo, uniqname);
                 } else {
@@ -307,12 +307,18 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 }
             }
         }
-        if (StringUtils.isBlank(uniqname)) {
+        if (!isValidUniqname(passportId,uniqname)) {
             uniqname = defaultUniqname(passportId);
         }
         return uniqname;
     }
 
+    private boolean isValidUniqname(String passportId,String uniqname){
+        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))){
+            return false;
+        }
+        return true;
+    }
     private AccountBaseInfo getBaseInfo(String passportId) {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setUserid(passportId);
