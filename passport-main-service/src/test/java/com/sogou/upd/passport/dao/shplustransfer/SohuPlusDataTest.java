@@ -67,7 +67,7 @@ public class SohuPlusDataTest extends BaseDAOTest {
     public void testSnamePassportidMapping() {
         try {
             try {
-                ip = InetAddress.getLocalHost().getHostAddress()
+                ip = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e) {
                 ip = "127.0.0.1";
             }
@@ -484,10 +484,10 @@ public class SohuPlusDataTest extends BaseDAOTest {
             boolean result = loc.getSid().equals(rem.getSid()) && loc.getSname().equals(rem.getSname());
             if (result == true) {
                 if (StringUtil.isBlank(loc.getMobile()) && !StringUtil.isBlank(rem.getMobile())) {
-                    return "local-no-mobile";
+                    return "local-no-mobile:"+loc.getMobile()+"|"+rem.getMobile();
                 }
                 if (!StringUtil.isBlank(loc.getMobile()) && !loc.getMobile().equals(rem.getMobile())) {
-                    return "diff-mobile";
+                    return "diff-mobile:"+loc.getMobile()+"|"+rem.getMobile();
                 }
             }
             if (result == false) {
@@ -499,19 +499,20 @@ public class SohuPlusDataTest extends BaseDAOTest {
 
 
         private String compareNickAndAvator(AccountBaseInfo accountBaseInfo, SohuPassportSidMapping sohuPassportSidMapping) {
-            String flag = ":"+accountBaseInfo.getUniqname()+"|"+accountBaseInfo.getAvatar()+"|"+sohuPassportSidMapping.getNick()+"|"+sohuPassportSidMapping.getLarge_avator();
+            String flag = ":"+(accountBaseInfo==null?null:accountBaseInfo.getUniqname())+"|"
+                    +(sohuPassportSidMapping==null?null:sohuPassportSidMapping.getNick());
             if (accountBaseInfo == null) {
                 if (sohuPassportSidMapping != null && (sohuPassportSidMapping.getLarge_avator() != null || sohuPassportSidMapping.getNick() != null)) {
-                    if (sohuPassportSidMapping.getLarge_avator() != null) {
-                        return "local-no-avator"+flag;
+                    if (!StringUtil.isBlank(sohuPassportSidMapping.getLarge_avator())) {
+                        return "local-no-avator"+flag+"|null|"+sohuPassportSidMapping.getLarge_avator();
                     }
                     String nick = sohuPassportSidMapping.getNick();
-                    if (nick != null && nick.indexOf("搜狐网友") != -1
-                            && nick.indexOf("在搜狐") != -1 && nick.indexOf("的blog") != -1) {
+                    if (!StringUtil.isBlank(nick) && nick.indexOf("搜狐网友") == -1
+                            && nick.indexOf("在搜狐") == -1 && nick.indexOf("的blog") == -1) {
                         return "local-no-nick"+flag;
                     }
                 }
-                return "ok"+flag;
+                return "ok";
             }
             if (sohuPassportSidMapping == null) {
                 return "sohu-no"+flag;
@@ -530,24 +531,24 @@ public class SohuPlusDataTest extends BaseDAOTest {
                 /*if (!nick.equals(nickSohu)) {
                     return "diff-nick";
                 }*/
-                if (nickSohu == null) {
+                if (StringUtil.isEmpty(nickSohu)) {
                     return "sohu-no-nick"+flag;
                 }
             }
-            if (avatar == null) {
-                if (avatarSohu != null) {
-                    return "local-no-avatar"+flag;
+            if (StringUtil.isBlank(avatar)) {
+                if (!StringUtil.isEmpty(avatarSohu)) {
+                    return "local-no-avatar"+flag+"|null|"+sohuPassportSidMapping.getLarge_avator();
                 }
             } else {
                 /*if (!avatar.equals(avatarSohu)) {
                     return "diff-avatar";
                 }*/
-                if (avatarSohu == null) {
-                    return "sohu-no-avatar"+flag;
+                if (StringUtil.isEmpty(avatarSohu)) {
+                    return "sohu-no-avatar"+flag+"|"+avatar+"|"+sohuPassportSidMapping.getLarge_avator();
                 }
             }
 
-            return "ok"+flag;
+            return "ok";
         }
     }
 
