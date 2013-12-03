@@ -414,8 +414,8 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
 
                         if (/(10009|20205)/.test(code))
                             self.showTips($account,$account.next('.position-tips'),self.retStatus.login[code]);
-                        else if (20206 == code)
-                            self.showTips($password,$password.next('.position-tips'),self.retStatus.login[code]);
+                       // else if (20206 == code)
+                       //     self.showTips($password,$password.next('.position-tips'),self.retStatus.login[code]);
                         else if (20221 == code)
                             self.showTips($vcode,$vcode.next('.position-tips'),self.retStatus.login[code]);
                         else
