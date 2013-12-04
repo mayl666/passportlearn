@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_checkUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public String checkUniqName(String uniqname) throws ServiceException {
         String passportId = null;
@@ -50,6 +52,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         return passportId;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_checkAndInsertUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean checkAndInsertUniqName(String passportId, String uniqname) throws ServiceException {
         String existPassportId = checkUniqName(uniqname);
@@ -60,6 +63,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean insertUniqName(String passportId, String uniqname) throws ServiceException {
         try {
@@ -76,6 +80,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         return false;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateUniqName(/*Account account,*/String passportId, String oldNickName, String nickname) throws ServiceException {
         try {
@@ -109,6 +114,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         return false;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_removeUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean removeUniqName(String uniqname) throws ServiceException {
         try {
