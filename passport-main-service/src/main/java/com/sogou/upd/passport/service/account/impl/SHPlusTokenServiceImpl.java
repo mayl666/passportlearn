@@ -38,10 +38,6 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     private static Logger log = LoggerFactory.getLogger(SHPlusTokenServiceImpl.class);
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
-    @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
-    private RedisUtils redisUtils;
 
     @Override
     public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException {
@@ -96,44 +92,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         return resultMap;
     }
 
-    @Override
-    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken) throws ServiceException {
-        String cacheKey = buildAvatarCacheKey(passportId);
-        try {
-            Map<String, String> map = redisUtils.hGetAll(cacheKey);
-            if(map!=null && map.size()>0){
-                return true;
-            }
 
-            Map userInfoMap = getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
-            if (userInfoMap != null) {
-                String result = (String) userInfoMap.get("result");
-                if ("confirm".equals(result)) {
-                    // http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar175.png
-                    Map resource = (Map) userInfoMap.get("resource");
-                    Map data = (Map) resource.get("data");
-                    String avatar = (String) data.get("large_avatar");
-                    if (!CommonHelper.isInvokeProxyApi(passportId)) {
-                        // TODO 写到搜狗数据库里
-                    }
-                    //更新图片到缓存中
-                    //获取图片名
-                    String imgName = photoUtils.generalFileName();
-                    // 上传到OP图片平台
-                    if (photoUtils.uploadImg(imgName, null, avatar, "1")) {
-                        String imgURL = photoUtils.accessURLTemplate(imgName);
-                        //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                        redisUtils.hPut(cacheKey,"sgImg",imgURL);
-                        return true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("copyAvatarToLocal fail", e);
-            throw new ServiceException(e);
-        }
-        return false;
-    }
 
     private String buildAvatarCacheKey(String passportId) {
         return  CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;

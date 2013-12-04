@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
@@ -34,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
     @Autowired
-    private RedisUtils redisUtils;
+    private DBRedisUtils dbRedisUtils;
     @Autowired
     private PhotoUtils photoUtils;
     @Autowired
@@ -71,11 +72,11 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                             //更新缓存
                             baseInfo.setAvatar(imgUrl);
                             cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                            redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                            dbRedisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                         }
                     }
                 } else {
-                    redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                 }
             }
         } catch (Exception e) {
@@ -104,28 +105,33 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                     return result;
                 }
             } else {
-                String passportId = updateUserInfoApiParams.getUserid();
-                String uniqname = updateUserInfoApiParams.getUniqname();
+                try {
+                    String passportId = updateUserInfoApiParams.getUserid();
+                    String uniqname = updateUserInfoApiParams.getUniqname();
 
-                accountBaseInfo = new AccountBaseInfo();
-                accountBaseInfo.setUniqname(uniqname);
-                accountBaseInfo.setAvatar("");
-                accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
-                //初始化accountBaseInfo
-                accountBaseInfoDAO.insertAccountBaseInfo(passportId, accountBaseInfo);
-                //初始化昵称映射表
-                int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                String cacheKey = null;
-                if (row > 0) {
-                    cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                    redisUtils.set(cacheKey, passportId);
+                    accountBaseInfo = new AccountBaseInfo();
+                    accountBaseInfo.setUniqname(uniqname);
+                    accountBaseInfo.setAvatar("");
+                    accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
+                    //初始化accountBaseInfo
+                    accountBaseInfoDAO.insertAccountBaseInfo(passportId, accountBaseInfo);
+                    //初始化昵称映射表
+                    int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                    String cacheKey = null;
+                    if (row > 0) {
+                        cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                        dbRedisUtils.set(cacheKey, passportId);
+                    }
+                    //初始化缓存
+                    cacheKey = buildAccountBaseInfoKey(passportId);
+                    dbRedisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
+                    result.setSuccess(true);
+                    result.setMessage("修改成功");
+                    return result;
+                } catch (Exception e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    logger.error("updateUserInfo error", e);
                 }
-                //初始化缓存
-                cacheKey = buildAccountBaseInfoKey(passportId);
-                redisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
-                result.setSuccess(true);
-                result.setMessage("修改成功");
-                return result;
             }
         }
         return result;
