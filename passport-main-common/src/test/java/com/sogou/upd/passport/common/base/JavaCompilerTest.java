@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.common.base;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.joda.time.DateTimeUtils;
 
-import javax.tools.*;
+import javax.tools.SimpleJavaFileObject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -20,7 +18,8 @@ public class JavaCompilerTest {
 
     public static void main(String[] args) throws Exception {
         Date date = DateUtils.addDays(new Date(), 7);
-          System.out.println(date);
+        System.out.println(date);
+        System.out.println(date.toString());
 //        String source = "public class Main { public static void main(String[] args) {System.out.println(\"Hello World!\");} }";
 //        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 //        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
