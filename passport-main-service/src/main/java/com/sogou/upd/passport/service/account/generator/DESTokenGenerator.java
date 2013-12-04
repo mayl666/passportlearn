@@ -201,10 +201,10 @@ public class DESTokenGenerator {
         String clientSecret = "c1756a351db27d817225e2a4fd7b3f7d";
 
 
-        String encode = encrypt(passportId);
+        String encode = DESTokenGenerator.encrypt(passportId);
         System.out.println(encode);
 
-        String decode = decrypt(encode);
+        String decode = DESTokenGenerator.decrypt(encode);
         System.out.println(decode);
     }
 }
