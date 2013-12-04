@@ -261,6 +261,25 @@
     </logger>
     <!--end:web服务器性能log-->
 
+    <!--start:redies请求log-->
+    <appender name="dbPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mysqldb/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="dbCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000" />
+        <appender-ref ref="dbPerfFileAppender" />
+    </appender>
+    <logger name="dbTimingLogger" level="info" additivity="false">
+        <appender-ref ref="dbCoalescingStatistics" />
+    </logger>
+    <!--end:web服务器性能log-->
+
     <root level="warn">
         <appender-ref ref="Console" />
     </root>

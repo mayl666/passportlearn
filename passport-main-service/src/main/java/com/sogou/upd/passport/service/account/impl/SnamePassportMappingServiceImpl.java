@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import org.perf4j.aop.Profiled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
     @Autowired
     private DBRedisUtils dbRedisUtils;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdBySnameOrPhone", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     @Override
     public String queryPassportIdBySnameOrPhone(String snameOrPhone) throws ServiceException{
         if(AccountDomainEnum.isIndivid(snameOrPhone)){
@@ -39,6 +41,8 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         }
         return null;
     }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdBySname", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     @Override
     public String queryPassportIdBySname(String sname) throws ServiceException {
         String passportId;
@@ -57,6 +61,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return passportId;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdBySid", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     @Override
     public String queryPassportIdBySid(String sid) throws ServiceException {
         String passportId;
@@ -75,6 +80,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return passportId;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdByMobile", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     @Override
     public String queryPassportIdByMobile(String mobile) throws ServiceException {
         String passportId;
@@ -93,6 +99,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return passportId;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateSnamePassportMapping", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateSnamePassportMapping(String sname, String passportId) throws ServiceException {
         try {
@@ -108,6 +115,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return false;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdByMobile", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean deleteSnamePassportMapping(String sname) throws ServiceException {
         try {
