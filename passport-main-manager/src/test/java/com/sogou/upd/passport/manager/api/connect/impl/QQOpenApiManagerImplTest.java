@@ -23,7 +23,7 @@ import java.util.Map;
 public class QQOpenApiManagerImplTest extends BaseTest {
 
     @Autowired
-    private QQLightOpenApiManager proxyQQLightOpenApiManager;
+    private QQLightOpenApiManager sgQQLightOpenApiManager;
 
     @Test
     public void testGetConnectQQUserInfo() throws Exception {
@@ -46,7 +46,7 @@ public class QQOpenApiManagerImplTest extends BaseTest {
         maps.put("userip","10.129.192.121");
         qqLightOpenApiParams.setParams(maps);
         qqLightOpenApiParams.setOpenApiName("/v3/user/sogou_flag");
-        String result = proxyQQLightOpenApiManager.executeQQOpenApi(sdk, openId, accessToken, qqLightOpenApiParams);
+        String result = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, qqLightOpenApiParams);
         System.out.println("result:--------------------" + result);
     }
 }
