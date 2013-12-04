@@ -27,14 +27,15 @@ import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
-import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -54,7 +55,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     public static final String RESOURCE = "resource";
     public static final String SNAME = "sname";
     public static final String SID = "sid";
-
 
 
     @Autowired
@@ -145,7 +145,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
                 return result;
             }
-            String suffix = ";path=/;domain=.sogou.com;expires=Tuesday, 15-Sep-15 19:02:21 GMT";   // TODO 这里不能写死有效期，要改
+            Date expires = DateUtils.addDays(new Date(), 7);
+//            String suffix = ";path=/;domain=.sogou.com;expires=Tuesday, 15-Sep-15 19:02:21 GMT";   // TODO 这里不能写死有效期，要改
+            String suffix = ";path=/;domain=.sogou.com;expires=" + expires;
             String ppinf = cookieResult.getModels().get("ppinf") + suffix;
             String pprdig = cookieResult.getModels().get("pprdig") + suffix;
             String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
@@ -267,7 +269,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         if (accountBaseInfo != null) {
             uniqname = accountBaseInfo.getUniqname();
         }
-        uniqname = getAndUpdateUniqname(passportId,accountBaseInfo,uniqname);
+        uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
         return uniqname;
     }
 
@@ -290,7 +292,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             mid_avatar = (String) getPhotoResult.getModels().get("img_50");
             tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
         }
-        uniqname = getAndUpdateUniqname(passportId,accountBaseInfo,uniqname);
+        uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
         result.setSuccess(true);
         result.setDefaultModel("uniqname", uniqname);
         result.setDefaultModel("img_30", tiny_avatar);
@@ -299,11 +301,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return result;
     }
 
-    private String getAndUpdateUniqname(String passportId,AccountBaseInfo accountBaseInfo,String uniqname){
-        if (!isValidUniqname(passportId,uniqname)){
+    private String getAndUpdateUniqname(String passportId, AccountBaseInfo accountBaseInfo, String uniqname) {
+        if (!isValidUniqname(passportId, uniqname)) {
             //从论坛获取昵称
             uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-            if (isValidUniqname(passportId,uniqname)) {
+            if (isValidUniqname(passportId, uniqname)) {
                 if (accountBaseInfo != null) {
                     accountBaseInfoService.updateUniqname(accountBaseInfo, uniqname);
                 } else {
@@ -311,18 +313,19 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 }
             }
         }
-        if (!isValidUniqname(passportId,uniqname)) {
+        if (!isValidUniqname(passportId, uniqname)) {
             uniqname = defaultUniqname(passportId);
         }
         return uniqname;
     }
 
-    private boolean isValidUniqname(String passportId,String uniqname){
-        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))){
+    private boolean isValidUniqname(String passportId, String uniqname) {
+        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
             return false;
         }
         return true;
     }
+
     private AccountBaseInfo getBaseInfo(String passportId) {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setUserid(passportId);
