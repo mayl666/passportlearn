@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.SnamePassportMapping;
-import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
@@ -32,6 +31,7 @@ public interface SnamePassportMappingDAO {
 
     /**
      * 获取所有记录
+     *
      * @return
      * @throws DataAccessException
      */
@@ -81,6 +81,16 @@ public interface SnamePassportMappingDAO {
     public String getPassportIdByMobile(@SQLParam("mobile") String mobile) throws DataAccessException;
 
     /**
+     * TODO 测试用
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select * from " +
+            TABLE_NAME +
+            " where passport_id=:passport_id")
+    public SnamePassportMapping getSnamePassportMappingByPassportid(@SQLParam("passport_id") String passport_id) throws DataAccessException;
+
+    /**
      * 插入一条sname和passportId的映射关系
      *
      * @param sname
@@ -121,4 +131,18 @@ public interface SnamePassportMappingDAO {
             TABLE_NAME +
             " where sname=:sname")
     public int deleteSnamePassportMapping(@SQLParam("sname") String sname) throws DataAccessException;
+
+    /**
+     * TODO 测试用的
+     *
+     * @param sname
+     * @param passport_id
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set sid=:sid, sname=:sname where passport_id=:passport_id")
+    public int updateSidSnamePassportMapping(@SQLParam("passport_id") String passport_id, @SQLParam("sname") String sname, @SQLParam("sid") String sid)
+            throws DataAccessException;
 }
