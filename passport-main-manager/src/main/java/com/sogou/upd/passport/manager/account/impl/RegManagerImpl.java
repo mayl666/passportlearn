@@ -289,31 +289,40 @@ public class RegManagerImpl implements RegManager {
                     //手机号 判断绑定账户
                     result = proxyBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
+                        result = new APIResultSupport(false);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                         return result;
+                    } else if (CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
                     } else {
                         result.setSuccess(true);
                         result.setMessage("账户未被占用");
                     }
                 } else {
                     result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
+                    }
                 }
             } else {
                 if (type) {
                     result = sgBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
+                        result = new APIResultSupport(false);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                         return result;
+                    } else if (CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
                     } else {
                         result.setSuccess(true);
                         result.setMessage("账户未被占用");
                     }
                 } else {
                     result = sgRegisterApiManager.checkUser(checkUserApiParams);
+                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
+                    }
                 }
-            }
-            if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                result = isSohuplusUser(username, clientId);
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);

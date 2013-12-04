@@ -154,110 +154,13 @@ public class SohuPlusDataTest extends BaseDAOTest {
         try {
             ObjectMapper om = new ObjectMapper();
             mapResult = om.readValue(result, Map.class);// , Map.class);
-            // data = om.writeValueAsString(mapResult.get("data"));
             mapData = mapResult.get("data");
         } catch (IOException e) {
             System.err.println("error");
         }
 
-        //List allList = new LinkedList();
-        // data = (String) map.get("data");
-
         return mapData;
     }
-
-    /**
-     * 发送请求至SOHU+，获取结果
-     *
-     * @param sids
-     * @return
-     */
-/*    private List sendSpassportHttpReq(String sids) {
-        String url = "http://rest.plus.sohuno.com/spassportrest/batchget/spassports";
-        RequestModel requestModel = new RequestModel(url);
-        requestModel.addParam("sids", sids);
-        requestModel.addParam("appkey", appkey);
-        requestModel.addParam("so_sig", computeSig(sids));
-        int errors = 0;
-
-        String result = SGHttpClient.executeStr(requestModel);
-
-        Map<String, String> map = null;
-        try {
-            map = new ObjectMapper().readValue(result, Map.class);
-        } catch (IOException e) {
-            errors++;
-        }
-
-        List list = null;
-        //List allList = new LinkedList();
-        try {
-            list = new ObjectMapper().readValue(map.get("data"), List.class);
-        } catch (IOException e) {
-            errors++;
-        }
-
-        //allList.addAll(list);
-
-        if (errors != 0) {
-            System.out.println(errors);
-        }
-
-        return list;
-        //return allList;
-    }*/
-
-
-/*    private List sendSpassportSidHttpReq(String passportId) {
-        String url = "http://rest.plus.sohuno.com/spassportrest/passport/autoconvert";
-        RequestModel requestModel = new RequestModel(url);
-
-        requestModel.addParam("passport", passportId);
-        requestModel.addParam("appkey", appkey);
-        requestModel.addParam("ip", "10.129.192.245");
-        requestModel.addParam("so_sig", computeSigSingle(passportId));
-        int errors = 0;
-
-        String result = SGHttpClient.executeStr(requestModel);
-
-        Map<String, Map<String, Object>> map = null;
-        try {
-            map = new ObjectMapper().readValue(result, Map.class);
-        } catch (IOException e) {
-            errors++;
-        }
-
-        List list = null;
-        //List allList = new LinkedList();
-       *//* try {
-            list = new ObjectMapper().readValue(map.get("data"), List.class);
-        } catch (IOException e) {
-            errors++;
-        }*//*
-
-        //allList.addAll(list);
-
-        if (errors != 0) {
-            System.out.println(errors);
-        }
-
-        return list;
-        //return allList;
-    }*/
-
-
-/*    @Test
-    public void testSig() {
-        String sids = "89057280,102587270";
-        String sig = computeSig(sids);
-        System.out.println(sig);
-
-        Map<String, String> map = new HashMap();
-        map.put("mobile", "18210696900");
-        map.put("appkey", appkey);
-
-        System.out.println(computeSigCommon(map));
-    }*/
 
     /**
      * 计算签名
@@ -284,28 +187,6 @@ public class SohuPlusDataTest extends BaseDAOTest {
             return null;
         }
     }
-
-/*    private String computeSig(String sids) {
-
-        try {
-            String so_sig = Coder.encryptMD5("appkey=30000004" + "sids=" + sids + secret);
-            // String so_sig = Coder.encryptMD5("appkey=30000004" + "ip=10.129.192.245" +"passport=hujunfei1986@163.com"+secret);
-            return so_sig;
-        } catch (Exception e) {
-            System.err.println("sig error");
-        }
-        return null;
-    }*/
-
-/*    private String computeSigSingle(String passportId) {
-        try {
-            String so_sig = Coder.encryptMD5("appkey=30000004" + "ip=10.129.192.245" + "passport=" + passportId + secret);
-            return so_sig;
-        } catch (Exception e) {
-            System.err.println("sig error");
-        }
-        return null;
-    }*/
 
     @Test
     public void testSendHttp() {
@@ -443,39 +324,11 @@ public class SohuPlusDataTest extends BaseDAOTest {
                 } catch (InterruptedException e) {
                     //
                 }
-
-/*                for (int i=j; i<j+STEP && i<end && i<list.size(); i++) {
-                    SnamePassportMapping snamePassportMapping = list.get(i);
-                    sids += snamePassportMapping.getSid();
-                }
-                List<String> resultList = sendSpassportHttpReq(sids);
-
-                for (int i=j; i<STEP+j && i<end && i < list.size(); i++) {
-                    try {
-                        SohuPassportMapping sohuPassportMapping = objectMapper.get().readValue(resultList.get(i-j), SohuPassportMapping.class);
-                        SnamePassportMapping snamePassportMapping = list.get(i);
-                        if (!compareResult(snamePassportMapping, sohuPassportMapping)) {
-                            dataOutputStream.writeUTF(snamePassportMapping.getSid()+"\tfail\t"+Integer.valueOf(i + start)+"\n");
-                            dataOutputStream.flush();
-                        } else {
-                            dataOutputStream.writeUTF(snamePassportMapping.getSid()+"\tsuccess\t"+Integer.valueOf(i+start)+"\n");
-                            dataOutputStream.flush();
-                            successNum++;
-                        }
-                    } catch (IOException e) {
-                        System.out.println("error:" + flag);
-                    }
-                }*/
             }
 
             success.set(new Integer(successNum));
             System.out.println(success.get() + ":" + successNum);
         }
-
-/*        private boolean compareResult(SnamePassportMapping loc, SohuPassportMapping rem) {
-            return loc.getSid().equals(rem.getSid()) && loc.getSname().equals(rem.getSname())
-                    && loc.getPassportId().equals(rem.getEmail());
-        }*/
 
         private String compareResult(SnamePassportMapping loc, SohuPassportSidMapping rem) {
             if (rem == null) {
@@ -551,6 +404,8 @@ public class SohuPlusDataTest extends BaseDAOTest {
             return "ok";
         }
     }
+
+
 
     class SohuPassportSidMapping {
         private String sid;
