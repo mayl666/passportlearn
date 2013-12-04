@@ -566,7 +566,7 @@ public class DBRedisUtils {
     /*
     * 设置缓存内容
     */
-    private void set(String key, String value, long timeout, TimeUnit timeUnit) throws Exception {
+    public void set(String key, String value, long timeout, TimeUnit timeUnit) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value, timeout, timeUnit);
