@@ -88,14 +88,13 @@ define([], function() {
                 defaultMsg: "账号/手机号/邮箱",
                 errMsg: function(val){
                     if(!val)return this.emptyMsg;
-                    else if(val.length<4||val.length>50)return "长度必须为4-50个字符";
                     else if(/^[^a-z]/.test(val)){
                         return "首字符必须为小写字母";
                     }
                     else if(/^\d+$/.test(val)){
                         return '不能全为数字';
                     }
-                    else return '请用4-16位字母、数字或"-"';
+                    else return '请用4-16位字母、数字或"_"';
                 },
                 emptyMsg: '不能为空',
                 nullable: false,
@@ -116,16 +115,15 @@ define([], function() {
             password: {
                 errMsg:function(val){
                     if(!val)return this.emptyMsg;
-                    if(val.length<6||val.length>16)return "请输入6-16位密码";
-                    else return '密码必须字母、数字、下划线的组合';
+                    else return '请用6-16位字母、数字或"_"';
                 },
                 emptyMsg: '不能为空',
                 nullable: false,
-                regStr: /^\w{6,16}$/
+                regStr: /^\S{6,16}$/
             },
             vcode: {
                 errMsg: '请正确输入验证码',
-                emptyMsg: '验证码不能为空',
+                emptyMsg: '不能为空',
                 nullable: false,
                 regStr: /^\w*$/
             },
@@ -186,7 +184,7 @@ define([], function() {
         } ,//check
         showTips:function($input,$error,msg,normal){
             normal?$input.removeClass('error'):$input.addClass('error');
-            $error.show().html(msg+((!normal)?"<span class='x'>x</span>":'<span class="r"></span>'));
+            $error.show().html(msg+((!normal)?"":'<span class="r"></span>'));
         },
         saveHistory:function(uname){
             if(!uname||'undefined'===typeof localStorage)return false;

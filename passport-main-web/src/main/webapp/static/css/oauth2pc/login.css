@@ -262,6 +262,7 @@ input[type="text"].error,input[type="password"].error{
 .dropdown .selected span{
 	line-height: 16px;
 	vertical-align: middle;
+	padding-right: 16px;
 }
 .outside-list{
 	position: absolute;
@@ -332,6 +333,7 @@ left: auto;
 	padding: 1px;
 	cursor: pointer;
 }
+.user-id .ppselecter li p{line-height: 20px;}
 .user-id .ppselecter li .photo,.user-id .ppselecter li .caption{
 	display: inline-block;
 	vertical-align: middle;
@@ -345,8 +347,9 @@ left: auto;
 	color:#a4a4a4;
 	display:none;
 	float: right;
-	margin:6px 10px 0 0;
+	margin-right:4px;
 	font-size: 14px;
+	height: 20px;
 }
 .user-id .ppselecter li .photo img,.user-id .ppselecter li .photo{
 	width:30px;
@@ -440,7 +443,7 @@ left: auto;
 }
 .position-tips span.x{
 	margin-left: 2px;
-	margin-top: -5px;
+	margin-top: -4px;
 	display: inline-block;
 	width: 20px;
 	height: 20px;
@@ -448,7 +451,7 @@ left: auto;
 	background: red;
 	color: white;
 	vertical-align: middle;
-	line-height: 18px;
+	line-height: 17px;
 	cursor: pointer;
 	text-align: center;
 	font-size: 18px;

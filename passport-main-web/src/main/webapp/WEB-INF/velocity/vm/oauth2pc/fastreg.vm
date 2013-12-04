@@ -5,7 +5,7 @@
     <title>搜狗浏览器</title>
     <meta name="description" content="搜狗浏览器登录注册框">
     <meta name="author" content="yinyong@sogou-inc.com">
-    <link href="/./static/css/oauth2pc/login.css?t=402789" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc/login.css?t=755663" rel="stylesheet" />
     <!--[if lte IE 9]>
     <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
     <![endif]-->
@@ -25,7 +25,7 @@ var splus = {
         <div class="login-con">
             <form id="fast_reg_form">
                 <fieldset>
-                    <legend>注册搜狗浏览器</legend>
+                    <legend>快速注册</legend>
                     <div class="control-group">
                         <div class="controls user-id">
                             <input type="text" class="" placeholder="设置账号" name="sname" autocomplete="off" disableautocomplete>
@@ -56,7 +56,7 @@ var splus = {
                     <div class="controls">
                         <button class="btn btn-g" type="submit">快速注册</button>
                         <span class="reg-switch">
-                            <a href="/sogou/mobilereg?instanceid=${instanceid}">或用手机注册账号</a>
+                            <a href="/sogou/mobilereg?instanceid=${instanceid}" class="blue">手机注册</a>
                         </span>
                     </div>
                 </div>
@@ -66,7 +66,8 @@ var splus = {
                     </div>
                     <div class="controls position-bottom">
                         <div class="fr"> <i class="left-arrow"></i>
-                            <a href="/sogou/flogon?instanceid=${instanceid}" class="blue">已有账号 直接登录</a>
+                            <span style="vertical-align:baseline">已有账号</span>
+                            <a href="/sogou/flogon?instanceid=${instanceid}" class="blue"> 直接登录</a>
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,7 @@ import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
@@ -33,6 +34,7 @@ import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 
@@ -129,7 +132,9 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest);
-
+        if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
+            result.setCode("0");
+        }
         UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
         userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
@@ -151,7 +156,12 @@ public class PCOAuth2AccountController extends BaseController {
 
         result = oAuth2ResourceManager.resource(params);
 
-        UserOperationLog userOperationLog = new UserOperationLog(params.getAccess_token(), params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        String passportId = "";
+        if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
+            result.setCode("0");
+            passportId = (String) result.getModels().get("sid");
+        }
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
@@ -249,6 +259,9 @@ public class PCOAuth2AccountController extends BaseController {
         commonManager.incRegTimes(ip, uuidName);
 
         //注册添加log
+        if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
+            result.setCode("0");
+        }
         UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), result.getCode(), ip);
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
@@ -261,7 +274,6 @@ public class PCOAuth2AccountController extends BaseController {
         } else {
             logCode = result.getCode();
         }
-        //用户注册log
         UserOperationLog userOperationLog = new UserOperationLog(pcoAuth2RegisterParams.getUsername(), request.getRequestURI(), pcoAuth2RegisterParams.getClient_id(), logCode, getIp(request));
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
@@ -323,6 +335,9 @@ public class PCOAuth2AccountController extends BaseController {
             }
         }
 
+        if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
+            result.setCode("0");
+        }
         UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), String.valueOf(clientId), result.getCode(), ip);
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
@@ -353,6 +368,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     //个人中心页面
     @RequestMapping(value = "/sogou/profile/basic/edit", method = RequestMethod.GET)
+    @ResponseBody
     public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -360,7 +376,8 @@ public class PCOAuth2AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return "tokenerror";
+            response.sendRedirect("/tokenerror");
+            return "";
         }
 
         //当前页面cookie
@@ -371,25 +388,30 @@ public class PCOAuth2AccountController extends BaseController {
         int clientId = pcOAuth2LoginManager.getClientId(oauth2PcIndexParams.getClient_id());
         Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid());
 
+        if (StringUtils.isBlank(queryPassportIdResult.getCode()) && queryPassportIdResult.isSuccess()) {
+            queryPassportIdResult.setCode("0");
+        }
         UserOperationLog userOperationLog = new UserOperationLog(oauth2PcIndexParams.getAccesstoken(), request.getRequestURI(), String.valueOf(oauth2PcIndexParams.getClient_id()), queryPassportIdResult.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
 
         if (!queryPassportIdResult.isSuccess()) {
             //token 验证出错，跳出到登录页
-            return "tokenerror";
+            response.sendRedirect("/tokenerror");
+            return "";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         //判断cookie中的passportId与token解密出来的passportId是否相等
         if (!Strings.isNullOrEmpty(cookieUserId)) {
             if (!cookieUserId.equals(passportId)) {
-                return "redirect:/web/logout_redirect";
+                response.sendRedirect("/web/logout_redirect");
+                return "";
             }
-            return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+            response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
+            return "";
         }
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
-        String utfUserId = new String(passportId.getBytes("gbk"),"utf-8");
-        cookieApiParams.setUserid(utfUserId);
+        cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
         cookieApiParams.setRu("https://account.sogou.com");
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
@@ -403,13 +425,26 @@ public class PCOAuth2AccountController extends BaseController {
             ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
         }
-        return "redirect:/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+
+        String ru = "https://account.sogou.com/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        result = commonManager.createCookieUrl(passportId, "", ru, 1);
+        if (result.isSuccess()) {
+            response.sendRedirect((String) result.getModels().get("cookieUrl"));
+            return "";
+        }
+        response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
+        return "";
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+
+    @RequestMapping(value = "/tokenerror")
+    public String tokenerror() throws Exception {
+        return "tokenerror";
     }
 
     /**

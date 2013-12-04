@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     @Autowired
     private PhotoUtils photoUtils;
     @Autowired
-    private RedisUtils redisUtils;
+    private DBRedisUtils dbRedisUtils;
     @Autowired
     private UniqNamePassportMappingService uniqNamePassportMappingService;
     @Autowired
@@ -40,6 +42,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     private static final Logger logger = LoggerFactory.getLogger(AccountBaseInfoService.class);
     private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initConnectAccountBaseInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountBaseInfo initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
         String uniqname = connectUserInfoVO.getNickname();
@@ -75,17 +78,18 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountBaseInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountBaseInfo queryAccountBaseInfo(String passportId) throws ServiceException {
 
         String cacheKey = buildAccountBaseInfoKey(passportId);
         AccountBaseInfo accountBaseInfo;
         try {
-            accountBaseInfo = redisUtils.getObject(cacheKey, AccountBaseInfo.class);
+            accountBaseInfo = dbRedisUtils.getObject(cacheKey, AccountBaseInfo.class);
             if (accountBaseInfo == null) {
                 accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
                 if (accountBaseInfo != null) {
-                    redisUtils.set(cacheKey, accountBaseInfo);
+                    dbRedisUtils.set(cacheKey, accountBaseInfo);
                 }
             }
         } catch (Exception e) {
@@ -95,6 +99,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         return accountBaseInfo;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateUniqname", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateUniqname(AccountBaseInfo oldBaseInfo, String uniqname) {
         String oldUniqName = oldBaseInfo.getUniqname();
@@ -110,7 +115,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setUniqname(uniqname);
-                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                     //移除原来映射表
                     if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
                         boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
@@ -125,6 +130,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateAvatar", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateAvatar(AccountBaseInfo oldBaseInfo, String avatar) {
         String passportId = oldBaseInfo.getPassportId();
@@ -135,7 +141,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setAvatar(avatar);
-                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                 }
             }
             return true;
@@ -145,6 +151,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertAccountBaseInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountBaseInfo insertAccountBaseInfo(String passportId, String uniqname, String avatar) throws ServiceException {
         try {
@@ -167,7 +174,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
                 if (accountBaseInfoRow > 0) {
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                     return accountBaseInfo;
                 }
             }
@@ -178,6 +185,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_simpleSaveAccountBaseInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean simpleSaveAccountBaseInfo(AccountBaseInfo accountBaseInfo) {
         String passportId = accountBaseInfo.getPassportId();
@@ -185,7 +193,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
             if (accountBaseInfoRow > 0) {
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                dbRedisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                 return true;
             }
             return false;
@@ -195,6 +203,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_isUniqNameExist", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     public boolean isUniqNameExist(String uniqname) {
         if (!Strings.isNullOrEmpty(uniqname)) {
             String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);

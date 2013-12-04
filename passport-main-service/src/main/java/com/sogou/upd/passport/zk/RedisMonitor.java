@@ -28,9 +28,13 @@ public class RedisMonitor {
 
     private NodeCache tokenNodeCache;
 
+    private NodeCache dbCacheNodeCache;
+
     private String cachePath;
 
     private String tokenPath;
+
+    private String dbCachePath;
 
     private Monitor monitor;
 
@@ -38,14 +42,21 @@ public class RedisMonitor {
 
     private JedisConnectionFactory cacheConnectionFactory;  //web接口临时信息存储缓存
 
-    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath, JedisConnectionFactory tokenConnectionFactory, JedisConnectionFactory cacheConnectionFactory) {
+    private JedisConnectionFactory dbCacheConnectionFactory;  //web接口临时信息存储缓存
+
+
+    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath,String dbCachePath,JedisConnectionFactory cacheConnectionFactory,
+                        JedisConnectionFactory tokenConnectionFactory, JedisConnectionFactory dbCacheConnectionFactory) {
         this.monitor = monitor;
         this.cachePath = cachePath;
         this.tokenPath = tokenPath;
-        this.tokenConnectionFactory = tokenConnectionFactory;
+        this.dbCachePath = dbCachePath;
         this.cacheConnectionFactory = cacheConnectionFactory;
+        this.tokenConnectionFactory = tokenConnectionFactory;
+        this.dbCacheConnectionFactory = dbCacheConnectionFactory;
         cacheNodeCache = this.addListener(cachePath, new CacheListenerImpl());
         tokenNodeCache = this.addListener(tokenPath, new TokenListenerImpl());
+        dbCacheNodeCache = this.addListener(dbCachePath,new DbCacheListenerImpl());
     }
 
 
@@ -75,6 +86,15 @@ public class RedisMonitor {
         public void nodeChanged() throws Exception {
             log.warn("redis node changed ");
             refresh(tokenNodeCache, tokenConnectionFactory);
+        }
+    }
+
+    private class DbCacheListenerImpl implements NodeCacheListener {
+
+        @Override
+        public void nodeChanged() throws Exception {
+            log.warn("redis node changed ");
+            refresh(dbCacheNodeCache, dbCacheConnectionFactory);
         }
     }
 
@@ -129,6 +149,11 @@ public class RedisMonitor {
             if (tokenNodeCache != null) {
                 tokenNodeCache.close();
             }
+
+            if (dbCacheNodeCache != null) {
+                dbCacheNodeCache.close();
+            }
+
         } catch (Exception e) {
             log.error("error when destroy PathChildrenCache in Observer", e);
         }

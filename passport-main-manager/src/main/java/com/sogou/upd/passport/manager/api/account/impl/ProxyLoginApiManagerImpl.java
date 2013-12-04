@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;

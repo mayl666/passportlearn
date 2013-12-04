@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -52,6 +53,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     public static final String DATA = "data";
     public static final String RESOURCE = "resource";
     public static final String SNAME = "sname";
+    public static final String SID = "sid";
+
+
 
     @Autowired
     private AppConfigService appConfigService;
@@ -201,7 +205,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 resourceMap = (Map) map.get(RESOURCE);
                 Map dataMap = (Map) resourceMap.get(DATA);
                 String sname = (String) dataMap.get(SNAME);
-                passportId = snamePassportMappingService.queryPassportIdBySname(sname);
+                String sid = (String) dataMap.get(SID);
+                passportId = snamePassportMappingService.queryPassportIdBySid(sid);
                 //处理11.26号数据迁移以后注册的账号
                 if (StringUtils.isBlank(passportId)) {
                     passportId = sname + "@sogou.com";
@@ -266,6 +271,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return uniqname;
     }
 
+    @Override
+    public String defaultUniqname(String passportId) {
+        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
+            return "搜狗用户";
+        }
+        return passportId.substring(0, passportId.indexOf("@"));
+    }
+
     private Result getUserInfo(String passportId) {
         Result result = new APIResultSupport(false);
         String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
@@ -287,10 +300,10 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private String getAndUpdateUniqname(String passportId,AccountBaseInfo accountBaseInfo,String uniqname){
-        if (Strings.isNullOrEmpty(uniqname)) {
+        if (!isValidUniqname(passportId,uniqname)){
             //从论坛获取昵称
             uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-            if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(defaultUniqname(passportId))) {
+            if (isValidUniqname(passportId,uniqname)) {
                 if (accountBaseInfo != null) {
                     accountBaseInfoService.updateUniqname(accountBaseInfo, uniqname);
                 } else {
@@ -298,12 +311,18 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 }
             }
         }
-        if (StringUtils.isBlank(uniqname)) {
+        if (!isValidUniqname(passportId,uniqname)) {
             uniqname = defaultUniqname(passportId);
         }
         return uniqname;
     }
 
+    private boolean isValidUniqname(String passportId,String uniqname){
+        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))){
+            return false;
+        }
+        return true;
+    }
     private AccountBaseInfo getBaseInfo(String passportId) {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setUserid(passportId);
@@ -317,10 +336,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             return accountBaseInfo;
         }
         return null;
-    }
-
-    private String defaultUniqname(String passportId) {
-        return passportId.substring(0, passportId.indexOf("@"));
     }
 
 }
