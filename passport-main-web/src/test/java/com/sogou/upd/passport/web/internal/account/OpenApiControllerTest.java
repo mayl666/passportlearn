@@ -23,8 +23,8 @@ public class OpenApiControllerTest extends BaseActionTest {
         Map<String, String> params = new HashMap<String, String>();
 //        String userid = "1548840104@sohu.com";
 //        String openid = "1548840104@sohu.com";
-        String userid = "A3F5CE13DCE83E57779D51A1B9DAFFD1@qq.sohu.com";
-        String openid = "A3F5CE13DCE83E57779D51A1B9DAFFD1@qq.sohu.com";
+        String userid = "9138E14C2A3F13E49F885BAE9E749ADA@qq.sohu.com";
+        String openid = "9138E14C2A3F13E49F885BAE9E749ADA@qq.sohu.com";
         int clientId = 1110;
         String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
         long ct = System.currentTimeMillis();
@@ -41,7 +41,7 @@ public class OpenApiControllerTest extends BaseActionTest {
         maps.put("opt", "set");
         maps.put("pf", "qzone");
         maps.put("value", "1");
-        maps.put("userip", "10.129.192.121");
+        maps.put("userip", "10.128.134.167");
         String mapString = JacksonJsonMapperUtil.getMapper().writeValueAsString(maps);
         params.put("params", mapString);
         String result = sendPost("http://localhost/internal/connect/qq/light", params);

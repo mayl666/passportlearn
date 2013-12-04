@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
@@ -16,15 +17,20 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.internal.connect.OpenApiParamsHelper;
+import com.sogou.upd.passport.web.internal.connect.qq.form.OpenApiResult;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -67,31 +73,20 @@ public class QQLightOpenApiController {
             //调用sohu接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createQQConnectParams(params);
             result = proxyQQLightOpenApiManager.getProxyConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
-            if (!result.isSuccess()) {
-                //使用浏览器clientid=1044查询老用户的搜狐token
-                BaseOpenApiParams baseOpenApiIEParams = new OpenApiParamsHelper().createQQConnectParams(params);
-                result = proxyQQLightOpenApiManager.getProxyConnectUserInfo(baseOpenApiIEParams, SHPPUrlConstant.IE_CONNECT_APP_ID, SHPPUrlConstant.IE_CONNECT_APP_KEY);
-            }
             resultString = result.toString();
             if (result.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> accessTokenMap = (Map<String, String>) result.getModels().get("result");
                 String openId = accessTokenMap.get("open_id").toString();
                 String accessToken = accessTokenMap.get("access_token").toString();
-                //测试可用
-//                String openId = "94BE926A9FD3261C4F4045031A3C7966";
-//                String accessToken = "9BC2B0AAF5D06C9474DC01F13D153A45";
-                //应用的基本信息，搜狗在QQ的第三方appid与appkey
-                String appkey = CommonConstant.APP_CONNECT_KEY;     //搜狗在QQ的appkey
-                String appsecret = CommonConstant.APP_CONNECT_SECRET; //搜狗在QQ的appsecret
-//                String appkey = "200034";
-//                String appsecret = "8c0116a88d3b5ce01f25d69a376f381f";
                 //QQ提供的openapi服务器
                 String serverName = CommonConstant.QQ_SERVER_NAME;
-                OpenApiV3 sdk = new OpenApiV3(appkey, appsecret);
-                sdk.setServerName(serverName);
+                //应用的基本信息，搜狗在QQ的第三方appid与appkey
+                String sgAppKey = CommonConstant.APP_CONNECT_KEY;     //搜狗在QQ的appid
+                String sgAppSecret = CommonConstant.APP_CONNECT_SECRET; //搜狗在QQ的appkey
+                OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
                 //调用代理第三方接口，点亮或熄灭QQ图标
-                String resp = proxyQQLightOpenApiManager.executeQQOpenApi(sdk, openId, accessToken, params);
+                String resp = proxyQQLightOpenApiManager.executeQQOpenApi(sdkSG, openId, accessToken, params);
                 resultString = resp;
             }
         } catch (Exception e) {
@@ -104,5 +99,11 @@ public class QQLightOpenApiController {
             UserOperationLogUtil.log(userOperationLog);
         }
         return resultString;
+    }
+
+    private OpenApiV3 createOpenApiByApp(String appKey, String appSecret, String serverName) {
+        OpenApiV3 sdk = new OpenApiV3(appKey, appSecret);
+        sdk.setServerName(serverName);
+        return sdk;
     }
 }

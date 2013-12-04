@@ -24,6 +24,8 @@ public class CommonConstant {
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
+    public static final String SOHU_APP_CONNECT_KEY = "200034";  //搜狐在QQ第三方开放平台的应用id
+    public static final String SOHU_APP_CONNECT_SECRET = "8c0116a88d3b5ce01f25d69a376f381f ";  //搜狐在QQ第三方开放平台对应的应用密钥
     public static final String HTTP = "http";  //http请求方式
     public static final String HTTPS = "https";//https请求方式
     public static final String CONNECT_METHOD_GET = "get";//method=get请求方式
