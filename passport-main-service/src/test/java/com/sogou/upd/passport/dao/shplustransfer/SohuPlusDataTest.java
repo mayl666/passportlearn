@@ -2,22 +2,17 @@ package com.sogou.upd.passport.dao.shplustransfer;
 
 
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.model.httpclient.RequestModel;
-import com.sogou.upd.passport.common.utils.BeanUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.BaseDAOTest;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
 import com.sogou.upd.passport.dao.account.SohuplusTmpDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
+import com.sogou.upd.passport.dao.shplustransfer.DO.SohuPassportSidMapping;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.SnamePassportMapping;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
-import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
@@ -37,21 +32,10 @@ import java.util.*;
  */
 public class SohuPlusDataTest extends BaseDAOTest {
     @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
-    private SohuplusTmpDAO sohuplusTmpDAO;
-    @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
     @Autowired
-    private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
-    @Autowired
     private SnamePassportMappingDAO snamePassportMappingDAO;
-    @Autowired
-    private AccountBaseInfoService accountBaseInfoService;
-    @Autowired
-    private TaskExecutor batchOperateExecutor;
 
-    // private DataOutputStream dataOutputStream;
     private PrintWriter printWriter;
 
     private ThreadLocal<ObjectMapper> objectMapper = new ThreadLocal<>();
@@ -85,8 +69,6 @@ public class SohuPlusDataTest extends BaseDAOTest {
             int begin = 0;
             int area = allLocal / THREADS;
 
-/*            printWriter.println(allLocal);
-            printWriter.flush();*/
             List<Thread> threadList = new LinkedList<>();
 
             for (int i = begin, j = 0; i < allLocal; i += area, j++) {
@@ -94,151 +76,24 @@ public class SohuPlusDataTest extends BaseDAOTest {
                 if (end > allLocal) {
                     end = allLocal;
                 }
-                // System.out.println(i+":"+end);
                 Thread thread = new Thread(new CompareSpassportWithSohu(j, i, end, list));
                 thread.start();
                 threadList.add(thread);
             }
 
-
             for (int i = 0; i < threadList.size(); i++) {
                 try {
                     threadList.get(i).join();
                 } catch (InterruptedException e) {
-                    //
                 }
             }
-
-
-            // List<AccountBaseInfo> listAccount = accountBaseInfoDAO.listAccountBaseInfo();
-
         } catch (FileNotFoundException e) {
             System.err.println("data file error");
         } finally {
-
-                /*if (dataOutputStream != null) {
-                    dataOutputStream.close();
-                }*/
             if (printWriter != null) {
                 printWriter.close();
             }
-
         }
-
-
-    }
-
-    /**
-     * 发送请求至SOHU+，获取结果
-     *
-     * @param
-     * @return
-     */
-
-    private Map sendSpassportSingleHttpReq(String url, Map<String, String> map) {
-        RequestModel requestModel = new RequestModel(url);
-
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            requestModel.addParam(entry.getKey(), entry.getValue());
-        }
-        requestModel.addParams(map);
-        requestModel.addParam("so_sig", computeSigCommon(map));
-
-        // System.out.println(requestModel.getUrlWithParam());
-
-        String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
-
-        Map<String, Map<String, Object>> mapResult = null;
-        Map mapData = null;
-        try {
-            ObjectMapper om = new ObjectMapper();
-            mapResult = om.readValue(result, Map.class);// , Map.class);
-            mapData = mapResult.get("data");
-        } catch (IOException e) {
-            System.err.println("error");
-        }
-
-        return mapData;
-    }
-
-    /**
-     * 计算签名
-     *
-     * @param map
-     * @return
-     */
-
-    private String computeSigCommon(Map<String, String> map) {
-        Set keys = map.keySet();
-        TreeMap<String, String> treeMap = new TreeMap(map);
-        StringBuilder sb = new StringBuilder();
-
-        Iterator it = treeMap.keySet().iterator();
-
-        while (it.hasNext()) {
-            String key = (String) it.next();
-            sb.append(key + "=" + treeMap.get(key));
-        }
-        sb.append(secret);
-        try {
-            return Coder.encryptMD5(sb.toString());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Test
-    public void testSendHttp() {
-        String url = "http://rest.plus.sohuno.com/spassportrest/passport/autoconvert";
-        Map<String, String> map = new HashMap();
-        map.put("appkey", appkey);
-        map.put("passport", "suzhiheng666@sogou.com");
-        map.put("ip", ip);
-
-        SohuPassportSidMapping sohuPassportSidMapping = new SohuPassportSidMapping();
-        try {
-            Map<String, String> data = sendSpassportSingleHttpReq(url, map);
-            // sohuPassportSidMapping = new ObjectMapper().readValue(data, SohuPassportSidMapping.class);
-            // System.out.println(data.get("sid"));
-            sohuPassportSidMapping = (SohuPassportSidMapping) toJavaBean(sohuPassportSidMapping, data);
-            // BeanUtils.populate(sohuPassportSidMapping, data);
-            System.out.println(sohuPassportSidMapping.getSid()+"|"+sohuPassportSidMapping.getSname());
-        } catch (Exception e) {
-            System.err.println("error parse");
-        }
-    }
-
-    /**
-     * 将map转换成Javabean
-     *
-     * @param javabean javaBean
-     * @param data map数据
-     */
-    public Object toJavaBean(Object javabean, Map<String, String> data)
-    {
-        Method[] methods = javabean.getClass().getDeclaredMethods();
-        for (Method method : methods)
-        {
-            try
-            {
-                if (method.getName().startsWith("set"))
-                {
-                    String field = method.getName();
-                    field = field.substring(field.indexOf("set") + 3);
-                    field = field.toLowerCase().charAt(0) + field.substring(1);
-                    method.invoke(javabean, new Object[]
-                            {
-                                    data.get(field)
-                            });
-                }
-            }
-            catch (Exception e)
-            {
-            }
-        }
-
-        return javabean;
     }
 
     /**
@@ -275,7 +130,6 @@ public class SohuPlusDataTest extends BaseDAOTest {
         }
 
 
-
         @Override
         public void run() {
             try {
@@ -294,28 +148,10 @@ public class SohuPlusDataTest extends BaseDAOTest {
 
                     SnamePassportMapping snamePassportMapping = list.get(i);
                     String passportId = snamePassportMapping.getPassportId();
-
-                    String url = "http://rest.plus.sohuno.com/spassportrest/passport/autoconvert";
-                    Map<String, String> map = new HashMap();
-                    map.put("appkey", appkey);
-                    map.put("passport", passportId);
-                    map.put("ip", ip);
-
-                    SohuPassportSidMapping sohuPassportSidMapping = new SohuPassportSidMapping();
-                    try {
-                        Map<String, String> data = sendSpassportSingleHttpReq(url, map);
-                        // sohuPassportSidMapping = new ObjectMapper().readValue(data, SohuPassportSidMapping.class);
-                        // BeanUtils.populate(sohuPassportSidMapping, data);
-                        sohuPassportSidMapping = (SohuPassportSidMapping) toJavaBean(sohuPassportSidMapping, data);
-
-                    } catch (Exception e) {
-                        System.err.println("error parse");
-                    }
+                    SohuPassportSidMapping sohuPassportSidMapping = SohuPlusUtil.sendSohuPlusHttp(passportId);
 
                     AccountBaseInfo accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
-
-
-                    printWriter.println(i+"\t"+ snamePassportMapping.getPassportId() + "\t" + compareResult(snamePassportMapping, sohuPassportSidMapping) + "\t" + compareNickAndAvator(accountBaseInfo, sohuPassportSidMapping));
+                    printWriter.println(i + "\t" + snamePassportMapping.getPassportId() + "\t" + compareResult(snamePassportMapping, sohuPassportSidMapping) + "\t" + compareNickAndAvator(accountBaseInfo, sohuPassportSidMapping));
 
                 }
                 printWriter.flush();
@@ -325,7 +161,6 @@ public class SohuPlusDataTest extends BaseDAOTest {
                     //
                 }
             }
-
             success.set(new Integer(successNum));
             System.out.println(success.get() + ":" + successNum);
         }
@@ -337,14 +172,14 @@ public class SohuPlusDataTest extends BaseDAOTest {
             boolean result = loc.getSid().equals(rem.getSid()) && loc.getSname().equals(rem.getSname());
             if (result == true) {
                 if (StringUtil.isBlank(loc.getMobile()) && !StringUtil.isBlank(rem.getMobile())) {
-                    return "local-no-mobile:"+loc.getMobile()+"|"+rem.getMobile();
+                    return "local-no-mobile:" + loc.getMobile() + "|" + rem.getMobile();
                 }
                 if (!StringUtil.isBlank(loc.getMobile()) && !loc.getMobile().equals(rem.getMobile())) {
-                    return "diff-mobile:"+loc.getMobile()+"|"+rem.getMobile();
+                    return "diff-mobile:" + loc.getMobile() + "|" + rem.getMobile();
                 }
             }
             if (result == false) {
-                return "diff-sidOrname:"+loc.getSid()+"|"+rem.getSid()+"|"+loc.getSname()+"|"+rem.getSname();
+                return "diff-sidOrname:" + loc.getSid() + "|" + rem.getSid() + "|" + loc.getSname() + "|" + rem.getSname();
             } else {
                 return "ok";
             }
@@ -352,23 +187,23 @@ public class SohuPlusDataTest extends BaseDAOTest {
 
 
         private String compareNickAndAvator(AccountBaseInfo accountBaseInfo, SohuPassportSidMapping sohuPassportSidMapping) {
-            String flag = ":"+(accountBaseInfo==null?null:accountBaseInfo.getUniqname())+"|"
-                    +(sohuPassportSidMapping==null?null:sohuPassportSidMapping.getNick());
+            String flag = ":" + (accountBaseInfo == null ? null : accountBaseInfo.getUniqname()) + "|"
+                    + (sohuPassportSidMapping == null ? null : sohuPassportSidMapping.getNick());
             if (accountBaseInfo == null) {
                 if (sohuPassportSidMapping != null && (sohuPassportSidMapping.getLarge_avator() != null || sohuPassportSidMapping.getNick() != null)) {
                     if (!StringUtil.isBlank(sohuPassportSidMapping.getLarge_avator())) {
-                        return "local-no-avator"+flag+"|null|"+sohuPassportSidMapping.getLarge_avator();
+                        return "local-no-avator" + flag + "|null|" + sohuPassportSidMapping.getLarge_avator();
                     }
                     String nick = sohuPassportSidMapping.getNick();
                     if (!StringUtil.isBlank(nick) && nick.indexOf("搜狐网友") == -1
                             && nick.indexOf("在搜狐") == -1 && nick.indexOf("的blog") == -1) {
-                        return "local-no-nick"+flag;
+                        return "local-no-nick" + flag;
                     }
                 }
                 return "ok";
             }
             if (sohuPassportSidMapping == null) {
-                return "sohu-no"+flag;
+                return "sohu-no" + flag;
             }
             String nickSohu = sohuPassportSidMapping.getNick();
             String avatarSohu = sohuPassportSidMapping.getLarge_avator();
@@ -377,7 +212,7 @@ public class SohuPlusDataTest extends BaseDAOTest {
 
             if (nick == null) {
                 if (nickSohu != null) {
-                    return "local-no-nick"+flag;
+                    return "local-no-nick" + flag;
                 }
 
             } else {
@@ -385,155 +220,23 @@ public class SohuPlusDataTest extends BaseDAOTest {
                     return "diff-nick";
                 }*/
                 if (StringUtil.isEmpty(nickSohu)) {
-                    return "sohu-no-nick"+flag;
+                    return "sohu-no-nick" + flag;
                 }
             }
             if (StringUtil.isBlank(avatar)) {
                 if (!StringUtil.isEmpty(avatarSohu)) {
-                    return "local-no-avatar"+flag+"|null|"+sohuPassportSidMapping.getLarge_avator();
+                    return "local-no-avatar" + flag + "|null|" + sohuPassportSidMapping.getLarge_avator();
                 }
             } else {
                 /*if (!avatar.equals(avatarSohu)) {
                     return "diff-avatar";
                 }*/
                 if (StringUtil.isEmpty(avatarSohu)) {
-                    return "sohu-no-avatar"+flag+"|"+avatar+"|"+sohuPassportSidMapping.getLarge_avator();
+                    return "sohu-no-avatar" + flag + "|" + avatar + "|" + sohuPassportSidMapping.getLarge_avator();
                 }
             }
 
             return "ok";
-        }
-    }
-
-
-
-    class SohuPassportSidMapping {
-        private String sid;
-        private String sname;
-        private String email;
-        private String nick;
-        private String large_avator;
-        private String mid_avator;
-        private String tiny_avator;
-        private String update_at;
-        private String active_at;
-        private String create_at;
-        private String create_ip;
-        private String status;
-        private String sname_active;
-        private String mobile;
-
-
-        String getStatus() {
-            return status;
-        }
-
-        void setStatus(String status) {
-            this.status = status;
-        }
-
-        String getSname_active() {
-            return sname_active;
-        }
-
-        void setSname_active(String sname_active) {
-            this.sname_active = sname_active;
-        }
-
-        String getMobile() {
-            return mobile;
-        }
-
-        void setMobile(String mobile) {
-            this.mobile = mobile;
-        }
-
-        String getSid() {
-            return sid;
-        }
-
-        String getSname() {
-            return sname;
-        }
-
-        String getEmail() {
-            return email;
-        }
-
-        String getNick() {
-            return nick;
-        }
-
-        String getLarge_avator() {
-            return large_avator;
-        }
-
-        String getMid_avator() {
-            return mid_avator;
-        }
-
-        String getTiny_avator() {
-            return tiny_avator;
-        }
-
-        String getUpdate_at() {
-            return update_at;
-        }
-
-        String getActive_at() {
-            return active_at;
-        }
-
-        String getCreate_at() {
-            return create_at;
-        }
-
-        String getCreate_ip() {
-            return create_ip;
-        }
-
-        void setSid(String sid) {
-            this.sid = sid;
-        }
-
-        void setSname(String sname) {
-            this.sname = sname;
-        }
-
-        void setEmail(String email) {
-            this.email = email;
-        }
-
-        void setNick(String nick) {
-            this.nick = nick;
-        }
-
-        void setLarge_avator(String large_avator) {
-            this.large_avator = large_avator;
-        }
-
-        void setMid_avator(String mid_avator) {
-            this.mid_avator = mid_avator;
-        }
-
-        void setTiny_avator(String tiny_avator) {
-            this.tiny_avator = tiny_avator;
-        }
-
-        void setUpdate_at(String update_at) {
-            this.update_at = update_at;
-        }
-
-        void setActive_at(String active_at) {
-            this.active_at = active_at;
-        }
-
-        void setCreate_at(String create_at) {
-            this.create_at = create_at;
-        }
-
-        void setCreate_ip(String create_ip) {
-            this.create_ip = create_ip;
         }
     }
 
