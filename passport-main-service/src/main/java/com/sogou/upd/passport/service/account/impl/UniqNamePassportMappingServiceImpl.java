@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -26,7 +27,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     private static final Logger logger = LoggerFactory.getLogger(UniqNamePassportMappingService.class);
 
     @Autowired
-    private RedisUtils redisUtils;
+    private DBRedisUtils dbRedisUtils;
     @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
@@ -35,11 +36,11 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         String passportId = null;
         try {
             String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-            passportId = redisUtils.get(cacheKey);
+            passportId = dbRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId);
+                    dbRedisUtils.set(cacheKey, passportId);
                 }
             }
         } catch (Exception e) {
@@ -65,7 +66,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
             if (row > 0) {
                 String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                redisUtils.set(cacheKey, passportId);
+                dbRedisUtils.set(cacheKey, passportId);
                 return true;
             }
         } catch (Exception e) {
@@ -86,7 +87,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
 //            if (row > 0) {
 //                String cacheKey = buildAccountKey(passportId);
 //                account.setUniqname(nickname);
-//                redisUtils.set(cacheKey, account);
+//                dbRedisUtils.set(cacheKey, account);
 
             //移除原来映射表
             if (removeUniqName(oldNickName)) {
@@ -94,7 +95,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
                 if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-                    redisUtils.set(cacheKey, passportId);
+                    dbRedisUtils.set(cacheKey, passportId);
                     return true;
                 }
             } else {
@@ -116,7 +117,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
                 if (row >= 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                    redisUtils.delete(cacheKey);
+                    dbRedisUtils.delete(cacheKey);
                     return true;
                 }
             }

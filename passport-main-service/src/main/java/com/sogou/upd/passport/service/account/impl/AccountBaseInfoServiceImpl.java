@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
@@ -30,7 +31,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     @Autowired
     private PhotoUtils photoUtils;
     @Autowired
-    private RedisUtils redisUtils;
+    private DBRedisUtils dbRedisUtils;
     @Autowired
     private UniqNamePassportMappingService uniqNamePassportMappingService;
     @Autowired
@@ -81,11 +82,11 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         String cacheKey = buildAccountBaseInfoKey(passportId);
         AccountBaseInfo accountBaseInfo;
         try {
-            accountBaseInfo = redisUtils.getObject(cacheKey, AccountBaseInfo.class);
+            accountBaseInfo = dbRedisUtils.getObject(cacheKey, AccountBaseInfo.class);
             if (accountBaseInfo == null) {
                 accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
                 if (accountBaseInfo != null) {
-                    redisUtils.set(cacheKey, accountBaseInfo);
+                    dbRedisUtils.set(cacheKey, accountBaseInfo);
                 }
             }
         } catch (Exception e) {
@@ -110,7 +111,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setUniqname(uniqname);
-                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                     //移除原来映射表
                     if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
                         boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
@@ -135,7 +136,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setAvatar(avatar);
-                    redisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                 }
             }
             return true;
@@ -167,7 +168,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
                 if (accountBaseInfoRow > 0) {
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                     return accountBaseInfo;
                 }
             }
@@ -185,7 +186,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
             if (accountBaseInfoRow > 0) {
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                redisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                dbRedisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
                 return true;
             }
             return false;

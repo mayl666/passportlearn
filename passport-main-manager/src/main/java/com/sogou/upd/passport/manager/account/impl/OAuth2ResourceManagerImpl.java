@@ -53,6 +53,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     public static final String DATA = "data";
     public static final String RESOURCE = "resource";
     public static final String SNAME = "sname";
+    public static final String SID = "sid";
+
+
 
     @Autowired
     private AppConfigService appConfigService;
@@ -202,7 +205,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 resourceMap = (Map) map.get(RESOURCE);
                 Map dataMap = (Map) resourceMap.get(DATA);
                 String sname = (String) dataMap.get(SNAME);
-                passportId = snamePassportMappingService.queryPassportIdBySname(sname);
+                String sid = (String) dataMap.get(SID);
+                passportId = snamePassportMappingService.queryPassportIdBySid(sid);
                 //处理11.26号数据迁移以后注册的账号
                 if (StringUtils.isBlank(passportId)) {
                     passportId = sname + "@sogou.com";

@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -27,7 +28,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
     @Autowired
     private SnamePassportMappingDAO snamePassportMappingDAO;
     @Autowired
-    private RedisUtils redisUtils;
+    private DBRedisUtils dbRedisUtils;
 
     @Override
     public String queryPassportIdBySnameOrPhone(String snameOrPhone) throws ServiceException{
@@ -43,11 +44,11 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         String passportId;
         try {
             String cacheKey = buildSnamePassportMappingKey(sname);
-            passportId = redisUtils.get(cacheKey);
+            passportId = dbRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySname(sname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
                 }
             }
         } catch (Exception e) {
@@ -61,11 +62,11 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         String passportId;
         try {
             String cacheKey = buildSnamePassportMappingKey(sid);
-            passportId = redisUtils.get(cacheKey);
+            passportId = dbRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySid(sid);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
                 }
             }
         } catch (Exception e) {
@@ -79,11 +80,11 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         String passportId;
         try {
             String cacheKey = buildSnamePassportMappingKey(mobile);
-            passportId = redisUtils.get(cacheKey);
+            passportId = dbRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
                 }
             }
         } catch (Exception e) {
@@ -98,7 +99,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             int accountRow = snamePassportMappingDAO.updateSnamePassportMapping(sname, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildSnamePassportMappingKey(sname);
-                redisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
+                dbRedisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
                 return true;
             }
         } catch (Exception e) {
@@ -113,7 +114,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             int row = snamePassportMappingDAO.deleteSnamePassportMapping(sname);
             if (row != 0) {
                 String cacheKey = buildSnamePassportMappingKey(sname);
-                redisUtils.delete(cacheKey);
+                dbRedisUtils.delete(cacheKey);
                 return true;
             }
         } catch (Exception e) {
