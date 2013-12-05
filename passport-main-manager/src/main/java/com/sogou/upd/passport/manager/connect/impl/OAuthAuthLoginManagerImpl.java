@@ -14,16 +14,19 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
+import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
@@ -33,6 +36,7 @@ import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.WapTokenService;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
@@ -46,6 +50,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -79,6 +84,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private PCAccountManager pcAccountManager;
     @Autowired
     private WapTokenService wapTokenService;
+    @Autowired
+    private AppConfigService appConfigService;
+    @Autowired
+    private SessionServerManager sessionServerManager;
+
 
     @Override
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
@@ -174,6 +184,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String ip = req.getParameter("ip");
             String instanceId = req.getParameter("ts");
             String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
+            String display = req.getParameter("display");
             int provider = AccountTypeEnum.getProvider(providerStr);
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
@@ -197,16 +208,30 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, display, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
+            //若provider=QQ && display=wml、xhtml调用WAP接口
+            String accessTokenUrl = null;
+            if (ConnectRequest.isQQWapRequest(providerStr, display)) {
+                accessTokenUrl = oAuthConsumer.getWapAccessTokenUrl();
+            } else {
+                accessTokenUrl = oAuthConsumer.getAccessTokenUrl();
+            }
+
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
-                    oAuthConsumer, redirectUrl);
+                    /*oAuthConsumer*/accessTokenUrl, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
             oAuthTokenVO.setIp(ip);
 
             if (provider == AccountTypeEnum.QQ.getValue()) {
                 //QQ需根据access_token获取openid
+                String obtainOpenIdUrl = null;
+                if (ConnectRequest.isQQWapRequest(providerStr, display)) {
+                    obtainOpenIdUrl = oAuthConsumer.getWapOpenIdUrl();
+                } else {
+                    obtainOpenIdUrl = oAuthConsumer.getOpenIdUrl();
+                }
                 String accessToken = oAuthTokenVO.getAccessToken();
-                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, oAuthConsumer);
+                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, /*oAuthConsumer*/obtainOpenIdUrl);
                 String openId = openIdResponse.getOpenId();
                 if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
             }
@@ -218,7 +243,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
             if (connectAccountResult.isSuccess()) {
-                result.setDefaultModel("userid", connectAccountResult.getModels().get("userid"));
+                String passportId = (String) connectAccountResult.getModels().get("userid");
+                result.setDefaultModel("userid", passportId);
                 String userId = (String) connectAccountResult.getModels().get("userid");
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
@@ -243,6 +269,21 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
+                    AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+
+                    //写session 数据库
+                    String sgid = sessionServerManager.createSession(appConfig, userId);
+
+                    if (!Strings.isNullOrEmpty(sgid)) {
+                        result.setSuccess(true);
+                        result.getModels().put("sgid", sgid);
+                        //ru后缀一个sgid
+                        URL url = new URL(ru);
+                        ru = url.getQuery();
+                        ru = ru.substring(ru.indexOf('=') + 1, ru.length());
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, buildWapSuccessRu(ru, sgid));
+                    }
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
@@ -277,6 +318,19 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         params.put("userid", userid);
         params.put("token", token);
         params.put("uniqname", uniqname);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        return ru;
+    }
+
+    private String buildWapSuccessRu(String ru, String sgid) {
+        Map params = Maps.newHashMap();
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        params.put("sgid", sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

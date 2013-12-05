@@ -36,13 +36,13 @@ import java.io.IOException;
 public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     @Override
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer, String redirectUrl)
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig/*, OAuthConsumer oAuthConsumer*/,String accessTokenUrl, String redirectUrl)
             throws IOException, OAuthProblemException {
 
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
 
-        OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
+        OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(accessTokenUrl)
                 .setAppKey(appKey).setAppSecret(appSecret).setRedirectURI(redirectUrl).setCode(code)
                 .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE);
 
@@ -65,8 +65,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, OAuthConsumer oAuthConsumer) throws OAuthProblemException, IOException {
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.openIdLocation(oAuthConsumer.getOpenIdUrl())
+    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, /*OAuthConsumer oAuthConsumer*/String obtainOpenIdUrl) throws OAuthProblemException, IOException {
+        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.openIdLocation(obtainOpenIdUrl)
                 .setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
 
         QQOpenIdResponse qqOpenIdResponse = OAuthHttpClient.execute(request,

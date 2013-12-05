@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
@@ -21,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
@@ -41,6 +40,39 @@ public class HttpClientUtil {
         GetMethod get = new GetMethod(url);
         return doWget(get);
     }
+
+
+    public static String postRequest(String url, Map<String, String> params) throws Exception {
+        PostMethod postMethod = new PostMethod(url);
+        try {
+            // 设置请求参数
+            if (params != null && !params.isEmpty()) {
+                NameValuePair[] data = new NameValuePair[params.size()];
+
+                Iterator iter = params.entrySet().iterator();
+                int i = 0;
+                while (iter.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    data[i] = new NameValuePair((String) entry.getKey(), (String) entry.getValue());
+                    ++i;
+                }
+                postMethod.setRequestBody(data);
+            }
+            int statusCode = client.executeMethod(postMethod);
+
+            if (statusCode == HttpStatus.SC_OK) {
+                //读取内容
+                byte[] responseBody = postMethod.getResponseBody();
+                return new String(responseBody, "UTF-8");
+            }
+
+        } finally {
+            //释放链接
+            postMethod.releaseConnection();
+        }
+        return null;
+    }
+
 
     // integer 表示的返回状态吗，String表示的Content-Type的值，InputStream是内容
     public static Pair<Integer, Pair<String, byte[]>> getFile(String url) {

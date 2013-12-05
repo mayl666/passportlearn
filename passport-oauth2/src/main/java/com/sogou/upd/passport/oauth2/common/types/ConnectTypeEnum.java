@@ -16,7 +16,8 @@ public enum ConnectTypeEnum {
     WEB("web"),
     TOKEN("token"),   //桌面应用
     MAPP("mapp"),   //手机app，基于服务器端调用检验token的接口
-    MOBILE("mobile");  //仅搜狗地图的移动端使用
+    MOBILE("mobile"),  //仅搜狗地图的移动端使用
+    WAP("wap");  //手机wap
 
     private String connectType;
 
@@ -27,6 +28,7 @@ public enum ConnectTypeEnum {
         TYPE_LIST.add(TOKEN.toString());
         TYPE_LIST.add(MAPP.toString());
         TYPE_LIST.add(MOBILE.toString());
+        TYPE_LIST.add(WAP.toString());
     }
 
     ConnectTypeEnum(String connectType) {
@@ -42,6 +44,12 @@ public enum ConnectTypeEnum {
      */
     public static boolean isMobileApp(String type) {
         return type.equals(ConnectTypeEnum.MAPP.toString());
+    }
+    /*
+    * 是否为移动客户端，type=mapp/mobile
+    */
+    public static boolean isMobileWap(String type) {
+        return type.equals(ConnectTypeEnum.WAP.toString());
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.sogou.upd.passport.oauth2.common.types;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 

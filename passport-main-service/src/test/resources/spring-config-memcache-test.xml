@@ -8,8 +8,8 @@
     <!--RefreshToken访问配置-->
     <bean   id="rTokenMemClientBuilder"
             class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
-            p:connectionPoolSize="170"
-            p:connectTimeout="500"
+            p:connectionPoolSize="10"
+            p:connectTimeout="50"
             p:failureMode="true">
         <constructor-arg>
             <list>

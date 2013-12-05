@@ -28,7 +28,7 @@ public interface ConnectAuthService {
      * @throws IOException,OAuthProblemException
      *
      */
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer, String redirectUrl)
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, /*OAuthConsumer oAuthConsumer*/String accessTokenUrl, String redirectUrl)
             throws IOException, OAuthProblemException;
 
     /**
@@ -36,7 +36,7 @@ public interface ConnectAuthService {
      *
      * @throws IOException
      */
-    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, OAuthConsumer oAuthConsumer)
+    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, /*OAuthConsumer oAuthConsumer*/String obtainOpenIdUrl)
             throws OAuthProblemException, IOException;
 
     /**

@@ -48,6 +48,10 @@ public class OAuthConsumerFactory {
         oAuthConsumer.setOpenIdUrl(getURL("openIdUrl", providerStr));
         oAuthConsumer.setCallbackUrl(getURL("callbackUrl", providerStr));
         oAuthConsumer.setUserInfo(getURL("userInfo", providerStr));
+
+        oAuthConsumer.setWapAccessTokenUrl(getURL("wap_accessTokenUrl", providerStr));
+        oAuthConsumer.setWapOpenIdUrl(getURL("wap_openIdUrl", providerStr));
+        oAuthConsumer.setWapUserAuthzUrl(getURL("wap_userAuthzUrl", providerStr));
         return oAuthConsumer;
     }
 

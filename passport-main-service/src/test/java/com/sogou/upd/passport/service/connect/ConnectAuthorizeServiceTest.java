@@ -23,7 +23,7 @@ import java.io.IOException;
 public class ConnectAuthorizeServiceTest extends BaseTest {
 
     private static final int clientId = 1120;
-    private static final int provider = AccountTypeEnum.SINA.getValue();
+    private static final int provider = AccountTypeEnum.QQ.getValue();
 
     @Autowired
     private ConnectAuthService connectAuthorizeService;
@@ -32,13 +32,14 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
 
     @Test
     public void testObtainAccessTokenByCode() {
-        String code = "3256211234615615151";
+        String code = "627A7E46B28835F183C656909A6AF5B4";
 
         ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
         try {
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             String ru = "https://account.sogou.com";
-            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(provider, code, connectConfig, oAuthConsumer, ru);
+            String accessToken=oAuthConsumer.getAccessTokenUrl();
+            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(provider, code, connectConfig, /*oAuthConsumer*/accessToken, ru);
             String body = response.getBody();
             System.out.println("body:" + body);
         } catch (IOException e) {

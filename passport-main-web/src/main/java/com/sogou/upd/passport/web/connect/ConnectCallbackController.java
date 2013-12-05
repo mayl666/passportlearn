@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
@@ -67,7 +68,13 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
                 model.addAttribute("result", result.getModels().get("result"));
                 return viewUrl;
-            } else {
+            } else if(type.equals(ConnectTypeEnum.WAP.toString())){
+                String sgid= (String) result.getModels().get("sgid");
+                ServletUtil.setCookie(res, "sgid", sgid, (int)DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+
+                res.sendRedirect(viewUrl);
+                return "";
+            }else {
                 // TODO 少了种cookie
                 res.sendRedirect(viewUrl);
                 return "";
