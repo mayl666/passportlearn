@@ -115,6 +115,23 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return false;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertSnamePassportMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean insertSnamePassportMapping(String sid,String sname, String passportId,String mobile) throws ServiceException {
+        try {
+            int accountRow = snamePassportMappingDAO.insertSnamePassportMapping(sid,sname, passportId,mobile);
+            if (accountRow != 0) {
+                String cacheKey = buildSnamePassportMappingKey(sname);
+                dbRedisUtils.set(cacheKey, passportId, 30, TimeUnit.DAYS);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_deleteSnamePassportMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean deleteSnamePassportMapping(String sname) throws ServiceException {
