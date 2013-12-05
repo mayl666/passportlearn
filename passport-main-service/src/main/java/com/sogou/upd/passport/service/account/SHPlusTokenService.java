@@ -42,5 +42,5 @@ public interface SHPlusTokenService {
      * @return
      * @throws ServiceException
      */
-    public String getSohuPlusPassportBySid(String sid) throws ServiceException;
+    public String getSohuPlusPassportIdBySid(String sid) throws ServiceException;
 }

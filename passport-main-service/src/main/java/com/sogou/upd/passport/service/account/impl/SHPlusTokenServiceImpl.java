@@ -91,7 +91,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     }
 
     @Override
-    public String getSohuPlusPassportBySid(String sid) throws ServiceException {
+    public String getSohuPlusPassportIdBySid(String sid) throws ServiceException {
         Map<String, String> map = new HashMap();
         map.put("appkey", SohuPlusUtil.appkey);
         map.put("sids", sid);
