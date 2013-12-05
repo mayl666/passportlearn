@@ -4,6 +4,7 @@ import com.qq.open.OpenApiV3;
 import com.qq.open.OpensnsException;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -16,7 +17,10 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.model.app.ConnectConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -34,16 +38,25 @@ import java.util.Set;
 @Component("sgQQLightOpenApiManager")
 public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQLightOpenApiManager {
 
+    @Autowired
+    private ConfigureManager configureManager;
+
     @Override
     public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) {
-        //QQ提供的openapi服务器
-        String serverName = CommonConstant.QQ_SERVER_NAME;
-        //应用的基本信息，搜狗在QQ的第三方appid与appkey
-        String sgAppKey = CommonConstant.APP_CONNECT_KEY;     //搜狗在QQ的appid
-        String sgAppSecret = CommonConstant.APP_CONNECT_SECRET; //搜狗在QQ的appkey
-        OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
-        //调用代理第三方接口，点亮或熄灭QQ图标
-        String resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
+        String resp = "";
+        try {
+            //QQ提供的openapi服务器
+            String serverName = CommonConstant.QQ_SERVER_NAME;
+            //应用的基本信息，搜狗在QQ的第三方appid与appkey
+            ConnectConfig connectConfig = configureManager.obtainConnectConfig(qqParams.getClient_id(), AccountTypeEnum.getAccountType(qqParams.getOpenid()).getValue());
+            String sgAppKey = connectConfig.getAppKey();     //搜狗在QQ的appid
+            String sgAppSecret = connectConfig.getAppSecret(); //搜狗在QQ的appkey
+            OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
+            //调用代理第三方接口，点亮或熄灭QQ图标
+            resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return resp;
     }
 
@@ -73,7 +86,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
         String resp = null;
         try {
             resp = sdk.api(scriptName, params, protocol, method);
-            System.out.println(resp);
+//            System.out.println(resp);
         } catch (OpensnsException e) {
             System.out.printf("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
             e.printStackTrace();
