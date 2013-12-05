@@ -23,7 +23,7 @@ public interface SHPlusTokenService {
      * @return
      * @throws ServiceException
      */
-    public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException;
+    public String queryATokenByRToken(String passportId, String instanceId, String refreshToken, String sid) throws ServiceException;
 
     /**
      * 通过获取token获取资源

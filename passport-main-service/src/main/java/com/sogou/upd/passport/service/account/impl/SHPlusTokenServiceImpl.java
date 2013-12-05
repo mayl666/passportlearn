@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
@@ -37,7 +38,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
     private static final String GET_PASSPORT_BY_SID = "http://rest.account.i.sohu.com/account/getpassport/bysid/";
 
     @Override
-    public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException {
+    public String queryATokenByRToken(String passportId, String instanceId, String refreshToken, String sid) throws ServiceException {
         RequestModelJSON requestModel = new RequestModelJSON(SHPlusConstant.OAUTH2_TOKEN);
         requestModel.addParam(OAuth.OAUTH_GRANT_TYPE, "heartbeat");
         requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, refreshToken);
@@ -47,6 +48,9 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instanceId);
         requestModel.addParam(OAuth.OAUTH_REDIRECT_URI, "www.sohu.com");
         requestModel.addParam(OAuth.OAUTH_USERNAME, passportId);
+        if (!Strings.isNullOrEmpty(sid) && !sid.contains("@")) {    // 如果是11.26日后新激活账号，需要传递sid
+            requestModel.addParam("sid", sid);
+        }
         requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
         String json = SGHttpClient.executeStr(requestModel);
         Map resultMap = null;
