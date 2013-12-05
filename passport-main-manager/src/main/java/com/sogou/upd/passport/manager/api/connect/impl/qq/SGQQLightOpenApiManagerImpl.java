@@ -11,7 +11,6 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.api.BaseApiParams;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
@@ -19,7 +18,6 @@ import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,8 +31,8 @@ import java.util.Set;
  * Time: 上午10:10
  * To change this template use File | Settings | File Templates.
  */
-@Component("proxyQQLightOpenApiManager")
-public class ProxyQQLightOpenApiManagerImpl extends BaseProxyManager implements QQLightOpenApiManager {
+@Component("sgQQLightOpenApiManager")
+public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQLightOpenApiManager {
 
     /**
      * 调用sohu接口获取用户的openid和accessToken等信息
@@ -43,7 +41,7 @@ public class ProxyQQLightOpenApiManagerImpl extends BaseProxyManager implements 
      * @return
      */
     @Override
-    public Result getProxyConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         Result result = new APIResultSupport(false);
         //如果是post请求，原方法
         RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_QQ_LIGHT_USER_INFO_TEST);
@@ -73,17 +71,21 @@ public class ProxyQQLightOpenApiManagerImpl extends BaseProxyManager implements 
         return requestModelJSON;
     }
 
-    /**
-     * 调用QQ第三方点亮接口
-     *
-     * @param sdk                  QQ  SDK参数类
-     * @param openid               用户的openid
-     * @param openkey              用户的openkey
-     * @param qqLightOpenApiParams 代理接口参数类
-     * @return
-     */
     @Override
-    public String executeQQOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) {
+    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) {
+        //QQ提供的openapi服务器
+        String serverName = CommonConstant.QQ_SERVER_NAME;
+        //应用的基本信息，搜狗在QQ的第三方appid与appkey
+        String sgAppKey = CommonConstant.APP_CONNECT_KEY;     //搜狗在QQ的appid
+        String sgAppSecret = CommonConstant.APP_CONNECT_SECRET; //搜狗在QQ的appkey
+        OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
+        //调用代理第三方接口，点亮或熄灭QQ图标
+        String resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
+        return resp;
+    }
+
+
+    private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) {
         // 指定OpenApi Cgi名字
         String scriptName = qqLightOpenApiParams.getOpenApiName();
         // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
@@ -114,5 +116,11 @@ public class ProxyQQLightOpenApiManagerImpl extends BaseProxyManager implements 
             e.printStackTrace();
         }
         return resp;
+    }
+
+    private OpenApiV3 createOpenApiByApp(String appKey, String appSecret, String serverName) {
+        OpenApiV3 sdk = new OpenApiV3(appKey, appSecret);
+        sdk.setServerName(serverName);
+        return sdk;
     }
 }
