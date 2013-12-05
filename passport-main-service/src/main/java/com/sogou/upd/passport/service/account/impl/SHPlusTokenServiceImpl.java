@@ -109,7 +109,6 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         return passportId;
     }
 
-
     private String buildAvatarCacheKey(String passportId) {
         return CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
     }
