@@ -1,28 +1,25 @@
 package com.sogou.upd.passport.service.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.service.SHPlusConstant;
 import com.sogou.upd.passport.service.account.SHPlusTokenService;
-import org.apache.commons.collections.CollectionUtils;
+import com.sogou.upd.passport.service.account.SohuPlusUtil;
+import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +34,7 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
 
     private static Logger log = LoggerFactory.getLogger(SHPlusTokenServiceImpl.class);
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
-
+    private static final String GET_PASSPORT_BY_SID = "http://rest.account.i.sohu.com/account/getpassport/bysid/";
 
     @Override
     public String queryATokenByRToken(String passportId, String instanceId, String refreshToken) throws ServiceException {
@@ -92,9 +89,26 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         return resultMap;
     }
 
+    @Override
+    public String getSohuPlusPassportBySid(String sid) throws ServiceException {
+        Map<String, String> map = new HashMap();
+        map.put("appkey", SohuPlusUtil.appkey);
+        map.put("sids", sid);
+
+        String passportId = "";
+        try {
+            Map<String, String> data = SohuPlusUtil.sendSpassportSingleHttpReq(GET_PASSPORT_BY_SID, map);
+            if (!MapUtils.isEmpty(data)) {
+                passportId = data.get(sid);
+            }
+        } catch (Exception e) {
+            System.err.println("error parse");
+        }
+        return passportId;
+    }
 
 
     private String buildAvatarCacheKey(String passportId) {
-        return  CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
+        return CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
     }
 }
