@@ -77,6 +77,10 @@ public abstract class OAuthASRequest {
         return getParam(OAuth.OAUTH_INSTANCE_ID);
     }
 
+    public String getSid() {
+        return getParam("sid");
+    }
+
     public Set<String> getScopes() {
         String scopes = getParam(OAuth.OAUTH_SCOPE);
 

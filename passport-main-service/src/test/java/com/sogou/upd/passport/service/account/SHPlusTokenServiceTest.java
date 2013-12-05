@@ -51,10 +51,10 @@ public class SHPlusTokenServiceTest extends BaseTest {
         String instanceId = "323906108";
         String passportId = "shipengzhi1986@sogou.com";
         String refreshToken = "58cc24195472c1c25a378513b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
-        String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
+        String accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken, "");
         Assert.assertTrue(accessToken == null);
         refreshToken = "58cc24195472c1c25a378523b6ec7b94dbb290a9468b6d774bf0fc4706330e93";
-        accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken);
+        accessToken = shPlusTokenService.queryATokenByRToken(passportId, instanceId, refreshToken, "");
         Assert.assertTrue(accessToken != null);
     }
 
