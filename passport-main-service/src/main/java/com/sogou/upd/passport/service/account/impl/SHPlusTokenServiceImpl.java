@@ -83,7 +83,8 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         try {
             resultMap = jsonMapper.readValue(json, Map.class);
         } catch (IOException e) {
-            log.error("parse json to map fail,jsonString:" + json);
+            log.error("parse json to map fail,jsonString:" + json, e);
+            throw new ServiceException(e);
         }
 
         return resultMap;
@@ -102,7 +103,8 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
                 passportId = data.get(sid);
             }
         } catch (Exception e) {
-            System.err.println("error parse");
+            log.error("get SohuPlus Passport By Sid:" + sid, e);
+            throw new ServiceException(e);
         }
         return passportId;
     }
