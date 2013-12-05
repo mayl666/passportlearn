@@ -2,6 +2,8 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SessionServerUtil;
@@ -28,7 +30,9 @@ public class SessionServerManagerImpl implements SessionServerManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionServerManagerImpl.class);
 
     @Override
-    public String createSession(AppConfig appConfig, String passportId) {
+    public Result createSession(AppConfig appConfig, String passportId) {
+        Result result = new APIResultSupport(false);
+
         String sgid=null;
         try {
             //创建sgid
@@ -50,15 +54,13 @@ public class SessionServerManagerImpl implements SessionServerManager {
             String resultRequest = HttpClientUtil.postRequest(SessionServerUrlConstant.CREATE_SESSION, params);
 
             if (!Strings.isNullOrEmpty(resultRequest)) {
-                Result result = jsonMapper.readValue(resultRequest, Result.class);
+                SessionResult sessionResult = jsonMapper.readValue(resultRequest, SessionResult.class);
                 if (result != null) {
-                    if ("0".equals(result.getStatus())) {
-                        return sgid;
-                    } else {
-                        return null;
+                    if ("0".equals(sessionResult.getStatus())) {
+                        result.setSuccess(true);
+                        result.getModels().put("sgid",sgid);
+                        return result;
                     }
-                } else {
-                    return null;
                 }
             }
         } catch (Exception e) {
@@ -66,11 +68,11 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 logger.debug("createSessionSid "+"passportId:"+passportId+",sid:"+sgid);
             }
         }
-        return null;
+        return result;
     }
 }
 
-class Result {
+class SessionResult {
     private String status;
     private String statusText;
 

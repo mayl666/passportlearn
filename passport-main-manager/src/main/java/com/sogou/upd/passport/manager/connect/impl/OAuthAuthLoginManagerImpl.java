@@ -273,17 +273,17 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
 
                     //写session 数据库
-                    String sgid = sessionServerManager.createSession(appConfig, userId);
-
-                    if (!Strings.isNullOrEmpty(sgid)) {
-                        result.setSuccess(true);
-                        result.getModels().put("sgid", sgid);
-                        //ru后缀一个sgid
-                        URL url = new URL(ru);
-                        ru = url.getQuery();
-                        ru = ru.substring(ru.indexOf('=') + 1, ru.length());
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, buildWapSuccessRu(ru, sgid));
+                    Result sessionResult = sessionServerManager.createSession(appConfig, userId);
+                    String sgid=null;
+                    if(sessionResult.isSuccess()){
+                         sgid= (String) sessionResult.getModels().get("sgid");
+                         if (!Strings.isNullOrEmpty(sgid)) {
+                            result.setSuccess(true);
+                            result.getModels().put("sgid", sgid);
+                        }
                     }
+                    ru= buildWapSuccessRu(ru, sgid);
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
@@ -326,12 +326,18 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
-        } catch (UnsupportedEncodingException e) {
+            //ru后缀一个sgid
+            URL url = new URL(ru);
+            ru = url.getQuery();
+            ru = ru.substring(ru.indexOf('=') + 1, ru.length());
+        } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        params.put("sgid", sgid);
-        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        if(!Strings.isNullOrEmpty(sgid)){
+            params.put("sgid", sgid);
+            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        }
         return ru;
     }
 

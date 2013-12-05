@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.app.AppConfig;
 
 /**
@@ -8,5 +9,5 @@ import com.sogou.upd.passport.model.app.AppConfig;
  * Time: 下午8:43
  */
 public interface SessionServerManager {
-     public String createSession(AppConfig appConfig,String userId);
+     public Result createSession(AppConfig appConfig,String userId);
 }
