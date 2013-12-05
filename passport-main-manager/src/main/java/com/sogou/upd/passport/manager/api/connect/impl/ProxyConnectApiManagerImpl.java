@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -103,5 +104,10 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
             result.setDefaultModel(CommonConstant.RESPONSE_STATUS_TEXT, map.get("error_description"));
         }
         return result;
+    }
+
+    @Override
+    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

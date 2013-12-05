@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect;
 
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
@@ -34,4 +35,12 @@ public interface ConnectApiManager {
      * @return
      */
     public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO);
+
+    /**
+     * 根据第三方QQ用户信息获取用户的openid及accessToken
+     *
+     * @param baseOpenApiParams 调用sohu接口参数类
+     * @return
+     */
+    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
 }

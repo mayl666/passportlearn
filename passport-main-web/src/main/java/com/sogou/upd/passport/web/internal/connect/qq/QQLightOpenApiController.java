@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
@@ -41,6 +42,9 @@ public class QQLightOpenApiController {
     @Autowired
     private QQLightOpenApiManager sgQQLightOpenApiManager;
 
+    @Autowired
+    private ConnectApiManager sgConnectApiManager;
+
     /**
      * 根据用户信息，实现qq图标点亮
      *
@@ -64,7 +68,7 @@ public class QQLightOpenApiController {
             }
             //调用sohu接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createQQConnectParams(params);
-            result = sgQQLightOpenApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            result = sgConnectApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             resultString = result.toString();
             if (result.isSuccess()) {
                 //获取用户的openId/openKey
