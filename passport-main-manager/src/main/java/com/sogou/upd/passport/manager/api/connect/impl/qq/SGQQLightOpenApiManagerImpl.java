@@ -34,43 +34,6 @@ import java.util.Set;
 @Component("sgQQLightOpenApiManager")
 public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQLightOpenApiManager {
 
-    /**
-     * 调用sohu接口获取用户的openid和accessToken等信息
-     *
-     * @param baseOpenApiParams
-     * @return
-     */
-    @Override
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
-        Result result = new APIResultSupport(false);
-        //如果是post请求，原方法
-        RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_QQ_LIGHT_USER_INFO_TEST);
-        requestModelJSON.addParams(baseOpenApiParams);
-        requestModelJSON.deleteParams(CommonConstant.CLIENT_ID);
-        this.setDefaultParams(requestModelJSON, baseOpenApiParams.getUserid(), String.valueOf(clientId), clientKey);
-        Map map = SGHttpClient.executeBean(requestModelJSON, HttpTransformat.json, Map.class);
-        if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
-            String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
-            if ("0".equals(status)) {
-                result.setSuccess(true);
-            }
-            Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
-            result.setCode(entry.getKey());
-            result.setMessage(entry.getValue());
-            result.setModels(map);
-        }
-        return result;
-    }
-
-    public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {
-        long ct = System.currentTimeMillis();
-        String code = ManagerHelper.generatorCodeGBK(userId, Integer.parseInt(clientId), clientKey, ct);
-        requestModelJSON.addParam(SHPPUrlConstant.APPID_STRING, clientId);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CODE, code);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
-        return requestModelJSON;
-    }
-
     @Override
     public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) {
         //QQ提供的openapi服务器

@@ -80,6 +80,8 @@ public class QQLightOpenApiController {
             }
         } catch (Exception e) {
             logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            resultString = result.toString();
         } finally {
             //用户注册log
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "");

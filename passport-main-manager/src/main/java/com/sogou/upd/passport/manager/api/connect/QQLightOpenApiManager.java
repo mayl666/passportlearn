@@ -14,14 +14,6 @@ import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
  */
 public interface QQLightOpenApiManager {
     /**
-     * 根据用户信息获取用户的openid及accessToken
-     *
-     * @param baseOpenApiParams 调用sohu接口参数类
-     * @return
-     */
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
-
-    /**
      * 调用
      * @param openId
      * @param openKey
