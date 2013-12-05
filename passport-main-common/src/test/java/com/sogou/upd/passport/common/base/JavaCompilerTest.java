@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.common.base;
 
-import javax.tools.*;
+import org.apache.commons.lang.time.DateUtils;
+
+import javax.tools.SimpleJavaFileObject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.Date;
 
 /**
  * 动态编译java源文件测试
@@ -15,16 +17,19 @@ import java.util.Arrays;
 public class JavaCompilerTest {
 
     public static void main(String[] args) throws Exception {
-        String source = "public class Main { public static void main(String[] args) {System.out.println(\"Hello World!\");} }";
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-        StringSourceJavaObject sourceObject = new JavaCompilerTest.StringSourceJavaObject("Main", source);
-        Iterable<? extends JavaFileObject> fileObjects = Arrays.asList(sourceObject);
-        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
-        boolean result = task.call();
-        if (result) {
-            System.out.println("编译成功。");
-        }
+        Date date = DateUtils.addDays(new Date(), 7);
+        System.out.println(date);
+        System.out.println(date.toString());
+//        String source = "public class Main { public static void main(String[] args) {System.out.println(\"Hello World!\");} }";
+//        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+//        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+//        StringSourceJavaObject sourceObject = new JavaCompilerTest.StringSourceJavaObject("Main", source);
+//        Iterable<? extends JavaFileObject> fileObjects = Arrays.asList(sourceObject);
+//        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, null, null, fileObjects);
+//        boolean result = task.call();
+//        if (result) {
+//            System.out.println("编译成功。");
+//        }
     }
 
     static class StringSourceJavaObject extends SimpleJavaFileObject {

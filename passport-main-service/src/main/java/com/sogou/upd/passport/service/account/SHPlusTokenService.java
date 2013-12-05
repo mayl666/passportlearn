@@ -36,12 +36,4 @@ public interface SHPlusTokenService {
      */
     public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException;
 
-    /**
-     * 复制sohu+头像到本地
-     * @param passportId
-     * @param instanceId
-     * @param accessToken
-     * @return
-     */
-    public boolean copyAvatarToLocal(String passportId, String instanceId, String accessToken) throws ServiceException;
 }

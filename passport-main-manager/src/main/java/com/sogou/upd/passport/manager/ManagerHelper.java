@@ -112,6 +112,7 @@ public class ManagerHelper {
         result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
         result.setDefaultModel("nick", Coder.encryptBase64(uniqName));
         result.setDefaultModel("passport", Coder.encryptBase64(accountToken.getPassportId()));
+        result.setDefaultModel("sid", accountToken.getPassportId());
         result.setDefaultModel("logintype", loginType);
         return result;
     }

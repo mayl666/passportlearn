@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
@@ -43,7 +44,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Autowired
     private PhotoUtils photoUtils;
     @Autowired
-    private RedisUtils redisUtils;
+    private DBRedisUtils dbRedisUtils;
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
@@ -92,7 +93,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         accountBaseInfoDAO.insertAccountBaseInfo(passportId,baseInfo);
                     }
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    redisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
+                    dbRedisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                 }
                 result.setSuccess(true);
                 result.setDefaultModel("image", imgURL);
@@ -121,7 +122,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + clientId;
 
-                redisUtils.hPut(cacheKey,"sgImg",imgURL);
+                dbRedisUtils.hPut(cacheKey,"sgImg",imgURL);
 
                 result.setSuccess(true);
                 result.setDefaultModel("image",imgURL);

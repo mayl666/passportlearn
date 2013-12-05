@@ -34,7 +34,8 @@ public class AES {
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.ENCRYPT_MODE, key);
         byte[] encVal = c.doFinal(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
-        String encryptedValue = Coder.encryptBase64URLSafeString(encVal);
+//        String encryptedValue = Coder.encryptBase64URLSafeString(encVal);
+        String encryptedValue = Base62.encodeBase62(encVal).toString();
         return encryptedValue;
     }
 
@@ -50,7 +51,7 @@ public class AES {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.DECRYPT_MODE, key);
-        byte[] decordedValue = Base64.decodeBase64(encryptedData);
+        byte[] decordedValue = Base62.decodeBase62(encryptedData.toCharArray());//Base64.decodeBase64(encryptedData);
         byte[] decValue = c.doFinal(decordedValue);
 
         String decryptedValue = new String(decValue,CommonConstant.DEFAULT_CONTENT_CHARSET);

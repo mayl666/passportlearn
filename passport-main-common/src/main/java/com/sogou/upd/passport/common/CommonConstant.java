@@ -20,7 +20,7 @@ public class CommonConstant {
     public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
     public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
-    public static final String SG_TOKEN_START = "SG_"; //4.2版本浏览器token开始标志
+    public static final String SG_TOKEN_START = "SG"; //4.2版本浏览器token开始标志
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥

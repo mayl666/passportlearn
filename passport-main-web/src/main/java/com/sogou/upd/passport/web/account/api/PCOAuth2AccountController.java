@@ -135,7 +135,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), "/oauth2/token/?grant_type="+oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
         userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
         UserOperationLogUtil.log(userOperationLog);
@@ -159,9 +159,9 @@ public class PCOAuth2AccountController extends BaseController {
         String passportId = "";
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
-            passportId = (String) result.getModels().get("sid");
+//            passportId = (String) result.getModels().get("sid");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(passportId, params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, "/oauth2/resource/?resource_type="+params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
@@ -391,7 +391,8 @@ public class PCOAuth2AccountController extends BaseController {
         if (StringUtils.isBlank(queryPassportIdResult.getCode()) && queryPassportIdResult.isSuccess()) {
             queryPassportIdResult.setCode("0");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(oauth2PcIndexParams.getAccesstoken(), request.getRequestURI(), String.valueOf(oauth2PcIndexParams.getClient_id()), queryPassportIdResult.getCode(), getIp(request));
+
+        UserOperationLog userOperationLog = new UserOperationLog("", request.getRequestURI(), String.valueOf(oauth2PcIndexParams.getClient_id()), queryPassportIdResult.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
 
         if (!queryPassportIdResult.isSuccess()) {

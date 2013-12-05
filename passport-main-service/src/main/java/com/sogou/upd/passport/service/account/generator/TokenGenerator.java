@@ -109,11 +109,17 @@ public class TokenGenerator {
         return token;
     }
 
-    public static void main(String args[]) throws Exception{
-        String passportId ="C8FB68EC3C5C62D21A8774B2870E79BC@qq.sohu.com";
+    public static void main(String args[]) throws Exception {
+//        String passportId = "C8FB68EC3C5C62D21A8774B2870E79BC@qq.sohu.com";
+        String passportId = "tinkame71wwwww01111@sogou.com";
         int expiresIn = 604800;
-        String clientSecret="c1756a351db27d817225e2a4fd7b3f7d";
-        System.out.print(generatorPcToken(passportId,expiresIn,clientSecret));
+        String clientSecret = "c1756a351db27d817225e2a4fd7b3f7d";
+        String encode = TokenGenerator.generatorPcToken(passportId, expiresIn, clientSecret);
+        System.out.println("encode:" + encode);
+
+        String decpde = TokenDecrypt.decryptPcToken(encode, clientSecret);
+        System.out.println("decpde:" + decpde);
+
     }
 
     //sohu生成token算法
