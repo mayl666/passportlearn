@@ -28,6 +28,9 @@ public class PCOAuth2ResourceParams {
     @NotBlank(message = "resource_type不允许为空")
     private String resource_type;
 
+    @NotBlank(message = "username不允许为空")
+    private String username;
+
     public int getClient_id() {
         return client_id;
     }
@@ -76,4 +79,11 @@ public class PCOAuth2ResourceParams {
         this.resource_type = resource_type;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }

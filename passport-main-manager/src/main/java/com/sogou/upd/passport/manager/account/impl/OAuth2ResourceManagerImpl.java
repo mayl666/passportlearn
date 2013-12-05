@@ -94,9 +94,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             String clientSecret = appConfig.getClientSecret();
             String resourceType = params.getResource_type();
             if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
-                result = getCookieValue(accessToken, clientId, clientSecret, instanceId);
+                result = getCookieValue(accessToken, clientId, clientSecret, instanceId,params.getUsername());
             } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
-                result = getFullUserInfo(accessToken, clientId, clientSecret, instanceId);
+                result = getFullUserInfo(accessToken, clientId, clientSecret, instanceId,params.getUsername());
             } else {
                 result.setCode(ErrorUtil.INVALID_RESOURCE_TYPE);
                 return result;
@@ -114,13 +114,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
      * @return
      */
     @Override
-    public Result getCookieValue(String accessToken, int clientId, String clientSecret, String instanceId) {
+    public Result getCookieValue(String accessToken, int clientId, String clientSecret, String instanceId,String username) {
         Result result = new OAuthResultSupport(false);
         Result cookieResult;
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
         try {
-            passportId = getPassportIdByToken(accessToken, clientId, clientSecret, instanceId);
+            passportId = getPassportIdByToken(accessToken, clientId, clientSecret, instanceId,username);
             if (Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return result;
@@ -166,7 +166,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public Result queryPassportIdByAccessToken(String token, int clientId, String instanceId) {
+    public Result queryPassportIdByAccessToken(String token, int clientId, String instanceId,String username) {
         Result finalResult = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -174,7 +174,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
                 return finalResult;
             }
-            String passportId = getPassportIdByToken(token, clientId, appConfig.getClientSecret(), instanceId);
+            String passportId = getPassportIdByToken(token, clientId, appConfig.getClientSecret(), instanceId,username);
             if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
@@ -189,7 +189,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
     }
 
-    private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId) {
+    private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId,String username) {
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
         if (accessToken.startsWith(CommonConstant.SG_TOKEN_START)) {
@@ -211,6 +211,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 passportId = snamePassportMappingService.queryPassportIdBySid(sid);
                 //处理11.26号数据迁移以后注册的账号
                 if (StringUtils.isBlank(passportId)) {
+                    if(!StringUtils.isBlank(username)){
+                        //如果username包含@,说明该username为有效账号
+                        if(username.contains("@")){
+                            snamePassportMappingService.insertSnamePassportMapping(sid,sname,username,"");
+                            return username;
+                       }
+                    }
                     passportId = sname + "@sogou.com";
                 }
             }
@@ -225,11 +232,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
      * @return
      */
     @Override
-    public Result getFullUserInfo(String accessToken, int clientId, String clientSecret, String instanceId) {
+    public Result getFullUserInfo(String accessToken, int clientId, String clientSecret, String instanceId,String username) {
         Result result = new OAuthResultSupport(false);
         Map resourceMap = Maps.newHashMap();
         try {
-            String passportId = getPassportIdByToken(accessToken, clientId, clientSecret, instanceId);
+            String passportId = getPassportIdByToken(accessToken, clientId, clientSecret, instanceId,username);
             if (Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return result;

@@ -51,6 +51,17 @@ public class SnamePassportMappingServiceTest extends AbstractJUnit4SpringContext
     }
 
     @Test
+    public void insertSnamePassportMapping() throws Exception {
+        boolean res = snamePassportMappingService.insertSnamePassportMapping("11111112221122","new33333test23","tinkame7222241@sohu.com","");
+        if (res) {
+            System.out.println("插入account表成功...");
+        } else {
+            System.out.println("插入account表不成功!!!");
+        }
+    }
+
+
+    @Test
     public void deleteSnamePassportMapping() throws Exception {
         boolean res = snamePassportMappingService.deleteSnamePassportMapping(SNAME);
         if (res) {

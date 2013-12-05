@@ -66,4 +66,15 @@ public interface SnamePassportMappingService {
      *
      */
     public boolean deleteSnamePassportMapping(String sname) throws ServiceException;
+
+    /**
+     *插入一条映射关系
+     * @param sid
+     * @param sname
+     * @param passportId
+     * @param mobile
+     * @return
+     * @throws ServiceException
+     */
+    public boolean insertSnamePassportMapping(String sid,String sname, String passportId,String mobile) throws ServiceException;
 }
