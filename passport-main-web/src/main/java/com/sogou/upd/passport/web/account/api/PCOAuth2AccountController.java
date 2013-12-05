@@ -386,7 +386,7 @@ public class PCOAuth2AccountController extends BaseController {
             cookieUserId = hostHolder.getPassportId();
         }
         int clientId = pcOAuth2LoginManager.getClientId(oauth2PcIndexParams.getClient_id());
-        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid());
+        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid(),"");
 
         if (StringUtils.isBlank(queryPassportIdResult.getCode()) && queryPassportIdResult.isSuccess()) {
             queryPassportIdResult.setCode("0");
