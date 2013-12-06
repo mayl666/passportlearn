@@ -44,7 +44,6 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
         try {
             if (Strings.isNullOrEmpty(redisUtils.hGet(cacheKey, key))) {
                 redisUtils.hPutExpire(cacheKey, key, limiTimes, DateAndNumTimesConstant.TIME_FIVE_MINITUES);
-                logger.info("initAppLimited:"+ cacheKey + "," + key +","+limiTimes);
             }
         } catch (Exception e) {
             throw new ServiceException(e);
