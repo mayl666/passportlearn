@@ -214,7 +214,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                     if (!StringUtils.isBlank(passportId)) {
                         snamePassportMappingService.insertSnamePassportMapping(sid, sname, passportId, "");
                     } else {
-                        if (!StringUtils.isBlank(username) && username.contains("@")) {
+                        if (AccountDomainEnum.isPassportId(username)) {
                             //如果username包含@,说明该username为有效账号
                             snamePassportMappingService.insertSnamePassportMapping(sid, sname, username, "");
                             passportId = username;
@@ -229,7 +229,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private String getPassportIdByUsername(String passportId,String accessToken, int clientId, String clientSecret, String instanceId, String username){
-        if(StringUtils.isBlank(passportId) && username.contains("@")){
+        if(StringUtils.isBlank(passportId) && AccountDomainEnum.isPassportId(username)){
             passportId = username;
         }
         if (!StringUtils.isBlank(passportId)) {

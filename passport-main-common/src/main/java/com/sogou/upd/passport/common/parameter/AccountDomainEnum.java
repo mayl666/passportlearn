@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.parameter;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +119,10 @@ public enum AccountDomainEnum {
     }
 
     public static boolean isPassportId(String username){
-        if (username.matches(".+@[a-zA-Z0-9\\.]$")) {
+        if(StringUtils.isBlank(username)){
+            return false;
+        }
+        if (username.matches(".+@[a-zA-Z0-9.]+$")) {
             return true;
         }
         return false;

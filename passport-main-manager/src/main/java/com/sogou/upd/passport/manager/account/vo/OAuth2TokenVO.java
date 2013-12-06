@@ -14,6 +14,7 @@ public class OAuth2TokenVO {
     private long expires_time; // 令牌过期的截止时间的时间戳,单位毫秒
     private String refresh_token; // 	新的刷新令牌
     private String scope = "all"; //授权服务器真正授予的作用域
+    private String sid = "sid";
 
     public String getAccess_token() {
         return access_token;
@@ -53,5 +54,13 @@ public class OAuth2TokenVO {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+    public String getSid() {
+        return sid;
+    }
+
+    public void setSid(String sid) {
+        this.sid = sid;
     }
 }

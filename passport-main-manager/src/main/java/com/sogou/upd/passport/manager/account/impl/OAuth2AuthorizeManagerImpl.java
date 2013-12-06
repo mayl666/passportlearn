@@ -158,6 +158,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                 oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());
                 oAuth2TokenVO.setExpires_time(renewAccountToken.getAccessValidTime());
                 oAuth2TokenVO.setRefresh_token(renewAccountToken.getRefreshToken());
+                oAuth2TokenVO.setSid(passportId);
                 result.setSuccess(true);
                 result.setDefaultModel(oAuth2TokenVO);
                 return result;
