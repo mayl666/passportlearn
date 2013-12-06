@@ -132,6 +132,7 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                     }
                     long times = Long.parseLong(cacheTimes);
                     if (times <= 0) {
+                        logger.info("ClientId:"+clientId +",Url:"+url+",Time:"+new SimpleDateFormat("HH:mm:ss").format(new Date())+",over:"+times);
                         map.put("flag", false);
                         return map;
                     } else {
