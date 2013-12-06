@@ -88,6 +88,27 @@ public class TokenDecrypt {
     }
 
     /**
+     * 根据refreshToken解密,并返回passportId
+     * 解密失败则返回null
+     */
+    public static String decryptOldPcToken(String token, String clientSecret) throws Exception {
+        try {
+            String passportId = null;
+            String tokenContent = token.substring(CommonConstant.SG_TOKEN_OLD_START.length(),token.length());
+            String decryptStr = AES.decryptURLSafeString(tokenContent, clientSecret);
+            if (!Strings.isNullOrEmpty(decryptStr)) {
+                String[] strArray = decryptStr.split("\\"+CommonConstant.SEPARATOR_1);
+                passportId = strArray[0];
+            }
+            return passportId;
+        } catch (Exception e) {
+            logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", token);
+            return null;
+        }
+    }
+
+
+    /**
      * 解密<br>
      * 用公钥解密
      *

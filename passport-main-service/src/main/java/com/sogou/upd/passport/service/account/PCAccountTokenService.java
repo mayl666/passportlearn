@@ -116,4 +116,13 @@ public interface PCAccountTokenService {
      */
     public String getPassportIdByToken(String token,String clientSecret) throws ServiceException;
 
+    /**
+     * 兼容以SG_开头的token
+     * @param token
+     * @param clientSecret
+     * @return
+     * @throws ServiceException
+     */
+    public String getPassportIdByOldToken(String token,String clientSecret) throws ServiceException;
+
 }

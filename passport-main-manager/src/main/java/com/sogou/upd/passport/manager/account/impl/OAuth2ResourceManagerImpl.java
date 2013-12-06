@@ -192,14 +192,13 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId, String username) {
         Map resourceMap = Maps.newHashMap();
         String passportId = null;
-        if (accessToken.startsWith(CommonConstant.SG_TOKEN_START)) {
+
+        if(accessToken.startsWith(CommonConstant.SG_TOKEN_OLD_START)){
+            passportId = pcAccountTokenService.getPassportIdByOldToken(accessToken, clientSecret);
+            return getPassportIdByUsername(passportId,accessToken,clientId,clientSecret,instanceId,username);
+        }else  if (accessToken.startsWith(CommonConstant.SG_TOKEN_START)) {
             passportId = pcAccountTokenService.getPassportIdByToken(accessToken, clientSecret);
-            if (!Strings.isNullOrEmpty(passportId)) {
-                //校验accessToken
-                if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
-                    return null;
-                }
-            }
+            return getPassportIdByUsername(passportId,accessToken,clientId,clientSecret,instanceId,username);
         } else {
             //sohu+token，获取passportId
             Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
@@ -225,6 +224,19 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 }
             }
             shPlusTokenLog.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
+        }
+        return passportId;
+    }
+
+    private String getPassportIdByUsername(String passportId,String accessToken, int clientId, String clientSecret, String instanceId, String username){
+        if(StringUtils.isBlank(passportId) && username.contains("@")){
+            passportId = username;
+        }
+        if (!StringUtils.isBlank(passportId)) {
+            //校验accessToken
+            if (!pcAccountTokenService.verifyAccessToken(passportId, clientId, instanceId, accessToken)) {
+                return null;
+            }
         }
         return passportId;
     }

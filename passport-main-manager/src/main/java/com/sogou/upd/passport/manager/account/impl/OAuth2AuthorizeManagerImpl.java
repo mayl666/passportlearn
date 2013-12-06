@@ -141,7 +141,8 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
                     result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
                     return result;
                 }
-                if (refreshToken.startsWith(CommonConstant.SG_TOKEN_START)) {
+                //如果是老的token或者SG_开头的token，则返回新的token
+                if (refreshToken.startsWith(CommonConstant.SG_TOKEN_START) && !refreshToken.startsWith(CommonConstant.SG_TOKEN_OLD_START)) {
                     renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
                 } else {
                     //非4.2版本的sogou token要重新生成token

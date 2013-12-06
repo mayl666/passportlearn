@@ -117,6 +117,13 @@ public enum AccountDomainEnum {
         return  (!username.contains("@"))&& !isPhone(username);
     }
 
+    public static boolean isPassportId(String username){
+        if (username.matches(".+@[a-zA-Z0-9\\.]$")) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return this.name().toLowerCase();
