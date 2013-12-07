@@ -80,7 +80,7 @@ public class QQLightOpenApiController {
             Result openResult = sgConnectApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> accessTokenMap = (Map<String, String>) result.getModels().get("result");
+                Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
                 String openId = accessTokenMap.get("open_id").toString();
                 String accessToken = accessTokenMap.get("access_token").toString();
                 String resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params);
