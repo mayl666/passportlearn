@@ -20,6 +20,8 @@ import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,11 +40,13 @@ import java.util.Set;
 @Component("sgQQLightOpenApiManager")
 public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQLightOpenApiManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(SGQQLightOpenApiManagerImpl.class);
+
     @Autowired
     private ConfigureManager configureManager;
 
     @Override
-    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) {
+    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) throws OpensnsException {
         String resp = "";
         try {
             //QQ提供的openapi服务器
@@ -54,14 +58,15 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
             //调用代理第三方接口，点亮或熄灭QQ图标
             resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (OpensnsException e) {
+            logger.error("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
+            throw new OpensnsException(e.getErrorCode(), e.getMessage());
         }
         return resp;
     }
 
 
-    private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) {
+    private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) throws OpensnsException {
         // 指定OpenApi Cgi名字
         String scriptName = qqLightOpenApiParams.getOpenApiName();
         // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
@@ -88,8 +93,8 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             resp = sdk.api(scriptName, params, protocol, method);
 //            System.out.println(resp);
         } catch (OpensnsException e) {
-            System.out.printf("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
-            e.printStackTrace();
+            logger.error("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
+            throw new OpensnsException(e.getErrorCode(), e.getMessage());
         }
         return resp;
     }

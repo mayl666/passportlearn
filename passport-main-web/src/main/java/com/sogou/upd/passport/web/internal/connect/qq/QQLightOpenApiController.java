@@ -58,7 +58,7 @@ public class QQLightOpenApiController {
     @InterfaceSecurity
     @RequestMapping(value = "/qq/light", method = RequestMethod.POST)
     @ResponseBody
-    public Object getConnectQQApi(HttpServletRequest request, QQLightOpenApiParams params) throws OpensnsException {
+    public Object getConnectQQApi(HttpServletRequest request, QQLightOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String resultString = "";
         try {
@@ -67,20 +67,18 @@ public class QQLightOpenApiController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                resultString = result.toString();
-                return resultString;
+                return result.toString();
             }
             //验证client_id
             int clientId = params.getClient_id();
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result;
+                return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createQQConnectParams(params);
-            result = sgConnectApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
-            resultString = result.toString();
-            if (result.isSuccess()) {
+            Result openResult = sgConnectApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> accessTokenMap = (Map<String, String>) result.getModels().get("result");
                 String openId = accessTokenMap.get("open_id").toString();
