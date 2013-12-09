@@ -68,4 +68,11 @@ public interface AccountBaseInfoService {
      */
     public boolean simpleSaveAccountBaseInfo(AccountBaseInfo accountBaseInfo);
 
+    /**
+     * 检查昵称是否才能在
+     * @param uniqname
+     * @return
+     */
+    public boolean isUniqNameExist(String uniqname);
+
 }

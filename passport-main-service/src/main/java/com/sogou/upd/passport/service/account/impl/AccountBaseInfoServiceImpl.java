@@ -204,6 +204,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     }
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_isUniqNameExist", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
     public boolean isUniqNameExist(String uniqname) {
         if (!Strings.isNullOrEmpty(uniqname)) {
             String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);

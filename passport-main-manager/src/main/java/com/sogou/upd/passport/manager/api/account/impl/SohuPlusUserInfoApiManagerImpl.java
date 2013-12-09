@@ -110,28 +110,32 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                     String uniqname = updateUserInfoApiParams.getUniqname();
 
                     accountBaseInfo = new AccountBaseInfo();
-                    accountBaseInfo.setUniqname(uniqname);
                     accountBaseInfo.setAvatar("");
                     accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
-
-                    //初始化昵称映射表
-                    int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                    String cacheKey = null;
-                    if (row > 0) {
-                        cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                        dbRedisUtils.set(cacheKey, passportId);
+                    int row = 0;
+                    if (!accountBaseInfoService.isUniqNameExist(uniqname)) {
+                        //初始化昵称映射表
+                        row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                        if (row > 0) {
+                            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                            dbRedisUtils.set(cacheKey, passportId);
+                        }
+                    } else {
+                        accountBaseInfo.setUniqname("");
                     }
                     //初始化accountBaseInfo
-                    row=accountBaseInfoDAO.insertAccountBaseInfo(passportId, accountBaseInfo);
-                    if(row > 0){
+                    row = accountBaseInfoDAO.insertAccountBaseInfo(passportId, accountBaseInfo);
+                    if (row > 0) {
                         //初始化缓存
-                        cacheKey = buildAccountBaseInfoKey(passportId);
+                        String cacheKey = buildAccountBaseInfoKey(passportId);
                         dbRedisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
                         result.setSuccess(true);
                         result.setMessage("修改成功");
                     }
                     return result;
                 } catch (Exception e) {
+                    logger.error("updateUserInfo error,userid=", updateUserInfoApiParams.getUserid()
+                            + "uniqname=" + updateUserInfoApiParams.getUniqname());
                     logger.error("updateUserInfo error", e);
                 }
             }
