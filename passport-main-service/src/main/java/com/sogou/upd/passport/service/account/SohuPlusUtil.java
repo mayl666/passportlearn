@@ -38,20 +38,17 @@ public class SohuPlusUtil {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             requestModel.addParam(entry.getKey(), entry.getValue());
         }
-//        requestModel.addParams(map);
         requestModel.addParam("so_sig", computeSigCommon(map));
         requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
         String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
 
         Map<String, Map<String, Object>> mapResult = null;
         Map mapData = null;
         try {
             ObjectMapper om = new ObjectMapper();
-            mapResult = om.readValue(result, Map.class);// , Map.class);
+            mapResult = om.readValue(result, Map.class);
             mapData = mapResult.get("data");
         } catch (IOException e) {
-            System.err.println("error");
         }
 
         return mapData;
