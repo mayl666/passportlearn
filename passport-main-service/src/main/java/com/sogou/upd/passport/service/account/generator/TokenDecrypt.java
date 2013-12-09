@@ -48,7 +48,7 @@ public class TokenDecrypt {
             accessTokenCipherDO = TokenCipherDO.parseEncryptString(decryTokenStr);
             return accessTokenCipherDO;
         } catch (Exception e) {
-            logger.error("Access Token decryptURLSafeString fail, accessToken:{}", accessToken);
+            logger.error("Access Token decryptURLSafeString Base64 fail, accessToken:{}", accessToken);
             throw e;
         }
     }
@@ -62,7 +62,7 @@ public class TokenDecrypt {
             RefreshTokenCipherDO refreshTokenCipherDO = RefreshTokenCipherDO.parseEncryptString(decryptStr);
             return refreshTokenCipherDO;
         } catch (Exception e) {
-            logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", refreshToken);
+            logger.error("Refresh Token decryptURLSafeString Base62 fail, refreshToken:{}", refreshToken);
             throw e;
         }
     }
@@ -82,10 +82,33 @@ public class TokenDecrypt {
             }
             return passportId;
         } catch (Exception e) {
-            logger.error("Refresh Token decryptURLSafeString fail, refreshToken:{}", token);
+            logger.error("Refresh Token decryptURLSafeString Base62 fail, refreshToken:{}", token);
             return null;
         }
     }
+
+    /**
+     * 根据refreshToken解密,并返回passportId
+     * 解密失败则返回null
+     */
+    public static String decryptOldPcToken(String token, String clientSecret) throws Exception {
+        try {
+            String passportId = null;
+            String tokenContent = token.substring(CommonConstant.SG_TOKEN_OLD_START.length(),token.length());
+            String decryptStr = AES.decryptURLSafeStringBase64(tokenContent, clientSecret);
+            if (!Strings.isNullOrEmpty(decryptStr)) {
+                String[] strArray = decryptStr.split("\\"+CommonConstant.SEPARATOR_1);
+                passportId = strArray[0];
+            }
+            return passportId;
+        } catch (Exception e) {
+            logger.error("Refresh Token decryptURLSafeString Base64 fail, refreshToken:{}", token);
+            return null;
+        }
+    }
+
+
+
 
     /**
      * 解密<br>

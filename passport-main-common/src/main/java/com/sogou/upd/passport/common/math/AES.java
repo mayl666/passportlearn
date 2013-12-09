@@ -58,6 +58,17 @@ public class AES {
         return decryptedValue;
     }
 
+    public static String decryptURLSafeStringBase64(String encryptedData, String secKey) throws Exception {
+        Key key = generateKey(secKey);
+        Cipher c = Cipher.getInstance(KEY_ALGORITHM);
+        c.init(Cipher.DECRYPT_MODE, key);
+        byte[] decordedValue = Base64.decodeBase64(encryptedData);
+        byte[] decValue = c.doFinal(decordedValue);
+
+        String decryptedValue = new String(decValue,CommonConstant.DEFAULT_CONTENT_CHARSET);
+        return decryptedValue;
+    }
+
     private static Key generateKey(String seckey) throws Exception {
         Key key = new SecretKeySpec(Coder.encryptMD5_Byte(seckey), KEY_ALGORITHM);
         return key;

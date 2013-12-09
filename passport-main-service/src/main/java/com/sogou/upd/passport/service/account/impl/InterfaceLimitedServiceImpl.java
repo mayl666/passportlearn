@@ -44,7 +44,6 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
         try {
             if (Strings.isNullOrEmpty(redisUtils.hGet(cacheKey, key))) {
                 redisUtils.hPutExpire(cacheKey, key, limiTimes, DateAndNumTimesConstant.TIME_FIVE_MINITUES);
-                logger.info("initAppLimited:"+ cacheKey + "," + key +","+limiTimes);
             }
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -132,6 +131,7 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
                     }
                     long times = Long.parseLong(cacheTimes);
                     if (times <= 0) {
+                        logger.info("ClientId:"+clientId +",Url:"+url+",Time:"+new SimpleDateFormat("HH:mm:ss").format(new Date())+",over:"+times);
                         map.put("flag", false);
                         return map;
                     } else {

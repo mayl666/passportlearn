@@ -222,6 +222,7 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(reqParams.getUserid(), request.getRequestURI(), reqParams.getAppid(), resultCode, getIp(request));
+        userOperationLog.putOtherMessage("refreshtoken", reqParams.getRefresh_token());
         UserOperationLogUtil.log(userOperationLog);
 
         return getReturnStr(cb, resStr);
@@ -247,6 +248,7 @@ public class PCAccountController extends BaseController {
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
+        userOperationLog.putOtherMessage("accesstoken", authPcTokenParams.getToken());
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie

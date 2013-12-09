@@ -160,6 +160,18 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
+    public String getPassportIdByOldToken(String token,String clientSecret) throws ServiceException{
+        String passportId = null;
+        try {
+            passportId = TokenDecrypt.decryptOldPcToken(token, clientSecret);
+            return  passportId;
+        } catch (Exception e) {
+            logger.error("getPassportIdByToken:" + token, e);
+            return null;
+        }
+    }
+
+    @Override
     public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException {
         if (CommonHelper.isExplorerToken(clientId)) {
             String oldRToken = queryOldPCToken(passportId, clientId, instanceId);

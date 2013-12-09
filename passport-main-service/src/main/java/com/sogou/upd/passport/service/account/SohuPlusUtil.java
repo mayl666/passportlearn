@@ -1,15 +1,17 @@
-package com.sogou.upd.passport.dao.shplustransfer;
+package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.dao.shplustransfer.DO.SohuPassportSidMapping;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,27 +26,6 @@ public class SohuPlusUtil {
     public static String appkey = "30000004";
     public static String ip = "127.0.0.1";
 
-    public static SohuPassportSidMapping sendSohuPlusHttp(String passportId) {
-
-        String url = "http://rest.plus.sohuno.com/spassportrest/passport/autoconvert";
-        Map<String, String> map = new HashMap();
-        map.put("appkey", appkey);
-        map.put("passport", passportId);
-        map.put("ip", ip);
-
-        SohuPassportSidMapping sohuPassportSidMapping = new SohuPassportSidMapping();
-        try {
-            Map<String, String> data = sendSpassportSingleHttpReq(url, map);
-            // sohuPassportSidMapping = new ObjectMapper().readValue(data, SohuPassportSidMapping.class);
-            // BeanUtils.populate(sohuPassportSidMapping, data);
-            sohuPassportSidMapping = (SohuPassportSidMapping) toJavaBean(sohuPassportSidMapping, data);
-
-        } catch (Exception e) {
-            System.err.println("error parse");
-        }
-        return sohuPassportSidMapping;
-    }
-
     /**
      * 发送请求至SOHU+，获取结果
      *
@@ -57,20 +38,17 @@ public class SohuPlusUtil {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             requestModel.addParam(entry.getKey(), entry.getValue());
         }
-//        requestModel.addParams(map);
         requestModel.addParam("so_sig", computeSigCommon(map));
         requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
         String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
 
         Map<String, Map<String, Object>> mapResult = null;
         Map mapData = null;
         try {
             ObjectMapper om = new ObjectMapper();
-            mapResult = om.readValue(result, Map.class);// , Map.class);
+            mapResult = om.readValue(result, Map.class);
             mapData = mapResult.get("data");
         } catch (IOException e) {
-            System.err.println("error");
         }
 
         return mapData;
@@ -144,20 +122,6 @@ public class SohuPlusUtil {
 //            System.err.println("error parse");
 //        }
 
-        String url = "http://rest.account.i.sohu.com/account/getpassport/bysid/";
-        Map<String, String> map = new HashMap();
-        map.put("appkey", "30000004");
-        map.put("sids", "1000043573");
-//        map.put("ip", ip);
-
-        SohuPassportSidMapping sohuPassportSidMapping = new SohuPassportSidMapping();
-        try {
-            Map<String, String> data = SohuPlusUtil.sendSpassportSingleHttpReq(url, map);
-            sohuPassportSidMapping = (SohuPassportSidMapping) SohuPlusUtil.toJavaBean(sohuPassportSidMapping, data);
-            System.out.println(sohuPassportSidMapping.getSid() + "|" + sohuPassportSidMapping.getSname());
-        } catch (Exception e) {
-            System.err.println("error parse");
-        }
     }
 
 }

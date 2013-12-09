@@ -28,7 +28,7 @@ public class PCOAuth2ResourceParams {
     @NotBlank(message = "resource_type不允许为空")
     private String resource_type;
 
-    @NotBlank(message = "username不允许为空")
+//    @NotBlank(message = "username不允许为空")
     private String username;
 
     public int getClient_id() {

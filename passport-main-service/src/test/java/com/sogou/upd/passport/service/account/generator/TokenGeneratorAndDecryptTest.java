@@ -87,5 +87,17 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
         }
     }
 
+    @Test
+    public void testDecryptOldPcToken(){
+        String token = "GL7V7uoNulLUhjZFv-YSStrxHT9NzlMvS-EsichFGy0sQktolS2s_tC73uNYftDr";
+        String scret = "=#dW$h%q)6xZB#m#lu'x]]wP=\\FUO7";
+        try {
+            String str = TokenDecrypt.decryptOldPcToken(token, scret);
+            System.out.println(str);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
 
 }
