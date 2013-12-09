@@ -11,6 +11,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
@@ -45,6 +46,9 @@ public class QQLightOpenApiController {
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
+
+    @Autowired
+    private ConfigureManager configureManager;
     /**
      * 根据用户信息，实现qq图标点亮
      *
@@ -54,7 +58,7 @@ public class QQLightOpenApiController {
     @InterfaceSecurity
     @RequestMapping(value = "/qq/light", method = RequestMethod.POST)
     @ResponseBody
-    public Object getConnectQQApi(HttpServletRequest request, QQLightOpenApiParams params) throws OpensnsException {
+    public Object getConnectQQApi(HttpServletRequest request, QQLightOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String resultString = "";
         try {
@@ -63,16 +67,20 @@ public class QQLightOpenApiController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                resultString = result.toString();
-                return resultString;
+                return result.toString();
+            }
+            //验证client_id
+            int clientId = params.getClient_id();
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createQQConnectParams(params);
-            result = sgConnectApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
-            resultString = result.toString();
-            if (result.isSuccess()) {
+            Result openResult = sgConnectApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> accessTokenMap = (Map<String, String>) result.getModels().get("result");
+                Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
                 String openId = accessTokenMap.get("open_id").toString();
                 String accessToken = accessTokenMap.get("access_token").toString();
                 String resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params);
@@ -80,6 +88,8 @@ public class QQLightOpenApiController {
             }
         } catch (Exception e) {
             logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            resultString = result.toString();
         } finally {
             //用户注册log
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "");

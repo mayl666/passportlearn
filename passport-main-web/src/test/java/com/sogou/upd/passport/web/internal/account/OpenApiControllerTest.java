@@ -25,8 +25,8 @@ public class OpenApiControllerTest extends BaseActionTest {
 //        String openid = "1548840104@sohu.com";
         String userid = "E80576E5E25C62D67834C76051F4675E@qq.sohu.com";
         String openid = "E80576E5E25C62D67834C76051F4675E@qq.sohu.com";
-        int clientId = 1110;
-        String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
+        int clientId = 1120;
+        String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
         long ct = System.currentTimeMillis();
         String code = ManagerHelper.generatorCodeGBK(userid.toString(), clientId, serverSecret, ct);
         System.out.println("code:" + code);
