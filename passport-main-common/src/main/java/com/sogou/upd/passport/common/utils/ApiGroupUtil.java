@@ -26,6 +26,12 @@ public class ApiGroupUtil {
         apiGroupMap.put("/internal/account/authuser", LOGIN);
         apiGroupMap.put("/act/pclogin", LOGIN);
 
+        // 4.2接口
+        apiGroupMap.put("/oauth2/login", LOGIN);
+        apiGroupMap.put("/oauth2/register", REGISTER);
+        // 4.1接口
+        apiGroupMap.put("/act/getpairtoken", LOGIN);
+
         apiGroupMap.put("/web/logout_js", LOGOUT);
         apiGroupMap.put("/web/logout_redirect", LOGOUT);
 
