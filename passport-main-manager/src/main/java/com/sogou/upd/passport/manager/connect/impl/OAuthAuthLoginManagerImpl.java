@@ -32,7 +32,7 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
@@ -211,16 +211,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             oAuthTokenVO.setIp(ip);
 
             String openId = oAuthTokenVO.getOpenid();
-            if (provider == AccountTypeEnum.QQ.getValue()) {
-                //QQ需根据access_token获取openid
-                String accessToken = oAuthTokenVO.getAccessToken();
-                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, oAuthConsumer);
-                openId = openIdResponse.getOpenId();
-                if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
-            }
-
             // 获取第三方个人资料
-            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+            ConnectUserInfoVO connectUserInfoVO;
+            if (provider == AccountTypeEnum.QQ.getValue()) {    // QQ根据code获取access_token时，已经取到了个人资料
+                connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
+            } else {
+                connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+            }
             String uniqname = openId;
             if (connectUserInfoVO != null) {
                 uniqname = connectUserInfoVO.getNickname();
@@ -267,7 +264,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                             String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
                             accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
                         }
-                        if(accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())){
+                        if (accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())) {
                             uniqname = oAuth2ResourceManager.defaultUniqname(userId);
                         }
                         uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
@@ -298,7 +295,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         return result;
     }
-
 
     private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();

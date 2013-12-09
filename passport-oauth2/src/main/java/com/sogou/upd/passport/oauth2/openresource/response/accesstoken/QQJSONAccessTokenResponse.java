@@ -4,10 +4,10 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.oauth2.common.exception.HTMLTextParseException;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.utils.HTMLTextUtils;
-import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 
 import java.util.Map;
 
@@ -27,9 +27,6 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
         this.body = body;
         try {
             this.parameters = JacksonJsonMapperUtil.getMapper().readValue(this.body, Map.class);
-            if (Strings.isNullOrEmpty(getAccessToken())) {
-                log.error("QQ Response body Json is not have access_token, body:" + body);
-            }
         } catch (Exception e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
                     "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");
@@ -43,8 +40,21 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
      */
     @Override
     public String getOpenid() {
-        // QQ不返回openid，需调用获取openid的接口
-        return "";
+        String value = getParam(OAuth.OAUTH_OPENID);
+        return Strings.isNullOrEmpty(value) ? "" : value;
+    }
+
+    public ConnectUserInfoVO getUserInfo() {
+        ConnectUserInfoVO connectUserInfoVO = null;
+        Object value = parameters.get(QQOAuth.USER_INFO);
+        if (value != null && value instanceof Map) {
+            Map userInfoMap = (Map) value;
+            connectUserInfoVO = new ConnectUserInfoVO();
+            connectUserInfoVO.setNickname((String) userInfoMap.get(QQOAuth.NICK_NAME));
+            connectUserInfoVO.setGender(formGender((String) userInfoMap.get(QQOAuth.GENDER)));
+            connectUserInfoVO.setImageURL((String) userInfoMap.get(QQOAuth.FIGURE_URL_100));
+        }
+        return connectUserInfoVO;
     }
 
     /**
@@ -55,6 +65,14 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
     @Override
     public String getNickName() {
         return "";
+    }
+
+    private int formGender(String gender) {
+        int sex = 0;
+        if (gender.equals("male")) {
+            sex = 1;
+        }
+        return sex;
     }
 
 }
