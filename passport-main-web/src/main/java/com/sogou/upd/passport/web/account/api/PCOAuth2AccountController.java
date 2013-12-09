@@ -156,12 +156,10 @@ public class PCOAuth2AccountController extends BaseController {
 
         result = oAuth2ResourceManager.resource(params);
 
-        String passportId = "";
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
-//            passportId = (String) result.getModels().get("sid");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(passportId, "/oauth2/resource/?resource_type="+params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type="+params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();

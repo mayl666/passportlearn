@@ -163,7 +163,7 @@ public class PhotoUtils {
         try {
             response = httpClient.execute(httpPost);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.warn(e.getMessage(), e);
             return false;
         }
         int statusCode = response.getStatusLine().getStatusCode();
