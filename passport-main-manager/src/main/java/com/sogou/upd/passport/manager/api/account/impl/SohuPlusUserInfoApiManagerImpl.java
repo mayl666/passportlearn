@@ -113,8 +113,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                     accountBaseInfo.setUniqname(uniqname);
                     accountBaseInfo.setAvatar("");
                     accountBaseInfo.setPassportId(updateUserInfoApiParams.getUserid());
-                    //初始化accountBaseInfo
-                    accountBaseInfoDAO.insertAccountBaseInfo(passportId, accountBaseInfo);
+
                     //初始化昵称映射表
                     int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                     String cacheKey = null;
@@ -122,14 +121,17 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                         cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                         dbRedisUtils.set(cacheKey, passportId);
                     }
-                    //初始化缓存
-                    cacheKey = buildAccountBaseInfoKey(passportId);
-                    dbRedisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
-                    result.setSuccess(true);
-                    result.setMessage("修改成功");
+                    //初始化accountBaseInfo
+                    row=accountBaseInfoDAO.insertAccountBaseInfo(passportId, accountBaseInfo);
+                    if(row > 0){
+                        //初始化缓存
+                        cacheKey = buildAccountBaseInfoKey(passportId);
+                        dbRedisUtils.set(cacheKey, accountBaseInfo, 30, TimeUnit.DAYS);
+                        result.setSuccess(true);
+                        result.setMessage("修改成功");
+                    }
                     return result;
                 } catch (Exception e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     logger.error("updateUserInfo error", e);
                 }
             }
