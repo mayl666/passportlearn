@@ -29,12 +29,7 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
             this.parameters = JacksonJsonMapperUtil.getMapper().readValue(this.body, Map.class);
             if (Strings.isNullOrEmpty(getAccessToken())) {
                 log.error("QQ Response body Json is not have access_token, body:" + body);
-                parameters = HTMLTextUtils.parseHTMLText(body);
-            } else if (Strings.isNullOrEmpty(getAccessToken())) {
-                log.error("QQ Response body HTML is not have access_token, body:" + body);
             }
-        } catch (HTMLTextParseException e) {
-            parameters = OAuthUtils.parseQQIrregularJSONObject(body);
         } catch (Exception e) {
             throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
                     "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");
