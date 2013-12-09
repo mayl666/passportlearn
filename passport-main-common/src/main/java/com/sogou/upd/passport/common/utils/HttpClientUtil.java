@@ -120,6 +120,27 @@ public class HttpClientUtil {
         }
     }
 
+    public static String getgetResponseBodyWget(String url) {
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
+        GetMethod method = new GetMethod(url);
+        String[] urlArray = url.split("[?]");
+        try {
+            method.setFollowRedirects(false);
+            method.setDoAuthentication(false);
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+            shClient.executeMethod(method);
+            stopWatch(stopWatch, urlArray[0], "success");
+            return method.getResponseBodyAsString();
+        } catch (Exception e) {
+            stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
+            logger.error("http request error", e);
+            return null;
+        } finally {
+            method.releaseConnection();
+        }
+    }
+
     private static void stopWatch(StopWatch stopWatch, String tag, String message) {
         //无论什么情况都记录下所有的请求数据
         if (stopWatch.getElapsedTime() >= SLOW_TIME) {
