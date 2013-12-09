@@ -378,7 +378,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             data = {
                 username: $account.val(),
                 password: password,
-                rememberMe: 　checked,
+                rememberMe:checked,
                 client_id: _g_client_id,
                 instanceid: instanceid,
                 token: $img.attr('data-token')
@@ -497,7 +497,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
         formatHistoryData: function(login_history) {
             //sid sname nick avatar  type
             var list = []
-            if (login_history) {　
+            if (login_history) {
                 login_arr = login_history.split("|")
                 if (login_arr.length > 0) {
                     list = login_arr.filter(function(k) {
