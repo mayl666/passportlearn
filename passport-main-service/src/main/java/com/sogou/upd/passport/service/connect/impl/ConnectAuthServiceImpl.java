@@ -48,7 +48,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         OAuthAccessTokenResponse oauthResponse;
         OAuthAuthzClientRequest request = builder.buildBodyMessage(OAuthAuthzClientRequest.class);
         if (provider == AccountTypeEnum.QQ.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQHTMLTextAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
             oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {

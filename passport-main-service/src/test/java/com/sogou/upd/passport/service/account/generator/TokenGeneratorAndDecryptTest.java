@@ -89,8 +89,8 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
 
     @Test
     public void testDecryptOldPcToken(){
-        String token = "GL7V7uoNulLUhjZFv-YSStrxHT9NzlMvS-EsichFGy0sQktolS2s_tC73uNYftDr";
-        String scret = "=#dW$h%q)6xZB#m#lu'x]]wP=\\FUO7";
+        String token = "l296k0lLDCssuTsAMmmjWrAUA7sry0Wm4dweuVDiYDSLXxU6KlFk2Y__lBVaH9WI";
+        String scret = "c1756a351db27d817225e2a4fd7b3f7d";
         try {
             String str = TokenDecrypt.decryptOldPcToken(token, scret);
             System.out.println(str);
