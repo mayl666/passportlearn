@@ -120,6 +120,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                             String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                             dbRedisUtils.set(cacheKey, passportId);
                         }
+                        accountBaseInfo.setUniqname(uniqname);
                     } else {
                         accountBaseInfo.setUniqname("");
                     }
