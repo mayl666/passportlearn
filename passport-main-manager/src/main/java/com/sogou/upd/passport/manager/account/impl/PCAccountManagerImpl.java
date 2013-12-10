@@ -214,7 +214,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public String getBrowserBbsUniqname(String passportId) {
         String uniqname = "";
         try {
-            uniqname = HttpClientUtil.getgetResponseBodyWget(BROWSER_BBS_UNIQNAME_URL+"?uid="+passportId);
+            uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL+"?uid="+passportId);
         } catch (Exception e) {
             logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
         }
