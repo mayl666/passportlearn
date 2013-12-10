@@ -222,24 +222,47 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 accessTokenUrl = oAuthConsumer.getAccessTokenUrl();
             }
 
+//            OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
+//                    oAuthConsumer, redirectUrl);
+//            OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
+//            oAuthTokenVO.setIp(ip);
+//
+//            String openId = oAuthTokenVO.getOpenid();
+//            // 获取第三方个人资料
+//            ConnectUserInfoVO connectUserInfoVO;
+//            if (provider == AccountTypeEnum.QQ.getValue()) {    // QQ根据code获取access_token时，已经取到了个人资料
+//                connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
+//            } else {
+//                connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+//            }
+//            String uniqname = openId;
+//            if (connectUserInfoVO != null) {
+//                uniqname = connectUserInfoVO.getNickname();
+//                oAuthTokenVO.setNickName(uniqname);
+//            }
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
             oAuthTokenVO.setIp(ip);
 
-            String openId = oAuthTokenVO.getOpenid();
+            if (provider == AccountTypeEnum.QQ.getValue()) {
+                //QQ需根据access_token获取openid
+                String obtainOpenIdUrl = null;
+                if (ConnectRequest.isQQWapRequest(providerStr, display)) {
+                    obtainOpenIdUrl = oAuthConsumer.getWapOpenIdUrl();
+                    oAuthConsumer.setOpenIdUrl(obtainOpenIdUrl);
+                } else {
+                    obtainOpenIdUrl = oAuthConsumer.getOpenIdUrl();
+                }
+                String accessToken = oAuthTokenVO.getAccessToken();
+                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, oAuthConsumer);
+                String openId = openIdResponse.getOpenId();
+                if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
+            }
+
             // 获取第三方个人资料
-            ConnectUserInfoVO connectUserInfoVO;
-            if (provider == AccountTypeEnum.QQ.getValue()) {    // QQ根据code获取access_token时，已经取到了个人资料
-                connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
-            } else {
-                connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
-            }
-            String uniqname = openId;
-            if (connectUserInfoVO != null) {
-                uniqname = connectUserInfoVO.getNickname();
-                oAuthTokenVO.setNickName(uniqname);
-            }
+            String uniqname = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
+            oAuthTokenVO.setNickName(uniqname);
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);

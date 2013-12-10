@@ -59,16 +59,16 @@ public interface ConnectAuthService {
     public ConnectUserInfoVO obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken,
                                                  OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException;
 
-//    /**
-//     * 初始化第三方昵称
-//     * QQ、sina、baidu需要调用获取用户信息接口
-//     * @param provider
-//     * @param connectConfig
-//     * @param oAuthTokenVO
-//     * @param oAuthConsumer
-//     * @throws IOException
-//     * @throws OAuthProblemException
-//     */
-//    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer)
-//            throws IOException, OAuthProblemException;
+    /*
+     * 初始化第三方昵称
+     * QQ、sina、baidu需要调用获取用户信息接口
+     * @param provider
+     * @param connectConfig
+     * @param oAuthTokenVO
+     * @param oAuthConsumer
+     * @throws IOException
+     * @throws OAuthProblemException  */
+
+    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer)
+            throws IOException, OAuthProblemException;
 }
