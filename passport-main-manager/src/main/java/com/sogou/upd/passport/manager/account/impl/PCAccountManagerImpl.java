@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
+import com.sogou.upd.passport.common.validation.constraints.UniqNameValidator;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
@@ -212,13 +213,17 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     @Override
     public String getBrowserBbsUniqname(String passportId) {
-        String uniqname = "";
         try {
-            uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL+"?uid="+passportId);
+            String uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL+"?uid="+passportId);
+            if(UniqNameValidator.isValidUniqName(uniqname)){
+                return uniqname;
+            }else {
+                return "";
+            }
         } catch (Exception e) {
             logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
+            return "";
         }
-        return uniqname;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

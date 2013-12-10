@@ -33,6 +33,11 @@ public class HttpClientUtil {
 
     private static final int DEFAULT_INITIAL_BUFFER_SIZE = 4*1024; // 4 kB
 
+    /**
+     * http返回成功的code
+     */
+    protected final static int RESPONSE_SUCCESS_CODE = 200;
+
     private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
@@ -133,6 +138,9 @@ public class HttpClientUtil {
             shClient.executeMethod(method);
             stopWatch(stopWatch, urlArray[0], "success");
 
+            if(method.getStatusCode() != RESPONSE_SUCCESS_CODE){
+                return "";
+            }
             //针对header.length=0 的请求使用 getResponseBodyAsStream方式处理结果
             InputStream instream = method.getResponseBodyAsStream();
             ByteArrayOutputStream outstream = new ByteArrayOutputStream(DEFAULT_INITIAL_BUFFER_SIZE);
