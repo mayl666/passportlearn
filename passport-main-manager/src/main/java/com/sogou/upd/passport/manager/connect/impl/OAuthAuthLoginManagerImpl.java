@@ -212,6 +212,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 return result;
             }
             String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, display, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
+
+            //若provider=QQ && display=wml、xhtml调用WAP接口
+            String accessTokenUrl = null;
+            if (ConnectRequest.isQQWapRequest(providerStr, display)) {
+                accessTokenUrl = oAuthConsumer.getWapAccessTokenUrl();
+                oAuthConsumer.setAccessTokenUrl(accessTokenUrl);
+            } else {
+                accessTokenUrl = oAuthConsumer.getAccessTokenUrl();
+            }
+
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
