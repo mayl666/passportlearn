@@ -217,16 +217,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             oAuthTokenVO.setIp(ip);
 
             String openId = oAuthTokenVO.getOpenid();
-            if (provider == AccountTypeEnum.QQ.getValue()) {
-                //QQ需根据access_token获取openid
-                String accessToken = oAuthTokenVO.getAccessToken();
-                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, oAuthConsumer);
-                openId = openIdResponse.getOpenId();
-                if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
-            }
-
             // 获取第三方个人资料
-            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+            ConnectUserInfoVO connectUserInfoVO;
+            if (provider == AccountTypeEnum.QQ.getValue()) {    // QQ根据code获取access_token时，已经取到了个人资料
+                connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
+            } else {
+                connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+            }
             String uniqname = openId;
             if (connectUserInfoVO != null) {
                 uniqname = connectUserInfoVO.getNickname();
