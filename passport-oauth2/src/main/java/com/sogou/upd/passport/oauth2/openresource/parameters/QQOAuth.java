@@ -3,10 +3,8 @@ package com.sogou.upd.passport.oauth2.openresource.parameters;
 public class QQOAuth {
 
     /* 通用请求参数 */
-    public static final String WAP_USER_AUTHZ_URL = "https://graph.z.qq.com/moc2/authorize";
-    public static final String WAP_ACCESS_TOKEN_URL = "https://graph.z.qq.com/moc2/token";
-    public static final String WAP_OPENID_URL = "https://graph.z.qq.com/moc2/me";
     public static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key"; // QQ分配给passport的appKey
+    public static final String USER_INFO = "userinfo"; // 用户信息
     public static final String OPENID = "openid"; // QQ用户id
     public static final String FORMAT = "format"; // 定义API返回的数据格式
     public static final String MOBILE_DISPLAY = "mobile"; // 对应display=mobile
@@ -17,6 +15,7 @@ public class QQOAuth {
     /* 用户类API响应 */
     public static final String NICK_NAME = "nickname"; // 昵称
     public static final String FIGURE_URL_2 = "figureurl_2"; // 头像url，尺寸100*100
+    public static final String FIGURE_URL_100 = "faceurl100"; // /oauth2/token接口返回的100尺寸头像
     public static final String GENDER = "gender"; // 性别
 
     /* 信息类API请求参数 */
