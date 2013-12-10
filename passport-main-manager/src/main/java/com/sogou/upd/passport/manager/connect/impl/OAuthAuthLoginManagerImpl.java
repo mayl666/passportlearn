@@ -33,6 +33,7 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientRespo
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
@@ -210,36 +211,27 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 return result;
             }
             String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, display, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
-            //若provider=QQ && display=wml、xhtml调用WAP接口
-            String accessTokenUrl = null;
-            if (ConnectRequest.isQQWapRequest(providerStr, display)) {
-                accessTokenUrl = oAuthConsumer.getWapAccessTokenUrl();
-            } else {
-                accessTokenUrl = oAuthConsumer.getAccessTokenUrl();
-            }
-
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
-                    /*oAuthConsumer*/accessTokenUrl, redirectUrl);
+                    oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
             oAuthTokenVO.setIp(ip);
 
+            String openId = oAuthTokenVO.getOpenid();
             if (provider == AccountTypeEnum.QQ.getValue()) {
                 //QQ需根据access_token获取openid
-                String obtainOpenIdUrl = null;
-                if (ConnectRequest.isQQWapRequest(providerStr, display)) {
-                    obtainOpenIdUrl = oAuthConsumer.getWapOpenIdUrl();
-                } else {
-                    obtainOpenIdUrl = oAuthConsumer.getOpenIdUrl();
-                }
                 String accessToken = oAuthTokenVO.getAccessToken();
-                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, /*oAuthConsumer*/obtainOpenIdUrl);
-                String openId = openIdResponse.getOpenId();
+                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, oAuthConsumer);
+                openId = openIdResponse.getOpenId();
                 if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
             }
 
             // 获取第三方个人资料
-            String uniqname = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
-            oAuthTokenVO.setNickName(uniqname);
+            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+            String uniqname = openId;
+            if (connectUserInfoVO != null) {
+                uniqname = connectUserInfoVO.getNickname();
+                oAuthTokenVO.setNickName(uniqname);
+            }
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
@@ -266,7 +258,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-                    String token = wapTokenService.saveWapToken(userId);
+                    String token = (String) connectAccountResult.getModels().get("token");
                     String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);

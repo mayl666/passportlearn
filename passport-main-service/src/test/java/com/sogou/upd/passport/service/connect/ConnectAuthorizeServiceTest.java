@@ -39,7 +39,7 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             String ru = "https://account.sogou.com";
             String accessToken=oAuthConsumer.getAccessTokenUrl();
-            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(provider, code, connectConfig, /*oAuthConsumer*/accessToken, ru);
+            OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(provider, code, connectConfig, oAuthConsumer, ru);
             String body = response.getBody();
             System.out.println("body:" + body);
         } catch (IOException e) {

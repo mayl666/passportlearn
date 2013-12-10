@@ -36,13 +36,13 @@ import java.io.IOException;
 public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     @Override
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig/*, OAuthConsumer oAuthConsumer*/,String accessTokenUrl, String redirectUrl)
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer, String redirectUrl)
             throws IOException, OAuthProblemException {
 
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
 
-        OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(accessTokenUrl)
+        OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
                 .setAppKey(appKey).setAppSecret(appSecret).setRedirectURI(redirectUrl).setCode(code)
                 .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE);
 
@@ -65,8 +65,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, /*OAuthConsumer oAuthConsumer*/String obtainOpenIdUrl) throws OAuthProblemException, IOException {
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.openIdLocation(obtainOpenIdUrl)
+    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, OAuthConsumer oAuthConsumer) throws OAuthProblemException, IOException {
+        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.openIdLocation(oAuthConsumer.getOpenIdUrl())
                 .setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
 
         QQOpenIdResponse qqOpenIdResponse = OAuthHttpClient.execute(request,
@@ -80,13 +80,13 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public UserAPIResponse obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
+    public ConnectUserInfoVO obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
         String url = oAuthConsumer.getUserInfo();
         String appKey = connectConfig.getAppKey();
-        String appSecret = connectConfig.getAppSecret();
+        ConnectUserInfoVO userProfileFromConnect = null;
 
         OAuthClientRequest request;
-        UserAPIResponse response;
+        UserAPIResponse response = null;
         if (provider == AccountTypeEnum.QQ.getValue()) {
             request = QQUserAPIRequest.apiLocation(url, QQUserAPIRequest.QQUserAPIBuilder.class)
                     .setOauth_Consumer_Key(appKey).setOpenid(openid).setAccessToken(accessToken)
@@ -103,20 +103,15 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }
-        return response;
+        if (response != null) {
+            userProfileFromConnect = response.toUserInfo();
+        }
+        return userProfileFromConnect;
     }
 
-    @Override
-    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
-        String nickname = oAuthTokenVO.getNickName();
-        if (provider == AccountTypeEnum.QQ.getValue() || provider == AccountTypeEnum.SINA.getValue()) {
-            UserAPIResponse response = obtainConnectUserInfo(provider, connectConfig, oAuthTokenVO.getOpenid(),
-                    oAuthTokenVO.getAccessToken(), oAuthConsumer);
-            ConnectUserInfoVO userProfileFromConnect = response.toUserInfo();
-            nickname = userProfileFromConnect.getNickname();
-            oAuthTokenVO.setNickName(nickname);
-        }
-        return nickname;
-    }
+//    @Override
+//    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
+//        return null;  //To change body of implemented methods use File | Settings | File Templates.
+//    }
 
 }

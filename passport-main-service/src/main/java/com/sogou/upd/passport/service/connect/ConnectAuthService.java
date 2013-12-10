@@ -6,6 +6,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.user.UserAPIResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ public interface ConnectAuthService {
      * @throws IOException,OAuthProblemException
      *
      */
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, /*OAuthConsumer oAuthConsumer*/String accessTokenUrl, String redirectUrl)
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer, String redirectUrl)
             throws IOException, OAuthProblemException;
 
     /**
@@ -36,7 +37,7 @@ public interface ConnectAuthService {
      *
      * @throws IOException
      */
-    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, /*OAuthConsumer oAuthConsumer*/String obtainOpenIdUrl)
+    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, OAuthConsumer oAuthConsumer)
             throws OAuthProblemException, IOException;
 
     /**
@@ -55,19 +56,19 @@ public interface ConnectAuthService {
      * @throws IOException
      * @throws OAuthProblemException
      */
-    public UserAPIResponse obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken,
+    public ConnectUserInfoVO obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken,
                                                  OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException;
 
-    /**
-     * 初始化第三方昵称
-     * QQ、sina、baidu需要调用获取用户信息接口
-     * @param provider
-     * @param connectConfig
-     * @param oAuthTokenVO
-     * @param oAuthConsumer
-     * @throws IOException
-     * @throws OAuthProblemException
-     */
-    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer)
-            throws IOException, OAuthProblemException;
+//    /**
+//     * 初始化第三方昵称
+//     * QQ、sina、baidu需要调用获取用户信息接口
+//     * @param provider
+//     * @param connectConfig
+//     * @param oAuthTokenVO
+//     * @param oAuthConsumer
+//     * @throws IOException
+//     * @throws OAuthProblemException
+//     */
+//    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer)
+//            throws IOException, OAuthProblemException;
 }
