@@ -263,6 +263,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             // 获取第三方个人资料
             String uniqname = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
             oAuthTokenVO.setNickName(uniqname);
+            //===================================================
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
