@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect;
 
-import com.qq.open.OpensnsException;
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
 
 /**
