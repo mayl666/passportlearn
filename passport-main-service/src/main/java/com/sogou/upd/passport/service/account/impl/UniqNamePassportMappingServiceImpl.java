@@ -74,7 +74,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 return true;
             }
         } catch (Exception e) {
-            logger.error("insertUniqName fail", e);
+            logger.error("insertUniqName fail,passportId="+passportId+",uniqname="+uniqname,e);
             throw new ServiceException(e);
         }
         return false;

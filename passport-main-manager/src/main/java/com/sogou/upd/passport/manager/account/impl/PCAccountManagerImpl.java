@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
@@ -211,11 +212,9 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     @Override
     public String getBrowserBbsUniqname(String passportId) {
-        RequestModel requestModel = new RequestModel(BROWSER_BBS_UNIQNAME_URL);
         String uniqname = "";
         try {
-            requestModel.addParam("uid", passportId);
-            uniqname = SGHttpClient.executeStr(requestModel);
+            uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL+"?uid="+passportId);
         } catch (Exception e) {
             logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
         }

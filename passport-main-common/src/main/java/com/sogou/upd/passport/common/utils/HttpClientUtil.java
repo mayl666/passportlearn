@@ -1,16 +1,14 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.util.EncodingUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.params.ClientPNames;
 import org.perf4j.StopWatch;
@@ -32,6 +30,8 @@ public class HttpClientUtil {
      * 超过500ms的请求定义为慢请求
      */
     private final static int SLOW_TIME = 500;
+
+    private static final int DEFAULT_INITIAL_BUFFER_SIZE = 4*1024; // 4 kB
 
     private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
@@ -111,6 +111,43 @@ public class HttpClientUtil {
             shClient.executeMethod(method);
             stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
+        } catch (Exception e) {
+            stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
+            logger.error("http request error", e);
+            return null;
+        } finally {
+            method.releaseConnection();
+        }
+    }
+
+    public static String getResponseBodyWget(String url) {
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
+        GetMethod method = new GetMethod(url);
+        String[] urlArray = url.split("[?]");
+        try {
+            method.setFollowRedirects(false);
+            method.setDoAuthentication(false);
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+
+            shClient.executeMethod(method);
+            stopWatch(stopWatch, urlArray[0], "success");
+
+            //针对header.length=0 的请求使用 getResponseBodyAsStream方式处理结果
+            InputStream instream = method.getResponseBodyAsStream();
+            ByteArrayOutputStream outstream = new ByteArrayOutputStream(DEFAULT_INITIAL_BUFFER_SIZE);
+            byte[] buffer = new byte[DEFAULT_INITIAL_BUFFER_SIZE];
+            int len;
+            while ((len = instream.read(buffer)) > 0) {
+                outstream.write(buffer, 0, len);
+            }
+            outstream.close();
+            byte[] responseBody= outstream.toByteArray();
+            if (responseBody != null) {
+                return EncodingUtil.getString(responseBody, method.getResponseCharSet());
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
             logger.error("http request error", e);
