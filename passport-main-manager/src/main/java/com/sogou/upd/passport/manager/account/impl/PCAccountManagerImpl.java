@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -215,7 +216,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public String getBrowserBbsUniqname(String passportId) {
         try {
             String uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL+"?uid="+passportId);
-            if(UniqNameValidator.isValidUniqName(uniqname)){
+            if(StringUtil.isCommonStr(uniqname)){
                 return uniqname;
             }else {
                 return "";

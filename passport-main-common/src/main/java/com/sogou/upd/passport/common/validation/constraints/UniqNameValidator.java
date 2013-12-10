@@ -45,25 +45,4 @@ public class UniqNameValidator implements ConstraintValidator<UniqName, String> 
         String regx = "^(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$";
         return value.matches(regx);
     }
-
-    /**
-     * 昵称不包含特殊字符，只保留 中文、英文大小写字母、空格、-、_
-     */
-    public static boolean isValidUniqName(String str) {
-        if (StringUtils.isNotBlank(str)) {
-            str = str.trim();
-            for (int i = 0; i < str.length(); i++) {
-                String ch = String.valueOf(str.charAt(i));
-                boolean isDigest = Pattern.matches("[a-zA-Z0-9_\\-\\s]", ch);
-                if (!isDigest) {
-                    boolean isChinese = Pattern.matches("[\\u4e00-\\u9fa5]", ch);
-                    if (!isChinese) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
-    }
 }
