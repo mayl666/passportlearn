@@ -73,7 +73,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 }
             }
         } catch (Exception e) {
-            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            logger.error("initConnectAccountBaseInfo fail", e);
             return null;
         }
     }
