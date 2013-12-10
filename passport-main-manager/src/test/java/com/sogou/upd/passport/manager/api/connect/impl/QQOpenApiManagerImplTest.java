@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
-import com.qq.open.OpenApiV3;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;

@@ -1,4 +1,4 @@
-package com.qq.open;
+package com.sogou.upd.passport.oauth2.common.utils.qqutils;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -35,7 +35,7 @@ public class SnsNetwork
      * @param params 请求参数 
      * @param protocol 请求协议 "http" / "https"
      * @return 服务器响应的请求结果
-     * @throws com.qq.open.OpensnsException 网络故障时抛出异常。
+     * @throws OpensnsException 网络故障时抛出异常。
      */
     public static String postRequest(
             String url, 

@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
-import com.qq.open.OpenApiV3;
-import com.qq.open.OpensnsException;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 
 import java.util.HashMap;
 
