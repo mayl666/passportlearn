@@ -1,14 +1,14 @@
-package com.sogou.upd.passport.service.account.impl;
+package com.sogou.upd.passport.service.app.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.dao.config.ConfigDAO;
+import com.sogou.upd.passport.dao.app.ConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;
-import com.sogou.upd.passport.service.account.InterfaceLimitedService;
+import com.sogou.upd.passport.service.app.InterfaceLimitedService;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

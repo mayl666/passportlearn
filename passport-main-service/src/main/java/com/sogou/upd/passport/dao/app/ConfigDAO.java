@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao.config;
+package com.sogou.upd.passport.dao.app;
 
 import com.sogou.upd.passport.model.config.ClientIdLevelMapping;
 import com.sogou.upd.passport.model.config.InterfaceLevelMapping;

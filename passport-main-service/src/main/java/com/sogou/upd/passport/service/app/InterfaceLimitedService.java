@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service.account;
+package com.sogou.upd.passport.service.app;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

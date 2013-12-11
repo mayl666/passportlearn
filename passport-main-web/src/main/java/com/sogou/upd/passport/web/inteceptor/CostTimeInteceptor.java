@@ -9,7 +9,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.service.account.InterfaceLimitedService;
+import com.sogou.upd.passport.service.app.InterfaceLimitedService;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.apache.commons.collections.MapUtils;
 import org.perf4j.StopWatch;
