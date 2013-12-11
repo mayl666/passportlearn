@@ -31,11 +31,11 @@ import java.util.Map;
  */
 public class RequestModel {
 
-    static final String DEFAULT_ENCODE = "GBK";
+    static final String DEFAULT_ENCODE = "UTF-8";
 
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
-    private String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded;charset=GBK";
+    private String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded;charset=utf-8";
 
     private static final Logger logger = LoggerFactory.getLogger(RequestModel.class);
 
