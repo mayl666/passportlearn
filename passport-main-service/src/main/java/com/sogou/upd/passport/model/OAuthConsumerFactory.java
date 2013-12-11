@@ -42,15 +42,13 @@ public class OAuthConsumerFactory {
         properties.load(input);
 
         OAuthConsumer oAuthConsumer = new OAuthConsumer();
-        oAuthConsumer.setWebUserAuthzUrl(getURL("userAuthzUrl", providerStr));
+        oAuthConsumer.setWebUserAuthzUrl(getURL("web_userAuthzUrl", providerStr));
         oAuthConsumer.setAccessTokenUrl(getURL("accessTokenUrl", providerStr));
         oAuthConsumer.setRefreshAccessTokenUrl(getURL("refreshAccessTokenUrl", providerStr));
         oAuthConsumer.setOpenIdUrl(getURL("openIdUrl", providerStr));
         oAuthConsumer.setCallbackUrl(getURL("callbackUrl", providerStr));
         oAuthConsumer.setUserInfo(getURL("userInfo", providerStr));
 
-        oAuthConsumer.setWapAccessTokenUrl(getURL("wap_accessTokenUrl", providerStr));
-        oAuthConsumer.setWapOpenIdUrl(getURL("wap_openIdUrl", providerStr));
         oAuthConsumer.setWapUserAuthzUrl(getURL("wap_userAuthzUrl", providerStr));
         return oAuthConsumer;
     }

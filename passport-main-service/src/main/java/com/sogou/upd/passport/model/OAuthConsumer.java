@@ -16,8 +16,6 @@ public class OAuthConsumer {
     private String callbackUrl;
 
     private String wapUserAuthzUrl;  //qq wap支持
-    private String wapAccessTokenUrl;   //qq wap支持
-    private String wapOpenIdUrl;   //qq wap支持
 
     //======================第三方开放API=========================
     private String userInfo;
@@ -76,21 +74,5 @@ public class OAuthConsumer {
 
     public void setWapUserAuthzUrl(String wapUserAuthzUrl) {
         this.wapUserAuthzUrl = wapUserAuthzUrl;
-    }
-
-    public String getWapAccessTokenUrl() {
-        return wapAccessTokenUrl;
-    }
-
-    public void setWapAccessTokenUrl(String wapAccessTokenUrl) {
-        this.wapAccessTokenUrl = wapAccessTokenUrl;
-    }
-
-    public String getWapOpenIdUrl() {
-        return wapOpenIdUrl;
-    }
-
-    public void setWapOpenIdUrl(String wapOpenIdUrl) {
-        this.wapOpenIdUrl = wapOpenIdUrl;
     }
 }
