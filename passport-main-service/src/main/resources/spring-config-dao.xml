@@ -43,6 +43,10 @@
         <property name="initialPoolSize">
             <value>5</value>
         </property>
+        <!--某个连接最长空闲时间，默认为0，即永远不销毁-->
+        <property name="maxIdleTime">
+            <value>300</value>
+        </property>
     </bean>
 
     <!-- 配置slave数据库 -->
@@ -80,6 +84,10 @@
         </property>
         <property name="initialPoolSize">
             <value>5</value>
+        </property>
+        <!--某个连接最长空闲时间，默认为0，即永远不销毁-->
+        <property name="maxIdleTime">
+            <value>300</value>
         </property>
     </bean>
 
