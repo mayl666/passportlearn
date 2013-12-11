@@ -40,7 +40,7 @@ public interface ConfigDAO {
     @SQL("select * from" +
             CLIENTID_LEVEL_TABLE_NAME +
             "where client_id=:clientId")
-    public ClientIdLevelMapping findLevelByClientId(@SQLParam("clientId") String clientId) throws DataAccessException;
+    public ClientIdLevelMapping findLevelByClientId(@SQLParam("clientId") int clientId) throws DataAccessException;
 
 
     /**

@@ -52,11 +52,11 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
 
     private static final String CACHE_PREFIX_PASSPORT_INTER_AND_LEVEL = CacheConstant.CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED_INIT;
 
-    private String buildCacheKey(String clientId) {
+    private String buildCacheKey(int clientId) {
         return CACHE_PREFIX_PASSPORT_INTER_AND_LEVEL + clientId;
     }
 
-    private Map<String, String> getMapsFromCacheKey(String clientId) throws ServiceException {
+    private Map<String, String> getMapsFromCacheKey(int clientId) throws ServiceException {
         String cacheKey = buildCacheKey(clientId);
         Map<String, String> maps;
         List<InterfaceLevelMapping> list;
@@ -108,7 +108,7 @@ public class InterfaceLimitedServiceImpl implements InterfaceLimitedService {
 
         Map map = null;
         //从缓存中获取接口初始化限制次数
-        Map<String, String> interfaceTimesMapping = getMapsFromCacheKey(Integer.toString(clientId));
+        Map<String, String> interfaceTimesMapping = getMapsFromCacheKey(clientId);
         if (MapUtils.isNotEmpty(interfaceTimesMapping)) {
             String interfaceTimes = interfaceTimesMapping.get(url);
             if (!Strings.isNullOrEmpty(interfaceTimes)) {
