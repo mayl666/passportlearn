@@ -50,7 +50,11 @@ public class SessionServerManagerImpl implements SessionServerManager {
             params.put("code", code);
             params.put("ct", String.valueOf(ct));
             params.put("sgid", sgid);
-            params.put("user_info", jsonMapper.writeValueAsString(Maps.newHashMap().put("passport_id", passportId)));
+
+            Map<String,String> map=Maps.newHashMap();
+            map.put("passport_id",passportId);
+            params.put("user_info", jsonMapper.writeValueAsString(map));
+
             String resultRequest = HttpClientUtil.postRequest(SessionServerUrlConstant.CREATE_SESSION, params);
 
             if (!Strings.isNullOrEmpty(resultRequest)) {
