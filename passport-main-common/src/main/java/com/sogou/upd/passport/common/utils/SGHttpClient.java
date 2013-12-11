@@ -201,28 +201,6 @@ public class SGHttpClient {
      * @return
      */
     private static HttpRequestBase getHttpRequest(RequestModel requestModel)  {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(requestModel.getRequestEntity().getContent()));
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        String line = null;
-
-        try {
-
-            while ((line = reader.readLine()) != null) {
-
-                System.out.println(line);
-
-            }
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        }
 
         HttpRequestBase httpRequest = null;
         HttpMethodEnum method = requestModel.getHttpMethodEnum();
