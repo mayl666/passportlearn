@@ -93,7 +93,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 }
             }
         } catch (Exception e) {
-            logger.error("queryAccountBaseInfo fail!", e);
+            logger.error("queryAccountBaseInfo fail,passportId="+passportId, e);
             throw new ServiceException();
         }
         return accountBaseInfo;
