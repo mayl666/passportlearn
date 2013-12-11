@@ -295,7 +295,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
-                    AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+                    AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(appConfig, userId);
