@@ -93,6 +93,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private SessionServerManager sessionServerManager;
 
 
+
     @Override
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
         Result result = new APIResultSupport(false);
@@ -354,12 +355,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             //ru后缀一个sgid
             URL url = new URL(ru);
             ru = url.getQuery();
-            ru = ru.substring(ru.indexOf('=') + 1, ru.length());
+            if (!Strings.isNullOrEmpty(ru)) {
+                ru = ru.substring(ru.indexOf('=') + 1, ru.length());
+            } else {
+                ru = CommonConstant.DEFAULT_WAP_URL;
+            }
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_WAP_URL;
         }
-        if(!Strings.isNullOrEmpty(sgid)){
+        if (!Strings.isNullOrEmpty(sgid)) {
             params.put("sgid", sgid);
             ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         }

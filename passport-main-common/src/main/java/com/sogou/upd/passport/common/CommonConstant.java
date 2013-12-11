@@ -33,6 +33,7 @@ public class CommonConstant {
     public static final String SEPARATOR_1 = "|";
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
+    public static final String DEFAULT_WAP_URL="http://wap.sogou.com";
     public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
     public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
