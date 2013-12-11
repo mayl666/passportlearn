@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -198,7 +200,30 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    private static HttpRequestBase getHttpRequest(RequestModel requestModel) {
+    private static HttpRequestBase getHttpRequest(RequestModel requestModel)  {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(requestModel.getRequestEntity().getContent()));
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        String line = null;
+
+        try {
+
+            while ((line = reader.readLine()) != null) {
+
+                System.out.println(line);
+
+            }
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }
+
         HttpRequestBase httpRequest = null;
         HttpMethodEnum method = requestModel.getHttpMethodEnum();
         switch (method) {
