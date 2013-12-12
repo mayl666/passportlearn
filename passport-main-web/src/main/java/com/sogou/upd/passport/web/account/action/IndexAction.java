@@ -65,7 +65,7 @@ public class IndexAction extends BaseController {
 //                    }
 //                }
 
-                result.setDefaultModel("username", oAuth2ResourceManager.getUniqname(userId));
+                result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId));
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {
