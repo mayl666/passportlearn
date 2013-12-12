@@ -408,25 +408,10 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
             return "";
         }
-        //生成cookie
-        CookieApiParams cookieApiParams = new CookieApiParams();
-        cookieApiParams.setUserid(passportId);
-        cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
-        cookieApiParams.setRu("https://account.sogou.com");
-        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-        cookieApiParams.setPersistentcookie(String.valueOf(1));
-        cookieApiParams.setIp(getIp(request));
-        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
-        if (getCookieValueResult.isSuccess()) {
-            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-            ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-            ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-        }
-
+        //生成sogou域 cookie
+        commonManager.setSogouCookie(request,response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),-1);
         String ru = "https://account.sogou.com/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
-        result = commonManager.createCookieUrl(passportId, "", ru, 1);
+        result = commonManager.createSohuCookieUrl(passportId, "", ru, 1);
         if (result.isSuccess()) {
             response.sendRedirect((String) result.getModels().get("cookieUrl"));
             return "";
