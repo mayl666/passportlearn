@@ -38,16 +38,21 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     private static final Logger prefLogger = LoggerFactory.getLogger("webTimingLogger");
     private final static int SLOW_TIME = 500;
 
-    @Autowired
-    private InterfaceLimitedService interfaceLimitedService;
+//    @Autowired
+//    private InterfaceLimitedService interfaceLimitedService;
 
 
-    private static Map clientMapping = new ConcurrentHashMap();
+//    private static Map clientMapping = new ConcurrentHashMap();
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
-        request.setAttribute(STOPWATCH, stopWatch);
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
+        try {
+            StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
+            request.setAttribute(STOPWATCH, stopWatch);
+        }catch (Exception e){
+            logger.error("CostTimeInteceptor error:" + request.getRequestURI(), e);
+            return false;
+        }
         return true;
 //        //获取url对应的方法
 //        if (!(handler instanceof HandlerMethod)) {
@@ -108,73 +113,73 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
 //        return true;
     }
 
-    //在缓存中还有剩余，初始化内存数据
-    public void initMemoryTimes(int clientId, String url, AtomicInteger atomicGetTimes) {
-        if (MapUtils.isNotEmpty(clientMapping)) {
-            Object obj = clientMapping.get(clientId);
-            if (obj != null && obj instanceof Map) {
-                Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
-                atomicGetTimes.getAndDecrement();
-                map.put(url, atomicGetTimes);
-            }
-        }
-    }
+//    //在缓存中还有剩余，初始化内存数据
+//    public void initMemoryTimes(int clientId, String url, AtomicInteger atomicGetTimes) {
+//        if (MapUtils.isNotEmpty(clientMapping)) {
+//            Object obj = clientMapping.get(clientId);
+//            if (obj != null && obj instanceof Map) {
+//                Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
+//                atomicGetTimes.getAndDecrement();
+//                map.put(url, atomicGetTimes);
+//            }
+//        }
+//    }
+//
+//    private String getPassportId(HttpServletRequest request){
+//         try{
+//             String passportId=request.getParameter("username");
+//             if(!StringUtil.isBlank(passportId)){
+//                return passportId;
+//             }
+//             passportId=request.getParameter("userid");
+//             if(!StringUtil.isBlank(passportId)){
+//                 return passportId;
+//             }
+//             return "";
+//         }catch (Exception e){
+//             logger.error("",e);
+//             return "";
+//         }
+//    }
 
-    private String getPassportId(HttpServletRequest request){
-         try{
-             String passportId=request.getParameter("username");
-             if(!StringUtil.isBlank(passportId)){
-                return passportId;
-             }
-             passportId=request.getParameter("userid");
-             if(!StringUtil.isBlank(passportId)){
-                 return passportId;
-             }
-             return "";
-         }catch (Exception e){
-             logger.error("",e);
-             return "";
-         }
-    }
 
 
-
-    public boolean obtainInterfaceLimited(int clientId, String url) {
-        //读取内存中限制次数
-        Object obj = clientMapping.get(clientId);
-        if (obj != null && obj instanceof Map) {
-            Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
-            if (map.containsKey(url)) {
-                AtomicInteger atomicGetMemeryTimes = (AtomicInteger) map.get(url);
-                if (atomicGetMemeryTimes != null && atomicGetMemeryTimes.get() >= 1) {
-                    atomicGetMemeryTimes.getAndDecrement();
-                } else {
-                    //内存中无可用次数
-                    return false;
-                }
-            } else {
-                //同一client_id的其他url
-                Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
-                if (MapUtils.isNotEmpty(mapResult)) {
-                    AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
-                    atomicGetTimes.getAndDecrement();
-                    map.put(url, atomicGetTimes);
-                }
-            }
-        } else {
-            //同一client_id的其他url是否在内存中
-            Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
-            if (MapUtils.isNotEmpty(mapResult)) {
-                AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
-                atomicGetTimes.getAndDecrement();
-                //初始化新的client_id以及从缓存中获取limited存放内存中
-                Map<String, AtomicInteger> map = new ConcurrentHashMap<String, AtomicInteger>();
-                map.put(url, atomicGetTimes);
-                clientMapping.put(clientId, map);
-            }
-        }
-        return true;
-    }
+//    public boolean obtainInterfaceLimited(int clientId, String url) {
+//        //读取内存中限制次数
+//        Object obj = clientMapping.get(clientId);
+//        if (obj != null && obj instanceof Map) {
+//            Map<String, AtomicInteger> map = (ConcurrentHashMap<String, AtomicInteger>) obj;
+//            if (map.containsKey(url)) {
+//                AtomicInteger atomicGetMemeryTimes = (AtomicInteger) map.get(url);
+//                if (atomicGetMemeryTimes != null && atomicGetMemeryTimes.get() >= 1) {
+//                    atomicGetMemeryTimes.getAndDecrement();
+//                } else {
+//                    //内存中无可用次数
+//                    return false;
+//                }
+//            } else {
+//                //同一client_id的其他url
+//                Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
+//                if (MapUtils.isNotEmpty(mapResult)) {
+//                    AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
+//                    atomicGetTimes.getAndDecrement();
+//                    map.put(url, atomicGetTimes);
+//                }
+//            }
+//        } else {
+//            //同一client_id的其他url是否在内存中
+//            Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
+//            if (MapUtils.isNotEmpty(mapResult)) {
+//                AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
+//                atomicGetTimes.getAndDecrement();
+//                //初始化新的client_id以及从缓存中获取limited存放内存中
+//                Map<String, AtomicInteger> map = new ConcurrentHashMap<String, AtomicInteger>();
+//                map.put(url, atomicGetTimes);
+//                clientMapping.put(clientId, map);
+//            }
+//        }
+//        return true;
+//    }
 
     private String getIp(HttpServletRequest request) {
         String sff = request.getHeader("X-Forwarded-For");// 根据nginx的配置，获取相应的ip
