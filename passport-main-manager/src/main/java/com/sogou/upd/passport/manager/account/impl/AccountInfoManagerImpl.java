@@ -266,7 +266,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 //                    result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?params.getUsername():uniqname);
 //                }
 //            }
-             result.getModels().put("uniqname",oAuth2ResourceManager.getUniqname(params.getUsername()));
+             result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername()));
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
