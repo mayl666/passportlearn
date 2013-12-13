@@ -249,23 +249,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
         Result result = new APIResultSupport(false);
-
         GetUserInfoApiparams infoApiparams=buildGetUserInfoApiparams(params);
-
         // 调用内部接口
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
             //其中昵称是获取的account_base_info
             // TODO 搜狗账号迁移后，搜狗账号的昵称从account表里拿，其他账号昵称从account_base_info里拿
-//            Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-//            if(shPlusResult.isSuccess()){
-//                Object obj= shPlusResult.getModels().get("baseInfo");
-//                if(obj!=null){
-//                    AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
-//                    String uniqname= baseInfo.getUniqname();
-//                    result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?params.getUsername():uniqname);
-//                }
-//            }
              result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername()));
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
