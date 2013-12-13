@@ -48,63 +48,64 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         request.setAttribute(STOPWATCH, stopWatch);
-        //获取url对应的方法
-        if (!(handler instanceof HandlerMethod)) {
-            return true;
-        }
+        return true;
+//        //获取url对应的方法
+//        if (!(handler instanceof HandlerMethod)) {
+//            return true;
+//        }
 
 //        HandlerMethod handlerMethod = (HandlerMethod) handler;
 //        InterfaceLimited interfaceLimited = handlerMethod.getMethodAnnotation(InterfaceLimited.class);
         //检查是否加@InterfaceLimited注解，如果没加不需要验证
 
-        Result result = new APIResultSupport(true);
-        int clientId=0;
-        try {
-            String client_id=request.getParameter(CommonConstant.CLIENT_ID);
-            //先取client_id，如果没有再获取appid
-            if(Strings.isNullOrEmpty(client_id)){
-                client_id=request.getParameter(CommonConstant.APP_ID);
-            }
-            clientId = Integer.parseInt(Strings.isNullOrEmpty(client_id)?"1120":client_id);
-
-            //获取url
-            String url = request.getRequestURI();
-
-            //获取接口全量限制次数
-            //本地内存中不够了再去缓存中获取
-            if (!obtainInterfaceLimited(clientId, url)) {
-                //初始化或获取限制的次数
-                Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
-                if (MapUtils.isNotEmpty(mapResult)) {
-                    AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
-                    //flag为false 代表缓存中次数已经消耗完，接口频次受限
-                    if (mapResult.get("flag") instanceof Boolean && !(boolean) mapResult.get("flag")) {
-                        result.setSuccess(false);
-                        result.setCode(ErrorUtil.INVOKE_BEYOND_FREQUENCY_LIMIT);
-                        response.setContentType(HttpConstant.ContentType.JSON + ";charset=UTF-8");
-                        response.getWriter().write(result.toString());
-                        return false;
-                    } else {
-                        //在缓存中还有剩余，初始化内存数据
-                        initMemoryTimes(clientId, url, atomicGetTimes);
-                        return true;
-                    }
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error("CostTimeInteceptor error:" + clientId+" "+request.getRequestURI(), e);
-        } finally {
-            if(!result.isSuccess()){
-                String passportId=this.getPassportId(request);
-                String errorCode=result.getCode();
-                UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), Integer.toString(clientId), errorCode, getIp(request));
-                String referer = request.getHeader("referer");
-                userOperationLog.putOtherMessage("ref", referer);
-                UserOperationLogUtil.log(userOperationLog);
-            }
-        }
-        return true;
+//        Result result = new APIResultSupport(true);
+//        int clientId=0;
+//        try {
+//            String client_id=request.getParameter(CommonConstant.CLIENT_ID);
+//            //先取client_id，如果没有再获取appid
+//            if(Strings.isNullOrEmpty(client_id)){
+//                client_id=request.getParameter(CommonConstant.APP_ID);
+//            }
+//            clientId = Integer.parseInt(Strings.isNullOrEmpty(client_id)?"1120":client_id);
+//
+//            //获取url
+//            String url = request.getRequestURI();
+//
+//            //获取接口全量限制次数
+//            //本地内存中不够了再去缓存中获取
+//            if (!obtainInterfaceLimited(clientId, url)) {
+//                //初始化或获取限制的次数
+//                Map<Object, Object> mapResult = interfaceLimitedService.initInterfaceTimes(clientId, url);
+//                if (MapUtils.isNotEmpty(mapResult)) {
+//                    AtomicInteger atomicGetTimes = (AtomicInteger) mapResult.get("getTimes");
+//                    //flag为false 代表缓存中次数已经消耗完，接口频次受限
+//                    if (mapResult.get("flag") instanceof Boolean && !(boolean) mapResult.get("flag")) {
+//                        result.setSuccess(false);
+//                        result.setCode(ErrorUtil.INVOKE_BEYOND_FREQUENCY_LIMIT);
+//                        response.setContentType(HttpConstant.ContentType.JSON + ";charset=UTF-8");
+//                        response.getWriter().write(result.toString());
+//                        return false;
+//                    } else {
+//                        //在缓存中还有剩余，初始化内存数据
+//                        initMemoryTimes(clientId, url, atomicGetTimes);
+//                        return true;
+//                    }
+//                }
+//            }
+//            return true;
+//        } catch (Exception e) {
+//            logger.error("CostTimeInteceptor error:" + clientId+" "+request.getRequestURI(), e);
+//        } finally {
+//            if(!result.isSuccess()){
+//                String passportId=this.getPassportId(request);
+//                String errorCode=result.getCode();
+//                UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), Integer.toString(clientId), errorCode, getIp(request));
+//                String referer = request.getHeader("referer");
+//                userOperationLog.putOtherMessage("ref", referer);
+//                UserOperationLogUtil.log(userOperationLog);
+//            }
+//        }
+//        return true;
     }
 
     //在缓存中还有剩余，初始化内存数据
