@@ -697,12 +697,12 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                 $("#s-province").change(changeCities).trigger('change'); //show the list before set city value.
                 $("#s-city").val(data.city || "");
                 $("#FullnameIpt").val(data.fullname || "");
-                $("#NicknameIpt").val(data.uniqname || ""); //Uniqname or nickname?I cannot tell.
+                $("#NicknameIpt").val(decodeURIComponent(data.uniqname) || ""); //Uniqname or nickname?I cannot tell.
                 $("#PersonalidIpt").val(data.personalid || ""); //Note:if the personalid is not empty,we think it not editable!
                 if(data.personalid){
                     $('#PersonalidIpt').parent('span').attr('class','form-text').empty().append("****************** 已验证");
                 }
-                $(".snick").text(data.uniqname||"");
+                $(".snick").text(decodeURIComponent(data.uniqname)||"");
                 if(+data.gender===1)
                 $(":radio[name='gender']").eq(1).prop('checked', true);
                else
