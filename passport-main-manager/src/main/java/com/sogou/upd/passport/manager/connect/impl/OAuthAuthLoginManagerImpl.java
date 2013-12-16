@@ -305,7 +305,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                             result.getModels().put("sgid", sgid);
                         }
                     }
-                    ru= buildWapSuccessRu(ru, sgid);
+                    ru= buildWapRu(ru, sgid);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
                     result.setSuccess(true);
@@ -345,7 +345,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
-    private String buildWapSuccessRu(String ru, String sgid) {
+    private String buildWapRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
