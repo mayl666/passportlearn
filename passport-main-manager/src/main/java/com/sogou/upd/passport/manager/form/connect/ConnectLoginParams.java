@@ -98,7 +98,11 @@ public class ConnectLoginParams {
 
     public void setDisplay(String display) {
         if(Strings.isNullOrEmpty(display)){
-            this.display="page";
+            if(ConnectTypeEnum.WAP.toString().equals(getType())){
+                this.display="mobile";
+            } else {
+                this.display="page";
+            }
         }else {
             this.display = display;
         }
