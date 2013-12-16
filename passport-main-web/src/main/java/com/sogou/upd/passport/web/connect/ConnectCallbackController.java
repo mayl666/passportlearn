@@ -42,7 +42,7 @@ public class ConnectCallbackController extends BaseConnectController {
     private OAuthAuthLoginManager oAuthAuthLoginManager;
 
     @RequestMapping("/callback/{providerStr}")
-    @ResponseBody
+//    @ResponseBody
     public Object handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
                                                @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
