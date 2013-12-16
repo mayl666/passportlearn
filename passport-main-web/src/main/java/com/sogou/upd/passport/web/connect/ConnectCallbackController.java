@@ -42,8 +42,8 @@ public class ConnectCallbackController extends BaseConnectController {
     private OAuthAuthLoginManager oAuthAuthLoginManager;
 
     @RequestMapping("/callback/{providerStr}")
-    @ResponseBody
-    public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
+//    @ResponseBody
+    public Object handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
                                                @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
@@ -84,7 +84,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("passport", result.getModels().get("passport"));
                 model.addAttribute("result", 0);
                 model.addAttribute("logintype", result.getModels().get("logintype"));
-                return viewUrl;
+                return new ModelAndView(viewUrl);
             } else {
                 // TODO 少了种cookie
                 res.sendRedirect(viewUrl);
