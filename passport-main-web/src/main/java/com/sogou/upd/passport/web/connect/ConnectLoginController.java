@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -30,6 +31,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.UUID;
 
 /**
@@ -87,11 +90,18 @@ public class ConnectLoginController extends BaseConnectController {
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
+
+        if (Strings.isNullOrEmpty(providerStr)){
+            //provide为空跳转到 ru
+            url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, null);
+            res.sendRedirect(url);
+            return "";
+        }
         int provider = AccountTypeEnum.getProvider(providerStr);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                url = buildAppErrorRu(type, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
                 return "";
             }
@@ -102,7 +112,7 @@ public class ConnectLoginController extends BaseConnectController {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
-                url = buildAppErrorRu(type, ru, ErrorUtil.INVALID_CLIENTID, null);
+                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
                 res.sendRedirect(url);
                 return "";
             }
@@ -117,7 +127,7 @@ public class ConnectLoginController extends BaseConnectController {
             res.sendRedirect(url);
             return "";
         } catch (OAuthProblemException e) {
-            url = buildAppErrorRu(type, ru, e.getError(), e.getDescription());
+            url = buildAppErrorRu(type,providerStr, ru, e.getError(), e.getDescription());
             res.sendRedirect(url);
             return "";
         } finally {

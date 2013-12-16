@@ -30,7 +30,7 @@ public class ConnectLoginParams {
     @Ru
     private String ru = "https://account.sogou.com";  // 回调地址
 
-    private String display;  // 样式
+    private String display="page";  // 样式
     private boolean forcelogin = true;   // 是否强制输入用户名、密码登录
     private String type = "web";     // 应用类型
     private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式

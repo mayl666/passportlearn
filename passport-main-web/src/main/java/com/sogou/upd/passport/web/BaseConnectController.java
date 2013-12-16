@@ -13,6 +13,7 @@ import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -65,24 +66,42 @@ public class BaseConnectController extends BaseController {
      * @param errorText 错误文案
      * @return
      */
-    protected String buildAppErrorRu(String type, String ru, String errorCode, String errorText) {
-        if (Strings.isNullOrEmpty(ru)) {
-            if (ConnectTypeEnum.isMobileApp(type)) {
-                ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
-            } else {
-                ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+    protected String buildAppErrorRu(String type, String provider,String ru, String errorCode, String errorText) {
+        try{
+            if (Strings.isNullOrEmpty(ru)) {
+                if (ConnectTypeEnum.isMobileApp(type)) {
+                    ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+                } else {
+                    ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                }
             }
-        }
-        if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {
-            Map params = Maps.newHashMap();
-            params.put(CommonConstant.RESPONSE_STATUS, errorCode);
-            if (Strings.isNullOrEmpty(errorText)) {
-                errorText = ErrorUtil.ERR_CODE_MSG_MAP.get(errorCode);
+            if(Strings.isNullOrEmpty(provider)){
+                //provide为空跳转到 ru
+                URL urlRu = new URL(ru);
+                ru = urlRu.getQuery();
+                if (!Strings.isNullOrEmpty(ru)) {
+                    ru = ru.substring(ru.indexOf('=') + 1, ru.length());
+                } else {
+                    ru = CommonConstant.DEFAULT_WAP_URL;
+                }
+                Map params = Maps.newHashMap();
+                params.put(CommonConstant.RESPONSE_STATUS, errorCode);
+                params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
+                ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
             }
-            params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
-            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-        } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-            ru = "/pcaccount/connectlogin";
+            if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {
+                Map params = Maps.newHashMap();
+                params.put(CommonConstant.RESPONSE_STATUS, errorCode);
+                if (Strings.isNullOrEmpty(errorText)) {
+                    errorText = ErrorUtil.ERR_CODE_MSG_MAP.get(errorCode);
+                }
+                params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
+                ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+            } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+                ru = "/pcaccount/connectlogin";
+            }
+        }catch (Exception e){
+            logger.error("buildAppErrorRu! ru:" + ru);
         }
         return ru;
     }
