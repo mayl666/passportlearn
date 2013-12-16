@@ -43,7 +43,7 @@ public class ConnectCallbackController extends BaseConnectController {
 
     @RequestMapping("/callback/{providerStr}")
 //    @ResponseBody
-    public Object handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
+    public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
                                                @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
@@ -67,8 +67,7 @@ public class ConnectCallbackController extends BaseConnectController {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
-                res.sendRedirect(viewUrl);
-                return "";
+                return viewUrl;
             } else if(type.equals(ConnectTypeEnum.WAP.toString())){
                 String sgid= (String) result.getModels().get("sgid");
                 ServletUtil.setCookie(res, "sgid", sgid, (int)DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
@@ -84,14 +83,16 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("passport", result.getModels().get("passport"));
                 model.addAttribute("result", 0);
                 model.addAttribute("logintype", result.getModels().get("logintype"));
-                return new ModelAndView(viewUrl);
+                return viewUrl;
             } else {
                 // TODO 少了种cookie
                 res.sendRedirect(viewUrl);
                 return "";
             }
         } else {
-            if(ConnectTypeEnum.PC.toString().equals(type)){
+            if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
+                return viewUrl;
+            } else if(ConnectTypeEnum.PC.toString().equals(type)){
                 return viewUrl;
             }else {
                 res.sendRedirect(viewUrl);
