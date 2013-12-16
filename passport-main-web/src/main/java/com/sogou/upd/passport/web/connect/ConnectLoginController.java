@@ -95,12 +95,7 @@ public class ConnectLoginController extends BaseConnectController {
                 res.sendRedirect(url);
                 return "";
             }
-            if (Strings.isNullOrEmpty(providerStr)){
-                //provide为空跳转到 ru
-                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, null);
-                res.sendRedirect(url);
-                return "";
-            }
+
             int provider = AccountTypeEnum.getProvider(providerStr);
             // 浏览器、输入法的第三方登录是搜狐nginx转发过来的，为了避免nginx层解析，所以兼容appid参数
             if (!Strings.isNullOrEmpty(connectLoginParams.getAppid()) && Strings.isNullOrEmpty(connectLoginParams.getClient_id())) {
