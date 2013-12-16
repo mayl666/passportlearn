@@ -43,7 +43,7 @@ public class RepairDataTest extends BaseTest {
             FileOutputStream fos = new FileOutputStream("d:/no_obtain_avatar-avator.txt");
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             BufferedWriter bw = new BufferedWriter(osw);
-            List<String> passportIdList = readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\local-no-avator");
+            List<String> passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\local-no-avator");
             for (String passportId : passportIdList) {
                 AccountBaseInfo accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
                 SohuPassportSidMapping sohuPassportSidMapping = SohuPlusUtil.sendSohuPlusHttp(passportId);
@@ -81,7 +81,7 @@ public class RepairDataTest extends BaseTest {
             FileOutputStream fos = new FileOutputStream("d:/no_update_uniqname-avator.txt");
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             BufferedWriter bw = new BufferedWriter(osw);
-            List<String> passportIdList = readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\local-update-nick");
+            List<String> passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\local-update-nick");
             for (String passportId : passportIdList) {
                 AccountBaseInfo accountBaseInfo = accountBaseInfoService.queryAccountBaseInfo(passportId);
                 SohuPassportSidMapping sohuPassportSidMapping = SohuPlusUtil.sendSohuPlusHttp(passportId);
@@ -111,8 +111,8 @@ public class RepairDataTest extends BaseTest {
             FileOutputStream fos = new FileOutputStream("d:/no_in_sohuplusfix.txt");
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             BufferedWriter bw = new BufferedWriter(osw);
-            List<String> sogou_diffsid_passportIdList = readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\diff_sidsname-passportid");
-            List<String> sohuplus_fixList = readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\sogou4.2fix-修复的2000个记录.txt");
+            List<String> sogou_diffsid_passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\diff_sidsname-passportid");
+            List<String> sohuplus_fixList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\sogou4.2fix-修复的2000个记录.txt");
             List<String> sohuplus_fix_passportIdList = Lists.newArrayList();
 //            for (String sohuplus : sohuplus_fixList) {
 //                String[] strArray = sohuplus.split("||");
@@ -138,7 +138,7 @@ public class RepairDataTest extends BaseTest {
             FileOutputStream fos = new FileOutputStream("d:/no_update_diffSidSname.txt");
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             BufferedWriter bw = new BufferedWriter(osw);
-            List<String> sogou_diffsid_passportIdList = readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\diff_sidSname-passportid");
+            List<String> sogou_diffsid_passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\diff_sidSname-passportid");
             for (String sogou_diffsid_passportId : sogou_diffsid_passportIdList) {
                 SohuPassportSidMapping sohuPassportSidMapping = SohuPlusUtil.sendSohuPlusHttp(sogou_diffsid_passportId);
                 String sid = sohuPassportSidMapping.getSid();
@@ -166,33 +166,6 @@ public class RepairDataTest extends BaseTest {
         }
     }
 
-    /**
-     * 以行为单位读取文件，常用于读面向行的格式化文件
-     */
-    public static List<String> readFileByLines(String fileName) {
-        List<String> LinesList = Lists.newArrayList();
-        BufferedReader reader = null;
-        try {
-            File file = new File(fileName);
-            reader = new BufferedReader(new FileReader(file));
-            String tempString = null;
-            int line = 1;
-            // 一次读入一行，直到读入null为文件结束
-            while ((tempString = reader.readLine()) != null) {
-                LinesList.add(tempString);
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e1) {
-                }
-            }
-        }
-        return LinesList;
-    }
+
 
 }

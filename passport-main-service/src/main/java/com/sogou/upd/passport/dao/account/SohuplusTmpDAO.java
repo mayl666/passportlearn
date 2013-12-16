@@ -49,4 +49,11 @@ public interface SohuplusTmpDAO {
             " where passport_id=:passport_id")
     public SohuplusTmp getSohuplusTmpByPassportId(@SQLParam("passport_id") String passport_id) throws DataAccessException;
 
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(sid,sname,passport_id,uniqname,avatar) " +
+            "values (:sid,:sohuplusTmp.sname,:sohuplusTmp.passportId,:sohuplusTmp.uniqname,:sohuplusTmp.avatar) "
+            + "ON DUPLICATE KEY UPDATE sid=:sid")
+    public int insetOrUpdateSohuplusTmpBySId(@SQLParam("sid") long sid, @SQLParam("sohuplusTmp")SohuplusTmp sohuplusTmp) throws DataAccessException;
+
 }
