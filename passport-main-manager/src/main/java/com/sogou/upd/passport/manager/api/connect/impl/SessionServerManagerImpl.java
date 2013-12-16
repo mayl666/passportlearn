@@ -33,7 +33,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
     public Result createSession(AppConfig appConfig, String passportId) {
         Result result = new APIResultSupport(false);
 
-        String sgid=null;
+        String sgid = null;
         try {
             //创建sgid
             sgid = SessionServerUtil.createSessionSid(passportId);
@@ -51,8 +51,8 @@ public class SessionServerManagerImpl implements SessionServerManager {
             params.put("ct", String.valueOf(ct));
             params.put("sgid", sgid);
 
-            Map<String,String> map=Maps.newHashMap();
-            map.put("passport_id",passportId);
+            Map<String, String> map = Maps.newHashMap();
+            map.put("passport_id", passportId);
             params.put("user_info", jsonMapper.writeValueAsString(map));
 
             String resultRequest = HttpClientUtil.postRequest(SessionServerUrlConstant.CREATE_SESSION, params);
@@ -62,14 +62,14 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 if (result != null) {
                     if ("0".equals(sessionResult.getStatus())) {
                         result.setSuccess(true);
-                        result.getModels().put("sgid",sgid);
+                        result.getModels().put("sgid", sgid);
                         return result;
                     }
                 }
             }
         } catch (Exception e) {
-            if(logger.isDebugEnabled()){
-                logger.debug("createSessionSid "+"passportId:"+passportId+",sid:"+sgid);
+            if (logger.isDebugEnabled()) {
+                logger.debug("createSessionSid " + "passportId:" + passportId + ",sid:" + sgid);
             }
         }
         return result;
