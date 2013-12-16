@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
@@ -16,11 +17,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -39,8 +42,8 @@ public class ConnectCallbackController extends BaseConnectController {
     private OAuthAuthLoginManager oAuthAuthLoginManager;
 
     @RequestMapping("/callback/{providerStr}")
-    public ModelAndView handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
-                                               @PathVariable("providerStr") String providerStr, Model model) {
+    public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
+                                               @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
         try {
@@ -57,13 +60,20 @@ public class ConnectCallbackController extends BaseConnectController {
             String passportId = (String) result.getModels().get("userid");
             //用户第三方登录log
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             UserOperationLogUtil.log(userOperationLog);
 
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
-                return new ModelAndView(viewUrl);
-            } else if (ConnectTypeEnum.PC.toString().equals(type)){
+                return viewUrl;
+            } else if(type.equals(ConnectTypeEnum.WAP.toString())){
+                String sgid= (String) result.getModels().get("sgid");
+                ServletUtil.setCookie(res, "sgid", sgid, (int)DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+
+                res.sendRedirect(viewUrl);
+                return "";
+            }else if (ConnectTypeEnum.PC.toString().equals(type)){
                 model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
                 model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
                 model.addAttribute("nick", result.getModels().get("nick"));
@@ -72,18 +82,20 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("passport", result.getModels().get("passport"));
                 model.addAttribute("result", 0);
                 model.addAttribute("logintype", result.getModels().get("logintype"));
-                return new ModelAndView(viewUrl);
+                return viewUrl;
             } else {
                 // TODO 少了种cookie
-                return new ModelAndView(new RedirectView(viewUrl));
+                res.sendRedirect(viewUrl);
+                return "";
             }
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
-                return new ModelAndView(viewUrl);
+                return viewUrl;
             } else if(ConnectTypeEnum.PC.toString().equals(type)){
-                return new ModelAndView(viewUrl);
+                return viewUrl;
             }else {
-                return new ModelAndView(new RedirectView(viewUrl));
+                res.sendRedirect(viewUrl);
+                return "";
             }
         }
 

@@ -2,16 +2,17 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.api.account.form.ReNewCookieApiParams;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -47,6 +48,7 @@ public class LoginApiController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
 
+
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     /**
@@ -81,7 +83,7 @@ public class LoginApiController extends BaseController {
             ru = LOGIN_INDEX_URL;
         }
 
-        String userid=params.getUserid();
+        String userid = params.getUserid();
 
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(userid);
@@ -95,13 +97,13 @@ public class LoginApiController extends BaseController {
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
 
             result.setSuccess(true);
-            Map<String,String> map= Maps.newHashMap();
-            map.put("userid",userid);
-            map.put("ppinf",ppinf);
-            map.put("pprdig",pprdig);
+            Map<String, String> map = Maps.newHashMap();
+            map.put("userid", userid);
+            map.put("ppinf", ppinf);
+            map.put("pprdig", pprdig);
 
             result.setModels(map);
-        }else {
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result.toString();
@@ -180,14 +182,36 @@ public class LoginApiController extends BaseController {
         }
         // 调用内部接口
         result = proxyLoginApiManager.appAuthToken(params);
-/*
         String userId = (String) result.getModels().get("userid");
 
         //记录log
         UserOperationLog userOperationLog=new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
         userOperationLog.putOtherMessage("token",params.getToken());
         UserOperationLogUtil.log(userOperationLog);
-*/
+       /* result = wapLoginManager.authtoken(params.getToken());
+
+        String userid = "";
+        if (result.isSuccess()){
+            userid = (String) result.getModels().get("userid");
+            if(AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userid)
+                    && params.getUsethirdinfo() == WapConstant.USE_THIRD_INFO){
+                //获取第三方用户信息
+                UserOpenApiParams userOpenApiParams = new UserOpenApiParams();
+                userOpenApiParams.setOpenid(userid);
+                userOpenApiParams.setUserid(userid);
+                //必须得传client_id
+                userOpenApiParams.setClient_id(params.getClient_id());
+                result = proxyUserOpenApiManager.getUserInfo(userOpenApiParams);
+            }else {
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userid);
+                //必须得传client_id
+                getUserInfoApiparams.setClient_id(params.getClient_id());
+                result = proxyUserInfoApiManagerImpl.getUserInfo(getUserInfoApiparams);
+                //转换结果格式
+                result = changeResult(result);
+            }
+        }*/
 
         return result.toString();
     }

@@ -7,6 +7,9 @@ public class QQOAuth {
     public static final String USER_INFO = "userinfo"; // 用户信息
     public static final String OPENID = "openid"; // QQ用户id
     public static final String FORMAT = "format"; // 定义API返回的数据格式
+    public static final String MOBILE_DISPLAY = "mobile"; // 对应display=mobile
+    public static final String WML_DISPLAY = "wml"; // 对应的g_ut=1
+    public static final String XHTML_DISPLAY = "xhtml"; // 对应的g_ut=2
 
     /* 用户类API请求 */
     /* 用户类API响应 */

@@ -27,7 +27,7 @@ public class ConnectLoginParams {
     private String client_id; // 应用id
     @Min(0)
     private String appid; // 浏览器和输入法会传1044，这个没让搜狐转发时把参数名改了，搜狗做兼容
-
+    @Ru
     private String ru = "https://account.sogou.com";  // 回调地址
 
     private String display;  // 样式
@@ -97,7 +97,11 @@ public class ConnectLoginParams {
     }
 
     public void setDisplay(String display) {
-        this.display = display;
+        if(Strings.isNullOrEmpty(display)){
+            this.display="page";
+        }else {
+            this.display = display;
+        }
     }
 
     public boolean isForcelogin() {

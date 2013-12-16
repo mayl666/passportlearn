@@ -99,6 +99,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             request = RenrenUserAPIRequest.apiLocation(url, RenrenUserAPIRequest.RenrenUserAPIBuilder.class)
                     .setUserId(openid).setAccessToken(accessToken).buildQueryMessage(RenrenUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, RenrenUserAPIResponse.class);
+        } else {
+            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();

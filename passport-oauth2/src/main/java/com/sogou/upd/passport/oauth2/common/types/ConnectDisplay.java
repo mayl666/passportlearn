@@ -2,6 +2,8 @@ package com.sogou.upd.passport.oauth2.common.types;
 
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 
@@ -19,7 +21,9 @@ public class ConnectDisplay {
     private static final List<String> BAIDU_DISPLAY = Lists.newArrayList();
 
     static {
-        QQ_DISPLAY.add("mobile");
+        QQ_DISPLAY.add(QQOAuth.MOBILE_DISPLAY); //mobile端下的样式,触屏版，适用于支持html5的手机
+        QQ_DISPLAY.add(QQOAuth.WML_DISPLAY);  //1：wml版本
+        QQ_DISPLAY.add(QQOAuth.XHTML_DISPLAY);  //2：xhtml版本
     }
 
     static {
