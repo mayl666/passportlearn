@@ -95,8 +95,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private WapTokenService wapTokenService;
-    @Autowired
     private AppConfigService appConfigService;
     @Autowired
     private SessionServerManager sessionServerManager;
@@ -372,7 +370,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {
+        if (!Strings.isNullOrEmpty(errorCode) && (ConnectTypeEnum.isMobileApp(type) || ConnectTypeEnum.isMobileWap(type))) {
             Map params = Maps.newHashMap();
             params.put(CommonConstant.RESPONSE_STATUS, errorCode);
             if (Strings.isNullOrEmpty(errorText)) {
