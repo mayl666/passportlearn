@@ -67,11 +67,7 @@ public class LoginManagerImpl implements LoginManager {
                     return result;
                 }
             }
-            //校验username是否在账户黑名单中
-            if(isLoginUserInBlackList(username,ip)){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result;
-            }
+
             result = authUser(username,ip,pwdMD5);
             //记录返回结果
             if (result.isSuccess()) {
