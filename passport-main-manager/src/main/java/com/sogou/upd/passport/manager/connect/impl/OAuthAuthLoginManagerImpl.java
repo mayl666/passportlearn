@@ -301,9 +301,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                          if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
                             result.getModels().put("sgid", sgid);
-                        }
+                            ru= buildWapSuccessRu(ru, sgid);
+                         }
+                    }else {
+                        result=buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:"+userId);
                     }
-                    ru= buildWapRu(ru, sgid);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
                     result.setSuccess(true);
@@ -343,22 +345,17 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
-    private String buildWapRu(String ru, String sgid) {
+    private String buildWapSuccessRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            //ru后缀一个sgid
-            if (Strings.isNullOrEmpty(ru)) {
-                ru = CommonConstant.DEFAULT_WAP_URL;
-            }
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
-        if (!Strings.isNullOrEmpty(sgid)) {
-            params.put("sgid", sgid);
-            ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-        }
+        //ru后缀一个sgid
+        params.put("sgid", sgid);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
 
