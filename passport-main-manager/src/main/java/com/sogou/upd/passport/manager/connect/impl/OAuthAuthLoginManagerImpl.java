@@ -350,11 +350,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             //ru后缀一个sgid
-            URL url = new URL(ru);
-            ru = url.getQuery();
-            if (!Strings.isNullOrEmpty(ru)) {
-                ru = ru.substring(ru.indexOf('=') + 1, ru.length());
-            } else {
+            if (Strings.isNullOrEmpty(ru)) {
                 ru = CommonConstant.DEFAULT_WAP_URL;
             }
         } catch (Exception e) {
