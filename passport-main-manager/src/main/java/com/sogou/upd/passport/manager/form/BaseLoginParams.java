@@ -18,7 +18,6 @@ public class BaseLoginParams {
     @NotBlank(message = "请输入用户名！")
     private String username;
 
-
     /**
      * 登陆密码
      */
@@ -26,13 +25,11 @@ public class BaseLoginParams {
     @NotBlank(message = "请输入密码！")
     private String password;
 
-
     /**
      * 验证码 用户连续3次登陆失败需要输入验证码
      */
     private String captcha;//验证码
     private String token;//标识码
-
 
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
