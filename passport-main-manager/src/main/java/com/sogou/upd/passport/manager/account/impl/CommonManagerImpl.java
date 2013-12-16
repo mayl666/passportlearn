@@ -113,11 +113,12 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createCookieUrl(String passportId, int autoLogin){
+    public Result createCookieUrl(String passportId, String domain,String ru,int autoLogin){
         Result result = new APIResultSupport(false);
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
-        createCookieUrlApiParams.setRu(COOKIE_URL_RU);
+        createCookieUrlApiParams.setRu(ru);
+        createCookieUrlApiParams.setDomain(domain);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
         Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true, true);
         if (createCookieResult.isSuccess()) {
@@ -133,5 +134,10 @@ public class CommonManagerImpl implements CommonManager {
     @Override
     public void incRegTimesForInternal(String ip) {
         operateTimesService.incRegTimesForInternal(ip);
+    }
+
+    @Override
+    public void incRegTimes(String ip, String cookieStr) {
+        operateTimesService.incRegTimes(ip, cookieStr);
     }
 }

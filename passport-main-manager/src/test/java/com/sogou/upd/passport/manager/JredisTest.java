@@ -1,10 +1,8 @@
 package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.utils.RedisUtils;
-
 import com.sogou.upd.passport.model.problem.ProblemType;
 import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,7 +32,8 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void test() {
         try {
-            redisUtils.set("aaaaa", "bbbb");
+//            redisUtils.set("aaaaa", "bbbb");
+            redisUtils.hPut("dsdsds","aaa","bbba");
 //        redisUtils.expire("aaaaa",10);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

@@ -34,7 +34,7 @@ public class AccoutDebugController {
      */
     @RequestMapping(value = "/internal/debug/deleteAccount", method = RequestMethod.GET)
     @ResponseBody
-    public Result deleteAccount(@RequestParam(defaultValue = "") String mobile) throws Exception {
+    public String deleteAccount(@RequestParam(defaultValue = "") String mobile) throws Exception {
         Result result = new APIResultSupport(false);
         if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
             String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
@@ -45,19 +45,19 @@ public class AccoutDebugController {
                 if (isDeleteAccount && isDeleteAccountToken && isDeleteMobilePassportMapping) {
                     result.setSuccess(true);
                     result.setMessage("删除成功！");
-                    return result;
+                    return result.toString();
                 } else {
                     result.setCode("10000");
                     result.setMessage("删除失败！");
-                    return result;
+                    return result.toString();
                 }
             } else {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                return result;
+                return result.toString();
             }
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
-            return result;
+            return result.toString();
         }
     }
 }

@@ -2,22 +2,19 @@ package com.sogou.upd.passport.service.app.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ConcurrentMap;
-
 import javax.inject.Inject;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,17 +34,6 @@ public class AppConfigServiceImpl implements AppConfigService {
     private AppConfigDAO appConfigDAO;
     @Inject
     private RedisUtils redisUtils;
-
-    @Override
-    public boolean verifyClientVaild(int clientId, String clientSecret) throws ServiceException {
-        AppConfig appConfig = queryAppConfigByClientId(clientId);
-        if (appConfig == null) {
-            return false;
-        } else if (!clientSecret.equals(appConfig.getClientSecret())) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException {
@@ -112,6 +98,22 @@ public class AppConfigServiceImpl implements AppConfigService {
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
         }
         return flag;
+    }
+
+    @Override
+    public AppConfig verifyClientVaild(int clientId, String clientSecret) {
+        try {
+            AppConfig appConfig = queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return null;
+            } else if (!clientSecret.equals(appConfig.getClientSecret())) {
+                return null;
+            }
+            return appConfig;
+        } catch (ServiceException e) {
+            logger.error("[app] Verify ClientVaild Fail:", e);
+            return null;
+        }
     }
 
 }

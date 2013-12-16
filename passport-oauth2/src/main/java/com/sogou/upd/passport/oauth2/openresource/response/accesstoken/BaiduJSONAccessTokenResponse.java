@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.BaiduOAuthTokenVO;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.Map;
 

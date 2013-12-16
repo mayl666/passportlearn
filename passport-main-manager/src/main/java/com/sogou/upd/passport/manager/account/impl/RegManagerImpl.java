@@ -2,12 +2,8 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.parameter.*;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -17,7 +13,6 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
@@ -28,12 +23,8 @@ import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.OperateTimesService;
-
+import com.sogou.upd.passport.oauth2.common.OAuth;
+import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +60,8 @@ public class RegManagerImpl implements RegManager {
     private CommonManager commonManager;
     @Autowired
     private OperateTimesService operateTimesService;
+    @Autowired
+    private SnamePassportMappingService snamePassportMappingService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -110,7 +103,7 @@ public class RegManagerImpl implements RegManager {
                     String token = regParams.getToken();
                     //判断验证码
                     if (!accountService.checkCaptchaCode(token, captcha)) {
-                        logger.info("[webRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
+                        logger.debug("[webRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         return result;
                     }
@@ -145,7 +138,7 @@ public class RegManagerImpl implements RegManager {
             return result;
         }
         if (result.isSuccess()) {
-            result.getModels().put("username",username);            //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
+            result.getModels().put("username", username);            //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
             Object obj = result.getModels().get("isSetCookie");
             if (obj != null && (obj instanceof Boolean) && (boolean) obj) {
                 // 种sohu域cookie
@@ -211,9 +204,9 @@ public class RegManagerImpl implements RegManager {
                 long accessValidTime = accountToken.getAccessValidTime();
                 String refreshToken = accountToken.getRefreshToken();
                 Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put("access_token", accessToken);
-                mapResult.put("expires_time", accessValidTime);
-                mapResult.put("refresh_token", refreshToken);
+                mapResult.put(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
+                mapResult.put(OAuth.OAUTH_EXPIRES_TIME, accessValidTime);
+                mapResult.put(OAuth.OAUTH_REFRESH_TOKEN, refreshToken);
 
                 result.setSuccess(true);
                 result.setMessage("注册成功！");
@@ -245,6 +238,8 @@ public class RegManagerImpl implements RegManager {
                 Account account = accountService.initialWebAccount(username, ip);
                 if (account != null) {
                     //更新缓存
+                    result.setDefaultModel(account);
+                    result.setDefaultModel("userid", account.getPassportId());
                     result.setSuccess(true);
                     result.setMessage("激活成功！");
                     return result;
@@ -283,46 +278,50 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result isAccountNotExists(String username, boolean type) throws Exception {
-        Result result = null;
+    public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception {
+        Result result;
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+            BaseMoblieApiParams params = new BaseMoblieApiParams();
+            params.setMobile(username);
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 if (type) {
                     //手机号 判断绑定账户
-                    BaseMoblieApiParams params = new BaseMoblieApiParams();
-                    params.setMobile(username);
                     result = proxyBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result = new APIResultSupport(false);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                         return result;
+                    } else if (CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
                     } else {
-                        result = new APIResultSupport(false);
                         result.setSuccess(true);
-                        result.setMessage("账户未被占用，可以注册");
+                        result.setMessage("账户未被占用");
                     }
                 } else {
                     result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
+                    }
                 }
             } else {
                 if (type) {
-                    //手机号 判断绑定账户
-                    BaseMoblieApiParams params = new BaseMoblieApiParams();
-                    params.setMobile(username);
-
                     result = sgBindApiManager.getPassportIdByMobile(params);
                     if (result.isSuccess()) {
                         result = new APIResultSupport(false);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                         return result;
+                    } else if (CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
                     } else {
-                        result = new APIResultSupport(false);
                         result.setSuccess(true);
-                        result.setMessage("账户未被占用，可以注册");
+                        result.setMessage("账户未被占用");
                     }
                 } else {
                     result = sgRegisterApiManager.checkUser(checkUserApiParams);
+                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                        result = isSohuplusUser(username, clientId);
+                    }
                 }
             }
         } catch (ServiceException e) {
@@ -331,6 +330,7 @@ public class RegManagerImpl implements RegManager {
         }
         return result;
     }
+
 
     @Override
     public Result checkRegInBlackListByIpForInternal(String ip) throws Exception {
@@ -375,6 +375,27 @@ public class RegManagerImpl implements RegManager {
             logger.error("register incRegTimes Exception", e);
             throw new Exception(e);
         }
+    }
+
+    /*
+     * client=1044的username为个性域名或手机号
+     * 都有可能是sohuplus的账号，需要判断sohuplus映射表
+     * 如果username包含@，则取@前面的
+     */
+    private Result isSohuplusUser(String username, int clientId) {
+        Result result = new APIResultSupport(false);
+        if (username.contains("@")) {
+            username = username.substring(0, username.indexOf("@"));
+        }
+        String sohuplus_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(username);
+        if (!Strings.isNullOrEmpty(sohuplus_passportId)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            return result;
+        } else {
+            result.setSuccess(true);
+            result.setMessage("账户未被占用");
+        }
+        return result;
     }
 
     private CheckUserApiParams buildProxyApiParams(String username) {

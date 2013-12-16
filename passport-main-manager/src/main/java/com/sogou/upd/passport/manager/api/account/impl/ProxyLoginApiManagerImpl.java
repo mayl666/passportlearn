@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -18,10 +19,8 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,9 @@ import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,38 +67,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_AUTH_TOKEN, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(appAuthTokenApiParams);
         return executeResult(requestModelXml, appAuthTokenApiParams.getToken());
-    }
-
-    @Override
-    public Result createCookie(CreateCookieApiParams createCookieApiParams) {
-        Result result = new APIResultSupport(false);
-
-        RequestModel requestModel = new RequestModel(SHPPUrlConstant.GET_COOKIE_VALUE);
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        requestModel.addParams(createCookieApiParams);
-        if (createCookieApiParams.isAutologin()) {
-            requestModel.addParam("persistentcookie", 1);
-        } else {
-            requestModel.addParam("persistentcookie", 0);
-        }
-        //由于SGPP对一些参数的命名和SHPP不一致，在这里做相应的调整
-        this.paramNameAdapter(requestModel);
-        long ct = System.currentTimeMillis();
-        String code = createCookieApiParams.getUserid() + SHPPUrlConstant.COOKIE_KEY + ct;
-        try {
-            code = Coder.encryptMD5(code);
-            requestModel.addParam(CommonConstant.RESQUEST_CT, ct);
-            requestModel.addParam(CommonConstant.RESQUEST_CODE, code);
-            String value = SGHttpClient.executeStr(requestModel);
-            if (StringUtil.isBlank(value) || value.trim().length() < 20) {
-                throw new RuntimeException("获取cookie值失败 userid=" + createCookieApiParams.getUserid() + " value=" + value);
-            }
-            result.setDefaultModel("ppinf", value);
-            result.setSuccess(true);
-        } catch (Exception e) {
-            log.error("获取cookie值失败 userid=" + createCookieApiParams.getUserid(), e);
-        }
-        return result;
     }
 
     @Override
@@ -138,6 +108,35 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         } catch (Exception e) {
             log.error("buildCreateCookieUrl error userid:" + createCookieUrlApiParams.getUserid() + " ru=" + createCookieUrlApiParams.getRu(), e);
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+        }
+        return result;
+    }
+
+    @Override
+    public Result getSHCookieValue(CookieApiParams cookieApiParams){
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(cookieApiParams);
+        requestModelXml.getParams().put("result_type","json");       //sohu 传 xml参数，返回json
+        Result result = executeResult(requestModelXml);
+        if (result.isSuccess()) {
+            Object obj= result.getModels().get("data");
+            if(obj!=null && obj instanceof List) {
+                List<Map<String, String>> listMap = (List<Map<String, String>>) obj;
+                if(CollectionUtils.isNotEmpty(listMap)){
+                    for (Map<String,String>map:listMap){
+                         String key=(String)map.get("name");
+                         String value=(String)map.get("value");
+                         if("ppinf".equals(key)){
+                             result.getModels().put("ppinf",value);
+                         }
+                         if("pprdig".equals(key)){
+                             result.getModels().put("pprdig",value);
+                         }
+                    }
+                }
+            }
+            result.setMessage("获取cookie成功");
+            result.setDefaultModel("userid", cookieApiParams.getUserid());
         }
         return result;
     }

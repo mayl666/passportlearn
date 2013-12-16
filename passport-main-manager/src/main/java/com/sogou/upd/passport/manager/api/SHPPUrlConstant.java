@@ -15,6 +15,9 @@ public class SHPPUrlConstant {
     public static final int DEFAULT_CONNECT_APP_ID = 1110;
     public static final String DEFAULT_CONNECT_APP_KEY = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
 
+    public static final int IE_CONNECT_APP_ID = 1044;
+    public static final String  IE_CONNECT_APP_KEY = "=#dW$h%q)6xZB#m#lu'x]]wP=\\FUO7";
+
     public static final String APPID_STRING = "appid";
 
     public static final String COOKIE_KEY = "a80d&p4^9t";
@@ -37,8 +40,6 @@ public class SHPPUrlConstant {
     /*================================登录相关=======================================*/
     public static final String AUTH_USER = BASE_INTERNAL_URL + "authuser"; //检查用户名密码是否正确
     public static final String MOBILE_AUTH_TOKEN = BASE_INTERNAL_URL + "token/auth"; //检查用户名密码是否正确
-    //    public static final String GET_COOKIE_KEY="http://internal.passport.sohu.com/act/getcookiekey";//获取cookie值
-    public static final String GET_COOKIE_VALUE = "http://internal.passport.sohu.com/act/getcookievalue";//获取cookie值
     // 手机浏览器/authtoken接口返回结果后会302到setcookie接口，这个必须为http，所以此处也为http，得到location的也为http
     public static final String HTTPS_SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
     public static final String HTTP_SET_COOKIE = "http://passport.sohu.com/act/setcookie";//用于前端设置cookie
@@ -53,6 +54,9 @@ public class SHPPUrlConstant {
     public static final String REG_MOBILE_CAPTCHA = BASE_INTERNAL_URL + "register/mobilecaptcha";  //手机号验证码注册
     public static final String WEB_EMAIL_REG = BASE_INTERNAL_URL + "reguser";  //web端邮箱注册
     public static final String REG_MOBILE_NOCAPTCHA = BASE_INTERNAL_URL + "regmobiled";
+
+    //todo 这个地方的接口名sohu接口开发完会提供，暂时命名
+    public static final String GET_COOKIE_VALUE_FROM_SOHU =  BASE_INTERNAL_URL + "getcookieinfo";
 
 
     /*================================手机绑定相关=======================================*/
@@ -115,5 +119,8 @@ public class SHPPUrlConstant {
     public static final String CONNECT_SHARE_PIC = BASE_OPEN_API_URL + "api/share/add_pic";
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
+    //获取第三方用户的openid和accessToken   todo 12月1号sohu接口提供后换成真正的调用url
+    public static final String GET_CONNECT_QQ_LIGHT_USER_INFO = BASE_OPEN_API_URL + "api/token/get";
+    public static final String GET_CONNECT_QQ_LIGHT_USER_INFO_TEST = "http://10.11.49.38:8007/openlogin/api/token/get";
 
 }

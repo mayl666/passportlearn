@@ -24,7 +24,6 @@ package com.sogou.upd.passport.oauth2.common.validators;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,8 +43,9 @@ public abstract class AbstractValidator<T extends HttpServletRequest> implements
 
     @Override
     public void validateMethod(T request) throws OAuthProblemException {
-        if (!request.getMethod().equals(HttpConstant.HttpMethod.POST)) {
-            throw OAuthUtils.handleOAuthProblemException("Method not set to POST.");
+        String method = request.getMethod();
+        if (!method.equals(HttpConstant.HttpMethod.POST) && !method.equals(HttpConstant.HttpMethod.GET)) {
+            throw OAuthUtils.handleOAuthProblemException("Method not set to POST or GET.");
         }
     }
 

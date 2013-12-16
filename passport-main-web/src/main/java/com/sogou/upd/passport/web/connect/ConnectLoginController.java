@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -10,13 +9,12 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
-import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
-import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -31,8 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.UUID;
 
 /**
@@ -118,7 +114,7 @@ public class ConnectLoginController extends BaseConnectController {
             }
             // 防CRSF攻击
             String uuid = UUID.randomUUID().toString();
-            if (CommonHelper.isIePinyinToken(clientId) || /*ConnectTypeEnum.isMobileApp(type)||*/ConnectTypeEnum.isMobileWap(type)) {  // 目前浏览器PC端和mapp走搜狗流程
+            if (CommonHelper.isIePinyinToken(clientId) || type.equals(ConnectTypeEnum.PC.toString()) || /*ConnectTypeEnum.isMobileApp(type)||*/ConnectTypeEnum.isMobileWap(type)) {  // 目前浏览器PC端和mapp走搜狗流程
                 url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
                 writeOAuthStateCookie(res, uuid, providerStr);
             } else {

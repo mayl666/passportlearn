@@ -63,25 +63,26 @@
             </div>
             <div  class="form">
                 <form method="post" id="" action="/web/reguser">
-                    <div class="form-item">
-                        <label for="UsernameIpt">通行证：</label>
+                    
+                   <div class="form-item">
+                       <label for="UsernameIpt">通行证：</label>
                        <span class="form-el form-el-s">
                            <input autocomplete="off" uui-type="require nick" type="text" name="username" id="UsernameIpt" value="" data-desc="" class="nick-holder"/>
                        </span>
-                        <span class="suffix">@sogou.com</span>
-                        <span class="desc" style="display: none;">小写字母开头的数字、字母、下划线或组合</span>
-                        <span class="error" style="display: block;">请填写通行证</span>
-                    </div>
+                       <span class="suffix">@sogou.com</span>
+                       <span class="desc" style="display: none;">小写字母开头的数字、字母、下划线或组合</span>
+                       <span class="error" style="display: block;">请填写通行证</span>
+                   </div>
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value="" class="" placeholder=""/>
     </span>
 </div>
                     <div class="form-item">
     <label for="Password2Ipt">确认密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" value=""/>
+        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" value="" class="" placeholder=""/>
     </span>
 </div>
                     <div class="form-item form-item-vcode">
@@ -117,8 +118,9 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2013082332"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2013120650"></script>
     
+    <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
 
 var spb_vars = {
@@ -133,11 +135,14 @@ var spb_vars = {
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
 })();
 
-
-var server_data = '${data}';
+//Prevent syntax error leads to undefined.
+var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
         
 require.config({
-    baseUrl:"/./static/js"
+    baseUrl:"/./static/js",
+    shim:{
+        'uuiForm':{deps:['uuibase']}//not AMD style...
+    }
 });
 
 

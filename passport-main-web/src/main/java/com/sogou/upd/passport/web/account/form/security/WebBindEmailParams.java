@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.form.security;
 
 import com.sogou.upd.passport.common.CommonConstant;
-
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;

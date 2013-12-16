@@ -7,6 +7,7 @@ package com.sogou.upd.passport.common;
 public class DateAndNumTimesConstant {
 
     public static final long TIME_ONEDAY = 24 * 60 * 60; // 时间 一天 1440分钟 ,单位s
+    public static final long TIME_FIVE_MINITUES = 5 * 60; // 时间 一天 1440分钟 ,单位s
     public static final long TWO_WEEKS =14 * 24 * 60 * 60; // 时间 一天 1440分钟 ,单位s
     public static final long SIX_MONTH =6 * 30 * 24 * 60 * 60; // 时间 6个月 ,单位s
     public static final long TIME_TWODAY = 2 * 24 * 60 * 60; // 时间 两天 2880分钟 ,单位s

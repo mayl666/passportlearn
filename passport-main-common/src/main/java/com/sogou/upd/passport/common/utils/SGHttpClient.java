@@ -199,6 +199,7 @@ public class SGHttpClient {
      * @return
      */
     private static HttpRequestBase getHttpRequest(RequestModel requestModel) {
+
         HttpRequestBase httpRequest = null;
         HttpMethodEnum method = requestModel.getHttpMethodEnum();
         switch (method) {

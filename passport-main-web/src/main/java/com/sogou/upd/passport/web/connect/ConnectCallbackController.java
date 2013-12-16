@@ -64,25 +64,36 @@ public class ConnectCallbackController extends BaseConnectController {
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             UserOperationLogUtil.log(userOperationLog);
 
-            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));
+            if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
+                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
-                return viewUrl;
+                res.sendRedirect(viewUrl);
+                return "";
             } else if(type.equals(ConnectTypeEnum.WAP.toString())){
                 String sgid= (String) result.getModels().get("sgid");
                 ServletUtil.setCookie(res, "sgid", sgid, (int)DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 res.sendRedirect(viewUrl);
                 return "";
-            }else {
+            }else if (ConnectTypeEnum.PC.toString().equals(type)){
+                model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
+                model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
+                model.addAttribute("nick", result.getModels().get("nick"));
+//                model.addAttribute("sname", result.getModels().get("sname"));
+                model.addAttribute("sid", result.getModels().get("sid"));
+                model.addAttribute("passport", result.getModels().get("passport"));
+                model.addAttribute("result", 0);
+                model.addAttribute("logintype", result.getModels().get("logintype"));
+                return viewUrl;
+            } else {
                 // TODO 少了种cookie
                 res.sendRedirect(viewUrl);
                 return "";
             }
         } else {
-            if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            if(ConnectTypeEnum.PC.toString().equals(type)){
                 return viewUrl;
-            } else {
+            }else {
                 res.sendRedirect(viewUrl);
                 return "";
             }

@@ -1,19 +1,10 @@
 package com.sogou.upd.passport.dao.problem;
 
-import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.dao.BaseDAOTest;
-import com.sogou.upd.passport.model.problem.Problem;
-import com.sogou.upd.passport.model.problem.ProblemType;
-
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-17 Time: 下午4:32 To change this template

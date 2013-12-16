@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.oauth2.openresource.response.user;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.impl.RenrenAPIValidator;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import org.apache.commons.collections.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,9 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
         String url = "";
         if (imageList.size() > 0) {
             Map image = (Map) imageList.get(imageList.size() - 1);
-            url = (String) image.get(RenrenOAuth.IMAGE_URL);
+            if (MapUtils.isNotEmpty(image)) {
+                url = (String) image.get(RenrenOAuth.IMAGE_URL);
+            }
         }
         return url;
     }
@@ -62,7 +66,7 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
         Map basicInfo = (Map) this.parameters.get(RenrenOAuth.BASIC_INFORMATION);
         String sex = (String) basicInfo.get(RenrenOAuth.SEX);
         int gender = 0;
-        if (sex.equals("MALE")) {
+        if (!Strings.isNullOrEmpty(sex) && sex.equals("MALE")) {
             gender = 1;
         }
         return gender;
@@ -71,13 +75,21 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
     private String getProvince() {
         Map basicInfo = (Map) this.parameters.get(RenrenOAuth.BASIC_INFORMATION);
         Map homeTown = (Map) basicInfo.get(RenrenOAuth.HOME_TOWN);
-        return (String) homeTown.get(RenrenOAuth.PROVINCE);
+        String province = "";
+        if (MapUtils.isNotEmpty(homeTown)) {
+            province = (String) homeTown.get(RenrenOAuth.PROVINCE);
+        }
+        return province;
     }
 
     private String getCity() {
         Map basicInfo = (Map) this.parameters.get(RenrenOAuth.BASIC_INFORMATION);
         Map homeTown = (Map) basicInfo.get(RenrenOAuth.HOME_TOWN);
-        return (String) homeTown.get(RenrenOAuth.CITY);
+        String city = "";
+        if (MapUtils.isNotEmpty(homeTown)) {
+            city = (String) homeTown.get(RenrenOAuth.CITY);
+        }
+        return city;
     }
 
 }

@@ -31,7 +31,8 @@
     <import resource="classpath:spring-config-service.xml"/>
     <import resource="classpath:spring-config-jredis.xml"/>
     <import resource="classpath:spring-config-memcache.xml"/>
-    <import resource="spring-config-mail.xml"/>
+    <import resource="classpath:spring-config-image.xml"/>
+    <import resource="classpath:spring-config-mail.xml"/>
 
     <!--<import resource="spring-config-mail.xml"/>-->
 
@@ -147,6 +148,14 @@
         </property>
         <property name="configLocation">
             <value>/WEB-INF/velocity/velocity.properties</value>
+        </property>
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设置上传文件的最大尺寸为3MB -->
+        <property name="maxUploadSize">
+            <value>3242880</value>
         </property>
     </bean>
 

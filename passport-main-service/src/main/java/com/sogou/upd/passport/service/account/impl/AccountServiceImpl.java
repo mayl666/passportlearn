@@ -2,7 +2,6 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -11,11 +10,7 @@ import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.CaptchaUtils;
-import com.sogou.upd.passport.common.utils.DateUtil;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.MailUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
@@ -23,7 +18,6 @@ import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -47,7 +40,6 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
-
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
@@ -202,7 +194,7 @@ public class AccountServiceImpl implements AccountService {
     public void setLimitResetPwd(String passportId) throws ServiceException {
         // 设置密码修改次数限制
         String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
-                               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
         try {
             if (redisUtils.checkKeyIsExist(resetCacheKey)) {
                 redisUtils.increment(resetCacheKey);
@@ -218,7 +210,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean checkLimitResetPwd(String passportId) throws ServiceException {
         try {
             String cacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
-                              DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                    DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             String checkNumStr = redisUtils.get(cacheKey);
             if (!Strings.isNullOrEmpty(checkNumStr)) {
                 int checkNum = Integer.parseInt(checkNumStr);
@@ -287,8 +279,8 @@ public class AccountServiceImpl implements AccountService {
                     PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
-            if(!Strings.isNullOrEmpty(ru)){
-              activeUrl=  activeUrl +"&ru="+ru;
+            if (!Strings.isNullOrEmpty(ru)) {
+                activeUrl = activeUrl + "&ru=" + ru;
             }
 
             //发送邮件
@@ -405,23 +397,24 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean updateState(Account account, int newState) throws ServiceException {
-       try {
-           String passportId = account.getPassportId();
-           int row = accountDAO.updateState(newState, passportId);
-           if (row > 0) {
-               String cacheKey = buildAccountKey(passportId);
-               account.setStatus(newState);
-               redisUtils.set(cacheKey, account);
-               return true;
-           }
-       } catch (Exception e) {
-           throw new ServiceException(e);
-       }
-       return false;
+        try {
+            String passportId = account.getPassportId();
+            int row = accountDAO.updateState(newState, passportId);
+            if (row > 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setStatus(newState);
+                redisUtils.set(cacheKey, account);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
     }
-  /*
-   * 外域邮箱注册
-   */
+
+    /*
+     * 外域邮箱注册
+     */
     public void initialAccountToCache(String username, String password, String ip) throws ServiceException {
         int provider = AccountTypeEnum.EMAIL.getValue();
         Account account = new Account();
@@ -430,7 +423,7 @@ public class AccountServiceImpl implements AccountService {
         String passwordSign = null;
         try {
             if (!Strings.isNullOrEmpty(password)) {
-                passwordSign = PwdGenerator.generatorStoredPwd(password,false);
+                passwordSign = PwdGenerator.generatorStoredPwd(password, false);
             }
             account.setPasswd(passwordSign);
             account.setRegTime(new Date());
@@ -454,17 +447,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-  @Override
-  public boolean checkCaptchaCode(String token, String captchaCode) throws Exception {
-    try {
-      //校验验证码
-      if (!checkCaptchaCodeIsVaild(token, captchaCode)) {
-        return false;
-      }
-    } catch (ServiceException e) {
-      logger.error("checkCaptchaCode fail", e);
-      return false;
+    @Override
+    public boolean checkCaptchaCode(String token, String captchaCode) throws Exception {
+        try {
+            //校验验证码
+            if (!checkCaptchaCodeIsVaild(token, captchaCode)) {
+                return false;
+            }
+        } catch (ServiceException e) {
+            logger.error("checkCaptchaCode fail", e);
+            return false;
+        }
+        return true;
     }
-    return true;
-  }
+
 }

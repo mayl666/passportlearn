@@ -5,7 +5,6 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.user.UserAPIResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 

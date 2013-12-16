@@ -41,7 +41,7 @@ public class UserInfoApiController extends BaseController {
     }
 
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
+    private UserInfoApiManager proxyUserInfoApiManager;
 
     /**
      * 获取用户基本信息
@@ -62,7 +62,7 @@ public class UserInfoApiController extends BaseController {
             return result.toString();
         }
         // 调用内部接口
-        result = proxyUserInfoApiManagerImpl.getUserInfo(params);
+        result = proxyUserInfoApiManager.getUserInfo(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("fields",params.getFields());
         UserOperationLogUtil.log(userOperationLog);
@@ -89,7 +89,7 @@ public class UserInfoApiController extends BaseController {
             return result.toString();
         }
         // 调用内部接口
-        result = proxyUserInfoApiManagerImpl.updateUserInfo(params);
+        result = proxyUserInfoApiManager.updateUserInfo(params);
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
         UserOperationLogUtil.log(userOperationLog);
@@ -116,7 +116,7 @@ public class UserInfoApiController extends BaseController {
             return result.toString();
         }
         //调用检查昵称是否唯一的内部接口
-        result = proxyUserInfoApiManagerImpl.checkUniqName(params);
+        result = proxyUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();

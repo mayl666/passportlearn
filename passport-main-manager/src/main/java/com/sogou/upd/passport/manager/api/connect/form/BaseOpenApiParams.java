@@ -3,8 +3,6 @@ package com.sogou.upd.passport.manager.api.connect.form;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi

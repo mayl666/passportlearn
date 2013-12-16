@@ -48,6 +48,21 @@
         <appender-ref ref="userOperationAppender" />
     </logger>
 
+
+    <appender name="interfaceLimitedAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/interfaceLimited/interfaceLimited.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="interfaceLimitedLogger" level="info" additivity="false">
+        <appender-ref ref="interfaceLimitedAppender" />
+    </logger>
+
+
     <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
         <host>10.146.32.57</host>
         <port>5672</port>
@@ -106,6 +121,30 @@
     </appender>
     <logger name="tokenRedisMissLogger" level="info" additivity="false">
         <appender-ref ref="tokenRedisMissAppender" />
+    </logger>
+
+    <appender name="dBRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/dBRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="dBRedisMissLogger" level="info" additivity="false">
+        <appender-ref ref="dBRedisMissAppender" />
+    </logger>
+
+    <appender name="shPlusTokenAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/shPlusToken/shPlusToken.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="shPlusTokenLogger" level="info" additivity="false">
+        <appender-ref ref="shPlusTokenAppender" />
     </logger>
 
     <!--start:httpClient性能log-->
@@ -222,7 +261,26 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <root level="info">
+    <!--start:redies请求log-->
+    <appender name="dbPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mysqldb/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="dbCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000" />
+        <appender-ref ref="dbPerfFileAppender" />
+    </appender>
+    <logger name="dbTimingLogger" level="info" additivity="false">
+        <appender-ref ref="dbCoalescingStatistics" />
+    </logger>
+    <!--end:web服务器性能log-->
+
+    <root level="warn">
         <appender-ref ref="Console" />
     </root>
 </configuration>

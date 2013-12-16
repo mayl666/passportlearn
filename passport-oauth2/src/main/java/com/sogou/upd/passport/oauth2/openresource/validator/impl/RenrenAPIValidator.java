@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.oauth2.openresource.validator.impl;
 
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenOAuthError;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;

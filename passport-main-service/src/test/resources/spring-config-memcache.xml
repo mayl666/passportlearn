@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- ==============memcache socket pools conf=========================== -->
+    <!--RefreshToken访问配置-->
+    <bean id="rTokenMemClientBuilder"
+          class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
+          p:connectionPoolSize="1"
+          p:connectTimeout="1"
+          p:failureMode="true">
+        <constructor-arg>
+            <list>
+                <bean class="java.net.InetSocketAddress">
+                    <constructor-arg>
+                        <value>10.11.215.220</value>
+                    </constructor-arg>
+                    <constructor-arg>
+                        <value>11211</value>
+                    </constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+        <property name="transcoder">
+            <bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder"/>
+        </property>
+    </bean>
+    <bean id="rTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init">
+        <property name="builder" ref="rTokenMemClientBuilder"/>
+    </bean>
+
+    <!--AccessToken访问配置-->
+    <bean id="aTokenMemClientBuilder"
+          class="net.rubyeye.xmemcached.XMemcachedClientBuilder"
+          p:connectionPoolSize="1"
+          p:connectTimeout="1"
+          p:failureMode="true">
+        <constructor-arg>
+            <list>
+                <bean class="java.net.InetSocketAddress">
+                    <constructor-arg>
+                        <value>10.11.207.133</value>
+                    </constructor-arg>
+                    <constructor-arg>
+                        <value>11211</value>
+                    </constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+        <property name="transcoder">
+            <bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder"/>
+        </property>
+    </bean>
+    <bean id="aTokenMemUtils" class="com.sogou.upd.passport.common.utils.MemcacheUtils" init-method="init">
+        <property name="builder" ref="aTokenMemClientBuilder"/>
+    </bean>
+</beans>

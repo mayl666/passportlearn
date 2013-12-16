@@ -5,8 +5,6 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.net.IDN;
-import java.util.regex.Matcher;
 
 /**
  * 验证手机号码、电话号码是否有效

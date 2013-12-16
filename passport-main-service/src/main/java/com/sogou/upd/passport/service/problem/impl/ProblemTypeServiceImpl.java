@@ -9,7 +9,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.problem.ProblemType;
 import com.sogou.upd.passport.service.problem.ProblemTypeService;
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

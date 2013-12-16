@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = UserNameValidator.class)
 @Documented
 public @interface UserName {
-    String message() default "用户名格式不正确";
+    String message() default "账号格式错误";
 
     Class<?>[] groups() default {};
 

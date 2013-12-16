@@ -22,7 +22,6 @@
 package com.sogou.upd.passport.oauth2.common.parameters;
 
 import com.sogou.upd.passport.common.HttpConstant;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.authzserver.response.OAuthMessage;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 

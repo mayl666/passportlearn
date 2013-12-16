@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager.app;
 
-import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 
 /**
@@ -12,12 +12,13 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
  */
 public interface ConfigureManager {
     /**
-     * 验证client合法性
+     * 验证clientId和clientSecret合法性
+     * 如果不合法返回null
      * @param clientId
      * @param clientSecret
      * @return
      */
-    public boolean verifyClientVaild(int clientId, String clientSecret);
+    public AppConfig verifyClientVaild(int clientId, String clientSecret);
 
     public ConnectConfig obtainConnectConfig(int clientId, int provider);
    /**

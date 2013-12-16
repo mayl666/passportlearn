@@ -1,8 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

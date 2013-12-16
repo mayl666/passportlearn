@@ -2,12 +2,8 @@ package com.sogou.upd.passport.dao.problem;
 
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.dao.BaseDAOTest;
-import com.sogou.upd.passport.dao.problem.ProblemDAO;
 import com.sogou.upd.passport.model.problem.Problem;
-import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-
 import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -3,19 +3,13 @@ package com.sogou.upd.passport.common.utils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -39,7 +33,7 @@ public class RedisUtils {
     * 设置缓存内容
     */
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_set", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    public void set(String key, String value) throws Exception {
+    public void set(String key, String value)  {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value);
@@ -54,6 +48,15 @@ public class RedisUtils {
         }
     }
 
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hIncrByTimes", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    public void hIncrByTimes(String cacheKey, String key,long time) {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.increment(key, time);
+        } catch (Exception e) {
+            logger.error("[Cache] hIncr num cache fail, key:" + cacheKey + "value:" + key, e);
+        }
+    }
     /*
     * 设置缓存内容
     */
@@ -299,6 +302,24 @@ public class RedisUtils {
             } catch (Exception ex) {
                 logger.error("[Cache] hPut and delete cache fail, cacheKey:" + cacheKey + " mapKey:"
                              + key + " mapValue:" + value, e);
+                throw e;
+            }
+        }
+    }
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutExpire", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    public void hPutExpire(String cacheKey, String key, String value,long times) throws Exception {
+        try {
+            BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
+            boundHashOperations.put(key, value);
+            boundHashOperations.expire(times,TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error("[Cache] hPut cache fail, cacheKey:" + cacheKey + " mapKey:" + key
+                    + " mapValue:" + value, e);
+            try {
+                delete(cacheKey);
+            } catch (Exception ex) {
+                logger.error("[Cache] hPut and delete cache fail, cacheKey:" + cacheKey + " mapKey:"
+                        + key + " mapValue:" + value, e);
                 throw e;
             }
         }
@@ -572,7 +593,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    private void set(String key, String value, long timeout, TimeUnit timeUnit) throws Exception {
+    public void set(String key, String value, long timeout, TimeUnit timeUnit) throws Exception {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value, timeout, timeUnit);
@@ -585,7 +606,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    private void set(String key, Object obj, long timeout, TimeUnit timeUnit) throws Exception {
+    public void set(String key, Object obj, long timeout, TimeUnit timeUnit)  {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, jsonMapper.writeValueAsString(obj), timeout, timeUnit);

@@ -1,10 +1,10 @@
 package com.sogou.upd.passport.manager.api.account;
 
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
 
 /**
  * User: ligang201716@sogou-inc.com

@@ -1,13 +1,9 @@
 package com.sogou.upd.passport.service.problem;
 
-import com.sogou.upd.passport.model.problem.Problem;
-import com.sogou.upd.passport.model.problem.ProblemType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-6 Time: 下午6:49 To change this template use

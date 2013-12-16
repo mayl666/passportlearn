@@ -1,10 +1,6 @@
 package com.sogou.upd.passport.manager.app.impl;
 
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
@@ -32,14 +28,8 @@ public class ConfigureManagerImpl implements ConfigureManager {
     private ConnectConfigService connectConfigService;
 
     @Override
-    public boolean verifyClientVaild(int clientId, String clientSecret) {
-        try {
-            boolean resultFlag = appConfigService.verifyClientVaild(clientId, clientSecret);
-            return resultFlag;
-        } catch (ServiceException e) {
-            log.error("Verify ClientVaild Fail:", e);
-            return false;
-        }
+    public AppConfig verifyClientVaild(int clientId, String clientSecret) {
+        return appConfigService.verifyClientVaild(clientId, clientSecret);
     }
 
     @Override

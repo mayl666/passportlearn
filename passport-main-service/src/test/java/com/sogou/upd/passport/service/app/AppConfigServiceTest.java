@@ -1,9 +1,7 @@
 package com.sogou.upd.passport.service.app;
 
 import com.sogou.upd.passport.BaseTest;
-
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,4 +23,5 @@ public class AppConfigServiceTest extends BaseTest {
         resultStr = appConfigService.queryClientName(CLIENT_ID_NOEXIST);
         Assert.assertNull(resultStr);
     }
+
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -11,6 +12,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
@@ -19,11 +21,13 @@ import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
@@ -35,7 +39,10 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAcce
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
 import com.sogou.upd.passport.service.account.WapTokenService;
@@ -82,6 +89,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private ConnectAuthService connectAuthService;
     @Autowired
+    private AccountBaseInfoService accountBaseInfoService;
+    @Autowired
     private ConnectApiManager proxyConnectApiManager;
     @Autowired
     private PCAccountManager pcAccountManager;
@@ -91,6 +100,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private AppConfigService appConfigService;
     @Autowired
     private SessionServerManager sessionServerManager;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
 
 
@@ -188,7 +199,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String ip = req.getParameter("ip");
             String instanceId = req.getParameter("ts");
             String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
-            String display = req.getParameter("display");
             int provider = AccountTypeEnum.getProvider(providerStr);
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
@@ -212,17 +222,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, display, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
-
-            //若provider=QQ && display=wml、xhtml调用WAP接口
-//            String accessTokenUrl = null;
-//            if (ConnectRequest.isQQWapRequest(providerStr, display)) {
-//                accessTokenUrl = oAuthConsumer.getWapAccessTokenUrl();
-//                oAuthConsumer.setAccessTokenUrl(accessTokenUrl);
-//            } else {
-//                accessTokenUrl = oAuthConsumer.getAccessTokenUrl();
-//            }
-
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -241,33 +241,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 uniqname = connectUserInfoVO.getNickname();
                 oAuthTokenVO.setNickName(uniqname);
             }
-//            OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
-//                    oAuthConsumer, redirectUrl);
-//            OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
-//            oAuthTokenVO.setIp(ip);
-//
-//            if (provider == AccountTypeEnum.QQ.getValue()) {
-//                //QQ需根据access_token获取openid
-//                String obtainOpenIdUrl = null;
-//                if (ConnectRequest.isQQWapRequest(providerStr, display)) {
-//                    obtainOpenIdUrl = oAuthConsumer.getWapOpenIdUrl();
-//                    oAuthConsumer.setOpenIdUrl(obtainOpenIdUrl);
-//                } else {
-//                    obtainOpenIdUrl = oAuthConsumer.getOpenIdUrl();
-//                }
-//                String accessToken = oAuthTokenVO.getAccessToken();
-//                QQOpenIdResponse openIdResponse = connectAuthService.obtainOpenIdByAccessToken(provider, accessToken, oAuthConsumer);
-//                String openId = openIdResponse.getOpenId();
-//                if (!Strings.isNullOrEmpty(openId)) oAuthTokenVO.setOpenid(openId);
-//            }
-//
-//            // 获取第三方个人资料
-//            String uniqname = connectAuthService.obtainConnectNick(provider, connectConfig, oAuthTokenVO, oAuthConsumer);
-//            oAuthTokenVO.setNickName(uniqname);
-            //===================================================
 
             // 创建第三方账号
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
+
             if (connectAccountResult.isSuccess()) {
                 String passportId = (String) connectAccountResult.getModels().get("userid");
                 result.setDefaultModel("userid", passportId);
@@ -295,6 +272,26 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
+                    AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+                    if (tokenResult.isSuccess()) {
+                        result.setSuccess(true);
+
+                        AccountBaseInfo accountBaseInfo = null;
+                        if (connectUserInfoVO != null) {
+                            passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
+                            accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
+                        }
+                        if (accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())) {
+                            uniqname = oAuth2ResourceManager.defaultUniqname(userId);
+                        }
+                        uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
+                        ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
+                    } else {
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
+                    }
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
                     AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
@@ -385,6 +382,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
             ru = "/pcaccount/connecterr";
+        } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+            ru = "/oauth2pc/pclogin";
         }
         return ru;
     }
@@ -413,7 +412,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         return passportId;
     }
-
 
     private String obtainPassportId(Map<String, ConnectRelation> connectRelations) {
         String passportId = "";

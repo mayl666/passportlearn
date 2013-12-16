@@ -1,13 +1,12 @@
 package com.sogou.upd.passport.common.utils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 public class BeanUtil {
 

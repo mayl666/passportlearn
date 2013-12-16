@@ -2,11 +2,27 @@
  * form module script
  * @author zhengxin
 */
- 
-
-
 
 define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
+
+    /**
+     * Just accept "CJK Unified Ideographs"
+     * @see http://zh.wikipedia.org/wiki/Unicode%E4%B8%AD%E6%97%A5%E9%9F%93%E7%B5%B1%E4%B8%80%E8%A1%A8%E6%84%8F%E6%96%87%E5%AD%97%E5%88%97%E8%A1%A8
+     */
+    
+    var nicknameReg=/^([a-zA-Z0-9]|[\u4e00-\u9fa5]){2,12}$/;
+    var invalidNicknameKey=['搜狐','搜狗','搜狐微博','sohu','souhu','sogou','sougou'];
+
+    if(!Array.indexOf)
+    {
+        Array.prototype.indexOf = function(item) {
+            for (var i = 0; i < this.length; ++i) {
+                if (this[i] == item)
+                    return i;
+            }
+            return -1;
+        };
+    }
 
     $.uuiForm.addType('password' , function(value){
         return value.length<=16 && value.length>=6;
@@ -21,7 +37,77 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
     });
     $.uuiForm.addType('nick' , function(value){
         return /^[a-z]([a-zA-Z0-9_.]{3,15})$/.test(value);
+    }); 
+
+    $.uuiForm.addType('new_answer' , function(value){
+        return value&&value.replace(/[^\x00-\xff]/g,'xx').length<=50;
+    });    
+
+    $.uuiForm.addType('nickname' , function(value){
+        return  nicknameReg.test(value)&&(invalidNicknameKey.indexOf(value)<0);
+    });    
+
+    $.uuiForm.addType('fullname' , function(value){
+        return   value.length<=50&&(value==''||/^[a-z\u4e00-\u9fa5]+$/i.test(value));
     });
+
+    $.uuiForm.addType('personalid', function(value) {
+        return (value == "") || idTester.valid(value);
+    });
+    
+    //yinyong#sogou-inc.com:Copied from Internet.
+    var idTester = {
+        aCity: {
+            11: "北京",
+            12: "天津",
+            13: "河北",
+            14: "山西",
+            15: "内蒙古",
+            21: "辽宁",
+            22: "吉林",
+            23: "黑龙江",
+            31: "上海",
+            32: "江苏",
+            33: "浙江",
+            34: "安徽",
+            35: "福建",
+            36: "江西",
+            37: "山东",
+            41: "河南",
+            42: "湖北",
+            43: "湖南",
+            44: "广东",
+            45: "广西",
+            46: "海南",
+            50: "重庆",
+            51: "四川",
+            52: "贵州",
+            53: "云南",
+            54: "西藏",
+            61: "陕西",
+            62: "甘肃",
+            63: "青海",
+            64: "宁夏",
+            65: "新疆",
+            71: "台湾",
+            81: "香港",
+            82: "澳门",
+            91: "国外"
+        },
+        valid: function(sId) {
+            var iSum = 0;
+            var info = "";
+            if (!/^\d{17}(\d|x)$/i.test(sId)) return false;
+            sId = sId.replace(/x$/i, "a");
+            if (this.aCity[parseInt(sId.substr(0, 2))] == null) return false;//"Error:非法地区";
+            var sBirthday = sId.substr(6, 4) + "-" + Number(sId.substr(10, 2)) + "-" + Number(sId.substr(12, 2));
+            var d = new Date(sBirthday.replace(/-/g, "/"))
+            if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate())) return false;//"Error:非法生日";
+            for (var i = 17; i >= 0; i--) iSum += (Math.pow(2, i) % 11) * parseInt(sId.charAt(17 - i), 11)
+            if (iSum % 11 != 1) return false;//"Error:非法证号";
+            return true;//aCity[parseInt(sId.substr(0, 2))] + "," + sBirthday + "," + (sId.substr(16, 1) % 2 ? "男" : "女")
+        }
+    };
 
     var ErrorDesc = {
         require: function($el){
@@ -46,11 +132,33 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         max: function($el , max){
             return '输入字符请少于' + max + '个字';
         },
+        nickname: function($el){
+            if($el.val().length <2 || $el.val().length>12 ){
+                return '昵称长度为2-12位';
+            }else if(/[^\u4e00-\u9fa5a-zA-Z0-9]/.test($el.val())){
+                return "只能使用中文、字母、数字";
+            }else if(invalidNicknameKey.indexOf($el.val())>-1){
+                return "含有非法关键字"
+            }
+            return '昵称不合法';
+        },
+        fullname:function($el){
+            if ($el.val().length > 50)
+                return "不能超过50个字符"
+            else return "真实姓名仅允许输入英文字母和汉字";
+        },  
+        new_answer:function($el){
+             //$el.val().replace(/[^\u00-\uff]/g,'xx').length
+             return "不能超过50个英文字母或25个汉字"
+        },
         nick: function($el){
             if( $el.val().length <3 || $el.val().length>16 ){
                 return '个性帐号长度为6-16位';
             }
             return '小写字母开头的数字、字母、下划线或组合';
+        },
+        personalid:function(){
+            return "请输入18位有效的身份证号码";
         }
     };
 
@@ -198,8 +306,8 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 status = true;
                 var el = $(this);
                 oldText = el.html();
-                el.html(timeout + text);
-                el.addClass('tel-valid-btn-disable');
+                //el.html(timeout + text);
+                //el.addClass('tel-valid-btn-disable');
 
                 var url = el.attr('action') || '/web/sendsms';
                 $.get(url , {
@@ -214,6 +322,18 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                             $('.main-content .form form').find('.tel-valid-error').show().html(data.statusText? data.statusText : '系统错误');;
                         }
                         resetBtn();
+                    }else{
+                        //Fixed by yinyong
+                        el.addClass('tel-valid-btn-disable');
+                        tm = setInterval(function() {
+                            if (!--timeout) {
+                                resetBtn();
+                            } else {
+                                el.html(timeout + text);
+
+                            }
+
+                        }, 1000);
                     }
                         
                 });
@@ -225,20 +345,15 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                     timeout = oldtimeout;
                     el.removeClass('tel-valid-btn-disable');
                 }
-                tm=setInterval(function(){
-                    if( !--timeout  ){
-                        resetBtn();
-                    }else{
-                        el.html(timeout + text);
 
-                    }
-                    
-                } , 1000);
             });
 
         },
         showFormError: function(text){
             $('.main-content .form form').find('.form-error').show().find('span').html(text);;
+        },
+        freshToken:function($el){
+            initToken($el);
         }
     };
 });

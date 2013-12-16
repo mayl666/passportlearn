@@ -1,11 +1,10 @@
 package com.sogou.upd.passport.common.parameter;
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -89,21 +88,44 @@ public enum AccountDomainEnum {
             return AccountDomainEnum.THIRD;
         } else if (username.contains("@")) {
             return AccountDomainEnum.OTHER;
-        } else{
+        } else {
             return AccountDomainEnum.INDIVID;
         }
 
     }
 
     //获取内部大小写的处理方式：第三方除外，其他账号都按小写处理
-    public static String  getInternalCase(String userId){
-        if (userId.endsWith("@focus.cn")){
-           return userId;
+    public static String getInternalCase(String userId) {
+        if (userId.endsWith("@focus.cn")) {
+            return userId;
         }
-        if(AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userId)){
-           return userId;
+        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userId)) {
+            return userId;
         }
         return userId.toLowerCase();
+    }
+
+    //判断是否为手机号或者无@账号，以判断sohu+
+    public static boolean isPhoneOrIndivid(String username) {
+        return (isPhone(username) || isIndivid(username));
+    }
+
+    public static boolean isPhone(String username) {
+        return PhoneUtil.verifyPhoneNumberFormat(username);
+    }
+
+    public static boolean isIndivid(String username) {
+        return  (!username.contains("@"))&& !isPhone(username);
+    }
+
+    public static boolean isPassportId(String username){
+        if(StringUtils.isBlank(username)){
+            return false;
+        }
+        if (username.matches(".+@[a-zA-Z0-9.]+$")) {
+            return true;
+        }
+        return false;
     }
 
     @Override

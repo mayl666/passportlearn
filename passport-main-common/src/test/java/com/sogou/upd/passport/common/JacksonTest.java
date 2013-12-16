@@ -6,9 +6,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
 import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import java.util.Iterator;

@@ -106,4 +106,23 @@ public interface PCAccountTokenService {
      * @throws ServiceException
      */
     public boolean verifyPCOldRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) throws ServiceException;
+
+    /**
+     * 根据token来获取passportId
+     * @param token
+     * @param clientSecret
+     * @return
+     * @throws ServiceException
+     */
+    public String getPassportIdByToken(String token,String clientSecret) throws ServiceException;
+
+    /**
+     * 兼容以SG_开头的token
+     * @param token
+     * @param clientSecret
+     * @return
+     * @throws ServiceException
+     */
+    public String getPassportIdByOldToken(String token,String clientSecret) throws ServiceException;
+
 }

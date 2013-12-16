@@ -1,12 +1,5 @@
 package com.sogou.upd.passport;
 
-import com.sogou.upd.passport.model.account.Account;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-8-5

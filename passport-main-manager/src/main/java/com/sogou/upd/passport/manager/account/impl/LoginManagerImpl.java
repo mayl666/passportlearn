@@ -51,12 +51,25 @@ public class LoginManagerImpl implements LoginManager {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();
-        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+        String pwdMD5 = password;
+        if(loginParameters.getPwdtype() == CommonConstant.PWD_TYPE_EXPRESS){
+            pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+        }
         String passportId = username;
         try {
-            //验证验证码
-            result = checkCaptchaVaild(username,ip,loginParameters.getClient_id(),loginParameters.getCaptcha(),loginParameters.getToken());
-            if(!result.isSuccess()){
+            //校验验证码
+            if (needCaptchaCheck(loginParameters.getClient_id(), username, ip)) {
+                String captchaCode = loginParameters.getCaptcha();
+                String token = loginParameters.getToken();
+                if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+                    logger.debug("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    return result;
+                }
+            }
+            //校验username是否在账户黑名单中
+            if(isLoginUserInBlackList(username,ip)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
             result = authUser(username,ip,pwdMD5);
@@ -119,7 +132,9 @@ public class LoginManagerImpl implements LoginManager {
 
     @Override
     public boolean needCaptchaCheck(String client_id, String username, String ip) {
-        if (Integer.parseInt(client_id) == SHPPUrlConstant.APP_ID) {
+        int clientId = Integer.parseInt(client_id);
+        //目前使用sogou验证码的应用有passport 浏览器4.2及以上版本
+        if (clientId== SHPPUrlConstant.APP_ID || clientId== CommonConstant.PC_CLIENTID) {
             if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
                 return true;
             }

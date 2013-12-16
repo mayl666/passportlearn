@@ -21,16 +21,15 @@ public class ManagerHelperTest extends BaseTest {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String token ="apptest1@sogou.com";
-        String code = ManagerHelper.generatorCodeGBK(token, 1115, "RBCqf6a448Wj5a8#KF&POL75*5GBQ5", ct);
+        String code = ManagerHelper.generatorCodeGBK(userid, clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
-        try {
-            String pwdMD5 = Coder.encryptMD5("111111");
+        /*try {
+            String pwdMD5 = Coder.encryptMD5(code);
             System.out.println("pwdMD5:" + pwdMD5);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 

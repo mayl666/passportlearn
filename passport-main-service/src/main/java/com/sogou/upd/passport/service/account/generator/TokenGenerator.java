@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -47,7 +49,7 @@ public class TokenGenerator {
             throws Exception {
 
         // 过期时间点
-        long vaildTime = generatorVaildTime(expiresIn);
+        long vaildTime = DateUtil.generatorVaildTime(expiresIn);
 
         // 4位随机数
         String random = RandomStringUtils.randomAlphanumeric(4);
@@ -94,12 +96,12 @@ public class TokenGenerator {
     public static String generatorPcToken(String passportId, int expiresIn, String clientSecret)
             throws Exception {
         // 过期时间点
-        long vaildTime = generatorVaildTime(expiresIn);
+        long vaildTime = DateUtil.generatorVaildTime(expiresIn);
         String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
         String token;
         try {
-            //加上4为随机数，是为了与sohu+ token长度区别开来
-            token = AES.encryptURLSafeString(tokenContent, clientSecret);
+            //特殊标识，是为了与sohu+ token长度区别开来
+            token = CommonConstant.SG_TOKEN_START + AES.encryptURLSafeString(tokenContent, clientSecret);
         } catch (Exception e) {
             logger.error("Pc Token generator by AES fail, passportId:" + passportId);
             throw e;
@@ -107,21 +109,24 @@ public class TokenGenerator {
         return token;
     }
 
+    public static void main(String args[]) throws Exception {
+//        String passportId = "C8FB68EC3C5C62D21A8774B2870E79BC@qq.sohu.com";
+        String passportId = "tinkame71wwwww01111@sogou.com";
+        int expiresIn = 604800;
+        String clientSecret = "c1756a351db27d817225e2a4fd7b3f7d";
+        String encode = TokenGenerator.generatorPcToken(passportId, expiresIn, clientSecret);
+        System.out.println("encode:" + encode);
+
+        String decpde = TokenDecrypt.decryptPcToken(encode, clientSecret);
+        System.out.println("decpde:" + decpde);
+
+    }
+
     //sohu生成token算法
     public static String generateSoHuPcToken(String passportId, int expiresIn, String clientSecret)
             throws Exception {
-        RandomStr rs = new RandomStr();
-        String refreshToken = rs.getRandomStr(CommonConstant.SOHU_PCTOKEN_LEN);
+        String refreshToken = RandomStringUtils.randomAlphanumeric(CommonConstant.SOHU_PCTOKEN_LEN);
         return refreshToken;
-    }
-
-    /**
-     * 生成过期时间点
-     */
-    public static long generatorVaildTime(int expiresIn) {
-        DateTime dateTime = new DateTime();
-        long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
-        return vaildTime;
     }
 
     /**

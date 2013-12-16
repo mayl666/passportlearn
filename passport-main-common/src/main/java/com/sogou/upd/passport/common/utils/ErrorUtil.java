@@ -48,8 +48,8 @@ public class ErrorUtil {
     public static final String UNSUPPORTED_GRANT_TYPE = "103";
     //unsupported_response_type
     public static final String UNSUPPORTED_RESPONSE_TYPE = "104";
-    // invalid_scope
-//    public static final String INVALID_SCOPE = "105";
+    // invalid_resource_type
+    public static final String INVALID_RESOURCE_TYPE = "105";
     // insufficient_scope
 //    public static final String INSUFFICIENT_SCOPE = "106";
     // expired_token
@@ -66,9 +66,15 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
     /* ============================================================================ */
+    //暂不支持邮箱注册
+    public static final String ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED = "20197";
+    //当日用户原密码校验错误次数已达上限
+    public static final String ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD = "20198";
+    //重新发送激活邮件失败
+    public static final String ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED = "20199";
     //注册异常
     public static final String ERR_CODE_REGISTER_UNUSUAL = "20200";
-    // 帐号已经注册，请直接登录
+    // 账号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
     // 短信发送已达今天的最高上限20条
     public static final String ERR_CODE_ACCOUNT_CANTSENTSMS = "20202";
@@ -76,7 +82,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONEERROR = "20203";
     // 一分钟内只能发一条短信
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
-    // 帐号不存在
+    // 账号不存在
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
     // 用户名密码不正确
     public static final String ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR = "20206";
@@ -170,6 +176,8 @@ public class ErrorUtil {
     public static final String NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT = "20252";
     // 此账号已经注册或绑定过
     public static final String ACCOUNT_ALREADY_REG_OR_BIND = "20253";
+    // 调用频次超限
+    public static final String ERR_CODE_CLIENT_INBLACKLIST = "20254";
 
     /* ============================================================================ */
     /*  密保方式相关的错误代码                                                       */
@@ -210,9 +218,29 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
     /* ============================================================================ */
+    //不支持的图片后缀
+    public static final String ERR_CODE_PHOTO_EXT = "20296";
+    //图片过大
+    public static final String ERR_CODE_PHOTO_TO_LARGE = "20297";
+    //图片上传失败
+    public static final String ERR_CODE_UPLOAD_PHOTO = "20298";
+    //获取图像失败
+    public static final String ERR_CODE_OBTAIN_PHOTO = "20299";
     // 字段非法
     public static final String ERR_CODE_PROFILE_FIELD = "20301";
+    //用户信息获取失败
+    public static final String ERR_CODE_GET_USER_INFO = "20302";
+    //不支持的图片尺寸
+    public static final String ERR_CODE_ERROR_IMAGE_SIZE = "20303";
 
+    //不支持的图片后缀
+    public static final String ERR_PHOTO_EXT = "20296";
+    //图片过大
+    public static final String ERR_PHOTO_TO_LARGE = "20297";
+    //图片上传失败
+    public static final String ERR_UPLOAD_PHOTO = "20298";
+    //获取图像失败
+    public static final String ERR_OBTAIN_PHOTO = "20299";
     /* ============================================================================ */
     /*  Connect通用的错误代码                                                        */
     /* ============================================================================ */
@@ -222,7 +250,7 @@ public class ErrorUtil {
     public static final String CONNECT_USER_DENIED_LOGIN = "30002";
     // 第三方授权的state被篡改
     public static final String OAUTH_AUTHZ_STATE_INVALID = "30003";
-    // 第三方登录帐号Token过期，请重新登录
+    // 第三方登录账号Token过期，请重新登录
     public static final String CONNECT_TOKEN_INVALID = "30004";
     // 刷新第三方accessToken失败
     public static final String CONNECT_REFRESH_TOKEN_FAIL = "30005";
@@ -238,6 +266,10 @@ public class ErrorUtil {
     public static final String CONNECT_USER_DEFINED_ERROR = "30011";
     //第三方openid获取失败,没有此用户
     public static final String ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR = "30013";
+    //当opt为set时，value值必须有，且为0或1
+    public static final String ERR_CODE_CONNECT_OPT_VALUE_ERROR = "30014";
+    //当opt为set时，请求方式必须为post
+    public static final String ERR_CODE_CONNECT_SET_POST_ERROR = "30015";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -254,7 +286,7 @@ public class ErrorUtil {
     public static final String PIC_URL_NOT_NULL = "30401";
     // 发送失败
     public static final String ADD_SHARE_FAIL = "30402";
-    // QQ帐号未开通微博
+    // QQ账号未开通微博
     public static final String NO_OPEN_BLOG = "30403";
     // 上传的图片不能为空
     public static final String PIC_NOT_NULL = "30404";
@@ -278,12 +310,26 @@ public class ErrorUtil {
     public static final String ERR_CODE_PROBLEM_NOT_LOGIN = "30604";
     //用户提及反馈的次数超限
     public static final String ERR_CODE_PROBLEM_ADDTIMES_LIMITED = "30605";
+    /* ============================================================================ */
+    /*  接口频次调用相关错误代码                                                     */
+    /* ============================================================================ */
+    public static final String ERR_CODE_INTERFACE_FREQUENCY = "30606";
+
+
+    /* ============================================================================ */
+    /*  sohu+接口相关错误代码                                                            */
+    /* ============================================================================ */
+    public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
+
+    public ErrorUtil() {
+        super();
+    }
 
     static {
         // 通用错误
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数或参数验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
         ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "内部接口code签名错误或请求超时");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
         ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
@@ -297,19 +343,23 @@ public class ErrorUtil {
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
         ERR_CODE_MSG_MAP.put(UNSUPPORTED_GRANT_TYPE, "不支持的grant_type");
+        ERR_CODE_MSG_MAP.put(INVALID_RESOURCE_TYPE, "不支持的resource_type");
         ERR_CODE_MSG_MAP.put(INVALID_REFRESH_TOKEN, "refresh_token不存在或过期");
         ERR_CODE_MSG_MAP.put(AUTHORIZE_FAIL, "授权失败");
         ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "账号或密码错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED, "暂不支持邮箱注册");
 
         // account
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD, "用户当日原密码校验错误次数已达上限!");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED, "重新发送激活邮件失败!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_UNUSUAL, "注册失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "此帐号已注册，请直接登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "账号已注册");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "该手机号当日短信发送次数超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "帐号不存在");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "账号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR, "密码错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_BIND_NOTEXIST, "手机号绑定的账号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
@@ -382,16 +432,31 @@ public class ErrorUtil {
         // profile
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
 
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_EXT, "不支持的图片后缀");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_TO_LARGE, "上传图片过大，不能超过3M");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_UPLOAD_PHOTO, "上传图片失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_OBTAIN_PHOTO, "获取图像失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_GET_USER_INFO, "用户信息获取失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_IMAGE_SIZE, "不支持的图片尺寸");
+
+        ERR_CODE_MSG_MAP.put(ERR_PHOTO_EXT, "不支持的图片后缀");
+        ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过3M");
+        ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
+        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
+
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
         ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
         ERR_CODE_MSG_MAP.put(OAUTH_AUTHZ_STATE_INVALID, "第三方授权的state被篡改");
-        ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方帐号Token过期，请重新登录");
+        ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方账号Token过期，请重新登录");
         ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");
         ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPT_VALUE_ERROR,"当opt为set时，value值必须要有，且为0或1，其它值非法");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SET_POST_ERROR,"当opt值为set时，请求方式必须为post");
 
         // info
         ERR_CODE_MSG_MAP.put(PIC_URL_NOT_NULL, "图片url不能为空");
@@ -403,7 +468,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(REPEAT_CONTENT, "同样的内容请勿重复发送");
 
         // friend
-        ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过帐号");
+        ERR_CODE_MSG_MAP.put(FOLLOW_ACCOUNT_NOT_EXISTS, "您关注的用户不存在或未注册过账号");
         ERR_CODE_MSG_MAP.put(ALREADY_FOLLOWED, "已经关注此用户");
 
         //反馈相关
@@ -412,6 +477,13 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_NOT_LOGIN, "您还未登陆，不能提交反馈");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
+
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CLIENT_INBLACKLIST, "服务器处理失败！");
+
+        //sohu+相关接口
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号冲突或者异常，请到论坛问题反馈区找回账号");
+
+
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

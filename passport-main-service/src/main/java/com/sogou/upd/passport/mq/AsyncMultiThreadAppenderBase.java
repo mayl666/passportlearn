@@ -1,15 +1,15 @@
 package com.sogou.upd.passport.mq;
 
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.UnsynchronizedAppenderBase;
+import ch.qos.logback.core.spi.AppenderAttachable;
+import ch.qos.logback.core.spi.AppenderAttachableImpl;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import ch.qos.logback.core.Appender;
-import ch.qos.logback.core.UnsynchronizedAppenderBase;
-import ch.qos.logback.core.spi.AppenderAttachable;
-import ch.qos.logback.core.spi.AppenderAttachableImpl;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-9-4 Time: 上午10:28 To change this template use File | Settings | File Templates.

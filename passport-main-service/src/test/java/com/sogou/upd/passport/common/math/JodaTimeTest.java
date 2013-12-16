@@ -4,9 +4,6 @@ import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.Date;
-
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -25,5 +22,11 @@ public class JodaTimeTest {
         long time1 = date1.getMillis();
 
         Assert.assertEquals(time1, dateTime.getMillis()+expiresIn*1000);
+    }
+
+
+    @Test
+    public void testTime(){
+
     }
 }

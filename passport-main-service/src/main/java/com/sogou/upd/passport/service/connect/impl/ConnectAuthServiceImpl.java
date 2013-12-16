@@ -19,7 +19,6 @@ import com.sogou.upd.passport.oauth2.openresource.response.user.RenrenUserAPIRes
 import com.sogou.upd.passport.oauth2.openresource.response.user.SinaUserAPIResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.user.UserAPIResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
-import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +48,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         OAuthAccessTokenResponse oauthResponse;
         OAuthAuthzClientRequest request = builder.buildBodyMessage(OAuthAuthzClientRequest.class);
         if (provider == AccountTypeEnum.QQ.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST,QQJSONAccessTokenResponse.class /*QQHTMLTextAccessTokenResponse*/);
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
             oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {
@@ -107,20 +106,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             userProfileFromConnect = response.toUserInfo();
         }
         return userProfileFromConnect;
-    }
-
-    @Override
-    public String obtainConnectNick(int provider, ConnectConfig connectConfig, OAuthTokenVO oAuthTokenVO, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
-//        String nickname = oAuthTokenVO.getNickName();
-//        if (provider == AccountTypeEnum.QQ.getValue() || provider == AccountTypeEnum.SINA.getValue()) {
-//            UserAPIResponse response = obtainConnectUserInfo(provider, connectConfig, oAuthTokenVO.getOpenid(),
-//                    oAuthTokenVO.getAccessToken(), oAuthConsumer);
-//            ConnectUserInfoVO userProfileFromConnect = response.toUserInfo();
-//            nickname = userProfileFromConnect.getNickname();
-//            oAuthTokenVO.setNickName(nickname);
-//        }
-//        return nickname;
-        return null;
     }
 
 }

@@ -18,8 +18,24 @@ public class CommonConstant {
     public static final int BROWSER_CLIENTID = 1065; //浏览器输入法桌面端client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
+    public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
+    public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
+    public static final String SG_TOKEN_START = "SG"; //4.2版本浏览器token开始标志
+    public static final String SG_TOKEN_OLD_START = "SG_"; //4.2版本早期的token开始标志
+
+    public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
+    public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
+    public static final String SOHU_APP_CONNECT_KEY = "200034";  //搜狐在QQ第三方开放平台的应用id
+    public static final String SOHU_APP_CONNECT_SECRET = "8c0116a88d3b5ce01f25d69a376f381f ";  //搜狐在QQ第三方开放平台对应的应用密钥
+    public static final String HTTP = "http";  //http请求方式
+    public static final String HTTPS = "https";//https请求方式
+    public static final String CONNECT_METHOD_GET = "get";//method=get请求方式
+    public static final String CONNECT_METHOD_POST = "post";//method=post请求方式
+    public static final String QQ_SERVER_IP = "119.147.19.43";         //测试环境ip：
+    public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //正式环境可以使用域名
 
     public static final String CLIENT_ID = "client_id";
+    public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
     public static final String UNIQNAME = "uniqname";
@@ -40,7 +56,9 @@ public class CommonConstant {
     //	public static final String API_ID_SOGOU_DOMAIN = "test01.id.sogou.com";
     public static final String API_ID_SOGOU_INTERNAL_DOMAIN = "api.id.sogou.com.z.sogou-op.org";
 
-    public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 10; // 默认种cookie的有效期，1小时
+    public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
+
+    public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
 
     //=============缓存相关配置项====================
 //	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time
@@ -48,6 +66,7 @@ public class CommonConstant {
     //在request attribut中存在的用于及时的StopWatch的name
     public static final String STOPWATCH = "stopWatch";
 
+    public static boolean IS_USE_IEBBS_UNIQNAME = true;
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

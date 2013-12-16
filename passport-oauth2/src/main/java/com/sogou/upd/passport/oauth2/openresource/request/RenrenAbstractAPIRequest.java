@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.oauth2.openresource.request;
 
-import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenOAuth;
-
 /**
  * renren API请求的通用参数
  *

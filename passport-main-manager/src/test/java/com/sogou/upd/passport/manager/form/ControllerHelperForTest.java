@@ -2,13 +2,12 @@ package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.CommonConstant;
 
-import java.util.Map;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-23 Time: 下午1:49 To change this template use

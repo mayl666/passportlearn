@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.

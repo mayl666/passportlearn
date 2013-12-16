@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.oauth2.common;
 
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-
 /**
  *
  *

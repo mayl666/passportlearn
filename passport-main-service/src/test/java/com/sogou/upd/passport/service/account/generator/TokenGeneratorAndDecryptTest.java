@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.service.account.generator;
 
-import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
+import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +84,18 @@ public class TokenGeneratorAndDecryptTest extends BaseGeneratorTest {
             System.out.println("pcToken:" + pcToken);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testDecryptOldPcToken(){
+        String token = "l296k0lLDCssuTsAMmmjWrAUA7sry0Wm4dweuVDiYDSLXxU6KlFk2Y__lBVaH9WI";
+        String scret = "c1756a351db27d817225e2a4fd7b3f7d";
+        try {
+            String str = TokenDecrypt.decryptOldPcToken(token, scret);
+            System.out.println(str);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 

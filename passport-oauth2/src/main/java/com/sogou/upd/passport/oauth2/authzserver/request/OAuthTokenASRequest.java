@@ -1,12 +1,12 @@
 package com.sogou.upd.passport.oauth2.authzserver.request;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.authzserver.validator.AuthorizationCodeValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.ClientCredentialValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.PasswordValidator;
 import com.sogou.upd.passport.oauth2.authzserver.validator.RefreshTokenValidator;
 import com.sogou.upd.passport.oauth2.common.OAuth;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.common.validators.OAuthValidator;
@@ -30,6 +30,7 @@ public class OAuthTokenASRequest extends OAuthASRequest {
         validators.put(GrantTypeEnum.CLIENT_CREDENTIALS.toString(), ClientCredentialValidator.class);
         validators.put(GrantTypeEnum.AUTHORIZATION_CODE.toString(), AuthorizationCodeValidator.class);
         validators.put(GrantTypeEnum.REFRESH_TOKEN.toString(), RefreshTokenValidator.class);
+        validators.put(GrantTypeEnum.HEART_BEAT.toString(), RefreshTokenValidator.class);
         String requestTypeValue = getParam(OAuth.OAUTH_GRANT_TYPE);
         if (Strings.isNullOrEmpty(requestTypeValue)) {
             throw OAuthUtils.handleOAuthProblemException("Missing grant_type parameter value");

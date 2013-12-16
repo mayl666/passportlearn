@@ -15,6 +15,8 @@ public class BaseDAOTest extends BaseTest {
     public static final String PASSPORT_ID = "13600000000@sohu.com";
     public static final String NEW_PASSPORT_ID = "13600000001@sohu.com";
     public static final String MOBILE = "13600000000";
+    public static final String SID = "120000";
+    public static final String SNAME = "sohuplus_name";
     public static final String PASSWORD = "111111";
     public static final String NEW_PASSWORD = "123456";
     public static final int ACCOUNT_TYPE = 2;

@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.manager;
 
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import org.slf4j.Logger;
@@ -59,6 +61,16 @@ public class ManagerHelper {
     }
 
     /**
+     * 是否使用sohu提供的getcookiinfo接口；返回true代表调用getcookieinfo接口，false代表调用之前的从location拿的接口，为回滚做准备
+     *
+     * @return
+     */
+    public static boolean isUsedSohuProxyApiToGetCookie() {
+        return true;
+//        return false;
+    }
+
+    /**
      * 内部接口方法签名生成
      *
      * @param firstStr code算法第一个字符串，可能为userid、mobile、userid+mobile
@@ -93,5 +105,15 @@ public class ManagerHelper {
             log.error("calculate default code error", e);
         }
         return code;
+    }
+
+    public static Result setModelForOAuthResult(Result result, String uniqName, AccountToken accountToken, String loginType) throws Exception {
+        result.setDefaultModel("accesstoken", accountToken.getAccessToken());
+        result.setDefaultModel("refreshtoken", accountToken.getRefreshToken());
+        result.setDefaultModel("nick", Coder.encryptBase64(uniqName));
+        result.setDefaultModel("passport", Coder.encryptBase64(accountToken.getPassportId()));
+        result.setDefaultModel("sid", accountToken.getPassportId());
+        result.setDefaultModel("logintype", loginType);
+        return result;
     }
 }

@@ -1,8 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
-import com.sogou.upd.passport.web.test.BaseActionTest;
+import com.sogou.upd.passport.web.BaseActionTest;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -37,25 +36,25 @@ public class RegActionTest extends BaseActionTest {
         String result  = sendPost("http://account.sogou.com/web/reguser", params);
         System.out.println(result);
     }
-  @Test
-  public void testUpdatePWD() throws IOException {
-    String localUrl = "/web/reguser/";
-    Map<String, String> params = new HashMap<>();
-    params.put("newpwd", "212121");
-    params.put("password", "dasdasdasdasda@sogou.com");
-    params.put("client_id", "1100");
+    @Test
+    public void testUpdatePWD() throws IOException {
+        String localUrl = "/web/reguser/";
+        Map<String, String> params = new HashMap<>();
+        params.put("newpwd", "212121");
+        params.put("password", "dasdasdasdasda@sogou.com");
+        params.put("client_id", "1100");
 //        params.put("captcha", "GVD2X");
-    String result  = sendPost("http://account.sogou.com/web/sendemail", params);
-    System.out.println(result);
-  }
+        String result  = sendPost("http://account.sogou.com/web/sendemail", params);
+        System.out.println(result);
+    }
 
 
-  @Test
-  public void testCheckusername() throws IOException {
-    Map<String, String> params = new HashMap<>();
-    params.put("username", "fsdf3ffds");
+    @Test
+    public void testCheckusername() throws IOException {
+        Map<String, String> params = new HashMap<>();
+        params.put("username", "fsdf3ffds");
 //    params.put("client_id", "1100");
-    String result  = sendGet("http://account.sogou.com/web/account/checkusername", params);
-    System.out.println(result);
-  }
+        String result  = sendGet("http://account.sogou.com/web/account/checkusername", params);
+        System.out.println(result);
+    }
 }

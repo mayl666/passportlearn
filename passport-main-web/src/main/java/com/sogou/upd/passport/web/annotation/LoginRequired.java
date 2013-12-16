@@ -1,13 +1,6 @@
 package com.sogou.upd.passport.web.annotation;
 
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * 用于标记一个方法需要登录，如修改密码

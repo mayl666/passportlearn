@@ -50,10 +50,8 @@ public abstract class OAuthASRequest {
                     log.debug("Cannot read redirect_url from the request: {}", new Object[]{ex.getMessage()});
                 }
             }
-
             throw e;
         }
-
     }
 
     protected abstract OAuthValidator<HttpServletRequest> initValidator() throws OAuthProblemException;
@@ -77,6 +75,10 @@ public abstract class OAuthASRequest {
 
     public String getInstanceId() {
         return getParam(OAuth.OAUTH_INSTANCE_ID);
+    }
+
+    public String getSid() {
+        return getParam("sid");
     }
 
     public Set<String> getScopes() {

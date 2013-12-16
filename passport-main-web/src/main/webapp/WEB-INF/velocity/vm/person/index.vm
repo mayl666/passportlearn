@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>搜狗通行证</title>
+        <link rel="stylesheet" href="/./static/css/main.css?t=837973" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
+        <ul class="info" style="display:none;">
+            <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
+            <li class="sep" >|</li>
+            <li class="logout" >
+                <a href="https://account.sogou.com/web/logout_redirect?client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2F">退出</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+            
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li ><a href="/">首页</a></li>
+            
+            <li class="current"><a href="/web/userinfo/getuserinfo">个人资料</a></li>
+            
+            <li ><a href="/web/security">帐号安全</a></li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li style="border:none;" class="person   ">
+       <span>个人资料</span>
+    </li>
+    
+    <li  class="index current  small">
+        <a href="/web/userinfo/getuserinfo">基本资料</a>
+    </li>
+    
+    <li  class="avatar   small">
+        <a href="/web/userinfo/avatarurl">修改头像</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+
+        <div class="inner safe-index person" >
+     <div class="title">
+                 <span class="i">i</span>欢迎来到个人中心，<span class="snick"></span>
+            </div>
+            <hr color="#f3f3f3" height="1"/>
+            <div  class="form">
+                <script type="text/tpl" id="Target">
+                    <form method="post" action="/web/userinfo/update" class="form2">
+                        
+                        <input type="hidden" name="birthday" id="birthday"/>
+                        <input type="hidden" name="flag" id="flag" value="0"/>
+                        <div class="form-item">
+    <label for="NicknameIpt">昵称：</label>
+    <span class="form-el">
+        <input autocomplete="off" uui-type="require nickname" type="text" name="nickname" id="NicknameIpt" value="" data-desc="请输入您的昵称" value="" class="" placeholder=""/>
+    </span>
+</div>
+                        <div class="form-item">
+    <label for="GenderIpt">性别：</label>
+    <span class="form-el form-ra">
+        
+        <label><input type="radio"  name="gender" id="GenderIpt" value="2" checked/> 女</label>
+        
+        <label><input type="radio"  name="gender" id="GenderIpt" value="1" /> 男</label>
+        
+    </span>
+</div>
+                        <div class="form-item">
+    <label for="Ipt">所在地：</label>
+    <span class="form-select">
+      
+        <select name="province" id="s-province" class="location">
+        </select>
+      
+        <select name="city" id="s-city" class="location">
+        </select>
+      
+    </span>
+</div>
+                        <div class="form-item">
+    <label for="Ipt">生日：</label>
+    <span class="form-select">
+      
+        <select name="" id="s-year" class="birthday">
+        </select>
+      
+        <select name="" id="s-month" class="birthday">
+        </select>
+      
+        <select name="" id="s-day" class="birthday">
+        </select>
+      
+    </span>
+</div>
+                        <hr color="#f3f3f3" height="1"/>
+                        <div class="tip">补充以下信息，当您的帐号丢失时，我们可以帮你找回</div>
+                        <div class="form-item">
+    <label for="FullnameIpt">真实姓名：</label>
+    <span class="form-el">
+        <input autocomplete="off"uui-type="fullname"type="text" name="fullname" id="FullnameIpt" value="" data-desc="请输入您的真实姓名" value=""/>
+    </span>
+</div>
+                        <div class="form-item">
+    <label for="PersonalidIpt">身份证：</label>
+    <span class="form-el">
+        <input autocomplete="off"uui-type="personalid"type="text" name="personalid" id="PersonalidIpt" value="" data-desc="请输入您的身份证号码" value=""/>
+    </span>
+</div>
+                        <div class="form-item"><label>&nbsp;</label><div class="s-tip">请放心填写，我们不会向任何第三方透露您的资料  </div></div>
+                        <div class="form-btn">
+   
+    <button type="submit" class="sub medium-btn">保存</button>
+   
+    <button type="button" class="back medium-btn">返回</button>
+   
+</div>
+                    </form>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
+    <script type="text/javascript" src="/./static/js/person.js?t=2013120650"></script>
+    
+    <script type="text/javascript">var _server_data = '${data}';</script>
+    <script type="text/javascript">
+
+var spb_vars = {
+    productid:"passport",
+    ptype:"web",
+    pcode:"person_index".split('/').join('_')
+};
+
+(function() {
+    var pb = document.createElement('script'); pb.type = 'text/javascript'; pb.async = true;
+    pb.src = '/static/js/pb.580599.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
+})();
+
+//Prevent syntax error leads to undefined.
+var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
+        
+require.config({
+    baseUrl:"/./static/js",
+    shim:{
+        'uuiForm':{deps:['uuibase']}//not AMD style...
+    }
+});
+
+
+require(['person'] , function(module){
+    module.init('index');
+});
+
+
+    </script>
+</html>
+<!--zly-->

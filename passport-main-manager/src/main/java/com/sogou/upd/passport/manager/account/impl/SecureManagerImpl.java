@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -13,6 +12,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -23,22 +23,15 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.ActionRecord;
-import com.sogou.upd.passport.service.account.AccountInfoService;
-import com.sogou.upd.passport.service.account.AccountSecureService;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.EmailSenderService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +83,11 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
-    private LoginApiManager sgLoginApiManager;
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private PhotoUtils photoUtils;
+    @Autowired
+    private UserInfoApiManager shPlusUserInfoApiManager;
 
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
@@ -284,6 +279,12 @@ public class SecureManagerImpl implements SecureManager {
     public Result queryAccountSecureInfo(String userId, int clientId, boolean doProcess) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
+
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
 
@@ -292,8 +293,25 @@ public class SecureManagerImpl implements SecureManager {
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//                getUserInfoApiparams.setImagesize("50");
+                getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+
+                Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                if(shPlusResult.isSuccess()){
+                    Object obj= shPlusResult.getModels().get("baseInfo");
+                    if(obj!=null){
+                        AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
+                        String uniqname=baseInfo.getUniqname();
+                        result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?userId:uniqname);
+                        Result photoResult= photoUtils.obtainPhoto(baseInfo.getAvatar(),"50");
+                        if(photoResult.isSuccess()){
+                            result.getModels().put("avatarurl",photoResult.getModels());
+                        }
+                    } else {
+                        result.getModels().put("uniqname",userId);
+                    }
+                }
             } else {
                 GetSecureInfoApiParams params = new GetSecureInfoApiParams();
                 params.setUserid(userId);
@@ -302,7 +320,7 @@ public class SecureManagerImpl implements SecureManager {
             }
 
             Map<String, String> map = result.getModels();
-            result.setModels(Maps.newHashMap());
+            result.setModels(map);
 
             if (!result.isSuccess()) {
                 return result;

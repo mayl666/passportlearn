@@ -24,6 +24,23 @@ public class CreateCookieUrlApiParams {
 
     private String domain;
 
+    public CreateCookieUrlApiParams() {
+    }
+
+    public CreateCookieUrlApiParams(String userid, String ru, int persistentcookie) {
+        this.userid = userid;
+        this.ru = ru;
+        this.persistentcookie = persistentcookie;
+    }
+
+    public CreateCookieUrlApiParams(String userid, String ru, int persistentcookie, String domain) {
+        this.userid = userid;
+        this.ru = ru;
+        this.persistentcookie = persistentcookie;
+        this.domain = domain;
+    }
+
+
     public String getUserid() {
         return userid;
     }

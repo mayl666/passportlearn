@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.AssertTrue;
 

@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.service.connect;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.inject.Inject;
 

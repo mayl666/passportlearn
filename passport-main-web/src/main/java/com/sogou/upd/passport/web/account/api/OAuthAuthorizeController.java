@@ -3,8 +3,9 @@ package com.sogou.upd.passport.web.account.api;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.OAuthAuthorizeManager;
+import com.sogou.upd.passport.manager.account.OAuth2AuthorizeManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
@@ -30,12 +31,12 @@ public class OAuthAuthorizeController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(OAuthAuthorizeController.class);
 
     @Autowired
-    private OAuthAuthorizeManager oAuthAuthorizeManager;
+    private OAuth2AuthorizeManager oAuth2AuthorizeManager;
 
     @Autowired
     private ConfigureManager configureManager;
 
-    @RequestMapping(value = {"/mobile/mobilelogin", "/oauth2/token"})
+    @RequestMapping(value = "/mobile/mobilelogin")
     @ResponseBody
     public Object authorize(HttpServletRequest request) throws Exception {
         OAuthTokenASRequest oauthRequest;
@@ -51,11 +52,12 @@ public class OAuthAuthorizeController extends BaseController {
         int clientId = oauthRequest.getClientId();
 
         // 检查client_id和client_secret是否有效
-        if (!configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret())) {
+        AppConfig appConfig = configureManager.verifyClientVaild(clientId, oauthRequest.getClientSecret());
+        if (appConfig == null) {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             return result.toString();
         }
-        result = oAuthAuthorizeManager.authorize(oauthRequest);
+        result = oAuth2AuthorizeManager.authorize(oauthRequest);
 
         return result.toString();
     }

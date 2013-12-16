@@ -13,12 +13,18 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -31,6 +37,8 @@ import java.util.Map;
 @Component("proxyConnectApiManager")
 public class ProxyConnectApiManagerImpl extends BaseProxyManager implements ConnectApiManager {
 
+    private static final Logger log = LoggerFactory.getLogger(ProxyConnectApiManagerImpl.class);
+
     @Override
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip) throws OAuthProblemException {
         String providerStr = AccountTypeEnum.getProviderStr(provider);
@@ -38,6 +46,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         Map params = Maps.newHashMap();
         params.put("provider", providerStr);
         params.put("appid", SHPPUrlConstant.DEFAULT_CONNECT_APP_ID);  // TODO 只是为了避免和浏览器输入法PC端冲突
+        params.put("hun", "1");  //是否显示“起个更好的名字”。默认显示；为1表示 隐藏
         if (!Strings.isNullOrEmpty(connectLoginParams.getRu())) {
             params.put(CommonConstant.RESPONSE_RU, connectLoginParams.getRu());
         }
@@ -67,13 +76,21 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
         requestModel.addParam("expires_in", (int) oAuthTokenVO.getExpiresIn());  // 搜狐wiki里expires_in必须为int型
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getRefreshToken())) {
-            requestModel.addParam("refresh_token", oAuthTokenVO.getRefreshToken());
+            requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, oAuthTokenVO.getRefreshToken());
         }
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getOpenid())) {
             requestModel.addParam("openid", oAuthTokenVO.getOpenid());
         }
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName())) {
-            requestModel.addParam("nick_name", oAuthTokenVO.getNickName());
+            String nickName = oAuthTokenVO.getNickName();
+            if (AccountTypeEnum.TAOBAO.toString().equals(providerStr)) {    // taobao注册账号昵称返回乱码
+                try {
+                    nickName = URLEncoder.encode(nickName, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                } catch (UnsupportedEncodingException e) {
+                    log.error("encoder taobao nickname exception,nickName:" + nickName, e);
+                }
+            }
+            requestModel.addParam("nick_name", nickName);
         }
         Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         if ("0".equals(map.get("status"))) {
@@ -87,5 +104,10 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
             result.setDefaultModel(CommonConstant.RESPONSE_STATUS_TEXT, map.get("error_description"));
         }
         return result;
+    }
+
+    @Override
+    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

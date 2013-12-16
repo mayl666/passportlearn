@@ -2,9 +2,8 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -14,7 +13,6 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -60,7 +58,6 @@ public class LoginApiController extends BaseController {
 
     /**
      * 续种cookie
-     *
      * @param request
      * @param params
      * @return
@@ -130,16 +127,17 @@ public class LoginApiController extends BaseController {
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
         String createip = params.getCreateip();
+
         try {
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            if (StringUtils.isEmpty(createip)) {
-                createip = null;
+            if(StringUtils.isEmpty(createip)){
+                createip =null;
             }
             if (loginManager.isLoginUserInBlackList(params.getUserid(), createip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
@@ -187,14 +185,21 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-//        // 调用内部接口
-        result = wapLoginManager.authtoken(params.getToken());
+        // 调用内部接口
+        result = proxyLoginApiManager.appAuthToken(params);
+        String userId = (String) result.getModels().get("userid");
+
+        //记录log
+        UserOperationLog userOperationLog=new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
+        userOperationLog.putOtherMessage("token",params.getToken());
+        UserOperationLogUtil.log(userOperationLog);
+       /* result = wapLoginManager.authtoken(params.getToken());
 
         String userid = "";
         if (result.isSuccess()){
             userid = (String) result.getModels().get("userid");
             if(AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userid)
-                 && params.getUsethirdinfo() == WapConstant.USE_THIRD_INFO){
+                    && params.getUsethirdinfo() == WapConstant.USE_THIRD_INFO){
                 //获取第三方用户信息
                 UserOpenApiParams userOpenApiParams = new UserOpenApiParams();
                 userOpenApiParams.setOpenid(userid);
@@ -211,30 +216,9 @@ public class LoginApiController extends BaseController {
                 //转换结果格式
                 result = changeResult(result);
             }
-        }
-        // 获取记录UserOperationLog的数据
-        UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        UserOperationLogUtil.log(userOperationLog);
+        }*/
+
         return result.toString();
-    }
-
-
-    private Result changeResult(Result result) {
-        Result userInfoResult = new APIResultSupport(true);
-        userInfoResult.setCode(result.getCode());
-        userInfoResult.setMessage(result.getMessage());
-        Map<String, Object> data = Maps.newHashMap();
-        Map<String, Object> value_data = Maps.newHashMap();
-        value_data.put("id","");
-        value_data.put("birthday",result.getModels().get("birthday").toString());
-        value_data.put("sex",result.getModels().get("gender").toString());
-        value_data.put("nick",result.getModels().get("uniqname").toString());
-        value_data.put("location",result.getModels().get("province").toString());
-        value_data.put("headurl",result.getModels().get("avatarurl").toString());
-        data.put("result",value_data);
-        data.put("userid",result.getModels().get("userid").toString());
-        userInfoResult.setModels(data);
-        return userInfoResult;
     }
 
 }

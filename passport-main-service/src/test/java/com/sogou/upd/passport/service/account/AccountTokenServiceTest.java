@@ -5,8 +5,6 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.inject.Inject;
 

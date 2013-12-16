@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect.form.user;
 
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
-import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 用户信息类

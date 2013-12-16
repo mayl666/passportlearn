@@ -1,14 +1,12 @@
 package com.sogou.upd.passport.service.connect.impl;
 
 import com.google.common.collect.Maps;
-
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectRelationDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;

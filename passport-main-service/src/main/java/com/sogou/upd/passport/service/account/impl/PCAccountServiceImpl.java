@@ -13,6 +13,7 @@ import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SHTokenService;
+import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,11 +43,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
-//            long start = System.currentTimeMillis();
             AccountToken accountToken = newAccountToken(passportId, instanceId, appConfig);
             saveAccountToken(passportId, instanceId, appConfig, accountToken);
-//            CommonHelper.recordTimestamp(start, "saveAccountToken-newAccountToken");
-
             return accountToken;
         } catch (Exception e) {
             logger.error("initialAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
@@ -56,8 +54,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public AccountToken updateAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
-        //todo 暂时每次都返回新的token
-//        return initialAccountToken(passportId,instanceId,appConfig);
         final int clientId = appConfig.getClientId();
         try {
             AccountToken accountToken = queryAccountToken(passportId, clientId, instanceId);
@@ -87,22 +83,10 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         final int clientId = appConfig.getClientId();
         try {
             String kvKey = buildKeyStr(passportId, clientId, instanceId);
-//            long start = System.currentTimeMillis();
-
             kvUtils.set(kvKey, accountToken);
-//            CommonHelper.recordTimestamp(start, "saveAccountToken-kvUtils");
-
             //重新设置缓存
-//            start = System.currentTimeMillis();
-
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.set(redisKey, accountToken);
-//            CommonHelper.recordTimestamp(start, "saveAccountToken-tokenRedisUtils");
-
-//            if (CommonHelper.isIePinyinToken(clientId)){
-//                //保存一份在sohu memcache
-//                shTokenService.saveAccountToken(passportId,instanceId,appConfig,accountToken);
-//            }
             //保存映射关系
 //            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
         } catch (Exception e) {
@@ -161,6 +145,30 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             res = refreshToken.equals(actualRefreshToken) && isValidToken(tokenValidTime);
         }
         return res;
+    }
+
+    @Override
+    public String getPassportIdByToken(String token,String clientSecret) throws ServiceException{
+        String passportId = null;
+        try {
+            passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
+            return  passportId;
+        } catch (Exception e) {
+            logger.error("getPassportIdByToken:" + token, e);
+            return null;
+        }
+    }
+
+    @Override
+    public String getPassportIdByOldToken(String token,String clientSecret) throws ServiceException{
+        String passportId = null;
+        try {
+            passportId = TokenDecrypt.decryptOldPcToken(token, clientSecret);
+            return  passportId;
+        } catch (Exception e) {
+            logger.error("getPassportIdByToken:" + token, e);
+            return null;
+        }
     }
 
     @Override
@@ -248,8 +256,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         String accessToken;
         String refreshToken;
         try {
-            accessToken = TokenGenerator.generateSoHuPcToken(passportId, accessTokenExpiresIn, clientSecret);
-            refreshToken = TokenGenerator.generateSoHuPcToken(passportId, refreshTokenExpiresIn, clientSecret);
+            accessToken = TokenGenerator.generatorPcToken(passportId, accessTokenExpiresIn, clientSecret);
+            refreshToken = TokenGenerator.generatorPcToken(passportId, refreshTokenExpiresIn, clientSecret);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.form.security;
 
 import com.sogou.upd.passport.common.validation.constraints.SafeInput;
-
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
