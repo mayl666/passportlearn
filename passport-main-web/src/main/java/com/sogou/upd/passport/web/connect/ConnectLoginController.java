@@ -64,7 +64,8 @@ public class ConnectLoginController extends BaseConnectController {
         }
 
         // 检查client_id和client_secret是否有效
-        if (!configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret())) {
+        AppConfig appConfig = configureManager.verifyClientVaild(oauthRequest.getClientId(), oauthRequest.getClientSecret());
+        if (appConfig == null) {
             result.setCode(ErrorUtil.INVALID_CLIENT);
             result.setMessage("client_id or client_secret mismatch");
             return result.toString();
@@ -87,13 +88,6 @@ public class ConnectLoginController extends BaseConnectController {
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
 
-        if (Strings.isNullOrEmpty(providerStr)){
-            //provide为空跳转到 ru
-            url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, null);
-            res.sendRedirect(url);
-            return "";
-        }
-        int provider = AccountTypeEnum.getProvider(providerStr);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -101,6 +95,13 @@ public class ConnectLoginController extends BaseConnectController {
                 res.sendRedirect(url);
                 return "";
             }
+            if (Strings.isNullOrEmpty(providerStr)){
+                //provide为空跳转到 ru
+                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, null);
+                res.sendRedirect(url);
+                return "";
+            }
+            int provider = AccountTypeEnum.getProvider(providerStr);
             // 浏览器、输入法的第三方登录是搜狐nginx转发过来的，为了避免nginx层解析，所以兼容appid参数
             if (!Strings.isNullOrEmpty(connectLoginParams.getAppid()) && Strings.isNullOrEmpty(connectLoginParams.getClient_id())) {
                 connectLoginParams.setClient_id(connectLoginParams.getAppid());

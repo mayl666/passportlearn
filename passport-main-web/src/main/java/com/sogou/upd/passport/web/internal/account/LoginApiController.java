@@ -42,17 +42,12 @@ public class LoginApiController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(LoginApiController.class);
 
     @Autowired
-    private WapLoginManager wapLoginManager;
-    @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginManager loginManager;
     @Autowired
     private ConfigureManager configureManager;
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManagerImpl;
-    @Autowired
-    private UserOpenApiManager proxyUserOpenApiManager;
+
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
