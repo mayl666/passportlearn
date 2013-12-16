@@ -106,9 +106,4 @@ public class BaseConnectController extends BaseController {
         return ru;
     }
 
-    protected static boolean isWapQQ(int provider, String display) {
-        return provider == AccountTypeEnum.QQ.getValue() && (QQOAuth.WML_DISPLAY.equals(display) || QQOAuth.XHTML_DISPLAY.equals(display));
-    }
-
-
 }

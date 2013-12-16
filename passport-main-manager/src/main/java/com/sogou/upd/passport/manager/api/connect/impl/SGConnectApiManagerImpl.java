@@ -131,6 +131,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
                 result.setCode(entry.getKey());
                 result.setMessage(entry.getValue());
+                map.remove(SHPPUrlConstant.RESULT_STATUS);
                 result.setModels(map);
             }
         } catch (Exception e) {
