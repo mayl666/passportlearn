@@ -66,9 +66,6 @@ public class ConnectDisplay {
         if (provider.equals(AccountTypeEnum.TAOBAO.toString())) {
             if (TAOBAO_DISPLAY.contains(display)) return true;
         }
-        if ("page".equals(display)){
-            return true;
-        }
 
         return false;
     }
