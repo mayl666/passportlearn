@@ -66,7 +66,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
 
-            String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),connectLoginParams.getDisplay(),
+            String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
                     connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(), ip, connectLoginParams.getFrom());
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
