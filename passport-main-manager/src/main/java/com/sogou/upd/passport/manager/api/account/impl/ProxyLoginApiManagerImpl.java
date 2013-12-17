@@ -80,7 +80,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             }
             long ct = System.currentTimeMillis();
             String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
-            code = Coder.encryptMD5(code);
+            code = Coder.encryptMD5GBK(code);
             String shUrl = SHPPUrlConstant.HTTP_SET_COOKIE;
             if (isHttps) {
                 shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;

@@ -23,14 +23,19 @@ public class Test {
 //
 //        String deStr = URLDecoder.decode(encodeStr);
 //        System.out.println("decodeStr:"+deStr);
-        String passportId ="￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
-        String passportId1 = "￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
-        String tmpPassportId =  new String(passportId.getBytes(), "GBK");
+//        String passportId ="￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
+//        String passportId1 = "￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
+//        String tmpPassportId =  new String(passportId.getBytes(), "GBK");
+//
+////        InputStream in = new InputStream();
+////        InputStreamReader in = new InputStreamReader();
+//        System.out.println("tmpPassportId:"+tmpPassportId);
 
-//        InputStream in = new InputStream();
-//        InputStreamReader in = new InputStreamReader();
-        System.out.println("tmpPassportId:"+tmpPassportId);
-
+        long ct = 1387264053119l;
+        String  userId = "大大大31231@focus.cn";
+        String code = userId + 1120 + "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY" + ct;
+        code = Coder.encryptMD5GBK(code);
+        System.out.println("code:"+code);
 
 
 
