@@ -86,7 +86,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                 shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
             }
             RequestModel requestModel = new RequestModel(shUrl);
-            requestModel.addParam("userid",new String(userId.getBytes("utf-8"),"gbk"));
+            requestModel.addParam("userid",userId);
             requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
             requestModel.addParam("ct", ct);
             requestModel.addParam("code", code);
