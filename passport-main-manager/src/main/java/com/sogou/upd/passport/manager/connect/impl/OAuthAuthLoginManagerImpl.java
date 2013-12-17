@@ -384,6 +384,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         result.setCode(errorCode);
         result.setMessage(errorText);
         result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText));
+        result.setDefaultModel(CommonConstant.RESPONSE_DATA, buildErrorRu(type, ru, errorCode, errorText));  //todo
         return result;
     }
 
