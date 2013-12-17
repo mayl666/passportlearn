@@ -170,8 +170,6 @@ public class WapLoginAction extends BaseController {
             //处理ru
             if (Strings.isNullOrEmpty(ru)) {
                 ru= CommonConstant.DEFAULT_WAP_URL;
-            } else {
-                ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             }
             //session server中清除cookie
             Result result=wapLoginManager.removeSession(sgid);
