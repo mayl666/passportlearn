@@ -48,7 +48,7 @@ public class RedisUtils {
         }
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hIncrByTimes", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hIncrByTimes", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hIncrByTimes(String cacheKey, String key,long time) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
@@ -306,7 +306,7 @@ public class RedisUtils {
             }
         }
     }
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutExpire", timeThreshold = 5, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutExpire", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public void hPutExpire(String cacheKey, String key, String value,long times) throws Exception {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
