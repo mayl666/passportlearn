@@ -9,5 +9,6 @@ import com.sogou.upd.passport.model.app.AppConfig;
  * Time: 下午8:43
  */
 public interface SessionServerManager {
-     public Result createSession(AppConfig appConfig,String userId);
+     public Result createSession(String userId);
+     public Result removeSession(String sgid);
 }

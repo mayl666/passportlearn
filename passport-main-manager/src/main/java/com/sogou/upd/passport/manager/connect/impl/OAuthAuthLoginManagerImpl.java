@@ -291,10 +291,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
-                    AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
                     //写session 数据库
-                    Result sessionResult = sessionServerManager.createSession(appConfig, userId);
+                    Result sessionResult = sessionServerManager.createSession(userId);
                     String sgid=null;
                     if(sessionResult.isSuccess()){
                          sgid= (String) sessionResult.getModels().get("sgid");
