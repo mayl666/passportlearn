@@ -139,12 +139,13 @@ public class LoginAction extends BaseController {
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
-            int sogouMaxAge = loginParams.getAutoLogin() == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
+            int autoLogin = loginParams.getAutoLogin();
+            int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
             String sogouRu = loginParams.getRu();
             if (Strings.isNullOrEmpty(sogouRu)) {
                 sogouRu = LOGIN_INDEX_URL;
             }
-            result = commonManager.setCookie(response, userId, clientId, ip, sogouMaxAge, sogouRu, 1, COOKIE_URL_SOHURU);
+            result = commonManager.setCookie(response, userId, clientId, ip, sogouMaxAge, sogouRu, autoLogin, COOKIE_URL_SOHURU);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
