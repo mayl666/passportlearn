@@ -8,6 +8,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 
@@ -55,6 +56,18 @@ public class Coder {
             en = en.replace("+", "%20");
             en = en.replace("*", "%2A");
             return en;
+        } catch (UnsupportedEncodingException problem) {
+            throw new IllegalArgumentException(problem);
+        }
+    }
+
+    /**
+     * 将参数URLDecoder为UTF-8
+     */
+    public static String decodeUTF8(String params) {
+        try {
+            String de = URLDecoder.decode(params, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            return de;
         } catch (UnsupportedEncodingException problem) {
             throw new IllegalArgumentException(problem);
         }

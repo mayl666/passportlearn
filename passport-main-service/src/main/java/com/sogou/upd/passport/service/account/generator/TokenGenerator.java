@@ -98,7 +98,7 @@ public class TokenGenerator {
         // 过期时间点
         long vaildTime = DateUtil.generatorVaildTime(expiresIn);
         String tokenContent = passportId + CommonConstant.SEPARATOR_1 + vaildTime;
-        String token = null;
+        String token;
         try {
             //特殊标识，是为了与sohu+ token长度区别开来
             token = CommonConstant.SG_TOKEN_START + AES.encryptURLSafeString(tokenContent, clientSecret);
@@ -130,12 +130,23 @@ public class TokenGenerator {
     }
 
     /**
-     * 生成过期时间点
+     * 生成Wap端登录流程使用的token 构成格式 MD5(passportID|timestamp|4位随机数)
      */
-    public static long generatorVaildTime(int expiresIn) {
-        DateTime dateTime = new DateTime();
-        long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
-        return vaildTime;
+    public static String generatorWapToken(String passportId)
+            throws Exception {
+        // 过期时间点
+        long curTimestamp = System.currentTimeMillis();
+        // 4位随机数
+        String random = RandomStringUtils.randomAlphanumeric(4);
+        String tokenContent = passportId + CommonConstant.SEPARATOR_1 + curTimestamp + CommonConstant.SEPARATOR_1 + random;
+        String token;
+        try {
+            token = Coder.encryptMD5(tokenContent);
+        } catch (Exception e) {
+            logger.error("Pc Token generator by AES fail, passportId:" + passportId);
+            throw e;
+        }
+        return token;
     }
 
 }

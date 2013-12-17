@@ -16,28 +16,37 @@ import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
+import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.OAuth;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
+import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
+import com.sogou.upd.passport.service.account.WapTokenService;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
@@ -51,6 +60,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -85,7 +95,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
+    private AppConfigService appConfigService;
+    @Autowired
+    private SessionServerManager sessionServerManager;
+    @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
+
+
 
     @Override
     public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
@@ -228,7 +244,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
 
             if (connectAccountResult.isSuccess()) {
-                result.setDefaultModel("userid", connectAccountResult.getModels().get("userid"));
+                String passportId = (String) connectAccountResult.getModels().get("userid");
+                result.setDefaultModel("userid", passportId);
                 String userId = (String) connectAccountResult.getModels().get("userid");
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
@@ -261,7 +278,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
                         AccountBaseInfo accountBaseInfo = null;
                         if (connectUserInfoVO != null) {
-                            String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
+                            passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
                             accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
                         }
                         if (accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())) {
@@ -273,6 +290,23 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
+                } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
+                    AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
+
+                    //写session 数据库
+                    Result sessionResult = sessionServerManager.createSession(appConfig, userId);
+                    String sgid=null;
+                    if(sessionResult.isSuccess()){
+                         sgid= (String) sessionResult.getModels().get("sgid");
+                         if (!Strings.isNullOrEmpty(sgid)) {
+                            result.setSuccess(true);
+                            result.getModels().put("sgid", sgid);
+                            ru= buildWapSuccessRu(ru, sgid);
+                         }
+                    }else {
+                        result=buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:"+userId);
+                    }
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
@@ -311,11 +345,25 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
+    private String buildWapSuccessRu(String ru, String sgid) {
+        Map params = Maps.newHashMap();
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (Exception e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_WAP_URL;
+        }
+        //ru后缀一个sgid
+        params.put("sgid", sgid);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        return ru;
+    }
+
     private String buildErrorRu(String type, String ru, String errorCode, String errorText) {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        if (ConnectTypeEnum.isMobileApp(type) && !Strings.isNullOrEmpty(errorCode)) {
+        if (!Strings.isNullOrEmpty(errorCode) && (ConnectTypeEnum.isMobileApp(type) || ConnectTypeEnum.isMobileWap(type))) {
             Map params = Maps.newHashMap();
             params.put(CommonConstant.RESPONSE_STATUS, errorCode);
             if (Strings.isNullOrEmpty(errorText)) {
@@ -363,5 +411,4 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         return passportId;
     }
-
 }
