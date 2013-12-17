@@ -42,7 +42,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     public boolean setPassportId(HttpServletRequest request) {
         try {
             String passportId = request.getHeader(LoginConstant.USER_ID_HEADER);
-//            String tmpPassportId =  new String(passportId.getBytes("ISO-8859-1"), "UTF-8");
+            //解决中文账号cookie问题
             if (passportId.indexOf("@focus.cn") > 0) {
                 char[] carr = passportId.toCharArray();
                 byte[] barr = new byte[carr.length];
