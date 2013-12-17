@@ -36,6 +36,8 @@ public class ConnectLoginParams {
     private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式
     private String ts;   //终端的实例ID
 
+    private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
+
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId(){
         return !Strings.isNullOrEmpty(appid) || !Strings.isNullOrEmpty(client_id);
@@ -146,5 +148,13 @@ public class ConnectLoginParams {
 
     public void setAppid(String appid) {
         this.appid = appid;
+    }
+
+    public String getViewPage() {
+        return viewPage;
+    }
+
+    public void setViewPage(String viewPage) {
+        this.viewPage = viewPage;
     }
 }

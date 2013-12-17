@@ -92,6 +92,12 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
             return this;
         }
 
+        // qq为搜狗产品定制化页面
+        public AuthenticationRequestBuilder setViewPage(String viewPage) {
+            this.parameters.put(QQOAuth.VIEW_PAGE, viewPage);
+            return this;
+        }
+
         // 是否强制用户输入用户名、密码
         public AuthenticationRequestBuilder setForceLogin(boolean force, int provider) {
             if (provider == AccountTypeEnum.RENREN.getValue()) {

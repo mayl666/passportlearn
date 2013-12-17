@@ -28,24 +28,18 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
-import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.WapTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -60,7 +54,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -100,7 +93,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private SessionServerManager sessionServerManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
-
 
 
     @Override
@@ -295,16 +287,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(appConfig, userId);
-                    String sgid=null;
-                    if(sessionResult.isSuccess()){
-                         sgid= (String) sessionResult.getModels().get("sgid");
-                         if (!Strings.isNullOrEmpty(sgid)) {
+                    String sgid;
+                    if (sessionResult.isSuccess()) {
+                        sgid = (String) sessionResult.getModels().get("sgid");
+                        if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
                             result.getModels().put("sgid", sgid);
-                            ru= buildWapSuccessRu(ru, sgid);
-                         }
-                    }else {
-                        result=buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:"+userId);
+                            ru = buildWapSuccessRu(ru, sgid);
+                        }
+                    } else {
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
                     }
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
@@ -359,6 +351,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
+    /*
+     * 返回错误情况下的重定向url
+     */
     private String buildErrorRu(String type, String ru, String errorCode, String errorText) {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
@@ -384,7 +379,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         result.setCode(errorCode);
         result.setMessage(errorText);
         result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText));
-        result.setDefaultModel(CommonConstant.RESPONSE_DATA, buildErrorRu(type, ru, errorCode, errorText));  //todo
+        // type=token返回的错误信息
+        if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            String error = errorCode + "|" + errorText;
+            result.setDefaultModel(CommonConstant.RESPONSE_ERROR, error);
+        }
         return result;
     }
 
