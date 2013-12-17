@@ -163,7 +163,7 @@ public class CommonManagerImpl implements CommonManager {
         Result result = new APIResultSupport(false);
         //种搜狗域cookie
         boolean setSogouCookieRes = setSogouCookie(response,passportId,client_id,ip,sogouMaxAge,sogouRu);
-        if(setSogouCookieRes){
+        if(!setSogouCookieRes){
             result.setSuccess(false);
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
             result.setMessage("生成cookie失败");
