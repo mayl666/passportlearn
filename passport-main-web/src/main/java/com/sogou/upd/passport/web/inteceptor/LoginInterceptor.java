@@ -43,6 +43,20 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         try {
             String passportId = request.getHeader(LoginConstant.USER_ID_HEADER);
 //            String tmpPassportId =  new String(passportId.getBytes("ISO-8859-1"), "UTF-8");
+            if (passportId.indexOf("@focus.cn") > 0) {
+                char[] carr = passportId.toCharArray();
+                byte[] barr = new byte[carr.length];
+                for (int i = 0; i < carr.length; i++) {
+                    barr[i] = (byte) (carr[i]);
+                }
+                try {
+                    passportId = new String(new String(barr, "utf-8"));
+                    // email = new String(new String(barr, "utf-8").getBytes(),
+                    // "GBK");
+                } catch (UnsupportedEncodingException e) {
+                }
+            }
+
             if (StringUtil.isBlank(passportId)) {
                 return false;
             }

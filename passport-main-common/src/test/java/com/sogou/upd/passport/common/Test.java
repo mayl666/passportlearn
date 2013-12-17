@@ -2,6 +2,8 @@ package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.math.Coder;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URLDecoder;
 
 /**
@@ -14,13 +16,22 @@ import java.net.URLDecoder;
 public class Test {
     public static void main(String args[]) throws Exception{
 //        String str= "\\'\"@#$%^&*";
-        String str= "你好，家盟abc-";
+//        String str= "你好，家盟abc-";
+//
+//        String encodeStr = Coder.encodeUTF8(str);
+//        System.out.println("encodeStr:"+encodeStr);
+//
+//        String deStr = URLDecoder.decode(encodeStr);
+//        System.out.println("decodeStr:"+deStr);
+        String passportId ="￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
+        String passportId1 = "￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
+        String tmpPassportId =  new String(passportId.getBytes(), "GBK");
 
-        String encodeStr = Coder.encodeUTF8(str);
-        System.out.println("encodeStr:"+encodeStr);
+//        InputStream in = new InputStream();
+//        InputStreamReader in = new InputStreamReader();
+        System.out.println("tmpPassportId:"+tmpPassportId);
 
-        String deStr = URLDecoder.decode(encodeStr);
-        System.out.println("decodeStr:"+deStr);
+
 
 
     }
