@@ -358,6 +358,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
+    /*
+     * 返回错误情况下的重定向url
+     */
     private String buildErrorRu(String type, String ru, String errorCode, String errorText) {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
@@ -383,6 +386,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         result.setCode(errorCode);
         result.setMessage(errorText);
         result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText));
+        // type=token返回的错误信息
+        if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            String error = errorCode + "|" + errorText;
+            result.setDefaultModel(CommonConstant.RESPONSE_ERROR, error);
+        }
         return result;
     }
 
