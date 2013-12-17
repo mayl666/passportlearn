@@ -68,7 +68,7 @@ public interface CommonManager {
      * @param autoLogin
      * @return
      */
-    public Result createSohuCookieUrl(String passportId, String domain,String ru,int autoLogin);
+    public Result createSohuCookieUrl(String passportId,String ru,int autoLogin);
     /**
      * 内部接口注册的ip次数累加
      *
@@ -77,13 +77,29 @@ public interface CommonManager {
     public void incRegTimesForInternal(String ip);
 
     /**
-     * 种sogou 域cookie
-     * @param request
+     * 种sogou域cookie
      * @param response
      * @param passportId
      * @param client_id
      * @param ip
+     * @param maxAge
+     * @param ru
+     * @return
      */
-    public void setSogouCookie(HttpServletRequest request, HttpServletResponse response,String passportId,int client_id,String ip,int maxAge);
+    public boolean setSogouCookie(HttpServletResponse response,String passportId,int client_id,String ip,int maxAge,String ru);
+
+    /**
+     * 种sogou sohu域cookie
+     * @param response
+     * @param passportId
+     * @param client_id
+     * @param ip
+     * @param sogouMaxAge
+     * @param sogouRu
+     * @param sohuAutoLogin
+     * @param sohuRu
+     * @return
+     */
+    public Result setCookie(HttpServletResponse response,String passportId,int client_id,String ip,int sogouMaxAge,String sogouRu,int sohuAutoLogin,String sohuRu);
 
 }

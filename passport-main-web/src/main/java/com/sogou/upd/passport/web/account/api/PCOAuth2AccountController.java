@@ -408,10 +408,10 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
             return "";
         }
-        //生成sogou域 cookie
-        commonManager.setSogouCookie(request,response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),-1);
-        String ru = "https://account.sogou.com/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
-        result = commonManager.createSohuCookieUrl(passportId, "", ru, 1);
+
+        String sogouRu ="https://account.sogou.com";
+        String sohuRu = "https://account.sogou.com/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        result = commonManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),-1,sogouRu,1,sohuRu);
         if (result.isSuccess()) {
             response.sendRedirect((String) result.getModels().get("cookieUrl"));
             return "";

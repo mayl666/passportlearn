@@ -119,13 +119,12 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createSohuCookieUrl(String passportId, String domain,String ru,int autoLogin){
+    public Result createSohuCookieUrl(String passportId,String ru,int autoLogin){
         Result result = new APIResultSupport(false);
-        //todo 只有@sogou域 和 sohu矩阵域才种跨域cookie
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
         createCookieUrlApiParams.setRu(ru);
-        createCookieUrlApiParams.setDomain(domain);
+        createCookieUrlApiParams.setDomain("");
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
         Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true, true);
         if (createCookieResult.isSuccess()) {
@@ -139,11 +138,11 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public void setSogouCookie(HttpServletRequest request, HttpServletResponse response,String passportId,int client_id,String ip,int maxAge){
+    public boolean setSogouCookie(HttpServletResponse response,String passportId,int client_id,String ip,int maxAge,String ru){
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(client_id);
-        cookieApiParams.setRu("https://account.sogou.com");
+        cookieApiParams.setRu(ru);
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
@@ -154,7 +153,27 @@ public class CommonManagerImpl implements CommonManager {
             ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    public Result setCookie(HttpServletResponse response,String passportId,int client_id,String ip,int sogouMaxAge,String sogouRu,int sohuAutoLogin,String sohuRu){
+        Result result = new APIResultSupport(false);
+        //种搜狗域cookie
+        boolean setSogouCookieRes = setSogouCookie(response,passportId,client_id,ip,sogouMaxAge,sogouRu);
+        if(setSogouCookieRes){
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+            result.setMessage("生成cookie失败");
+            return result;
+        }
+
+        //todo 只有@sogou域 和 sohu矩阵域才种跨域cookie
+        result = createSohuCookieUrl(passportId,sohuRu,sohuAutoLogin);
+        return result;
+
     }
 
     @Override
