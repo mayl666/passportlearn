@@ -77,11 +77,7 @@ public class BaseConnectController extends BaseController {
             }
             if(Strings.isNullOrEmpty(provider)){
                 //provide为空跳转到 ru
-                URL urlRu = new URL(ru);
-                ru = urlRu.getQuery();
-                if (!Strings.isNullOrEmpty(ru)) {
-                    ru = ru.substring(ru.indexOf('=') + 1, ru.length());
-                } else {
+                if (Strings.isNullOrEmpty(ru)) {
                     ru = CommonConstant.DEFAULT_WAP_URL;
                 }
                 Map params = Maps.newHashMap();

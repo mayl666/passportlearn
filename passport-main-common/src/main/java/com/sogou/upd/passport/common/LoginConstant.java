@@ -10,6 +10,8 @@ public class LoginConstant {
 
     //用户登陆的信息
     public static final String COOKIE_PPINF = "ppinf";
+    //用户登陆的信息
+    public static final String COOKIE_SGID = "sgid";
 
     //PPINF 的数字签名
     public static final String COOKIE_PPRDIG = "pprdig";

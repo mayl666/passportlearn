@@ -28,18 +28,24 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.OAuth;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
+import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.AccountTokenService;
+import com.sogou.upd.passport.service.account.WapTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -54,6 +60,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -93,6 +100,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private SessionServerManager sessionServerManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
+
 
 
     @Override
@@ -283,20 +291,19 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
-                    AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
                     //写session 数据库
-                    Result sessionResult = sessionServerManager.createSession(appConfig, userId);
-                    String sgid;
-                    if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get("sgid");
-                        if (!Strings.isNullOrEmpty(sgid)) {
+                    Result sessionResult = sessionServerManager.createSession(userId);
+                    String sgid=null;
+                    if(sessionResult.isSuccess()){
+                         sgid= (String) sessionResult.getModels().get("sgid");
+                         if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
                             result.getModels().put("sgid", sgid);
-                            ru = buildWapSuccessRu(ru, sgid);
-                        }
-                    } else {
-                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+                            ru= buildWapSuccessRu(ru, sgid);
+                         }
+                    }else {
+                        result=buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:"+userId);
                     }
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
