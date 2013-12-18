@@ -147,7 +147,7 @@ public class WapLoginAction extends BaseController {
      * wap页面退出
      * 页面直接跳转，回跳到之前的地址
      */
-    @RequestMapping(value = "/logout_redirect", method = RequestMethod.GET)
+    @RequestMapping(value = "/wap/logout_redirect", method = RequestMethod.GET)
     public String logoutWithRu(HttpServletRequest request,
                                      HttpServletResponse response,
                                      WapLogoutParams params) {
