@@ -37,7 +37,7 @@ define(['./utils'],function(utils){
             }
         },
         parseHeader: function(data){
-            $('#Header .username').html(data.uniqname||data.username);
+            $('#Header .username').html(decodeURIComponent(data.uniqname||data.username));
             if( data.username||data.uniqname ){
                 $('#Header .info').show();
             }

@@ -1,15 +1,18 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -19,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -113,12 +119,12 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createCookieUrl(String passportId, String domain,String ru,int autoLogin){
+    public Result createSohuCookieUrl(String passportId,String ru,int autoLogin){
         Result result = new APIResultSupport(false);
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
         createCookieUrlApiParams.setRu(ru);
-        createCookieUrlApiParams.setDomain(domain);
+        createCookieUrlApiParams.setDomain("");
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
         Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true, true);
         if (createCookieResult.isSuccess()) {
@@ -127,6 +133,45 @@ public class CommonManagerImpl implements CommonManager {
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
+        return result;
+
+    }
+
+    @Override
+    public boolean setSogouCookie(HttpServletResponse response,String passportId,int client_id,String ip,int maxAge,String ru){
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(passportId);
+        cookieApiParams.setClient_id(client_id);
+        cookieApiParams.setRu(ru);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        cookieApiParams.setIp(ip);
+        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+        if (getCookieValueResult.isSuccess()) {
+            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+            ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Result setCookie(HttpServletResponse response,String passportId,int client_id,String ip,int sogouMaxAge,String sogouRu,int sohuAutoLogin,String sohuRu){
+        Result result = new APIResultSupport(false);
+        //种搜狗域cookie
+        boolean setSogouCookieRes = setSogouCookie(response,passportId,client_id,ip,sogouMaxAge,sogouRu);
+        if(!setSogouCookieRes){
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+            result.setMessage("生成cookie失败");
+            return result;
+        }
+
+        //todo 只有@sogou域 和 sohu矩阵域才种跨域cookie
+        result = createSohuCookieUrl(passportId,sohuRu,sohuAutoLogin);
         return result;
 
     }
