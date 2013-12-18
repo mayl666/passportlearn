@@ -112,7 +112,6 @@ public class ConnectLoginController extends BaseConnectController {
             String uuid = UUID.randomUUID().toString();
             if (CommonHelper.isIePinyinToken(clientId) || type.equals(ConnectTypeEnum.PC.toString()) || /*ConnectTypeEnum.isMobileApp(type)||*/ConnectTypeEnum.isMobileWap(type)) {  // 目前浏览器PC端和mapp走搜狗流程
                 url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-                writeOAuthStateCookie(res, uuid, providerStr);
             } else {
                 url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
             }
