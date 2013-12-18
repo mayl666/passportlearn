@@ -204,9 +204,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             // 校验state，防止CRSF攻击
             String state = req.getParameter("state");
             String cookieValue = ServletUtil.getCookie(req, state);
-            if (!cookieValue.equals(CommonHelper.constructStateCookieKey(providerStr))) {
-                result.setCode(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
-                return result;
+            if(cookieValue != null){
+                if (!cookieValue.equals(CommonHelper.constructStateCookieKey(providerStr))) {
+                    result.setCode(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
+                    return result;
+                }
             }
 
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
