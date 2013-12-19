@@ -116,7 +116,7 @@ public class RedisMonitor {
                 int port = (Integer) jsonMap.get("port");
                 if (!Strings.isNullOrEmpty(host) && port >= 0) {
 
-                    log.info("factory info:"+factory.getHostName()+":"+factory.getPort());
+                    log.warn("factory info:"+factory.getHostName()+":"+factory.getPort());
 
                     if (host.equals(factory.getHostName()) && port == factory.getPort()) {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
@@ -138,6 +138,8 @@ public class RedisMonitor {
                     factory.setPort(port);
                     factory.setShardInfo(shardInfo);
                     factory.afterPropertiesSet();
+
+                    log.warn("redis changed succ factory info:"+factory.getHostName()+":"+factory.getPort());
                 }
 
             } else {
