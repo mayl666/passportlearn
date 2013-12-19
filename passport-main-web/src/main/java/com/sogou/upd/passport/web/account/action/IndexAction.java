@@ -46,26 +46,7 @@ public class IndexAction extends BaseController {
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                //获取昵称
-//                String nickName = hostHolder.getNickName();
-//                if (Strings.isNullOrEmpty(nickName)) {
-//                    nickName = userId;
-//                }
-//                GetUserInfoApiparams infoApiparams=new GetUserInfoApiparams();
-//                infoApiparams.setUserid(userId);
-//                Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-//                if(shPlusResult.isSuccess()){
-//                    Object obj= shPlusResult.getModels().get("baseInfo");
-//                    if(obj!=null){
-//                        AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
-//                        String uniqname=baseInfo.getUniqname();
-//                        result.setDefaultModel("username", Strings.isNullOrEmpty(uniqname)?userId:uniqname);
-//                    } else {
-//                        result.setDefaultModel("username", nickName);
-//                    }
-//                }
-
-                result.setDefaultModel("username", oAuth2ResourceManager.getUniqname(userId));
+                result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId));
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {

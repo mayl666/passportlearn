@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
@@ -53,6 +54,8 @@ public class SecureAction extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private CheckManager checkManager;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
 
     /*
@@ -255,11 +258,7 @@ public class SecureAction extends BaseController {
         }
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -296,11 +295,7 @@ public class SecureAction extends BaseController {
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }

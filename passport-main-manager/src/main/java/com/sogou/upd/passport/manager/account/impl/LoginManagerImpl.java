@@ -69,16 +69,7 @@ public class LoginManagerImpl implements LoginManager {
             }
 
             result = authUser(username,ip,pwdMD5);
-            //记录返回结果
-            if (result.isSuccess()) {
-                result = commonManager.createCookieUrl(result, passportId,"", loginParameters.getAutoLogin());
-                //设置来源
-                String ru = loginParameters.getRu();
-                if (Strings.isNullOrEmpty(ru)) {
-                    ru = scheme + LOGIN_INDEX_URLSTR;
-                }
-                result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
-            }
+
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
