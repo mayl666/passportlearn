@@ -75,7 +75,7 @@ public class RedisMonitor {
     private class CacheListenerImpl implements NodeCacheListener {
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("cache redis node changed ");
+            log.warn("redis node changed cache");
             refresh(cacheNodeCache, cacheConnectionFactory);
         }
     }
@@ -84,7 +84,7 @@ public class RedisMonitor {
 
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("redis node changed ");
+            log.warn("redis node changed token");
             refresh(tokenNodeCache, tokenConnectionFactory);
         }
     }
@@ -93,7 +93,7 @@ public class RedisMonitor {
 
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("redis node changed ");
+            log.warn("redis node changed dbcache");
             refresh(dbCacheNodeCache, dbCacheConnectionFactory);
         }
     }
@@ -108,7 +108,8 @@ public class RedisMonitor {
         try {
             if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
                 String data = new String(nodeCache.getCurrentData().getData());
-                log.warn("cache redis node changed data:" + data);
+
+                log.warn("redis node changed data:" + data);
 
                 Map jsonMap = JsonUtil.jsonToBean(data, Map.class);
                 String host = (String) jsonMap.get("host");
@@ -118,6 +119,8 @@ public class RedisMonitor {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
                     }
+
+                    log.warn("redis node real changed data:" + data);
 
                     if (factory != null) {
                         factory.destroy();
