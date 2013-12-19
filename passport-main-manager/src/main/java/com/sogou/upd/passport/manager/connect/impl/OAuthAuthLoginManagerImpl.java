@@ -201,14 +201,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
-            // 校验state，防止CRSF攻击
-            String state = req.getParameter("state");
-            String cookieValue = ServletUtil.getCookie(req, state);
-            if (!cookieValue.equals(CommonHelper.constructStateCookieKey(providerStr))) {
-                result.setCode(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
-                return result;
-            }
-
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             if (oAuthConsumer == null) {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
