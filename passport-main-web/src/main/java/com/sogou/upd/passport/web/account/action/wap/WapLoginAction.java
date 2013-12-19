@@ -152,7 +152,6 @@ public class WapLoginAction extends BaseController {
                                      HttpServletResponse response,
                                      WapLogoutParams params) {
         // 校验参数
-        String viewUrl= null;
         String sgid = null;
         String client_id= null;
         String ru= null;
@@ -160,8 +159,8 @@ public class WapLoginAction extends BaseController {
             ru=params.getRu();
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                viewUrl = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-                response.sendRedirect(viewUrl);
+                ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                response.sendRedirect(ru);
                 return "";
             }
             sgid=params.getSgid();

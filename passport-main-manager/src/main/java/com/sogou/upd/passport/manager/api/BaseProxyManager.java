@@ -176,7 +176,7 @@ public class BaseProxyManager {
      */
     private boolean isNonPCOpenApiProxy(String url, String clientId) {
         if (url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO)) {
-            if (!clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID))) {
+            if (!clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.XIAOSHUO_CLIENTID))) {
                 return true;
             }
         }
