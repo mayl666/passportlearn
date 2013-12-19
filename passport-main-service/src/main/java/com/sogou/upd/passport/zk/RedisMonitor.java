@@ -115,12 +115,19 @@ public class RedisMonitor {
                 String host = (String) jsonMap.get("host");
                 int port = (Integer) jsonMap.get("port");
                 if (!Strings.isNullOrEmpty(host) && port >= 0) {
+
+                    log.info("factory info:"+factory.getHostName()+":"+factory.getPort());
+
                     if (host.equals(factory.getHostName()) && port == factory.getPort()) {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
                     }
 
-                    log.warn("redis node real changed data:" + data);
+
+                    if(!"localhost".equals(factory.getHostName())){
+                        log.warn("redis node real changed data:" + data);
+                    }
+
 
                     if (factory != null) {
                         factory.destroy();
