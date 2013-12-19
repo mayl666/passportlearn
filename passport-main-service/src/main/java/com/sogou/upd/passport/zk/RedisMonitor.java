@@ -22,7 +22,6 @@ import java.util.Map;
 @Component
 public class RedisMonitor {
 
-
     private static final Logger log = LoggerFactory.getLogger(RedisMonitor.class);
 
     private NodeCache cacheNodeCache;
@@ -46,7 +45,7 @@ public class RedisMonitor {
     private JedisConnectionFactory dbCacheConnectionFactory;  //web接口临时信息存储缓存
 
 
-    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath, String dbCachePath, JedisConnectionFactory cacheConnectionFactory,
+    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath,String dbCachePath,JedisConnectionFactory cacheConnectionFactory,
                         JedisConnectionFactory tokenConnectionFactory, JedisConnectionFactory dbCacheConnectionFactory) {
         this.monitor = monitor;
         this.cachePath = cachePath;
@@ -57,7 +56,7 @@ public class RedisMonitor {
         this.dbCacheConnectionFactory = dbCacheConnectionFactory;
         cacheNodeCache = this.addListener(cachePath, new CacheListenerImpl());
         tokenNodeCache = this.addListener(tokenPath, new TokenListenerImpl());
-        dbCacheNodeCache = this.addListener(dbCachePath, new DbCacheListenerImpl());
+        dbCacheNodeCache = this.addListener(dbCachePath,new DbCacheListenerImpl());
     }
 
 
@@ -76,7 +75,7 @@ public class RedisMonitor {
     private class CacheListenerImpl implements NodeCacheListener {
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("redis node changed cache");
+            log.warn("cache redis node changed ");
             refresh(cacheNodeCache, cacheConnectionFactory);
         }
     }
@@ -85,7 +84,7 @@ public class RedisMonitor {
 
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("redis node changed token");
+            log.warn("redis node changed ");
             refresh(tokenNodeCache, tokenConnectionFactory);
         }
     }
@@ -94,7 +93,7 @@ public class RedisMonitor {
 
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("redis node changed dbcache");
+            log.warn("redis node changed ");
             refresh(dbCacheNodeCache, dbCacheConnectionFactory);
         }
     }
@@ -109,20 +108,15 @@ public class RedisMonitor {
         try {
             if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
                 String data = new String(nodeCache.getCurrentData().getData());
+                log.warn("cache redis node changed data:" + data);
 
                 Map jsonMap = JsonUtil.jsonToBean(data, Map.class);
                 String host = (String) jsonMap.get("host");
                 int port = (Integer) jsonMap.get("port");
                 if (!Strings.isNullOrEmpty(host) && port >= 0) {
-                    if (factory != null && host.equals(factory.getHostName()) && port == factory.getPort()) {
+                    if (host.equals(factory.getHostName()) && port == factory.getPort()) {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
-                    }
-
-                    if (factory != null) {
-                        log.warn("cache redis node changed data:" + data);
-                    } else {
-                        log.warn("cache redis node init data:" + data);
                     }
 
                     if (factory != null) {
