@@ -148,11 +148,11 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public String getPassportIdByToken(String token,String clientSecret) throws ServiceException{
+    public String getPassportIdByToken(String token, String clientSecret) throws ServiceException {
         String passportId = null;
         try {
             passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
-            return  passportId;
+            return passportId;
         } catch (Exception e) {
             logger.error("getPassportIdByToken:" + token, e);
             return null;
@@ -160,11 +160,11 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public String getPassportIdByOldToken(String token,String clientSecret) throws ServiceException{
+    public String getPassportIdByOldToken(String token, String clientSecret) throws ServiceException {
         String passportId = null;
         try {
             passportId = TokenDecrypt.decryptOldPcToken(token, clientSecret);
-            return  passportId;
+            return passportId;
         } catch (Exception e) {
             logger.error("getPassportIdByToken:" + token, e);
             return null;
@@ -296,7 +296,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private boolean isNeedExtendTime(long tokenValidTime, int expiresIn) {
         long currentTime = System.currentTimeMillis();
         long leftTime = tokenValidTime - currentTime;
-        long halfExpireTime = (long) (expiresIn / 2);
+        long halfExpireTime = (long) (expiresIn * 1000 / 2);
         return leftTime < halfExpireTime;
     }
 }
