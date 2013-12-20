@@ -92,6 +92,7 @@ public class ConnectCallbackController extends BaseConnectController {
             }
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
+                model.addAttribute("error", result.getModels().get("error"));
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 return viewUrl;

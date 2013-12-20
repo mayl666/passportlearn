@@ -38,6 +38,12 @@ public interface WapLoginManager {
     public Result checkCaptchaVaild(String username, String ip, String clientId,String captchaCode,String token );
 
     /**
+     * wap端移除session
+     * @return
+     */
+    public Result removeSession(String sgid);
+
+    /**
      * 判断wap端应用是否需要输入验证码
      * @param client_id
      * @param username

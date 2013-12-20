@@ -201,14 +201,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
-            // 校验state，防止CRSF攻击
-            String state = req.getParameter("state");
-            String cookieValue = ServletUtil.getCookie(req, state);
-            if (!cookieValue.equals(CommonHelper.constructStateCookieKey(providerStr))) {
-                result.setCode(ErrorUtil.OAUTH_AUTHZ_STATE_INVALID);
-                return result;
-            }
-
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             if (oAuthConsumer == null) {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
@@ -291,10 +283,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
-                    AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
                     //写session 数据库
-                    Result sessionResult = sessionServerManager.createSession(appConfig, userId);
+                    Result sessionResult = sessionServerManager.createSession(userId);
                     String sgid=null;
                     if(sessionResult.isSuccess()){
                          sgid= (String) sessionResult.getModels().get("sgid");
@@ -359,6 +350,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
+    /*
+     * 返回错误情况下的重定向url
+     */
     private String buildErrorRu(String type, String ru, String errorCode, String errorText) {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
@@ -384,6 +378,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         result.setCode(errorCode);
         result.setMessage(errorText);
         result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText));
+        // type=token返回的错误信息
+        if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            String error = errorCode + "|" + errorText;
+            result.setDefaultModel(CommonConstant.RESPONSE_ERROR, error);
+        }
         return result;
     }
 

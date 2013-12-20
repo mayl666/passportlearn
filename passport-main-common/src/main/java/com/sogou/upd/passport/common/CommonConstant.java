@@ -17,6 +17,7 @@ public class CommonConstant {
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
     public static final int BROWSER_CLIENTID = 1065; //浏览器输入法桌面端client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
+    public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
     public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
     public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
@@ -42,7 +43,7 @@ public class CommonConstant {
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
-    public static final String RESPONSE_DATA = "data"; // 响应结果数据
+    public static final String RESPONSE_ERROR = "error"; // 响应结果数据
     public static final String RESPONSE_RU = "ru"; // 响应结果的ru
 
     public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
@@ -53,8 +54,6 @@ public class CommonConstant {
     public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
     public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
-    //	public static final String API_ID_SOGOU_DOMAIN = "test01.id.sogou.com";
-    public static final String API_ID_SOGOU_INTERNAL_DOMAIN = "api.id.sogou.com.z.sogou-op.org";
 
     public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
 

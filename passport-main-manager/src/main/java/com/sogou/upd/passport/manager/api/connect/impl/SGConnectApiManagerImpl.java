@@ -3,9 +3,9 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
@@ -21,11 +21,9 @@ import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
 import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
-import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -78,18 +76,21 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             String requestUrl;
             // 采用Authorization Code Flow流程
             //若provider=QQ && display=wml、xhtml调用WAP接口
-            if(ConnectRequest.isQQWapRequest(connectLoginParams.getProvider(), display)){
+            if (ConnectRequest.isQQWapRequest(connectLoginParams.getProvider(), display)) {
                 requestUrl = oAuthConsumer.getWapUserAuthzUrl();
-            }else {
+            } else {
                 requestUrl = oAuthConsumer.getWebUserAuthzUrl();
             }
-            request = OAuthAuthzClientRequest
+            OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
                     .authorizationLocation(requestUrl).setAppKey(appKey)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
+                    .setState(uuid);
+            if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage()) && AccountTypeEnum.QQ.getValue() == provider) {
+                builder.setViewPage(connectLoginParams.getViewPage());       // qq为搜狗产品定制化页面
+            }
+            request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
             throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException!");
@@ -114,7 +115,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
      * @return
      */
     @Override
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+    public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         Result result = new APIResultSupport(false);
         try {
             //如果是post请求，原方法
@@ -135,7 +136,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setModels(map);
             }
         } catch (Exception e) {
-            logger.error("getQQConnectUserInfo Fail:", e);
+            logger.error("getConnectTokenInfo Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;

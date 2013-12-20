@@ -76,7 +76,7 @@ public class QQLightOpenApiController {
             }
             //调用sohu接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createQQConnectParams(params);
-            Result openResult = sgConnectApiManager.getQQConnectUserInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             resultString = openResult.toString();
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey

@@ -75,7 +75,7 @@ public class RedisMonitor {
     private class CacheListenerImpl implements NodeCacheListener {
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("cache redis node changed ");
+            log.warn("redis node changed cache");
             refresh(cacheNodeCache, cacheConnectionFactory);
         }
     }
@@ -84,7 +84,7 @@ public class RedisMonitor {
 
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("redis node changed ");
+            log.warn("redis node changed token");
             refresh(tokenNodeCache, tokenConnectionFactory);
         }
     }
@@ -93,7 +93,7 @@ public class RedisMonitor {
 
         @Override
         public void nodeChanged() throws Exception {
-            log.warn("redis node changed ");
+            log.warn("redis node changed dbcache");
             refresh(dbCacheNodeCache, dbCacheConnectionFactory);
         }
     }
@@ -108,16 +108,26 @@ public class RedisMonitor {
         try {
             if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
                 String data = new String(nodeCache.getCurrentData().getData());
-                log.warn("cache redis node changed data:" + data);
+
+                log.warn("redis node changed data:" + data);
 
                 Map jsonMap = JsonUtil.jsonToBean(data, Map.class);
                 String host = (String) jsonMap.get("host");
                 int port = (Integer) jsonMap.get("port");
                 if (!Strings.isNullOrEmpty(host) && port >= 0) {
+
+                    log.warn("factory info:"+factory.getHostName()+":"+factory.getPort());
+
                     if (host.equals(factory.getHostName()) && port == factory.getPort()) {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
                         return;
                     }
+
+
+                    if(!"localhost".equals(factory.getHostName())){
+                        log.warn("redis node real changed data:" + data);
+                    }
+
 
                     if (factory != null) {
                         factory.destroy();
@@ -128,6 +138,8 @@ public class RedisMonitor {
                     factory.setPort(port);
                     factory.setShardInfo(shardInfo);
                     factory.afterPropertiesSet();
+
+                    log.warn("redis changed succ factory info:"+factory.getHostName()+":"+factory.getPort());
                 }
 
             } else {
