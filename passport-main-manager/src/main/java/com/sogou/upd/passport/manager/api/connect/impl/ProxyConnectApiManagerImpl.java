@@ -107,7 +107,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     }
 
     @Override
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+    public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
