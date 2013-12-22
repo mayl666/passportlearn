@@ -72,7 +72,6 @@ public class ConnectCallbackController extends BaseConnectController {
                 String sgid= (String) result.getModels().get("sgid");
                 ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
-                viewUrl= URLEncoder.encode(viewUrl,CommonConstant.DEFAULT_CONTENT_CHARSET);
                 res.sendRedirect(viewUrl);
                 return "";
             }else if (ConnectTypeEnum.PC.toString().equals(type)){
