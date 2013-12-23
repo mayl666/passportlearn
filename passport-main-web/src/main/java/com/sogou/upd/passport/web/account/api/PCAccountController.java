@@ -242,21 +242,6 @@ public class PCAccountController extends BaseController {
             return "Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
-        //解决中文账号cookie问题
-        if (userId.indexOf("@focus.cn") > 0) {
-            char[] carr = userId.toCharArray();
-            byte[] barr = new byte[carr.length];
-            for (int i = 0; i < carr.length; i++) {
-                barr[i] = (byte) (carr[i]);
-            }
-            try {
-                userId = new String(new String(barr, "utf-8"));
-                // email = new String(new String(barr, "utf-8").getBytes(),
-                // "GBK");
-            } catch (UnsupportedEncodingException e) {
-            }
-        }
-
         userId = AccountDomainEnum.getInternalCase(userId);
         authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
