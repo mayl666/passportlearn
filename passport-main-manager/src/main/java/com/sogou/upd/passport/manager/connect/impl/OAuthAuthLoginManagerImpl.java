@@ -357,6 +357,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 int port = url.getPort();
                 String query = url.getQuery();
                 ru = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + url.getPort()) + (StringUtils.isNotEmpty(query) ? "?" + URLEncoder.encode(url.getQuery(), CommonConstant.DEFAULT_CONTENT_CHARSET) : "");
+
+                logger.debug("######:"+ru);
+
             } catch (MalformedURLException e) {
                 logger.error("buildWapSuccessRu MalformedURLException!", e);
             } catch (UnsupportedEncodingException e) {
