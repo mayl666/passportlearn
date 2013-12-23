@@ -23,6 +23,10 @@ public class CommonConstant {
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
     public static final String SG_TOKEN_START = "SG"; //4.2版本浏览器token开始标志
     public static final String SG_TOKEN_OLD_START = "SG_"; //4.2版本早期的token开始标志
+    public static final String PC_REDIRECT_GETUSERINFO = "getuserinfo"; //跳转到个人中心页面
+    public static final String PC_REDIRECT_AVATARURL = "avatarurl"; //跳转到修改头像页面
+    public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
+
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
