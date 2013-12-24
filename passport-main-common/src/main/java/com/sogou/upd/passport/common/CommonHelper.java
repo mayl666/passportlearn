@@ -68,6 +68,15 @@ public class CommonHelper {
     }
 
     /**
+     * clientId=1105为输入法MAC
+     *
+     * @param clientId
+     * @return
+     */
+    public static boolean isPinyinExplorerWeb(int clientId) {
+        return clientId == CommonConstant.PINYIN_EXPLORER_BBS_CLIENTID;
+    }
+    /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
      * @param passportId passport内部传输的用户id
      * @return

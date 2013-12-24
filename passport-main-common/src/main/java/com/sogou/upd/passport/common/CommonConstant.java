@@ -15,7 +15,7 @@ public class CommonConstant {
 
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
-    public static final int BROWSER_CLIENTID = 1065; //浏览器输入法桌面端client_id
+    public static final int PINYIN_EXPLORER_BBS_CLIENTID = 1065; //浏览器输入法web端client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
     public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30

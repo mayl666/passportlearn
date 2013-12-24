@@ -108,12 +108,12 @@ public class ConnectLoginController extends BaseConnectController {
                 res.sendRedirect(url);
                 return "";
             }
-            // 防CRSF攻击
+
             String uuid = UUID.randomUUID().toString();
-            if (CommonHelper.isIePinyinToken(clientId) || type.equals(ConnectTypeEnum.PC.toString()) || /*ConnectTypeEnum.isMobileApp(type)||*/ConnectTypeEnum.isMobileWap(type) || ConnectTypeEnum.isWeb(type)) {  // 目前浏览器PC端和mapp走搜狗流程
-                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-            } else {
+            if (CommonHelper.isPinyinExplorerWeb(clientId)) {  // todo 需要确定输入法web端是否能够切换
                 url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+            } else {
+                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
             }
             res.sendRedirect(url);
             return "";
