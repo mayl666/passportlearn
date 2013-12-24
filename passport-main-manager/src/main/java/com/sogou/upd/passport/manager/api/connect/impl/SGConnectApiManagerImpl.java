@@ -115,7 +115,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
      * @return
      */
     @Override
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+    public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         Result result = new APIResultSupport(false);
         try {
             //如果是post请求，原方法
@@ -136,7 +136,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setModels(map);
             }
         } catch (Exception e) {
-            logger.error("getQQConnectUserInfo Fail:", e);
+            logger.error("getConnectTokenInfo Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;

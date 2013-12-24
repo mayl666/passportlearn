@@ -339,8 +339,8 @@ public class HttpClientUtil {
         MultiThreadedHttpConnectionManager shManager = new MultiThreadedHttpConnectionManager();
         shManager.getParams().setDefaultMaxConnectionsPerHost(100);
         shManager.getParams().setMaxTotalConnections(500);
-        shManager.getParams().setConnectionTimeout(1000);
-        shManager.getParams().setSoTimeout(1000);
+        shManager.getParams().setConnectionTimeout(3000);
+        shManager.getParams().setSoTimeout(3000);
         shClient = new HttpClient(shManager);
     }
 

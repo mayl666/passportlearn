@@ -5,14 +5,10 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.model.httpclient.RequestModel;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.HttpClientUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.common.validation.constraints.UniqNameValidator;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
@@ -24,11 +20,7 @@ import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
-import com.sogou.upd.passport.service.account.SHTokenService;
-import com.sogou.upd.passport.service.account.generator.TokenDecrypt;
-import com.sogou.upd.passport.service.account.impl.PCAccountServiceImpl;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +48,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
-    @Autowired
-    private SHTokenService shTokenService;
 
     @Override
     public Result createPairToken(PcPairTokenParams pcTokenParams) {
@@ -155,11 +145,9 @@ public class PCAccountManagerImpl implements PCAccountManager {
         try {
             if (CommonHelper.isExplorerToken(clientId)) {
                 return  (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
-                         pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken)||
-                         shTokenService.verifyAllShRToken(passportId, clientId, instanceId, refreshToken));
+                         pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken));
             } else if (CommonHelper.isPinyinMACToken(clientId)) {
-                return (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken)||
-                        shTokenService.verifyShRToken(passportId, clientId, instanceId, refreshToken));
+                return (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken));
             } else {
                 return pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
             }
@@ -277,24 +265,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
         boolean isPCTokenSig = verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
         if (!isPCTokenSig) {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return  (verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig) ||
-                        verifySigByAllShToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
-            } else if (CommonHelper.isPinyinMACToken(clientId)) {
-                return verifySigByShRefreshToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
+                return  (verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
             }
         }
         return isPCTokenSig;
-    }
-
-    //通过sh token校验sig
-    private boolean verifySigByAllShToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
-        return (isEqualSig(passportId, clientId, shTokenService.queryRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig) ||
-                isEqualSig(passportId, clientId, shTokenService.queryOldRefreshToken(passportId, clientId, instanceId), timestamp, clientSecret, sig));
-    }
-
-    private boolean verifySigByShRefreshToken(String passportId, int clientId, String instanceId, String timestamp, String clientSecret, String sig) throws Exception {
-        String refreshToken = shTokenService.queryRefreshToken(passportId, clientId, instanceId);
-        return isEqualSig(passportId, clientId, refreshToken, timestamp, clientSecret, sig);
     }
 
     //通过sh token校验sig
