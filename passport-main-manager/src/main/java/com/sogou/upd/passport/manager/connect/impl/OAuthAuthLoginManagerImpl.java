@@ -52,6 +52,7 @@ import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,10 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -347,6 +350,20 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         //ru后缀一个sgid
         params.put("sgid", sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+//        if(!Strings.isNullOrEmpty(ru)){
+//            URL url = null;
+//            try {
+//                url = new URL(ru);
+//                int port = url.getPort();
+//                String query = url.getQuery();
+//                ru = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + url.getPort()) + (StringUtils.isNotEmpty(query) ? "?" + URLEncoder.encode(url.getQuery(), CommonConstant.DEFAULT_CONTENT_CHARSET) : "");
+//
+//            } catch (MalformedURLException e) {
+//                logger.error("buildWapSuccessRu MalformedURLException!", e);
+//            } catch (UnsupportedEncodingException e) {
+//                logger.error("buildWapSuccessRu UnsupportedEncodingException!", e);
+//            }
+//        }
         return ru;
     }
 

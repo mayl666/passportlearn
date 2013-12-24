@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
@@ -16,12 +18,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * 第三方账号授权回调接口
@@ -65,13 +71,13 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
                 return viewUrl;
-            } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
-                String sgid = (String) result.getModels().get("sgid");
+            } else if(type.equals(ConnectTypeEnum.WAP.toString())){
+                String sgid= (String) result.getModels().get("sgid");
                 ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 res.sendRedirect(viewUrl);
                 return "";
-            } else if (ConnectTypeEnum.PC.toString().equals(type)) {
+            }else if (ConnectTypeEnum.PC.toString().equals(type)){
                 model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
                 model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
                 model.addAttribute("nick", result.getModels().get("nick"));
@@ -87,6 +93,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 res.sendRedirect(ru);
                 return "";
             } else {
+                // TODO 少了种cookie
                 res.sendRedirect(viewUrl);
                 return "";
             }
@@ -94,9 +101,9 @@ public class ConnectCallbackController extends BaseConnectController {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("error", result.getModels().get("error"));
                 return viewUrl;
-            } else if (ConnectTypeEnum.PC.toString().equals(type)) {
+            } else if(ConnectTypeEnum.PC.toString().equals(type)){
                 return viewUrl;
-            } else {
+            }else {
                 res.sendRedirect(viewUrl);
                 return "";
             }
