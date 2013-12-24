@@ -122,9 +122,9 @@ public class WapLoginAction extends BaseController {
 
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
-            String token = result.getModels().get("token").toString();
+            String sgid = result.getModels().get("sgid").toString();
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(),token));
+            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(),sgid));
             return "empty";
         } else {
             int isNeedCaptcha = 0;
