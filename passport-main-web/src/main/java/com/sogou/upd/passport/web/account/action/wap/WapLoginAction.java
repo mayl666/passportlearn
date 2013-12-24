@@ -144,6 +144,63 @@ public class WapLoginAction extends BaseController {
     }
 
     /**
+     * wap sid透传
+     */
+    @RequestMapping(value = "/wap/passthrough_qq", method = RequestMethod.GET)
+    public String qqPassThrough(HttpServletRequest request,
+                               HttpServletResponse response,
+                               WapLogoutParams params) {
+        // 校验参数
+        String sgid = null;
+        String client_id= null;
+        String ru= null;
+        try {
+            ru=params.getRu();
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                response.sendRedirect(ru);
+                return "";
+            }
+            sgid=params.getSgid();
+            client_id=params.getClient_id();
+
+            //处理ru
+            if (Strings.isNullOrEmpty(ru)) {
+                ru= CommonConstant.DEFAULT_WAP_URL;
+            }
+            //session server中清除cookie
+            Result result=wapLoginManager.removeSession(sgid);
+            if(result.isSuccess()){
+                //清除cookie
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
+                response.sendRedirect(ru);
+                return "";
+            }
+        }catch (Exception e){
+            if (logger.isDebugEnabled()) {
+                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
+            }
+        } finally {
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, "0", getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        ru = buildErrorRu(ru,ErrorUtil.ERR_CODE_REMOVE_COOKIE_FAILED,"error");
+        try {
+            response.sendRedirect(ru);
+        } catch (IOException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
+            }
+        }
+        return "";
+    }
+
+    /**
      * wap页面退出
      * 页面直接跳转，回跳到之前的地址
      */
