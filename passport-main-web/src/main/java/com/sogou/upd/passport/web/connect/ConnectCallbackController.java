@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * 第三方账号授权回调接口
@@ -64,12 +65,12 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLogUtil.log(userOperationLog);
 
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
-                model.addAttribute("uniqname", Coder.encode((String)result.getModels().get("uniqname"),"UTF-8"));  //qq的昵称会出现特殊字符需url编码
+                model.addAttribute("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
                 return viewUrl;
             } else if(type.equals(ConnectTypeEnum.WAP.toString())){
                 String sgid= (String) result.getModels().get("sgid");
-                ServletUtil.setCookie(res, "sgid", sgid, (int)DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 res.sendRedirect(viewUrl);
                 return "";
