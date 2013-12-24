@@ -29,11 +29,7 @@ import java.util.Map;
 public class SGUserOpenApiManagerImplTest extends BaseTest {
 
     @Autowired
-    private UserOpenApiManager proxyUserOpenApiManager;
-    @Autowired
-    private ConnectApiManager sgConnectApiManager;
-    @Autowired
-    private ConfigureManager configureManager;
+    private UserOpenApiManager sgUserOpenApiManager;
 
 
     /**
@@ -47,37 +43,8 @@ public class SGUserOpenApiManagerImplTest extends BaseTest {
         params.setUserid("DC56FD6C203C4D91FBC42A1ECBD744C6@qq.sohu.com");
         params.setOpenid("DC56FD6C203C4D91FBC42A1ECBD744C6@qq.sohu.com");
         params.setClient_id(1115);
-        Result result = proxyUserOpenApiManager.getUserInfo(params);
+        Result result = sgUserOpenApiManager.getUserInfo(params);
         System.out.println("result data:" + result);
-    }
-
-    /**
-     * 直接调用第三方OpenAPI
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testSGGetUserInfo() throws Exception {
-        BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
-        baseOpenApiParams.setOpenid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
-        baseOpenApiParams.setUserid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
-        Result openResult = sgConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
-        if (openResult.isSuccess()) {
-            //获取用户的openId/openKey
-            Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
-            String openId = accessTokenMap.get("open_id").toString();
-            String accessToken = accessTokenMap.get("access_token").toString();
-            int provider = 3;
-            ConnectConfig connectConfig = configureManager.obtainConnectConfig(SHPPUrlConstant.APP_ID, provider);
-            if (connectConfig != null) {
-                String url = "https://graph.qq.com/user/get_user_info";
-                OAuthClientRequest request = QQUserAPIRequest.apiLocation(url, QQUserAPIRequest.QQUserAPIBuilder.class).setOauth_Consumer_Key(connectConfig.getAppKey())
-                        .setOpenid(openId).setAccessToken(accessToken).buildQueryMessage(QQUserAPIRequest.class);
-                System.out.println("request url:" + request.getLocationUri());
-                OAuthClientResponse response = OAuthHttpClient.execute(request, QQUserAPIResponse.class);
-                System.out.println("response body:" + response.getBody());
-            }
-        }
     }
 
 }

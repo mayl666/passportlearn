@@ -253,9 +253,23 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         // 调用内部接口
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
-            //其中昵称是获取的account_base_info
+            //其中昵称和头像是获取的account_base_info
+            if(infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")){
+                AccountBaseInfo baseInfo = getBaseInfo(infoApiparams.getUserid());
+                if(baseInfo!= null){
+                    result.getModels().put("uniqname",baseInfo.getUniqname());
+                    result.getModels().put("avatarurl",baseInfo.getAvatar());
+                }else {
+                    result.setCode(ErrorUtil.ERR_CODE_GET_USER_INFO);
+                    return result;
+                }
+            }else {
+                //不能使用返回的sohu头像、昵称
+                result.getModels().put("uniqname","");
+                result.getModels().put("avatarurl","");
+            }
             // TODO 搜狗账号迁移后，搜狗账号的昵称从account表里拿，其他账号昵称从account_base_info里拿
-             result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername()));
+
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
@@ -306,4 +320,20 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         updateUserUniqnameApiParams.setClient_id(Integer.parseInt(params.getClient_id()));
         return updateUserUniqnameApiParams;
     }
+
+    private AccountBaseInfo getBaseInfo(String passportId) {
+        GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
+        infoApiparams.setUserid(passportId);
+        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+        if (getUserInfoResult.isSuccess()) {
+            Object obj = getUserInfoResult.getModels().get("baseInfo");
+            AccountBaseInfo accountBaseInfo = null;
+            if (obj != null) {
+                accountBaseInfo = (AccountBaseInfo) obj;
+            }
+            return accountBaseInfo;
+        }
+        return null;
+    }
+
 }
