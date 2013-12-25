@@ -132,11 +132,14 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public boolean isLoginUserInBlackList(final String username, final String ip) {
         //校验username是否在账户黑名单中
-        if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
+        if (operateTimesService.isUserInBlackList(username,ip)) {
             //是否在白名单中
             if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                 return true;
             }
+        }else {
+            //检查登录次数，以确定用户名或者IP是否需要进入黑名单
+            operateTimesService.checkLoginTimesForBlackList(username,ip);
         }
         return false;
     }
