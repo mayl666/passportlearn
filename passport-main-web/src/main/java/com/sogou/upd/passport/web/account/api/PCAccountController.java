@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -38,8 +37,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Calendar;
 
 /**
@@ -244,17 +241,10 @@ public class PCAccountController extends BaseController {
             return "Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
-        //解决中文账号问题
-        if (userId.indexOf("@focus.cn") > 0) {
-            String queryStr = request.getQueryString();
-            String tmpstr= queryStr.substring(queryStr.indexOf("userid="),queryStr.length());
-            userId =  tmpstr.substring("userid=".length(),tmpstr.indexOf("&"));
-            userId = URLDecoder.decode(userId, "GBK");
-        }
-
         userId = AccountDomainEnum.getInternalCase(userId);
         authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
+
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
