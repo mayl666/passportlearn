@@ -117,7 +117,6 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
                 requestModel.addParam(entry.getKey(),entry.getValue());
             }
-
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
 
             String resultRequest = SGHttpClient.executeStr(requestModel);
@@ -133,6 +132,33 @@ public class SessionServerManagerImpl implements SessionServerManager {
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("removeSession " + "sgid:" + sgid );
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Result getPassportIdBySgid(String sgid) {
+        Result result = new APIResultSupport(false);
+        try {
+            Map<String,String> params=buildHttpSessionParam(sgid);
+
+            RequestModel requestModel=new RequestModel(SessionServerUrlConstant.VERIFY_SID);
+
+            Set<Map.Entry<String, String>> set = params.entrySet();
+            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();) {
+                Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
+                requestModel.addParam(entry.getKey(),entry.getValue());
+            }
+            requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+
+            String resultRequest = SGHttpClient.executeStr(requestModel);
+            if (!Strings.isNullOrEmpty(resultRequest)) {
+                return jsonMapper.readValue(resultRequest, Result.class);
+            }
+        } catch (Exception e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("getPassportIdBySgid error! " + "sgid:" + sgid );
             }
         }
         return result;

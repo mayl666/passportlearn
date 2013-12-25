@@ -11,4 +11,5 @@ import com.sogou.upd.passport.model.app.AppConfig;
 public interface SessionServerManager {
      public Result createSession(String userId);
      public Result removeSession(String sgid);
+     public Result getPassportIdBySgid(String sgid);
 }

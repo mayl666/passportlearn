@@ -12,12 +12,10 @@ import javax.validation.constraints.Min;
  * Time: 下午6:57
  */
 public class WapPassThroughParams {
-
+    @NotBlank(message = "token is null")
     private String token;
+    @NotBlank(message = "openid is null")
     private String openid;
-
-    @Ru
-    private String ru = "https://account.sogou.com";  // 回调地址
 
     public String getToken() {
         return token;
@@ -35,11 +33,4 @@ public class WapPassThroughParams {
         this.openid = openid;
     }
 
-    public String getRu() {
-        return ru;
-    }
-
-    public void setRu(String ru) {
-        this.ru = ru;
-    }
 }

@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.action.wap;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -39,6 +40,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -148,61 +150,72 @@ public class WapLoginAction extends BaseController {
      * wap sid透传
      */
     @RequestMapping(value = "/wap/passthrough_qq", method = RequestMethod.GET)
-    public String qqPassThrough(HttpServletRequest request,
-                               HttpServletResponse response,
+    public String qqPassThrough(HttpServletRequest req,
+                               HttpServletResponse res,
                                WapPassThroughParams params) {
-        // 校验参数
-        String sgid = null;
-        String ru= null;
+        String openId = null;
+        String token = null;
+        String ru = null;
         try {
-//            ru=params.getRu();
-//            String validateResult = ControllerHelper.validateParams(params);
-//            if (!Strings.isNullOrEmpty(validateResult)) {
-//                ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-//                response.sendRedirect(ru);
-//                return "";
-//            }
-
-            //处理ru
-            if (Strings.isNullOrEmpty(ru)) {
-                ru= CommonConstant.DEFAULT_WAP_URL;
-            }
-            //校验param
-            String token=null;
-            String openid=null;
-
-            //获取sgid
-           sgid = ServletUtil.getCookie(request,LoginConstant.COOKIE_SGID);
-
-            //session server中清除cookie
-            Result result=wapLoginManager.passThroughQQ(sgid,token,openid);
-            if(result.isSuccess()){
-                //清除cookie
-
-                response.sendRedirect(ru);
+        // 校验参数
+            ru = req.getParameter(CommonConstant.RESPONSE_RU);
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                res.sendRedirect(ru);
                 return "";
             }
-        }catch (Exception e){
-//            if (logger.isDebugEnabled()) {
-//                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
-//            }
-        } finally {
-            //用于记录log
-//            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, "0", getIp(request));
-//            String referer = request.getHeader("referer");
-//            userOperationLog.putOtherMessage("ref", referer);
-//            userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
-//            UserOperationLogUtil.log(userOperationLog);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_REMOVE_COOKIE_FAILED, "error");
-        try {
-            response.sendRedirect(ru);
-        } catch (IOException e) {
+        token = params.getToken();
+        openId = params.getOpenid();
+
+        //获取sgid
+        String sgid = ServletUtil.getCookie(req,LoginConstant.COOKIE_SGID);
+
+        Result result = wapLoginManager.passThroughQQ(sgid, token, openId);
+        if (result.isSuccess()) {
+            sgid= (String) result.getModels().get("sgid");
+            ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+
+            ru=buildSuccessRu(ru,sgid);
+            res.sendRedirect(ru);
+            return "";
+        }else {
+            ru=buildErrorRu(ru,ErrorUtil.ERR_CODE_CONNECT_PASSTHROUGH,null);
+            res.sendRedirect(ru);
+            return "";
+        }
+        }catch (Exception e){
             if (logger.isDebugEnabled()) {
-//                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
+                logger.debug("/wap/passthrough_qq " + "openId:" + openId +",token:"+token);
             }
+        } finally {
+//            用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(openId, token, "0", getIp(req));
+            String referer = req.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
+            UserOperationLogUtil.log(userOperationLog);
         }
         return "";
+    }
+    private String buildSuccessRu(String ru, String sgid) {
+        Map params = Maps.newHashMap();
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (Exception e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_WAP_URL;
+        }
+        //ru后缀一个sgid
+        params.put("sgid", sgid);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        return ru;
     }
 
     /**
@@ -275,7 +288,7 @@ public class WapLoginAction extends BaseController {
             if (Strings.isNullOrEmpty(ru)) {
                 ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
             }
-            if (!Strings.isNullOrEmpty(errorCode) && !Strings.isNullOrEmpty(errorText)) {
+            if (!Strings.isNullOrEmpty(errorCode)) {
                 Map params = Maps.newHashMap();
                 params.put(CommonConstant.RESPONSE_STATUS, errorCode);
                 if (Strings.isNullOrEmpty(errorText)) {

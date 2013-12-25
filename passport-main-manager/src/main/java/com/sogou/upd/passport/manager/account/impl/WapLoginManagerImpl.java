@@ -1,30 +1,36 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
-import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
-import com.sogou.upd.passport.manager.form.WapPassThroughParams;
-import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.model.OAuthConsumer;
+import com.sogou.upd.passport.model.OAuthConsumerFactory;
+import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
+import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.WapTokenService;
-import com.sogou.upd.passport.service.account.generator.TokenGenerator;
-import com.sogou.upd.passport.service.app.AppConfigService;
+import com.sogou.upd.passport.service.app.ConnectConfigService;
+import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,7 +54,11 @@ public class WapLoginManagerImpl implements WapLoginManager {
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
-    private UserOpenApiManager sgUserOpenApiManager;
+    private ConnectAuthService connectAuthService;
+    @Autowired
+    private ConnectConfigService connectConfigService;
+    @Autowired
+    private ConnectApiManager proxyConnectApiManager;
 
     @Override
     public Result accountLogin(WapLoginParams loginParams, String ip) {
@@ -118,29 +128,77 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result passThroughQQ(String sgid,String token,String openid) {
+    public Result passThroughQQ(String sgid,String accessToken,String openId) {
         Result result = new APIResultSupport(true);
-        String shPassportId = openid + "@qq.sohu.com";
+        try {
+            //根据获取第三方个人资料验证token的有效性
+            int provider = AccountTypeEnum.QQ.getValue();
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+            OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
 
-        //根据获取第三方个人资料验证token的有效性
-        UserOpenApiParams params=bulidUserOpenApiParams(shPassportId,token,openid);
-        sgUserOpenApiManager.getUserInfo(params) ;
-        return null;
+            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+            if (connectUserInfoVO == null) {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+                return result;
+            }
+            String nickname=connectUserInfoVO.getNickname();
+            String shPassportId = openId + "@qq.sohu.com";
+            if(!Strings.isNullOrEmpty(sgid)){
+                 //session server获取passportid
+                Result sessionResult = sessionServerManager.getPassportIdBySgid(sgid);
+                if(sessionResult.isSuccess()){
+                    String passportId= (String) sessionResult.getModels().get("passport_id");
+                    if(Strings.isNullOrEmpty(passportId)){
+                        //sgid失效，重新生成sgid
+                        result=bulidSgid(accessToken,shPassportId,nickname) ;
+                    }else if(passportId.equals(shPassportId)){
+                        result.setSuccess(true);
+                        result.getModels().put("sgid",sgid);
+                    }
+                }
+            }else {
+                result=bulidSgid(accessToken,shPassportId,nickname) ;
+            }
+        }catch (Exception e){
+            logger.error("passThroughQQ error:",e);
+        }
+
+        return result;
     }
 
-    private UserOpenApiParams bulidUserOpenApiParams(String shPassportId,String token,String openid){
-        UserOpenApiParams params=new UserOpenApiParams();
-        params.setClient_id(CommonConstant.SGPP_DEFAULT_CLIENTID);
-        params.setOpenid(shPassportId);
-        params.setUserid(shPassportId);
+    private Result bulidSgid(String accessToken,String openId,String nickname) {
+        // sohu创建第三方账号
+        String provider= AccountTypeEnum.QQ.toString();
+        OAuthTokenVO oAuthTokenVO=bulidOAuthTokenVO(accessToken, openId,nickname);
+        Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(provider, oAuthTokenVO);
 
-        return params;
+        if(connectAccountResult.isSuccess()){
+            //创建sgid
+            Result sessionResult = sessionServerManager.createSession(openId);
+            String sgid = null;
+            if (sessionResult.isSuccess()) {
+                sgid = (String) sessionResult.getModels().get("sgid");
+                if (!Strings.isNullOrEmpty(sgid)) {
+                    sessionResult.setDefaultModel("sgid", sgid);
+                }
+            }
+            return sessionResult;
+        } else {
+            return connectAccountResult;
+        }
+    }
+
+    private OAuthTokenVO bulidOAuthTokenVO(String accessToken,String openId,String nickname){
+        OAuthTokenVO oAuthTokenVO=new OAuthTokenVO();
+        oAuthTokenVO.setAccessToken(accessToken);
+        oAuthTokenVO.setOpenid(openId);
+        oAuthTokenVO.setNickName(nickname);
+        return oAuthTokenVO;
     }
 
     @Override
     public Result removeSession(String sgid) {
         Result result = sessionServerManager.removeSession(sgid);
-
         return result;
     }
 

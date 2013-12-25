@@ -42,7 +42,7 @@ public interface WapLoginManager {
      * wap端移除session
      * @return
      */
-    public Result passThroughQQ(String sgid,String token,String openid);
+    public Result passThroughQQ(String sgid,String accessToken,String openId);
     /**
      * QQ wap透传
      * @return

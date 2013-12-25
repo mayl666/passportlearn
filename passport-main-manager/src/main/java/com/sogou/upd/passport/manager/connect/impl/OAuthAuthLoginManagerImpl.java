@@ -359,20 +359,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         //ru后缀一个sgid
         params.put("sgid", sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-//        if(!Strings.isNullOrEmpty(ru)){
-//            URL url = null;
-//            try {
-//                url = new URL(ru);
-//                int port = url.getPort();
-//                String query = url.getQuery();
-//                ru = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + url.getPort()) + (StringUtils.isNotEmpty(query) ? "?" + URLEncoder.encode(url.getQuery(), CommonConstant.DEFAULT_CONTENT_CHARSET) : "");
-//
-//            } catch (MalformedURLException e) {
-//                logger.error("buildWapSuccessRu MalformedURLException!", e);
-//            } catch (UnsupportedEncodingException e) {
-//                logger.error("buildWapSuccessRu UnsupportedEncodingException!", e);
-//            }
-//        }
         return ru;
     }
 
