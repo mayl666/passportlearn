@@ -6,36 +6,33 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Min;
 
 /**
- * wap登出参数校验
+ * wap qq透传
  * User: mayan
  * Date: 13-12-17
  * Time: 下午6:57
  */
-public class WapLogoutParams {
-    @NotBlank(message = "client_id不允许为空!")
-    @Min(0)
-    private String client_id;
+public class WapPassThroughParams {
 
-    @NotBlank(message = "sgid不允许为空!")
-    private String sgid;
+    private String token;
+    private String openid;
 
     @Ru
     private String ru = "https://account.sogou.com";  // 回调地址
 
-    public String getClient_id() {
-        return client_id;
+    public String getToken() {
+        return token;
     }
 
-    public void setClient_id(String client_id) {
-        this.client_id = client_id;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getSgid() {
-        return sgid;
+    public String getOpenid() {
+        return openid;
     }
 
-    public void setSgid(String sgid) {
-        this.sgid = sgid;
+    public void setOpenid(String openid) {
+        this.openid = openid;
     }
 
     public String getRu() {

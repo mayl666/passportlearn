@@ -10,7 +10,10 @@ import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
+import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
+import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
+import com.sogou.upd.passport.manager.form.WapPassThroughParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
@@ -43,9 +46,9 @@ public class WapLoginManagerImpl implements WapLoginManager {
     @Autowired
     private OperateTimesService operateTimesService;
     @Autowired
-    private AppConfigService appConfigService;
-    @Autowired
     private SessionServerManager sessionServerManager;
+    @Autowired
+    private UserOpenApiManager proxyUserOpenApiManager;
 
     @Override
     public Result accountLogin(WapLoginParams loginParams, String ip) {
@@ -112,6 +115,26 @@ public class WapLoginManagerImpl implements WapLoginManager {
             }
         }
         return result;
+    }
+
+    @Override
+    public Result passThroughQQ(String sgid,String token,String openid) {
+        Result result = new APIResultSupport(true);
+        String shPassportId = openid + "@qq.sohu.com";
+
+        //根据获取第三方个人资料验证token的有效性
+        UserOpenApiParams params=bulidUserOpenApiParams(shPassportId,token,openid);
+        proxyUserOpenApiManager.getUserInfo(params) ;
+        return null;
+    }
+
+    private UserOpenApiParams bulidUserOpenApiParams(String shPassportId,String token,String openid){
+        UserOpenApiParams params=new UserOpenApiParams();
+        params.setClient_id(CommonConstant.SGPP_DEFAULT_CLIENTID);
+        params.setOpenid(shPassportId);
+        params.setUserid(shPassportId);
+
+        return params;
     }
 
     @Override

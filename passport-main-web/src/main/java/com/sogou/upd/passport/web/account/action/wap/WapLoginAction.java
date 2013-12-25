@@ -17,6 +17,7 @@ import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
+import com.sogou.upd.passport.manager.form.WapPassThroughParams;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseController;
@@ -149,52 +150,56 @@ public class WapLoginAction extends BaseController {
     @RequestMapping(value = "/wap/passthrough_qq", method = RequestMethod.GET)
     public String qqPassThrough(HttpServletRequest request,
                                HttpServletResponse response,
-                               WapLogoutParams params) {
+                               WapPassThroughParams params) {
         // 校验参数
         String sgid = null;
-        String client_id= null;
         String ru= null;
         try {
-            ru=params.getRu();
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-                response.sendRedirect(ru);
-                return "";
-            }
-            sgid=params.getSgid();
-            client_id=params.getClient_id();
+//            ru=params.getRu();
+//            String validateResult = ControllerHelper.validateParams(params);
+//            if (!Strings.isNullOrEmpty(validateResult)) {
+//                ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+//                response.sendRedirect(ru);
+//                return "";
+//            }
 
             //处理ru
             if (Strings.isNullOrEmpty(ru)) {
                 ru= CommonConstant.DEFAULT_WAP_URL;
             }
+            //校验param
+            String token=null;
+            String openid=null;
+
+            //获取sgid
+           sgid = ServletUtil.getCookie(request,LoginConstant.COOKIE_SGID);
+
             //session server中清除cookie
-            Result result=wapLoginManager.removeSession(sgid);
+            Result result=wapLoginManager.passThroughQQ(sgid,token,openid);
             if(result.isSuccess()){
                 //清除cookie
-                ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
+
                 response.sendRedirect(ru);
                 return "";
             }
         }catch (Exception e){
-            if (logger.isDebugEnabled()) {
-                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
-            }
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
+//            }
         } finally {
             //用于记录log
-            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, "0", getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
-            UserOperationLogUtil.log(userOperationLog);
+//            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, "0", getIp(request));
+//            String referer = request.getHeader("referer");
+//            userOperationLog.putOtherMessage("ref", referer);
+//            userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
+//            UserOperationLogUtil.log(userOperationLog);
         }
-        ru = buildErrorRu(ru,ErrorUtil.ERR_CODE_REMOVE_COOKIE_FAILED,"error");
+        ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_REMOVE_COOKIE_FAILED, "error");
         try {
             response.sendRedirect(ru);
         } catch (IOException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
+//                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
             }
         }
         return "";
