@@ -138,8 +138,9 @@ public class SessionServerManagerImpl implements SessionServerManager {
     }
 
     @Override
-    public Result getPassportIdBySgid(String sgid) {
+    public Result getPassportIdBySgid(String sgid,String ip) {
         Result result = new APIResultSupport(false);
+        String passportId=null;
         try {
             Map<String,String> params=buildHttpSessionParam(sgid);
 
@@ -150,11 +151,20 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
                 requestModel.addParam(entry.getKey(),entry.getValue());
             }
+            requestModel.addParam("user_ip",ip);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
 
             String resultRequest = SGHttpClient.executeStr(requestModel);
             if (!Strings.isNullOrEmpty(resultRequest)) {
-                return jsonMapper.readValue(resultRequest, Result.class);
+                Map mapResult=jsonMapper.readValue(resultRequest, Map.class);
+                String status= (String) mapResult.get("status");
+                if("0".equals(status)){
+                    Map<String,String> mapping= (Map<String, String>) mapResult.get("data");
+                    passportId=mapping.get("passport_id");
+                    result.setSuccess(true);
+                    result.getModels().put("passport_id",passportId);
+                }
+                return result;
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {

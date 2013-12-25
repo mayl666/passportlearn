@@ -156,6 +156,7 @@ public class WapLoginAction extends BaseController {
         String openId = null;
         String token = null;
         String ru = null;
+        String ip=null;
         try {
         // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
@@ -173,11 +174,12 @@ public class WapLoginAction extends BaseController {
         }
         token = params.getToken();
         openId = params.getOpenid();
+        ip=getIp(req);
 
         //获取sgid
         String sgid = ServletUtil.getCookie(req,LoginConstant.COOKIE_SGID);
 
-        Result result = wapLoginManager.passThroughQQ(sgid, token, openId);
+        Result result = wapLoginManager.passThroughQQ(sgid, token, openId,ip);
         if (result.isSuccess()) {
             sgid= (String) result.getModels().get("sgid");
             ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
@@ -196,7 +198,7 @@ public class WapLoginAction extends BaseController {
             }
         } finally {
 //            用于记录log
-            UserOperationLog userOperationLog = new UserOperationLog(openId, token, "0", getIp(req));
+            UserOperationLog userOperationLog = new UserOperationLog(openId, token, "0", ip);
             String referer = req.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);

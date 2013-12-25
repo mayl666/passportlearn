@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
@@ -76,6 +77,8 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
         if(oAuthTokenVO.getExpiresIn() != 0){
             requestModel.addParam("expires_in", (int) oAuthTokenVO.getExpiresIn());  // 搜狐wiki里expires_in必须为int型
+        }else{
+            requestModel.addParam("expires_in", (int)DateAndNumTimesConstant.THREE_MONTH);
         }
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getRefreshToken())) {
             requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, oAuthTokenVO.getRefreshToken());

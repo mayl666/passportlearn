@@ -128,7 +128,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result passThroughQQ(String sgid,String accessToken,String openId) {
+    public Result passThroughQQ(String sgid,String accessToken,String openId,String ip) {
         Result result = new APIResultSupport(true);
         try {
             //根据获取第三方个人资料验证token的有效性
@@ -143,9 +143,10 @@ public class WapLoginManagerImpl implements WapLoginManager {
             }
             String nickname=connectUserInfoVO.getNickname();
             String shPassportId = openId + "@qq.sohu.com";
+            sgid="AVK64Ro7tfh6s0Tys3GAzZw";
             if(!Strings.isNullOrEmpty(sgid)){
                  //session server获取passportid
-                Result sessionResult = sessionServerManager.getPassportIdBySgid(sgid);
+                Result sessionResult = sessionServerManager.getPassportIdBySgid(sgid,ip);
                 if(sessionResult.isSuccess()){
                     String passportId= (String) sessionResult.getModels().get("passport_id");
                     if(Strings.isNullOrEmpty(passportId)){
