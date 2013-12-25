@@ -48,7 +48,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
-    private UserOpenApiManager proxyUserOpenApiManager;
+    private UserOpenApiManager sgUserOpenApiManager;
 
     @Override
     public Result accountLogin(WapLoginParams loginParams, String ip) {
@@ -124,7 +124,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
         //根据获取第三方个人资料验证token的有效性
         UserOpenApiParams params=bulidUserOpenApiParams(shPassportId,token,openid);
-        proxyUserOpenApiManager.getUserInfo(params) ;
+        sgUserOpenApiManager.getUserInfo(params) ;
         return null;
     }
 
