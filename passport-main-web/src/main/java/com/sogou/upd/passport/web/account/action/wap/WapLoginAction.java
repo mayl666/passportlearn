@@ -157,6 +157,7 @@ public class WapLoginAction extends BaseController {
         String token = null;
         String ru = null;
         String ip=null;
+        String expires_in=null;
         try {
         // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
@@ -172,14 +173,16 @@ public class WapLoginAction extends BaseController {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        token = params.getToken();
+        token = params.getAccess_token();
         openId = params.getOpenid();
+        expires_in=params.getExpires_in();
+
         ip=getIp(req);
 
         //获取sgid
         String sgid = ServletUtil.getCookie(req,LoginConstant.COOKIE_SGID);
 
-        Result result = wapLoginManager.passThroughQQ(sgid, token, openId,ip);
+        Result result = wapLoginManager.passThroughQQ(sgid, token, openId,ip,expires_in);
         if (result.isSuccess()) {
             sgid= (String) result.getModels().get("sgid");
             ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);

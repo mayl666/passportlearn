@@ -128,7 +128,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result passThroughQQ(String sgid,String accessToken,String openId,String ip) {
+    public Result passThroughQQ(String sgid,String accessToken,String openId,String ip,String expires_in) {
         Result result = new APIResultSupport(true);
         try {
             //根据获取第三方个人资料验证token的有效性
@@ -143,7 +143,6 @@ public class WapLoginManagerImpl implements WapLoginManager {
             }
             String nickname=connectUserInfoVO.getNickname();
             String shPassportId = openId + "@qq.sohu.com";
-            sgid="AVK64Ro7tfh6s0Tys3GAzZw";
             if(!Strings.isNullOrEmpty(sgid)){
                  //session server获取passportid
                 Result sessionResult = sessionServerManager.getPassportIdBySgid(sgid,ip);
@@ -151,14 +150,14 @@ public class WapLoginManagerImpl implements WapLoginManager {
                     String passportId= (String) sessionResult.getModels().get("passport_id");
                     if(Strings.isNullOrEmpty(passportId)){
                         //sgid失效，重新生成sgid
-                        result=bulidSgid(accessToken,shPassportId,nickname) ;
+                        result=bulidSgid(accessToken,shPassportId,nickname,expires_in) ;
                     }else if(passportId.equals(shPassportId)){
                         result.setSuccess(true);
                         result.getModels().put("sgid",sgid);
                     }
                 }
             }else {
-                result=bulidSgid(accessToken,shPassportId,nickname) ;
+                result=bulidSgid(accessToken,shPassportId,nickname,expires_in) ;
             }
         }catch (Exception e){
             logger.error("passThroughQQ error:",e);
@@ -167,10 +166,10 @@ public class WapLoginManagerImpl implements WapLoginManager {
         return result;
     }
 
-    private Result bulidSgid(String accessToken,String openId,String nickname) {
+    private Result bulidSgid(String accessToken,String openId,String nickname,String expires_in) {
         // sohu创建第三方账号
         String provider= AccountTypeEnum.QQ.toString();
-        OAuthTokenVO oAuthTokenVO=bulidOAuthTokenVO(accessToken, openId,nickname);
+        OAuthTokenVO oAuthTokenVO=bulidOAuthTokenVO(accessToken, openId,nickname,expires_in);
         Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(provider, oAuthTokenVO);
 
         if(connectAccountResult.isSuccess()){
@@ -189,11 +188,12 @@ public class WapLoginManagerImpl implements WapLoginManager {
         }
     }
 
-    private OAuthTokenVO bulidOAuthTokenVO(String accessToken,String openId,String nickname){
+    private OAuthTokenVO bulidOAuthTokenVO(String accessToken,String openId,String nickname,String expires_in){
         OAuthTokenVO oAuthTokenVO=new OAuthTokenVO();
         oAuthTokenVO.setAccessToken(accessToken);
         oAuthTokenVO.setOpenid(openId);
         oAuthTokenVO.setNickName(nickname);
+        oAuthTokenVO.setExpiresIn(Long.parseLong(expires_in));
         return oAuthTokenVO;
     }
 
