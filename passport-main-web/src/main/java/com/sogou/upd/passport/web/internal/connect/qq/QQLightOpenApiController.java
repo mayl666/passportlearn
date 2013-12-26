@@ -72,6 +72,14 @@ public class QQLightOpenApiController {
             int clientId = params.getClient_id();
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID));
+                return result.toString();
+            }
+            String openIdString = params.getOpenid();
+            String userIdString = params.getUserid();
+            if(!openIdString.endsWith("@qq.sohu.com") || !userIdString.endsWith("@qq.sohu.com")){
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED));
                 return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
