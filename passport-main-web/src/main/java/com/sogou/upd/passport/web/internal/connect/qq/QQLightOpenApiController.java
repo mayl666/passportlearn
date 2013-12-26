@@ -77,12 +77,6 @@ public class QQLightOpenApiController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            //验证client_id
-            int clientId = params.getClient_id();
-            if (!configureManager.checkAppIsExist(clientId)) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result.toString();
-            }
             //调用sohu接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createQQConnectParams(params);
             Result openResult = sgConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
