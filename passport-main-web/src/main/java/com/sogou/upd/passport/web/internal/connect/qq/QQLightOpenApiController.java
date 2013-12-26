@@ -85,6 +85,10 @@ public class QQLightOpenApiController {
                 String accessToken = accessTokenMap.get("access_token").toString();
                 String resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params);
                 resultString = resp;
+                result.setCode("0");
+                result.setSuccess(true);
+            }else {
+                result = openResult;
             }
         } catch (Exception e) {
             logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
@@ -95,6 +99,7 @@ public class QQLightOpenApiController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "");
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage("qqResultString", resultString);
             UserOperationLogUtil.log(userOperationLog);
         }
         return resultString;
