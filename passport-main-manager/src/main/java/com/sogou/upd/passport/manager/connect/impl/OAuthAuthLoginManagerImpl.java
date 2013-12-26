@@ -201,6 +201,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String instanceId = req.getParameter("ts");
             String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
             int provider = AccountTypeEnum.getProvider(providerStr);
+
+            String usercancel=req.getParameter("usercancel") ;
+            //校验是否是用户取消授权
+            if(isUserCancel(usercancel)){
+                return buildErrorResult(type,ru,ErrorUtil.ERR_CODE_CONNECT_USERCANAEL,null);
+            }
+
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
@@ -324,6 +331,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return result;
     }
 
+    private boolean isUserCancel(String usercancel){
+        if(!Strings.isNullOrEmpty(usercancel) && ("1".equals(usercancel) ||"2".equals(usercancel))){
+            return true;
+        }
+        return false;
+    }
+
+
     private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();
         try {
@@ -350,19 +365,20 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         //ru后缀一个sgid
         params.put("sgid", sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-        if(!Strings.isNullOrEmpty(ru)){
-            URL url = null;
-            try {
-                url = new URL(ru);
-                int port = url.getPort();
-                String query = url.getQuery();
-                ru = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + url.getPort()) + (StringUtils.isNotEmpty(query) ? "?" + URLEncoder.encode(url.getQuery(), CommonConstant.DEFAULT_CONTENT_CHARSET) : "");
-            } catch (MalformedURLException e) {
-                logger.error("buildWapSuccessRu MalformedURLException!", e);
-            } catch (UnsupportedEncodingException e) {
-                logger.error("buildWapSuccessRu UnsupportedEncodingException!", e);
-            }
-        }
+//        if(!Strings.isNullOrEmpty(ru)){
+//            URL url = null;
+//            try {
+//                url = new URL(ru);
+//                int port = url.getPort();
+//                String query = url.getQuery();
+//                ru = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + url.getPort()) + (StringUtils.isNotEmpty(query) ? "?" + URLEncoder.encode(url.getQuery(), CommonConstant.DEFAULT_CONTENT_CHARSET) : "");
+//
+//            } catch (MalformedURLException e) {
+//                logger.error("buildWapSuccessRu MalformedURLException!", e);
+//            } catch (UnsupportedEncodingException e) {
+//                logger.error("buildWapSuccessRu UnsupportedEncodingException!", e);
+//            }
+//        }
         return ru;
     }
 

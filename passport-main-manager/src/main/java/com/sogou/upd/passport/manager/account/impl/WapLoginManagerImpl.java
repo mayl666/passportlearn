@@ -62,9 +62,18 @@ public class WapLoginManagerImpl implements WapLoginManager {
             }
             result = loginManager.authUser(username, ip, pwdMD5);
             if (result.isSuccess()) {
-                String userId = result.getModels().get("userid").toString();
-                String token = wapTokenService.saveWapToken(userId);
-                result.setDefaultModel("token", token);
+//                String userId = result.getModels().get("userid").toString();
+//                String token = wapTokenService.saveWapToken(userId);
+//                result.setDefaultModel("token", token);
+                //写session 数据库
+                Result sessionResult = sessionServerManager.createSession(passportId);
+                String sgid=null;
+                if(sessionResult.isSuccess()){
+                    sgid= (String) sessionResult.getModels().get("sgid");
+                    if (!Strings.isNullOrEmpty(sgid)) {
+                        result.setDefaultModel("sgid", sgid);
+                    }
+                }
             }
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);
