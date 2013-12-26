@@ -154,6 +154,8 @@ public class WapLoginManagerImpl implements WapLoginManager {
                     }else if(passportId.equals(shPassportId)){
                         result.setSuccess(true);
                         result.getModels().put("sgid",sgid);
+                    } else {
+                        result=bulidSgid(accessToken,shPassportId,nickname,expires_in) ;
                     }
                 }
             }else {
