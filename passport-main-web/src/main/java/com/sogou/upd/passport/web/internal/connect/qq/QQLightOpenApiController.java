@@ -11,7 +11,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
@@ -36,19 +36,15 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/internal/connect")
-public class QQLightOpenApiController {
+public class QQLightOpenApiController extends BaseConnectController {
 
     private static final Logger logger = LoggerFactory.getLogger(QQLightOpenApiController.class);
 
     @Autowired
     private QQLightOpenApiManager sgQQLightOpenApiManager;
-
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
-
-    @Autowired
-    private ConfigureManager configureManager;
     /**
      * 根据用户信息，实现qq图标点亮
      *
@@ -99,10 +95,10 @@ public class QQLightOpenApiController {
             resultString = result.toString();
         } finally {
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "");
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("qqResultString", resultString);
+            userOperationLog.putOtherMessage("qqResult", resultString);
             UserOperationLogUtil.log(userOperationLog);
         }
         return resultString;
