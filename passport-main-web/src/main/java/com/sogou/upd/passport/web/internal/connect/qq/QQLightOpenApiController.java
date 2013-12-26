@@ -67,7 +67,6 @@ public class QQLightOpenApiController {
             String userIdStr = params.getUserid();
             if(AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ){
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED));
                 return result.toString();
             }
 
@@ -82,7 +81,6 @@ public class QQLightOpenApiController {
             int clientId = params.getClient_id();
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID));
                 return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
