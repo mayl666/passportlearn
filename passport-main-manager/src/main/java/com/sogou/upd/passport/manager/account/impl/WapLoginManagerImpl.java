@@ -129,7 +129,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
     @Override
     public Result passThroughQQ(String sgid,String accessToken,String openId,String ip,String expires_in) {
-        Result result = new APIResultSupport(true);
+        Result result = new APIResultSupport(false);
         try {
             //根据获取第三方个人资料验证token的有效性
             int provider = AccountTypeEnum.QQ.getValue();
