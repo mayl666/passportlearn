@@ -73,7 +73,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 res.sendRedirect(viewUrl);
-                return "";
+                return "empty";
             }else if (ConnectTypeEnum.PC.toString().equals(type)){
                 model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
                 model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));

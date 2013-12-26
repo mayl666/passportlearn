@@ -126,6 +126,9 @@ public class WapLoginAction extends BaseController {
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             String sgid = result.getModels().get("sgid").toString();
+
+            ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(),sgid));
             return "empty";
@@ -167,7 +170,7 @@ public class WapLoginAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(ru);
-                return "";
+                return "empty";
             }
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
@@ -189,11 +192,11 @@ public class WapLoginAction extends BaseController {
 
             ru=buildSuccessRu(ru,sgid);
             res.sendRedirect(ru);
-            return "";
+            return "empty";
         }else {
             ru=buildErrorRu(ru,ErrorUtil.ERR_CODE_CONNECT_PASSTHROUGH,null);
             res.sendRedirect(ru);
-            return "";
+            return "empty";
         }
         }catch (Exception e){
             if (logger.isDebugEnabled()) {
@@ -207,7 +210,7 @@ public class WapLoginAction extends BaseController {
             userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
             UserOperationLogUtil.log(userOperationLog);
         }
-        return "";
+        return "empty";
     }
     private String buildSuccessRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
