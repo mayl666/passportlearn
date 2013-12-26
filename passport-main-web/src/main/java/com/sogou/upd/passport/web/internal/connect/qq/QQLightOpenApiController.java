@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.connect.qq;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -61,6 +62,15 @@ public class QQLightOpenApiController {
         Result result = new APIResultSupport(false);
         String resultString = "";
         try {
+            // 仅支持qq账号调用此接口
+            String openIdStr = params.getOpenid();
+            String userIdStr = params.getUserid();
+            if(AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ){
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED));
+                return result.toString();
+            }
+
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -73,13 +83,6 @@ public class QQLightOpenApiController {
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID));
-                return result.toString();
-            }
-            String openIdString = params.getOpenid();
-            String userIdString = params.getUserid();
-            if(!openIdString.endsWith("@qq.sohu.com") || !userIdString.endsWith("@qq.sohu.com")){
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED));
                 return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数

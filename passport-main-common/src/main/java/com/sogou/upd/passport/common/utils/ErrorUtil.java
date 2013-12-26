@@ -276,7 +276,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_SET_POST_ERROR = "30015";
     // 用户取消授权
     public static final String ERR_CODE_CONNECT_USERCANAEL = "30016";
-    //不支持此类第三方登录
+    //不支持此类第三方账号
     public static final String ERR_CODE_CONNECT_NOT_SUPPORTED = "30017";
 
     /* ============================================================================ */
