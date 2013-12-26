@@ -154,38 +154,43 @@ public class WapLoginAction extends BaseController {
      */
     @RequestMapping(value = "/wap/passthrough_qq", method = RequestMethod.GET)
     public String qqPassThrough(HttpServletRequest req,
-                               HttpServletResponse res,
-                               WapPassThroughParams params) {
+                               HttpServletResponse res) {
         String openId = null;
-        String token = null;
+        String access_token = null;
         String ru = null;
         String ip=null;
         String expires_in=null;
         try {
         // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
-        try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-                res.sendRedirect(ru);
-                return "empty";
+
+            if(Strings.isNullOrEmpty(ru)){
+                access_token = req.getParameter(CommonConstant.ACCESS_TOKEN);
+                openId = req.getParameter(CommonConstant.OPENID);
+                expires_in=req.getParameter(CommonConstant.EXPIRES_IN);
+
             }
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
-        token = params.getAccess_token();
-        openId = params.getOpenid();
-        expires_in=params.getExpires_in();
+
+
+//        try {
+//            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+//            String validateResult = ControllerHelper.validateParams(params);
+//            if (!Strings.isNullOrEmpty(validateResult)) {
+//                ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+//                res.sendRedirect(ru);
+//                return "empty";
+//            }
+//        } catch (UnsupportedEncodingException e) {
+//            logger.error("Url decode Exception! ru:" + ru);
+//            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+//        }
 
         ip=getIp(req);
 
         //获取sgid
         String sgid = ServletUtil.getCookie(req,LoginConstant.COOKIE_SGID);
 
-        Result result = wapLoginManager.passThroughQQ(sgid, token, openId,ip,expires_in);
+        Result result = wapLoginManager.passThroughQQ(sgid, access_token, openId,ip,expires_in);
         if (result.isSuccess()) {
             sgid= (String) result.getModels().get("sgid");
             ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
@@ -200,11 +205,11 @@ public class WapLoginAction extends BaseController {
         }
         }catch (Exception e){
             if (logger.isDebugEnabled()) {
-                logger.debug("/wap/passthrough_qq " + "openId:" + openId +",token:"+token);
+                logger.debug("/wap/passthrough_qq " + "openId:" + openId +",access_token:"+access_token);
             }
         } finally {
 //            用于记录log
-            UserOperationLog userOperationLog = new UserOperationLog(openId, token, "0", ip);
+            UserOperationLog userOperationLog = new UserOperationLog(openId, access_token, "0", ip);
             String referer = req.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
