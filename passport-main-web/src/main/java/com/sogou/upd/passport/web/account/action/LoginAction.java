@@ -136,6 +136,11 @@ public class LoginAction extends BaseController {
 
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        UserOperationLogUtil.log(userOperationLog);
+
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
@@ -164,10 +169,6 @@ public class LoginAction extends BaseController {
                 result.setMessage("密码错误");
             }
         }
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        UserOperationLogUtil.log(userOperationLog);
 
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());
