@@ -244,7 +244,7 @@ public class WapLoginAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 response.sendRedirect(ru);
-                return "";
+                return "empty";
             }
             sgid=params.getSgid();
             client_id=params.getClient_id();

@@ -325,14 +325,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return result;
     }
 
-    private boolean isUserCancel(String usercancel){
-        if(!Strings.isNullOrEmpty(usercancel) && ("1".equals(usercancel) ||"2".equals(usercancel))){
-            return true;
-        }
-        return false;
-    }
-
-
     private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();
         try {
