@@ -149,4 +149,27 @@ public class TokenGenerator {
         return token;
     }
 
+    /**
+     * 生成mapp端登录流程使用的token 构成格式 MD5(passportID|timestamp|4位随机数)
+     * @param passportId
+     * @return
+     * @throws Exception
+     */
+    public static String generatorMappToken(String passportId)
+            throws Exception {
+        // 过期时间点
+        long curTimestamp = System.currentTimeMillis();
+        // 4位随机数
+        String random = RandomStringUtils.randomAlphanumeric(4);
+        String tokenContent = passportId + CommonConstant.SEPARATOR_1 + curTimestamp + CommonConstant.SEPARATOR_1 + random;
+        String token;
+        try {
+            token = Coder.encryptMD5(tokenContent);
+        } catch (Exception e) {
+            logger.error("generatorMappToken fail, passportId:" + passportId);
+            throw e;
+        }
+        return token;
+    }
+
 }

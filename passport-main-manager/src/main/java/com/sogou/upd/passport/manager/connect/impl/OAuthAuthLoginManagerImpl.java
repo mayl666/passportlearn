@@ -44,10 +44,7 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.AccountBaseInfoService;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.WapTokenService;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -102,7 +99,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private AppConfigService appConfigService;
+    private MappTokenService mappTokenService;
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
@@ -271,16 +268,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
-                    AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-                    if (tokenResult.isSuccess()) {
-                        String token = accountToken.getAccessToken();
-                        String url = buildMAppSuccessRu(ru, userId, token, uniqname);
-                        result.setSuccess(true);
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-                    } else {
-                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
-                    }
+                    String token = mappTokenService.saveToken(userId);
+                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+                    result.setSuccess(true);
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (type.equals(ConnectTypeEnum.MOBILE.toString())) {
                     String s_m_u = getSMU(userId);
                     String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
