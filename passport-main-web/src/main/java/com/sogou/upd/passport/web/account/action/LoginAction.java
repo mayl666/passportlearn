@@ -15,8 +15,6 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -60,8 +58,7 @@ public class LoginAction extends BaseController {
 
     @Autowired
     private HostHolder hostHolder;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
+
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
     private static final String COOKIE_URL_SOHURU = "https://account.sogou.com/static/api/ru.htm";   //种完sohu域要跳转的URL
 
@@ -136,6 +133,11 @@ public class LoginAction extends BaseController {
 
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        UserOperationLogUtil.log(userOperationLog);
+
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
@@ -164,10 +166,6 @@ public class LoginAction extends BaseController {
                 result.setMessage("密码错误");
             }
         }
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        UserOperationLogUtil.log(userOperationLog);
 
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());

@@ -78,7 +78,7 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
                 } else if (QQOAuth.XHTML_DISPLAY.equals(display)) {
                     this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "2");
                     this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
-                } else {
+                } else if(QQOAuth.MOBILE_DISPLAY.equals(display)){
                     this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
                 }
             } else {
