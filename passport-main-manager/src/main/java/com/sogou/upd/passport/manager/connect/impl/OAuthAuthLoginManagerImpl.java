@@ -268,11 +268,21 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-                    String token = (String) connectAccountResult.getModels().get("token");
-                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
-                    result.setSuccess(true);
-                    result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-                } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
+                    AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+                    if (tokenResult.isSuccess()) {
+                        String token = accountToken.getAccessToken();
+                        String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+                        result.setSuccess(true);
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                    }else {
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
+                    }
+
+                } else if (type.equals(ConnectTypeEnum.MOBILE.toString())) {
+//                    String url = buildMOBILESuccessRu(ru, userId, token, uniqname);
+
+                }else if (type.equals(ConnectTypeEnum.PC.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
@@ -340,6 +350,21 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
 
     private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
+        Map params = Maps.newHashMap();
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        params.put("userid", userid);
+        params.put("token", token);
+        params.put("uniqname", uniqname);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        return ru;
+    }
+
+    private String buildMOBILESuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
