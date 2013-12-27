@@ -227,6 +227,19 @@ public class DateUtil {
         return (long) (intervalMilli / (1000));
     }
 
+    /**
+     * 计算两个日期间隔的天数
+     *
+     * @param firstDate 小者
+     * @param lastDate  大者
+     * @return int 默认-1
+     */
+    public static int getDayNum(Date firstDate, Date lastDate) {
+        long timeInterval = getTimeIntervalMins(firstDate, lastDate);
+        long between_days = timeInterval / (1000 * 3600 * 24);
+        return Integer.parseInt(String.valueOf(between_days));
+    }
+
 	/* ------------------------- format/parse impl ------------------------- */
 
     static SimpleDateFormat getFormat(String pattern) {
