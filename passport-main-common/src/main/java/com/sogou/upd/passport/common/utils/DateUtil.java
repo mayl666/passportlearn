@@ -236,7 +236,7 @@ public class DateUtil {
      */
     public static int getDayNum(Date firstDate, Date lastDate) {
         long timeInterval = getTimeIntervalMins(firstDate, lastDate);
-        long between_days = timeInterval / (1000 * 3600 * 24);
+        long between_days = timeInterval / (3600 * 24);
         return Integer.parseInt(String.valueOf(between_days));
     }
 
