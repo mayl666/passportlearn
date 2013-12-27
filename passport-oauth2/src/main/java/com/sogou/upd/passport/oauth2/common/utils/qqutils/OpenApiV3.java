@@ -78,65 +78,16 @@ public class OpenApiV3
         // 计算签名
         String sig = SnsSigCheck.makeSig(method, scriptName, params, secret);
         params.put("sig", sig);
-//        System.out.println("sig:-------------" + sig);
         StringBuilder sb = new StringBuilder(64);
         sb.append(protocol).append("://").append(this.serverName).append(scriptName);
         String url = sb.toString();
         // cookie
         HashMap<String, String> cookies = null;
-        //通过调用以下方法，可以打印出最终发送到openapi服务器的请求参数以及url，默认注释
-        printRequest(url,method,params);
         // 发送请求
         String resp = SnsNetwork.postRequest(url, params, cookies, protocol);
-        //通过调用以下方法，可以打印出调用openapi请求的返回码以及错误信息，默认注释
-//        printRespond(resp);
         return resp;
     }
 	
-	/**
-     * 辅助函数，打印出完整的请求串内容
-     * 
-     * @param url 请求cgi的url
-     * @param method 请求的方式 get/post
-     * @param params OpenApi的参数列表
-     */
-	private void printRequest(String url,String method,HashMap<String, String> params) throws OpensnsException
-	{
-		System.out.println("==========Request Info==========\n");
-		System.out.println("method:  " + method);
-		System.out.println("url:  " + url);
-		System.out.println("params:");
-		System.out.println(params);
-		System.out.println("querystring:");
-		StringBuilder buffer = new StringBuilder(128);
-		Iterator iter = params.entrySet().iterator();
-		while (iter.hasNext())
-		{
-			Map.Entry entry = (Map.Entry) iter.next(); 
-			try
-			{	
-				buffer.append(URLEncoder.encode((String)entry.getKey(), "UTF-8").replace("+", "%20").replace("*", "%2A")).append("=").append(URLEncoder.encode((String)entry.getValue(), "UTF-8").replace("+", "%20").replace("*", "%2A")).append("&");
-			}
-			catch(UnsupportedEncodingException e)
-			{
-				throw new OpensnsException(ErrorCode.MAKE_SIGNATURE_ERROR, e);
-			}
-		}
-		String tmp = buffer.toString();
-		tmp = tmp.substring(0,tmp.length()-1);
-		System.out.println(tmp);
-		System.out.println();
-	}
-	/**
-     * 辅助函数，打印出完整的执行的返回信息
-     * 
-     * @return 返回服务器响应内容
-     */
-	private void printRespond(String resp)
-	{
-		System.out.println("===========Respond Info============");
-		System.out.println(resp);
-	}
     /**
      * 验证openid是否合法
      */

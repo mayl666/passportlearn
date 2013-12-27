@@ -72,6 +72,14 @@ public class QQLightOpenApiController {
             int clientId = params.getClient_id();
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID));
+                return result.toString();
+            }
+            String openIdString = params.getOpenid();
+            String userIdString = params.getUserid();
+            if(!openIdString.endsWith("@qq.sohu.com") || !userIdString.endsWith("@qq.sohu.com")){
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED));
                 return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
@@ -85,6 +93,10 @@ public class QQLightOpenApiController {
                 String accessToken = accessTokenMap.get("access_token").toString();
                 String resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params);
                 resultString = resp;
+                result.setCode("0");
+                result.setSuccess(true);
+            }else {
+                result = openResult;
             }
         } catch (Exception e) {
             logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
@@ -95,6 +107,7 @@ public class QQLightOpenApiController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "");
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage("qqResultString", resultString);
             UserOperationLogUtil.log(userOperationLog);
         }
         return resultString;
