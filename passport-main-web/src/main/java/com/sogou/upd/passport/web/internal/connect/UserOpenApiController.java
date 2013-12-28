@@ -60,11 +60,7 @@ public class UserOpenApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            if (CommonHelper.isPinyinExplorerWeb(params.getClient_id())) {  // todo 需要确定输入法web端是否能够切换
-                 result = proxyUserOpenApiManager.getUserInfo(params);
-            }else {
-                result =  sgUserOpenApiManager.getUserInfo(params);
-            }
+            result =  sgUserOpenApiManager.getUserInfo(params);
         } catch (Exception e) {
             logger.error("getUserInfo:Get User For Internal Is Failed,Userid is " + params.getOpenid(), e);
         } finally {
