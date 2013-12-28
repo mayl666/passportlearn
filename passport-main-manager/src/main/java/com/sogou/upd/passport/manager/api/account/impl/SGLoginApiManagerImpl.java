@@ -51,6 +51,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             if (!Strings.isNullOrEmpty(passportId)) {
                 result.setSuccess(true);
                 result.setDefaultModel("userid", passportId);
+                return result;
             }
             result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
             return result;

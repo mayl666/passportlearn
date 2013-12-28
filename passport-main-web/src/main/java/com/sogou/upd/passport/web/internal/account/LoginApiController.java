@@ -52,10 +52,6 @@ public class LoginApiController extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private ConfigureManager configureManager;
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
-    private UserOpenApiManager proxyUserOpenApiManager;
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
@@ -172,7 +168,9 @@ public class LoginApiController extends BaseController {
     /**
      * 手机应用使用第三方登录完成之后，会通过302重定向的方式将token带给产品的服务器端，
      * 产品的服务器端通过传入userid和token验证用户的合法性，且token具有较长的有效期。
-     * TODO 注意，目前接入应用全部是验证token，没有传入userid
+     * 注意，目前接入应用全部是验证token，没有传入userid
+     * todo 以后可考虑，验证token时，直接返回用户信息；现阶段为防止获取用户信息失败
+     * 而导致验证登录状态验证失败，暂时不做
      *
      * @return
      */
@@ -193,55 +191,13 @@ public class LoginApiController extends BaseController {
         if(!result.isSuccess()){
             result = proxyLoginApiManager.appAuthToken(params);
         }
-        String userId = (String) result.getModels().get("userid");
 
+        String userId = (String) result.getModels().get("userid");
         //记录log
         UserOperationLog userOperationLog=new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
         userOperationLog.putOtherMessage("token",params.getToken());
         UserOperationLogUtil.log(userOperationLog);
 
-        String userid = "";
-        if (result.isSuccess()){
-            userid = (String) result.getModels().get("userid");
-            if(AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userid)
-                    && params.getUsethirdinfo() == WapConstant.USE_THIRD_INFO){
-                //获取第三方用户信息
-                UserOpenApiParams userOpenApiParams = new UserOpenApiParams();
-                userOpenApiParams.setOpenid(userid);
-                userOpenApiParams.setUserid(userid);
-                //必须得传client_id
-                userOpenApiParams.setClient_id(params.getClient_id());
-                result = proxyUserOpenApiManager.getUserInfo(userOpenApiParams);
-            }else {
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userid);
-                //必须得传client_id
-                getUserInfoApiparams.setClient_id(params.getClient_id());
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                //转换结果格式
-                result = changeResult(result);
-            }
-        }
-
         return result.toString();
     }
-
-    private Result changeResult(Result result) {
-        Result userInfoResult = new APIResultSupport(true);
-        userInfoResult.setCode(result.getCode());
-        userInfoResult.setMessage(result.getMessage());
-        Map<String, Object> data = Maps.newHashMap();
-        Map<String, Object> value_data = Maps.newHashMap();
-        value_data.put("id","");
-        value_data.put("birthday",result.getModels().get("birthday").toString());
-        value_data.put("sex",result.getModels().get("gender").toString());
-        value_data.put("nick",result.getModels().get("uniqname").toString());
-        value_data.put("location",result.getModels().get("province").toString());
-        value_data.put("headurl",result.getModels().get("avatarurl").toString());
-        data.put("result",value_data);
-        data.put("userid",result.getModels().get("userid").toString());
-        userInfoResult.setModels(data);
-        return userInfoResult;
-    }
-
 }
