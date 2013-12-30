@@ -146,16 +146,16 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         result_value_data.put("birthday", getUserInfoResult.getModels().get("birthday").toString());
         result_value_data.put("sex", getUserInfoResult.getModels().get("gender").toString());
         result_value_data.put("nick", getUserInfoResult.getModels().get("uniqname").toString());
-        result_value_data.put("location", getUserInfoResult.getModels().get("province").toString());
+        result_value_data.put("location", getUserInfoResult.getModels().get("province").toString() + " " + getUserInfoResult.getModels().get("city").toString());
         result_value_data.put("headurl", getUserInfoResult.getModels().get("avatarurl").toString());
         data.put("result", result_value_data);
 
         Map<String, Object> original_value_data = Maps.newHashMap();
         original_value_data.put("id", "");
-//        value_data.put("birthday",connectUserInfoVO.get);
+        original_value_data.put("birthday", "");
         original_value_data.put("sex", connectUserInfoVO.getGender());
         original_value_data.put("nick", connectUserInfoVO.getNickname());
-        original_value_data.put("location", connectUserInfoVO.getProvince());
+        original_value_data.put("location", connectUserInfoVO.getProvince() + " " + connectUserInfoVO.getCity() + " " + connectUserInfoVO.getRegion());
         original_value_data.put("headurl", connectUserInfoVO.getImageURL());
         data.put("original", original_value_data);
         data.put("userid", userid);
