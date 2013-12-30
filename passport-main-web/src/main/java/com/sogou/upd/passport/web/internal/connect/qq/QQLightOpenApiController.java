@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.connect.qq;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -10,7 +11,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
@@ -35,19 +36,15 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/internal/connect")
-public class QQLightOpenApiController {
+public class QQLightOpenApiController extends BaseConnectController {
 
     private static final Logger logger = LoggerFactory.getLogger(QQLightOpenApiController.class);
 
     @Autowired
     private QQLightOpenApiManager sgQQLightOpenApiManager;
-
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
-
-    @Autowired
-    private ConfigureManager configureManager;
     /**
      * 根据用户信息，实现qq图标点亮
      *
@@ -61,25 +58,19 @@ public class QQLightOpenApiController {
         Result result = new APIResultSupport(false);
         String resultString = "";
         try {
+            // 仅支持qq账号调用此接口
+            String openIdStr = params.getOpenid();
+            String userIdStr = params.getUserid();
+            if(AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ){
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                return result.toString();
+            }
+
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                return result.toString();
-            }
-            //验证client_id
-            int clientId = params.getClient_id();
-            if (!configureManager.checkAppIsExist(clientId)) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID));
-                return result.toString();
-            }
-            String openIdString = params.getOpenid();
-            String userIdString = params.getUserid();
-            if(!openIdString.endsWith("@qq.sohu.com") || !userIdString.endsWith("@qq.sohu.com")){
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED));
                 return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
@@ -104,10 +95,10 @@ public class QQLightOpenApiController {
             resultString = result.toString();
         } finally {
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), "");
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("qqResultString", resultString);
+            userOperationLog.putOtherMessage("qqResult", resultString);
             UserOperationLogUtil.log(userOperationLog);
         }
         return resultString;

@@ -15,8 +15,6 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -60,8 +58,7 @@ public class LoginAction extends BaseController {
 
     @Autowired
     private HostHolder hostHolder;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
+
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
     private static final String COOKIE_URL_SOHURU = "https://account.sogou.com/static/api/ru.htm";   //种完sohu域要跳转的URL
 

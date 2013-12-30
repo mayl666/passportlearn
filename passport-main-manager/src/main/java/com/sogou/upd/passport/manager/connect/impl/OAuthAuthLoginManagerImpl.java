@@ -44,7 +44,10 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountBaseInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.AccountTokenService;
+import com.sogou.upd.passport.service.account.WapTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -202,12 +205,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
             int provider = AccountTypeEnum.getProvider(providerStr);
 
-            String usercancel = req.getParameter("usercancel");
-            //校验是否是用户取消授权
-            if (isUserCancel(usercancel)) {
-                return buildErrorResult(type, ru, ErrorUtil.ERR_CODE_CONNECT_USERCANAEL, null);
-            }
-
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
@@ -301,16 +298,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(userId);
-                    String sgid = null;
-                    if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get("sgid");
-                        if (!Strings.isNullOrEmpty(sgid)) {
+                    String sgid=null;
+                    if(sessionResult.isSuccess()){
+                         sgid= (String) sessionResult.getModels().get("sgid");
+                         if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
                             result.getModels().put("sgid", sgid);
-                            ru = buildWapSuccessRu(ru, sgid);
-                        }
-                    } else {
-                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+                            ru= buildWapSuccessRu(ru, sgid);
+                         }
+                    }else {
+                        result=buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:"+userId);
                     }
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
@@ -336,8 +333,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return result;
     }
 
-    private boolean isUserCancel(String usercancel) {
-        if (!Strings.isNullOrEmpty(usercancel) && ("1".equals(usercancel) || "2".equals(usercancel))) {
+    private boolean isUserCancel(String usercancel){
+        if(!Strings.isNullOrEmpty(usercancel) && ("1".equals(usercancel) ||"2".equals(usercancel))){
             return true;
         }
         return false;
