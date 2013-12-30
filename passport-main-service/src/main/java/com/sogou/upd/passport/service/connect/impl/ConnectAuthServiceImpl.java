@@ -10,14 +10,12 @@ import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.user.BaiduUserAPIRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.QQUserAPIRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.RenrenUserAPIRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.SinaUserAPIRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
-import com.sogou.upd.passport.oauth2.openresource.response.user.QQUserAPIResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.user.RenrenUserAPIResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.user.SinaUserAPIResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.user.UserAPIResponse;
+import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.springframework.stereotype.Service;
@@ -99,6 +97,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             request = RenrenUserAPIRequest.apiLocation(url, RenrenUserAPIRequest.RenrenUserAPIBuilder.class)
                     .setUserId(openid).setAccessToken(accessToken).buildQueryMessage(RenrenUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, RenrenUserAPIResponse.class);
+        } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
+            request = BaiduUserAPIRequest.apiLocation(url, BaiduUserAPIRequest.BaiduUserAPIBuilder.class)
+                    .setAccessToken(accessToken).buildQueryMessage(BaiduUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduUserAPIResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }
