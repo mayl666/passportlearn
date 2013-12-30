@@ -46,6 +46,7 @@ public class BaiduUserAPIResponse extends UserAPIResponse {
         connectUserInfoVO.setGender(getGender());
         connectUserInfoVO.setProvince("");//百度不支持省 市信息
         connectUserInfoVO.setCity("");
+        connectUserInfoVO.setOriginal(parameters);
         return connectUserInfoVO;
     }
 

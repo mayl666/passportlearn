@@ -39,6 +39,7 @@ public class QQUserAPIResponse extends UserAPIResponse {
 		user.setNickname(getParam(QQOAuth.NICK_NAME));
 		user.setImageURL(getParam(QQOAuth.FIGURE_URL_2));
 		user.setGender(formGender(getParam(QQOAuth.GENDER)));
+        user.setOriginal(parameters);
 		return user;
     }
 

@@ -61,6 +61,7 @@ public class UserOpenApiController extends BaseController {
             }
             // 调用内部接口
             result =  sgUserOpenApiManager.getUserInfo(params);
+
         } catch (Exception e) {
             logger.error("getUserInfo:Get User For Internal Is Failed,Userid is " + params.getOpenid(), e);
         } finally {

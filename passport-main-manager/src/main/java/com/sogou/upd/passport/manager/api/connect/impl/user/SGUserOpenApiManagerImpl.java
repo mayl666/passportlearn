@@ -52,8 +52,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
-    @Autowired
-    private AccountInfoManager accountInfoManager;
 
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
@@ -62,18 +60,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         try {
             String userid = userOpenApiParams.getUserid();
             int clientId = userOpenApiParams.getClient_id();
-
-            //查询用户存储在sogou passport的用户信息
-            ObtainAccountInfoParams getUserInfoparams = new ObtainAccountInfoParams();
-            getUserInfoparams.setUsername(userid);
-            getUserInfoparams.setClient_id(String.valueOf(clientId));
-            getUserInfoparams.setFields("uniqname,birthday,gender,province,city,avatarurl");
-
-            Result getUserInfoResult = accountInfoManager.getUserInfo(getUserInfoparams);
-            if (!getUserInfoResult.isSuccess()) {
-                result.setCode(ErrorUtil.ERR_CODE_GET_USER_INFO);
-                return result;
-            }
 
             //获取第三方信息
             String providerStr = getProviderByUserid(userid);
@@ -105,7 +91,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                 return result;
             }
-            result = buildSuccResult(getUserInfoResult, connectUserInfoVO, userid);
+            result = buildSuccResult(connectUserInfoVO, userid);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
@@ -138,26 +124,18 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         return result;
     }
 
-    private Result buildSuccResult(Result getUserInfoResult, ConnectUserInfoVO connectUserInfoVO, String userid) {
+    private Result buildSuccResult(ConnectUserInfoVO connectUserInfoVO, String userid) {
         Result userInfoResult = new APIResultSupport(true);
         Map<String, Object> data = Maps.newHashMap();
         Map<String, Object> result_value_data = Maps.newHashMap();
         result_value_data.put("id", "");
-        result_value_data.put("birthday", getUserInfoResult.getModels().get("birthday").toString());
-        result_value_data.put("sex", getUserInfoResult.getModels().get("gender").toString());
-        result_value_data.put("nick", getUserInfoResult.getModels().get("uniqname").toString());
-        result_value_data.put("location", getUserInfoResult.getModels().get("province").toString() + " " + getUserInfoResult.getModels().get("city").toString());
-        result_value_data.put("headurl", getUserInfoResult.getModels().get("avatarurl").toString());
+        result_value_data.put("birthday", "");
+        result_value_data.put("sex", connectUserInfoVO.getGender());
+        result_value_data.put("nick", connectUserInfoVO.getNickname());
+        result_value_data.put("location", connectUserInfoVO.getProvince() + " " + connectUserInfoVO.getCity() + " " + connectUserInfoVO.getRegion());
+        result_value_data.put("headurl", connectUserInfoVO.getImageURL());
         data.put("result", result_value_data);
-
-        Map<String, Object> original_value_data = Maps.newHashMap();
-        original_value_data.put("id", "");
-        original_value_data.put("birthday", "");
-        original_value_data.put("sex", connectUserInfoVO.getGender());
-        original_value_data.put("nick", connectUserInfoVO.getNickname());
-        original_value_data.put("location", connectUserInfoVO.getProvince() + " " + connectUserInfoVO.getCity() + " " + connectUserInfoVO.getRegion());
-        original_value_data.put("headurl", connectUserInfoVO.getImageURL());
-        data.put("original", original_value_data);
+        data.put("original", connectUserInfoVO.getOriginal());
         data.put("userid", userid);
         data.put("openid", userid);
         userInfoResult.setModels(data);

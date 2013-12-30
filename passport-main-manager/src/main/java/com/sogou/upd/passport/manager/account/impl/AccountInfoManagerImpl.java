@@ -256,19 +256,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             //其中昵称和头像是获取的account_base_info
             if(infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")){
                 AccountBaseInfo baseInfo = getBaseInfo(infoApiparams.getUserid());
+                //如果有sogou有存储，则用sogou存的
                 if(baseInfo!= null){
                     result.getModels().put("uniqname",baseInfo.getUniqname());
                     result.getModels().put("avatarurl",baseInfo.getAvatar());
-                }else {
-                    result.setCode(ErrorUtil.ERR_CODE_GET_USER_INFO);
-                    return result;
                 }
-            }else {
-                //不能使用返回的sohu头像、昵称
-                result.getModels().put("uniqname","");
-                result.getModels().put("avatarurl","");
             }
-            // TODO 搜狗账号迁移后，搜狗账号的昵称从account表里拿，其他账号昵称从account_base_info里拿
 
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);

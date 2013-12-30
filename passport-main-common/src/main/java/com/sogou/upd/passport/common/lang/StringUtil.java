@@ -348,6 +348,24 @@ public class StringUtil {
         return false;
     }
 
+    /**
+     *解决中文乱码问题
+     * @param value
+     * @return
+     */
+    public static String exchangeToUf8(String value) {
+        char[] carr = value.toCharArray();
+        byte[] barr = new byte[carr.length];
+        for (int i = 0; i < carr.length; i++) {
+            barr[i] = (byte) (carr[i]);
+        }
+        try {
+            value = new String(barr, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+        }
+        return value;
+    }
+
     public static void main(String[] args) {
         String a = "中国China";
         System.out.println("isChinese:" + containChinese(a));
