@@ -100,7 +100,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
             request = BaiduUserAPIRequest.apiLocation(url, BaiduUserAPIRequest.BaiduUserAPIBuilder.class)
                     .setAccessToken(accessToken).buildQueryMessage(BaiduUserAPIRequest.class);
-            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduUserAPIResponse.class);
+            response = OAuthHttpClient.execute(request, BaiduUserAPIResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }
