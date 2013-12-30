@@ -87,7 +87,7 @@ public class ConnectCallbackController extends BaseConnectController {
             } else {
                 // TODO 少了种cookie
                 res.sendRedirect(viewUrl);
-                return "";
+                return "empty";
             }
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
@@ -97,7 +97,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 return viewUrl;
             }else {
                 res.sendRedirect(viewUrl);
-                return "";
+                return "empty";
             }
         }
 

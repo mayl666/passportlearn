@@ -276,8 +276,11 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_SET_POST_ERROR = "30015";
     // 用户取消授权
     public static final String ERR_CODE_CONNECT_USERCANAEL = "30016";
+    //不支持此类第三方账号
+    public static final String ERR_CODE_CONNECT_NOT_SUPPORTED = "30017";
     // 透传失败
-    public static final String ERR_CODE_CONNECT_PASSTHROUGH = "30017";
+    public static final String ERR_CODE_CONNECT_PASSTHROUGH = "30018";
+
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
     /* ============================================================================ */
@@ -472,6 +475,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPT_VALUE_ERROR,"当opt为set时，value值必须要有，且为0或1，其它值非法");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SET_POST_ERROR,"当opt值为set时，请求方式必须为post");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL,"用户取消授权");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED,"不支持此类第三方账号调用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH,"透传失败");
 
 

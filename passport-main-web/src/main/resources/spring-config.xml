@@ -91,11 +91,12 @@
     </bean>
 
 
-    <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
-        <!-- 解决 HttpMediaTypeNotAcceptableException: Could not find acceptable representation -->
+    <bean id="mappingJacksonHttpMessageConverter"
+          class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        <!-- 解决 wap HttpMediaTypeNotAcceptableException: Could not find acceptable representation -->
         <property name="supportedMediaTypes">
             <list>
-                <value>text/html;charset=UTF-8</value>
+                <value>application/json;charset=UTF-8</value>
             </list>
         </property>
     </bean>
