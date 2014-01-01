@@ -84,6 +84,12 @@ public class SnsNetwork
         // 设置User-Agent
         postMethod.setRequestHeader("User-Agent", "Java OpenApiV3 SDK Client");
 
+        // 设置每个路由最大连接数
+        httpClient.getHttpConnectionManager().getParams().setDefaultMaxConnectionsPerHost(MAX_ROUTE_CONNECTIONS);
+
+        // 设置最大连接数
+        httpClient.getHttpConnectionManager().getParams().setMaxTotalConnections(MAX_TOTAL_CONNECTIONS);
+
         // 设置建立连接超时时间
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMEOUT);
 
@@ -136,6 +142,12 @@ public class SnsNetwork
 
     // 编码方式
     private static final String CONTENT_CHARSET = "UTF-8";
+
+    // 每个路由最大连接数
+    protected final static int MAX_ROUTE_CONNECTIONS = 100;
+
+    // 最大连接数
+    protected final static int MAX_TOTAL_CONNECTIONS = 500;
 
     // 连接超时时间
     private static final int CONNECTION_TIMEOUT = 3000;
