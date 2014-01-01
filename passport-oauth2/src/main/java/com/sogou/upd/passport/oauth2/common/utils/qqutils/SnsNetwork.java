@@ -43,7 +43,13 @@ public class SnsNetwork
             HashMap<String, String> cookies, 
             String protocol) throws OpensnsException
     {
-        HttpClient httpClient = new HttpClient();
+        MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+        manager.getParams().setDefaultMaxConnectionsPerHost(MAX_ROUTE_CONNECTIONS);
+        manager.getParams().setMaxTotalConnections(MAX_TOTAL_CONNECTIONS);
+        manager.getParams().setConnectionTimeout(CONNECTION_TIMEOUT);
+        manager.getParams().setSoTimeout(READ_DATA_TIMEOUT);
+        HttpClient httpClient = new HttpClient(manager);
+
         PostMethod postMethod = new PostMethod(url);
 
 
@@ -84,7 +90,7 @@ public class SnsNetwork
         // 设置User-Agent
         postMethod.setRequestHeader("User-Agent", "Java OpenApiV3 SDK Client");
 
-        // 设置每个路由最大连接数
+/*        // 设置每个路由最大连接数
         httpClient.getHttpConnectionManager().getParams().setDefaultMaxConnectionsPerHost(MAX_ROUTE_CONNECTIONS);
 
         // 设置最大连接数
@@ -94,7 +100,7 @@ public class SnsNetwork
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMEOUT);
 
         // 设置读数据超时时间
-        httpClient.getHttpConnectionManager().getParams().setSoTimeout(READ_DATA_TIMEOUT);
+        httpClient.getHttpConnectionManager().getParams().setSoTimeout(READ_DATA_TIMEOUT);*/
 
         // 设置编码
         postMethod.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET,
