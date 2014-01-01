@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.connect;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -90,8 +91,13 @@ public class ConnectCallbackController extends BaseConnectController {
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
                 commonManager.setSogouCookie(res, passportId, clientId, getIp(req), (int) DateAndNumTimesConstant.TWO_WEEKS, ru);
-                res.sendRedirect(ru);
-                return "";
+                String domain = req.getParameter("domain");
+                if(!Strings.isNullOrEmpty(domain)){
+                    //
+                }else {
+                    res.sendRedirect(ru);
+                }
+                return "empty";
             } else {
                 // TODO 少了种cookie
                 res.sendRedirect(viewUrl);

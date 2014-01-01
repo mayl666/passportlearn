@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
+import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -37,6 +38,7 @@ public class ConnectLoginParams {
     private String ts;   //终端的实例ID
 
     private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
+    private String domain;   // qq导航所用，种附加域的cookie
 
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId(){
@@ -65,6 +67,14 @@ public class ConnectLoginParams {
     @AssertTrue(message = "不支持的type")
     private boolean isSupportType() {
         if (type != null && !ConnectTypeEnum.isSupportType(type)) {
+            return false;
+        }
+        return true;
+    }
+
+    @AssertTrue(message = "不支持的domain")
+    private boolean isSupportDomain() {
+        if (domain != null && !ConnectDomainEnum.isSupportDomain(domain)) {
             return false;
         }
         return true;
@@ -156,5 +166,13 @@ public class ConnectLoginParams {
 
     public void setViewPage(String viewPage) {
         this.viewPage = viewPage;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 }

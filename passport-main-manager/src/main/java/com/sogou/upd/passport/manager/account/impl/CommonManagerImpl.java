@@ -47,8 +47,6 @@ public class CommonManagerImpl implements CommonManager {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
     private OperateTimesService operateTimesService;
 
 
@@ -89,7 +87,7 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createCookieUrl(Result result, String passportId,String domain, int autoLogin) {
+    public Result createCookieUrl(Result result, String passportId, String domain, int autoLogin) {
         // 种sohu域cookie
 
         String scheme = "https";
@@ -108,7 +106,7 @@ public class CommonManagerImpl implements CommonManager {
         createCookieUrlApiParams.setRu(scheme + COOKIE_URL_RUSTR);
         createCookieUrlApiParams.setPersistentcookie(autoLogin);
         createCookieUrlApiParams.setDomain(domain);
-        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true,true);
+        Result createCookieResult = proxyLoginApiManager.buildCreateCookieUrl(createCookieUrlApiParams, true, true);
         if (createCookieResult.isSuccess()) {
             result.setDefaultModel("cookieUrl", createCookieResult.getModels().get("url"));
         } else {
@@ -118,7 +116,7 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result createSohuCookieUrl(String passportId,String ru,int autoLogin){
+    public Result createSohuCookieUrl(String passportId, String ru, int autoLogin) {
         Result result = new APIResultSupport(false);
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(passportId);
@@ -137,7 +135,7 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public boolean setSogouCookie(HttpServletResponse response,String passportId,int client_id,String ip,int maxAge,String ru){
+    public boolean setSogouCookie(HttpServletResponse response, String passportId, int client_id, String ip, int maxAge, String ru) {
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(client_id);
@@ -158,11 +156,11 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result setCookie(HttpServletResponse response,String passportId,int client_id,String ip,int sogouMaxAge,String sogouRu,int sohuAutoLogin,String sohuRu){
+    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, int sogouMaxAge, String sogouRu, int sohuAutoLogin, String sohuRu) {
         Result result = new APIResultSupport(false);
         //种搜狗域cookie
-        boolean setSogouCookieRes = setSogouCookie(response,passportId,client_id,ip,sogouMaxAge,sogouRu);
-        if(!setSogouCookieRes){
+        boolean setSogouCookieRes = setSogouCookie(response, passportId, client_id, ip, sogouMaxAge, sogouRu);
+        if (!setSogouCookieRes) {
             result.setSuccess(false);
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
             result.setMessage("生成cookie失败");
@@ -170,9 +168,15 @@ public class CommonManagerImpl implements CommonManager {
         }
 
         //todo 只有@sogou域 和 sohu矩阵域才种跨域cookie
-        result = createSohuCookieUrl(passportId,sohuRu,sohuAutoLogin);
+        result = createSohuCookieUrl(passportId, sohuRu, sohuAutoLogin);
         return result;
 
+    }
+
+    @Override
+    public void setSSOCookie(HttpServletResponse response, String sginf, String sgrdig, String domain, int maxAge) {
+        ServletUtil.setCookie(response, "sginf", sginf, maxAge, domain);
+        ServletUtil.setCookie(response, "sgrdig", sgrdig, maxAge, domain);
     }
 
     @Override
