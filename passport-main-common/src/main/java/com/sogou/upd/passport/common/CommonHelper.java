@@ -73,8 +73,8 @@ public class CommonHelper {
      * @param clientId
      * @return
      */
-    public static boolean isPinyinExplorerWeb(int clientId) {
-        return clientId == CommonConstant.PINYIN_EXPLORER_BBS_CLIENTID;
+    public static boolean isWAN(int clientId) {
+        return clientId == CommonConstant.WAN_CLIENTID;
     }
     /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
