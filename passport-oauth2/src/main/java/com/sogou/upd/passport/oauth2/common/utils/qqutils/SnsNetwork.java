@@ -112,36 +112,24 @@ public class SnsNetwork
 
         try 
         {
-            try
-            {
                 int statusCode = httpClient.executeMethod(postMethod);
-    
                 if (statusCode != HttpStatus.SC_OK) 
                 {
                     throw new OpensnsException(ErrorCode.NETWORK_ERROR, "Request [" + url + "] failed:" + postMethod.getStatusLine());
                 }
-    
                 //读取内容 
                 byte[] responseBody = postMethod.getResponseBody();
-    
                 return new String(responseBody, CONTENT_CHARSET);
-            }
-            finally
-            {
-                //释放链接
-                postMethod.releaseConnection();
-            }
-        } 
-        catch (HttpException e) 
-        {
+        } catch (HttpException e){
             //发生致命的异常，可能是协议不对或者返回的内容有问题
             throw new OpensnsException(ErrorCode.NETWORK_ERROR, "Request [" + url + "] failed:" +  e.getMessage());
-        } 
-        catch (IOException e) 
-        {
+        } catch (IOException e){
             //发生网络异常
             throw new OpensnsException(ErrorCode.NETWORK_ERROR, "Request [" + url + "] failed:" +  e.getMessage());
-        } 
+        } finally  {
+            //释放链接
+            postMethod.releaseConnection();
+        }
     }
 	
 	
