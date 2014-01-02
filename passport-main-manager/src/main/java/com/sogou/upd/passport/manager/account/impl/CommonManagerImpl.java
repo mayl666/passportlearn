@@ -216,10 +216,10 @@ public class CommonManagerImpl implements CommonManager {
         String code1 = getCode(ppinf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
         String code2 = getCode(pprdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
         urlBuilder.append("?").append("sginf=").append(ppinf)
-                .append("sgrdig=").append(pprdig)
-                .append("code1=").append(code1)
-                .append("code2=").append(code2)
-                .append("ru=").append(Coder.encodeUTF8(ru));
+                .append("&sgrdig=").append(pprdig)
+                .append("&code1=").append(code1)
+                .append("&code2=").append(code2)
+                .append("&ru=").append(Coder.encodeUTF8(ru));
         return urlBuilder.toString();
     }
 
