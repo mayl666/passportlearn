@@ -52,10 +52,7 @@ public class SSOCookieController extends BaseController {
         }
         //校验servername
         String serverName = request.getServerName();
-
-        StringBuffer url = request.getRequestURL();
-        String tempContextUrl = url.delete(url.length() - request.getRequestURI().length(), url.length()).append("/").toString();
-        String domain = SSOSupportDomainEnum.getSupportDomain(tempContextUrl);
+        String domain = SSOSupportDomainEnum.getSupportDomain(serverName);
         if (StringUtils.isBlank(domain)) {
             result.setCode(ErrorUtil.ERR_CODE_ERROR_SERVERNAME);
             return result.toString();
