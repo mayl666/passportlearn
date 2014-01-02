@@ -210,7 +210,7 @@ public class CommonManagerImpl implements CommonManager {
         String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
         String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
 
-        String cookieData[] = ppinf.split(CommonConstant.SEPARATOR_1);
+        String cookieData[] = ppinf.split("\\"+CommonConstant.SEPARATOR_1);
         String createtime = cookieData[1];
         long ct = new Long(createtime);
         String code1 = getCode(ppinf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);

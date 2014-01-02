@@ -59,7 +59,7 @@ public class SSOCookieController {
         //验证code
         String sginf = ssoCookieParams.getSginf();
         String sgrdig = ssoCookieParams.getSgrdig();
-        String cookieData[] = sginf.split(CommonConstant.SEPARATOR_1);
+        String cookieData[] = sginf.split("\\"+CommonConstant.SEPARATOR_1);
         String createtime = cookieData[1];
         String expiretime = cookieData[2];
         long ct = new Long(createtime);
