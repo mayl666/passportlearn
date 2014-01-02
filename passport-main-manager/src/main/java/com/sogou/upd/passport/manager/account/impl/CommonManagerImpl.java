@@ -188,9 +188,9 @@ public class CommonManagerImpl implements CommonManager {
     public String buildCreateSSOCookieUrl(String domain, String passportId, String ru, String ip) {
         StringBuilder urlBuilder = new StringBuilder();
         if (domain.equals(ConnectDomainEnum.DAOHANG.toString())) {
-            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL);
-        } else if (domain.equals(ConnectDomainEnum.HAO.toString())) {
             urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL);
+        } else if (domain.equals(ConnectDomainEnum.HAO.toString())) {
+            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL);
         } else {
             return null;
         }
