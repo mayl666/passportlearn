@@ -210,7 +210,7 @@ public class CommonManagerImpl implements CommonManager {
         String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
         String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
 
-        String cookieData[] = ppinf.split("\\"+CommonConstant.SEPARATOR_1);
+        String cookieData[] = ppinf.split("\\" + CommonConstant.SEPARATOR_1);
         String createtime = cookieData[1];
         long ct = new Long(createtime);
         String code1 = getCode(ppinf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
@@ -227,7 +227,9 @@ public class CommonManagerImpl implements CommonManager {
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
         long currentTime = System.currentTimeMillis();
-        if (code.equalsIgnoreCase(originalCode) && ct > currentTime - CommonConstant.API_REQUEST_VAILD_TERM) {
+        boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
+        boolean timeRight = ct > currentTime - CommonConstant.API_REQUEST_VAILD_TERM;
+        if (isCodeEqual && timeRight) {
             return true;
         } else {
             return false;
