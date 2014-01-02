@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.form.SSOSupportDomainEnum;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.SSOCookieParams;
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-public class SSOCookieController {
+public class SSOCookieController extends BaseController {
     @Autowired
     private CommonManager commonManager;
 
@@ -51,7 +52,10 @@ public class SSOCookieController {
         }
         //校验servername
         String serverName = request.getServerName();
-        String domain = SSOSupportDomainEnum.getSupportDomain(serverName);
+
+        StringBuffer url = request.getRequestURL();
+        String tempContextUrl = url.delete(url.length() - request.getRequestURI().length(), url.length()).append("/").toString();
+        String domain = SSOSupportDomainEnum.getSupportDomain(tempContextUrl);
         if (StringUtils.isBlank(domain)) {
             result.setCode(ErrorUtil.ERR_CODE_ERROR_SERVERNAME);
             return result.toString();

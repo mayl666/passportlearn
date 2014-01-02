@@ -195,7 +195,7 @@ public class CommonManagerImpl implements CommonManager {
             return null;
         }
 
-        int client_id = 1120;
+        int client_id = CommonConstant.SGPP_DEFAULT_CLIENTID;
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(client_id);
