@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -56,12 +58,13 @@ public class QQLightOpenApiController extends BaseConnectController {
     @ResponseBody
     public Object getConnectQQApi(HttpServletRequest request, QQLightOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        String resultString = "";
+        String resultString = null;
+        String finalLogCode = null;
         try {
             // 仅支持qq账号调用此接口
             String openIdStr = params.getOpenid();
             String userIdStr = params.getUserid();
-            if(AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ){
+            if (AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
                 return result.toString();
             }
@@ -86,7 +89,15 @@ public class QQLightOpenApiController extends BaseConnectController {
                 resultString = resp;
                 result.setCode("0");
                 result.setSuccess(true);
-            }else {
+                if (!Strings.isNullOrEmpty(resp)) {
+                    Map<String, Object> logMap = JacksonJsonMapperUtil.getMapper().readValue(resp, Map.class);
+                    if (!CollectionUtils.isEmpty(logMap)) {
+                        if (logMap.containsKey("ret")) {
+                            finalLogCode = logMap.get("ret").toString().trim();
+                        }
+                    }
+                }
+            } else {
                 result = openResult;
             }
         } catch (Exception e) {
@@ -95,7 +106,13 @@ public class QQLightOpenApiController extends BaseConnectController {
             resultString = result.toString();
         } finally {
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String logCode;
+            if (!Strings.isNullOrEmpty(finalLogCode)) {
+                logCode = finalLogCode;
+            } else {
+                logCode = result.getCode();
+            }
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage("qqResult", resultString);
