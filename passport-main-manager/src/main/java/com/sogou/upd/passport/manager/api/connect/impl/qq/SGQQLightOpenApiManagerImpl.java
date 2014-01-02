@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
-import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
-import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
@@ -10,6 +8,8 @@ import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             //调用代理第三方接口，点亮或熄灭QQ图标
             resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
         } catch (OpensnsException e) {
-            logger.warn("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
+            logger.warn(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
             throw new OpensnsException(e.getErrorCode(), e.getMessage());
         }
         return resp;
@@ -57,6 +57,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
 
 
     private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) throws OpensnsException {
+        String resp = "";
         // 指定OpenApi Cgi名字
         String scriptName = qqLightOpenApiParams.getOpenApiName();
         // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
@@ -78,11 +79,10 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
         }
         //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
         String method = CommonConstant.CONNECT_METHOD_POST;
-        String resp = null;
         try {
             resp = sdk.api(scriptName, params, protocol, method);
         } catch (OpensnsException e) {
-            logger.warn("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
+            logger.warn(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
             throw new OpensnsException(e.getErrorCode(), e.getMessage());
         }
         return resp;
