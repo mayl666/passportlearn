@@ -58,13 +58,12 @@ public class QQLightOpenApiController extends BaseConnectController {
     @ResponseBody
     public Object getConnectQQApi(HttpServletRequest request, QQLightOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        String resultString = null;
-        String finalLogCode = null;
+        String resultString = "";
         try {
             // 仅支持qq账号调用此接口
             String openIdStr = params.getOpenid();
             String userIdStr = params.getUserid();
-            if (AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ) {
+            if(AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ){
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
                 return result.toString();
             }
@@ -89,15 +88,7 @@ public class QQLightOpenApiController extends BaseConnectController {
                 resultString = resp;
                 result.setCode("0");
                 result.setSuccess(true);
-                if (!Strings.isNullOrEmpty(resp)) {
-                    Map<String, Object> logMap = JacksonJsonMapperUtil.getMapper().readValue(resp, Map.class);
-                    if (!CollectionUtils.isEmpty(logMap)) {
-                        if (logMap.containsKey("ret")) {
-                            finalLogCode = logMap.get("ret").toString().trim();
-                        }
-                    }
-                }
-            } else {
+            }else {
                 result = openResult;
             }
         } catch (Exception e) {
@@ -106,13 +97,7 @@ public class QQLightOpenApiController extends BaseConnectController {
             resultString = result.toString();
         } finally {
             //用户注册log
-            String logCode;
-            if (!Strings.isNullOrEmpty(finalLogCode)) {
-                logCode = finalLogCode;
-            } else {
-                logCode = result.getCode();
-            }
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), logCode, getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage("qqResult", resultString);
