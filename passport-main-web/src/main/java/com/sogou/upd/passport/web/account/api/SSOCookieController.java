@@ -79,7 +79,7 @@ public class SSOCookieController extends BaseController {
         int maxAge = getMaxAge(et);
 
         commonManager.setSSOCookie(response, ssoCookieParams.getSginf(), ssoCookieParams.getSgrdig(), domain, maxAge);
-        return "empty";
+        return "";
     }
 
     //获取cookie有效期
