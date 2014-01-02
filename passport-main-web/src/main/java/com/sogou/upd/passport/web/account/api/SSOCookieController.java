@@ -86,7 +86,7 @@ public class SSOCookieController extends BaseController {
     private int getMaxAge(long et) {
         int maxAge = -1;
         if (et > 0) {
-            long currentTime = System.currentTimeMillis();
+            int currentTime = (int)(System.currentTimeMillis()/1000);
             maxAge = DateUtil.getIntervalSec(et, currentTime);
             if (maxAge == 0) {
                 maxAge = -1;
