@@ -276,9 +276,7 @@ public class DateUtil {
         return vaildTime;
     }
 
-    public static int getIntervalSec(long t1,long t2) {
-        long intervalMilli = t1 - t2;
-        return (int) (intervalMilli);
-    }
+    public static int getIntervalSec(int t1,int t2) {
+        return  (t1 - t2);    }
 
 }
