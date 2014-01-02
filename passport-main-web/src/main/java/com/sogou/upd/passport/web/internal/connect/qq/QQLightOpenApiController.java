@@ -90,7 +90,7 @@ public class QQLightOpenApiController extends BaseConnectController {
                 result = openResult;
             }
         } catch (Exception e) {
-            logger.warn("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
+            logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             resultString = result.toString();
         } finally {

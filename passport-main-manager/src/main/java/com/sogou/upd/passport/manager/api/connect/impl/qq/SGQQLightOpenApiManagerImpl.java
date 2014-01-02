@@ -49,7 +49,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             //调用代理第三方接口，点亮或熄灭QQ图标
             resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
         } catch (OpensnsException e) {
-            logger.warn(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
+            logger.error(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
             throw new OpensnsException(e.getErrorCode(), e.getMessage());
         }
         return resp;
@@ -82,7 +82,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
         try {
             resp = sdk.api(scriptName, params, protocol, method);
         } catch (OpensnsException e) {
-            logger.warn(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
+            logger.error(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
             throw new OpensnsException(e.getErrorCode(), e.getMessage());
         }
         return resp;
