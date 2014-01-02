@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
+import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -48,7 +49,7 @@ public class ConnectCallbackController extends BaseConnectController {
 
     @RequestMapping("/callback/{providerStr}")
     public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
-                                               @PathVariable("providerStr") String providerStr, Model model) throws IOException {
+                                         @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
         try {
@@ -72,13 +73,13 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
                 return viewUrl;
-            } else if(type.equals(ConnectTypeEnum.WAP.toString())){
-                String sgid= (String) result.getModels().get("sgid");
+            } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
+                String sgid = (String) result.getModels().get("sgid");
                 ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 res.sendRedirect(viewUrl);
                 return "empty";
-            }else if (ConnectTypeEnum.PC.toString().equals(type)){
+            } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
                 model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
                 model.addAttribute("nick", result.getModels().get("nick"));
@@ -92,14 +93,14 @@ public class ConnectCallbackController extends BaseConnectController {
                 int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
                 commonManager.setSogouCookie(res, passportId, clientId, getIp(req), (int) DateAndNumTimesConstant.TWO_WEEKS, ru);
                 String domain = req.getParameter("domain");
-                if(!Strings.isNullOrEmpty(domain)){
-                    //
-                }else {
+                if (!Strings.isNullOrEmpty(domain)) {
+                    String creeateSSOCookieUrl= commonManager.buildCreateSSOCookieUrl(domain,passportId,ru,getIp(req));
+                    res.sendRedirect(creeateSSOCookieUrl);
+                } else {
                     res.sendRedirect(ru);
                 }
                 return "empty";
-            }else {
-                // TODO 少了种cookie
+            } else {
                 res.sendRedirect(viewUrl);
                 return "empty";
             }
@@ -107,14 +108,13 @@ public class ConnectCallbackController extends BaseConnectController {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("error", result.getModels().get("error"));
                 return viewUrl;
-            } else if(ConnectTypeEnum.PC.toString().equals(type)){
+            } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 return viewUrl;
-            }else {
+            } else {
                 res.sendRedirect(viewUrl);
                 return "empty";
             }
         }
-
     }
 
 }

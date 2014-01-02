@@ -57,8 +57,11 @@ public class CommonConstant {
 
     public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
 
-    public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
+    public static final String HAO_CREATE_COOKIE_URL = "https://account.hao.qq.com";
+    public static final String DAOHANG_CREATE_COOKIE_URL = "https://account.daohang.qq.com";
 
+    public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
+    public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
     //=============缓存相关配置项====================
 //	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time
 

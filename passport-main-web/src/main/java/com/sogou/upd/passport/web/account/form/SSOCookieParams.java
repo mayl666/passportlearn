@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -16,15 +17,12 @@ public class SSOCookieParams {
     private String sginf;
     @NotBlank(message = "sgrdig不允许为空")
     private String sgrdig;
-    @NotBlank(message = "maxAge不允许为空")
-    private int maxAge;
     @NotBlank(message = "code1不允许为空")
     protected String code1;
     @NotBlank(message = "code2不允许为空")
     protected String code2;
-    @Min(0)
-    protected long ct; //单位为毫秒
 
+    @Ru
     protected String ru;
 
     public String getSginf() {
@@ -43,14 +41,6 @@ public class SSOCookieParams {
         this.sgrdig = sgrdig;
     }
 
-    public int getMaxAge() {
-        return maxAge;
-    }
-
-    public void setMaxAge(int maxAge) {
-        this.maxAge = maxAge;
-    }
-
     public String getCode1() {
         return code1;
     }
@@ -67,14 +57,6 @@ public class SSOCookieParams {
         this.code2 = code2;
     }
 
-    public long getCt() {
-        return ct;
-    }
-
-    public void setCt(long ct) {
-        this.ct = ct;
-    }
-
     public String getRu() {
         return ru;
     }
@@ -82,4 +64,6 @@ public class SSOCookieParams {
     public void setRu(String ru) {
         this.ru = ru;
     }
+
+
 }

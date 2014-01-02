@@ -42,8 +42,6 @@ public class ConnectLoginController extends BaseConnectController {
     @Autowired
     private OAuthAuthLoginManager oAuthAuthLoginManager;
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
-    @Autowired
     private ConnectApiManager sgConnectApiManager;
     @Autowired
     private ConfigureManager configureManager;
