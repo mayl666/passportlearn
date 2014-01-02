@@ -226,9 +226,9 @@ public class CommonManagerImpl implements CommonManager {
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
-        long currentTime = System.currentTimeMillis();
+        int currentTime = (int)(System.currentTimeMillis()/1000);
         boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
-        boolean timeRight = ct > currentTime - CommonConstant.API_REQUEST_VAILD_TERM;
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         if (isCodeEqual && timeRight) {
             return true;
         } else {
