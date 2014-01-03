@@ -53,6 +53,24 @@ public class ServletUtil {
         response.addHeader("Set-Cookie", cookieValue);
     }
 
+    //Set-Cookie: ppinf=2|1388731545|1389941145|bG9naW5pZDowOnx1c2VyaWQ6NDQ6MzE2ODBENkE2QTY1RDMyQkYxRTkyOTY3N0U3OERFMjl
+    // AcXEuc29odS5jb218c2VydmljZXVzZTozMDowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDB8Y3J0OjA6fGVtdDoxOjB8YXBwaWQ6NDoxMTIw
+    // fHRydXN0OjE6MXxwYXJ0bmVyaWQ6MTowfHJlbGF0aW9uOjA6fHV1aWQ6MTY6ODNhN2I4NzA3YjNhNDg2eHx1aWQ6MTY6ODNhN2I4NzA3YjNhNDg
+    // 2eHx1bmlxbmFtZTo0OTolRTUlOEElQTAlRTclOUIlOUYxNjQyJUU1JTlDJUE4JUU2JTkwJTlDJUU3JThCJTkwfHJlZnVzZXJpZDozMjozMTY4MEQ2
+    // QTZBNjVEMzJCRjFFOTI5Njc3RTc4REUyOXxyZWZuaWNrOjE4OiVFNSU4QSVBMCVFNyU5QiU5Rnw;
+    //
+    // domain=.hao.qq.com; path=/; expires=Fri, 17-Jan-2014 06:45:45 GMT
+    public static void setHttpOnlyCookie(HttpServletResponse response, String key, String value, String domain,long expires) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(key).append("=").append(value).append("; ");
+        sb.append("domain=").append(domain).append("; ");
+        sb.append("path=/").append("; ");
+        sb.append("expires=").append(DateUtil.getDateByTimeStamp(expires)).append(" GMT").append("; ");
+        sb.append("HttpOnly");
+        String cookieValue = sb.toString();
+        response.addHeader("Set-Cookie", cookieValue);
+    }
+
     public static void setCookie(HttpServletResponse response, String key, String value, int second, String domain) {
         saveCookie(response, key, value, second, "/", domain);
     }
