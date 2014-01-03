@@ -180,8 +180,8 @@ public class CommonManagerImpl implements CommonManager {
 
     @Override
     public void setSSOCookie(HttpServletResponse response, String sginf, String sgrdig, String domain, int maxAge) {
-        ServletUtil.setCookie(response, "sginf", sginf, maxAge, domain);
-        ServletUtil.setCookie(response, "sgrdig", sgrdig, maxAge, domain);
+        ServletUtil.setCookie(response, "ppinf", sginf, maxAge, domain);
+        ServletUtil.setCookie(response, "pprdig", sgrdig, maxAge, domain);
     }
 
     @Override
