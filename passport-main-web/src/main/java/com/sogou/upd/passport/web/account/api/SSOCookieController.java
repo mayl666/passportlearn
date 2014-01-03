@@ -73,6 +73,11 @@ public class SSOCookieController extends BaseController {
         int maxAge = getMaxAge(et);
 
         commonManager.setSSOCookie(response, ssoCookieParams.getSginf(), ssoCookieParams.getSgrdig(), domain, maxAge);
+        String ru = ssoCookieParams.getRu();
+        if(StringUtils.isBlank(ru)){
+            ru = SSOSupportDomainEnum.getDefaultRu(serverName);
+        }
+        response.sendRedirect(ru);
         return "";
     }
 

@@ -41,6 +41,19 @@ public enum SSOSupportDomainEnum {
         return null;
     }
 
+    public static String getDefaultRu(String serverName) {
+        if (StringUtils.isBlank(serverName)) {
+            return null;
+        }
+
+        for (String domain : DOMAIN_LIST) {
+            if (serverName.contains(domain)) {
+                return "http://" + domain;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return connectType;
