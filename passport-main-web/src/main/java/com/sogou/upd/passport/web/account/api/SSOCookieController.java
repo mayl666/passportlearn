@@ -6,22 +6,16 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.form.SSOSupportDomainEnum;
-import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.SSOCookieParams;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +54,7 @@ public class SSOCookieController extends BaseController {
         //验证code
         String sginf = ssoCookieParams.getSginf();
         String sgrdig = ssoCookieParams.getSgrdig();
-        String cookieData[] = sginf.split("\\"+CommonConstant.SEPARATOR_1);
+        String cookieData[] = sginf.split("\\" + CommonConstant.SEPARATOR_1);
         String createtime = cookieData[1];
         String expiretime = cookieData[2];
         long ct = new Long(createtime);
@@ -86,7 +80,7 @@ public class SSOCookieController extends BaseController {
     private int getMaxAge(long et) {
         int maxAge = -1;
         if (et > 0) {
-            int currentTime = (int)(System.currentTimeMillis()/1000);
+            int currentTime = (int) (System.currentTimeMillis() / 1000);
             maxAge = DateUtil.getIntervalSec(et, currentTime);
             if (maxAge == 0) {
                 maxAge = -1;

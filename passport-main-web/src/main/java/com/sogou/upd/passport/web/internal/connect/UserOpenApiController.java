@@ -36,8 +36,6 @@ public class UserOpenApiController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(UserOpenApiController.class);
 
     @Autowired
-    private UserOpenApiManager proxyUserOpenApiManager;
-    @Autowired
     private UserOpenApiManager sgUserOpenApiManager;
 
     /**
