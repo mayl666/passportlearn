@@ -220,4 +220,8 @@ public class RequestModel {
     public void setHEADER_CONTENT_TYPE_VALUE(String HEADER_CONTENT_TYPE_VALUE) {
         this.HEADER_CONTENT_TYPE_VALUE = HEADER_CONTENT_TYPE_VALUE;
     }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
 }

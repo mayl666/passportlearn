@@ -26,8 +26,8 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
         }
         if (value.indexOf("@") == -1) {
             if (!PhoneUtil.verifyPhoneNumberFormat(value)) {
-                //个性账号格式是否拼配，{3，15}就表示4--16位，这个地方我自作聪明，改错一次，切忌
-                String regx = "[a-z]([a-zA-Z0-9_.-]{3,15})";
+                //个性账号格式是否拼配，{3，15}就表示4--16位，必须字母开头，不作大小写限制
+                String regx = "[a-zA-Z]([a-zA-Z0-9_.-]{3,15})";
                 boolean flag = value.matches(regx);
                 if (!flag) {
                     return false;
