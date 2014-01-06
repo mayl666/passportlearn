@@ -48,7 +48,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
     @Autowired
     private ConnectProxyOpenApiManager connectProxyOpenApiManager;
     @Autowired
-    private ConnectApiManager sgConnectApiManager;
+    private ConnectApiManager proxyConnectApiManager;
 
     /**
      * 执行第三方开放平台代理接口的调用
@@ -61,8 +61,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
      * @throws Exception
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/{providerStr}/{interfaceName}", method = RequestMethod.POST)
-    @ResponseBody
+    @RequestMapping(value = "/{providerStr}/{interfaceName}")
     public Object connectProxyOpenApi(HttpServletRequest request, @NotBlank @PathVariable("providerStr") String providerStr, @NotBlank @PathVariable("interfaceName") String interfaceName, ConnectProxyOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -84,14 +83,19 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             }
             //TODO ACCESS_TOKEN迁移至搜狗数据库后，此方法逻辑需要替换
             //调用搜狐接口，获取QQ token，openid等参数
-            BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createQQConnectParams(params);
-            Result openResult = sgConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
+            baseOpenApiParams.setUserid(params.getUserid());
+            Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
                 String openId = accessTokenMap.get("open_id").toString();
                 String accessToken = accessTokenMap.get("access_token").toString();
-                result = connectProxyOpenApiManager.handleConnectOpenApi(openId, accessToken, providerStr, interfaceName, params);
+                if (!Strings.isNullOrEmpty(openId) && !Strings.isNullOrEmpty(accessToken)) {
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(openId, accessToken, providerStr, interfaceName, params);
+                } else {
+                    result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                }
             }
         } catch (Exception e) {
             logger.error("connectProxyOpenApi Is Failed,UserId is " + params.getUserid(), e);

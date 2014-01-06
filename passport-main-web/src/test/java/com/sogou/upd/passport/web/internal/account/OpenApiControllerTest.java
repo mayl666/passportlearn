@@ -47,4 +47,34 @@ public class OpenApiControllerTest extends BaseActionTest {
         String result = sendPost("http://localhost/internal/connect/qq/light", params);
         System.out.println(result);
     }
+
+    @Test
+    public void testConnectProxyOpenApi() throws IOException {
+        Map<String, String> params = new HashMap<String, String>();
+//        String userid = "1548840104@sohu.com";
+//        String openid = "1548840104@sohu.com";
+        String userid = "560C552D549401B79A41A2CE8724D31A@qq.sohu.com";
+        String openid = "560C552D549401B79A41A2CE8724D31A@qq.sohu.com";
+        int clientId = 1120;
+        String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
+        long ct = System.currentTimeMillis();
+        String code = ManagerHelper.generatorCodeGBK(userid.toString(), clientId, serverSecret, ct);
+        System.out.println("code:" + code);
+        params.put("client_id", String.valueOf(clientId));
+        params.put("userid", userid);
+        params.put("openid", openid);
+        params.put("code", code);
+        params.put("ct", String.valueOf(ct));
+//        params.put("openApiName", "/v3/user/sogou_flag");
+        Map<String, String> maps = new HashMap<String, String>();
+//        maps.put("format", "json");
+//        maps.put("opt", "set");
+//        maps.put("pf", "qzone");
+//        maps.put("value", "0");
+//        maps.put("userip", "10.128.134.167");
+        String mapString = JacksonJsonMapperUtil.getMapper().writeValueAsString(maps);
+        params.put("params", mapString);
+        String result = sendPost("http://localhost/internal/connect/qq/user/get_qzoneupdates", params);
+        System.out.println(result);
+    }
 }

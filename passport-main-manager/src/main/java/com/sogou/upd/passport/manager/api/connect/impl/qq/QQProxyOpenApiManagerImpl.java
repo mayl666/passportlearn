@@ -15,9 +15,7 @@ import com.sogou.upd.passport.manager.api.connect.QQProxyOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.proxy.ConnectProxyOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.proxy.OpenApiParams;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.ErrorCode;
-import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
-import com.sogou.upd.passport.oauth2.common.utils.qqutils.SnsSigCheck;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,7 @@ public class QQProxyOpenApiManagerImpl extends BaseProxyManager implements QQPro
 
     private static final Logger logger = LoggerFactory.getLogger(QQProxyOpenApiManagerImpl.class);
 
-    @Autowired
+    @Override
     public Result executeQQOpenApi(OpenApiParams openApiParams, ConnectProxyOpenApiParams params) {
         Result result = new APIResultSupport(false);
         try {

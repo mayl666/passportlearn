@@ -3,8 +3,6 @@ package com.sogou.upd.passport.manager.api.connect;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.connect.form.proxy.ConnectProxyOpenApiParams;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * 第三方开放平台接口代理
  * Created with IntelliJ IDEA.
@@ -18,7 +16,6 @@ public interface ConnectProxyOpenApiManager {
     /**
      * 处理第三方接口调用请求
      *
-     * @param result
      * @param providerStr   第三方类型
      * @param interfaceName 第三方开放平台接口
      * @param params        第三方开放平台参数
