@@ -91,7 +91,7 @@ public class ConnectLoginController extends BaseConnectController {
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
                 return "";
             }
@@ -104,7 +104,7 @@ public class ConnectLoginController extends BaseConnectController {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
-                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
+                url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
                 res.sendRedirect(url);
                 return "";
             }
@@ -113,12 +113,12 @@ public class ConnectLoginController extends BaseConnectController {
 //            if( type.equals(ConnectTypeEnum.MAPP.toString()) && CommonHelper.isWAN(clientId)) {
 //                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            }else {
-            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req),httpOrHttps);
+            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
 
             res.sendRedirect(url);
             return "";
         } catch (OAuthProblemException e) {
-            url = buildAppErrorRu(type,providerStr, ru, e.getError(), e.getDescription());
+            url = buildAppErrorRu(type, providerStr, ru, e.getError(), e.getDescription());
             res.sendRedirect(url);
             return "";
         } finally {
