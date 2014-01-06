@@ -71,6 +71,9 @@ public class CommonConstant {
     public static final String STOPWATCH = "stopWatch";
 
     public static boolean IS_USE_IEBBS_UNIQNAME = true;
+
+    public static final String HTTPS_HEADER = "X-Https";
+    public static final String HTTPS_VALUE = "https";
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

@@ -10,7 +10,9 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
+import org.apache.commons.lang.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -100,6 +102,15 @@ public class BaseConnectController extends BaseController {
             logger.error("buildAppErrorRu! ru:" + ru);
         }
         return ru;
+    }
+
+    protected String getProtocol(HttpServletRequest req){
+        String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
+        String httpOrHttps = "http";
+        if(!StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)){
+            httpOrHttps = "https";
+        }
+        return httpOrHttps;
     }
 
 }

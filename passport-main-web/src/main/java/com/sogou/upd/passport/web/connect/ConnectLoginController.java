@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -19,6 +20,7 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequ
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,7 +87,7 @@ public class ConnectLoginController extends BaseConnectController {
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
-        String httpOrHttps = req.getScheme();
+        String httpOrHttps = getProtocol(req);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
