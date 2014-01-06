@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.action.wap;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -17,6 +18,7 @@ import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
+import com.sogou.upd.passport.manager.form.WapPassThroughParams;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseController;
@@ -38,6 +40,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -123,6 +126,9 @@ public class WapLoginAction extends BaseController {
         if (result.isSuccess()) {
             String userId = result.getModels().get("userid").toString();
             String sgid = result.getModels().get("sgid").toString();
+
+            ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(),sgid));
             return "empty";
@@ -147,57 +153,77 @@ public class WapLoginAction extends BaseController {
      * wap sid透传
      */
     @RequestMapping(value = "/wap/passthrough_qq", method = RequestMethod.GET)
-    public String qqPassThrough(HttpServletRequest request,
-                               HttpServletResponse response,
-                               WapLogoutParams params) {
-        // 校验参数
-        String sgid = null;
-        String client_id= null;
-        String ru= null;
+    public String qqPassThrough(HttpServletRequest req,
+                               HttpServletResponse res,
+                               WapPassThroughParams params) {
+        String openId = null;
+        String token = null;
+        String ru = null;
+        String ip=null;
+        String expires_in=null;
         try {
-            ru=params.getRu();
+        // 校验参数
+            ru = req.getParameter(CommonConstant.RESPONSE_RU);
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-                response.sendRedirect(ru);
-                return "";
+                ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                res.sendRedirect(ru);
+                return "empty";
             }
-            sgid=params.getSgid();
-            client_id=params.getClient_id();
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        token = params.getAccess_token();
+        openId = params.getOpenid();
+        expires_in=params.getExpires_in();
 
-            //处理ru
-            if (Strings.isNullOrEmpty(ru)) {
-                ru= CommonConstant.DEFAULT_WAP_URL;
-            }
-            //session server中清除cookie
-            Result result=wapLoginManager.removeSession(sgid);
-            if(result.isSuccess()){
-                //清除cookie
-                ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
-                response.sendRedirect(ru);
-                return "";
-            }
+        ip=getIp(req);
+
+        //获取sgid
+        String sgid = ServletUtil.getCookie(req,LoginConstant.COOKIE_SGID);
+
+        Result result = wapLoginManager.passThroughQQ(sgid, token, openId,ip,expires_in);
+        if (result.isSuccess()) {
+            sgid= (String) result.getModels().get("sgid");
+            ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+
+            ru=buildSuccessRu(ru,sgid);
+            res.sendRedirect(ru);
+            return "empty";
+        }else {
+            ru=buildErrorRu(ru,ErrorUtil.ERR_CODE_CONNECT_PASSTHROUGH,null);
+            res.sendRedirect(ru);
+            return "empty";
+        }
         }catch (Exception e){
             if (logger.isDebugEnabled()) {
-                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
+                logger.debug("/wap/passthrough_qq " + "openId:" + openId +",token:"+token);
             }
         } finally {
-            //用于记录log
-            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, "0", getIp(request));
-            String referer = request.getHeader("referer");
+//            用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(openId, token, "0", ip);
+            String referer = req.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
             UserOperationLogUtil.log(userOperationLog);
         }
-        ru = buildErrorRu(ru,ErrorUtil.ERR_CODE_REMOVE_COOKIE_FAILED,"error");
+        return "empty";
+    }
+    private String buildSuccessRu(String ru, String sgid) {
+        Map params = Maps.newHashMap();
         try {
-            response.sendRedirect(ru);
-        } catch (IOException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("logout_redirect " + "sgid:" + sgid +",client_id:"+client_id);
-            }
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (Exception e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_WAP_URL;
         }
-        return "";
+        //ru后缀一个sgid
+        params.put("sgid", sgid);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        return ru;
     }
 
     /**
@@ -218,7 +244,7 @@ public class WapLoginAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 ru=buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 response.sendRedirect(ru);
-                return "";
+                return "empty";
             }
             sgid=params.getSgid();
             client_id=params.getClient_id();
@@ -270,7 +296,7 @@ public class WapLoginAction extends BaseController {
             if (Strings.isNullOrEmpty(ru)) {
                 ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
             }
-            if (!Strings.isNullOrEmpty(errorCode) && !Strings.isNullOrEmpty(errorText)) {
+            if (!Strings.isNullOrEmpty(errorCode)) {
                 Map params = Maps.newHashMap();
                 params.put(CommonConstant.RESPONSE_STATUS, errorCode);
                 if (Strings.isNullOrEmpty(errorText)) {
