@@ -193,7 +193,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type) {
+    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type,String httpOrHttps) {
         Result result = new APIResultSupport(false);
         try {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
@@ -217,7 +217,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip, from,domain);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from,domain);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();

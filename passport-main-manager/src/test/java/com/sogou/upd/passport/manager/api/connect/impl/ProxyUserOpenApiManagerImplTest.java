@@ -45,8 +45,8 @@ public class ProxyUserOpenApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         UserOpenApiParams params = new UserOpenApiParams();
-        params.setUserid("DC56FD6C203C4D91FBC42A1ECBD744C6@qq.sohu.com");
-        params.setOpenid("DC56FD6C203C4D91FBC42A1ECBD744C6@qq.sohu.com");
+        params.setUserid("31680D6A6A65D32BF1E929677E78DE29@qq.sohu.com");
+        params.setOpenid("31680D6A6A65D32BF1E929677E78DE29@qq.sohu.com");
         params.setClient_id(1115);
         Result result = proxyUserOpenApiManager.getUserInfo(params);
         System.out.println("result data:" + result);

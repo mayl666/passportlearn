@@ -85,7 +85,7 @@ public class ConnectLoginController extends BaseConnectController {
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
-
+        String httpOrHttps = req.getScheme();
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -111,7 +111,7 @@ public class ConnectLoginController extends BaseConnectController {
 //            if( type.equals(ConnectTypeEnum.MAPP.toString()) && CommonHelper.isWAN(clientId)) {
 //                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            }else {
-            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req),httpOrHttps);
 
             res.sendRedirect(url);
             return "";

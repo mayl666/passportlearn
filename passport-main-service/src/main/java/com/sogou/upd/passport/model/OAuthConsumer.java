@@ -56,6 +56,10 @@ public class OAuthConsumer {
         return callbackUrl;
     }
 
+    public String getCallbackUrl(String httpOrHttps) {
+        return httpOrHttps+callbackUrl;
+    }
+
     public void setCallbackUrl(String callbackUrl) {
         this.callbackUrl = callbackUrl;
     }

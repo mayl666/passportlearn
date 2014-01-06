@@ -32,6 +32,6 @@ public interface OAuthAuthLoginManager {
      * @param type
      * @return
      */
-    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type);
+    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type,String httpOrHttps);
 
 }

@@ -40,7 +40,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     private static final Logger log = LoggerFactory.getLogger(ProxyConnectApiManagerImpl.class);
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip,String httpOrHttps) throws OAuthProblemException {
         String providerStr = AccountTypeEnum.getProviderStr(provider);
 
         Map params = Maps.newHashMap();
