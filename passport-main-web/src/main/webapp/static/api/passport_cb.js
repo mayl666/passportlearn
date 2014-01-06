@@ -7,6 +7,6 @@
     }else{
         passhref = 'http://s.account.sogou.com/u';
     }
-    scr.src= passhref + '/api/sogou.js?t=2013121656';
+    scr.src= passhref + '/api/sogou.js?t=@date@';
     document.body.appendChild(scr);
 })();

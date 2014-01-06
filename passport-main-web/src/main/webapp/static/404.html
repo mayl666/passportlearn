@@ -3,12 +3,12 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=837973" type="text/css" />
+        <link rel="stylesheet" href="@static_prefix@/static/css/main.css?t=837973" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
     <div class="inner">
-        <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
+        <h1><a href="/"><img src="@img_prefix@/static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
         <ul class="info" style="display:none;">
             <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
             <li class="sep" >|</li>
@@ -40,7 +40,7 @@
         <div class="desc">
             抱歉此页面无法访问
         </div>
-        <img src="/./static/img/404.jpg" class="" alt="" />
+        <img src="@img_prefix@/static/img/404.jpg" class="" alt="" />
     </div>
 </div>
 
@@ -50,12 +50,12 @@
         
         <div class="footer">
     <div class="inner">
-        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2013 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2014 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
     </div>
 </div>
     </body>
-    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=346533"></script>
-    <script type="text/javascript" src="/./static/js/404.js?t=2013121656"></script>
+    <script type="text/javascript" src="@static_prefix@/static/js/lib/ursa.js?t=346533"></script>
+    <script type="text/javascript" src="@static_prefix@/static/js/404.js?t=@date@"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
@@ -76,7 +76,7 @@ var spb_vars = {
 var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
         
 require.config({
-    baseUrl:"/./static/js",
+    baseUrl:"@static_prefix@/static/js",
     shim:{
         'uuiForm':{deps:['uuibase']}//not AMD style...
     }
