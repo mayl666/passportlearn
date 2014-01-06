@@ -558,7 +558,7 @@ var PassportSC = {
         }
     },
     token : utils.uuid(),
-    _passhtml : '<form method="post" action="@protocol@://account.sogou.com/web/login" target="_PassportIframe">'
+    _passhtml : '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
         +'<input type="hidden" name="username" value="<%=username%>">'
         +'<input type="hidden" name="password" value="<%=password%>">'
         +'<input type="hidden" name="captcha" value="<%=vcode%>">'
