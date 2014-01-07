@@ -80,6 +80,11 @@ public class CommonConstant {
 
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
+
+    public static final String RESQUEST_USERNAME = "username";
+    public static final String RESQUEST_USERID = "userid";
+
+
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 
