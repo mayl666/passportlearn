@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,6 +29,7 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     private static final String NEW_ANSWER = "New secure answer";
 
     private static final int clientId = 1100;
+
     @Test
     public void testAuthUser() {
         try {
@@ -37,10 +39,23 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
             authUserParameters.setPassword(Coder.encryptMD5("123456"));
             authUserParameters.setUsertype(1);
             Result result = sgLoginApiManager.webAuthUser(authUserParameters);
-            System.out.println("testAuthUser:"+result);
+            System.out.println("testAuthUser:" + result);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testGetCookieInfo() {
+        String userid = "shipengzhi1986@sogou.com";
+        int client_id = 1120;
+        String uniqname = "跳刀的兔子";
+        String refnick = "跳刀的兔子";
+        // userid, client_id, ru, ip, uniqname, refnick
+        CookieApiParams cookieApiParams = new CookieApiParams(userid, client_id, "", "", uniqname, refnick);
+        Result result = sgLoginApiManager.getCookieInfo(cookieApiParams);
+        System.out.println("sginf: " + result.getModels().get("sginf"));
+        System.out.println("sgrdig: " + result.getModels().get("sgrdig"));
     }
 
 }
