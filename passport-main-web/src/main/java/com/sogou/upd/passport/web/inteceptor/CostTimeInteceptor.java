@@ -209,7 +209,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                 String url = tagBuilder.toString();
 
                 //是否为第三方请求
-                if(url.contains("connect")){
+                if(url.contains("/connect/")){
                     if (stopWatch.getElapsedTime() >= CONNECT_SLOW_TIME) {
                         tagBuilder.append(".slow");
                     }
