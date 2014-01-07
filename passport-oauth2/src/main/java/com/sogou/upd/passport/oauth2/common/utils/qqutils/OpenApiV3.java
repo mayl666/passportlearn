@@ -70,13 +70,6 @@ public class OpenApiV3 {
     public String api(String scriptName, HashMap<String, String> params, String protocol, String method) throws Exception {
         String resp;
         try {
-            // 检查openid openkey等参数
-            if (params.get("openid") == null) {
-                throw new OpensnsException(ErrorCode.PARAMETER_EMPTY, "openid is empty");
-            }
-            if (!isOpenid(params.get("openid"))) {
-                throw new OpensnsException(ErrorCode.PARAMETER_INVALID, "openid is invalid");
-            }
             // 无需传sig,会自动生成
             params.remove("sig");
             // 添加固定参数
