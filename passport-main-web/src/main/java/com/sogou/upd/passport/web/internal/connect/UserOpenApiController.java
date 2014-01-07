@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -35,7 +36,7 @@ public class UserOpenApiController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(UserOpenApiController.class);
 
     @Autowired
-    private UserOpenApiManager proxyUserOpenApiManager;
+    private UserOpenApiManager sgUserOpenApiManager;
 
     /**
      * 获取第三方账号的个人资料
@@ -57,7 +58,8 @@ public class UserOpenApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyUserOpenApiManager.getUserInfo(params);
+            result =  sgUserOpenApiManager.getUserInfo(params);
+
         } catch (Exception e) {
             logger.error("getUserInfo:Get User For Internal Is Failed,Userid is " + params.getOpenid(), e);
         } finally {

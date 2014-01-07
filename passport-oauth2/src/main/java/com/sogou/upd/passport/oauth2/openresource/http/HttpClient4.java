@@ -40,10 +40,12 @@ public class HttpClient4 extends SGHttpClient {
 
         InputStream in = null;
         //性能分析
-//        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         URI location;
+        String url="";
         try {
             location = new URI(request.getLocationUri());
+            url= request.getLocationUri();
         } catch (URISyntaxException e) {
             // URL表达式错误
             log.error("[HttpClient4] URL syntax error :", e);
@@ -59,6 +61,9 @@ public class HttpClient4 extends SGHttpClient {
                 ((HttpPost) req).setEntity(entity);
             } else {
                 req = new HttpGet(location);
+                if(url.indexOf("?") >0){
+                    url = url.substring(0,url.indexOf("?"));
+                }
             }
             if (headers != null && !headers.isEmpty()) {
                 for (Map.Entry<String, String> header : headers.entrySet()) {
@@ -78,15 +83,15 @@ public class HttpClient4 extends SGHttpClient {
             if (contentTypeHeader != null) {
                 contentType = contentTypeHeader.toString();
             }
-//            stopWatch(stopWatch, location.getPath(), "success");
+            stopWatch(stopWatch, url, "success");
             return OAuthClientResponseFactory.createCustomResponse(responseBody, contentType, response.getStatusLine()
                     .getStatusCode(), responseClass);
         } catch (OAuthProblemException e) {
-//            stopWatch(stopWatch, location.getPath(), "failed");
+            stopWatch(stopWatch, url, "failed");
             throw e;
         } catch (Exception e) {
             log.error("[HttpClient4] Execute Http Request Exception!", e);
-//            stopWatch(stopWatch, location.getPath(), "failed");
+            stopWatch(stopWatch, url, "failed");
             throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
         } finally {
             if (in != null) {
@@ -94,7 +99,7 @@ public class HttpClient4 extends SGHttpClient {
                     in.close();
                 } catch (IOException e) {
                     log.error("[HttpClient4] Close input stream IOException!", e);
-//                    stopWatch(stopWatch, location.getPath(), "failed");
+                    stopWatch(stopWatch, url, "failed");
                     throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
                 }
             }

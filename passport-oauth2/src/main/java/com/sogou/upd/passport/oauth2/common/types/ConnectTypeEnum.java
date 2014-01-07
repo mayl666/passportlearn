@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.oauth2.common.types;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -52,6 +53,12 @@ public enum ConnectTypeEnum {
     */
     public static boolean isMobileWap(String type) {
         return type.equals(ConnectTypeEnum.WAP.toString());
+    }
+    /*
+    * 是否为web端，type=web或空
+    */
+    public static boolean isWeb(String type) {
+        return Strings.isNullOrEmpty(type) || type.equals(ConnectTypeEnum.WEB.toString());
     }
 
     @Override

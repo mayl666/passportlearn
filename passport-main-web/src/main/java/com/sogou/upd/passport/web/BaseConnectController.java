@@ -10,7 +10,9 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
+import org.apache.commons.lang.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -60,14 +62,15 @@ public class BaseConnectController extends BaseController {
      * 第三方登录接口错误返回结果的跳转url
      * type=mapp时，需要在ru后追加status和statusText
      * type=token时，需往错误页面里注入错误参数
+     *
      * @param type      /connect/login接口的type参数
      * @param ru        回调url
      * @param errorCode 错误码
      * @param errorText 错误文案
      * @return
      */
-    protected String buildAppErrorRu(String type, String provider,String ru, String errorCode, String errorText) {
-        try{
+    protected String buildAppErrorRu(String type, String provider, String ru, String errorCode, String errorText) {
+        try {
             if (Strings.isNullOrEmpty(ru)) {
                 if (ConnectTypeEnum.isMobileApp(type)) {
                     ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
@@ -75,7 +78,7 @@ public class BaseConnectController extends BaseController {
                     ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
                 }
             }
-            if(Strings.isNullOrEmpty(provider)){
+            if (Strings.isNullOrEmpty(provider)) {
                 //provide为空跳转到 ru
                 if (Strings.isNullOrEmpty(ru)) {
                     ru = CommonConstant.DEFAULT_WAP_URL;
@@ -96,10 +99,19 @@ public class BaseConnectController extends BaseController {
             } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                 ru = "/pcaccount/connectlogin";
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("buildAppErrorRu! ru:" + ru);
         }
         return ru;
+    }
+
+    protected String getProtocol(HttpServletRequest req) {
+        String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
+        String httpOrHttps = "http";
+        if (!StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)) {
+            httpOrHttps = "https";
+        }
+        return httpOrHttps;
     }
 
 }

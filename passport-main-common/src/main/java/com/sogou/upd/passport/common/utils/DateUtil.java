@@ -227,6 +227,19 @@ public class DateUtil {
         return (long) (intervalMilli / (1000));
     }
 
+    /**
+     * 计算两个日期间隔的天数
+     *
+     * @param firstDate 小者
+     * @param lastDate  大者
+     * @return int 默认-1
+     */
+    public static int getDayNum(Date firstDate, Date lastDate) {
+        long timeInterval = getTimeIntervalMins(firstDate, lastDate);
+        long between_days = timeInterval / (3600 * 24);
+        return Integer.parseInt(String.valueOf(between_days));
+    }
+
 	/* ------------------------- format/parse impl ------------------------- */
 
     static SimpleDateFormat getFormat(String pattern) {
@@ -262,4 +275,15 @@ public class DateUtil {
         long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
         return vaildTime;
     }
+
+    public static int getIntervalSec(long t1,long t2) {
+        return  (int)(t1 - t2);
+    }
+
+    public static String getDateByTimeStamp(long timestamp) {
+        Long timestampMs = timestamp * 1000;
+        String date = new java.text.SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss").format(new java.util.Date(timestampMs));
+        return date;
+    }
+
 }

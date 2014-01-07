@@ -47,6 +47,7 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
         connectUserInfoVO.setGender(getGender());
         connectUserInfoVO.setProvince(getProvince());
         connectUserInfoVO.setCity(getCity());
+        connectUserInfoVO.setOriginal(parameters);
         return connectUserInfoVO;
     }
 

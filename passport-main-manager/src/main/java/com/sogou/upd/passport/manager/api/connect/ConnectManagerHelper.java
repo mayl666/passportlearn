@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class ConnectManagerHelper {
 
-    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from) {
+    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from,String domain) {
         try {
             ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
@@ -29,6 +29,9 @@ public class ConnectManagerHelper {
             callbackParams.put("ts", instanceId);
             if(!Strings.isNullOrEmpty(from)){
                 callbackParams.put("from", from);
+            }
+            if(!Strings.isNullOrEmpty(domain)){
+                callbackParams.put("domain", domain);
             }
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
             return pCallbackUrl + "?" + query;
