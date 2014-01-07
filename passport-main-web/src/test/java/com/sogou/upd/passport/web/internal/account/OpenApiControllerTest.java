@@ -74,7 +74,7 @@ public class OpenApiControllerTest extends BaseActionTest {
 //        maps.put("userip", "10.128.134.167");
         String mapString = JacksonJsonMapperUtil.getMapper().writeValueAsString(maps);
         params.put("params", mapString);
-        String result = sendPost("http://localhost/internal/connect/qq/user/get_qzoneupdates", params);
+        String result = sendPost("http://localhost/internal/connect/qq/user/qzone/unread_num", params);
         System.out.println(result);
     }
 }

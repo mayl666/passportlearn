@@ -54,26 +54,21 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
      * 执行第三方开放平台代理接口的调用
      *
      * @param request
-     * @param providerStr   第三方类型
-     * @param interfaceName 请求调用第三方开放平台的接口
-     * @param params        第三方开放平台接口所需参数
+     * @param params  第三方开放平台接口所需参数
      * @return
      * @throws Exception
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/{providerStr}/{interfaceName}")
+    @RequestMapping(value = "/qq/user/qzone/unread_num")
     @ResponseBody
-    public Object connectProxyOpenApi(HttpServletRequest request, @NotBlank @PathVariable("providerStr") String providerStr, @NotBlank @PathVariable("interfaceName") String interfaceName, ConnectProxyOpenApiParams params) throws Exception {
+    public Object connectProxyOpenApi(HttpServletRequest request, ConnectProxyOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(AccountTypeEnum.getProvider(providerStr));
-            if (oAuthConsumer == null) {
-                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
-                return result;
-            }
-            if (interfaceName.startsWith("/")) {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_INTERFACE);
-                return result;
+            // 仅支持qq账号调用此接口
+            String userIdStr = params.getUserid();
+            if (AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ) {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                return result.toString();
             }
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -82,10 +77,13 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            String url = request.getRequestURI();
+            url.substring(16, url.length());
             //TODO ACCESS_TOKEN迁移至搜狗数据库后，此方法逻辑需要替换
             //调用搜狐接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
+            baseOpenApiParams.setOpenid(params.getUserid());
             Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
@@ -93,7 +91,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 String openId = accessTokenMap.get("open_id").toString();
                 String accessToken = accessTokenMap.get("access_token").toString();
                 if (!Strings.isNullOrEmpty(openId) && !Strings.isNullOrEmpty(accessToken)) {
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(openId, accessToken, providerStr, interfaceName, params);
+//                    result = connectProxyOpenApiManager.handleConnectOpenApi(openId, accessToken, providerStr, interfaceName, params);
                 } else {
                     result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                 }
