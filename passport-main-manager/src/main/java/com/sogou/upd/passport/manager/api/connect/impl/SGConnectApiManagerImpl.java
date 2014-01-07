@@ -2,17 +2,10 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
-import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
@@ -33,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -108,48 +100,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         return null;
     }
 
-    /**
-     * 调用sohu接口获取用户的openid和accessToken等信息，只针对clientid=1120的第三方用户
-     *
-     * @param baseOpenApiParams
-     * @return
-     */
     @Override
     public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
-        Result result = new APIResultSupport(false);
-        try {
-            //如果是post请求，原方法
-            RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_QQ_LIGHT_USER_INFO);
-            requestModelJSON.addParams(baseOpenApiParams);
-            requestModelJSON.deleteParams(CommonConstant.CLIENT_ID);
-            this.setDefaultParams(requestModelJSON, baseOpenApiParams.getUserid(), String.valueOf(clientId), clientKey);
-            Map map = SGHttpClient.executeBean(requestModelJSON, HttpTransformat.json, Map.class);
-            if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
-                String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
-                if ("0".equals(status)) {
-                    result.setSuccess(true);
-                }
-                Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
-                result.setCode(entry.getKey());
-                result.setMessage(entry.getValue());
-                map.remove(SHPPUrlConstant.RESULT_STATUS);
-                result.setModels(map);
-            }
-        } catch (Exception e) {
-            logger.error("getConnectTokenInfo Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
-    }
-
-
-    public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {
-        long ct = System.currentTimeMillis();
-        String code = ManagerHelper.generatorCodeGBK(userId, Integer.parseInt(clientId), clientKey, ct);
-        requestModelJSON.addParam(SHPPUrlConstant.APPID_STRING, clientId);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CODE, code);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
-        return requestModelJSON;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*

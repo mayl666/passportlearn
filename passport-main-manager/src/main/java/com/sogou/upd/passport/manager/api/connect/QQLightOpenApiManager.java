@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect;
 
-import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,5 +19,5 @@ public interface QQLightOpenApiManager {
      * @return
      * @throws OpensnsException
      */
-    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) throws OpensnsException;
+    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) throws Exception;
 }

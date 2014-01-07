@@ -23,8 +23,8 @@ public class OpenApiControllerTest extends BaseActionTest {
         Map<String, String> params = new HashMap<String, String>();
 //        String userid = "1548840104@sohu.com";
 //        String openid = "1548840104@sohu.com";
-        String userid = "560C552D549401B79A41A2CE8724D31A@qq.sohu.com";
-        String openid = "560C552D549401B79A41A2CE8724D31A@qq.sohu.com";
+        String userid = "0003FFC24AE41A11E6B1352C76B9EE7B@qq.sohu.com";
+        String openid = "0003FFC24AE41A11E6B1352C76B9EE7B@qq.sohu.com";
         int clientId = 1120;
         String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
         long ct = System.currentTimeMillis();
