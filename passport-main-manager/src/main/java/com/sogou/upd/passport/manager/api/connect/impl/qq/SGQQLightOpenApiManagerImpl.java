@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -80,10 +81,16 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             params.put("openid", openid);
             params.put("openkey", openkey);
             ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
-            HashMap<String, String> maps = objectMapper.readValue(qqLightOpenApiParams.getParams().toString(), HashMap.class);
-            Set<String> commonKeySet = maps.keySet();
-            for (String dataKey : commonKeySet) {
-                params.put(dataKey, maps.get(dataKey));
+            HashMap<String, String> maps;
+            Object paramsObj = qqLightOpenApiParams.getParams();
+            if (paramsObj != null) {
+                maps = objectMapper.readValue(paramsObj.toString(), HashMap.class);
+                if (maps != null) {
+                    Set<String> commonKeySet = maps.keySet();
+                    for (String dataKey : commonKeySet) {
+                        params.put(dataKey, maps.get(dataKey));
+                    }
+                }
             }
             //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
             String method = CommonConstant.CONNECT_METHOD_POST;
