@@ -110,7 +110,7 @@ public class ConnectLoginController extends BaseConnectController {
             }
 
             String uuid = UUID.randomUUID().toString();
-//            if( type.equals(ConnectTypeEnum.MAPP.toString()) && CommonHelper.isWAN(clientId)) {
+//            if( type.equals(ConnectTypeEnum.MAPP.toString()) && CommonHelper.isWANOrYuedu(clientId)) {
 //                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            }else {
             url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
