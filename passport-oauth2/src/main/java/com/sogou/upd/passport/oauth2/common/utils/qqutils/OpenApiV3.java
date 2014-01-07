@@ -3,6 +3,7 @@ package com.sogou.upd.passport.oauth2.common.utils.qqutils;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import com.sogou.upd.passport.common.utils.ConnectHttpClient;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import org.slf4j.Logger;
@@ -93,7 +94,7 @@ public class OpenApiV3 {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             Map<String, Object> paramsMap = convertToMap(params);
             requestModel.setParams(paramsMap);
-            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            Map map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
             resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
         } catch (IOException ioe) {
             logger.error("Transfer Map To Json Is Failed :", ioe);

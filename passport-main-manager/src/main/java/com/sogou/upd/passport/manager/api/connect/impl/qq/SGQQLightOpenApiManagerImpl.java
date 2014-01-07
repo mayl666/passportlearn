@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -45,9 +44,8 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             String serverName = CommonConstant.QQ_SERVER_NAME;
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
-            AccountTypeEnum providerStr = AccountTypeEnum.getAccountType(userId);
-            int providerValue = providerStr.getValue();
-            ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, providerValue);
+            int provider = AccountTypeEnum.getAccountType(userId).getValue();
+            ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
             String sgAppKey = connectConfig.getAppKey();     //搜狗在QQ的appid
             String sgAppSecret = connectConfig.getAppSecret(); //搜狗在QQ的appkey
             OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
