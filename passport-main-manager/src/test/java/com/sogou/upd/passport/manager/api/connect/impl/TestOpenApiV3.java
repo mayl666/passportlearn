@@ -64,6 +64,8 @@ public class TestOpenApiV3 {
         } catch (OpensnsException e) {
             System.out.printf("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 }
