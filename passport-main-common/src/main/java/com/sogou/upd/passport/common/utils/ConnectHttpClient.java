@@ -3,75 +3,46 @@ package com.sogou.upd.passport.common.utils;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
-import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.*;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 /**
- * User: ligang201716@sogou-inc.com
+ * 第三方使用的httpclient
+ * User: shipengzhi@sogou-inc.com
  * Date: 13-5-29
  * Time: 上午10:25
  */
-public class SGHttpClient {
+public class ConnectHttpClient extends SGHttpClient {
 
 
     protected static final HttpClient httpClient;
     /**
-     * 最大连接数
-     */
-    protected final static int MAX_TOTAL_CONNECTIONS = 1000;
-    /**
      * 获取连接的最大等待时间
      */
     protected final static int WAIT_TIMEOUT = 3000;
-    /**
-     * 每个路由最大连接数
-     */
-    protected final static int MAX_ROUTE_CONNECTIONS = 200;
     /**
      * 读取超时时间
      */
     protected final static int READ_TIMEOUT = 3000;
 
     /**
-     * http返回成功的code
-     */
-    protected final static int RESPONSE_SUCCESS_CODE = 200;
-
-    /**
      * 超过500ms的请求定义为慢请求
      */
-    protected final static int SLOW_TIME = 500;
-
-    protected static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
+    protected final static int SLOW_TIME = 1000;
 
     static {
         HttpParams params = new BasicHttpParams();
@@ -149,25 +120,6 @@ public class SGHttpClient {
         }
     }
 
-    public static Header[] executeHeaders(RequestModel requestModel) {
-        if (requestModel == null) {
-            throw new NullPointerException("requestModel 不能为空");
-        }
-        HttpRequestBase httpRequest = getHttpRequest(requestModel);
-        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
-        try {
-            HttpParams params = httpClient.getParams();
-            params.setParameter(ClientPNames.HANDLE_REDIRECTS, false);
-            HttpResponse httpResponse = httpClient.execute(httpRequest);
-            Header[] headers = httpResponse.getAllHeaders();
-            stopWatch(stopWatch, requestModel.getUrl(), "success");
-            return headers;
-        } catch (IOException e) {
-            stopWatch(stopWatch, requestModel.getUrl(), "failed");
-            throw new RuntimeException("http request error ", e);
-        }
-    }
-
     /**
      * 执行请求并返回请求结果
      *
@@ -203,38 +155,6 @@ public class SGHttpClient {
     }
 
     /**
-     * 根据请求的参数构造HttpRequestBase
-     *
-     * @param requestModel
-     * @return
-     */
-    protected static HttpRequestBase getHttpRequest(RequestModel requestModel) {
-
-        HttpRequestBase httpRequest = null;
-        HttpMethodEnum method = requestModel.getHttpMethodEnum();
-        switch (method) {
-            case GET:
-                httpRequest = new HttpGet(requestModel.getUrlWithParam());
-                break;
-            case POST:
-                HttpPost httpPost = new HttpPost(requestModel.getUrl());
-                httpPost.setEntity(requestModel.getRequestEntity());
-                httpRequest = httpPost;
-                break;
-            case PUT:
-                HttpPut httpPut = new HttpPut(requestModel.getUrl());
-                httpPut.setEntity(requestModel.getRequestEntity());
-                httpRequest = httpPut;
-                break;
-            case DELETE:
-                httpRequest = new HttpDelete(requestModel.getUrl());
-                break;
-        }
-        httpRequest.setHeaders(requestModel.getHeaders());
-        return httpRequest;
-    }
-
-    /**
      * 记录性能log的规则
      *
      * @param stopWatch
@@ -248,48 +168,5 @@ public class SGHttpClient {
         }
         stopWatch.stop(tag, message);
     }
-
-    /*
- * 避免HttpClient的”SSLPeerUnverifiedException: peer not authenticated”异常
- * 不用导入SSL证书
- */
-    public static class WebClientDevWrapper {
-
-        public static org.apache.http.client.HttpClient wrapClient(org.apache.http.client.HttpClient base) {
-            try {
-                SSLContext ctx = SSLContext.getInstance("TLS");
-                X509TrustManager tm = new X509TrustManager() {
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-
-                    public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                    }
-
-                    public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                    }
-                };
-                ctx.init(null, new TrustManager[]{tm}, null);
-                SSLSocketFactory ssf = new SSLSocketFactory(ctx, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                SchemeRegistry registry = new SchemeRegistry();
-                registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-                registry.register(new Scheme("https", 443, ssf));
-                ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
-
-
-                HttpParams params = base.getParams();
-                mgr.setMaxTotal(MAX_TOTAL_CONNECTIONS);
-                mgr.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
-                HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
-                HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
-
-                return new DefaultHttpClient(mgr, params);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return null;
-            }
-        }
-    }
-
 
 }

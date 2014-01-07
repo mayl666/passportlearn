@@ -89,9 +89,8 @@ public class QQLightOpenApiController extends BaseConnectController {
                 String resp;
                 if (!Strings.isNullOrEmpty(openId) && !Strings.isNullOrEmpty(accessToken)) {
                     resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params);
-                    if (!"".equals(resp) && !Strings.isNullOrEmpty(resp)) {
+                    if (!Strings.isNullOrEmpty(resp)) {
                         resultString = resp;
-                        result.setCode("0");
                         result.setSuccess(true);
                     }
                 } else {
@@ -102,18 +101,6 @@ public class QQLightOpenApiController extends BaseConnectController {
                 result = openResult;
                 resultString = result.toString();
             }
-        } catch (IOException ioe) {
-            logger.error("Transfer Object To Map Failed :", ioe);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            resultString = result.toString();
-        } catch (OpensnsException e) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            resultString = result.toString();
-        } catch (RuntimeException re) {
-            logger.error("http request error :", re);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            resultString = result.toString();
         } catch (Exception e) {
             logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
