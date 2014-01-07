@@ -55,7 +55,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             logger.error("Transfer Object To Map Failed :", ioe);
             throw new IOException("Transfer Object To Map Failed :", ioe);
         } catch (OpensnsException e) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
+            logger.error(String.format("Request Failed.code:{}, msg:{}", e.getErrorCode(), e.getMessage()), e);
             throw new OpensnsException(e.getErrorCode(), e.getMessage());
         } catch (RuntimeException re) {
             logger.error("http request error :", re);
@@ -92,7 +92,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             logger.error("Transfer Object To Map Failed :", ioe);
             throw new IOException("Transfer Object To Map Failed :", ioe);
         } catch (OpensnsException e) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}\n", e.getErrorCode(), e.getMessage()), e);
+            logger.error(String.format("Request Failed.code:{}, msg:{}", e.getErrorCode(), e.getMessage()), e);
             throw new OpensnsException(e.getErrorCode(), e.getMessage());
         } catch (RuntimeException re) {
             logger.error("http request error :", re);

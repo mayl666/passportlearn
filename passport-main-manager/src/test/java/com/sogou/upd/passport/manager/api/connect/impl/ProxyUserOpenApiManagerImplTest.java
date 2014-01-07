@@ -32,6 +32,10 @@ public class ProxyUserOpenApiManagerImplTest extends BaseTest {
     @Autowired
     private UserOpenApiManager proxyUserOpenApiManager;
     @Autowired
+    private UserOpenApiManager sgUserOpenApiManager;
+
+
+    @Autowired
     private ConnectApiManager sgConnectApiManager;
     @Autowired
     private ConfigureManager configureManager;
@@ -45,10 +49,10 @@ public class ProxyUserOpenApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         UserOpenApiParams params = new UserOpenApiParams();
-        params.setUserid("DC56FD6C203C4D91FBC42A1ECBD744C6@qq.sohu.com");
-        params.setOpenid("DC56FD6C203C4D91FBC42A1ECBD744C6@qq.sohu.com");
-        params.setClient_id(1115);
-        Result result = proxyUserOpenApiManager.getUserInfo(params);
+        params.setUserid("4BC5721FAA8C1913538A268E944F9EE9@qq.sohu.com");
+        params.setOpenid("4BC5721FAA8C1913538A268E944F9EE9@qq.sohu.com");
+        params.setClient_id(1120);
+        Result result = sgUserOpenApiManager.getUserInfo(params);
         System.out.println("result data:" + result);
     }
 

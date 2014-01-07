@@ -5,5 +5,5 @@
     }else{
         passhref = 'http://s.account.sogou.com/u';
     }
-    document.write('<script type="text/javascript" src="'+ passhref +'/api/sogou.js?t=2013121656"></script>');
+    document.write('<script type="text/javascript" src="'+ passhref +'/api/sogou.js?t=2014010600"></script>');
 })();

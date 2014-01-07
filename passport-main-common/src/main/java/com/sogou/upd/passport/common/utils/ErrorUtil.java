@@ -278,6 +278,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_USERCANAEL = "30016";
     //不支持此类第三方账号
     public static final String ERR_CODE_CONNECT_NOT_SUPPORTED = "30017";
+    // 透传失败
+    public static final String ERR_CODE_CONNECT_PASSTHROUGH = "30018";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -290,6 +292,11 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  信息类API错误代码                                                            */
     /* ============================================================================ */
+    //账号类型非支持的第三方账号
+    public static final String ERR_CODE_CONNECT_USERID_TYPE_ERROR = "30320";
+    //获取第三方账号用户信息失败
+    public static final String ERR_CODE_CONNECT_GET_USERINFO_ERROR = "30321";
+
     // 图片url不能为空
     public static final String PIC_URL_NOT_NULL = "30401";
     // 发送失败
@@ -469,10 +476,13 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SET_POST_ERROR,"当opt值为set时，请求方式必须为post");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL,"用户取消授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED,"不支持此类第三方账号调用");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH,"透传失败");
 
 
 
         // info
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR,"账号非所支持的第三方账号类型");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_GET_USERINFO_ERROR,"获取第三方用户信息失败");
         ERR_CODE_MSG_MAP.put(PIC_URL_NOT_NULL, "图片url不能为空");
         ERR_CODE_MSG_MAP.put(ADD_SHARE_FAIL, "发布失败");
         ERR_CODE_MSG_MAP.put(NO_OPEN_BLOG, "还没开通微博呢");
