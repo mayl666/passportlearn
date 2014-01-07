@@ -54,7 +54,7 @@ public class QQProxyOpenApiManagerImpl extends BaseProxyManager implements QQPro
             String protocol = CommonConstant.HTTPS;
             openApiParams.setServerName(CommonConstant.QQ_SERVER_NAME_GRAPH);
             //封装第三方开放平台需要的参数
-            HashMap<String, String> sigMap = new HashMap<String, String>();
+            Map<String, Object> sigMap = new HashMap<String, Object>();
             //Todo 搜狗passport负责封装的三个必填参数,这三个参数的命名需要从数据库中读出
             sigMap.put("openid", openApiParams.getOpenId());
             sigMap.put("openkey", openApiParams.getAccessToken());
@@ -97,27 +97,27 @@ public class QQProxyOpenApiManagerImpl extends BaseProxyManager implements QQPro
      * @param protocol      HTTP请求协议 "http" / "https"
      * @return 返回服务器响应内容
      */
-    public String qqApi(OpenApiParams openApiParams, HashMap<String, String> params, String protocol, String method) throws OpensnsException {
+    public String qqApi(OpenApiParams openApiParams, Map<String, Object> params, String protocol, String method) throws OpensnsException {
         String resp = null;
-        // 检查openid openkey等参数
-        if (params.get("openid") == null) {
-            throw new OpensnsException(ErrorCode.PARAMETER_EMPTY, "openid is empty");
-        }
-        if (!isOpenid(params.get("openid"))) {
-            throw new OpensnsException(ErrorCode.PARAMETER_INVALID, "openid is invalid");
-        }
-        StringBuilder sb = new StringBuilder(64);
-        sb.append(protocol).append("://").append(openApiParams.getServerName()).append(openApiParams.getInterfaceName());
-        String url = sb.toString();
-        RequestModel requestModel = new RequestModel(url);
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        Map<String, Object> paramsMap = convertToMap(params);
-        requestModel.setParams(paramsMap);
-        Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         try {
+            // 检查openid openkey等参数
+            if (params.get("openid").toString() == null) {
+                throw new OpensnsException(ErrorCode.PARAMETER_EMPTY, "openid is empty");
+            }
+            if (!isOpenid(params.get("openid").toString())) {
+                throw new OpensnsException(ErrorCode.PARAMETER_INVALID, "openid is invalid");
+            }
+            StringBuilder sb = new StringBuilder(64);
+            sb.append(protocol).append("://").append(openApiParams.getServerName()).append(openApiParams.getInterfaceName());
+            String url = sb.toString();
+            RequestModel requestModel = new RequestModel(url);
+            requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+//        Map<String, Object> paramsMap = convertToMap(params);
+            requestModel.setParams(params);
+            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
             resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Execute Failed :", e);
         }
         return resp;
     }

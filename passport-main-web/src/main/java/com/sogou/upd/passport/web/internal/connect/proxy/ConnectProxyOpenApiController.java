@@ -62,6 +62,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
      */
     @InterfaceSecurity
     @RequestMapping(value = "/{providerStr}/{interfaceName}")
+    @ResponseBody
     public Object connectProxyOpenApi(HttpServletRequest request, @NotBlank @PathVariable("providerStr") String providerStr, @NotBlank @PathVariable("interfaceName") String interfaceName, ConnectProxyOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
