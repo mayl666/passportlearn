@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * To change this template use File | Settings | File Templates.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = "classpath:spring-config-test.xml")
+@ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class BaseTest extends AbstractJUnit4SpringContextTests {
     protected static final String userid = "4e1ca6c7999d5898306a243fc3da1e8f";
 
@@ -21,9 +21,9 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
 
     protected static final String uniqname = "你好";
 
-    protected static final int clientId = 1110;
+    protected static final int clientId = 1115;
 
-    protected static final String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
+    protected static final String serverSecret = "RBCqf6a448Wj5a8#KF&POL75*5GBQ5";
 
     protected static final String modifyIp = "10.1.164.160";
 
