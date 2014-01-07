@@ -64,6 +64,9 @@ public class UserOpenApiController extends BaseController {
             logger.error("getUserInfo:Get User For Internal Is Failed,Userid is " + params.getOpenid(), e);
         } finally {
             //记录log
+            if(result.isSuccess()) {
+                result.setCode("0");
+            }
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
         }
