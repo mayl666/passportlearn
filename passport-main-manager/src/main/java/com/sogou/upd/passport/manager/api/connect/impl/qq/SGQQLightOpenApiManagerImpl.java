@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -85,10 +86,12 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             Object paramsObj = qqLightOpenApiParams.getParams();
             if (paramsObj != null) {
                 maps = objectMapper.readValue(paramsObj.toString(), HashMap.class);
-                if (maps != null) {
-                    Set<String> commonKeySet = maps.keySet();
-                    for (String dataKey : commonKeySet) {
-                        params.put(dataKey, maps.get(dataKey));
+                if (!maps.isEmpty()) {
+                    Set<Map.Entry<String, String>> entrySet = maps.entrySet();
+                    if (!entrySet.isEmpty() && entrySet.size() > 0) {
+                        for (Map.Entry<String, String> entry : entrySet) {
+                            params.put(entry.getKey(), entry.getValue());
+                        }
                     }
                 }
             }
