@@ -88,8 +88,8 @@ define([], function() {
                 defaultMsg: "账号/手机号/邮箱",
                 errMsg: function(val){
                     if(!val)return this.emptyMsg;
-                    else if(/^[^a-z]/.test(val)){
-                        return "首字符必须为小写字母";
+                    else if(/^[^a-zA-Z]/.test(val)){
+                        return "首字符必须为字母";
                     }
                     else if(/^\d+$/.test(val)){
                         return '不能全为数字';
@@ -98,7 +98,7 @@ define([], function() {
                 },
                 emptyMsg: '不能为空',
                 nullable: false,
-                regStr:/^[a-z]([a-zA-Z0-9_.]{3,15})$/
+                regStr:/^[a-zA-Z]([a-zA-Z0-9_.]{3,15})$/
             },
             phone: {
                 errMsg: '请正确填写手机号',
@@ -128,10 +128,10 @@ define([], function() {
                 regStr: /^\w*$/
             },
             regacc: {
-                errMsg: '必须是小写字母开头的4-16位字母、数字、“.”及“-”的组合',
+                errMsg: '必须是字母开头的4-16位字母、数字、“.”及“-”的组合',
                 emptyMsg: '请填写账号',
                 nullable: false,
-                regStr: /^[a-z][a-zA-Z0-9-\.]{3,15}$/
+                regStr: /^[a-zA-Z][a-zA-Z0-9-\.]{3,15}$/
             },
             vcode: {
                 errMsg: '验证码错误，请重新输入',
