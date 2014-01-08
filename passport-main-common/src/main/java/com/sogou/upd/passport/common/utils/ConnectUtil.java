@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 
 import java.util.Map;
 
@@ -17,10 +18,10 @@ public class ConnectUtil {
 
     static {
         //QQ第三方信息映射
-        CONNECT_INFO_MAP.put("qq", "oauth_consumer_key|openid|access_token");
-        CONNECT_INFO_MAP.put("/qq/user/qzone/unread_num", "/user/get_qzoneupdates|qzone");
-        CONNECT_INFO_MAP.put("/qq/user/weibo/unread_num", "/v3/update/get_num|weibo");
-        CONNECT_INFO_MAP.put("/qq/user/mail/unread_num", "/user/get_mail_count|mail");
+        CONNECT_INFO_MAP.put("qq", "oauth_consumer_key|openid|access_token|sig");
+        CONNECT_INFO_MAP.put("/internal/connect/qq/user/qzone/unread_num", "/user/get_qzoneupdates|qzone");
+        CONNECT_INFO_MAP.put("/internal/connect/qq/user/weibo/unread_num", "/v3/update/get_num|weibo");
+        CONNECT_INFO_MAP.put("/internal/connect/qq/user/mail/unread_num", "/user/get_mail_count|mail");
     }
 
     public static Map<String, String> getCONNECT_INFO_MAP() {

@@ -11,25 +11,20 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectProxyOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.proxy.ConnectProxyOpenApiParams;
-import com.sogou.upd.passport.model.OAuthConsumer;
-import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
-import com.sogou.upd.passport.web.internal.connect.OpenApiParamsHelper;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -59,7 +54,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
      * @throws Exception
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/qq/user/qzone/unread_num")
+    @RequestMapping(value = "/qq/user/mail/unread_num")
     @ResponseBody
     public Object connectProxyOpenApi(HttpServletRequest request, ConnectProxyOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
@@ -78,8 +73,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 return result.toString();
             }
             String url = request.getRequestURI();
-            url.substring(16, url.length());
-            //TODO ACCESS_TOKEN迁移至搜狗数据库后，此方法逻辑需要替换
             //调用搜狐接口，获取QQ token，openid等参数
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
@@ -87,14 +80,15 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
-                String openId = accessTokenMap.get("open_id").toString();
-                String accessToken = accessTokenMap.get("access_token").toString();
-                if (!Strings.isNullOrEmpty(openId) && !Strings.isNullOrEmpty(accessToken)) {
-//                    result = connectProxyOpenApiManager.handleConnectOpenApi(openId, accessToken, providerStr, interfaceName, params);
-                } else {
-                    result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
+//                HashMap<String, Object> paramMap = new HashMap<>();
+//                paramMap.put("pf", "qzone");
+                if (!CollectionUtils.isEmpty(tokenMap)) {
+//                    result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, paramMap);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, null);
                 }
+            } else {
+                result = openResult;
             }
         } catch (Exception e) {
             logger.error("connectProxyOpenApi Is Failed,UserId is " + params.getUserid(), e);
@@ -106,7 +100,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
-        return result;
+        return result.toString();
     }
 
 }

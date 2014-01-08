@@ -10,4 +10,13 @@ import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
  * To change this template use File | Settings | File Templates.
  */
 public class ConnectProxyOpenApiParams extends BaseOpenApiParams {
+    private String pf;
+
+    public String getPf() {
+        return pf;
+    }
+
+    public void setPf(String pf) {
+        this.pf = pf;
+    }
 }

@@ -1,7 +1,8 @@
 package com.sogou.upd.passport.manager.api.connect;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.connect.form.proxy.ConnectProxyOpenApiParams;
+
+import java.util.Map;
 
 /**
  * 第三方开放平台接口代理
@@ -14,14 +15,14 @@ import com.sogou.upd.passport.manager.api.connect.form.proxy.ConnectProxyOpenApi
 public interface ConnectProxyOpenApiManager {
 
     /**
-     * 处理第三方接口调用请求
+     * 处理QQ第三方接口调用请求
      *
-     * @param providerStr   第三方类型
-     * @param interfaceName 第三方开放平台接口
-     * @param params        第三方开放平台参数
+     * @param sgUrl     应用请求passport接口的url
+     * @param tokenMap  sohu返回的openid和token信息
+     * @param paramsMap 应用传递进来的参数信息
      * @return
      */
-    public Result handleConnectOpenApi(String openId,String accessToken, String providerStr, String interfaceName, ConnectProxyOpenApiParams params);
+    public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap);
 
 
 }
