@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -83,6 +84,8 @@ public class LoginAction extends BaseController {
         }
 
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+        username = AccountDomainEnum.getInternalCase(username);
+
         int clientId = Integer.valueOf(checkParam.getClient_id());
         //判断账号是否存在
         if (username.indexOf("@") == -1) {
@@ -120,7 +123,7 @@ public class LoginAction extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-        String userId = loginParams.getUsername();
+
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -130,6 +133,9 @@ public class LoginAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/login/api";
         }
+        String userId = loginParams.getUsername();
+        userId = AccountDomainEnum.getInternalCase(userId);
+        loginParams.setUsername(userId);
 
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 

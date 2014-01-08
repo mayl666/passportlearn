@@ -78,11 +78,6 @@
             <!-- 内部接口code和ct校验 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
         </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>
-            <!-- 检测是否需要登录 -->
-            <bean class="com.sogou.upd.passport.web.inteceptor.UsernameInternalCaseInteceptor"/>
-        </mvc:interceptor>
     </mvc:interceptors>
 
 
