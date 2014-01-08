@@ -30,6 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -224,6 +225,7 @@ public class WapLoginAction extends BaseController {
      * 页面直接跳转，回跳到之前的地址
      */
     @RequestMapping(value = "/wap/logout_redirect", method = RequestMethod.GET)
+    @ResponseBody
     public String logoutWithRu(HttpServletRequest request,
                                HttpServletResponse response,
                                WapLogoutParams params) {
@@ -237,7 +239,7 @@ public class WapLoginAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 ru = buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 response.sendRedirect(ru);
-                return "empty";
+                return "";
             }
             sgid = params.getSgid();
             client_id = params.getClient_id();
