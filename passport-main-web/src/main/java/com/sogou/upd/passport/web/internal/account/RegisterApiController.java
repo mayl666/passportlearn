@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -125,6 +126,9 @@ public class RegisterApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            String userid = params.getUserid();
+            userid = AccountDomainEnum.getInternalCase(userid);
+            params.setUserid(userid);
 
             ip = params.getCreateip();
             //校验用户ip是否允许注册
@@ -208,6 +212,9 @@ public class RegisterApiController extends BaseController {
         }
         // 调用内部接口
         String userid = params.getUserid();
+        userid = AccountDomainEnum.getInternalCase(userid);
+        params.setUserid(userid);
+
         if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(userid);

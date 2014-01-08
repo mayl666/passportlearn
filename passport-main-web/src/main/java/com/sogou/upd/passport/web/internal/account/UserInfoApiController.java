@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -61,6 +62,9 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        String  userid = params.getUserid();
+        userid = AccountDomainEnum.getInternalCase(userid);
+        params.setUserid(userid);
         // 调用内部接口
         result = proxyUserInfoApiManager.getUserInfo(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
@@ -88,6 +92,9 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        String  userid = params.getUserid();
+        userid = AccountDomainEnum.getInternalCase(userid);
+        params.setUserid(userid);
         // 调用内部接口
         result = proxyUserInfoApiManager.updateUserInfo(params);
 
