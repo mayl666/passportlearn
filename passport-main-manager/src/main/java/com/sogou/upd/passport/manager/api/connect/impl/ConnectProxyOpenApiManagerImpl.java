@@ -143,17 +143,20 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                             if (maps.containsKey("result")) {
                                 HashMap<String, Object> resultMap = (HashMap<String, Object>) maps.get("result");
                                 if (!CollectionUtils.isEmpty(resultMap)) {
+                                    int size = Integer.parseInt(resultMap.get("Count").toString());
                                     List<Object> emailList = (List<Object>) resultMap.get("UnreadMailCountData");
-                                    if (!CollectionUtils.isEmpty(emailList)) {
-                                        HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(0);
-                                        if (!CollectionUtils.isEmpty(mail)) {
-                                            result.setSuccess(true);
-                                            result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
-                                            data = convertToSGMap(mail);
-                                            data.remove("Name");
-                                            result.setModels(data);
+                                    for (int i = 0; i < size; i++) {
+                                        if (!CollectionUtils.isEmpty(emailList)) {
+                                            HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(i);
+                                            if (!CollectionUtils.isEmpty(mail)) {
+                                                result.setSuccess(true);
+                                                result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
+                                                data = convertToSGMap(mail);
+                                                result.setDefaultModel("mail" + (i+1), data);
+                                            }
                                         }
                                     }
+                                    result.setDefaultModel("count", size);
                                 }
                             }
                         }
@@ -172,7 +175,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             Set<Map.Entry<String, Object>> set = map.entrySet();
             if (!CollectionUtils.isEmpty(set)) {
                 for (Map.Entry<String, Object> entry : set) {
-                    data.put(entry.getKey(), entry.getValue().toString());
+                    data.put(entry.getKey().toLowerCase(), entry.getValue().toString());
                 }
             }
         }
