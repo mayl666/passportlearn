@@ -120,6 +120,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                             String ret = maps.get("ret").toString();
                             if (ret.equals("0")) {
                                 result.setSuccess(true);
+                                result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
                                 data = convertToSGMap(maps);
                                 data.remove("ret");
                                 data.remove("msg");
@@ -132,6 +133,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                                     HashMap<String, Object> mapsWeibo = (HashMap<String, Object>) maps.get("data");
                                     if (!CollectionUtils.isEmpty(mapsWeibo)) {
                                         result.setSuccess(true);
+                                        result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
                                         data = convertToSGMap(mapsWeibo);
                                         result.setModels(data);
                                     }
@@ -146,6 +148,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                                         HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(0);
                                         if (!CollectionUtils.isEmpty(mail)) {
                                             result.setSuccess(true);
+                                            result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
                                             data = convertToSGMap(mail);
                                             data.remove("Name");
                                             result.setModels(data);
