@@ -65,7 +65,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
         Result result = new APIResultSupport(false);
         String username = loginParams.getUsername();
         String password = loginParams.getPassword();
-        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+//        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         String passportId = username;
         try {
             //验证验证码
@@ -73,7 +73,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
             if (!result.isSuccess()) {
                 return result;
             }
-            result = loginManager.authUser(username, ip, pwdMD5);
+            result = loginManager.authUser(username, ip, password);
             if (result.isSuccess()) {
 //                String userId = result.getModels().get("userid").toString();
 //                String token = wapTokenService.saveWapToken(userId);
@@ -83,8 +83,9 @@ public class WapLoginManagerImpl implements WapLoginManager {
                 String sgid=null;
                 if(sessionResult.isSuccess()){
                     sgid= (String) sessionResult.getModels().get("sgid");
+                    result.getModels().put("userid",result.getModels().get("userid").toString());
                     if (!Strings.isNullOrEmpty(sgid)) {
-                        result.setDefaultModel("sgid", sgid);
+                        result.getModels().put("sgid", sgid);
                     }
                 }
             }

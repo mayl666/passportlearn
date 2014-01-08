@@ -20,7 +20,7 @@ public class WapLogoutParams {
     private String sgid;
 
     @Ru
-    private String ru = "https://account.sogou.com";  // 回调地址
+    private String ru = "http://wap.sogou.com";  // 回调地址
 
     public String getClient_id() {
         return client_id;
