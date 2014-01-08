@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
@@ -22,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Map;
 
@@ -41,18 +39,26 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     public static final
     String
             PUBLIC_KEY =
-            "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJ_kLjVADIIzkB2aenKVdIGBa55BXFV6fgHhJQZhIanNGCDCxQn" +
-                    "2gntud-IXKdSe5dFygevdYbnKTkoEP1clM4UCAwEAAQ";
+            "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDkUuxaxxDrjs3xRnM8pHEvyl9w" +
+                    "GOCXOF5iBF+GMu30rAmPVU5rrciyXitECpcCqWRIw67JfdW8D80RDSmMGktMaw3b" +
+                    "vIJzobdBTpjZRBSE2HxWZaHtVR7pURmoYNz+NHi1UhS0sNo6Oe0v6FW96ShVGTtY" +
+                    "X+Rk9o5FkqdfoXHp3QIDAQAB";
     // 非对称加密算法-私钥
     public static final
     String
             PRIVATE_KEY =
-            "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAn-QuNUAMgjOQHZp6cpV0gYFrnkFcVXp-AeE" +
-                    "lBmEhqc0YIMLFCfaCe2534hcp1J7l0XKB691hucpOSgQ_VyUzhQIDAQABAkBabEnxlXo9e_mptD5" +
-                    "BZOJRhyachiw4ryBp4bD1raLDCrN2t0gFWY8ZcmbIX0b_xPJHN9GVClHydp1HOzTt6B9BAiEA2ka" +
-                    "SlgWHASvJ-koFphVhZ-UIQs0M9C9zPKFraFENpPECIQC7hnDQ1XhEZ1u3FzxWIcAepuTQwj6_xYf" +
-                    "UEYqBqE5n1QIgfu9Lj7LnL-cnLkadwlfsrV6jzzUvs1Fk0n2M2L1KEgECIEAdVB8ijU8d446y5A8" +
-                    "y1OPl_d-eOiQJHkqUgL2Z1MzNAiEAvdWYFlmaz80R3FGWKKQSeEfUmiwOFJxVqseZSvcl_hc";
+                    "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMi+r3/yZsYSVdEHnDlEm6nw5Lp2" +
+                            "Ki9tN/HBa/LnyInE3eIZ7x5PdjRqPNfv7oLX/JMUAT5uBzTDPjkBqGT9fxpjafdwQUCUtDbsZ6ZI" +
+                            "Hb39LiWdr4c2bsKW3TbAp/0vx59OuiHaTjUVIZnNkFh72rThmIIZBsMM99ZOPoj8EQUTAgMBAAEC" +
+                            "gYEAqUsOrGNbwuzRjH/TgwRWFqI98vYWK3r7NBl/lRFdsLniuXxPiQtQT3HMr/r69UN7EPpM9j5K" +
+                            "O3fwcJjyT4Ds/266sO3WLk5fxIv704HttYO9/yTTKA1ZXjuebYxgg8HZMQwyb8uWO0/XT1kF02yU" +
+                            "CZvTRMbAsrFahxusNex/2ZECQQD7J97jftybLcjbw/vLZgFEd3x2UzWrvS7XOGUPg0qAwCTCi9NX" +
+                            "XMt7e1WCYdPyd6RoNnBox/44AINomfzlLARJAkEAzJ3mzQa88QZ3DVEH3zMyvXMXXHWQGjX7UCkQ" +
+                            "Px6qqNrqbwoXB9T0Yp13Hi1tWih3JmFSESfzOrRfUHBVcsdGewJBAKOJ2LalupxI+cswGFrfNuAQ" +
+                            "NbkOgZose72keRna0b54XvdW+Oyf/deP/aQCc3IkuacqG5P+9egdXXPVITlQqhECQCMZav/8ieim" +
+                            "fUGRhtIozClnVriLih6U5/lGMf1B23B/rPtDNdQoGYvZCxfoHvv6OQYiZ5t9yOFnE3qO6nl36YUC" +
+                            "QCUkidj2RX7aEGCy24mwYimbF0EKljzPYVbcoTWujGFOLaVIC6SNf95mFwfEO3D7xTs+UEdWVrUC" +
+                            "0pOTjeSYPdw=";
 
     @Autowired
     private AccountService accountService;
@@ -117,9 +123,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             sginf.append(expireTime).append("|");
             sginf.append(infValue);
             //生成sgrdig
-            String rdigMD5Value = Coder.encryptMD5(sginf.toString());
-            byte[] encByte = RSA.encryptByPrivateKey(rdigMD5Value.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET), PRIVATE_KEY);
-            String sgrdig = Coder.encryptBase64(encByte);
+            String sgrdig = RSA.sign(sginf.toString(), PRIVATE_KEY);
             result.setSuccess(true);
             result.setDefaultModel("sginf", sginf);
             result.setDefaultModel("sgrdig", sgrdig);
@@ -134,7 +138,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
      * 构造sginf里的value
      * userid:18:houlinyan@sohu.com| crt:10:2011-12-23|clientid:4:9998|trust:1:1| uniqname:9:houlinyan|refnick:9:houlinyan|
      */
-    private String buildCookieInfStr(CookieApiParams cookieApiParams) throws UnsupportedEncodingException {
+    private String buildCookieInfStr(CookieApiParams cookieApiParams) throws Exception {
         StringBuilder infValue = new StringBuilder();
         Map<String, String> infValueMap = Maps.newHashMap();
         infValueMap.put("userid", cookieApiParams.getUserid());
@@ -148,7 +152,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             infValue.append(entry.getValue().length()).append(":");
             infValue.append(entry.getValue()).append("|");
         }
-        return Coder.encryptBase64(infValue.toString());
+        return Coder.encryptBase64URLSafeString(infValue.toString());
     }
 
 }

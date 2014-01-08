@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.impl.SGLoginApiManagerImpl;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,15 +20,6 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     @Autowired
     private LoginApiManager sgLoginApiManager;
-
-    private static final String PASSPORT_ID = "13552848876@sohu.com";
-    private static final String NEW_MOBILE = "13800000000";
-    private static final String EMAIL = "Binding123@163.com";
-    private static final String NEW_EMAIL = "hujunfei1986@126.com";
-    private static final String QUESTION = "Secure question";
-    private static final String NEW_QUESTION = "New secure question";
-    private static final String ANSWER = "Secure answer";
-    private static final String NEW_ANSWER = "New secure answer";
 
     private static final int clientId = 1100;
 
