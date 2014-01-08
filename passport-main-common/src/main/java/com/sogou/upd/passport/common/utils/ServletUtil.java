@@ -97,6 +97,11 @@ public class ServletUtil {
         clearCookie(response, key, 0, "/", defaultDomain);
     }
 
+    public static void clearCookie(HttpServletResponse response, String key,String domain) {
+        clearCookie(response, key, 0, "/", domain);
+    }
+
+
     public static void clearCookie(HttpServletResponse response, String key, int second,
                                    String path, String domain) {
         Cookie cookie = new Cookie(key, null);

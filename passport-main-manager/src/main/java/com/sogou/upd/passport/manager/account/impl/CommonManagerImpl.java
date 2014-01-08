@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -180,8 +181,8 @@ public class CommonManagerImpl implements CommonManager {
 
     @Override
     public void setSSOCookie(HttpServletResponse response, String sginf, String sgrdig, String domain, int maxAge) {
-        ServletUtil.setCookie(response, "ppinf", sginf, maxAge, domain);
-        ServletUtil.setCookie(response, "pprdig", sgrdig, maxAge, domain);
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, sginf, maxAge, domain);
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPRDIG, sgrdig, maxAge, domain);
     }
 
     @Override

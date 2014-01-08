@@ -2,24 +2,35 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.SSOSupportDomainEnum;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.form.SSOClearCookieParams;
 import com.sogou.upd.passport.web.account.form.SSOCookieParams;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,7 +85,45 @@ public class SSOCookieController extends BaseController {
 
         commonManager.setSSOCookie(response, ssoCookieParams.getSginf(), ssoCookieParams.getSgrdig(), domain, maxAge);
         String ru = ssoCookieParams.getRu();
-        if(StringUtils.isBlank(ru)){
+        if (StringUtils.isBlank(ru)) {
+            ru = SSOSupportDomainEnum.getDefaultRu(serverName);
+        }
+        response.sendRedirect(ru);
+        return "";
+    }
+
+    @RequestMapping(value = "/sso/logout_redirect", method = RequestMethod.GET)
+    @ResponseBody
+    public Object logoutWithRu(HttpServletRequest request, HttpServletResponse response, SSOClearCookieParams ssoClearCookieParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(ssoClearCookieParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        //校验servername
+        String serverName = request.getServerName();
+        String domain = SSOSupportDomainEnum.getSupportDomain(serverName);
+        if (StringUtils.isBlank(domain)) {
+            result.setCode(ErrorUtil.ERR_CODE_ERROR_SERVERNAME);
+            return result.toString();
+        }
+
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF, domain);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG, domain);
+
+        //用于记录log
+        String ru = ssoClearCookieParams.getRu();
+        UserOperationLog userOperationLog = new UserOperationLog("qq_logout", "", "0", getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
+        UserOperationLogUtil.log(userOperationLog);
+
+        if (StringUtils.isBlank(ru)) {
             ru = SSOSupportDomainEnum.getDefaultRu(serverName);
         }
         response.sendRedirect(ru);

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
+import com.sogou.upd.passport.manager.form.WapPassThroughParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 
 /**
@@ -39,6 +40,11 @@ public interface WapLoginManager {
 
     /**
      * wap端移除session
+     * @return
+     */
+    public Result passThroughQQ(String sgid,String accessToken,String openId,String ip,String expires_in);
+    /**
+     * QQ wap透传
      * @return
      */
     public Result removeSession(String sgid);

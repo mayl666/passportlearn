@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -19,6 +20,7 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequ
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,11 +87,11 @@ public class ConnectLoginController extends BaseConnectController {
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
-
+        String httpOrHttps = getProtocol(req);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
                 return "";
             }
@@ -102,21 +104,21 @@ public class ConnectLoginController extends BaseConnectController {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
-                url = buildAppErrorRu(type,providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
+                url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
                 res.sendRedirect(url);
                 return "";
             }
 
             String uuid = UUID.randomUUID().toString();
-//            if( type.equals(ConnectTypeEnum.MAPP.toString()) && CommonHelper.isWAN(clientId)) {
+//            if( type.equals(ConnectTypeEnum.MAPP.toString()) && CommonHelper.isWANOrYuedu(clientId)) {
 //                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
 //            }else {
-            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
 
             res.sendRedirect(url);
             return "";
         } catch (OAuthProblemException e) {
-            url = buildAppErrorRu(type,providerStr, ru, e.getError(), e.getDescription());
+            url = buildAppErrorRu(type, providerStr, ru, e.getError(), e.getDescription());
             res.sendRedirect(url);
             return "";
         } finally {

@@ -52,6 +52,7 @@ public class ConnectCallbackController extends BaseConnectController {
                                          @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
+        String httpOrHttps = getProtocol(req);
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
         } catch (UnsupportedEncodingException e) {
@@ -60,7 +61,7 @@ public class ConnectCallbackController extends BaseConnectController {
         }
         String type = req.getParameter("type");
 
-        Result result = oAuthAuthLoginManager.handleConnectCallback(req, providerStr, ru, type);
+        Result result = oAuthAuthLoginManager.handleConnectCallback(req, providerStr, ru, type, httpOrHttps);
         viewUrl = (String) result.getModels().get(CommonConstant.RESPONSE_RU);
         if (result.isSuccess()) {
             String passportId = (String) result.getModels().get("userid");
@@ -94,7 +95,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 commonManager.setSogouCookie(res, passportId, clientId, getIp(req), (int) DateAndNumTimesConstant.TWO_WEEKS, ru);
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
-                    String creeateSSOCookieUrl= commonManager.buildCreateSSOCookieUrl(domain,passportId,ru,getIp(req));
+                    String creeateSSOCookieUrl = commonManager.buildCreateSSOCookieUrl(domain, passportId, ru, getIp(req));
                     res.sendRedirect(creeateSSOCookieUrl);
                 } else {
                     res.sendRedirect(ru);

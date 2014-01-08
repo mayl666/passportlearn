@@ -51,6 +51,10 @@ public class CommonConstant {
     public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
 
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String EXPIRES_IN = "expires_in";
+    public static final String OPENID = "openid";
+
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String DEFAULT_WAP_URL="http://wap.sogou.com";
     public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
@@ -73,6 +77,9 @@ public class CommonConstant {
     public static final String STOPWATCH = "stopWatch";
 
     public static boolean IS_USE_IEBBS_UNIQNAME = true;
+
+    public static final String HTTPS_HEADER = "X-Https";
+    public static final String HTTPS_VALUE = "https";
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

@@ -50,6 +50,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             String passportId = mappTokenService.getPassprotIdByToken(appAuthTokenApiParams.getToken());
             if (!Strings.isNullOrEmpty(passportId)) {
                 result.setSuccess(true);
+                result.setMessage("操作成功");
                 result.setDefaultModel("userid", passportId);
                 return result;
             }

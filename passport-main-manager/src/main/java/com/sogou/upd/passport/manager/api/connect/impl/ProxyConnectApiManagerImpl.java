@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -43,7 +44,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     private static final Logger log = LoggerFactory.getLogger(ProxyConnectApiManagerImpl.class);
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip,String httpOrHttps) throws OAuthProblemException {
         String providerStr = AccountTypeEnum.getProviderStr(provider);
 
         Map params = Maps.newHashMap();
@@ -77,7 +78,11 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("appid", CommonConstant.SGPP_DEFAULT_CLIENTID);
         requestModel.addParam("provider", providerStr);
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
-        requestModel.addParam("expires_in", (int) oAuthTokenVO.getExpiresIn());  // 搜狐wiki里expires_in必须为int型
+        if(oAuthTokenVO.getExpiresIn() != 0){
+            requestModel.addParam("expires_in", (int) oAuthTokenVO.getExpiresIn());  // 搜狐wiki里expires_in必须为int型
+        }else{
+            requestModel.addParam("expires_in", (int)DateAndNumTimesConstant.THREE_MONTH);
+        }
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getRefreshToken())) {
             requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, oAuthTokenVO.getRefreshToken());
         }
@@ -109,6 +114,12 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         return result;
     }
 
+    /**
+     * 调用sohu接口获取用户的openid和accessToken等信息，只针对clientid=1120的第三方用户
+     *
+     * @param baseOpenApiParams
+     * @return
+     */
     @Override
     public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         Result result = new APIResultSupport(false);
@@ -136,6 +147,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         }
         return result;
     }
+
 
     public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {
         long ct = System.currentTimeMillis();

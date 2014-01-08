@@ -193,7 +193,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type) {
+    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type,String httpOrHttps) {
         Result result = new APIResultSupport(false);
         try {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
@@ -217,7 +217,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip, from,domain);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from,domain);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -263,7 +263,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-//                    if( CommonHelper.isWAN(clientId)) {
+//                    if( CommonHelper.isWANOrYuedu(clientId)) {
 //                        String token = (String) connectAccountResult.getModels().get("token");
 //                        String url = buildMAppSuccessRu(ru, userId, token, uniqname);
 //                        result.setSuccess(true);
@@ -337,14 +337,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return result;
     }
 
-    private boolean isUserCancel(String usercancel){
-        if(!Strings.isNullOrEmpty(usercancel) && ("1".equals(usercancel) ||"2".equals(usercancel))){
-            return true;
-        }
-        return false;
-    }
-
-
     private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();
         try {
@@ -414,20 +406,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         //ru后缀一个sgid
         params.put("sgid", sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-//        if(!Strings.isNullOrEmpty(ru)){
-//            URL url = null;
-//            try {
-//                url = new URL(ru);
-//                int port = url.getPort();
-//                String query = url.getQuery();
-//                ru = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + url.getPort()) + (StringUtils.isNotEmpty(query) ? "?" + URLEncoder.encode(url.getQuery(), CommonConstant.DEFAULT_CONTENT_CHARSET) : "");
-//
-//            } catch (MalformedURLException e) {
-//                logger.error("buildWapSuccessRu MalformedURLException!", e);
-//            } catch (UnsupportedEncodingException e) {
-//                logger.error("buildWapSuccessRu UnsupportedEncodingException!", e);
-//            }
-//        }
         return ru;
     }
 
