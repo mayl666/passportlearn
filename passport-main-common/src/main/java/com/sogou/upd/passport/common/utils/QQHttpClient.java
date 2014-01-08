@@ -34,27 +34,11 @@ public class QQHttpClient {
             Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
             resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
         } catch (IOException e) {
-            logger.error("Transfer Map To String Failed :", e);
-            e.printStackTrace();
+            logger.error("api:Transfer Map To String Failed :", e);
         }
         return resp;
     }
 
-    private Map<String, Object> convertToMap(HashMap<String, String> paramsMap) {
-        Map<String, Object> maps = new HashMap<>();
-        if (!CollectionUtils.isEmpty(paramsMap)) {
-            for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
-                maps.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return maps;
-    }
 
-    /**
-     * 验证openid是否合法
-     */
-    private boolean isOpenid(String openid) {
-        return (openid.length() == 32) && openid.matches("^[0-9A-Fa-f]+$");
-    }
 
 }
