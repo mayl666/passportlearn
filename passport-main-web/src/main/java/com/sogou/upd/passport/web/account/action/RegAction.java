@@ -85,7 +85,6 @@ public class RegAction extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        username = AccountDomainEnum.getInternalCase(username);
 
         String clientIdStr = checkParam.getClient_id();
         int clientId = 1120;
@@ -137,9 +136,6 @@ public class RegAction extends BaseController {
 
             //检验用户名是否存在
             String username = regParams.getUsername();
-            username = AccountDomainEnum.getInternalCase(username);
-            regParams.setUsername(username);
-
             int clientId = Integer.valueOf(regParams.getClient_id());
             result = checkAccountNotExists(username, clientId);
             if (!result.isSuccess()) {

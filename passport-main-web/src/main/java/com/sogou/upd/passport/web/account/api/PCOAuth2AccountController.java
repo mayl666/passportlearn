@@ -186,7 +186,6 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        username = AccountDomainEnum.getInternalCase(username);
 
         result = checkPCAccountNotExists(username);
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
@@ -220,10 +219,6 @@ public class PCOAuth2AccountController extends BaseController {
             }
             ip = getIp(request);
             uuidName = ServletUtil.getCookie(request, "uuidName");
-
-            String username = pcoAuth2RegisterParams.getUsername();
-            username = AccountDomainEnum.getInternalCase(username);
-            pcoAuth2RegisterParams.setUsername(username);
 
             result = regManager.checkRegInBlackList(ip, uuidName);
             if (!result.isSuccess()) {
@@ -315,9 +310,6 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         String username = loginParams.getUsername();
-        username = AccountDomainEnum.getInternalCase(username);
-        loginParams.setUsername(username);
-
         result = pcOAuth2LoginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 
         //用户登录log
