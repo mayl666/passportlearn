@@ -116,15 +116,16 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
         try {
             //生成sginf
             String infValue = buildCookieInfStr(cookieApiParams);
-            StringBuilder sginf = new StringBuilder();
-            sginf.append(1).append("|");
-            sginf.append(createTime).append("|");
-            sginf.append(expireTime).append("|");
-            sginf.append(infValue);
+            StringBuilder sginfValue = new StringBuilder();
+            sginfValue.append(1).append("|");
+            sginfValue.append(createTime).append("|");
+            sginfValue.append(expireTime).append("|");
+            sginfValue.append(infValue);
+            String sginf = sginfValue.toString();
             //生成sgrdig
             RSAEncoder rsaEncoder = new RSAEncoder(PRIVATE_KEY);
             rsaEncoder.init();
-            String sgrdig = rsaEncoder.sgrdig(sginf.toString());
+            String sgrdig = rsaEncoder.sgrdig(sginf);
             result.setSuccess(true);
             result.setDefaultModel("sginf", sginf);
             result.setDefaultModel("sgrdig", sgrdig);
