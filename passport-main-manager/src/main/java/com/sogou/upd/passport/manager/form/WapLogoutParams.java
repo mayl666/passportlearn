@@ -16,11 +16,11 @@ public class WapLogoutParams {
     @Min(0)
     private String client_id;
 
-    @NotBlank(message = "client_id不允许为空!")
+    @NotBlank(message = "sgid不允许为空!")
     private String sgid;
 
     @Ru
-    private String ru = "https://account.sogou.com";  // 回调地址
+    private String ru = "http://wap.sogou.com";  // 回调地址
 
     public String getClient_id() {
         return client_id;

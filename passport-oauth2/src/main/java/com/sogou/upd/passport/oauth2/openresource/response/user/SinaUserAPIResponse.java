@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.oauth2.openresource.response.user;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -59,6 +60,7 @@ public class SinaUserAPIResponse extends UserAPIResponse {
         user.setProvince(sinaProvinceCache.get(provinceID));
         user.setCity(formCity(provinceID, cityID));
         user.setRegion(getParam(SinaOAuth.LOCATION));
+        user.setOriginal(parameters);
         return user;
     }
 
@@ -75,7 +77,10 @@ public class SinaUserAPIResponse extends UserAPIResponse {
         String city = "未知";
         for (Map<String, String> map : cityList) {
             city = map.get(cityID);
-            if (!Strings.isNullOrEmpty(city)) break;
+            if (!Strings.isNullOrEmpty(city)){
+                city = StringUtil.exchangeToUf8(city);
+                break;
+            }
         }
         return city;
     }
@@ -89,6 +94,7 @@ public class SinaUserAPIResponse extends UserAPIResponse {
         for (Map province : provincesList) {
             Integer id = (Integer) province.get("id");
             String name = (String) province.get("name");
+            name = StringUtil.exchangeToUf8(name);
             sinaProvinceCache.putIfAbsent(id, name);
             // 城市map，{11={1=海淀}}
             List<Map<String, String>> cityList = (List<Map<String, String>>) province.get("citys");

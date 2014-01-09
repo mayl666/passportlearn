@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.utils.DateUtil;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,6 +58,14 @@ public class Test {
         String tmpstr= queryStr.substring(queryStr.indexOf("userid="),queryStr.length());
         String userid =  tmpstr.substring("userid=".length(),tmpstr.indexOf("&"));
         System.out.println("userid:"+userid);
+
+
+
+
+        Date strartDate = DateUtil.parse("2011-01-01", DateUtil.DATE_FMT_3);
+        Date endDate = new Date();
+        int dateNum = DateUtil.getDayNum(strartDate, endDate);
+        System.out.println("dateNum:"+dateNum);
 
 
 

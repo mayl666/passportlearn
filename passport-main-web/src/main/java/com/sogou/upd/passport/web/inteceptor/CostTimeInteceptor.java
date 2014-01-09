@@ -37,6 +37,8 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     private static final Logger logger = LoggerFactory.getLogger(CostTimeInteceptor.class);
     private static final Logger prefLogger = LoggerFactory.getLogger("webTimingLogger");
     private final static int SLOW_TIME = 500;
+    private final static int CONNECT_SLOW_TIME = 1000;
+
 
 //    @Autowired
 //    private InterfaceLimitedService interfaceLimitedService;
@@ -204,11 +206,19 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
                 StopWatch stopWatch = (StopWatch) stopWatchObject;
 
                 StringBuilder tagBuilder = new StringBuilder(request.getRequestURI());
+                String url = tagBuilder.toString();
 
-                //检测是否慢请求
-                if (stopWatch.getElapsedTime() >= SLOW_TIME) {
-                    tagBuilder.append(".slow");
+                //是否为第三方请求
+                if(url.contains("/connect/")){
+                    if (stopWatch.getElapsedTime() >= CONNECT_SLOW_TIME) {
+                        tagBuilder.append(".slow");
+                    }
+                }else {
+                    if (stopWatch.getElapsedTime() >= SLOW_TIME) {
+                        tagBuilder.append(".slow");
+                    }
                 }
+
 
                 stopWatch.stop(tagBuilder.toString());
             }

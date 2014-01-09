@@ -31,6 +31,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -173,21 +174,30 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    private static HttpEntity executePrivate(RequestModel requestModel) {
+    protected static HttpEntity executePrivate(RequestModel requestModel) {
         if (requestModel == null) {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
+        InputStream in=null;
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
+            in=httpResponse.getEntity().getContent();
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return httpResponse.getEntity();
             }
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CONTENT_CHARSET);
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params);
-        } catch (IOException e) {
+            String result= EntityUtils.toString(httpResponse.getEntity(),CommonConstant.DEFAULT_CONTENT_CHARSET);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:"+result);
+        } catch (Exception e) {
+            if(in!=null){
+                try{
+                    in.close();
+                }catch(IOException ioe){
+                }
+            }
             throw new RuntimeException("http request error ", e);
         }
     }
@@ -198,7 +208,7 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    private static HttpRequestBase getHttpRequest(RequestModel requestModel) {
+    protected static HttpRequestBase getHttpRequest(RequestModel requestModel) {
 
         HttpRequestBase httpRequest = null;
         HttpMethodEnum method = requestModel.getHttpMethodEnum();

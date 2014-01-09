@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +21,14 @@ import java.util.Map;
 public class ConnectApiManagerTest extends BaseTest {
 
     @Autowired
-    private ConnectApiManager sgConnectApiManager;
+    private ConnectApiManager proxyConnectApiManager;
 
     @Test
     public void testSGGetUserInfo() throws Exception {
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
         baseOpenApiParams.setOpenid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
         baseOpenApiParams.setUserid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
-        Result openResult = sgConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+        Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
         if (openResult.isSuccess()) {
             //获取用户的openId/openKey
             Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");

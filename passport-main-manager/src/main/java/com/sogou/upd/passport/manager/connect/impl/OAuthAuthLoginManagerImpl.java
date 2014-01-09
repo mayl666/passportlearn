@@ -5,9 +5,11 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -42,15 +44,13 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.AccountBaseInfoService;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.AccountTokenService;
-import com.sogou.upd.passport.service.account.WapTokenService;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +65,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -98,12 +99,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private AppConfigService appConfigService;
+    private MappTokenService mappTokenService;
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
-
 
 
     @Override
@@ -193,14 +193,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type) {
+    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type,String httpOrHttps) {
         Result result = new APIResultSupport(false);
         try {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
             String ip = req.getParameter("ip");
             String instanceId = req.getParameter("ts");
             String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
+            String domain = req.getParameter("domain"); //导航qq登陆，会传此参数
             int provider = AccountTypeEnum.getProvider(providerStr);
+
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
@@ -215,7 +217,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(), ip, from);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from,domain);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -261,8 +263,19 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-                    String token = (String) connectAccountResult.getModels().get("token");
-                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+//                    if( CommonHelper.isWANOrYuedu(clientId)) {
+//                        String token = (String) connectAccountResult.getModels().get("token");
+//                        String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+//                        result.setSuccess(true);
+//                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+//                    } else {
+                     String token = mappTokenService.saveToken(userId);
+                     String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+                     result.setSuccess(true);
+                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                } else if (type.equals(ConnectTypeEnum.MOBILE.toString())) {
+                    String s_m_u = getSMU(userId);
+                    String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (type.equals(ConnectTypeEnum.PC.toString())) {
@@ -339,6 +352,48 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
+    private String getSMU(String userId) {
+        int days = gethDays();
+        String digestStr = getDigest(userId, days);
+        return userId + "|" + days + "|" + digestStr;
+    }
+
+    /**
+     * @return 相对于2011-1-1的天数
+     */
+    private int gethDays() {
+        Date strartDate = DateUtil.parse("2011-01-01", DateUtil.DATE_FMT_3);
+        Date endDate = new Date();
+        int dateNum = DateUtil.getDayNum(strartDate, endDate);
+        return dateNum;
+    }
+
+    private String getDigest(String userId, int days) {
+        int[] WAP_SIG_OFFSET = {60, 126, 15, 85, 19, 81, 48, 71, 50, 22};
+        String sha = DigestUtils.sha512Hex(userId + "|" + days + "|" + "sohu.wap.secretkey#@!%^@");
+        char[] chars = new char[WAP_SIG_OFFSET.length];
+
+        for (int i = 0; i < WAP_SIG_OFFSET.length; i++) {
+            chars[i] = sha.charAt(WAP_SIG_OFFSET[i]);
+        }
+        String digestNo = new String(chars);
+        return digestNo;
+    }
+
+    private String buildMOBILESuccessRu(String ru, String userid, String s_m_u, String un) {
+        Map params = Maps.newHashMap();
+        try {
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        params.put("s_m_u", s_m_u);
+        params.put("un", un);
+        ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
+        return ru;
+    }
+
     private String buildWapSuccessRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
         try {
@@ -350,20 +405,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         //ru后缀一个sgid
         params.put("sgid", sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-//        if(!Strings.isNullOrEmpty(ru)){
-//            URL url = null;
-//            try {
-//                url = new URL(ru);
-//                int port = url.getPort();
-//                String query = url.getQuery();
-//                ru = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + url.getPort()) + (StringUtils.isNotEmpty(query) ? "?" + URLEncoder.encode(url.getQuery(), CommonConstant.DEFAULT_CONTENT_CHARSET) : "");
-//
-//            } catch (MalformedURLException e) {
-//                logger.error("buildWapSuccessRu MalformedURLException!", e);
-//            } catch (UnsupportedEncodingException e) {
-//                logger.error("buildWapSuccessRu UnsupportedEncodingException!", e);
-//            }
-//        }
         return ru;
     }
 

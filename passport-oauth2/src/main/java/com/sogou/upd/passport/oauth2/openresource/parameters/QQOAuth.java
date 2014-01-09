@@ -11,6 +11,7 @@ public class QQOAuth {
     public static final String WML_DISPLAY = "wml"; // 对应的g_ut=1
     public static final String XHTML_DISPLAY = "xhtml"; // 对应的g_ut=2
     public static final String VIEW_PAGE = "viewPage"; // qq为搜狗产品定制化页面
+    public static final String USERCANCEL = "usercancel"; // qq wap取消授权
 
     /* 用户类API请求 */
     /* 用户类API响应 */

@@ -16,12 +16,12 @@ public class ManagerHelperTest extends BaseTest {
     /**
      * 测试生成内部接口code参数
      */
-    @Test
+//    @Test
     public void testGeneratorCode() {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK(userid, clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("bbeefb33e2ed26f94a001a0cb8fb3ce6", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {
@@ -31,6 +31,10 @@ public class ManagerHelperTest extends BaseTest {
             e.printStackTrace();
         }*/
 
+    }
+
+    public static void main(String args[]) throws Exception{
+          new ManagerHelperTest().testGeneratorCode();
     }
 
     /**

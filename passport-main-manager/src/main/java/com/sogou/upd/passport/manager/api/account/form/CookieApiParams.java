@@ -27,6 +27,22 @@ public class CookieApiParams extends BaseApiParams {
     private String ip;                     //用户的机器ip
     private String persistentcookie;         //是否记住密码（0：否 1：是）或是否使用持久cookie 0:session级别的cookie 1:长时间有效的cookie，目前是两天
 
+    public CookieApiParams() {
+    }
+
+    public CookieApiParams(String userid, int client_id, String ru, String ip) {
+        this(userid, client_id, IS_ACTIVE, ru, ip, "1");
+    }
+
+    public CookieApiParams(String userid, int client_id, int trust, String ru, String ip, String persistentcookie) {
+        this.userid = userid;
+        this.client_id = client_id;
+        this.trust = trust;
+        this.ru = ru;
+        this.ip = ip;
+        this.persistentcookie = persistentcookie;
+    }
+
     public String getUserid() {
         return userid;
     }
