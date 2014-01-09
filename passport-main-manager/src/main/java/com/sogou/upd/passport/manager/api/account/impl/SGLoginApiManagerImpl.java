@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -63,6 +64,9 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         Result result = new APIResultSupport(false);
+        String userId = authUserApiParams.getUserid();
+        userId = AccountDomainEnum.getInternalCase(userId);
+        authUserApiParams.setUserid(userId);
         try {
             result = accountService.verifyUserPwdVaild(authUserApiParams.getUserid(), authUserApiParams.getPassword(), false);
             return result;

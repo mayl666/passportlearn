@@ -34,6 +34,8 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdBySnameOrPhone", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public String queryPassportIdBySnameOrPhone(String snameOrPhone) throws ServiceException{
+        snameOrPhone = AccountDomainEnum.getInternalCase(snameOrPhone);
+
         if(AccountDomainEnum.isIndivid(snameOrPhone)){
             return queryPassportIdBySname(snameOrPhone);
         }else if(AccountDomainEnum.isPhone(snameOrPhone)){

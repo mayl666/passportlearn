@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -58,38 +59,42 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
-        Result result=null;
+        Result result = null;
         try {
+            String userid = getUserInfoApiparams.getUserid();
+            userid = AccountDomainEnum.getInternalCase(userid);
+            getUserInfoApiparams.setUserid(userid);
+
             //搜狐真实姓名 username,搜狗fullname
-            String fields=getUserInfoApiparams.getFields();
-            if(!Strings.isNullOrEmpty(fields) && fields.contains("fullname")) {
-                fields=fields.replace("fullname","username");
+            String fields = getUserInfoApiparams.getFields();
+            if (!Strings.isNullOrEmpty(fields) && fields.contains("fullname")) {
+                fields = fields.replace("fullname", "username");
                 getUserInfoApiparams.setFields(fields);
             }
 
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        String[] fieldList = fields.split(",");
-        for (String field : fieldList) {
-            if (SUPPORT_FIELDS_MAP.contains(field)) {
-                requestModelXml.addParam(field, "");
+            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+            String[] fieldList = fields.split(",");
+            for (String field : fieldList) {
+                if (SUPPORT_FIELDS_MAP.contains(field)) {
+                    requestModelXml.addParam(field, "");
+                }
             }
-        }
-        requestModelXml.addParams(getUserInfoApiparams);
-        requestModelXml.deleteParams("imagesize");
+            requestModelXml.addParams(getUserInfoApiparams);
+            requestModelXml.deleteParams("imagesize");
 
-        if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
-            requestModelXml.addParam("usertype", 1);
-        }
-        requestModelXml.deleteParams("fields");
-        requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
+            if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
+                requestModelXml.addParam("usertype", 1);
+            }
+            requestModelXml.deleteParams("fields");
+            requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
             result = getUserInfoResultHandel(this.executeResult(requestModelXml));
 
-            if(result.isSuccess()){
+            if (result.isSuccess()) {
                 //获取完把搜狐真实姓名username替换成 搜狗的fullname
-                String fullname= (String) result.getModels().get("username");
-                if(!Strings.isNullOrEmpty(fullname)){
+                String fullname = (String) result.getModels().get("username");
+                if (!Strings.isNullOrEmpty(fullname)) {
                     //搜狐真实姓名变为utf-8编码
-                    result.setDefaultModel("fullname",fullname);
+                    result.setDefaultModel("fullname", fullname);
                     result.getModels().remove("username");
                 }
 
@@ -97,48 +102,48 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                 String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
                 result.setDefaultModel("avatarurl", avatarurl);
             }
-        }catch (Exception e){
-             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return getUserInfoResultHandel(result);
     }
 
-//    @Override
+    //    @Override
     public Result obtainPhoto(String passportId, String size) {
         Result result = new APIResultSupport(false);
         try {
-            String []sizeArry=null;
+            String[] sizeArry = null;
             //获取size对应的appId
-            if(!Strings.isNullOrEmpty(size)){
+            if (!Strings.isNullOrEmpty(size)) {
                 //检测是否是支持的尺寸
-                sizeArry=size.split(",");
+                sizeArry = size.split(",");
 
-                if(ArrayUtils.isNotEmpty(sizeArry)){
-                    for(int i=0;i<sizeArry.length;i++){
-                        if(Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))){
+                if (ArrayUtils.isNotEmpty(sizeArry)) {
+                    for (int i = 0; i < sizeArry.length; i++) {
+                        if (Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))) {
                             result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
                             return result;
                         }
                     }
                 } else {
                     //为空获取所有的尺寸
-                    sizeArry=photoUtils.getAllImageSize();
+                    sizeArry = photoUtils.getAllImageSize();
                 }
 
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-                String image=redisUtils.hGet(cacheKey,"sgImg");
+                String image = redisUtils.hGet(cacheKey, "sgImg");
 
-                if(!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)){
+                if (!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)) {
                     result.setSuccess(true);
-                    for (int i=0;i<sizeArry.length;i++){
+                    for (int i = 0; i < sizeArry.length; i++) {
                         //随机获取cdn域名
-                        String cdnUrl=photoUtils.getCdnURL();
+                        String cdnUrl = photoUtils.getCdnURL();
                         //获取图片尺寸
-                        String clientId=photoUtils.getAppIdBySize(sizeArry[i]);
+                        String clientId = photoUtils.getAppIdBySize(sizeArry[i]);
 
-                        String photoURL =String.format(image, cdnUrl, clientId);
-                        if(!Strings.isNullOrEmpty(photoURL)){
-                            result.setDefaultModel("img_"+sizeArry[i],photoURL);
+                        String photoURL = String.format(image, cdnUrl, clientId);
+                        if (!Strings.isNullOrEmpty(photoURL)) {
+                            result.setDefaultModel("img_" + sizeArry[i], photoURL);
                         }
                     }
                     return result;
@@ -147,7 +152,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                     return result;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
             return result;
         }
@@ -225,6 +230,10 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams updateUserInfoApiParams) {
+        String username = updateUserInfoApiParams.getUsername();
+        username = AccountDomainEnum.getInternalCase(username);
+        updateUserInfoApiParams.setUserid(username);
+
         if (PhoneUtil.verifyPhoneNumberFormat(updateUserInfoApiParams.getUserid())) {
             String userid = updateUserInfoApiParams.getUserid();
             userid += "@sohu.com";
@@ -264,7 +273,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
         requestModelXml.addParams(updateUserUniqnameApiParams);
         Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
-        if(result.isSuccess()){
+        if (result.isSuccess()) {
             result.setMessage("昵称未被占用");
         }
         return result;
