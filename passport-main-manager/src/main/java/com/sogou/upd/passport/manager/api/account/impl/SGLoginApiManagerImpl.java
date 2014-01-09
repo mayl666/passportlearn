@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.math.RSA;
+import com.sogou.upd.passport.common.math.RSAEncoder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -122,8 +122,9 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             sginf.append(expireTime).append("|");
             sginf.append(infValue);
             //生成sgrdig
-            String sginfData = "\\x30\\x30\\x30\\x0c\\x06\\x08\\x2a\\x86\\x48\\x86\\xf7\\x0d\\x02\\x05\\x05\\x00\\x04\\x20" + sginf.toString();
-            String sgrdig = RSA.sign(sginfData, PRIVATE_KEY);
+            RSAEncoder rsaEncoder = new RSAEncoder(PRIVATE_KEY);
+            rsaEncoder.init();
+            String sgrdig = rsaEncoder.sgrdig(sginf.toString());
             result.setSuccess(true);
             result.setDefaultModel("sginf", sginf);
             result.setDefaultModel("sgrdig", sgrdig);
