@@ -75,9 +75,6 @@ public class WapLoginManagerImpl implements WapLoginManager {
             }
             result = loginManager.authUser(username, ip, pwdMD5);
             if (result.isSuccess()) {
-//                String userId = result.getModels().get("userid").toString();
-//                String token = wapTokenService.saveWapToken(userId);
-//                result.setDefaultModel("token", token);
                 //写session 数据库
                 Result sessionResult = sessionServerManager.createSession(passportId);
                 String sgid=null;
