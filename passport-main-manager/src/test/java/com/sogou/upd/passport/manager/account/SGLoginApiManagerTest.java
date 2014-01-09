@@ -51,4 +51,17 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
         System.out.println("sgrdig: " + result.getModels().get("sgrdig"));
     }
 
+    @Test
+    public void testVerifyCookie() {
+        String sginf = "1|1389180826|1390390426|Y2xpZW50aWQ6NDoxMTIwfGNydDoxMDoxMzg5MTgwODI2fHJlZm5pY2s6NDU6JUU4JUI3JUIzJUU1JTg4JTgwJUU3JTlBJTg0JUU1JTg1JTk0JUU1JUFEJTkwfHRydXN0OjE6MXx1c2VyaWQ6MjQ6c2hpcGVuZ3poaTE5ODZAc29nb3UuY29tfHVuaXFuYW1lOjQ1OiVFOCVCNyVCMyVFNSU4OCU4MCVFNyU5QSU4NCVFNSU4NSU5NCVFNSVBRCU5MHw";
+        String sgrdig = "hu4Koyn_96APUQVV8fNY35grikLQW1psNEHgL1-9HCkfLWrADo1HjMiHW3o_YVnurUd131P6U7UGJ3jbQjh2OKtAoIMJZ6-WphuJLnQFD8tP-rd1xw_5PYn-dMuw5VEAK_QnA8EKhu7RSlQ2DjAciNqDRPCaqusmgMRFmThUUVI";
+
+        try {
+            boolean isRight = RSA.verify(sginf, SGLoginApiManagerImpl.PUBLIC_KEY, sgrdig);
+            System.out.println("verify sgrdig:" + isRight);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
 }
