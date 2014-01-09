@@ -263,12 +263,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-//                    if( CommonHelper.isWANOrYuedu(clientId)) {
-//                        String token = (String) connectAccountResult.getModels().get("token");
-//                        String url = buildMAppSuccessRu(ru, userId, token, uniqname);
-//                        result.setSuccess(true);
-//                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-//                    } else {
                      String token = mappTokenService.saveToken(userId);
                      String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                      result.setSuccess(true);

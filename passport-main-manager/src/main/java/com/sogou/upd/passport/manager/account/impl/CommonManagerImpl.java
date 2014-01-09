@@ -12,7 +12,6 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
@@ -149,7 +148,7 @@ public class CommonManagerImpl implements CommonManager {
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
-        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -207,7 +206,7 @@ public class CommonManagerImpl implements CommonManager {
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
-        Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
         if (!getCookieValueResult.isSuccess()) {
             return null;
         }
