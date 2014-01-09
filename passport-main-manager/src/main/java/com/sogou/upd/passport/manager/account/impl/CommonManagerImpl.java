@@ -188,10 +188,13 @@ public class CommonManagerImpl implements CommonManager {
     @Override
     public String buildCreateSSOCookieUrl(String domain, String passportId, String ru, String ip) {
         StringBuilder urlBuilder = new StringBuilder();
-        if (domain.equals(ConnectDomainEnum.DAOHANG.toString())) {
-            urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL);
-        } else if (domain.equals(ConnectDomainEnum.HAO.toString())) {
-            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL);
+        String daohangDomain = ConnectDomainEnum.DAOHANG.toString();
+        String haoDomain = ConnectDomainEnum.HAO.toString();
+
+        if (domain.equals(daohangDomain)) {
+            urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=.").append(daohangDomain);
+        } else if (domain.equals(haoDomain)) {
+            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL).append("?domain=.").append(haoDomain);
         } else {
             return null;
         }
@@ -216,7 +219,7 @@ public class CommonManagerImpl implements CommonManager {
         long ct = new Long(createtime);
         String code1 = getCode(ppinf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
         String code2 = getCode(pprdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
-        urlBuilder.append("?").append("sginf=").append(ppinf)
+        urlBuilder.append("&sginf=").append(ppinf)
                 .append("&sgrdig=").append(pprdig)
                 .append("&code1=").append(code1)
                 .append("&code2=").append(code2)
@@ -227,7 +230,7 @@ public class CommonManagerImpl implements CommonManager {
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
-        long currentTime = System.currentTimeMillis()/1000;
+        long currentTime = System.currentTimeMillis() / 1000;
         boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         if (isCodeEqual && timeRight) {

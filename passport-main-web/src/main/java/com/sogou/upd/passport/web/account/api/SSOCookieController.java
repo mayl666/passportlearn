@@ -55,13 +55,8 @@ public class SSOCookieController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //校验servername
-        String serverName = request.getServerName();
-        String domain = SSOSupportDomainEnum.getSupportDomain(serverName);
-        if (StringUtils.isBlank(domain)) {
-            result.setCode(ErrorUtil.ERR_CODE_ERROR_SERVERNAME);
-            return result.toString();
-        }
+
+        String domain = ssoCookieParams.getDomain();
         //验证code
         String sginf = ssoCookieParams.getSginf();
         String sgrdig = ssoCookieParams.getSgrdig();
@@ -85,10 +80,9 @@ public class SSOCookieController extends BaseController {
 
         commonManager.setSSOCookie(response, ssoCookieParams.getSginf(), ssoCookieParams.getSgrdig(), domain, maxAge);
         String ru = ssoCookieParams.getRu();
-        if (StringUtils.isBlank(ru)) {
-            ru = SSOSupportDomainEnum.getDefaultRu(serverName);
+        if (!StringUtils.isBlank(ru)) {
+            response.sendRedirect(ru);
         }
-        response.sendRedirect(ru);
         return "";
     }
 
@@ -104,13 +98,8 @@ public class SSOCookieController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //校验servername
-        String serverName = request.getServerName();
-        String domain = SSOSupportDomainEnum.getSupportDomain(serverName);
-        if (StringUtils.isBlank(domain)) {
-            result.setCode(ErrorUtil.ERR_CODE_ERROR_SERVERNAME);
-            return result.toString();
-        }
+        String domain = ssoClearCookieParams.getDomain();
+
 
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF, domain);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG, domain);
@@ -123,10 +112,9 @@ public class SSOCookieController extends BaseController {
         userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
         UserOperationLogUtil.log(userOperationLog);
 
-        if (StringUtils.isBlank(ru)) {
-            ru = SSOSupportDomainEnum.getDefaultRu(serverName);
+        if (!StringUtils.isBlank(ru)) {
+            response.sendRedirect(ru);
         }
-        response.sendRedirect(ru);
         return "";
     }
 
