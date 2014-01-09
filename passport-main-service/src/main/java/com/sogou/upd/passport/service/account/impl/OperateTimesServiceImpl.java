@@ -224,7 +224,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public void checkLoginTimesForBlackList(String username, String ip) throws ServiceException {
+    public boolean isLoginTimesForBlackList(String username, String ip) throws ServiceException {
         try {
             //username
             int num = 0;
@@ -236,6 +236,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     num = Integer.parseInt(username_failedNum);
                     if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
                         addUserNameToLoginBlackList(username);
+                        return true;
                     }
                 }
                 String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
@@ -243,6 +244,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     num = Integer.parseInt(username_successNum);
                     if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                         addUserNameToLoginBlackList(username);
+                        return true;
+
                     }
                 }
 
@@ -258,10 +261,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         if (checkInSubIpList(ip)) {
                             if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
                                 addIPToLoginBlackList(ip);
+                                return true;
+
                             }
                         } else {
                             if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT) {
                                 addIPToLoginBlackList(ip);
+                                return true;
+
                             }
                         }
                     }
@@ -270,6 +277,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         num = Integer.parseInt(ip_successNum);
                         if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                             addIPToLoginBlackList(ip);
+                            return true;
+
                         }
                     }
                 }
@@ -278,6 +287,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             logger.error("userInBlackList," + username + "," + ip, e);
             throw new ServiceException(e);
         }
+        return false;
     }
 
     private void logLoginBlackList(String username, String ip, String blackKey, int blackNum) {

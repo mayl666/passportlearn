@@ -250,5 +250,5 @@ public interface OperateTimesService {
      * @param ip
      * @throws ServiceException
      */
-    public void checkLoginTimesForBlackList(String username, String ip) throws ServiceException;
+    public boolean isLoginTimesForBlackList(String username, String ip) throws ServiceException;
 }
