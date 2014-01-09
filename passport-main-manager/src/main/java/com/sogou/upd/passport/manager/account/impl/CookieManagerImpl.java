@@ -49,7 +49,7 @@ public class CookieManagerImpl implements CookieManager {
     public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {
         Result result = new APIResultSupport(false);
         if (ManagerHelper.isUsedSohuProxyApiToGetCookie()) {  //使用sohu新提供的getcookieinfo接口
-            result = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+            result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
         } else {       //使用之前的从location里拿的cookie的接口，为回滚做准备
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(cookieApiParams.getUserid());
