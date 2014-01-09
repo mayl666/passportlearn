@@ -24,15 +24,7 @@ public class ConnectUtil {
         CONNECT_INFO_MAP.put("/internal/connect/qq/user/mail/unread_num", "/user/get_mail_count|mail");
     }
 
-    public static Map<String, String> getCONNECT_INFO_MAP() {
-        return CONNECT_INFO_MAP;
-    }
-
-    public static void setCONNECT_INFO_MAP(Map<String, String> CONNECT_INFO_MAP) {
-        ConnectUtil.CONNECT_INFO_MAP = CONNECT_INFO_MAP;
-    }
-
-    public static String getERR_CODE_MSG(String key) {
+    public static String getCONNECT_CODE_MSG(String key) {
         return CONNECT_INFO_MAP.get(key);
     }
 }
