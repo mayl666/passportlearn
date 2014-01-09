@@ -83,6 +83,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 //获取用户的openId/openKey
                 Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
                 if (!CollectionUtils.isEmpty(tokenMap)) {
+                    tokenMap.put("client_id",String.valueOf(params.getClient_id()));
                     result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, null);
                 }
             } else {
@@ -141,6 +142,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 HashMap<String, Object> paramMap = new HashMap<>();
                 paramMap.put("pf", "tapp");
                 if (!CollectionUtils.isEmpty(tokenMap)) {
+                    tokenMap.put("client_id",String.valueOf(params.getClient_id()));
                     result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, paramMap);
                 }
             } else {
@@ -197,6 +199,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 //获取用户的openId/openKey
                 Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
                 if (!CollectionUtils.isEmpty(tokenMap)) {
+                    tokenMap.put("client_id",String.valueOf(params.getClient_id()));
                     result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, null);
                 }
             } else {

@@ -45,7 +45,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
     public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap) {
         Result result = new APIResultSupport(false);
         try {
-            String connectInfo = ConnectUtil.getERR_CODE_MSG(sgUrl);
+            String connectInfo = ConnectUtil.getCONNECT_CODE_MSG(sgUrl);
             String[] str = connectInfo.split("\\|");
             String apiUrl = str[0];    //搜狗封装的url请求对应真正QQ第三方的接口请求
             String platform = str[1];  //QQ第三方接口所在的平台
@@ -56,6 +56,9 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             QQHttpClient qqHttpClient = new QQHttpClient();
             String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
             result = buildCommonResult(platform, resp);
+        } catch (ConnectException ce) {
+            logger.error("OpenId Format Is Illegal:", ce);
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR);
         } catch (Exception e) {
             logger.error("handleConnectOpenApi Is Failed:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -63,19 +66,18 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
         return result;
     }
 
-    private HashMap<String, Object> buildConnectParams(Map<String, String> tokenMap, Map<String, Object> paramsMap, String apiUrl) throws Exception {
+    private HashMap<String, Object> buildConnectParams(Map<String, String> tokenMap, Map<String, Object> paramsMap, String apiUrl) throws ConnectException {
         String openId = tokenMap.get("open_id").toString();
         if (!isOpenid(openId)) {
-            logger.error(ErrorUtil.ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR, "openid is not right");
-            throw new ConnectException(ErrorUtil.ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR);
+            throw new ConnectException();
         }
         String accessToken = tokenMap.get("access_token").toString();
         //获取搜狗在第三方开放平台的appkey和appsecret
-        ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, AccountTypeEnum.QQ.getValue());
+        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(Integer.parseInt(tokenMap.get("client_id")), AccountTypeEnum.QQ.getValue());
         String sgAppKey = connectConfig.getAppKey();
         String protocol = CommonConstant.HTTPS;
         HashMap<String, Object> sigMap = new HashMap();
-        String regularParams = ConnectUtil.getERR_CODE_MSG("qq");
+        String regularParams = ConnectUtil.getCONNECT_CODE_MSG("qq");
         String[] regularArray = regularParams.split("\\|");
         sigMap.put(regularArray[0], sgAppKey);
         sigMap.put(regularArray[1], openId);
@@ -143,20 +145,25 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                             if (maps.containsKey("result")) {
                                 HashMap<String, Object> resultMap = (HashMap<String, Object>) maps.get("result");
                                 if (!CollectionUtils.isEmpty(resultMap)) {
+                                    HashMap<String, Object> dataMail = new HashMap<>();
                                     int size = Integer.parseInt(resultMap.get("Count").toString());
+                                    dataMail.put("count", size);
                                     List<Object> emailList = (List<Object>) resultMap.get("UnreadMailCountData");
+                                    HashMap<String, String>[] mapArray = new HashMap[size];
+                                    HashMap<String, String> item;
                                     for (int i = 0; i < size; i++) {
                                         if (!CollectionUtils.isEmpty(emailList)) {
-                                            HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(i);
+                                            HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(0);
                                             if (!CollectionUtils.isEmpty(mail)) {
                                                 result.setSuccess(true);
                                                 result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
-                                                data = convertToSGMap(mail);
-                                                result.setDefaultModel("mail" + (i+1), data);
+                                                item = convertToSGMap(mail);
+                                                mapArray[i] = item;
                                             }
                                         }
                                     }
-                                    result.setDefaultModel("count", size);
+                                    dataMail.put("unreadMailCountData", mapArray);
+                                    result.setModels(dataMail);
                                 }
                             }
                         }
@@ -175,7 +182,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             Set<Map.Entry<String, Object>> set = map.entrySet();
             if (!CollectionUtils.isEmpty(set)) {
                 for (Map.Entry<String, Object> entry : set) {
-                    data.put(entry.getKey().toLowerCase(), entry.getValue().toString());
+                    data.put(entry.getKey().replace(entry.getKey().substring(0, 1), entry.getKey().substring(0, 1).toLowerCase()), entry.getValue().toString());
                 }
             }
         }
