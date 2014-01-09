@@ -1,16 +1,19 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.math.RSA;
+import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.impl.SGLoginApiManagerImpl;
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: chenjiameng Date: 13-5-15 Time: 下午4:31 To change this template use
@@ -53,14 +56,24 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testVerifyCookie() {
-        String sginf = "1|1389180826|1390390426|Y2xpZW50aWQ6NDoxMTIwfGNydDoxMDoxMzg5MTgwODI2fHJlZm5pY2s6NDU6JUU4JUI3JUIzJUU1JTg4JTgwJUU3JTlBJTg0JUU1JTg1JTk0JUU1JUFEJTkwfHRydXN0OjE6MXx1c2VyaWQ6MjQ6c2hpcGVuZ3poaTE5ODZAc29nb3UuY29tfHVuaXFuYW1lOjQ1OiVFOCVCNyVCMyVFNSU4OCU4MCVFNyU5QSU4NCVFNSU4NSU5NCVFNSVBRCU5MHw";
-        String sgrdig = "hu4Koyn_96APUQVV8fNY35grikLQW1psNEHgL1-9HCkfLWrADo1HjMiHW3o_YVnurUd131P6U7UGJ3jbQjh2OKtAoIMJZ6-WphuJLnQFD8tP-rd1xw_5PYn-dMuw5VEAK_QnA8EKhu7RSlQ2DjAciNqDRPCaqusmgMRFmThUUVI";
-
-        try {
-            boolean isRight = RSA.verify(sginf, SGLoginApiManagerImpl.PUBLIC_KEY, sgrdig);
-            System.out.println("verify sgrdig:" + isRight);
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        String passportId = "CFBF0F59AE1029AF7C2F9F1CD4827F96@qq.sohu.com";
+        int client_id = 1120;
+        CookieApiParams cookieApiParams = new CookieApiParams(passportId, client_id, "", "", "", "");
+        Result result = sgLoginApiManager.getCookieInfo(cookieApiParams);
+        if (result.isSuccess()) {
+            Map map = result.getModels();
+            String sginf = (String) map.get("sginf");
+            String sgrdig = (String) map.get("sgrdig");
+            RequestModel requestModel = new RequestModel("http://10.11.195.95/");
+            requestModel.addHeader("Cookie", "sginf=" + sginf + ";" + "sgrdig=" + sgrdig);
+            try {
+                String response = SGHttpClient.executeStr(requestModel);
+                Assert.assertEquals(passportId, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Assert.assertTrue(false);
         }
     }
 
