@@ -63,8 +63,8 @@ public class CommonConstant {
 
     public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
 
-    public static final String HAO_CREATE_COOKIE_URL = "https://account.hao.qq.com/sso/setcookie";
-    public static final String DAOHANG_CREATE_COOKIE_URL = "https://account.daohang.qq.com/sso/setcookie";
+    public static final String HAO_CREATE_COOKIE_URL = "http://account.hao.qq.com/sso/setcookie";
+    public static final String DAOHANG_CREATE_COOKIE_URL = "http://account.daohang.qq.com/sso/setcookie";
 
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
     public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒

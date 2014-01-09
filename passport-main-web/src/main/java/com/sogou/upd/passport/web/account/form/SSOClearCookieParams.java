@@ -11,6 +11,9 @@ import org.hibernate.validator.constraints.NotBlank;
  * To change this template use File | Settings | File Templates.
  */
 public class SSOClearCookieParams {
+    @NotBlank(message = "domain不允许为空")
+    private String domain;       //所种cookie的域
+
     @Ru
     protected String ru;
 
@@ -22,5 +25,11 @@ public class SSOClearCookieParams {
         this.ru = ru;
     }
 
+    public String getDomain() {
+        return domain;
+    }
 
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
 }

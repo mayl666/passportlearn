@@ -21,6 +21,8 @@ public class SSOCookieParams {
     protected String code1;
     @NotBlank(message = "code2不允许为空")
     protected String code2;
+    @NotBlank(message = "domain不允许为空")
+    private String domain;       //所种cookie的域
 
     @Ru
     protected String ru;
@@ -65,5 +67,11 @@ public class SSOCookieParams {
         this.ru = ru;
     }
 
+    public String getDomain() {
+        return domain;
+    }
 
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
 }
