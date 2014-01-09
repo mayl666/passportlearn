@@ -45,6 +45,10 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
     public Result regMailUser(RegEmailApiParams params) {
         Result result = new APIResultSupport(false);
         try {
+            String userid = params.getUserid();
+            userid = AccountDomainEnum.getInternalCase(userid);
+            params.setUserid(userid);
+
             String username = params.getUserid();
             String password = params.getPassword();
             String ip = params.getCreateip();
@@ -128,9 +132,11 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
     @Override
     public Result checkUser(CheckUserApiParams checkUserApiParams) {
         Result result = new APIResultSupport(false);
-        String username = null;
+        String username = checkUserApiParams.getUserid();
+        username = AccountDomainEnum.getInternalCase(username);
+        checkUserApiParams.setUserid(username);
+
         try {
-            username = checkUserApiParams.getUserid();
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
                 if (!Strings.isNullOrEmpty(passportId)) {

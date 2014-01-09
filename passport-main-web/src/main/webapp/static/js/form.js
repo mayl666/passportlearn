@@ -36,7 +36,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         return true;
     });
     $.uuiForm.addType('nick' , function(value){
-        return /^[a-z]([a-zA-Z0-9_.]{3,15})$/.test(value);
+        return /^[a-zA-Z]([a-zA-Z0-9_.]{3,15})$/.test(value);
     }); 
 
     $.uuiForm.addType('new_answer' , function(value){
@@ -148,14 +148,13 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             else return "真实姓名仅允许输入英文字母和汉字";
         },  
         new_answer:function($el){
-             //$el.val().replace(/[^\u00-\uff]/g,'xx').length
              return "不能超过50个英文字母或25个汉字"
         },
         nick: function($el){
-            if( $el.val().length <3 || $el.val().length>16 ){
-                return '个性帐号长度为6-16位';
+            if( $el.val().length <4 || $el.val().length>16 ){
+                return '个性帐号长度为4-16位';
             }
-            return '小写字母开头的数字、字母、下划线或组合';
+            return '字母开头的数字、字母、下划线或组合';
         },
         personalid:function(){
             return "请输入18位有效的身份证号码";
@@ -165,7 +164,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
     var NormalDesc = {
         email:"请输入您作为帐号的邮箱名",
         password:"6-16位，字母(区分大小写)、数字、符号",
-        nick: "小写字母开头的数字、字母、下划线或组合"
+        nick: "字母开头的数字、字母、下划线或组合"
     };
 
     var createSpan= function($el , className){

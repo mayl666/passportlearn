@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -185,6 +186,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+
         result = checkPCAccountNotExists(username);
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
             result.setMessage("该手机号已注册或已绑定，请直接登录");
@@ -217,6 +219,7 @@ public class PCOAuth2AccountController extends BaseController {
             }
             ip = getIp(request);
             uuidName = ServletUtil.getCookie(request, "uuidName");
+
             result = regManager.checkRegInBlackList(ip, uuidName);
             if (!result.isSuccess()) {
                 if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
@@ -306,7 +309,6 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
         String username = loginParams.getUsername();
         result = pcOAuth2LoginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 

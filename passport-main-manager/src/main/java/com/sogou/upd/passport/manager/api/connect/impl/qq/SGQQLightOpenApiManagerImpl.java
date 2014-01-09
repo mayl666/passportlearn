@@ -41,7 +41,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
         String resp;
         try {
             //QQ提供的openapi服务器
-            String serverName = CommonConstant.QQ_SERVER_NAME;
+            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
             int provider = AccountTypeEnum.getAccountType(userId).getValue();
@@ -51,15 +51,6 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
             //调用代理第三方接口，点亮或熄灭QQ图标
             resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
-        } catch (IOException ioe) {
-            logger.error("Transfer Object To Map Failed :", ioe);
-            throw new IOException("Transfer Object To Map Failed :", ioe);
-        } catch (OpensnsException e) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}", e.getErrorCode(), e.getMessage()), e);
-            throw new OpensnsException(e.getErrorCode(), e.getMessage());
-        } catch (RuntimeException re) {
-            logger.error("http request error :", re);
-            throw new RuntimeException("http request error ", re);
         } catch (Exception e) {
             logger.error("Execute Api Is Failed :", e);
             throw new Exception("Execute Api Is Failed:", e);
@@ -68,13 +59,13 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
     }
 
 
-    private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) throws Exception {
-        String resp;
+    private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) {
+        String resp = null;
         try {
             // 指定OpenApi Cgi名字
             String scriptName = qqLightOpenApiParams.getOpenApiName();
             // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
-            String protocol = CommonConstant.HTTP;
+            String protocol = CommonConstant.HTTPS;
             // 填充URL请求参数,用来生成sig签名
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("openid", openid);
@@ -98,16 +89,10 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             resp = sdk.api(scriptName, params, protocol, method);
         } catch (IOException ioe) {
             logger.error("Transfer Object To Map Failed :", ioe);
-            throw new IOException("Transfer Object To Map Failed :", ioe);
-        } catch (OpensnsException e) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}", e.getErrorCode(), e.getMessage()), e);
-            throw new OpensnsException(e.getErrorCode(), e.getMessage());
-        } catch (RuntimeException re) {
-            logger.error("http request error :", re);
-            throw new RuntimeException("http request error ", re);
+        } catch (OpensnsException oe) {
+            logger.error(String.format("Request Failed.code:{}, msg:{}", oe.getErrorCode(), oe.getMessage()), oe);
         } catch (Exception e) {
             logger.error("Execute Api Is Failed :", e);
-            throw new Exception("Execute Api Is Failed:", e);
         }
         return resp;
     }
