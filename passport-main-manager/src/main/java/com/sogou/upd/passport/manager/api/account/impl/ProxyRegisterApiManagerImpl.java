@@ -23,6 +23,10 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
 
     @Override
     public Result regMailUser(RegEmailApiParams regEmailApiParams) {
+        String userid = regEmailApiParams.getUserid();
+        userid = AccountDomainEnum.getInternalCase(userid);
+        regEmailApiParams.setUserid(userid);
+
         regEmailApiParams.setSend_email("1");
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.WEB_EMAIL_REG, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(regEmailApiParams);
@@ -73,6 +77,10 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
 
     @Override
     public Result checkUser(CheckUserApiParams checkUserApiParams) {
+        String userid = checkUserApiParams.getUserid();
+        userid = AccountDomainEnum.getInternalCase(userid);
+        checkUserApiParams.setUserid(userid);
+
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.CHECK_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(checkUserApiParams);
         Result result = executeResult(requestModelXml);

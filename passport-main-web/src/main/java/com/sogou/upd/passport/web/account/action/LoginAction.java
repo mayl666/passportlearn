@@ -84,8 +84,6 @@ public class LoginAction extends BaseController {
         }
 
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        username = AccountDomainEnum.getInternalCase(username);
-
         int clientId = Integer.valueOf(checkParam.getClient_id());
         //判断账号是否存在
         if (username.indexOf("@") == -1) {
@@ -134,9 +132,6 @@ public class LoginAction extends BaseController {
             return "/login/api";
         }
         String userId = loginParams.getUsername();
-        userId = AccountDomainEnum.getInternalCase(userId);
-        loginParams.setUsername(userId);
-
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
         //用户登录log

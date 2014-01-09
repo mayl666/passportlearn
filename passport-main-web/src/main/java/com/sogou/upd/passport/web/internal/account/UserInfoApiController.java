@@ -62,9 +62,6 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String  userid = params.getUserid();
-        userid = AccountDomainEnum.getInternalCase(userid);
-        params.setUserid(userid);
         // 调用内部接口
         result = proxyUserInfoApiManager.getUserInfo(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
@@ -92,9 +89,6 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String  userid = params.getUserid();
-        userid = AccountDomainEnum.getInternalCase(userid);
-        params.setUserid(userid);
         // 调用内部接口
         result = proxyUserInfoApiManager.updateUserInfo(params);
 
