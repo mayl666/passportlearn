@@ -41,6 +41,7 @@
     </div>
     <footer class="footer">Copyright © 2013 Sogou.com</footer>
 
+    <script src="/static/js/lib/md5-min.js"></script>
     <script src="/static/js/wap/main.js"></script>
 </body>
 </html>
