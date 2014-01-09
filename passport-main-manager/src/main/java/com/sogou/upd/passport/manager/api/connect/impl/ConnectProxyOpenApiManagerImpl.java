@@ -116,7 +116,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                         result.setMessage((String) maps.get("msg"));
                     } else {
                         //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
-                        HashMap<String, String> data = new HashMap<>();
+                        HashMap<String, Object> data = new HashMap<>();
                         //QQ空间未读数结果封装
                         if ("qzone".equals(platform)) {
                             String ret = maps.get("ret").toString();
@@ -149,8 +149,8 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                                     int size = Integer.parseInt(resultMap.get("Count").toString());
                                     dataMail.put("count", size);
                                     List<Object> emailList = (List<Object>) resultMap.get("UnreadMailCountData");
-                                    HashMap<String, String>[] mapArray = new HashMap[size];
-                                    HashMap<String, String> item;
+                                    HashMap<String, Object>[] mapArray = new HashMap[size];
+                                    HashMap<String, Object> item;
                                     for (int i = 0; i < size; i++) {
                                         if (!CollectionUtils.isEmpty(emailList)) {
                                             HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(0);
@@ -176,13 +176,13 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
         return result;
     }
 
-    private HashMap<String, String> convertToSGMap(HashMap<String, Object> map) {
-        HashMap<String, String> data = new HashMap<>();
+    private HashMap<String, Object> convertToSGMap(HashMap<String, Object> map) {
+        HashMap<String, Object> data = new HashMap<>();
         if (!CollectionUtils.isEmpty(map)) {
             Set<Map.Entry<String, Object>> set = map.entrySet();
             if (!CollectionUtils.isEmpty(set)) {
                 for (Map.Entry<String, Object> entry : set) {
-                    data.put(entry.getKey().replace(entry.getKey().substring(0, 1), entry.getKey().substring(0, 1).toLowerCase()), entry.getValue().toString());
+                    data.put(entry.getKey().replace(entry.getKey().substring(0, 1), entry.getKey().substring(0, 1).toLowerCase()), entry.getValue());
                 }
             }
         }
