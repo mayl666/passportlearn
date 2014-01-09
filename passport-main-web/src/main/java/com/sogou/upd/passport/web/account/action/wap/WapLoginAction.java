@@ -310,9 +310,9 @@ public class WapLoginAction extends BaseController {
     private String getSuccessReturnStr(String ru, String token) {
         String deRu = Coder.decodeUTF8(ru);
         if (deRu.contains("?")) {
-            return deRu + "&token=" + token;
+            return deRu + "&sgid=" + token;
         }
-        return deRu + "?token=" + token;
+        return deRu + "?sgid=" + token;
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
