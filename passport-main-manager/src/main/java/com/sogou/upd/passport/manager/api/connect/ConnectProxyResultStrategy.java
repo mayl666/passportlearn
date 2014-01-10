@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 /**
- * 根据平台封装返回该平台对应的结果
+ * 根据平台封装返回该平台对应结果的抽象策略接口，该接口封装所有具体策略所需的接口方法
  * Created with IntelliJ IDEA.
  * User: liuling
  * Date: 14-1-10

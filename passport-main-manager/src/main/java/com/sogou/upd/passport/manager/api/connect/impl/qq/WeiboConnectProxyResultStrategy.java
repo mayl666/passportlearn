@@ -10,7 +10,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.HashMap;
 
 /**
- * 返回weibo平台对应的结果
+ * weibo平台统一结果的实现类
  * Created with IntelliJ IDEA.
  * User: liuling
  * Date: 14-1-10

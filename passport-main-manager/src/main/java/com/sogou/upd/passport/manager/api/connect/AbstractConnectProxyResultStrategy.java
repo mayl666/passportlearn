@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * 抽象接口的抽象类实现，封装具体策略用到的所有公用方法
  * Created with IntelliJ IDEA.
  * User: liuling
  * Date: 14-1-10

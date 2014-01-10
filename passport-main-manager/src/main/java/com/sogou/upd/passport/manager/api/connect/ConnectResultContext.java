@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 /**
+ * 第三方开放平台通用返回结果的上下文环境
  * Created with IntelliJ IDEA.
  * User: liuling
  * Date: 14-1-10
