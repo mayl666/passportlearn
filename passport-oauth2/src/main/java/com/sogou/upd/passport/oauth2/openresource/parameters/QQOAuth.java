@@ -12,6 +12,9 @@ public class QQOAuth {
     public static final String XHTML_DISPLAY = "xhtml"; // 对应的g_ut=2
     public static final String VIEW_PAGE = "viewPage"; // qq为搜狗产品定制化页面
     public static final String USERCANCEL = "usercancel"; // qq wap取消授权
+    public static final String SHOW_AUTH_ITEMS = "show_auth_items"; // 是否隐藏授权信息 0:隐藏
+
+    public static final int NO_AUTH_ITEMS = 0; // 是否隐藏授权信息 0:隐藏
 
     /* 用户类API请求 */
     /* 用户类API响应 */

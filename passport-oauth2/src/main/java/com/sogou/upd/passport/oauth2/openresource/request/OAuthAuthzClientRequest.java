@@ -94,7 +94,12 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
             return this;
         }
 
-        // qq为搜狗产品定制化页面
+        // 是否隐藏授权信息
+        public AuthenticationRequestBuilder setShowAuthItems(int show_auth_items) {
+            this.parameters.put(QQOAuth.SHOW_AUTH_ITEMS, show_auth_items);
+            return this;
+        }
+
         public AuthenticationRequestBuilder setViewPage(String viewPage) {
             this.parameters.put(QQOAuth.VIEW_PAGE, viewPage);
             return this;

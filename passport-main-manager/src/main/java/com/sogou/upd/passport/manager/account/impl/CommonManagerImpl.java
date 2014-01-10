@@ -49,6 +49,8 @@ public class CommonManagerImpl implements CommonManager {
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
+    private LoginApiManager sgLoginApiManager;
+    @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private OperateTimesService operateTimesService;
