@@ -69,7 +69,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
         //简易版 炫彩版 需要md5加密
         String v=loginParams.getV();
-        if(!v.equals(WapConstant.WAP_COLOR)){
+        if(!v.equals(WapConstant.WAP_TOUCH)){
             password = DigestUtils.md5Hex(password.getBytes());
         }
         String passportId = username;
@@ -135,12 +135,12 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result passThroughQQ(String sgid,String accessToken,String openId,String ip,String expires_in) {
+    public Result passThroughQQ(int client_id,String sgid,String accessToken,String openId,String ip,String expires_in) {
         Result result = new APIResultSupport(false);
         try {
             //根据获取第三方个人资料验证token的有效性
             int provider = AccountTypeEnum.QQ.getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
 
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);

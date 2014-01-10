@@ -44,7 +44,7 @@ public class WapLoginParams {
 
 
     @NotBlank(message = "v is null")
-    private String v = WapConstant.WAP_COLOR;//wap版本:0-简易版；1-炫彩版；2-触屏版
+    private String v = WapConstant.WAP_COLOR;//wap版本:1-简易版；2-炫彩版；5-触屏版
 
     public String getRu() {
         return ru;

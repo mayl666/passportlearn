@@ -6,11 +6,13 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
@@ -22,6 +24,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,8 @@ public class WapLoginAction extends BaseController {
     private WapLoginManager wapLoginManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
+    private static final String SECRETKEY="afE0WZf345@werdm";
+
 
     @RequestMapping(value = {"/wap/index"})
     public String index(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams)
@@ -150,10 +155,11 @@ public class WapLoginAction extends BaseController {
                                 HttpServletResponse res,
                                 WapPassThroughParams params) {
         String openId = null;
-        String token = null;
+        String accessToken = null;
         String ru = null;
         String ip = null;
         String expires_in = null;
+        String data=null;
         try {
             // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
@@ -169,16 +175,25 @@ public class WapLoginAction extends BaseController {
                 logger.error("Url decode Exception! ru:" + ru);
                 ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
-            token = params.getAccess_token();
-            openId = params.getOpenid();
-            expires_in = params.getExpires_in();
+
+            data = params.getData();
+            //获取QQ回跳参数
+            byte[] buf= Hex.decodeHex(data.toCharArray());
+            String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CONTENT_CHARSET);
+
+            QQPassthroughParam param= JacksonJsonMapperUtil.getMapper().readValue(decryptedValue,QQPassthroughParam.class);
+            accessToken = param.getAccess_token();
+            openId = param.getOpenid();
+            expires_in = param.getExpires_in();
 
             ip = getIp(req);
 
             //获取sgid
             String sgid = ServletUtil.getCookie(req, LoginConstant.COOKIE_SGID);
 
-            Result result = wapLoginManager.passThroughQQ(sgid, token, openId, ip, expires_in);
+            //暂时只是sogou小说调用 client_id为 1115
+            int clientId=CommonConstant.XIAOSHUO_CLIENTID;
+            Result result = wapLoginManager.passThroughQQ(clientId,sgid, accessToken, openId, ip, expires_in);
             if (result.isSuccess()) {
                 sgid = (String) result.getModels().get("sgid");
                 ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
@@ -193,11 +208,11 @@ public class WapLoginAction extends BaseController {
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("/wap/passthrough_qq " + "openId:" + openId + ",token:" + token);
+                logger.debug("/wap/passthrough_qq " + "openId:" + openId + ",accessToken:" + accessToken);
             }
         } finally {
 //            用于记录log
-            UserOperationLog userOperationLog = new UserOperationLog(openId, token, "0", ip);
+            UserOperationLog userOperationLog = new UserOperationLog(openId, accessToken, "0", ip);
             String referer = req.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
@@ -241,7 +256,9 @@ public class WapLoginAction extends BaseController {
                 response.sendRedirect(ru);
                 return "";
             }
-            sgid = params.getSgid();
+
+            sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
+            sgid = Strings.isNullOrEmpty(sgid)?params.getSgid():null;
             client_id = params.getClient_id();
 
             //处理ru
@@ -332,5 +349,34 @@ public class WapLoginAction extends BaseController {
         }
         returnStr.append("&needCaptcha=" + isNeedCaptcha);
         return returnStr.toString();
+    }
+}
+class QQPassthroughParam{
+    private String access_token;
+    private String openid;
+    private String expires_in;
+
+    public String getAccess_token() {
+        return access_token;
+    }
+
+    public void setAccess_token(String access_token) {
+        this.access_token = access_token;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public String getExpires_in() {
+        return expires_in;
+    }
+
+    public void setExpires_in(String expires_in) {
+        this.expires_in = expires_in;
     }
 }
