@@ -153,7 +153,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                                     HashMap<String, Object> item;
                                     for (int i = 0; i < size; i++) {
                                         if (!CollectionUtils.isEmpty(emailList)) {
-                                            HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(0);
+                                            HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(i);
                                             if (!CollectionUtils.isEmpty(mail)) {
                                                 result.setSuccess(true);
                                                 result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
