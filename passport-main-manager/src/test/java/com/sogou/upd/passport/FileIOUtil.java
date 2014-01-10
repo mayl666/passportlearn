@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao.shplustransfer;
+package com.sogou.upd.passport;
 
 import com.google.common.collect.Lists;
 

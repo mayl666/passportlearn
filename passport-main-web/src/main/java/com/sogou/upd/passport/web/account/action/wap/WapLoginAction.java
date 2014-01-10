@@ -109,9 +109,9 @@ public class WapLoginAction extends BaseController {
             return getErrorReturnStr(loginParams, validateResult, 0);
         }
 
-        result = wapLoginManager.accountLogin(loginParams, ip);
+        result = wapLoginManager.accountLogin(loginParams, "");  //wap端ip获取不准确，所以这里不对ip做安全限制
         //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), ip);
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
@@ -310,9 +310,9 @@ public class WapLoginAction extends BaseController {
     private String getSuccessReturnStr(String ru, String token) {
         String deRu = Coder.decodeUTF8(ru);
         if (deRu.contains("?")) {
-            return deRu + "&token=" + token;
+            return deRu + "&sgid=" + token;
         }
-        return deRu + "?token=" + token;
+        return deRu + "?sgid=" + token;
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
