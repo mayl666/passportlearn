@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -65,7 +66,12 @@ public class WapLoginManagerImpl implements WapLoginManager {
         Result result = new APIResultSupport(false);
         String username = loginParams.getUsername();
         String password = loginParams.getPassword();
-//        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+
+        //简易版 炫彩版 需要md5加密
+        String v=loginParams.getV();
+        if(!v.equals(WapConstant.WAP_COLOR)){
+            password = DigestUtils.md5Hex(password.getBytes());
+        }
         String passportId = username;
         try {
             //验证验证码
@@ -75,9 +81,6 @@ public class WapLoginManagerImpl implements WapLoginManager {
             }
             result = loginManager.authUser(username, ip, password);
             if (result.isSuccess()) {
-//                String userId = result.getModels().get("userid").toString();
-//                String token = wapTokenService.saveWapToken(userId);
-//                result.setDefaultModel("token", token);
                 //写session 数据库
                 Result sessionResult = sessionServerManager.createSession(passportId);
                 String sgid=null;

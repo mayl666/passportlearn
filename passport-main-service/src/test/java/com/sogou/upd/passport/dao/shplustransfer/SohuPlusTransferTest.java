@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.BuilderUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.dao.BaseDAOTest;
+import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.SohuplusTmpDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
