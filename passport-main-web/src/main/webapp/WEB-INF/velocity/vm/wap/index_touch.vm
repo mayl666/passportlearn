@@ -18,7 +18,7 @@
             <input type="text" class="i-txt" name="username" id="ID" placeholder="邮箱/手机号/搜狗账号">
         </div>
         <div class="input-wrp">
-            <input type="password" class="i-txt" name="password" id="Pass" placeholder="请输入密码">
+            <input type="password" class="i-txt" id="FPass" placeholder="请输入密码">
         </div>
         <!-- <div>${isNeedCaptcha}</div> -->
         #if($isNeedCaptcha == 1)
@@ -33,6 +33,7 @@
             <input type="hidden" name="client_id" value="${client_id}" />
             <input type="hidden" name="v" value="${v}" />
             <input type="hidden" name="token" value="${token}" />
+            <input type="hidden" name="password" value="" id="RPass" />
             <input type="submit" value="登录" class="login-btn" id="Login">
         </div>
     </form>
@@ -41,6 +42,7 @@
     </div>
     <footer class="footer">Copyright © 2013 Sogou.com</footer>
 
+    <script src="/static/js/lib/md5-min.js"></script>
     <script src="/static/js/wap/main.js"></script>
 </body>
 </html>

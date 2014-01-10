@@ -38,6 +38,10 @@ function updateCaptcha() {
     captImg.src = src + '?t=' + d;
 }
 
+$$('FPass').addEventListener('blur', function() {
+    $$('RPass').value = hex_md5(trim($$('FPass').value));
+}, false);
+
 /**
  * 表单验证
  */
@@ -47,7 +51,7 @@ $$('LoginForm').addEventListener('submit', function(e) {
         errMsg += '和验证码'
     }
     if (!trim($$('ID').value) ||
-        !trim($$('Pass').value) ||
+        !trim($$('FPass').value) ||
         !trim($$('Captcha').value)) {
 
         $$('Error').innerHTML = errMsg;
