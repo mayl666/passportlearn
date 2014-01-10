@@ -7,9 +7,9 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectProxyOpenApiManager;
+import com.sogou.upd.passport.manager.api.connect.ConnectResultContext;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -20,9 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.rmi.server.ObjID;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,7 +53,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             QQHttpClient qqHttpClient = new QQHttpClient();
             String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
-            result = buildCommonResult(platform, resp);
+            result = buildCommonResultByStrategy(platform, resp);
         } catch (ConnectException ce) {
             logger.error("OpenId Format Is Illegal:", ce);
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR);
@@ -103,92 +101,22 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
         return sigMap;
     }
 
-    private Result buildCommonResult(String platform, String resp) throws IOException {
+    private Result buildCommonResultByStrategy(String platform, String resp) throws IOException {
         Result result = new APIResultSupport(false);
         try {
             if (!Strings.isNullOrEmpty(resp)) {
                 ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
                 HashMap<String, Object> maps = objectMapper.readValue(resp, HashMap.class);
                 if (!CollectionUtils.isEmpty(maps)) {
-                    //封装QQ返回请求错误的结果,请求结果包含ret，且ret不为零，表示调用不成功
-                    if (maps.containsKey("ret") && !maps.get("ret").toString().equals("0")) {
-                        result.setCode(maps.get("ret").toString());
-                        result.setMessage((String) maps.get("msg"));
-                    } else {
-                        //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
-                        HashMap<String, Object> data = new HashMap<>();
-                        //QQ空间未读数结果封装
-                        if ("qzone".equals(platform)) {
-                            String ret = maps.get("ret").toString();
-                            if (ret.equals("0")) {
-                                result.setSuccess(true);
-                                result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
-                                data = convertToSGMap(maps);
-                                data.remove("ret");
-                                data.remove("msg");
-                                result.setModels(data);
-                            }
-                        } else if ("weibo".equals(platform)) {
-                            String ret = maps.get("ret").toString();
-                            if (ret.equals("0")) {
-                                if (maps.containsKey("data")) {
-                                    HashMap<String, Object> mapsWeibo = (HashMap<String, Object>) maps.get("data");
-                                    if (!CollectionUtils.isEmpty(mapsWeibo)) {
-                                        result.setSuccess(true);
-                                        result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
-                                        data = convertToSGMap(mapsWeibo);
-                                        result.setModels(data);
-                                    }
-                                }
-                            }
-                        } else {
-                            if (maps.containsKey("result")) {
-                                HashMap<String, Object> resultMap = (HashMap<String, Object>) maps.get("result");
-                                if (!CollectionUtils.isEmpty(resultMap)) {
-                                    HashMap<String, Object> dataMail = new HashMap<>();
-                                    int size = Integer.parseInt(resultMap.get("Count").toString());
-                                    dataMail.put("count", size);
-                                    List<Object> emailList = (List<Object>) resultMap.get("UnreadMailCountData");
-                                    HashMap<String, Object>[] mapArray = new HashMap[size];
-                                    HashMap<String, Object> item;
-                                    for (int i = 0; i < size; i++) {
-                                        if (!CollectionUtils.isEmpty(emailList)) {
-                                            HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(i);
-                                            if (!CollectionUtils.isEmpty(mail)) {
-                                                result.setSuccess(true);
-                                                result.setMessage(ErrorUtil.getERR_CODE_MSG("0"));
-                                                item = convertToSGMap(mail);
-                                                mapArray[i] = item;
-                                            }
-                                        }
-                                    }
-                                    dataMail.put("unreadMailCountData", mapArray);
-                                    result.setModels(dataMail);
-                                }
-                            }
-                        }
-                    }
+                    ConnectResultContext connectResultContext = new ConnectResultContext();
+                    result = connectResultContext.getResultByPlatform(platform, maps);
                 }
             }
         } catch (IOException e) {
-            throw new IOException("Transfer QQ Result To SGResult Failed:", e);
+            throw new IOException("method[buildCommonResultByStrategy]:Transfer QQ Result To SGResult Failed:", e);
         }
         return result;
     }
-
-    private HashMap<String, Object> convertToSGMap(HashMap<String, Object> map) {
-        HashMap<String, Object> data = new HashMap<>();
-        if (!CollectionUtils.isEmpty(map)) {
-            Set<Map.Entry<String, Object>> set = map.entrySet();
-            if (!CollectionUtils.isEmpty(set)) {
-                for (Map.Entry<String, Object> entry : set) {
-                    data.put(entry.getKey().replace(entry.getKey().substring(0, 1), entry.getKey().substring(0, 1).toLowerCase()), entry.getValue());
-                }
-            }
-        }
-        return data;
-    }
-
 
     /**
      * 验证openid是否合法
