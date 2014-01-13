@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

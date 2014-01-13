@@ -383,9 +383,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        params.put("userid", userid);
         params.put("s_m_u", s_m_u);
-        params.put("un", Coder.encodeUTF8(un));
+        params.put("un", un);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

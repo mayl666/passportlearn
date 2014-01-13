@@ -3,6 +3,7 @@ package com.sogou.upd.passport.oauth2.openresource.http;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
+import com.sogou.upd.passport.common.utils.ConnectHttpClient;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -28,7 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class HttpClient4 extends SGHttpClient {
+public class HttpClient4 extends ConnectHttpClient {
 
     private static final Logger log = LoggerFactory.getLogger(HttpClient4.class);
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,26 +41,16 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
         String resp;
         try {
             //QQ提供的openapi服务器
-            String serverName = CommonConstant.QQ_SERVER_NAME;
+            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
-            AccountTypeEnum providerStr = AccountTypeEnum.getAccountType(userId);
-            int providerValue = providerStr.getValue();
-            ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, providerValue);
+            int provider = AccountTypeEnum.getAccountType(userId).getValue();
+            ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
             String sgAppKey = connectConfig.getAppKey();     //搜狗在QQ的appid
             String sgAppSecret = connectConfig.getAppSecret(); //搜狗在QQ的appkey
             OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
             //调用代理第三方接口，点亮或熄灭QQ图标
             resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
-        } catch (IOException ioe) {
-            logger.error("Transfer Object To Map Failed :", ioe);
-            throw new IOException("Transfer Object To Map Failed :", ioe);
-        } catch (OpensnsException e) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}", e.getErrorCode(), e.getMessage()), e);
-            throw new OpensnsException(e.getErrorCode(), e.getMessage());
-        } catch (RuntimeException re) {
-            logger.error("http request error :", re);
-            throw new RuntimeException("http request error ", re);
         } catch (Exception e) {
             logger.error("Execute Api Is Failed :", e);
             throw new Exception("Execute Api Is Failed:", e);
@@ -68,38 +59,40 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
     }
 
 
-    private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) throws Exception {
-        String resp;
+    private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) {
+        String resp = null;
         try {
             // 指定OpenApi Cgi名字
             String scriptName = qqLightOpenApiParams.getOpenApiName();
             // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
-            String protocol = CommonConstant.HTTP;
+            String protocol = CommonConstant.HTTPS;
             // 填充URL请求参数,用来生成sig签名
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("openid", openid);
             params.put("openkey", openkey);
             ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
-            HashMap<String, String> maps = objectMapper.readValue(qqLightOpenApiParams.getParams().toString(), HashMap.class);
-            Set<String> commonKeySet = maps.keySet();
-            for (String dataKey : commonKeySet) {
-                params.put(dataKey, maps.get(dataKey));
+            HashMap<String, String> maps;
+            Object paramsObj = qqLightOpenApiParams.getParams();
+            if (paramsObj != null) {
+                maps = objectMapper.readValue(paramsObj.toString(), HashMap.class);
+                if (!maps.isEmpty()) {
+                    Set<Map.Entry<String, String>> entrySet = maps.entrySet();
+                    if (!entrySet.isEmpty() && entrySet.size() > 0) {
+                        for (Map.Entry<String, String> entry : entrySet) {
+                            params.put(entry.getKey(), entry.getValue());
+                        }
+                    }
+                }
             }
             //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
             String method = CommonConstant.CONNECT_METHOD_POST;
             resp = sdk.api(scriptName, params, protocol, method);
         } catch (IOException ioe) {
             logger.error("Transfer Object To Map Failed :", ioe);
-            throw new IOException("Transfer Object To Map Failed :", ioe);
-        } catch (OpensnsException e) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}", e.getErrorCode(), e.getMessage()), e);
-            throw new OpensnsException(e.getErrorCode(), e.getMessage());
-        } catch (RuntimeException re) {
-            logger.error("http request error :", re);
-            throw new RuntimeException("http request error ", re);
+        } catch (OpensnsException oe) {
+            logger.error(String.format("Request Failed.code:{}, msg:{}", oe.getErrorCode(), oe.getMessage()), oe);
         } catch (Exception e) {
             logger.error("Execute Api Is Failed :", e);
-            throw new Exception("Execute Api Is Failed:", e);
         }
         return resp;
     }
