@@ -2,11 +2,8 @@ package com.sogou.upd.passport.service.connect.impl;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
-import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.connect.AccessTokenService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +20,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     @Autowired
     private RedisUtils redisUtils;
 
-    private static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCESSTOKEN;
+    private static final String CACHE_PREFIX_PASSPORTID_ACCESSTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCESSTOKEN;
 
     @Override
-    public boolean initialOrUpdateAccessToken(String userid, String accesstoken, int expire) throws ServiceException {
+    public boolean initialOrUpdateAccessToken(String userid, String accesstoken, long expire) throws ServiceException {
         try {
             String cacheKey = buildConnectTokenCacheKey(userid);
             redisUtils.setWithinSeconds(cacheKey, accesstoken, expire);
@@ -50,6 +47,6 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
 
     private String buildConnectTokenCacheKey(String passportId) {
-        return CACHE_PREFIX_PASSPORTID_CONNECTTOKEN + passportId;
+        return CACHE_PREFIX_PASSPORTID_ACCESSTOKEN + passportId;
     }
 }

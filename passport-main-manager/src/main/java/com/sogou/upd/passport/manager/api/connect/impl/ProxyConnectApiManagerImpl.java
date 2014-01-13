@@ -23,7 +23,6 @@ import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.connect.AccessTokenService;
 import org.apache.commons.lang.StringUtils;
@@ -85,9 +84,9 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("appid", CommonConstant.SGPP_DEFAULT_CLIENTID);
         requestModel.addParam("provider", providerStr);
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
-        int expires = (int) DateAndNumTimesConstant.THREE_MONTH;
+        long expires = DateAndNumTimesConstant.THREE_MONTH;
         if (oAuthTokenVO.getExpiresIn() != 0) {
-            expires = (int) oAuthTokenVO.getExpiresIn();
+            expires = oAuthTokenVO.getExpiresIn();
             requestModel.addParam("expires_in", expires);  // 搜狐wiki里expires_in必须为int型
         } else {
             requestModel.addParam("expires_in", (int) DateAndNumTimesConstant.THREE_MONTH);
@@ -113,11 +112,10 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         if ("0".equals(map.get("status"))) {
             result.setSuccess(true);
             String userid = map.get("userid").toString();
-            String token = map.get("token").toString();
             result.setDefaultModel("userid", userid);
-            result.setDefaultModel("token", token);
+            result.setDefaultModel("token", map.get("token").toString());
             result.setDefaultModel("uniqname", map.get("uniqname"));
-            accessTokenService.initialOrUpdateAccessToken(userid, token, expires);
+            accessTokenService.initialOrUpdateAccessToken(userid, oAuthTokenVO.getAccessToken(), expires);
 
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -142,7 +140,6 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
             if (!StringUtils.isBlank(cacheAccesstoken)) {
                 return buildSuccResult(userid, cacheAccesstoken);
             }
-
             //如果是post请求，原方法
             RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_QQ_LIGHT_USER_INFO);
             requestModelJSON.addParams(baseOpenApiParams);
@@ -156,9 +153,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
                     //更新缓存
                     Map<String, String> accessTokenMap = (Map<String, String>) map.get("result");
                     String resAccessToken = accessTokenMap.get("access_token").toString();
-                    Integer expire = new Integer(String.valueOf(accessTokenMap.get("expires_in")));
-//                    int expire = Integer.parseInt(expireStr);
-                    accessTokenService.initialOrUpdateAccessToken(userid, resAccessToken, expire);
+                    accessTokenService.initialOrUpdateAccessToken(userid, resAccessToken, DateAndNumTimesConstant.TIME_ONEDAY);
                 }
                 Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
                 result.setCode(entry.getKey());
