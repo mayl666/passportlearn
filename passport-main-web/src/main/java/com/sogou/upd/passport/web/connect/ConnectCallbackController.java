@@ -96,7 +96,8 @@ public class ConnectCallbackController extends BaseConnectController {
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
                     String refnick =  (String)result.getModels().get("refnick");
-                    String creeateSSOCookieUrl = commonManager.buildCreateSSOCookieUrl(domain, clientId,passportId,"",refnick,ru, getIp(req));
+                    //uniqname： 对qq导航应用，传qq昵称
+                    String creeateSSOCookieUrl = commonManager.buildCreateSSOCookieUrl(domain, clientId,passportId,refnick,refnick,ru, getIp(req));
                     res.sendRedirect(creeateSSOCookieUrl);
                 } else {
                     res.sendRedirect(ru);
