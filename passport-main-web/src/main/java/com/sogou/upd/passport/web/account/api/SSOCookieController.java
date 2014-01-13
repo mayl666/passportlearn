@@ -101,12 +101,10 @@ public class SSOCookieController extends BaseController {
             return result.toString();
         }
         String domain = ssoClearCookieParams.getDomain();
-
-
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGRDIG, domain);
 
-        //用于记录log
+        //记录log
         String ru = ssoClearCookieParams.getRu();
         UserOperationLog userOperationLog = new UserOperationLog("sso_logout", "", "0", getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
