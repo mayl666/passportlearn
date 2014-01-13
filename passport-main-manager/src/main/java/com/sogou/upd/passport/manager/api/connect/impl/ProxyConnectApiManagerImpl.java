@@ -51,7 +51,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     private AccessTokenService accessTokenService;
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip,String httpOrHttps) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
         String providerStr = AccountTypeEnum.getProviderStr(provider);
 
         Map params = Maps.newHashMap();
@@ -85,12 +85,12 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         requestModel.addParam("appid", CommonConstant.SGPP_DEFAULT_CLIENTID);
         requestModel.addParam("provider", providerStr);
         requestModel.addParam("access_token", oAuthTokenVO.getAccessToken());
-        int expires = (int)DateAndNumTimesConstant.THREE_MONTH;
-        if(oAuthTokenVO.getExpiresIn() != 0){
+        int expires = (int) DateAndNumTimesConstant.THREE_MONTH;
+        if (oAuthTokenVO.getExpiresIn() != 0) {
             expires = (int) oAuthTokenVO.getExpiresIn();
-            requestModel.addParam("expires_in",expires);  // 搜狐wiki里expires_in必须为int型
-        }else{
-            requestModel.addParam("expires_in", (int)DateAndNumTimesConstant.THREE_MONTH);
+            requestModel.addParam("expires_in", expires);  // 搜狐wiki里expires_in必须为int型
+        } else {
+            requestModel.addParam("expires_in", (int) DateAndNumTimesConstant.THREE_MONTH);
         }
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getRefreshToken())) {
             requestModel.addParam(OAuth.OAUTH_REFRESH_TOKEN, oAuthTokenVO.getRefreshToken());
@@ -112,12 +112,12 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         if ("0".equals(map.get("status"))) {
             result.setSuccess(true);
-            String userid =  map.get("userid").toString();
-            String token =   map.get("token").toString();
-            result.setDefaultModel("userid",userid);
-            result.setDefaultModel("token",token);
+            String userid = map.get("userid").toString();
+            String token = map.get("token").toString();
+            result.setDefaultModel("userid", userid);
+            result.setDefaultModel("token", token);
             result.setDefaultModel("uniqname", map.get("uniqname"));
-            accessTokenService.initialOrUpdateAccessToken(userid,token,expires);
+            accessTokenService.initialOrUpdateAccessToken(userid, token, expires);
 
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -139,8 +139,8 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         try {
             String userid = baseOpenApiParams.getUserid();
             String cacheAccesstoken = accessTokenService.getAccessToken(userid);
-            if(!StringUtils.isBlank(cacheAccesstoken)){
-                return buildSuccResult(userid,cacheAccesstoken);
+            if (!StringUtils.isBlank(cacheAccesstoken)) {
+                return buildSuccResult(userid, cacheAccesstoken);
             }
 
             //如果是post请求，原方法
@@ -154,11 +154,11 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
                 if ("0".equals(status)) {
                     result.setSuccess(true);
                     //更新缓存
-                    Map<String, String> accessTokenMap = (Map<String, String>)map.get("result");
+                    Map<String, String> accessTokenMap = (Map<String, String>) map.get("result");
                     String resAccessToken = accessTokenMap.get("access_token").toString();
-                    Integer expire =  new Integer(String.valueOf(accessTokenMap.get("expires_in")));
+                    Integer expire = new Integer(String.valueOf(accessTokenMap.get("expires_in")));
 //                    int expire = Integer.parseInt(expireStr);
-                    accessTokenService.initialOrUpdateAccessToken(userid,resAccessToken,expire);
+                    accessTokenService.initialOrUpdateAccessToken(userid, resAccessToken, expire);
                 }
                 Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
                 result.setCode(entry.getKey());
@@ -173,7 +173,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         return result;
     }
 
-    private Result buildSuccResult(String userid,String accesstoken) {
+    private Result buildSuccResult(String userid, String accesstoken) {
         Result obtainTokenResult = new APIResultSupport(true);
         Map<String, Object> data = Maps.newHashMap();
         Map<String, Object> result_value_data = Maps.newHashMap();
@@ -187,11 +187,11 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         return obtainTokenResult;
     }
 
-    private String getOpenId(String userid){
-        if (StringUtils.isBlank(userid)){
+    private String getOpenId(String userid) {
+        if (StringUtils.isBlank(userid)) {
             return null;
         }
-        return userid.substring(0,userid.indexOf("@"));
+        return userid.substring(0, userid.indexOf("@"));
     }
 
     public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {
