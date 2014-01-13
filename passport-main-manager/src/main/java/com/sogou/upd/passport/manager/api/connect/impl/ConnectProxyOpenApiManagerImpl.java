@@ -10,7 +10,6 @@ import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectProxyOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectResultContext;
-import com.sogou.upd.passport.manager.api.connect.proxy.ConnectParamsAdaptor;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -50,8 +49,6 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             String platform = str[1];  //QQ第三方接口所在的平台
             //封装第三方开放平台需要的参数
             HashMap<String, Object> sigMap = buildConnectParams(tokenMap, paramsMap, apiUrl);
-            ConnectParamsAdaptor adaptor = new ConnectParamsAdaptor();
-            adaptor.buildCommonParams(sgUrl,tokenMap,paramsMap);
             String protocol = CommonConstant.HTTPS;
             String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             QQHttpClient qqHttpClient = new QQHttpClient();
