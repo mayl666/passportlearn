@@ -37,6 +37,7 @@ public class MailConnectProxyResultStrategy extends AbstractConnectProxyResultSt
                     if (!CollectionUtils.isEmpty(emailList)) {
                         HashMap<String, Object> mail = (HashMap<String, Object>) emailList.get(i);
                         if (!CollectionUtils.isEmpty(mail)) {
+                            result.setCode("0");
                             result.setSuccess(true);
                             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SUCCESS));
                             item = super.convertToFormatMap(mail);

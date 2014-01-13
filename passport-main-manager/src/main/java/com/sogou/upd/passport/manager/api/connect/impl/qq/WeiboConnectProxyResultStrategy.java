@@ -30,6 +30,7 @@ public class WeiboConnectProxyResultStrategy extends AbstractConnectProxyResultS
                 HashMap<String, Object> data;
                 HashMap<String, Object> mapsWeibo = (HashMap<String, Object>) maps.get("data");
                 if (!CollectionUtils.isEmpty(mapsWeibo)) {
+                    result.setCode("0");
                     result.setSuccess(true);
                     result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SUCCESS));
                     data = super.convertToFormatMap(mapsWeibo);

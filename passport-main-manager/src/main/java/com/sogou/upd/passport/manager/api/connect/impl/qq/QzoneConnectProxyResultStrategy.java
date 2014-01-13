@@ -31,6 +31,7 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
             //QQ空间未读数结果封装
             String ret = maps.get("ret").toString();
             if (ret.equals(ErrorUtil.SUCCESS)) {
+                result.setCode("0");
                 result.setSuccess(true);
                 result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SUCCESS));
                 data = convertToFormatMap(maps);
