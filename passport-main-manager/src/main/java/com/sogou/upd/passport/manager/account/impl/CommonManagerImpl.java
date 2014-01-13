@@ -187,7 +187,7 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public String buildCreateSSOCookieUrl(String domain, String passportId, String ru, String ip) {
+    public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip) {
         StringBuilder urlBuilder = new StringBuilder();
         String daohangDomain = ConnectDomainEnum.DAOHANG.toString();
         String haoDomain = ConnectDomainEnum.HAO.toString();
@@ -200,28 +200,21 @@ public class CommonManagerImpl implements CommonManager {
             return null;
         }
 
-        int client_id = CommonConstant.SGPP_DEFAULT_CLIENTID;
-        CookieApiParams cookieApiParams = new CookieApiParams();
-        cookieApiParams.setUserid(passportId);
-        cookieApiParams.setClient_id(client_id);
-        cookieApiParams.setRu(ru);
-        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-        cookieApiParams.setPersistentcookie(String.valueOf(1));
-        cookieApiParams.setIp(ip);
+        CookieApiParams cookieApiParams = new CookieApiParams(passportId, client_id, ru,ip, uniqname, refnick);
         Result getCookieValueResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
         if (!getCookieValueResult.isSuccess()) {
             return null;
         }
-        String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-        String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+        String sginf = (String) getCookieValueResult.getModels().get("sginf");
+        String sgrdig = (String) getCookieValueResult.getModels().get("sgrdig");
 
-        String cookieData[] = ppinf.split("\\" + CommonConstant.SEPARATOR_1);
+        String cookieData[] = sginf.split("\\" + CommonConstant.SEPARATOR_1);
         String createtime = cookieData[1];
         long ct = new Long(createtime);
-        String code1 = getCode(ppinf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
-        String code2 = getCode(pprdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
-        urlBuilder.append("&sginf=").append(ppinf)
-                .append("&sgrdig=").append(pprdig)
+        String code1 = getCode(sginf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
+        String code2 = getCode(sgrdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
+        urlBuilder.append("&sginf=").append(sginf)
+                .append("&sgrdig=").append(sgrdig)
                 .append("&code1=").append(code1)
                 .append("&code2=").append(code2)
                 .append("&ru=").append(Coder.encodeUTF8(ru));
