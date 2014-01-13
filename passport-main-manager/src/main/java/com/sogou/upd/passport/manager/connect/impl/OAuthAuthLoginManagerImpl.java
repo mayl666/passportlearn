@@ -293,7 +293,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
-
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(userId);
                     String sgid=null;
@@ -311,6 +310,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
+                    result.setDefaultModel("refnick", uniqname);
+
                 }
             } else {
                 result = buildErrorResult(type, ru, connectAccountResult.getCode(), ErrorUtil.ERR_CODE_MSG_MAP.get(connectAccountResult.getCode()));
