@@ -19,7 +19,7 @@ public interface AccessTokenService {
      * @return
      * @throws ServiceException
      */
-    public boolean initialOrUpdateAccessToken(String userid,String Accesstoken,int expire) throws ServiceException;
+    public boolean initialOrUpdateAccessToken(String userid,String Accesstoken,long expire) throws ServiceException;
 
     /**
      * 通过userid获取accesstoken
