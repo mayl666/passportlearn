@@ -101,8 +101,8 @@ public class SSOCookieController extends BaseController {
         String domain = ssoClearCookieParams.getDomain();
 
 
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF, domain);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG, domain);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGRDIG, domain);
 
         //用于记录log
         String ru = ssoClearCookieParams.getRu();

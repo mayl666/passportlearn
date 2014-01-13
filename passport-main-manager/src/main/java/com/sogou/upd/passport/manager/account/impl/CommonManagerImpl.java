@@ -182,8 +182,8 @@ public class CommonManagerImpl implements CommonManager {
 
     @Override
     public void setSSOCookie(HttpServletResponse response, String sginf, String sgrdig, String domain, int maxAge) {
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, sginf, maxAge, domain);
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPRDIG, sgrdig, maxAge, domain);
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGINF, sginf, maxAge, domain);
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGRDIG, sgrdig, maxAge, domain);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class CommonManagerImpl implements CommonManager {
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
-        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+        Result getCookieValueResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
         if (!getCookieValueResult.isSuccess()) {
             return null;
         }
