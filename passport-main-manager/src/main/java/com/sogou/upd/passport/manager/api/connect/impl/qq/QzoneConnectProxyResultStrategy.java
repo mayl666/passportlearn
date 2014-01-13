@@ -23,7 +23,7 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
         if (maps.containsKey("ret") && !maps.get("ret").toString().equals(ErrorUtil.SUCCESS)) {
-            result.setCode(maps.get("ret").toString());
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             result.setMessage((String) maps.get("msg"));
         } else {
             //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装

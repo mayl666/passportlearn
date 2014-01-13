@@ -25,7 +25,7 @@ public class MailConnectProxyResultStrategy extends AbstractConnectProxyResultSt
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
         if (maps.containsKey("ret") && !maps.get("ret").toString().equals(ErrorUtil.SUCCESS)) {
-            result.setCode(maps.get("ret").toString());
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             result.setMessage((String) maps.get("msg"));
         } else {
             if (maps.containsKey("result")) {
