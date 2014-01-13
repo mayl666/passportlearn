@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -11,8 +10,6 @@ import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.form.SSOSupportDomainEnum;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -23,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,8 +49,8 @@ public class SSOCookieController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
         String domain = ssoCookieParams.getDomain();
+        String ru = ssoCookieParams.getRu();
         //验证code
         String sginf = ssoCookieParams.getSginf();
         String sgrdig = ssoCookieParams.getSgrdig();
@@ -68,22 +62,30 @@ public class SSOCookieController extends BaseController {
         boolean code1Res = commonManager.isCodeRight(sginf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode1());
         if (!code1Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
             return result.toString();
         }
         boolean code2Res = commonManager.isCodeRight(sgrdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode2());
         if (!code2Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
             return result.toString();
         }
-
         int maxAge = getMaxAge(et);
-
         commonManager.setSSOCookie(response, ssoCookieParams.getSginf(), ssoCookieParams.getSgrdig(), domain, maxAge);
-        String ru = ssoCookieParams.getRu();
         if (!StringUtils.isBlank(ru)) {
             response.sendRedirect(ru);
         }
+        log(request,ru,"0");
         return "";
+    }
+
+    private void log(HttpServletRequest request,String ru,String resultCode){
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog("sso_setcookie", request.getRequestURI(), "", resultCode, getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        userOperationLog.putOtherMessage("ru", ru);
+        UserOperationLogUtil.log(userOperationLog);
     }
 
     @RequestMapping(value = "/sso/logout_redirect", method = RequestMethod.GET)
@@ -106,9 +108,8 @@ public class SSOCookieController extends BaseController {
 
         //用于记录log
         String ru = ssoClearCookieParams.getRu();
-        UserOperationLog userOperationLog = new UserOperationLog("qq_logout", "", "0", getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLog userOperationLog = new UserOperationLog("sso_logout", "", "0", getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
         UserOperationLogUtil.log(userOperationLog);
 
