@@ -59,8 +59,8 @@ public class OpenApiControllerTest extends BaseActionTest {
     @Test
     public void testQzoneConnectProxyOpenApi() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        String userid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
-        String openid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
+        String userid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        String openid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
         int clientId = 1120;
         String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
         long ct = System.currentTimeMillis();
@@ -84,8 +84,8 @@ public class OpenApiControllerTest extends BaseActionTest {
     @Test
     public void testWeiboConnectProxyOpenApi() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        String userid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
-        String openid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
+        String userid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        String openid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
         int clientId = 1120;
         String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
         long ct = System.currentTimeMillis();
@@ -109,8 +109,8 @@ public class OpenApiControllerTest extends BaseActionTest {
     @Test
     public void testMailConnectProxyOpenApi() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        String userid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
-        String openid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
+        String userid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        String openid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
         int clientId = 1120;
         String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
         long ct = System.currentTimeMillis();
