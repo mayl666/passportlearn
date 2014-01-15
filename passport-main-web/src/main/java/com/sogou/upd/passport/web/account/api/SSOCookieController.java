@@ -65,12 +65,14 @@ public class SSOCookieController extends BaseController {
         boolean code1Res = commonManager.isCodeRight(sginf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode1());
         if (!code1Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
             return returnErrMsg(response,ru,result.getCode(),result.getMessage());
         }
         boolean code2Res = commonManager.isCodeRight(sgrdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode2());
         if (!code2Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
             return returnErrMsg(response, ru,result.getCode(), result.getMessage());
         }
