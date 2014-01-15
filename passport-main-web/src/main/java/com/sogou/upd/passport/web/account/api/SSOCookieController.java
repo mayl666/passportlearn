@@ -47,7 +47,7 @@ public class SSOCookieController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return returnErrMsg(response,ssoCookieParams.getRu(),result.getMessage());
         }
         String domain = ssoCookieParams.getDomain();
         String ru = ssoCookieParams.getRu();
@@ -63,13 +63,13 @@ public class SSOCookieController extends BaseController {
         if (!code1Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
-            return result.toString();
+            return returnErrMsg(response,ru,result.getMessage());
         }
         boolean code2Res = commonManager.isCodeRight(sgrdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode2());
         if (!code2Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
-            return result.toString();
+            return returnErrMsg(response,ru,result.getMessage());
         }
         int maxAge = getMaxAge(et);
         commonManager.setSSOCookie(response, ssoCookieParams.getSginf(), ssoCookieParams.getSgrdig(), domain, maxAge);
@@ -78,6 +78,14 @@ public class SSOCookieController extends BaseController {
         }
         log(request,ru,"0");
         return "";
+    }
+
+    private String returnErrMsg(HttpServletResponse response, String ru,String errMsg)throws Exception{
+        if (!Strings.isNullOrEmpty(ru)){
+            response.sendRedirect(ru + "?errorMsg="+errMsg);
+            return "";
+        }
+        return errMsg;
     }
 
     private void log(HttpServletRequest request,String ru,String resultCode){
@@ -98,7 +106,7 @@ public class SSOCookieController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result.toString();
+            return returnErrMsg(response,ssoClearCookieParams.getRu(),result.getMessage());
         }
         String domain = ssoClearCookieParams.getDomain();
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);

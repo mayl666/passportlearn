@@ -45,7 +45,7 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testGetCookieInfo() {
-        String userid = "shipengzhi1986@sogou.com";
+        String userid = "31680D6A6A65D32BF1E929677E78DE29@qq.sohu.com";
         int client_id = 1120;
 //        String uniqname = "跳刀的兔子";
         String refnick = "跳刀的兔子";

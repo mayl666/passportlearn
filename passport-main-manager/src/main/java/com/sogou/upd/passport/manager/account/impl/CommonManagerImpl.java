@@ -193,9 +193,9 @@ public class CommonManagerImpl implements CommonManager {
         String haoDomain = ConnectDomainEnum.HAO.toString();
 
         if (domain.equals(daohangDomain)) {
-            urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=.").append(daohangDomain);
+            urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=").append(daohangDomain);
         } else if (domain.equals(haoDomain)) {
-            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL).append("?domain=.").append(haoDomain);
+            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL).append("?domain=").append(haoDomain);
         } else {
             return null;
         }
