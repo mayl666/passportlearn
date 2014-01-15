@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.form;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -44,6 +45,7 @@ public class WapLoginParams {
 
 
     @NotBlank(message = "v is null")
+    @V
     private String v = WapConstant.WAP_COLOR;//wap版本:1-简易版；2-炫彩版；5-触屏版
 
     public String getRu() {
