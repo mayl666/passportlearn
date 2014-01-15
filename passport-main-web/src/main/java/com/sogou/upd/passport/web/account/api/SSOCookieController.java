@@ -38,6 +38,8 @@ public class SSOCookieController extends BaseController {
     @Autowired
     private CommonManager commonManager;
 
+    private static final String DEFAULT_URL = "https://account.sogou.com";
+
     @RequestMapping(value = "/sso/setcookie", method = RequestMethod.GET)
     @ResponseBody
     public Object setcookie(HttpServletRequest request, HttpServletResponse response, SSOCookieParams ssoCookieParams) throws Exception {
@@ -84,8 +86,10 @@ public class SSOCookieController extends BaseController {
         if (!Strings.isNullOrEmpty(ru)){
             response.sendRedirect(ru + "?errorMsg="+errMsg);
             return "";
+        }else {
+            response.sendRedirect(DEFAULT_URL + "?errorMsg="+errMsg);
+            return "";
         }
-        return errMsg;
     }
 
     private void log(HttpServletRequest request,String ru,String resultCode){
