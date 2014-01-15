@@ -114,7 +114,7 @@ public class ConnectCallbackController extends BaseConnectController {
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 return viewUrl;
             } else {
-                res.sendRedirect(viewUrl);
+                res.sendRedirect(viewUrl+"?errorCode="+result.getCode()+"&errorMsg="+ Coder.encodeUTF8(result.getMessage()));
                 return "empty";
             }
         }
