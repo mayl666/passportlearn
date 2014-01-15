@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class BaseTest extends AbstractJUnit4SpringContextTests {
-    protected static final String userid = "544B9E9B4D9AF36FF68DCBC2F1B29CAB@qq.sohu.com";
+    protected static final String userid = "4e1ca6c7999d5898306a243fc3da1e8f";
 
     protected static final String password = "testtest1";
 

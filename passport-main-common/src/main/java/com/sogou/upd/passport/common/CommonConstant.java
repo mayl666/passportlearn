@@ -15,7 +15,7 @@ public class CommonConstant {
 
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
-    public static final int BROWSER_CLIENTID = 1065; //浏览器输入法桌面端client_id
+    public static final int WAN_CLIENTID = 1100; //游戏client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
     public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
@@ -32,8 +32,10 @@ public class CommonConstant {
     public static final String HTTPS = "https";//https请求方式
     public static final String CONNECT_METHOD_GET = "get";//method=get请求方式
     public static final String CONNECT_METHOD_POST = "post";//method=post请求方式
-    public static final String QQ_SERVER_IP = "119.147.19.43";         //测试环境ip：
-    public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //正式环境可以使用域名
+    public static final String QQ_SERVER_IP = "119.147.19.43";         //QQ测试环境ip：
+    public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //QQ正式环境可以使用域名，http的，需要sig签名
+    public static final String QQ_SERVER_NAME_GRAPH = "graph.qq.com";   //QQ https请求域名，不需要sig签名
+    public static final String QQ_SERVER_NAME_OPENMOBILE = "openmobile.qq.com"; //QQ https请求域名，不需要sig签名
 
     public static final String CLIENT_ID = "client_id";
     public static final String APP_ID = "appid";
@@ -61,7 +63,12 @@ public class CommonConstant {
 
     public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
 
+    public static final String HAO_CREATE_COOKIE_URL = "http://account.hao.qq.com/sso/setcookie";
+    public static final String DAOHANG_CREATE_COOKIE_URL = "http://account.daohang.qq.com/sso/setcookie";
+
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
+    public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
+    public static final long COOKIE_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
 
     //=============缓存相关配置项====================
 //	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time
@@ -70,6 +77,14 @@ public class CommonConstant {
     public static final String STOPWATCH = "stopWatch";
 
     public static boolean IS_USE_IEBBS_UNIQNAME = true;
+
+    public static final String HTTPS_HEADER = "X-Https";
+    public static final String HTTPS_VALUE = "https";
+
+    public static final String RESQUEST_USERNAME = "username";
+    public static final String RESQUEST_USERID = "userid";
+
+
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

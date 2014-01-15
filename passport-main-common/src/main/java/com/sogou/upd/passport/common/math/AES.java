@@ -58,6 +58,15 @@ public class AES {
         return decryptedValue;
     }
 
+    public static byte[] decrypt(byte[] data, String key) throws Exception {
+        Key k = new SecretKeySpec(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET), KEY_ALGORITHM);
+        byte[] raw = k.getEncoded();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(raw, KEY_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(KEY_ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+        return cipher.doFinal(data);
+    }
+
     public static String decryptURLSafeStringBase64(String encryptedData, String secKey) throws Exception {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);

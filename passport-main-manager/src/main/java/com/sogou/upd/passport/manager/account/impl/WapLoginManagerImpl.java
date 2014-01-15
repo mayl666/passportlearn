@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -65,7 +66,12 @@ public class WapLoginManagerImpl implements WapLoginManager {
         Result result = new APIResultSupport(false);
         String username = loginParams.getUsername();
         String password = loginParams.getPassword();
-        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+
+        //简易版 炫彩版 需要md5加密
+        String v=loginParams.getV();
+        if(!v.equals(WapConstant.WAP_TOUCH)){
+            password = DigestUtils.md5Hex(password.getBytes());
+        }
         String passportId = username;
         try {
             //验证验证码
@@ -73,18 +79,16 @@ public class WapLoginManagerImpl implements WapLoginManager {
             if (!result.isSuccess()) {
                 return result;
             }
-            result = loginManager.authUser(username, ip, pwdMD5);
+            result = loginManager.authUser(username, ip, password);
             if (result.isSuccess()) {
-//                String userId = result.getModels().get("userid").toString();
-//                String token = wapTokenService.saveWapToken(userId);
-//                result.setDefaultModel("token", token);
                 //写session 数据库
                 Result sessionResult = sessionServerManager.createSession(passportId);
                 String sgid=null;
                 if(sessionResult.isSuccess()){
                     sgid= (String) sessionResult.getModels().get("sgid");
+                    result.getModels().put("userid",result.getModels().get("userid").toString());
                     if (!Strings.isNullOrEmpty(sgid)) {
-                        result.setDefaultModel("sgid", sgid);
+                        result.getModels().put("sgid", sgid);
                     }
                 }
             }
@@ -128,12 +132,12 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result passThroughQQ(String sgid,String accessToken,String openId,String ip,String expires_in) {
+    public Result passThroughQQ(int client_id,String sgid,String accessToken,String openId,String ip,String expires_in) {
         Result result = new APIResultSupport(false);
         try {
             //根据获取第三方个人资料验证token的有效性
             int provider = AccountTypeEnum.QQ.getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
 
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);

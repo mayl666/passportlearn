@@ -39,6 +39,7 @@ public interface LoginApiManager {
 
     /**
      * 获取cookie值，包括ppinf、pprdig、passport
+     * 并且返回种搜狗域cookie的重定向url
      * 只有浏览器老版本PC端才会用到passport
      *
      * @param createCookieUrlApiParams
@@ -47,10 +48,11 @@ public interface LoginApiManager {
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams);
 
     /**
-     * 获取sohu生成的cookie值，包括ppinf,pprdig
-     *
+     * 生成的cookie值
+     * sohu的是通过搜狐内部接口getcookieinfo获取ppinf和pprdig
+     * sogou的是自己生成sginf和sgrdig
      * @param cookieApiParams
      * @return
      */
-    public Result getSHCookieValue(CookieApiParams cookieApiParams);
+    public Result getCookieInfo(CookieApiParams cookieApiParams);
 }

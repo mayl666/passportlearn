@@ -102,4 +102,34 @@ public interface CommonManager {
      */
     public Result setCookie(HttpServletResponse response,String passportId,int client_id,String ip,int sogouMaxAge,String sogouRu,int sohuAutoLogin,String sohuRu);
 
+    /**
+     * 种导航qq域下cookie
+     * @param response
+     * @param sginf
+     * @param sgrdig
+     * @param domain
+     * @param maxAge
+     */
+    public void setSSOCookie(HttpServletResponse response, String sginf, String sgrdig, String domain, int maxAge);
+
+    /**
+     * 检验code是否正确
+     * @param firstStr
+     * @param clientId
+     * @param ct
+     * @param originalCode
+     * @return
+     */
+    public boolean isCodeRight(String firstStr,int clientId,long ct,String originalCode);
+
+    /**
+     * 创建种sso cookie的URL
+     * @param domain
+     * @param passportId
+     * @param ru
+     * @param ip
+     * @return
+     */
+    public String buildCreateSSOCookieUrl(String domain, String passportId, String ru, String ip);
+
 }

@@ -174,7 +174,7 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    private static HttpEntity executePrivate(RequestModel requestModel) {
+    protected static HttpEntity executePrivate(RequestModel requestModel) {
         if (requestModel == null) {
             throw new NullPointerException("requestModel 不能为空");
         }
@@ -208,7 +208,7 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    private static HttpRequestBase getHttpRequest(RequestModel requestModel) {
+    protected static HttpRequestBase getHttpRequest(RequestModel requestModel) {
 
         HttpRequestBase httpRequest = null;
         HttpMethodEnum method = requestModel.getHttpMethodEnum();

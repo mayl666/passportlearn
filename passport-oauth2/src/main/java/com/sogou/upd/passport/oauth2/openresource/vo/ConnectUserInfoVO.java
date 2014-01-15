@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.oauth2.openresource.vo;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -16,6 +18,8 @@ public class ConnectUserInfoVO {
     public String province; // 省
     public String city; // 市
     public String region; // 区
+
+    public Map<String, Object> original;//第三方返回的原始json串
 
     public String getNickname() {
         return nickname;
@@ -71,5 +75,13 @@ public class ConnectUserInfoVO {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public Map<String, Object> getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(Map<String, Object> original) {
+        this.original = original;
     }
 }

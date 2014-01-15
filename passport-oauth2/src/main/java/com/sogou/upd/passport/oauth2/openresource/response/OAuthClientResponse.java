@@ -71,4 +71,11 @@ public abstract class OAuthClientResponse {
         return body;
     }
 
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
 }

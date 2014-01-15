@@ -48,6 +48,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         String userId = authUserParameters.getUserid();
+        userId = AccountDomainEnum.getInternalCase(userId);
+        authUserParameters.setUserid(userId);
+
         if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
             userId = userId + "@sogou.com";
             authUserParameters.setUserid(userId);
@@ -113,7 +116,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result getSHCookieValue(CookieApiParams cookieApiParams){
+    public Result getCookieInfo(CookieApiParams cookieApiParams){
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(cookieApiParams);
         requestModelXml.getParams().put("result_type","json");       //sohu 传 xml参数，返回json

@@ -86,12 +86,13 @@ public class Coder {
 
     /**
      * 解码base64
+     *
      * @param key
      * @return
      */
-    public  static String decodeBASE64(String key){
-        byte[] bytes= Base64.decodeBase64(key);
-        return  new String(bytes);
+    public static String decodeBASE64(String key) {
+        byte[] bytes = Base64.decodeBase64(key);
+        return new String(bytes);
     }
 
 
@@ -113,8 +114,30 @@ public class Coder {
      * @return
      * @throws Exception
      */
+    public static String encryptBase64URLSafeString(String key) throws Exception {
+        return Base64.encodeBase64URLSafeString(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+    }
+
+    /**
+     * BASE64加密
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
     public static String encryptBase64(String key) throws UnsupportedEncodingException {
         return Base64.encodeBase64String(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+    }
+
+    /**
+     * BASE64加密
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public static String encryptBase64(byte[] key) throws UnsupportedEncodingException {
+        return Base64.encodeBase64String(key);
     }
 
     /**

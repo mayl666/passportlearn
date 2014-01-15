@@ -3,6 +3,7 @@ package com.sogou.upd.passport.oauth2.openresource.http;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
+import com.sogou.upd.passport.common.utils.ConnectHttpClient;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -28,7 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class HttpClient4 extends SGHttpClient {
+public class HttpClient4 extends ConnectHttpClient {
 
     private static final Logger log = LoggerFactory.getLogger(HttpClient4.class);
 
@@ -40,10 +41,12 @@ public class HttpClient4 extends SGHttpClient {
 
         InputStream in = null;
         //性能分析
-//        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         URI location;
+        String url="";
         try {
             location = new URI(request.getLocationUri());
+            url= request.getLocationUri();
         } catch (URISyntaxException e) {
             // URL表达式错误
             log.error("[HttpClient4] URL syntax error :", e);
@@ -59,6 +62,9 @@ public class HttpClient4 extends SGHttpClient {
                 ((HttpPost) req).setEntity(entity);
             } else {
                 req = new HttpGet(location);
+                if(url.indexOf("?") >0){
+                    url = url.substring(0,url.indexOf("?"));
+                }
             }
             if (headers != null && !headers.isEmpty()) {
                 for (Map.Entry<String, String> header : headers.entrySet()) {
@@ -78,15 +84,15 @@ public class HttpClient4 extends SGHttpClient {
             if (contentTypeHeader != null) {
                 contentType = contentTypeHeader.toString();
             }
-//            stopWatch(stopWatch, location.getPath(), "success");
+            stopWatch(stopWatch, url, "success");
             return OAuthClientResponseFactory.createCustomResponse(responseBody, contentType, response.getStatusLine()
                     .getStatusCode(), responseClass);
         } catch (OAuthProblemException e) {
-//            stopWatch(stopWatch, location.getPath(), "failed");
+            stopWatch(stopWatch, url, "failed");
             throw e;
         } catch (Exception e) {
             log.error("[HttpClient4] Execute Http Request Exception!", e);
-//            stopWatch(stopWatch, location.getPath(), "failed");
+            stopWatch(stopWatch, url, "failed");
             throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
         } finally {
             if (in != null) {
@@ -94,7 +100,7 @@ public class HttpClient4 extends SGHttpClient {
                     in.close();
                 } catch (IOException e) {
                     log.error("[HttpClient4] Close input stream IOException!", e);
-//                    stopWatch(stopWatch, location.getPath(), "failed");
+                    stopWatch(stopWatch, url, "failed");
                     throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
                 }
             }
