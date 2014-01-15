@@ -280,6 +280,14 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_NOT_SUPPORTED = "30017";
     // 透传失败
     public static final String ERR_CODE_CONNECT_PASSTHROUGH = "30018";
+
+    //第三方开放平台接口格式有误
+    public static final String ERR_CODE_CONNECT_INTERFACE = "30019";
+    //不支持指定编码以及不支持指定的加密方法
+    public static final String ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR = "30020";
+    //第三方API调用失败
+    public static final String ERR_CODE_CONNECT_FAILED = "30026";
+
     //找不到access_token
     public static final String ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND = "30021";
     //access_token过期
