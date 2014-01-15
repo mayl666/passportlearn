@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -49,7 +50,7 @@ public class SSOCookieController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return returnErrMsg(response,ssoCookieParams.getRu(),result.getMessage());
+            return returnErrMsg(response,ssoCookieParams.getRu(),result.getCode(),result.getMessage());
         }
         String domain = ssoCookieParams.getDomain();
         String ru = ssoCookieParams.getRu();
@@ -65,13 +66,13 @@ public class SSOCookieController extends BaseController {
         if (!code1Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
-            return returnErrMsg(response,ru,result.getMessage());
+            return returnErrMsg(response,ru,result.getCode(),result.getMessage());
         }
         boolean code2Res = commonManager.isCodeRight(sgrdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode2());
         if (!code2Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             log(request,ru,ErrorUtil.INTERNAL_REQUEST_INVALID);
-            return returnErrMsg(response,ru,result.getMessage());
+            return returnErrMsg(response, ru,result.getCode(), result.getMessage());
         }
         int maxAge = getMaxAge(et);
         commonManager.setSSOCookie(response, ssoCookieParams.getSginf(), ssoCookieParams.getSgrdig(), domain, maxAge);
@@ -82,14 +83,12 @@ public class SSOCookieController extends BaseController {
         return "";
     }
 
-    private String returnErrMsg(HttpServletResponse response, String ru,String errMsg)throws Exception{
-        if (!Strings.isNullOrEmpty(ru)){
-            response.sendRedirect(ru + "?errorMsg="+errMsg);
-            return "";
-        }else {
-            response.sendRedirect(DEFAULT_URL + "?errorMsg="+errMsg);
-            return "";
+    private String returnErrMsg(HttpServletResponse response, String ru,String errorCode,String errorMsg)throws Exception{
+        if (Strings.isNullOrEmpty(ru)){
+            ru = DEFAULT_URL;
         }
+        response.sendRedirect(ru + "?errorCode="+errorCode+"&errorMsg="+ Coder.encodeUTF8(errorMsg));
+        return "";
     }
 
     private void log(HttpServletRequest request,String ru,String resultCode){
@@ -110,7 +109,7 @@ public class SSOCookieController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return returnErrMsg(response,ssoClearCookieParams.getRu(),result.getMessage());
+            return returnErrMsg(response, ssoClearCookieParams.getRu(),result.getCode(), result.getMessage());
         }
         String domain = ssoClearCookieParams.getDomain();
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);
