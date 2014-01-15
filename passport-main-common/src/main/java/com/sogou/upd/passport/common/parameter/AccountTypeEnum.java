@@ -107,7 +107,7 @@ public enum AccountTypeEnum {
         }
 
         if (username.endsWith("@baidu.sohu.com")) {
-            return TAOBAO;
+            return BAIDU;
         }
 
         return UNKNOWN;

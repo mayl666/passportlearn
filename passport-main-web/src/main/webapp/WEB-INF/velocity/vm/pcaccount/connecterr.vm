@@ -2,6 +2,7 @@
 <head><title>SOGOU Passport Connect</title>
     <script>
 //        window.external.passport('result', '1|system_exception');
+        window.external.passport('error', '${error}');
         window.close();
     </script>
 </head>

@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
@@ -68,39 +67,52 @@ public class LoginManagerImpl implements LoginManager {
                     return result;
                 }
             }
-            //校验username是否在账户黑名单中
-            if(isLoginUserInBlackList(username,ip)){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result;
-            }
 
-            passportId =  getIndividPassportIdByUsername(username);
-            //封装参数
-            AuthUserApiParams authUserApiParams = new AuthUserApiParams();
-            authUserApiParams.setUserid(passportId);
-            authUserApiParams.setPassword(pwdMD5);
-            authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-            //根据域名判断是否代理，一期全部走代理
-            if (ManagerHelper.isInvokeProxyApi(passportId)) {
-                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-            } else {
-                result = sgLoginApiManager.webAuthUser(authUserApiParams);
-            }
+            result = authUser(username,ip,pwdMD5);
 
-            //记录返回结果
-            if (result.isSuccess()) {
-                result = commonManager.createCookieUrl(result, passportId,"", loginParameters.getAutoLogin());
-                //设置来源
-                String ru = loginParameters.getRu();
-                if (Strings.isNullOrEmpty(ru)) {
-                    ru = scheme + LOGIN_INDEX_URLSTR;
-                }
-                result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
-            }
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
+        }
+        return result;
+    }
+
+    @Override
+    public Result checkCaptchaVaild(String username, String ip, String clientId,String captchaCode,String token ) {
+        Result result = new APIResultSupport(true);
+        //校验验证码
+        if (needCaptchaCheck(clientId, username, ip)) {
+            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+                logger.info("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                return result;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Result authUser(String username, String ip, String pwdMD5) {
+        //校验username是否在账户黑名单中
+        Result result = new APIResultSupport(false);
+        if (isLoginUserInBlackList(username, ip)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            return result;
+        }
+
+        String passportId = getIndividPassportIdByUsername(username);
+        //封装参数
+        AuthUserApiParams authUserApiParams = new AuthUserApiParams();
+        authUserApiParams.setUserid(passportId);
+        authUserApiParams.setPassword(pwdMD5);
+        authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
+        //根据域名判断是否代理，一期全部走代理
+        if (ManagerHelper.isInvokeProxyApi(passportId)) {
+            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+        } else {
+            result = sgLoginApiManager.webAuthUser(authUserApiParams);
         }
         return result;
     }

@@ -80,13 +80,13 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             }
             long ct = System.currentTimeMillis();
             String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
-            code = Coder.encryptMD5(code);
+            code = Coder.encryptMD5GBK(code);
             String shUrl = SHPPUrlConstant.HTTP_SET_COOKIE;
             if (isHttps) {
                 shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
             }
             RequestModel requestModel = new RequestModel(shUrl);
-            requestModel.addParam("userid", userId);
+            requestModel.addParam("userid",userId);
             requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
             requestModel.addParam("ct", ct);
             requestModel.addParam("code", code);
@@ -113,7 +113,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result getSHCookieValue(CookieApiParams cookieApiParams){
+    public Result getCookieInfo(CookieApiParams cookieApiParams){
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(cookieApiParams);
         requestModelXml.getParams().put("result_type","json");       //sohu 传 xml参数，返回json

@@ -8,6 +8,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 
@@ -61,6 +62,18 @@ public class Coder {
     }
 
     /**
+     * 将参数URLDecoder为UTF-8
+     */
+    public static String decodeUTF8(String params) {
+        try {
+            String de = URLDecoder.decode(params, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            return de;
+        } catch (UnsupportedEncodingException problem) {
+            throw new IllegalArgumentException(problem);
+        }
+    }
+
+    /**
      * BASE64解密
      *
      * @param key
@@ -100,8 +113,30 @@ public class Coder {
      * @return
      * @throws Exception
      */
+    public static String encryptBase64URLSafeString(String key) throws Exception {
+        return Base64.encodeBase64URLSafeString(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+    }
+
+    /**
+     * BASE64加密
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
     public static String encryptBase64(String key) throws UnsupportedEncodingException {
         return Base64.encodeBase64String(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+    }
+
+    /**
+     * BASE64加密
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public static String encryptBase64(byte[] key) throws UnsupportedEncodingException {
+        return Base64.encodeBase64String(key);
     }
 
     /**

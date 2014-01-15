@@ -33,6 +33,10 @@ public class ManagerHelperTest extends BaseTest {
 
     }
 
+    public static void main(String args[]) throws Exception{
+          new ManagerHelperTest().testGeneratorCode();
+    }
+
     /**
      * 测试生成getpairtoken接口中sig参数
      */

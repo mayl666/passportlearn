@@ -38,7 +38,7 @@ public class QQAPIValidator extends AbstractClientValidator {
                 error_code = QQ_OAUTH_ERROR_MAP.get(error_code);
             }
             if (StringUtil.isEmpty(error_code)) {
-                error_code = ErrorUtil.CONNECT_USER_DEFINED_ERROR;
+                error_code = response.getParam(QQOAuthError.ERROR_CODE);
                 errorDesc = response.getParam(QQOAuthError.ERROR_DESCRIPTION);
             }
             throw OAuthProblemException.error(error_code).description(errorDesc);

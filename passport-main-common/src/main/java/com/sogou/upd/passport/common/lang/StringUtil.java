@@ -221,6 +221,27 @@ public class StringUtil {
     }
 
     /**
+     * 昵称不包含特殊字符，只保留 中文、英文大小写字母、空格、-、_
+     */
+    public static boolean isCommonStr(String str) {
+        if (StringUtils.isNotBlank(str)) {
+            str = str.trim();
+            for (int i = 0; i < str.length(); i++) {
+                String ch = String.valueOf(str.charAt(i));
+                boolean isDigest = Pattern.matches("[a-zA-Z0-9_\\-\\s]", ch);
+                if (!isDigest) {
+                    boolean isChinese = Pattern.matches("[\\u4e00-\\u9fa5]", ch);
+                    if (!isChinese) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 检测多个字符串参数中是否含有null或空值串，有则返回false，无则返回true。 不传入参数，则返回false
      */
     public static boolean checkExistNullOrEmpty(String... args) {
@@ -325,6 +346,24 @@ public class StringUtil {
             }
         }
         return false;
+    }
+
+    /**
+     *解决中文乱码问题
+     * @param value
+     * @return
+     */
+    public static String exchangeToUf8(String value) {
+        char[] carr = value.toCharArray();
+        byte[] barr = new byte[carr.length];
+        for (int i = 0; i < carr.length; i++) {
+            barr[i] = (byte) (carr[i]);
+        }
+        try {
+            value = new String(barr, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+        }
+        return value;
     }
 
     public static void main(String[] args) {

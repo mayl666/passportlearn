@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -19,17 +20,17 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequ
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -42,8 +43,6 @@ public class ConnectLoginController extends BaseConnectController {
 
     @Autowired
     private OAuthAuthLoginManager oAuthAuthLoginManager;
-    @Autowired
-    private ConnectApiManager proxyConnectApiManager;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
     @Autowired
@@ -80,52 +79,52 @@ public class ConnectLoginController extends BaseConnectController {
     }
 
     @RequestMapping(value = "/connect/login")
-    public ModelAndView authorize(HttpServletRequest req, HttpServletResponse res,
-                                  ConnectLoginParams connectLoginParams) {
+    @ResponseBody
+    public String authorize(HttpServletRequest req, HttpServletResponse res, ConnectLoginParams connectLoginParams) throws IOException {
 
         // 校验参数
         String url;
         String type = connectLoginParams.getType();
         String ru = connectLoginParams.getRu();
-        String validateResult = ControllerHelper.validateParams(connectLoginParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            url = buildAppErrorRu(type, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-            return new ModelAndView(new RedirectView(url));
-        }
-
         String providerStr = connectLoginParams.getProvider();
-        int provider = AccountTypeEnum.getProvider(providerStr);
-        // 浏览器、输入法的第三方登录转发需兼容appid参数
-        if(!Strings.isNullOrEmpty(connectLoginParams.getAppid()) && Strings.isNullOrEmpty(connectLoginParams.getClient_id())){
-            connectLoginParams.setClient_id(connectLoginParams.getAppid());
-        }
-        int clientId = Integer.parseInt(connectLoginParams.getClient_id());
-        //检查client_id是否存在
-        if (!configureManager.checkAppIsExist(clientId)) {
-            url = buildAppErrorRu(type, ru, ErrorUtil.INVALID_CLIENTID, null);
-            return new ModelAndView(new RedirectView(url));
-        }
-
-        // 防CRSF攻击
-        String uuid = UUID.randomUUID().toString();
+        String httpOrHttps = getProtocol(req);
         try {
-            if (CommonHelper.isIePinyinToken(clientId) || type.equals(ConnectTypeEnum.PC.toString())) {  // 目前只有浏览器走搜狗流程
-                url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
-                writeOAuthStateCookie(res, uuid, providerStr);
-            } else {
-                url = proxyConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req));
+            String validateResult = ControllerHelper.validateParams(connectLoginParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+                res.sendRedirect(url);
+                return "";
             }
+
+            int provider = AccountTypeEnum.getProvider(providerStr);
+            // 浏览器、输入法的第三方登录是搜狐nginx转发过来的，为了避免nginx层解析，所以兼容appid参数
+            if (!Strings.isNullOrEmpty(connectLoginParams.getAppid()) && Strings.isNullOrEmpty(connectLoginParams.getClient_id())) {
+                connectLoginParams.setClient_id(connectLoginParams.getAppid());
+            }
+            int clientId = Integer.parseInt(connectLoginParams.getClient_id());
+            //检查client_id是否存在
+            if (!configureManager.checkAppIsExist(clientId)) {
+                url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
+                res.sendRedirect(url);
+                return "";
+            }
+
+            String uuid = UUID.randomUUID().toString();
+            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
+
+            res.sendRedirect(url);
+            return "";
         } catch (OAuthProblemException e) {
-            url = buildAppErrorRu(type, ru, e.getError(), e.getDescription());
+            url = buildAppErrorRu(type, providerStr, ru, e.getError(), e.getDescription());
+            res.sendRedirect(url);
+            return "";
+        } finally {
+            //用户登陆log--二期迁移到callback中记录log
+            UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
+            userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
+            UserOperationLogUtil.log(userOperationLog);
         }
-
-        //用户登陆log--二期迁移到callback中记录log
-        UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
-        userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
-        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
-        UserOperationLogUtil.log(userOperationLog);
-
-        return new ModelAndView(new RedirectView(url));
     }
 
 }

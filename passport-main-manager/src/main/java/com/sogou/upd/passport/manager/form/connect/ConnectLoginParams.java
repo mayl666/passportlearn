@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
+import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -27,7 +28,7 @@ public class ConnectLoginParams {
     private String client_id; // 应用id
     @Min(0)
     private String appid; // 浏览器和输入法会传1044，这个没让搜狐转发时把参数名改了，搜狗做兼容
-
+    @Ru
     private String ru = "https://account.sogou.com";  // 回调地址
 
     private String display;  // 样式
@@ -35,6 +36,9 @@ public class ConnectLoginParams {
     private String type = "web";     // 应用类型
     private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式
     private String ts;   //终端的实例ID
+
+    private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
+    private String domain;   // qq导航所用，种附加域的cookie
 
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId(){
@@ -63,6 +67,14 @@ public class ConnectLoginParams {
     @AssertTrue(message = "不支持的type")
     private boolean isSupportType() {
         if (type != null && !ConnectTypeEnum.isSupportType(type)) {
+            return false;
+        }
+        return true;
+    }
+
+    @AssertTrue(message = "不支持的domain")
+    private boolean isSupportDomain() {
+        if (domain != null && !ConnectDomainEnum.isSupportDomain(domain)) {
             return false;
         }
         return true;
@@ -97,7 +109,15 @@ public class ConnectLoginParams {
     }
 
     public void setDisplay(String display) {
-        this.display = display;
+        if(Strings.isNullOrEmpty(display)){
+            if(ConnectTypeEnum.WAP.toString().equals(getType())){
+                this.display="mobile";
+            } else {
+                this.display="page";
+            }
+        }else {
+            this.display = display;
+        }
     }
 
     public boolean isForcelogin() {
@@ -138,5 +158,21 @@ public class ConnectLoginParams {
 
     public void setAppid(String appid) {
         this.appid = appid;
+    }
+
+    public String getViewPage() {
+        return viewPage;
+    }
+
+    public void setViewPage(String viewPage) {
+        this.viewPage = viewPage;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 }

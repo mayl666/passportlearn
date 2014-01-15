@@ -1,22 +1,19 @@
 package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
-import com.qq.open.OpenApiV3;
-import com.qq.open.OpensnsException;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
+import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
+import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -34,86 +31,68 @@ import java.util.Set;
 @Component("sgQQLightOpenApiManager")
 public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQLightOpenApiManager {
 
-    /**
-     * 调用sohu接口获取用户的openid和accessToken等信息
-     *
-     * @param baseOpenApiParams
-     * @return
-     */
+    private static final Logger logger = LoggerFactory.getLogger(SGQQLightOpenApiManagerImpl.class);
+
+    @Autowired
+    private ConnectConfigService connectConfigService;
+
     @Override
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
-        Result result = new APIResultSupport(false);
-        //如果是post请求，原方法
-        RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_QQ_LIGHT_USER_INFO_TEST);
-        requestModelJSON.addParams(baseOpenApiParams);
-        requestModelJSON.deleteParams(CommonConstant.CLIENT_ID);
-        this.setDefaultParams(requestModelJSON, baseOpenApiParams.getUserid(), String.valueOf(clientId), clientKey);
-        Map map = SGHttpClient.executeBean(requestModelJSON, HttpTransformat.json, Map.class);
-        if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
-            String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
-            if ("0".equals(status)) {
-                result.setSuccess(true);
-            }
-            Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
-            result.setCode(entry.getKey());
-            result.setMessage(entry.getValue());
-            result.setModels(map);
+    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) throws Exception {
+        String resp;
+        try {
+            //QQ提供的openapi服务器
+            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
+            //应用的基本信息，搜狗在QQ的第三方appid与appkey
+            String userId = qqParams.getUserid();
+            int provider = AccountTypeEnum.getAccountType(userId).getValue();
+            ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+            String sgAppKey = connectConfig.getAppKey();     //搜狗在QQ的appid
+            String sgAppSecret = connectConfig.getAppSecret(); //搜狗在QQ的appkey
+            OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
+            //调用代理第三方接口，点亮或熄灭QQ图标
+            resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
+        } catch (Exception e) {
+            logger.error("Execute Api Is Failed :", e);
+            throw new Exception("Execute Api Is Failed:", e);
         }
-        return result;
-    }
-
-    public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {
-        long ct = System.currentTimeMillis();
-        String code = ManagerHelper.generatorCodeGBK(userId, Integer.parseInt(clientId), clientKey, ct);
-        requestModelJSON.addParam(SHPPUrlConstant.APPID_STRING, clientId);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CODE, code);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
-        return requestModelJSON;
-    }
-
-    @Override
-    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) {
-        //QQ提供的openapi服务器
-        String serverName = CommonConstant.QQ_SERVER_NAME;
-        //应用的基本信息，搜狗在QQ的第三方appid与appkey
-        String sgAppKey = CommonConstant.APP_CONNECT_KEY;     //搜狗在QQ的appid
-        String sgAppSecret = CommonConstant.APP_CONNECT_SECRET; //搜狗在QQ的appkey
-        OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
-        //调用代理第三方接口，点亮或熄灭QQ图标
-        String resp = executeQQLightOpenApi(sdkSG, openId, openKey, qqParams);
         return resp;
     }
 
 
     private String executeQQLightOpenApi(OpenApiV3 sdk, String openid, String openkey, QQLightOpenApiParams qqLightOpenApiParams) {
-        // 指定OpenApi Cgi名字
-        String scriptName = qqLightOpenApiParams.getOpenApiName();
-        // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
-        String protocol = CommonConstant.HTTP;
-        // 填充URL请求参数,用来生成sig签名
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("openid", openid);
-        params.put("openkey", openkey);
-        ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
-        HashMap<String, String> maps = null;
-        try {
-            maps = objectMapper.readValue(qqLightOpenApiParams.getParams().toString(), HashMap.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Set<String> commonKeySet = maps.keySet();
-        for (String dataKey : commonKeySet) {
-            params.put(dataKey, maps.get(dataKey));
-        }
-        //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
-        String method = CommonConstant.CONNECT_METHOD_POST;
         String resp = null;
         try {
+            // 指定OpenApi Cgi名字
+            String scriptName = qqLightOpenApiParams.getOpenApiName();
+            // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
+            String protocol = CommonConstant.HTTPS;
+            // 填充URL请求参数,用来生成sig签名
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("openid", openid);
+            params.put("openkey", openkey);
+            ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
+            HashMap<String, String> maps;
+            Object paramsObj = qqLightOpenApiParams.getParams();
+            if (paramsObj != null) {
+                maps = objectMapper.readValue(paramsObj.toString(), HashMap.class);
+                if (!maps.isEmpty()) {
+                    Set<Map.Entry<String, String>> entrySet = maps.entrySet();
+                    if (!entrySet.isEmpty() && entrySet.size() > 0) {
+                        for (Map.Entry<String, String> entry : entrySet) {
+                            params.put(entry.getKey(), entry.getValue());
+                        }
+                    }
+                }
+            }
+            //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
+            String method = CommonConstant.CONNECT_METHOD_POST;
             resp = sdk.api(scriptName, params, protocol, method);
-            System.out.println(resp);
-        } catch (OpensnsException e) {
-            System.out.printf("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
-            e.printStackTrace();
+        } catch (IOException ioe) {
+            logger.error("Transfer Object To Map Failed :", ioe);
+        } catch (OpensnsException oe) {
+            logger.error(String.format("Request Failed.code:{}, msg:{}", oe.getErrorCode(), oe.getMessage()), oe);
+        } catch (Exception e) {
+            logger.error("Execute Api Is Failed :", e);
         }
         return resp;
     }

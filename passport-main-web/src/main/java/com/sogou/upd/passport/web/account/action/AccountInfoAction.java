@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -53,13 +54,15 @@ public class AccountInfoAction extends BaseController {
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private HostHolder hostHolder;
-
     @Autowired
     private AccountInfoManager accountInfoManager;
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
+
 
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
@@ -136,9 +139,9 @@ public class AccountInfoAction extends BaseController {
 
             params.setUsername(userId);
             result = accountInfoManager.getUserInfo(params);
+            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername()));
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-
             if (result.isSuccess()) {
                 if (domain == AccountDomainEnum.THIRD) {
                     result.setDefaultModel("disable", true);

@@ -2,16 +2,10 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
-import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
@@ -20,8 +14,10 @@ import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -31,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -49,7 +44,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private ConnectConfigService connectConfigService;
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip,String httpOrHttps) throws OAuthProblemException {
         OAuthConsumer oAuthConsumer;
         OAuthAuthzClientRequest request;
         ConnectConfig connectConfig;
@@ -63,7 +58,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
 
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
-                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(), ip, connectLoginParams.getFrom());
+                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(),connectLoginParams.getDomain());
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -72,16 +67,26 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             display = Strings.isNullOrEmpty(display) ? fillDisplay(connectType, connectLoginParams.getFrom(), provider) : display;
 
             String requestUrl;
-            //判断display  xhtml\wml调用wap接口
             // 采用Authorization Code Flow流程
-            requestUrl = oAuthConsumer.getWebUserAuthzUrl();
-            request = OAuthAuthzClientRequest
+            //若provider=QQ && display=wml、xhtml调用WAP接口
+            if (ConnectRequest.isQQWapRequest(connectLoginParams.getProvider(), display)) {
+                requestUrl = oAuthConsumer.getWapUserAuthzUrl();
+            } else {
+                requestUrl = oAuthConsumer.getWebUserAuthzUrl();
+            }
+            OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
                     .authorizationLocation(requestUrl).setAppKey(appKey)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                    .setState(uuid)
-                    .buildQueryMessage(OAuthAuthzClientRequest.class);
+                    .setState(uuid);
+            if(AccountTypeEnum.QQ.getValue() == provider){
+                builder.setShowAuthItems(QQOAuth.NO_AUTH_ITEMS);       // qq为搜狗产品定制化页面，隐藏授权信息
+                if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage())){
+                    builder.setViewPage(connectLoginParams.getViewPage());       // qq为搜狗产品定制化页面--输入法使用
+                }
+            }
+            request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
             throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException!");
@@ -99,42 +104,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         return null;
     }
 
-    /**
-     * 调用sohu接口获取用户的openid和accessToken等信息，只针对clientid=1120的第三方用户
-     *
-     * @param baseOpenApiParams
-     * @return
-     */
     @Override
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
-        Result result = new APIResultSupport(false);
-        //如果是post请求，原方法
-        RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_QQ_LIGHT_USER_INFO);
-        requestModelJSON.addParams(baseOpenApiParams);
-        requestModelJSON.deleteParams(CommonConstant.CLIENT_ID);
-        this.setDefaultParams(requestModelJSON, baseOpenApiParams.getUserid(), String.valueOf(clientId), clientKey);
-        Map map = SGHttpClient.executeBean(requestModelJSON, HttpTransformat.json, Map.class);
-        if (map.containsKey(SHPPUrlConstant.RESULT_STATUS)) {
-            String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
-            if ("0".equals(status)) {
-                result.setSuccess(true);
-            }
-            Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
-            result.setCode(entry.getKey());
-            result.setMessage(entry.getValue());
-            result.setModels(map);
-        }
-        return result;
-    }
-
-
-    public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {
-        long ct = System.currentTimeMillis();
-        String code = ManagerHelper.generatorCodeGBK(userId, Integer.parseInt(clientId), clientKey, ct);
-        requestModelJSON.addParam(SHPPUrlConstant.APPID_STRING, clientId);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CODE, code);
-        requestModelJSON.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
-        return requestModelJSON;
+    public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*
@@ -159,7 +131,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     private boolean isMobileDisplay(String type, String from) {
-        return type.equals(ConnectTypeEnum.TOKEN.toString()) && "mob".equalsIgnoreCase(from);
+        return type.equals(ConnectTypeEnum.TOKEN.toString()) && "mob".equalsIgnoreCase(from)
+                || type.equals(ConnectTypeEnum.MOBILE.toString());
     }
 
 }

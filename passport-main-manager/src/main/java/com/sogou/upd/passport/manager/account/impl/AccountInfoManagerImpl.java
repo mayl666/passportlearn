@@ -249,24 +249,20 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
         Result result = new APIResultSupport(false);
-
         GetUserInfoApiparams infoApiparams=buildGetUserInfoApiparams(params);
-
         // 调用内部接口
         if (ManagerHelper.isInvokeProxyApi(params.getUsername())) {
             result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
-            //其中昵称是获取的account_base_info
-            // TODO 搜狗账号迁移后，搜狗账号的昵称从account表里拿，其他账号昵称从account_base_info里拿
-//            Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-//            if(shPlusResult.isSuccess()){
-//                Object obj= shPlusResult.getModels().get("baseInfo");
-//                if(obj!=null){
-//                    AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
-//                    String uniqname= baseInfo.getUniqname();
-//                    result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?params.getUsername():uniqname);
-//                }
-//            }
-             result.getModels().put("uniqname",oAuth2ResourceManager.getUniqname(params.getUsername()));
+            //其中昵称和头像是获取的account_base_info
+            if(infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")){
+                AccountBaseInfo baseInfo = getBaseInfo(infoApiparams.getUserid());
+                //如果有sogou有存储，则用sogou存的
+                if(baseInfo!= null){
+                    result.getModels().put("uniqname",baseInfo.getUniqname());
+                    result.getModels().put("avatarurl",baseInfo.getAvatar());
+                }
+            }
+
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
@@ -317,4 +313,20 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         updateUserUniqnameApiParams.setClient_id(Integer.parseInt(params.getClient_id()));
         return updateUserUniqnameApiParams;
     }
+
+    private AccountBaseInfo getBaseInfo(String passportId) {
+        GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
+        infoApiparams.setUserid(passportId);
+        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
+        if (getUserInfoResult.isSuccess()) {
+            Object obj = getUserInfoResult.getModels().get("baseInfo");
+            AccountBaseInfo accountBaseInfo = null;
+            if (obj != null) {
+                accountBaseInfo = (AccountBaseInfo) obj;
+            }
+            return accountBaseInfo;
+        }
+        return null;
+    }
+
 }

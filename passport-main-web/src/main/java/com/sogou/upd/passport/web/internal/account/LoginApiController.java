@@ -2,16 +2,20 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.api.account.form.ReNewCookieApiParams;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
+import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -42,6 +46,8 @@ public class LoginApiController extends BaseController {
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
     @Autowired
     private LoginManager loginManager;
     @Autowired
@@ -81,7 +87,7 @@ public class LoginApiController extends BaseController {
             ru = LOGIN_INDEX_URL;
         }
 
-        String userid=params.getUserid();
+        String userid = params.getUserid();
 
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(userid);
@@ -95,13 +101,13 @@ public class LoginApiController extends BaseController {
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
 
             result.setSuccess(true);
-            Map<String,String> map= Maps.newHashMap();
-            map.put("userid",userid);
-            map.put("ppinf",ppinf);
-            map.put("pprdig",pprdig);
+            Map<String, String> map = Maps.newHashMap();
+            map.put("userid", userid);
+            map.put("ppinf", ppinf);
+            map.put("pprdig", pprdig);
 
             result.setModels(map);
-        }else {
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result.toString();
@@ -162,7 +168,9 @@ public class LoginApiController extends BaseController {
     /**
      * 手机应用使用第三方登录完成之后，会通过302重定向的方式将token带给产品的服务器端，
      * 产品的服务器端通过传入userid和token验证用户的合法性，且token具有较长的有效期。
-     * TODO 注意，目前接入应用全部是验证token，没有传入userid
+     * 注意，目前接入应用全部是验证token，没有传入userid
+     * todo 以后可考虑，验证token时，直接返回用户信息；现阶段为防止获取用户信息失败
+     * 而导致验证登录状态验证失败，暂时不做
      *
      * @return
      */
@@ -179,17 +187,17 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
         // 调用内部接口
-        result = proxyLoginApiManager.appAuthToken(params);
-/*
-        String userId = (String) result.getModels().get("userid");
+        result = sgLoginApiManager.appAuthToken(params);
+        if(!result.isSuccess()){
+            result = proxyLoginApiManager.appAuthToken(params);
+        }
 
+        String userId = (String) result.getModels().get("userid");
         //记录log
         UserOperationLog userOperationLog=new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
         userOperationLog.putOtherMessage("token",params.getToken());
         UserOperationLogUtil.log(userOperationLog);
-*/
 
         return result.toString();
     }
-
 }

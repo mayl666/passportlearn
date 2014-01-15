@@ -27,6 +27,27 @@ public class CookieApiParams extends BaseApiParams {
     private String ip;                     //用户的机器ip
     private String persistentcookie;         //是否记住密码（0：否 1：是）或是否使用持久cookie 0:session级别的cookie 1:长时间有效的cookie，目前是两天
 
+    private String uniqname; // Passport统一的昵称
+    private String refnick;  // 第三方昵称
+
+    public CookieApiParams() {
+    }
+
+    public CookieApiParams(String userid, int client_id, String ru, String ip, String uniqname, String refnick) {
+        this(userid, client_id, IS_ACTIVE, ru, ip, "1", uniqname, refnick);
+    }
+
+    public CookieApiParams(String userid, int client_id, int trust, String ru, String ip, String persistentcookie, String uniqname, String refnick) {
+        this.userid = userid;
+        this.client_id = client_id;
+        this.trust = trust;
+        this.ru = ru;
+        this.ip = ip;
+        this.persistentcookie = persistentcookie;
+        this.uniqname = uniqname;
+        this.refnick = refnick;
+    }
+
     public String getUserid() {
         return userid;
     }
@@ -73,5 +94,21 @@ public class CookieApiParams extends BaseApiParams {
 
     public void setPersistentcookie(String persistentcookie) {
         this.persistentcookie = persistentcookie;
+    }
+
+    public String getUniqname() {
+        return uniqname;
+    }
+
+    public void setUniqname(String uniqname) {
+        this.uniqname = uniqname;
+    }
+
+    public String getRefnick() {
+        return refnick;
+    }
+
+    public void setRefnick(String refnick) {
+        this.refnick = refnick;
     }
 }

@@ -243,25 +243,6 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <!--start:sh memcache请求log-->
-    <appender name="memcachePerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/memcache/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%msg %n</pattern>
-        </encoder>
-    </appender>
-    <appender name="memcacheCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
-        <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000" />
-        <appender-ref ref="memcachePerfFileAppender" />
-    </appender>
-    <logger name="memcacheTimingLogger" level="info" additivity="false">
-        <appender-ref ref="memcacheCoalescingStatistics" />
-    </logger>
-    <!--end:web服务器性能log-->
-
     <!--start:redies请求log-->
     <appender name="dbPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

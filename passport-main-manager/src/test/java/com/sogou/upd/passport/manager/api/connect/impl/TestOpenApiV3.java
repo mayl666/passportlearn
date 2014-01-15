@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
-import com.qq.open.OpenApiV3;
-import com.qq.open.OpensnsException;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
+import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 
 import java.util.HashMap;
 
@@ -64,6 +64,8 @@ public class TestOpenApiV3 {
         } catch (OpensnsException e) {
             System.out.printf("Request Failed. code:%d, msg:%s\n", e.getErrorCode(), e.getMessage());
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 }

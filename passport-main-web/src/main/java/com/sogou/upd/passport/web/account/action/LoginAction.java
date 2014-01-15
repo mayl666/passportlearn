@@ -11,11 +11,10 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -54,12 +53,15 @@ public class LoginAction extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private RegManager regManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @Autowired
     private HostHolder hostHolder;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    private static final String LOGIN_INDEX_URLSTR = "https://account.sogou.com";
+
+    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+    private static final String COOKIE_URL_SOHURU = "https://account.sogou.com/static/api/ru.htm";   //种完sohu域要跳转的URL
+
 
     /**
      * 用户登录检查是否显示验证码
@@ -94,14 +96,14 @@ public class LoginAction extends BaseController {
         } else {
             result = regManager.isAccountNotExists(username, false, clientId);
         }
-        if(!result.isSuccess()){
+        if (!result.isSuccess()) {
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
 
             result.setSuccess(true);
             result.setDefaultModel("needCaptcha", needCaptcha);
-        }else {
-            result= new APIResultSupport(false);
+        } else {
+            result = new APIResultSupport(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
         }
 
@@ -113,12 +115,12 @@ public class LoginAction extends BaseController {
      *
      * @param loginParams 传入的参数
      */
-
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
+        String userId = loginParams.getUsername();
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -131,54 +133,26 @@ public class LoginAction extends BaseController {
 
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
 
-        String userId = loginParams.getUsername();
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         UserOperationLogUtil.log(userOperationLog);
 
         if (result.isSuccess()) {
-
             userId = result.getModels().get("userid").toString();
-
-//            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-//            createCookieUrlApiParams.setUserid(userId);
-//
-//            //设置来源
-            String ru = loginParams.getRu();
-            if (Strings.isNullOrEmpty(ru)) {
-                ru = LOGIN_INDEX_URLSTR;
+            int clientId = Integer.parseInt(loginParams.getClient_id());
+            int autoLogin = loginParams.getAutoLogin();
+            int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
+            String sogouRu = loginParams.getRu();
+            if (Strings.isNullOrEmpty(sogouRu)) {
+                sogouRu = LOGIN_INDEX_URL;
             }
-//            createCookieUrlApiParams.setRu(ru);
-//            createCookieUrlApiParams.setDomain("sogou.com");
-            CookieApiParams cookieApiParams = new CookieApiParams();
-            cookieApiParams.setUserid(userId);
-            cookieApiParams.setClient_id(Integer.parseInt(loginParams.getClient_id()));
-            cookieApiParams.setRu(ru);
-            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-            int authLogin = loginParams.getAutoLogin();
-            //0-否  1-真
-            int validTime = authLogin == 0 ? 0 : 1;
-            cookieApiParams.setPersistentcookie(String.valueOf(validTime));
-
-            //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
-            if (getCookieValueResult.isSuccess()) {
-                String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-                String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-
-                //0-否  1-真
-                validTime=authLogin==0?-1:(int)DateAndNumTimesConstant.TWO_WEEKS;
-
-                ServletUtil.setCookie(response, "ppinf", ppinf, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "pprdig", pprdig, validTime, CommonConstant.SOGOU_ROOT_DOMAIN);
-
-                userId = result.getModels().get("userid").toString();
-                int clientId = Integer.parseInt(loginParams.getClient_id());
+            result = commonManager.setCookie(response, userId, clientId, ip, sogouMaxAge, sogouRu, autoLogin, COOKIE_URL_SOHURU);
+            if (result.isSuccess()) {
+                result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
+                result.setDefaultModel("userid", userId);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
             }
-
 
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);

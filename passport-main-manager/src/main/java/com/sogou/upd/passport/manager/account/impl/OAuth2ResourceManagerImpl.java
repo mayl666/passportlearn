@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -138,7 +139,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
                 cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
                 cookieApiParams.setPersistentcookie(String.valueOf(1));
-                cookieResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
 
             }
             if (!cookieResult.isSuccess()) {
@@ -294,6 +295,16 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
         return uniqname;
     }
+
+    @Override
+    public String getEncodedUniqname(String passportId) {
+        String uniqname = getUniqname(passportId);
+        if(!StringUtils.isBlank(uniqname)){
+            uniqname = Coder.encode(uniqname, "UTF-8");
+        }
+        return uniqname;
+    }
+
 
     @Override
     public String defaultUniqname(String passportId) {

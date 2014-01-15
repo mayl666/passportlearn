@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录到搜狗通行证</title>
+    <link rel="stylesheet" href="/static/css/wap/main.css">
+    <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+</head>
+<body>
+    
+    <div class="module logo"></div>
+    <form action="/wap/login" method="post" class="login-form module" id="LoginForm">
+        <div class="err-msg module" id="Error">$!errorMsg</div>
+        <div class="input-wrp">
+            <input type="text" class="i-txt" name="username" id="ID" placeholder="邮箱/手机号/搜狗账号">
+        </div>
+        <div class="input-wrp">
+            <input type="password" class="i-txt" name="password" id="Pass" placeholder="请输入密码">
+        </div>
+        <!-- <div>${isNeedCaptcha}</div> -->
+        #if($isNeedCaptcha == 1)
+        <div class="input-wrp cf captcha-wrp" id="CaptchaWrp">
+            <input type="text" class="i-txt captcha" name="captcha" id="Captcha" placeholder="验证码">
+            <img src="/captcha?token=${token}" alt="" class="captcha-img" id="CaptImg">
+            <a href="#" class="reload-captcha" id="ReloadCapt">看不清，换一张</a>
+        </div>
+        #end
+        <div class="input-wrp btns">
+            <input type="hidden" name="ru" value="${ru}" />
+            <input type="hidden" name="client_id" value="${client_id}" />
+            <input type="hidden" name="v" value="${v}" />
+            <input type="hidden" name="token" value="${token}" />
+            <input type="submit" value="登录" class="login-btn" id="Login">
+        </div>
+    </form>
+    <div class="module sg-index">
+        <a href="http://m.sogou.com">搜狗首页</a>
+    </div>
+    <footer class="footer">Copyright © 2013 Sogou.com</footer>
+
+    <script src="/static/js/wap/main.js"></script>
+</body>
+</html>

@@ -50,30 +50,35 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
             return null;
         }
-        if (!Strings.isNullOrEmpty(avatar) && !avatar.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
-            avatar = photoUtils.uploadWebImg(avatar);
-        }
+
         try {
             AccountBaseInfo accountBaseInfo = queryAccountBaseInfo(passportId);
             if (accountBaseInfo == null) { // 原来该用户无昵称头像
+                if (!Strings.isNullOrEmpty(avatar) && !avatar.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
+                    avatar = photoUtils.uploadWebImg(avatar);
+                }
                 return insertAccountBaseInfo(passportId, uniqname, avatar);
             } else {
                 String oldUniqname = accountBaseInfo.getUniqname();
                 String oldAvatar = accountBaseInfo.getAvatar();
                 if (!Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(oldAvatar)) {
                     return null;
-                } else if (Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(uniqname)) {
+                }
+                if (Strings.isNullOrEmpty(oldUniqname) && !Strings.isNullOrEmpty(uniqname)) {
                     updateUniqname(accountBaseInfo, uniqname);
                     return accountBaseInfo;
-                } else if (Strings.isNullOrEmpty(oldAvatar) && !Strings.isNullOrEmpty(avatar)) {
+                }
+                if (Strings.isNullOrEmpty(oldAvatar) && !Strings.isNullOrEmpty(avatar)) {
+                    if (!Strings.isNullOrEmpty(avatar) && !avatar.matches("%s/app/[a-z]+/%s/[a-zA-Z0-9]+_\\d+")) {
+                        avatar = photoUtils.uploadWebImg(avatar);
+                    }
                     updateAvatar(accountBaseInfo, avatar);
                     return accountBaseInfo;
-                } else {
-                    return insertAccountBaseInfo(passportId, uniqname, avatar);
                 }
             }
+            return accountBaseInfo;
         } catch (Exception e) {
-            logger.error("insertOrUpdateAccountBaseInfo fail", e);
+            logger.error("initConnectAccountBaseInfo fail", e);
             return null;
         }
     }
@@ -93,7 +98,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 }
             }
         } catch (Exception e) {
-            logger.error("queryAccountBaseInfo fail!", e);
+            logger.error("queryAccountBaseInfo fail,passportId=" + passportId, e);
             throw new ServiceException();
         }
         return accountBaseInfo;
@@ -204,6 +209,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     }
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_isUniqNameExist", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
     public boolean isUniqNameExist(String uniqname) {
         if (!Strings.isNullOrEmpty(uniqname)) {
             String existPassportId = uniqNamePassportMappingService.checkUniqName(uniqname);

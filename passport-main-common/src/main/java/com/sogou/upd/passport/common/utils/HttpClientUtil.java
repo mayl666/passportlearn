@@ -1,16 +1,14 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.util.EncodingUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.params.ClientPNames;
 import org.perf4j.StopWatch;
@@ -21,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
@@ -33,6 +33,13 @@ public class HttpClientUtil {
      */
     private final static int SLOW_TIME = 500;
 
+    private static final int DEFAULT_INITIAL_BUFFER_SIZE = 4*1024; // 4 kB
+
+    /**
+     * http返回成功的code
+     */
+    protected final static int RESPONSE_SUCCESS_CODE = 200;
+
     private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     private static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
@@ -41,6 +48,39 @@ public class HttpClientUtil {
         GetMethod get = new GetMethod(url);
         return doWget(get);
     }
+
+
+    public static String postRequest(String url, Map<String, String> params) throws Exception {
+        PostMethod postMethod = new PostMethod(url);
+        try {
+            // 设置请求参数
+            if (params != null && !params.isEmpty()) {
+                NameValuePair[] data = new NameValuePair[params.size()];
+
+                Iterator iter = params.entrySet().iterator();
+                int i = 0;
+                while (iter.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    data[i] = new NameValuePair((String) entry.getKey(), (String) entry.getValue());
+                    ++i;
+                }
+                postMethod.setRequestBody(data);
+            }
+            int statusCode = client.executeMethod(postMethod);
+
+            if (statusCode == HttpStatus.SC_OK) {
+                //读取内容
+                byte[] responseBody = postMethod.getResponseBody();
+                return new String(responseBody, "UTF-8");
+            }
+
+        } finally {
+            //释放链接
+            postMethod.releaseConnection();
+        }
+        return null;
+    }
+
 
     // integer 表示的返回状态吗，String表示的Content-Type的值，InputStream是内容
     public static Pair<Integer, Pair<String, byte[]>> getFile(String url) {
@@ -111,6 +151,46 @@ public class HttpClientUtil {
             shClient.executeMethod(method);
             stopWatch(stopWatch, urlArray[0], "success");
             return method.getResponseHeaders();
+        } catch (Exception e) {
+            stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
+            logger.error("http request error", e);
+            return null;
+        } finally {
+            method.releaseConnection();
+        }
+    }
+
+    public static String getResponseBodyWget(String url) {
+        StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
+        GetMethod method = new GetMethod(url);
+        String[] urlArray = url.split("[?]");
+        try {
+            method.setFollowRedirects(false);
+            method.setDoAuthentication(false);
+            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+
+            shClient.executeMethod(method);
+            stopWatch(stopWatch, urlArray[0], "success");
+
+            if(method.getStatusCode() != RESPONSE_SUCCESS_CODE){
+                return "";
+            }
+            //针对header.length=0 的请求使用 getResponseBodyAsStream方式处理结果
+            InputStream instream = method.getResponseBodyAsStream();
+            ByteArrayOutputStream outstream = new ByteArrayOutputStream(DEFAULT_INITIAL_BUFFER_SIZE);
+            byte[] buffer = new byte[DEFAULT_INITIAL_BUFFER_SIZE];
+            int len;
+            while ((len = instream.read(buffer)) > 0) {
+                outstream.write(buffer, 0, len);
+            }
+            outstream.close();
+            byte[] responseBody= outstream.toByteArray();
+            if (responseBody != null) {
+                return EncodingUtil.getString(responseBody, method.getResponseCharSet());
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
             logger.error("http request error", e);
@@ -259,8 +339,8 @@ public class HttpClientUtil {
         MultiThreadedHttpConnectionManager shManager = new MultiThreadedHttpConnectionManager();
         shManager.getParams().setDefaultMaxConnectionsPerHost(100);
         shManager.getParams().setMaxTotalConnections(500);
-        shManager.getParams().setConnectionTimeout(1000);
-        shManager.getParams().setSoTimeout(1000);
+        shManager.getParams().setConnectionTimeout(3000);
+        shManager.getParams().setSoTimeout(3000);
         shClient = new HttpClient(shManager);
     }
 

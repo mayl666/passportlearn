@@ -52,5 +52,5 @@ public interface LoginApiManager {
      * @param cookieApiParams
      * @return
      */
-    public Result getSHCookieValue(CookieApiParams cookieApiParams);
+    public Result getCookieInfo(CookieApiParams cookieApiParams);
 }

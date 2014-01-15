@@ -25,7 +25,7 @@ public interface ConnectApiManager {
      * @return
      */
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid,
-                                       int provider, String ip) throws OAuthProblemException;
+                                       int provider, String ip,String httpOrHttps) throws OAuthProblemException;
 
     /**
      * 同步创建第三方账号的接口
@@ -42,5 +42,5 @@ public interface ConnectApiManager {
      * @param baseOpenApiParams 调用sohu接口参数类
      * @return
      */
-    public Result getQQConnectUserInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
+    public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
 }
