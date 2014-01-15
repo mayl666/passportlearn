@@ -139,7 +139,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
                 cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
                 cookieApiParams.setPersistentcookie(String.valueOf(1));
-                cookieResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
 
             }
             if (!cookieResult.isSuccess()) {

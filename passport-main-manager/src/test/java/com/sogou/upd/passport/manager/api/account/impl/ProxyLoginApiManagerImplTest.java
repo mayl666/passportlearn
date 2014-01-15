@@ -9,10 +9,6 @@ import com.sogou.upd.passport.manager.api.account.form.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-6
@@ -47,7 +43,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(userId);
             cookieApiParams.setIp("200.0.98.23");
-            Result result = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+            Result result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
 //            Map<String, Object> map = result.getModels();
 //            List<Map<String, String>> listString = (List<Map<String, String>>) map.get("data");
 //            Map<String, String> mapString = new HashMap<String, String>();
@@ -86,7 +82,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
            cookieApiParams.setPersistentcookie(String.valueOf(1));
 
            //TODO sogou域账号迁移后cookie生成问题
-           Result getCookieValueResult = proxyLoginApiManager.getSHCookieValue(cookieApiParams);
+           Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
            System.out.println(getCookieValueResult.toString());
        }catch (Exception ex){
 
