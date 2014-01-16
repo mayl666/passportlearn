@@ -132,7 +132,7 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public boolean isLoginUserInBlackList(final String username, final String ip) {
         //校验username是否在账户黑名单中
-        if (operateTimesService.checkLoginUserInBlackList(username,ip)) {
+        if (operateTimesService.isUserInBlackList(username,ip) || operateTimesService.isLoginTimesForBlackList(username,ip)) {
             //是否在白名单中
             if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                 return true;

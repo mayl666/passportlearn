@@ -14,7 +14,7 @@ public class BaseOpenApiParams extends BaseApiParams {
 
     @NotBlank(message = "userid不允许为空")
     protected String userid; //通行证账号，如果用于绑定则是主账号
-    @NotBlank(message = "openid不允许为空")
+//    @NotBlank(message = "openid不允许为空")
     protected String openid; //通行证账号，***@provider.sohu.com
     protected Object params;//调用各个api所需的参数
 

@@ -1,12 +1,14 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.impl.SGLoginApiManagerImpl;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,16 +45,17 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testGetCookieInfo() {
-        String userid = "shipengzhi1986@sogou.com";
+        String userid = "31680D6A6A65D32BF1E929677E78DE29@qq.sohu.com";
         int client_id = 1120;
-        String uniqname = "跳刀的兔子";
+//        String uniqname = "跳刀的兔子";
         String refnick = "跳刀的兔子";
         // userid, client_id, ru, ip, uniqname, refnick
-        CookieApiParams cookieApiParams = new CookieApiParams(userid, client_id, "", "", uniqname, refnick);
+        CookieApiParams cookieApiParams = new CookieApiParams(userid, client_id, "", "", "", refnick);
         Result result = sgLoginApiManager.getCookieInfo(cookieApiParams);
         System.out.println("sginf: " + result.getModels().get("sginf"));
         System.out.println("sgrdig: " + result.getModels().get("sgrdig"));
     }
+
 
     @Test
     public void testVerifyCookie() {
@@ -76,5 +79,6 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
             Assert.assertTrue(false);
         }
     }
+
 
 }

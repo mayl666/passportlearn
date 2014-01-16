@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -47,6 +48,8 @@ public class CommonManagerImpl implements CommonManager {
     private AccountService accountService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
@@ -179,43 +182,39 @@ public class CommonManagerImpl implements CommonManager {
 
     @Override
     public void setSSOCookie(HttpServletResponse response, String sginf, String sgrdig, String domain, int maxAge) {
-        ServletUtil.setCookie(response, "ppinf", sginf, maxAge, domain);
-        ServletUtil.setCookie(response, "pprdig", sgrdig, maxAge, domain);
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGINF, sginf, maxAge, domain);
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGRDIG, sgrdig, maxAge, domain);
     }
 
     @Override
-    public String buildCreateSSOCookieUrl(String domain, String passportId, String ru, String ip) {
+    public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip) {
         StringBuilder urlBuilder = new StringBuilder();
-        if (domain.equals(ConnectDomainEnum.DAOHANG.toString())) {
-            urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL);
-        } else if (domain.equals(ConnectDomainEnum.HAO.toString())) {
-            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL);
+        String daohangDomain = ConnectDomainEnum.DAOHANG.toString();
+        String haoDomain = ConnectDomainEnum.HAO.toString();
+
+        if (domain.equals(daohangDomain)) {
+            urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=").append(daohangDomain);
+        } else if (domain.equals(haoDomain)) {
+            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL).append("?domain=").append(haoDomain);
         } else {
             return null;
         }
 
-        int client_id = CommonConstant.SGPP_DEFAULT_CLIENTID;
-        CookieApiParams cookieApiParams = new CookieApiParams();
-        cookieApiParams.setUserid(passportId);
-        cookieApiParams.setClient_id(client_id);
-        cookieApiParams.setRu(ru);
-        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-        cookieApiParams.setPersistentcookie(String.valueOf(1));
-        cookieApiParams.setIp(ip);
-        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+        CookieApiParams cookieApiParams = new CookieApiParams(passportId, client_id, ru,ip, uniqname, refnick);
+        Result getCookieValueResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
         if (!getCookieValueResult.isSuccess()) {
             return null;
         }
-        String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-        String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+        String sginf = (String) getCookieValueResult.getModels().get("sginf");
+        String sgrdig = (String) getCookieValueResult.getModels().get("sgrdig");
 
-        String cookieData[] = ppinf.split("\\" + CommonConstant.SEPARATOR_1);
+        String cookieData[] = sginf.split("\\" + CommonConstant.SEPARATOR_1);
         String createtime = cookieData[1];
         long ct = new Long(createtime);
-        String code1 = getCode(ppinf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
-        String code2 = getCode(pprdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
-        urlBuilder.append("?").append("sginf=").append(ppinf)
-                .append("&sgrdig=").append(pprdig)
+        String code1 = getCode(sginf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
+        String code2 = getCode(sgrdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct);
+        urlBuilder.append("&sginf=").append(sginf)
+                .append("&sgrdig=").append(sgrdig)
                 .append("&code1=").append(code1)
                 .append("&code2=").append(code2)
                 .append("&ru=").append(Coder.encodeUTF8(ru));
@@ -225,7 +224,7 @@ public class CommonManagerImpl implements CommonManager {
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
-        long currentTime = System.currentTimeMillis()/1000;
+        long currentTime = System.currentTimeMillis() / 1000;
         boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         if (isCodeEqual && timeRight) {

@@ -123,13 +123,16 @@ public interface CommonManager {
     public boolean isCodeRight(String firstStr,int clientId,long ct,String originalCode);
 
     /**
-     * 创建种sso cookie的URL
+     * sso 构建种sginf sgrdig cookie的url
      * @param domain
+     * @param client_id
      * @param passportId
+     * @param uniqname
+     * @param refnick
      * @param ru
      * @param ip
      * @return
      */
-    public String buildCreateSSOCookieUrl(String domain, String passportId, String ru, String ip);
+    public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip);
 
 }

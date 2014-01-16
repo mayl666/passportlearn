@@ -45,8 +45,16 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_IP_BINDNUM = "SP.IP:BINDNUM_"; //IP的设置密保限制
     // username或者ip在白名单中的set KEY
     public static final String CACHE_PREFIX_LOGIN_WHITELIST = "SP.USERNAME.IP:WHITELIST_KEY";
-    //ip在白名单中
-    public static final String CACHE_PREFIX_REGISTER_WHITELIST = "SP.REG.IP:WHITELIST_KEY";
+
+    // username或者ip在黑名单中的set KEY
+    public static final String CACHE_PREFIX_LOGIN_BLACKLIST = "SP.USERNAME.IP:BLACKLIST_KEY";
+
+    // username在黑名单的前缀
+    public static final String CACHE_PREFIX_LOGIN_USERNAME_BLACK_ = "SP.USERNAME:BLACK_";
+    // username在黑名单的前缀
+    public static final String CACHE_PREFIX_LOGIN_IP_BLACK_ = "SP.IP:BLACK_";
+
+    //IP网段黑名单
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
 
     public static final String CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING = "SP.PASSPORTID:IMAGE_HASH_"; //passportId与新旧头像映射
@@ -60,6 +68,7 @@ public class CacheConstant {
     /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
     public static final String CACHE_PREFIX_OPENID_CONNECTRELATION = "SP.OPENID:CONNECTRELATION_";  // openid+provider与ConnectRelation的映射
+    public static final String CACHE_PREFIX_PASSPORTID_ACCESSTOKEN = "SP.PASSPORTID:ACCESSTOKEN_"; //passportId与AccessToken映射
 
     /*================CONFIG 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_CLIENTID_APPCONFIG = "SP.CLIENTID:APPCONFIG_";     //clientid与appConfig映射

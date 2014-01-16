@@ -17,6 +17,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -79,8 +80,11 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
                     .setState(uuid);
-            if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage()) && AccountTypeEnum.QQ.getValue() == provider) {
-                builder.setViewPage(connectLoginParams.getViewPage());       // qq为搜狗产品定制化页面
+            if(AccountTypeEnum.QQ.getValue() == provider){
+                builder.setShowAuthItems(QQOAuth.NO_AUTH_ITEMS);       // qq为搜狗产品定制化页面，隐藏授权信息
+                if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage())){
+                    builder.setViewPage(connectLoginParams.getViewPage());       // qq为搜狗产品定制化页面--输入法使用
+                }
             }
             request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
         } catch (IOException e) {

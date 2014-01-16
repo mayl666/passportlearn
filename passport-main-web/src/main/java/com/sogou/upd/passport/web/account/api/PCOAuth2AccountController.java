@@ -401,24 +401,33 @@ public class PCOAuth2AccountController extends BaseController {
             return "";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
+        String redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)){
+            redirectUrl = "/web/userinfo/avatarurl?client_id=" +  oauth2PcIndexParams.getClient_id();
+        }else if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)){
+            redirectUrl = "/web/security/password?client_id=" +  oauth2PcIndexParams.getClient_id();
+        }else {
+            redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        }
+
         //判断cookie中的passportId与token解密出来的passportId是否相等
         if (!Strings.isNullOrEmpty(cookieUserId)) {
             if (!cookieUserId.equals(passportId)) {
                 response.sendRedirect("/web/logout_redirect");
                 return "";
             }
-            response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
+            response.sendRedirect(redirectUrl);
             return "";
         }
 
         String sogouRu ="https://account.sogou.com";
-        String sohuRu = "https://account.sogou.com/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        String sohuRu = "https://account.sogou.com"+ redirectUrl;
         result = commonManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),-1,sogouRu,0,sohuRu);
         if (result.isSuccess()) {
             response.sendRedirect((String) result.getModels().get("cookieUrl"));
             return "";
         }
-        response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
+        response.sendRedirect(redirectUrl);
         return "";
     }
 

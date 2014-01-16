@@ -60,7 +60,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
                 AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
                 if (appConfig != null) {
                     String secret = appConfig.getServerSecret();
-                    String  code= ManagerHelper.generatorCode(firstStr.toString(), clientId, secret, ct);
+                    String code = ManagerHelper.generatorCode(firstStr.toString(), clientId, secret, ct);
                     long currentTime = System.currentTimeMillis();
                     if (code.equalsIgnoreCase(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
                         return true;
@@ -94,7 +94,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
             }
             requestInfo.append("}");
 
-            log.error("InterfaceSecurityInteceptor verify code or ct error! "+requestInfo.toString(), e);
+            log.error("InterfaceSecurityInteceptor verify code or ct error! " + requestInfo.toString(), e);
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
         }
 
@@ -134,7 +134,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
             firstStr.append(mobile);
         } else if (!Strings.isNullOrEmpty(token)) {
             firstStr.append(token);
-        } else if (!Strings.isNullOrEmpty(uniqName)){
+        } else if (!Strings.isNullOrEmpty(uniqName)) {
             firstStr.append(uniqName);
         }
         return firstStr.toString();

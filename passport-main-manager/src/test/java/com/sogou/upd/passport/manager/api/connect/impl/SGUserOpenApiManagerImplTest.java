@@ -40,8 +40,8 @@ public class SGUserOpenApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         UserOpenApiParams params = new UserOpenApiParams();
-        params.setUserid("DDA3422EEBF277B2937EA842766734D4@qq.sohu.com");
-        params.setOpenid("DDA3422EEBF277B2937EA842766734D4@qq.sohu.com");
+        params.setUserid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
+        params.setOpenid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
         params.setClient_id(1115);
         Result result = sgUserOpenApiManager.getUserInfo(params);
         System.out.println("result data:" + result);
