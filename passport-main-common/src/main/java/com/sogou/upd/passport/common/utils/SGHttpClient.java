@@ -278,11 +278,11 @@ public class SGHttpClient {
                 registry.register(new Scheme("https", 443, ssf));
                 ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
 
-
                 HttpParams params = base.getParams();
                 mgr.setMaxTotal(MAX_TOTAL_CONNECTIONS);
                 mgr.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
-                HttpClientParams.setCookiePolicy(params, CookiePolicy.BROWSER_COMPATIBILITY); //按照浏览器的方式来自动处理Cookie，解决ResponseProcessCookies(9042): Invalid cookie header
+//                HttpClientParams.setCookiePolicy(params, CookiePolicy.BROWSER_COMPATIBILITY); //按照浏览器的方式来自动处理Cookie，解决ResponseProcessCookies(9042): Invalid cookie header
+                HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES);
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
 
