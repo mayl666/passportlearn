@@ -281,8 +281,7 @@ public class SGHttpClient {
                 HttpParams params = base.getParams();
                 mgr.setMaxTotal(MAX_TOTAL_CONNECTIONS);
                 mgr.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
-//                HttpClientParams.setCookiePolicy(params, CookiePolicy.BROWSER_COMPATIBILITY); //按照浏览器的方式来自动处理Cookie，解决ResponseProcessCookies(9042): Invalid cookie header
-                HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES);
+                HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
 
