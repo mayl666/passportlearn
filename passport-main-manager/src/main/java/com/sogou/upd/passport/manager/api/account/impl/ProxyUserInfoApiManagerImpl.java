@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -60,6 +61,10 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
         Result result=null;
         try {
+            String userid = getUserInfoApiparams.getUserid();
+            userid = AccountDomainEnum.getInternalCase(userid);
+            getUserInfoApiparams.setUserid(userid);
+
             //搜狐真实姓名 username,搜狗fullname
             String fields=getUserInfoApiparams.getFields();
             if(!Strings.isNullOrEmpty(fields) && fields.contains("fullname")) {
@@ -225,6 +230,10 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams updateUserInfoApiParams) {
+        String username = updateUserInfoApiParams.getUsername();
+        username = AccountDomainEnum.getInternalCase(username);
+        updateUserInfoApiParams.setUserid(username);
+
         if (PhoneUtil.verifyPhoneNumberFormat(updateUserInfoApiParams.getUserid())) {
             String userid = updateUserInfoApiParams.getUserid();
             userid += "@sohu.com";
