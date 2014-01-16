@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -19,8 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
@@ -49,45 +49,6 @@ public class HttpClientUtil {
         return doWget(get);
     }
 
-
-    public static String postRequest(String url, Map<String, String> params) throws Exception {
-        PostMethod postMethod = new PostMethod(url);
-        try {
-            // 设置请求参数
-            if (params != null && !params.isEmpty()) {
-                NameValuePair[] data = new NameValuePair[params.size()];
-
-                Iterator iter = params.entrySet().iterator();
-                int i = 0;
-                while (iter.hasNext()) {
-                    Map.Entry entry = (Map.Entry) iter.next();
-                    data[i] = new NameValuePair((String) entry.getKey(), (String) entry.getValue());
-                    ++i;
-                }
-                postMethod.setRequestBody(data);
-            }
-            int statusCode = client.executeMethod(postMethod);
-
-            if (statusCode == HttpStatus.SC_OK) {
-                //读取内容
-                byte[] responseBody = postMethod.getResponseBody();
-                return new String(responseBody, "UTF-8");
-            }
-
-        } finally {
-            //释放链接
-            postMethod.releaseConnection();
-        }
-        return null;
-    }
-
-
-    // integer 表示的返回状态吗，String表示的Content-Type的值，InputStream是内容
-    public static Pair<Integer, Pair<String, byte[]>> getFile(String url) {
-        GetMethod get = new GetMethod(url);
-        return doWgetAsStream(get);
-    }
-
     public static Pair<Integer, String> post(String url, Map<String, String> postdata)
             throws Exception {
         PostMethod post = new PostMethod(url);
@@ -108,35 +69,8 @@ public class HttpClientUtil {
         return doWget(post);
     }
 
-
-    public static Pair<Integer, String> postContent(String url, String data, String charset) {
-        try {
-            PostMethod post = new PostMethod(url);
-            post.setRequestEntity(new StringRequestEntity(data, null, charset));
-            return doWget(post, charset);
-        } catch (Exception e) {
-            String message = e.getClass().getName() + "|" + e.getMessage();
-            return Pair.of(0, message);
-        }
-    }
-
     private static Pair<Integer, String> doWget(HttpMethod method) {
         return doWget(method, null);
-    }
-
-    public static int doHead(String url) {
-        HeadMethod method = new HeadMethod(url);
-        try {
-            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-            int code = client.executeMethod(method);
-            return code;
-        } catch (Exception e) {
-            String message = e.getClass().getName() + "|" + e.getMessage();
-            System.out.println(message);
-            return 0;
-        } finally {
-            method.releaseConnection();
-        }
     }
 
     public static Header[] getResponseHeadersWget(String url) {
@@ -226,32 +160,6 @@ public class HttpClientUtil {
         } catch (Exception e) {
             String message = e.getClass().getName() + "|" + e.getMessage();
             return Pair.of(0, message);
-        } finally {
-            method.releaseConnection();
-        }
-    }
-
-    private static Pair<Integer, Pair<String, byte[]>> doWgetAsStream(HttpMethod method) {
-        try {
-            method.setFollowRedirects(false);
-            method.setDoAuthentication(false);
-            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-            method.getParams().setParameter(HttpMethodParams.USER_AGENT,
-                    "Sogou Passport Center Notifier");
-            method.setRequestHeader("Accept-Encoding", "gzip, deflate");
-            int code = client.executeMethod(method);
-            //			InputStream in = method.getResponseBodyAsStream();
-            //			Header h = method.getResponseHeader("Content-Length");
-            //			byte[] bytes = new byte[Integer.parseInt(h.getValue())];
-            //			in.read(bytes, 0, bytes.length);
-            byte[] bytes = method.getResponseBody();
-            Header respHeader = method.getResponseHeader("Content-Type");
-            String mime = respHeader.getValue();
-            Pair<String, byte[]> content = Pair.of(mime, bytes);
-            return Pair.of(code, content);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Pair.of(0, null);
         } finally {
             method.releaseConnection();
         }
@@ -351,10 +259,6 @@ public class HttpClientUtil {
         postData.put("signature", "tj6sEa2BFKeoFd1pSNFqOZVFSwZLmvldAgvOt_Ojoqs");
         postData.put("nickname", "戴菲菲");
 
-
-//        Pair<Integer, String> p = HttpClientUtil.post("http://localhost/account/regexpuser",
-//                postData);
-//        System.out.println(p);
         String urlStr = "http://passport.sohu.com/act/setcookie?userid=wg494943628@sogou.com&appid=1120&ct=1382384218435&code=ffee354f18ef84cf73b4655a37ddd528&ru=http://profile.pinyin.sogou.com/&persistentcookie=0&domain=sogou.com";
         URL url = new URL(urlStr);
         Header[] headers = getResponseHeadersWget(urlStr);
