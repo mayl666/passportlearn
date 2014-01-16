@@ -120,7 +120,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();
         }
-        initialOrUpdateConnectUserInfo(openid, userProfileFromConnect);
         return userProfileFromConnect;
     }
 
