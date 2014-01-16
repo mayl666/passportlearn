@@ -131,7 +131,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             return true;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            return false;
         }
     }
 
@@ -143,7 +144,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             return connectUserInfoVO;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
-            throw new ServiceException(e);
+//            throw new ServiceException(e);
+            return null;
         }
     }
 
