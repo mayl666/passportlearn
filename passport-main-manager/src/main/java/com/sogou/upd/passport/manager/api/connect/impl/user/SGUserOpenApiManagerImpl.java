@@ -55,12 +55,16 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
 
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
-        //todo 是否考虑刚切换时，拿到的sohu token，取不到userinfo
         Result result = new APIResultSupport(false);
         try {
             String userid = userOpenApiParams.getUserid();
-            int clientId = userOpenApiParams.getClient_id();
+            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainConnectUserInfo(userid);
+            if(cacheConnectUserInfoVO != null){
+                result = buildSuccResult(cacheConnectUserInfoVO, userid);
+                return result;
+            }
 
+            int clientId = userOpenApiParams.getClient_id();
             //获取第三方信息
             String providerStr = getProviderByUserid(userid);
             if (StringUtils.isBlank(providerStr)) {
@@ -92,6 +96,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             result = buildSuccResult(connectUserInfoVO, userid);
+            connectAuthService.initialOrUpdateConnectUserInfo(userid,cacheConnectUserInfoVO);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
