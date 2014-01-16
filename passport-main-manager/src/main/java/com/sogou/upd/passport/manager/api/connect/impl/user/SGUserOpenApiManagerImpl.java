@@ -96,7 +96,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             result = buildSuccResult(connectUserInfoVO, userid);
-            connectAuthService.initialOrUpdateConnectUserInfo(userid,cacheConnectUserInfoVO);
+            connectAuthService.initialOrUpdateConnectUserInfo(userid,connectUserInfoVO);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
