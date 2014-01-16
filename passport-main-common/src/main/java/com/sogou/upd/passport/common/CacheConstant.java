@@ -68,6 +68,7 @@ public class CacheConstant {
     /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
     public static final String CACHE_PREFIX_OPENID_CONNECTRELATION = "SP.OPENID:CONNECTRELATION_";  // openid+provider与ConnectRelation的映射
+    public static final String CACHE_PREFIX_PASSPORTID_ACCESSTOKEN = "SP.PASSPORTID:ACCESSTOKEN_"; //passportId与AccessToken映射
 
     /*================CONFIG 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_CLIENTID_APPCONFIG = "SP.CLIENTID:APPCONFIG_";     //clientid与appConfig映射

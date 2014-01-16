@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.ConnectHttpClient;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -74,11 +73,6 @@ public class OpenApiV3 {
             params.remove("sig");
             // 添加固定参数
             params.put("appid", this.appid);
-            // 签名密钥
-            String secret = this.appkey + "&";
-            // 计算签名
-            String sig = SnsSigCheck.makeSig(method, scriptName, params, secret);
-            params.put("sig", sig);
             StringBuilder sb = new StringBuilder(64);
             sb.append(protocol).append("://").append(this.serverName).append(scriptName);
             String url = sb.toString();
@@ -90,13 +84,10 @@ public class OpenApiV3 {
             Map map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
             resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
         } catch (IOException ioe) {
-            logger.error("Transfer Map To Json Is Failed :", ioe);
+            logger.error("api:Transfer Map To Json Is Failed :", ioe);
             throw new IOException("Transfer Map To Json Is Failed:", ioe);
-        } catch (RuntimeException re) {
-            logger.error("http request error :", re);
-            throw new RuntimeException("http request error ", re);
         } catch (Exception e) {
-            logger.error("Execute Api Is Failed :", e);
+            logger.error("api:Execute Api Is Failed :", e);
             throw new Exception("Execute Api Is Failed:", e);
         }
         return resp;

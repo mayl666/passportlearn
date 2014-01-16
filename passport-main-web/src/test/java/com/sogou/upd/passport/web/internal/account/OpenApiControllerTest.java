@@ -18,13 +18,16 @@ import java.util.Map;
  */
 public class OpenApiControllerTest extends BaseActionTest {
 
+    /**
+     * QQ点亮接口
+     *
+     * @throws IOException
+     */
     @Test
     public void testConnectOpenApi() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-//        String userid = "1548840104@sohu.com";
-//        String openid = "1548840104@sohu.com";
-        String userid = "1677D17252BC8AC2985ED6E989D2894E@qq.sohu.com";
-        String openid = "1677D17252BC8AC2985ED6E989D2894E@qq.sohu.com";
+        String userid = "560C552D549401B79A41A2CE8724D31A@qq.sohu.com";
+        String openid = "560C552D549401B79A41A2CE8724D31A@qq.sohu.com";
         int clientId = 1120;
         String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
         long ct = System.currentTimeMillis();
@@ -45,6 +48,81 @@ public class OpenApiControllerTest extends BaseActionTest {
         String mapString = JacksonJsonMapperUtil.getMapper().writeValueAsString(maps);
         params.put("params", mapString);
         String result = sendPost("http://localhost/internal/connect/qq/light", params);
+        System.out.println(result);
+    }
+
+    /**
+     * 获取QQ空间未读数
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testQzoneConnectProxyOpenApi() throws IOException {
+        Map<String, String> params = new HashMap<String, String>();
+        String userid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        String openid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        int clientId = 1120;
+        String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
+        long ct = System.currentTimeMillis();
+        String code = ManagerHelper.generatorCodeGBK(userid.toString(), clientId, serverSecret, ct);
+        System.out.println("code:" + code);
+        params.put("client_id", String.valueOf(clientId));
+        params.put("userid", userid);
+        params.put("openid", openid);
+        params.put("code", code);
+        params.put("ct", String.valueOf(ct));
+        String result = sendPost("http://localhost/internal/connect/qq/user/qzone/unread_num", params);
+        System.out.println("--------------------------结果如下--------------------------");
+        System.out.println(result);
+    }
+
+    /**
+     * 获取QQ微博未读数
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testWeiboConnectProxyOpenApi() throws IOException {
+        Map<String, String> params = new HashMap<String, String>();
+        String userid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        String openid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        int clientId = 1120;
+        String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
+        long ct = System.currentTimeMillis();
+        String code = ManagerHelper.generatorCodeGBK(userid.toString(), clientId, serverSecret, ct);
+        System.out.println("code:" + code);
+        params.put("client_id", String.valueOf(clientId));
+        params.put("userid", userid);
+        params.put("openid", openid);
+        params.put("code", code);
+        params.put("ct", String.valueOf(ct));
+        String result = sendPost("http://localhost/internal/connect/qq/user/weibo/unread_num", params);
+        System.out.println("--------------------------结果如下--------------------------");
+        System.out.println(result);
+    }
+
+    /**
+     * 获取QQ邮箱未读数
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testMailConnectProxyOpenApi() throws IOException {
+        Map<String, String> params = new HashMap<String, String>();
+        String userid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        String openid = "0000C6CF887D32A7BCAE3022BF965AA6@qq.sohu.com";
+        int clientId = 1120;
+        String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
+        long ct = System.currentTimeMillis();
+        String code = ManagerHelper.generatorCodeGBK(userid.toString(), clientId, serverSecret, ct);
+        System.out.println("code:" + code);
+        params.put("client_id", String.valueOf(clientId));
+        params.put("userid", userid);
+        params.put("openid", openid);
+        params.put("code", code);
+        params.put("ct", String.valueOf(ct));
+        String result = sendPost("http://localhost/internal/connect/qq/user/mail/unread_num", params);
+        System.out.println("--------------------------结果如下--------------------------");
         System.out.println(result);
     }
 }

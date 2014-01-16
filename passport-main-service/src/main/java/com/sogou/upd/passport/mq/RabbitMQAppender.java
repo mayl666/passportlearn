@@ -21,6 +21,9 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
     private String host = "localhost";
     private int port = 5672;
     private String queueName = "test";
+    private String exchangeName = "test";
+
+
     private String username = "guest";
     private String password = "guest";
     private String virtualHost = "/";
@@ -101,7 +104,7 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
             if (channel == null) {
                 return;
             }
-            channel.basicPublish("", queueName, null, msg.getBytes());
+            channel.basicPublish(exchangeName, queueName, null, msg.getBytes());
         } catch (IOException e) {
             addError("append failed: ", e);
         }
@@ -258,5 +261,13 @@ public class RabbitMQAppender extends UnsynchronizedAppenderBase<ILoggingEvent> 
 
     public void setChanSize(int chanSize) {
         this.chanSize = chanSize;
+    }
+
+    public String getExchangeName() {
+        return exchangeName;
+    }
+
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
     }
 }

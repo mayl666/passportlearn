@@ -70,6 +70,7 @@
         <username>davion</username>
         <password>davion</password>
         <queueName>passport_user_1</queueName>
+        <exchangeName>passport_user_1</exchangeName>
         <encoder>
             <pattern>%msg</pattern>
         </encoder>

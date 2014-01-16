@@ -280,6 +280,22 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_NOT_SUPPORTED = "30017";
     // 透传失败
     public static final String ERR_CODE_CONNECT_PASSTHROUGH = "30018";
+    //第三方开放平台接口格式有误
+    public static final String ERR_CODE_CONNECT_INTERFACE = "30019";
+    //不支持指定编码以及不支持指定的加密方法
+    public static final String ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR = "30020";
+    //找不到access_token
+    public static final String ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND = "30021";
+    //access_token过期
+    public static final String ERR_CODE_CONNECT_ACCESSTOKEN_EXPIRED = "30022";
+    //第三方返回openapi调用失败
+    public static final String ERR_CODE_CONNECT_OPENAPI_ERROR = "30023";
+    //SOHU暂时不支持此第三方的API调用
+    public static final String ERR_CODE_CONNECT_SOHU_NOT_SUPPORTED_ERROR = "30024";
+    //参数无效
+    public static final String ERR_CODE_CONNECT_INVALID_PARAMETER = "30025";
+    //第三方API调用失败
+    public static final String ERR_CODE_CONNECT_FAILED = "30026";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -337,6 +353,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
 
     public static final String ERR_CODE_ERROR_SERVERNAME = "30710";
+
     public ErrorUtil() {
         super();
     }
@@ -352,7 +369,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_REFRESH_TOKEN, "refresh_token错误");
-        ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN,"签名或token验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN, "签名或token验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
 
@@ -473,17 +490,21 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPT_VALUE_ERROR,"当opt为set时，value值必须要有，且为0或1，其它值非法");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SET_POST_ERROR,"当opt值为set时，请求方式必须为post");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL,"用户取消授权");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED,"不支持此类第三方账号调用");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH,"透传失败");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPT_VALUE_ERROR, "当opt为set时，value值必须要有，且为0或1，其它值非法");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SET_POST_ERROR, "当opt值为set时，请求方式必须为post");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL, "用户取消授权");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类第三方账号调用");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH, "透传失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "找不到access_token");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_EXPIRED, "access_token过期");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPENAPI_ERROR, "第三方返回openapi调用失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SOHU_NOT_SUPPORTED_ERROR, "SOHU暂时不支持此第三方的API调用");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_PARAMETER, "参数无效");
 
 
         // info
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR,"账号非所支持的第三方账号类型");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_GET_USERINFO_ERROR,"获取第三方用户信息失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_GET_USERINFO_ERROR, "获取第三方用户信息失败");
         ERR_CODE_MSG_MAP.put(PIC_URL_NOT_NULL, "图片url不能为空");
         ERR_CODE_MSG_MAP.put(ADD_SHARE_FAIL, "发布失败");
         ERR_CODE_MSG_MAP.put(NO_OPEN_BLOG, "还没开通微博呢");
@@ -510,7 +531,6 @@ public class ErrorUtil {
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_SERVERNAME, "非法的服务器名");
-
 
 
     }

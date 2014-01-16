@@ -43,7 +43,7 @@ public class OpenApiParamsHelper {
         Map<String, Object> map = objectMapper.convertValue(object, Map.class);
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
         baseOpenApiParams.setUserid(map.get("userid").toString());
-        baseOpenApiParams.setOpenid(map.get("openid").toString());
+//        baseOpenApiParams.setOpenid(map.get("openid").toString());
 //        baseOpenApiParams.setClient_id(Integer.parseInt(clientId));
         return baseOpenApiParams;
     }
