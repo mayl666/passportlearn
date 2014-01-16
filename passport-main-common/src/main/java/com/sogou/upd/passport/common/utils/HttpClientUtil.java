@@ -80,7 +80,8 @@ public class HttpClientUtil {
         try {
             method.setFollowRedirects(false);
             method.setDoAuthentication(false);
-            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+//            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
             shClient.executeMethod(method);
             stopWatch(stopWatch, urlArray[0], "success");
@@ -101,7 +102,8 @@ public class HttpClientUtil {
         try {
             method.setFollowRedirects(false);
             method.setDoAuthentication(false);
-            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+//            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             method.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
 
             shClient.executeMethod(method);
@@ -146,7 +148,8 @@ public class HttpClientUtil {
         try {
             method.setFollowRedirects(false);
             method.setDoAuthentication(false);
-            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+//            method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             method.getParams().setParameter(HttpMethodParams.USER_AGENT,
                     "Sogou Passport Center Notifier");
             method.setRequestHeader("Accept-Encoding", "gzip, deflate");
