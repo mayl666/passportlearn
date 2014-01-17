@@ -286,6 +286,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_INVALID_PARAMETER = "30025";
     //第三方API调用失败
     public static final String ERR_CODE_CONNECT_FAILED = "30026";
+    //qq用户修改密码，导致token失效
+    public static final String ERR_CODE_CONNECT_TOKEN_PWDERROR = "30027";
+    //qq用户修改密码，导致token失效
+    public static final String ERR_CODE_CONNECT_TOKEN_ERROR = "30028";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -486,6 +490,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "找不到access_token");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPENAPI_ERROR, "第三方返回openapi调用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_PARAMETER, "参数无效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_PWDERROR, "第三方账号修改密码，导致token失效");
+
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
