@@ -12,6 +12,8 @@ import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -276,10 +278,10 @@ public class SGHttpClient {
                 registry.register(new Scheme("https", 443, ssf));
                 ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
 
-
                 HttpParams params = base.getParams();
                 mgr.setMaxTotal(MAX_TOTAL_CONNECTIONS);
                 mgr.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
+                HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
 

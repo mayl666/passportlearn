@@ -94,15 +94,15 @@ public enum AccountDomainEnum {
 
     }
 
-    //获取内部大小写的处理方式：搜狗个性账号、外域账号按小写处理
+    //获取内部大小写的处理方式：第三方除外，其他账号都按小写处理
     public static String getInternalCase(String userId) {
-        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(userId);
-        if (accountDomainEnum == AccountDomainEnum.SOGOU || accountDomainEnum == AccountDomainEnum.INDIVID
-                || accountDomainEnum == AccountDomainEnum.OTHER) {
-            return userId.toLowerCase();
+        if (userId.endsWith("@focus.cn")) {
+            return userId;
         }
-        return userId;
-
+        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userId)) {
+            return userId;
+        }
+        return userId.toLowerCase();
     }
 
     //判断是否为手机号或者无@账号，以判断sohu+
