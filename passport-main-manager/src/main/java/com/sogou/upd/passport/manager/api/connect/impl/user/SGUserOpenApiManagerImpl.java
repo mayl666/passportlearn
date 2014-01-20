@@ -59,7 +59,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         try {
             String userid = userOpenApiParams.getUserid();
             ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainConnectUserInfo(userid);
-            if(cacheConnectUserInfoVO != null){
+            if (cacheConnectUserInfoVO != null) {
                 result = buildSuccResult(cacheConnectUserInfoVO, userid);
                 return result;
             }
@@ -96,14 +96,18 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             result = buildSuccResult(connectUserInfoVO, userid);
-            connectAuthService.initialOrUpdateConnectUserInfo(userid,connectUserInfoVO);
+            connectAuthService.initialOrUpdateConnectUserInfo(userid, connectUserInfoVO);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
         } catch (OAuthProblemException ope) {
-            logger.error("handle oauth authroize code error!", ope);
+            String errMsg = ErrorUtil.getERR_CODE_MSG(ope.getError());
+            if (StringUtils.isBlank(errMsg)) {
+                logger.error("handle oauth authroize code error!", ope);
+            }
             result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
+            logger.error("system error!", exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
         return result;
