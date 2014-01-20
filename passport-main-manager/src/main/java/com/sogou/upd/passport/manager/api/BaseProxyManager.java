@@ -113,14 +113,8 @@ public class BaseProxyManager {
         if (Strings.isNullOrEmpty(clientId)) {
             clientId = String.valueOf(requestModel.getParam(CommonConstant.CLIENT_ID));
         }
-        String code;
-        if (isNonPCOpenApiProxy(url, clientId)) {
-            code = ManagerHelper.generatorCode(signVariableStr, SHPPUrlConstant.DEFAULT_CONNECT_APP_ID, SHPPUrlConstant.DEFAULT_CONNECT_APP_KEY, ct);
-            requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.DEFAULT_CONNECT_APP_ID));
-        } else {
-            code = ManagerHelper.generatorCodeGBK(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
-            requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.APP_ID));
-        }
+        String code = ManagerHelper.generatorCodeGBK(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
+        requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.APP_ID));
         requestModel.addParam(CommonConstant.RESQUEST_CODE, code);
         requestModel.addParam(CommonConstant.RESQUEST_CT, String.valueOf(ct));
 
@@ -167,19 +161,5 @@ public class BaseProxyManager {
             map.remove("uniqname");
         }
         map.remove("errmsg");
-    }
-
-    /*
-     * 第三方代理接口请求中非 client_id=1044和1105 浏览器输入法客户端的
-     * 如果是，访问搜狐时需传appid=9998；
-     * 如果否，访问搜狐时需传appid=1120；
-     */
-    private boolean isNonPCOpenApiProxy(String url, String clientId) {
-        if (url.equals(SHPPUrlConstant.GET_OPEN_USER_INFO) || url.equals(SHPPUrlConstant.CONNECT_SHARE_PIC) || url.equals(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO)) {
-            if (!clientId.equals(String.valueOf(CommonConstant.PC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID)) && !clientId.equals(String.valueOf(CommonConstant.XIAOSHUO_CLIENTID))) {
-                return true;
-            }
-        }
-        return false;
     }
 }
