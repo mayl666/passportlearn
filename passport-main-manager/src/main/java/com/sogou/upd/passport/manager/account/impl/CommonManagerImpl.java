@@ -181,12 +181,6 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public void setSSOCookie(HttpServletResponse response, String sginf, String sgrdig, String domain, int maxAge) {
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGINF, sginf, maxAge, domain);
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGRDIG, sgrdig, maxAge, domain);
-    }
-
-    @Override
     public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip) {
         StringBuilder urlBuilder = new StringBuilder();
         String daohangDomain = ConnectDomainEnum.DAOHANG.toString();

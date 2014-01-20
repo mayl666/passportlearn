@@ -1,9 +1,7 @@
-package com.sogou.upd.passport.web.account.form;
+package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.Min;
 
 /**
  * Created with IntelliJ IDEA.
