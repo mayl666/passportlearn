@@ -69,9 +69,6 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         Result result = new APIResultSupport(false);
-        String userId = authUserApiParams.getUserid();
-        userId = AccountDomainEnum.getInternalCase(userId);
-        authUserApiParams.setUserid(userId);
         try {
             result = accountService.verifyUserPwdVaild(authUserApiParams.getUserid(), authUserApiParams.getPassword(), false);
             return result;

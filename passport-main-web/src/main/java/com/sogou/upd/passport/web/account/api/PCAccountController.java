@@ -240,7 +240,7 @@ public class PCAccountController extends BaseController {
             return "Error: parameter error!";
         }
         String userId = authPcTokenParams.getUserid();
-        userId = AccountDomainEnum.getInternalCase(userId);
+        userId = AccountDomainEnum.getAuthtokenCase(userId);
         authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
 

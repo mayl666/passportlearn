@@ -48,9 +48,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         String userId = authUserParameters.getUserid();
-        userId = AccountDomainEnum.getInternalCase(userId);
-        authUserParameters.setUserid(userId);
-
         if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
             userId = userId + "@sogou.com";
             authUserParameters.setUserid(userId);
