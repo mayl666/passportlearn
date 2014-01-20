@@ -101,11 +101,14 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
         } catch (OAuthProblemException ope) {
-            String errMsg = ErrorUtil.getERR_CODE_MSG(ope.getError());
+            String errorCode = ope.getError();
+            String errMsg = ErrorUtil.getERR_CODE_MSG(errorCode);
             if (StringUtils.isBlank(errMsg)) {
                 logger.error("handle oauth authroize code error!", ope);
+                result = buildErrorResult(errorCode, ope.getDescription());
+            }else {
+                result = buildErrorResult(errorCode, errMsg);
             }
-            result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
             logger.error("system error!", exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
