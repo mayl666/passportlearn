@@ -88,7 +88,6 @@ public class LoginApiController extends BaseController {
         }
 
         String userid = params.getUserid();
-
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid(userid);
         createCookieUrlApiParams.setRu(ru);
@@ -133,7 +132,6 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
         String createip = params.getCreateip();
-
         try {
             if(StringUtils.isEmpty(createip)){
                 createip =null;

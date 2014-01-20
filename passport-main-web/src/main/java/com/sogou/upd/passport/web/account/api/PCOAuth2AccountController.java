@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -185,6 +186,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+
         result = checkPCAccountNotExists(username);
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
             result.setMessage("该手机号已注册或已绑定，请直接登录");
@@ -217,6 +219,7 @@ public class PCOAuth2AccountController extends BaseController {
             }
             ip = getIp(request);
             uuidName = ServletUtil.getCookie(request, "uuidName");
+
             result = regManager.checkRegInBlackList(ip, uuidName);
             if (!result.isSuccess()) {
                 if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
@@ -306,7 +309,6 @@ public class PCOAuth2AccountController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
         String username = loginParams.getUsername();
         result = pcOAuth2LoginManager.accountLogin(loginParams, getIp(request), request.getScheme());
 
@@ -399,24 +401,33 @@ public class PCOAuth2AccountController extends BaseController {
             return "";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
+        String redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)){
+            redirectUrl = "/web/userinfo/avatarurl?client_id=" +  oauth2PcIndexParams.getClient_id();
+        }else if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)){
+            redirectUrl = "/web/security/password?client_id=" +  oauth2PcIndexParams.getClient_id();
+        }else {
+            redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        }
+
         //判断cookie中的passportId与token解密出来的passportId是否相等
         if (!Strings.isNullOrEmpty(cookieUserId)) {
             if (!cookieUserId.equals(passportId)) {
                 response.sendRedirect("/web/logout_redirect");
                 return "";
             }
-            response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
+            response.sendRedirect(redirectUrl);
             return "";
         }
 
         String sogouRu ="https://account.sogou.com";
-        String sohuRu = "https://account.sogou.com/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        String sohuRu = "https://account.sogou.com"+ redirectUrl;
         result = commonManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),-1,sogouRu,0,sohuRu);
         if (result.isSuccess()) {
             response.sendRedirect((String) result.getModels().get("cookieUrl"));
             return "";
         }
-        response.sendRedirect("/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id());
+        response.sendRedirect(redirectUrl);
         return "";
     }
 

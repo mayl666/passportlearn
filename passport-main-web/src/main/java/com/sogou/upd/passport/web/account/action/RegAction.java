@@ -85,6 +85,7 @@ public class RegAction extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+
         String clientIdStr = checkParam.getClient_id();
         int clientId = 1120;
         if (!Strings.isNullOrEmpty(clientIdStr)) {

@@ -115,11 +115,11 @@ public enum AccountDomainEnum {
     }
 
     public static boolean isIndivid(String username) {
-        return  (!username.contains("@"))&& !isPhone(username);
+        return (!username.contains("@")) && !isPhone(username);
     }
 
-    public static boolean isPassportId(String username){
-        if(StringUtils.isBlank(username)){
+    public static boolean isPassportId(String username) {
+        if (StringUtils.isBlank(username)) {
             return false;
         }
         if (username.matches(".+@[a-zA-Z0-9.]+$")) {

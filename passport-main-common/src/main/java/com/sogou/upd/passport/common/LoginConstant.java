@@ -49,7 +49,7 @@ public class LoginConstant {
     /**
      * 一小时内IP登陆成功多少次之后，用户不能再登陆
      */
-    public static final int LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT = 1000;
+    public static final int LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT = 500;
 
     /**
      * 内部接口一小时内某IP验证失败多少次之后，用户不能再登陆

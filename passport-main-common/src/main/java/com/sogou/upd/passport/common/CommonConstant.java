@@ -23,6 +23,10 @@ public class CommonConstant {
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
     public static final String SG_TOKEN_START = "SG"; //4.2版本浏览器token开始标志
     public static final String SG_TOKEN_OLD_START = "SG_"; //4.2版本早期的token开始标志
+    public static final String PC_REDIRECT_GETUSERINFO = "getuserinfo"; //跳转到个人中心页面
+    public static final String PC_REDIRECT_AVATARURL = "avatarurl"; //跳转到修改头像页面
+    public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
+
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
@@ -70,6 +74,8 @@ public class CommonConstant {
     public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
 
+    public static final String LOGIN_IN_BLACKLIST = "1"; //用户名或者ip在黑名单的标识
+
     //=============缓存相关配置项====================
 //	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time
 
@@ -80,6 +86,11 @@ public class CommonConstant {
 
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
+
+    public static final String RESQUEST_USERNAME = "username";
+    public static final String RESQUEST_USERID = "userid";
+
+
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

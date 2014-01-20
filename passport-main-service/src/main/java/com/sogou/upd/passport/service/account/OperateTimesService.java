@@ -39,16 +39,6 @@ public interface OperateTimesService {
     public boolean hCheckTimesByKey(String hKey, String key, final int max) throws ServiceException;
 
     /**
-     * 是否等于受限制次数的一半，用于记录日志
-     *
-     * @param cacheKey
-     * @param max
-     * @return
-     * @throws ServiceException
-     */
-    public boolean isHalfTimes(String cacheKey, final int max) throws ServiceException;
-
-    /**
      * 记录登陆成功或者失败的次数
      *
      * @param username
@@ -57,34 +47,6 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public void incLoginTimes(final String username, final String ip, final boolean isSuccess) throws ServiceException;
-
-    /**
-     * 检查username是否在黑名单中
-     *
-     * @param username
-     * @param ip
-     * @return
-     * @throws ServiceException
-     */
-    public boolean checkLoginUserInBlackList(String username, String ip) throws ServiceException;
-
-    /**
-     * 记录一天内修改密码的次数
-     *
-     * @param passportId
-     * @return
-     * @throws ServiceException
-     */
-    public long incResetPasswordTimes(String passportId) throws ServiceException;
-
-    /**
-     * 检查一天内修改密码的次数
-     *
-     * @param passportId
-     * @return
-     * @throws ServiceException
-     */
-    public boolean checkLimitResetPwd(String passportId) throws ServiceException;
 
     /**
      * 记录一天内修改密码的次数
@@ -251,8 +213,30 @@ public interface OperateTimesService {
     public boolean checkLimitCheckPwdFail(String userId, int clientId, AccountModuleEnum module) throws ServiceException;
 
     /**
-     * 检查用户是否在白名单列表里面
-     *
+     * 判断username 或者ip是否在黑名单中
+     * @param username
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean isUserInBlackList(String username, String ip) throws ServiceException;
+
+    /**
+     * 将username添加到登录黑名单中
+     * @param username
+     * @throws ServiceException
+     */
+    public void addUserNameToLoginBlackList(String username) throws ServiceException;
+
+    /**
+     * 将ip添加到登录黑名单中
+     * @param ip
+     * @throws ServiceException
+     */
+    public void addIPToLoginBlackList(String ip) throws ServiceException;
+
+    /**
+     * 检查用户名或者ip是否在白名单中
      * @param username
      * @param ip
      * @return
@@ -260,19 +244,11 @@ public interface OperateTimesService {
      */
     public boolean checkLoginUserInWhiteList(String username, String ip) throws ServiceException;
 
-
-
     /**
-     * 内部接口authuser次数累加
-     */
-    public void incAuthUserTimes(final String username, final String ip, final boolean isSuccess) throws ServiceException;
-
-    /**
-     * 内部接口authuser 判断是否在黑名单中
+     * 检查用户名或者ip是否需要被添加进黑名单中
      * @param username
      * @param ip
-     * @return
      * @throws ServiceException
      */
-    public boolean isWebAuthUserInBlackList(final String username, final String ip) throws ServiceException;
+    public boolean isLoginTimesForBlackList(String username, String ip) throws ServiceException;
 }

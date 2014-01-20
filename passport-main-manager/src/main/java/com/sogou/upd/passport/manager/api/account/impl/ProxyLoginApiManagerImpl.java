@@ -99,7 +99,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setDefaultModel("requestModel", requestModel);
 
             StringBuilder urlBuilder = new StringBuilder(shUrl);
-            urlBuilder.append("?").append("userid=").append(userId)
+            urlBuilder.append("?").append("userid=").append(URLEncoder.encode(userId, "UTF-8"))
                     .append("&appid=").append(SHPPUrlConstant.APP_ID)
                     .append("&ct=").append(ct)
                     .append("&code=").append(code)

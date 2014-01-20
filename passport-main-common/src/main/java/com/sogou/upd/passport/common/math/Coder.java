@@ -86,12 +86,13 @@ public class Coder {
 
     /**
      * 解码base64
+     *
      * @param key
      * @return
      */
-    public  static String decodeBASE64(String key){
-        byte[] bytes= Base64.decodeBase64(key);
-        return  new String(bytes);
+    public static String decodeBASE64(String key) {
+        byte[] bytes = Base64.decodeBase64(key);
+        return new String(bytes);
     }
 
 
