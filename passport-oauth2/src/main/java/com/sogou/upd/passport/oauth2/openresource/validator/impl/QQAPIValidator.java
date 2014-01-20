@@ -25,7 +25,7 @@ public class QQAPIValidator extends AbstractClientValidator {
         QQ_OAUTH_ERROR_MAP.put("100015", ErrorUtil.CONNECT_TOKEN_INVALID);
         QQ_OAUTH_ERROR_MAP.put("100016", ErrorUtil.CONNECT_TOKEN_INVALID);
         QQ_OAUTH_ERROR_MAP.put("-73", ErrorUtil.ERR_CODE_CONNECT_TOKEN_PWDERROR);
-        QQ_OAUTH_ERROR_MAP.put("-23", ErrorUtil.CONNECT_TOKEN_INVALID);
+        QQ_OAUTH_ERROR_MAP.put("-23", ErrorUtil.ERR_CODE_CONNECT_TOKEN_ERROR);
 
 
     }
