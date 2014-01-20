@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.WapConstant;
-import com.sogou.upd.passport.common.validation.constraints.Password;
-import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.V;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -13,15 +10,7 @@ import javax.validation.constraints.Min;
 /**
  * 用于web端的登陆的参数 User: liagng201716@sogou-inc.com Date: 13-5-12 Time: 下午10:01
  */
-public class WapLoginParams {
-
-    /**
-     * 登陆用户名
-     */
-    @Length(min = 1, max = 100, message = "用户名错误，请重新输入！")
-    @NotBlank(message = "请输入用户名！")
-    private String username;
-
+public class WapLoginParams extends UsernameParams {
     /**
      * 登陆密码
      */
@@ -62,14 +51,6 @@ public class WapLoginParams {
 
     public void setV(String v) {
         this.v = v;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
