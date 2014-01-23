@@ -13,10 +13,7 @@ import org.hibernate.validator.constraints.URL;
  * Time: 下午2:59
  * To change this template use File | Settings | File Templates.
  */
-public class RegEmailApiParams extends BaseApiParams {
-    @NotBlank(message = "注册账号不允许为空")
-    @Email
-    private String userid;  //注册账号
+public class RegEmailApiParams extends BaseUserApiParams {
     @NotBlank(message = "密码不允许为空")
     private String password;  //明文密码，需要对格式校验
     @NotBlank(message = "注册IP不允许为空")
@@ -34,14 +31,6 @@ public class RegEmailApiParams extends BaseApiParams {
         this.createip = createip;
         setClient_id(client_id);
         this.ru=ru;
-    }
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
     }
 
     public String getPassword() {

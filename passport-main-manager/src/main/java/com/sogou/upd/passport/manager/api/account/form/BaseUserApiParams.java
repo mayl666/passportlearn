@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -14,6 +15,8 @@ public class BaseUserApiParams extends BaseApiParams {
     protected String userid;
 
     public String getUserid() {
+        String internalUsername = AccountDomainEnum.getInternalCase(userid);
+        setUserid(internalUsername);
         return userid;
     }
 

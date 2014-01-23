@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+
 /**
  * sohu桌面应用token登录流程的参数类
  * 应用于：/getpairtoken接口
@@ -18,6 +20,8 @@ public class PcAccountWebParams {
     private String openapptype;
 
     public String getUserid() {
+        String internalUsername = AccountDomainEnum.getInternalCase(userid);
+        setUserid(internalUsername);
         return userid;
     }
 

@@ -258,7 +258,7 @@ public class WapLoginAction extends BaseController {
             }
 
             sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
-            sgid = Strings.isNullOrEmpty(sgid)?params.getSgid():null;
+            sgid = Strings.isNullOrEmpty(sgid)?params.getSgid():sgid;
             client_id = params.getClient_id();
 
             //处理ru
