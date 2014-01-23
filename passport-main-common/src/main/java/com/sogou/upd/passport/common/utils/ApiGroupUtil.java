@@ -21,7 +21,18 @@ public class ApiGroupUtil {
         apiGroupMap.put("/internal/account/regmobileuser", REGISTER);
         apiGroupMap.put("/web/reguser", REGISTER);
 
-        apiGroupMap.put("/connect/login", LOGIN);
+        /*
+         * 第三方登录
+         * 参考oauth_consumer.properties
+         * TODO：以后修改为读取配置文件
+         */
+        apiGroupMap.put("/connect/callback/sina", LOGIN);
+        apiGroupMap.put("/connect/callback/renren", LOGIN);
+        apiGroupMap.put("/connect/callback/qq", LOGIN);
+        apiGroupMap.put("/connect/callback/taobao", LOGIN);
+        apiGroupMap.put("/connect/callback/baidu", LOGIN);
+
+
         apiGroupMap.put("/web/login", LOGIN);
         apiGroupMap.put("/internal/account/authuser", LOGIN);
         apiGroupMap.put("/act/pclogin", LOGIN);
