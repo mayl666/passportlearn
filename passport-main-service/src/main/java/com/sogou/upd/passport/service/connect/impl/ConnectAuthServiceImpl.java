@@ -131,13 +131,12 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             return true;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
-//            throw new ServiceException(e);
             return false;
         }
     }
 
     @Override
-    public ConnectUserInfoVO obtainConnectUserInfo(String userid) throws ServiceException {
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid) throws ServiceException {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(userid);
             ConnectUserInfoVO connectUserInfoVO = dbRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);

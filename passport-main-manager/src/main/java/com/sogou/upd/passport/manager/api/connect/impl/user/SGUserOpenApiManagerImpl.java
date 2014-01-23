@@ -1,28 +1,20 @@
 package com.sogou.upd.passport.manager.api.connect.impl.user;
 
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
-import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -58,7 +50,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         Result result = new APIResultSupport(false);
         try {
             String userid = userOpenApiParams.getUserid();
-            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainConnectUserInfo(userid);
+            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(userid);
             if (cacheConnectUserInfoVO != null) {
                 result = buildSuccResult(cacheConnectUserInfoVO, userid);
                 return result;
@@ -80,7 +72,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setOpenid(userid);
             baseOpenApiParams.setUserid(userid);
-            Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");

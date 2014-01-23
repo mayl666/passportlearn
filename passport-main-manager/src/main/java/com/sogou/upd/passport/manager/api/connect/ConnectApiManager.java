@@ -42,5 +42,5 @@ public interface ConnectApiManager {
      * @param baseOpenApiParams 调用sohu接口参数类
      * @return
      */
-    public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
+    public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
 }

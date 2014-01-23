@@ -78,7 +78,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
@@ -135,7 +135,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
@@ -194,7 +194,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");

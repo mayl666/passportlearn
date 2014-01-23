@@ -108,11 +108,6 @@ public class BaseProxyManager {
         }
         long ct = System.currentTimeMillis();
         //计算默认的code
-        String url = requestModel.getUrl();
-        String clientId = String.valueOf(requestModel.getParam(SHPPUrlConstant.APPID_STRING));
-        if (Strings.isNullOrEmpty(clientId)) {
-            clientId = String.valueOf(requestModel.getParam(CommonConstant.CLIENT_ID));
-        }
         String code = ManagerHelper.generatorCodeGBK(signVariableStr, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY, ct);
         requestModel.addParam(SHPPUrlConstant.APPID_STRING, String.valueOf(SHPPUrlConstant.APP_ID));
         requestModel.addParam(CommonConstant.RESQUEST_CODE, code);

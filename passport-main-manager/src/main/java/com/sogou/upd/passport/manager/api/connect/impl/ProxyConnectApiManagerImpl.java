@@ -132,7 +132,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
      * @return
      */
     @Override
-    public Result obtainConnectTokenInfo(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+    public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         Result result = new APIResultSupport(false);
         try {
             String userid = baseOpenApiParams.getUserid();

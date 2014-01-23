@@ -191,7 +191,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId, String username) {
-        Map resourceMap = Maps.newHashMap();
+        Map resourceMap;
         String passportId = null;
 
         if (accessToken.startsWith(CommonConstant.SG_TOKEN_OLD_START)) {

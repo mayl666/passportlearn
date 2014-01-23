@@ -73,5 +73,5 @@ public interface ConnectAuthService {
      * @return
      * @throws ServiceException
      */
-    public ConnectUserInfoVO obtainConnectUserInfo(String userid) throws ServiceException;
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid) throws ServiceException;
 }
