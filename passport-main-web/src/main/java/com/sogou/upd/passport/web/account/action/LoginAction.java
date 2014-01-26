@@ -137,6 +137,7 @@ public class LoginAction extends BaseController {
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
         UserOperationLogUtil.log(userOperationLog);
 
         if (result.isSuccess()) {
