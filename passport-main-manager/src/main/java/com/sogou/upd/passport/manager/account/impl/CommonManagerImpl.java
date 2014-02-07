@@ -201,7 +201,7 @@ public class CommonManagerImpl implements CommonManager {
         }
         ///////////这块需要修改成统一的， 先加上，以后改。  add by denghua/////////////
         else if (domain.equals(shurufaDomain)) {
-            urlBuilder.append(CommonConstant.SHURUFA_CREATE_COOKIE_URL).append("?domain=").append(haoDomain);
+            urlBuilder.append(CommonConstant.SHURUFA_CREATE_COOKIE_URL).append("?domain=").append(shurufaDomain);
         }
         ////////////////////// add by denghua end///////////////
 
