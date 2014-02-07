@@ -68,6 +68,7 @@ public class ConnectCallbackController extends BaseConnectController {
             //用户第三方登录log
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
+            userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(req, "YYID"));
             UserOperationLogUtil.log(userOperationLog);
 
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
