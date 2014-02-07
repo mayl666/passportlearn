@@ -123,7 +123,7 @@ public class DESTokenGenerator {
      * @throws Exception
      */
 
-    public final static String decrypt(String data) {
+    public static String decrypt(String data) {
         try {
             return new String(decrypt(hex2byte(data.getBytes()),
 
@@ -143,7 +143,7 @@ public class DESTokenGenerator {
      * @throws Exception
      */
 
-    public final static String encrypt(String password) {
+    public static String encrypt(String password) {
         try {
             return byte2hex(encrypt(password.getBytes(), PASSWORD_CRYPT_KEY.getBytes()));
         } catch (Exception e) {
