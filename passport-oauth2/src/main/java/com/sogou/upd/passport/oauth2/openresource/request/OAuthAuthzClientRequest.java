@@ -28,10 +28,6 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
         return new TokenRequestBuilder(url);
     }
 
-    public static OpenidRequestBuilder openIdLocation(String url) {
-        return new OpenidRequestBuilder(url);
-    }
-
     /**
      * 用户OAuth授权请求构造器
      *
@@ -184,19 +180,6 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
         public TokenRequestBuilder setState(String state) {
             this.parameters.put(OAuth.OAUTH_STATE, state);
             return this;
-        }
-    }
-
-    /**
-     * 用access_token获取Openid的请求构造器
-     * 目前只有QQ需要
-     *
-     * @author shipengzhi(shipengzhi@sogou-inc.com)
-     */
-    public static class OpenidRequestBuilder extends OAuthClientRequestBuilder {
-
-        protected OpenidRequestBuilder(String url) {
-            super(url);
         }
     }
 
