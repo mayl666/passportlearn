@@ -224,7 +224,7 @@ public class DateUtil {
         }
 
         long intervalMilli = lastDate.getTime() - firstDate.getTime();
-        return (long) (intervalMilli / (1000));
+        return (intervalMilli / (1000));
     }
 
     /**

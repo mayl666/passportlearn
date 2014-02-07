@@ -102,7 +102,7 @@ public class RandomStr
         {
             for (int i = 0; i < length.intValue(); i++)
             {
-                randomstr = randomstr + new Character((char) ((int) 34 + ((int) (getFloat() * 93)))).toString();
+                randomstr = randomstr + new Character((char) (34 + ((int) (getFloat() * 93)))).toString();
             }
         }
         else if (singles)
@@ -285,7 +285,7 @@ public class RandomStr
         char up = upper.charValue();
 
         // get a random number in the range lowlow - lowup
-        tempval = (int) ((int) low + (getFloat() * ((int) (up - low))));
+        tempval = (int) ((int) low + (getFloat() * ((up - low))));
 
         // return the random char
         return (new Character((char) tempval));
