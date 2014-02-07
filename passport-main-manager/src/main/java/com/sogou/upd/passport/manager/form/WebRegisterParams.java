@@ -2,36 +2,25 @@ package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
 
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
-import com.sogou.upd.passport.common.validation.constraints.UserName;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 
 /**
  * User: mayan
  * Date: 13-4-15 Time: 下午5:15
  */
-public class WebRegisterParams {
+public class WebRegisterParams extends UsernameParams{
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private String client_id;
-
-    @Length(min = 1, max = 100, message = "用户名错误！")
-    @NotBlank(message = "注册账号不允许为空!")
-    @UserName
-    private String username;
 
     @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     @NotBlank(message = "请输入密码!")
@@ -51,20 +40,37 @@ public class WebRegisterParams {
         return StringUtil.isSohuUserName(username);
     }
 
+    @AssertTrue(message = "username格式错误")
+    public boolean isUserNameValid() {
+        if (Strings.isNullOrEmpty(username)) {
+            return true;
+        }
+        if (username.indexOf("@") == -1) {
+            if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+                //个性账号格式是否拼配，{3，15}就表示4--16位，必须字母开头，不作大小写限制
+                String regx = "[a-zA-Z]([a-zA-Z0-9_.-]{3,15})";
+                boolean flag = username.matches(regx);
+                if (!flag) {
+                    return false;
+                }
+            }
+        } else {
+            //邮箱格式,与sohu的邮箱格式相匹配了
+            String reg = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
+            boolean flag = username.matches(reg);
+            if (!flag) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public String getClient_id() {
         return client_id;
     }
 
     public void setClient_id(String client_id) {
         this.client_id = client_id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {

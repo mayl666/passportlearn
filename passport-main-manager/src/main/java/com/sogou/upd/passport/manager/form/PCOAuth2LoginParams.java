@@ -10,9 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 下午11:21
  * To change this template use File | Settings | File Templates.
  */
-public class PCOAuth2LoginParams {
-    @NotBlank(message = "登陆名不能为空")
-    private String username;
+public class PCOAuth2LoginParams extends UsernameParams{
     @NotBlank(message = "密码不能为空")
     private String password;
 
@@ -72,14 +70,6 @@ public class PCOAuth2LoginParams {
 
     public void setPwdtype(int pwdtype) {
         this.pwdtype = pwdtype;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {

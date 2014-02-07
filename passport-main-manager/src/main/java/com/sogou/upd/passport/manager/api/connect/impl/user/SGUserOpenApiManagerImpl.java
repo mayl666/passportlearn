@@ -1,28 +1,20 @@
 package com.sogou.upd.passport.manager.api.connect.impl.user;
 
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelJSON;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
-import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
@@ -55,12 +47,16 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
 
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
-        //todo 是否考虑刚切换时，拿到的sohu token，取不到userinfo
         Result result = new APIResultSupport(false);
         try {
             String userid = userOpenApiParams.getUserid();
-            int clientId = userOpenApiParams.getClient_id();
+            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(userid);
+            if (cacheConnectUserInfoVO != null) {
+                result = buildSuccResult(cacheConnectUserInfoVO, userid);
+                return result;
+            }
 
+            int clientId = userOpenApiParams.getClient_id();
             //获取第三方信息
             String providerStr = getProviderByUserid(userid);
             if (StringUtils.isBlank(providerStr)) {
@@ -76,7 +72,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setOpenid(userid);
             baseOpenApiParams.setUserid(userid);
-            Result openResult = proxyConnectApiManager.obtainConnectTokenInfo(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
@@ -92,13 +88,21 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             result = buildSuccResult(connectUserInfoVO, userid);
+            connectAuthService.initialOrUpdateConnectUserInfo(userid, connectUserInfoVO);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
         } catch (OAuthProblemException ope) {
-            logger.error("handle oauth authroize code error!", ope);
-            result = buildErrorResult(ope.getError(), ope.getDescription());
+            String errorCode = ope.getError();
+            String errMsg = ErrorUtil.getERR_CODE_MSG(errorCode);
+            if (StringUtils.isBlank(errMsg)) {
+                logger.error("handle oauth authroize code error!", ope);
+                result = buildErrorResult(errorCode, ope.getDescription());
+            }else {
+                result = buildErrorResult(errorCode, errMsg);
+            }
         } catch (Exception exp) {
+            logger.error("system error!", exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
         return result;

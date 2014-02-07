@@ -1,8 +1,13 @@
 package com.sogou.upd.passport.service.connect.impl;
 
+import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -18,6 +23,9 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,6 +39,11 @@ import java.io.IOException;
  */
 @Service
 public class ConnectAuthServiceImpl implements ConnectAuthService {
+    private Logger logger = LoggerFactory.getLogger(ConnectAuthServiceImpl.class);
+    private static final String CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO = CacheConstant.CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO;
+
+    @Autowired
+    private DBRedisUtils dbRedisUtils;
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer, String redirectUrl)
@@ -110,4 +123,32 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         return userProfileFromConnect;
     }
 
+    @Override
+    public boolean initialOrUpdateConnectUserInfo(String passportId,ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
+        try {
+            String cacheKey = buildConnectUserInfoCacheKey(passportId);
+            dbRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
+            return false;
+        }
+    }
+
+    @Override
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid) throws ServiceException {
+        try {
+            String cacheKey = buildConnectUserInfoCacheKey(userid);
+            ConnectUserInfoVO connectUserInfoVO = dbRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
+            return connectUserInfoVO;
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
+//            throw new ServiceException(e);
+            return null;
+        }
+    }
+
+    private String buildConnectUserInfoCacheKey(String passportId) {
+        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId;
+    }
 }

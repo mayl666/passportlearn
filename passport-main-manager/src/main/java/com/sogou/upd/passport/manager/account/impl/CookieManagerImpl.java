@@ -2,14 +2,19 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +39,8 @@ public class CookieManagerImpl implements CookieManager {
 
     @Autowired
     private AppConfigService appConfigService;
-    //    @Autowired
-//    private CookieApiManager proxyCookieApiManager;
+    @Autowired
+    private CommonManager commonManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
@@ -68,5 +73,49 @@ public class CookieManagerImpl implements CookieManager {
             result.setDefaultModel("userid", cookieApiParams.getUserid());
         }
         return result;
+    }
+
+    @Override
+    public Result setSSOCookie(HttpServletResponse response, SSOCookieParams ssoCookieParams){
+        Result result = new APIResultSupport(false);
+        //验证code
+        String sginf = ssoCookieParams.getSginf();
+        String sgrdig = ssoCookieParams.getSgrdig();
+        String cookieData[] = sginf.split("\\" + CommonConstant.SEPARATOR_1);
+        String createtime = cookieData[1];
+        String expiretime = cookieData[2];
+        long ct = new Long(createtime);
+        long et = new Long(expiretime);
+        boolean code1Res = commonManager.isCodeRight(sginf, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode1());
+        if (!code1Res) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+        boolean code2Res = commonManager.isCodeRight(sgrdig, CommonConstant.SGPP_DEFAULT_CLIENTID, ct, ssoCookieParams.getCode2());
+        if (!code2Res) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+        int maxAge = getMaxAge(et);
+        String domain = ssoCookieParams.getDomain();
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGINF, sginf, maxAge, domain);
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGRDIG, sgrdig, maxAge, domain);
+        result.setSuccess(true);
+        return result;
+    }
+
+    //获取cookie有效期
+    private int getMaxAge(long et) {
+        int maxAge = -1;
+        if (et > 0) {
+            long currentTime = System.currentTimeMillis() / 1000;
+            maxAge = DateUtil.getIntervalSec(et, currentTime);
+            if (maxAge == 0) {
+                maxAge = -1;
+            }
+        }
+        return maxAge;
     }
 }

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.UserName;
 import org.hibernate.validator.constraints.NotBlank;
@@ -31,8 +32,9 @@ public class CookieWebParams {
     private String domain;      //sogou只种sogou域cookie，后台默认赋值sogou域
 
     public String getUserid() {
-        return userid;
-    }
+        String internalUsername = AccountDomainEnum.getInternalCase(userid);
+        setUserid(internalUsername);
+        return userid;    }
 
     public void setUserid(String userid) {
         this.userid = userid;

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -22,6 +23,8 @@ public class PcBaseParams {
     private String ts = "";  //客户端的实例id
 
     public String getUserid() {
+        String internalUsername = AccountDomainEnum.getInternalCase(userid);
+        setUserid(internalUsername);
         return userid;
     }
 

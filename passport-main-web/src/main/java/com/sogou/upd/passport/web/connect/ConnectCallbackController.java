@@ -68,6 +68,7 @@ public class ConnectCallbackController extends BaseConnectController {
             //用户第三方登录log
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
+            userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(req, "YYID"));
             UserOperationLogUtil.log(userOperationLog);
 
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
@@ -84,7 +85,6 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("accesstoken", result.getModels().get("accesstoken"));
                 model.addAttribute("refreshtoken", result.getModels().get("refreshtoken"));
                 model.addAttribute("nick", result.getModels().get("nick"));
-//                model.addAttribute("sname", result.getModels().get("sname"));
                 model.addAttribute("sid", result.getModels().get("sid"));
                 model.addAttribute("passport", result.getModels().get("passport"));
                 model.addAttribute("result", 0);

@@ -243,7 +243,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             if (connectAccountResult.isSuccess()) {
                 String passportId = (String) connectAccountResult.getModels().get("userid");
                 result.setDefaultModel("userid", passportId);
-                String userId = (String) connectAccountResult.getModels().get("userid");
+                String userId = passportId;
+                //更新个人资料缓存
+                connectAuthService.initialOrUpdateConnectUserInfo(userId,connectUserInfoVO);
+
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
