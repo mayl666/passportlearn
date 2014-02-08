@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.dao.dal.routing;
 
 import com.xiaomi.common.service.dal.routing.Router;
+import com.xiaomi.common.service.dal.routing.RoutingConfigurator;
 import com.xiaomi.common.service.dal.routing.RoutingDescriptor;
 import com.xiaomi.common.service.dal.routing.RoutingDescriptorImpl;
 import org.apache.commons.lang.math.NumberUtils;
@@ -22,8 +23,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Time: 上午1:52
  * To change this template use File | Settings | File Templates.
  */
-public class RoutingConfigurator {
-    static Logger logger = LoggerFactory.getLogger(RoutingConfigurator.class);
+public class SGRoutingConfigurator extends RoutingConfigurator {
+    static Logger logger = LoggerFactory.getLogger(SGRoutingConfigurator.class);
 
     protected ConcurrentHashMap<String, RoutingDescriptor> map = new ConcurrentHashMap<String, RoutingDescriptor>();
 
@@ -35,7 +36,7 @@ public class RoutingConfigurator {
     boolean inited = false;
 
     // 分表路由的名称
-    public static final String XM_STRING_HASH = "xm-str-hash";
+    public static final String SG_STRING_HASH = "sg-str-hash";
 
     public RoutingDescriptor getDescriptor(String name) {
         if (!inited) {
@@ -74,11 +75,11 @@ public class RoutingConfigurator {
     }
 
     private Router createRouter(String[] conf) {
-        if (XM_STRING_HASH.equalsIgnoreCase(conf[0])) {
-            RouterFactory factory = new RouterFactory(XM_STRING_HASH) {
+        if (SG_STRING_HASH.equalsIgnoreCase(conf[0])) {
+            RouterFactory factory = new RouterFactory(SG_STRING_HASH) {
                 @Override
                 public Router onCreateRouter(String column, String pattern, int partitions) {
-                    return new XmStringHashRouter(column, pattern, partitions);
+                    return new SGStringHashRouter(column, pattern, partitions);
                 }
             };
             return factory.setColumn(conf[2]).setPattern(conf[3]).setPartition(conf[4]).createRouter();
