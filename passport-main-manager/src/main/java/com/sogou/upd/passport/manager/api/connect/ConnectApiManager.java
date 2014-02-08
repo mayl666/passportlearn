@@ -25,7 +25,7 @@ public interface ConnectApiManager {
      * @return
      */
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid,
-                                       int provider, String ip,String httpOrHttps) throws OAuthProblemException;
+                                       int provider, String ip, String httpOrHttps) throws OAuthProblemException;
 
     /**
      * 同步创建第三方账号的接口
@@ -43,4 +43,14 @@ public interface ConnectApiManager {
      * @return
      */
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
+
+    /**
+     * 从搜狗和搜狐库里双读token，最后再将token写入搜狗数据库中
+     *
+     * @param baseOpenApiParams
+     * @param clientId
+     * @param clientKey
+     * @return
+     */
+    public Result handleConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
 }
