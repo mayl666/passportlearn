@@ -287,7 +287,6 @@ public class SGHttpClient {
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 return null;
             }
         }

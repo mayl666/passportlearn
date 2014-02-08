@@ -64,7 +64,6 @@ public class QQProxyOpenApiManagerImpl extends BaseProxyManager implements QQPro
             try {
                 maps = objectMapper.readValue(params.getParams().toString(), HashMap.class);
             } catch (IOException e) {
-                e.printStackTrace();
             }
             //应用传入的参数添加至map中
             Set<String> commonKeySet = maps.keySet();

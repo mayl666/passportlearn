@@ -51,7 +51,6 @@ public class Ip2location {
 			}
 			this.buff = buff;
 		} catch (Exception e) {
-			e.printStackTrace();
 		} finally {
 			if (in != null) {
 				try {
@@ -89,7 +88,6 @@ public class Ip2location {
 			in.read(buff);
 			this.buff = buff;
 		} catch (Exception e) {
-			e.printStackTrace();
 		} finally {
 			if (in != null) {
 				try {
@@ -107,7 +105,6 @@ public class Ip2location {
 		try {
 			readData(ipFile);
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	private long getLongFromIp(String ip){

@@ -98,7 +98,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
                 result.setDefaultModel("avatarurl", avatarurl);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return getUserInfoResultHandel(result);
     }
@@ -255,12 +254,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
             throw new IllegalArgumentException("用户昵称不能为空");
         }
 
-        try {
 //            updateUserUniqnameApiParams.setUniqname(URLDecoder.decode(updateUserUniqnameApiParams.getUniqname(), "utf-8"));
-            updateUserUniqnameApiParams.setUniqname(updateUserUniqnameApiParams.getUniqname());
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        updateUserUniqnameApiParams.setUniqname(updateUserUniqnameApiParams.getUniqname());
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
         requestModelXml.addParams(updateUserUniqnameApiParams);
         Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
