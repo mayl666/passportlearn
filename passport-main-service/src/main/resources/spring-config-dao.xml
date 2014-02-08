@@ -116,7 +116,7 @@
     </bean>
 
 
-
+    <!-- 读写分离设置 -->
     <bean id="jade.dataSourceFactory" class="net.paoding.rose.jade.dataaccess.datasource.MasterSlaveDataSourceFactory">
         <constructor-arg type="javax.sql.DataSource" ref="masterDataSource"/>
         <constructor-arg type="java.util.List">
@@ -126,6 +126,19 @@
         </constructor-arg>
         <constructor-arg type="boolean" value="false"/>
     </bean>
+
+    <!-- 分表设置 -->
+    <bean id="jade.routerInterpreter" class="com.xiaomi.common.service.dal.routing.RewriteSQLInterpreter">
+        <property name="routingConfigurator" ref="jade.routingConfigurator" />
+    </bean>
+    <bean id="jade.routingConfigurator" class="com.xiaomi.common.service.dal.routing.RoutingConfigurator">
+        <property name="partitions">
+            <list>
+                <value>hash:test:id:test_{0}:3</value>
+            </list>
+        </property>
+    </bean>
+
 
     <bean class="net.paoding.rose.jade.context.spring.JadeBeanFactoryPostProcessor"/>
 
