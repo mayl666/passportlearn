@@ -242,7 +242,7 @@ public class OAuthUtils {
 
     public static <T> T instantiateClass(Class<T> clazz) throws OAuthProblemException {
         try {
-            return (T) clazz.newInstance();
+            return clazz.newInstance();
         } catch (Exception e) {
             log.error("Instantiate Class Exception! Class:" + clazz.getName(), e);
             throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

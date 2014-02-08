@@ -124,8 +124,8 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                 List<Map<String, String>> listMap = (List<Map<String, String>>) obj;
                 if(CollectionUtils.isNotEmpty(listMap)){
                     for (Map<String,String>map:listMap){
-                         String key=(String)map.get("name");
-                         String value=(String)map.get("value");
+                         String key=map.get("name");
+                         String value=map.get("value");
                          if("ppinf".equals(key)){
                              result.getModels().put("ppinf",value);
                          }

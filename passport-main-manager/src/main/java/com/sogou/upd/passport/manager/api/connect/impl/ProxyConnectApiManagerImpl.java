@@ -12,7 +12,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -22,7 +21,6 @@ import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.connect.AccessTokenService;
 import org.apache.commons.lang.StringUtils;
@@ -51,29 +49,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
 
     @Override
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
-        String providerStr = AccountTypeEnum.getProviderStr(provider);
-
-        Map params = Maps.newHashMap();
-        params.put("provider", providerStr);
-        params.put("appid", SHPPUrlConstant.DEFAULT_CONNECT_APP_ID);  // TODO 只是为了避免和浏览器输入法PC端冲突
-        params.put("hun", "1");  //是否显示“起个更好的名字”。默认显示；为1表示 隐藏
-        if (!Strings.isNullOrEmpty(connectLoginParams.getRu())) {
-            params.put(CommonConstant.RESPONSE_RU, connectLoginParams.getRu());
-        }
-        if (!Strings.isNullOrEmpty(connectLoginParams.getDisplay())) {
-            params.put("display", connectLoginParams.getDisplay());
-        }
-        params.put("type", connectLoginParams.getType());
-        params.put("forcelogin", connectLoginParams.isForcelogin());
-        if (!Strings.isNullOrEmpty(connectLoginParams.getFrom())) {
-            params.put("from", connectLoginParams.getFrom());
-        }
-        if (!Strings.isNullOrEmpty(connectLoginParams.getTs())) {
-            params.put("ts", connectLoginParams.getTs());
-        }
-
-        String url = QueryParameterApplier.applyOAuthParametersString(SHPPUrlConstant.CONNECT_LOGIN_ULR, params);
-        return url;
+        return null;
     }
 
     @Override

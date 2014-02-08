@@ -159,8 +159,8 @@ public class SnsSigCheck
 
         while (itr.hasNext()) 
         {
-            String key = (String) itr.next();
-            String value = (String) params.get(key);
+            String key = itr.next();
+            String value = params.get(key);
             value = encodeValue(value);
             params.put(key, value);
         }

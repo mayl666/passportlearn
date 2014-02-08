@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.app.ConnectConfig;
@@ -72,16 +71,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }
         return oauthResponse;
-    }
-
-    @Override
-    public QQOpenIdResponse obtainOpenIdByAccessToken(int provider, String accessToken, OAuthConsumer oAuthConsumer) throws OAuthProblemException, IOException {
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.openIdLocation(oAuthConsumer.getOpenIdUrl())
-                .setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
-
-        QQOpenIdResponse qqOpenIdResponse = OAuthHttpClient.execute(request,
-                QQOpenIdResponse.class);
-        return qqOpenIdResponse;
     }
 
     @Override

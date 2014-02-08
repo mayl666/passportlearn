@@ -12,15 +12,7 @@ public class SHPPUrlConstant {
     public static final int APP_ID = 1120;
     public static final String APP_KEY = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
 
-    public static final int DEFAULT_CONNECT_APP_ID = 1110;
-    public static final String DEFAULT_CONNECT_APP_KEY = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
-
-    public static final int IE_CONNECT_APP_ID = 1044;
-    public static final String  IE_CONNECT_APP_KEY = "=#dW$h%q)6xZB#m#lu'x]]wP=\\FUO7";
-
     public static final String APPID_STRING = "appid";
-
-    public static final String COOKIE_KEY = "a80d&p4^9t";
 
     //请求SHPP时xml默认的rootNodeName
     public static final String DEFAULT_REQUEST_ROOTNODE = "info";
@@ -109,8 +101,6 @@ public class SHPPUrlConstant {
     public static final String SOHU_FINDPWD_URL = BASE_URL + "web/RecoverPwdInput.action";
 
     /*================================第三方开放平台相关url=======================================*/
-    // 第三方授权通用接口
-    public static final String CONNECT_LOGIN_ULR = BASE_URL + "openlogin/request.action";
     // 同步创建第三方账号的接口
     public static final String CREATE_CONNECT_USER = "http://passport.sohu.com/openlogin/non/callback/";
     //获取第三方用户信息
@@ -119,8 +109,7 @@ public class SHPPUrlConstant {
     public static final String CONNECT_SHARE_PIC = BASE_OPEN_API_URL + "api/share/add_pic";
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
-    //获取第三方用户的openid和accessToken   todo 12月1号sohu接口提供后换成真正的调用url
+    //获取第三方用户的openid和accessToken
     public static final String GET_CONNECT_QQ_LIGHT_USER_INFO = BASE_OPEN_API_URL + "api/token/get";
-    public static final String GET_CONNECT_QQ_LIGHT_USER_INFO_TEST = "http://10.11.49.38:8007/openlogin/api/token/get";
 
 }

@@ -80,32 +80,6 @@ public class SohuPlusUtil {
         }
     }
 
-    /**
-     * 将map转换成Javabean
-     *
-     * @param javabean javaBean
-     * @param data     map数据
-     */
-    public static Object toJavaBean(Object javabean, Map<String, String> data) {
-        Method[] methods = javabean.getClass().getDeclaredMethods();
-        for (Method method : methods) {
-            try {
-                if (method.getName().startsWith("set")) {
-                    String field = method.getName();
-                    field = field.substring(field.indexOf("set") + 3);
-                    field = field.toLowerCase().charAt(0) + field.substring(1);
-                    method.invoke(javabean, new Object[]
-                            {
-                                    data.get(field)
-                            });
-                }
-            } catch (Exception e) {
-            }
-        }
-
-        return javabean;
-    }
-
     public static void main(String[] args) {
 //        String url = "http://rest.plus.sohuno.com/spassportrest/passport/autoconvert";
 //        Map<String, String> map = new HashMap();

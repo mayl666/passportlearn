@@ -15,16 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface OAuthAuthLoginManager {
 
     /**
-     * SSO-SDK第三方账户登录接口
-     *
-     * @param oauthRequest Sina微博采用SSO-SDK，OAuth2登录授权成功后的响应结果对象
-     * @param provider     第三方平台
-     * @param ip           登录的ip
-     * @return Result格式的返回值
-     */
-    public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip);
-
-    /**
      * 处理第三方登录授权回调
      * @param req
      * @param providerStr

@@ -51,9 +51,9 @@ public class PojoMapConverter implements Converter {
             map = (Map<String, Object>) value;
             for (Iterator<Entry<String, Object>> iterator = map.entrySet()
                     .iterator(); iterator.hasNext();) {
-                Entry<String, Object> entry = (Entry<String, Object>) iterator
+                Entry<String, Object> entry = iterator
                         .next();
-                key = (String) entry.getKey();
+                key = entry.getKey();
                 subvalue = entry.getValue();
                 writer.startNode(key);
                 if (subvalue.getClass().getName().indexOf("String") >= 0) {
