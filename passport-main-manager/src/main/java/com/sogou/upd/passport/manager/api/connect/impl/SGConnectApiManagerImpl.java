@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -13,6 +14,7 @@ import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
@@ -21,6 +23,7 @@ import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +45,11 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
 
     @Autowired
     private ConnectConfigService connectConfigService;
+    @Autowired
+    private ConnectTokenService connectTokenService;
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip,String httpOrHttps) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
         OAuthConsumer oAuthConsumer;
         OAuthAuthzClientRequest request;
         ConnectConfig connectConfig;
@@ -58,7 +63,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
 
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
-                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(),connectLoginParams.getDomain());
+                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain());
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -80,9 +85,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
                     .setState(uuid);
-            if(AccountTypeEnum.QQ.getValue() == provider){
+            if (AccountTypeEnum.QQ.getValue() == provider) {
                 builder.setShowAuthItems(QQOAuth.NO_AUTH_ITEMS);       // qq为搜狗产品定制化页面，隐藏授权信息
-                if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage())){
+                if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage())) {
                     builder.setViewPage(connectLoginParams.getViewPage());       // qq为搜狗产品定制化页面--输入法使用
                 }
             }
@@ -106,6 +111,19 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
 
     @Override
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+        Result result = new APIResultSupport(false);
+        int provider = AccountTypeEnum.getAccountType(baseOpenApiParams.getUserid()).getValue();
+        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        ConnectToken connectToken = null;
+        if (connectConfig != null) {
+            connectToken = connectTokenService.queryConnectToken(baseOpenApiParams.getUserid(), provider, connectConfig.getAppKey());
+        }
+        result.setDefaultModel("connectToken",connectToken);
+        return result;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result handleConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
