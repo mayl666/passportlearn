@@ -4,8 +4,8 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 
 /**
- * Account_Connect表服务接口
- * User: shipengzhi
+ * 用于缓存从搜狐获取的第三方accesstoken
+ * User: chenjiameng
  * Date: 13-3-24
  * Time: 下午5:12
  * To change this template use File | Settings | File Templates.
