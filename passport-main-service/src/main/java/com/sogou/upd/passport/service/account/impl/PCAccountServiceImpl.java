@@ -296,7 +296,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private boolean isNeedExtendTime(long tokenValidTime, int expiresIn) {
         long currentTime = System.currentTimeMillis();
         long leftTime = tokenValidTime - currentTime;
-        long halfExpireTime = (long)(expiresIn) * 500;
+        long  expiresIn_long =(long)(expiresIn);
+        long halfExpireTime = expiresIn_long * 500;
         return leftTime < halfExpireTime;
     }
 }
