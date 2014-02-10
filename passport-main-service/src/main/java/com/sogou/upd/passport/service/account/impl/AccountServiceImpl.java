@@ -89,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
         account.setPassportId(passportId);
         String passwordSign = null;
         try {
-            if (!Strings.isNullOrEmpty(password)) {
+            if (!Strings.isNullOrEmpty(password) && !AccountTypeEnum.isConnect(provider)) {
                 passwordSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             }
             account.setPasswd(passwordSign);

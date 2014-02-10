@@ -104,27 +104,30 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     @Override
-    public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO) {
+    public Result buildConnectAccount(int clientId, String providerStr, OAuthTokenVO oAuthTokenVO) {
         //To change body of implemented methods use File | Settings | File Templates.
         return null;
     }
 
     @Override
-    public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
+    public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) throws ServiceException {
         Result result = new APIResultSupport(false);
-        int provider = AccountTypeEnum.getAccountType(baseOpenApiParams.getUserid()).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-        ConnectToken connectToken = null;
-        if (connectConfig != null) {
-            connectToken = connectTokenService.queryConnectToken(baseOpenApiParams.getUserid(), provider, connectConfig.getAppKey());
+        try {
+            int provider = AccountTypeEnum.getAccountType(baseOpenApiParams.getUserid()).getValue();
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            ConnectToken connectToken = null;
+            if (connectConfig != null) {
+                connectToken = connectTokenService.queryConnectToken(baseOpenApiParams.getUserid(), provider, connectConfig.getAppKey());
+                if (connectToken != null) {
+                    result.setSuccess(true);
+                }
+            }
+            result.setDefaultModel("connectToken", connectToken);
+        } catch (Exception e) {
+            logger.error("method[obtainConnectToken] obtain connect token error.{}", e);
+            throw new ServiceException(e);
         }
-        result.setDefaultModel("connectToken",connectToken);
         return result;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Result handleConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*

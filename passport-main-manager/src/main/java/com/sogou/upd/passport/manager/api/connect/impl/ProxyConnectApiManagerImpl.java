@@ -53,7 +53,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     }
 
     @Override
-    public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO) {
+    public Result buildConnectAccount(int clientId, String providerStr, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
         String url = SHPPUrlConstant.CREATE_CONNECT_USER + providerStr;
         RequestModel requestModel = new RequestModel(url);
@@ -144,10 +144,6 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         return result;
     }
 
-    @Override
-    public Result handleConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 
     private Result buildSuccResult(String userid, String accesstoken) {
         Result obtainTokenResult = new APIResultSupport(true);

@@ -122,7 +122,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             // 创建第三方账号
-            Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
+            Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(clientId,providerStr, oAuthTokenVO);
 
             if (connectAccountResult.isSuccess()) {
                 String passportId = (String) connectAccountResult.getModels().get("userid");
