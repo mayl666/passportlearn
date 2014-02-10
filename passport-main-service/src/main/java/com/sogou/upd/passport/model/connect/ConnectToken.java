@@ -19,6 +19,11 @@ public class ConnectToken {
     private String accessToken; // 第三方access_token
     private long expiresIn; // 第三方access_token有效期
     private String refreshToken; // 第三方refresh_token
+    private String connectUniqname;  // 第三方昵称
+    private String avatarSmall;   // 第三方头像（小图）
+    private String avatarMiddle;  // 第三方头像（中图）
+    private String avatarLarge;  // 第三方头像（大图）
+    private String gender;   // 性别。 0-女，1-男，默认为1
     private Date createTime; // 创建时间
     
 	public long getId() {
@@ -76,4 +81,43 @@ public class ConnectToken {
 		this.createTime = createTime;
 	}
 
+    public String getConnectUniqname() {
+        return connectUniqname;
+    }
+
+    public void setConnectUniqname(String connectUniqname) {
+        this.connectUniqname = connectUniqname;
+    }
+
+    public String getAvatarSmall() {
+        return avatarSmall;
+    }
+
+    public void setAvatarSmall(String avatarSmall) {
+        this.avatarSmall = avatarSmall;
+    }
+
+    public String getAvatarMiddle() {
+        return avatarMiddle;
+    }
+
+    public void setAvatarMiddle(String avatarMiddle) {
+        this.avatarMiddle = avatarMiddle;
+    }
+
+    public String getAvatarLarge() {
+        return avatarLarge;
+    }
+
+    public void setAvatarLarge(String avatarLarge) {
+        this.avatarLarge = avatarLarge;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 }

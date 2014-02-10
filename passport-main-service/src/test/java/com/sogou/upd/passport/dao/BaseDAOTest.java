@@ -19,10 +19,10 @@ public class BaseDAOTest extends BaseTest {
     public static final String SNAME = "sohuplus_name";
     public static final String PASSWORD = "111111";
     public static final String NEW_PASSWORD = "123456";
-    public static final int ACCOUNT_TYPE = 2;
+    public static final int ACCOUNT_TYPE = 2; // 手机账号
     public static final String IP = "10.1.164.65";
-    public static final int STATUS = 1;
-    public static final int VERSION = 1;
+    public static final int FLAG = 1;
+    public static final int PWDTYPE = 1;
 
     // AccountInfo Test Constant ---hjf 2013.5.3
     public static final String EMAIL = "Binding123@163.com";
