@@ -23,7 +23,6 @@ public class SessionCommonUtil {
                 md = MessageDigest.getInstance("MD5");
                 mdThreadLocal.set(md);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
         return md;

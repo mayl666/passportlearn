@@ -17,8 +17,7 @@ import java.util.StringTokenizer;
  *          RandomStr.getRandom();//得到随机数
  */
 
-public class RandomStr
-{
+public class RandomStr {
     static String randomstr;
 
     static boolean allchars = false;
@@ -48,47 +47,31 @@ public class RandomStr
 
     static SecureRandom secrandom = null;
 
-    private static float getFloat()
-    {
-        if (random == null)
-        {
+    private static float getFloat() {
+        if (random == null) {
             return secrandom.nextFloat();
-        }
-        else
-        {
+        } else {
             return random.nextFloat();
         }
     }
 
-    public static void generateRandomObject() throws Exception
-    {
+    public static void generateRandomObject() throws Exception {
         // check to see if the object is a SecureRandom object
-        if (secure)
-        {
-            try
-            {
+        if (secure) {
+            try {
                 // get an instance of a SecureRandom object
-                if (provider != null)
-                {
+                if (provider != null) {
 
                     random = SecureRandom.getInstance(algorithm, provider);
-                }
-                else
-                {
+                } else {
                     random = SecureRandom.getInstance(algorithm);
                 }
-            }
-            catch (NoSuchAlgorithmException ne)
-            {
+            } catch (NoSuchAlgorithmException ne) {
                 throw new Exception(ne.getMessage());
-            }
-            catch (NoSuchProviderException pe)
-            {
+            } catch (NoSuchProviderException pe) {
                 throw new Exception(pe.getMessage());
             }
-        }
-        else
-        {
+        } else {
             random = new Random();
         }
     }
@@ -96,159 +79,108 @@ public class RandomStr
     /**
      * generate the random string
      */
-    private static void generaterandom()
-    {
-        if (allchars)
-        {
-            for (int i = 0; i < length.intValue(); i++)
-            {
+    private static void generaterandom() {
+        if (allchars) {
+            for (int i = 0; i < length.intValue(); i++) {
                 randomstr = randomstr + new Character((char) (34 + ((int) (getFloat() * 93)))).toString();
             }
-        }
-        else if (singles)
-        {
+        } else if (singles) {
             // check if there are single chars to be included
-            if (upper.size() == 3)
-            {
+            if (upper.size() == 3) {
                 // check for the number of ranges max 3 uppercase lowercase
                 // digits build the random string
-                for (int i = 0; i < length.intValue(); i++)
-                {
+                for (int i = 0; i < length.intValue(); i++) {
                     // you have four groups to choose a random number from, to
                     // make
                     // the choice a little more random select a number out of
                     // 100 get a random number even or odd
-                    if (((int) (getFloat() * 100)) % 2 == 0)
-                    {
+                    if (((int) (getFloat() * 100)) % 2 == 0) {
                         // the number was even get another number even or odd
-                        if (((int) (getFloat() * 100)) % 2 == 0)
-                        {
+                        if (((int) (getFloat() * 100)) % 2 == 0) {
                             // choose a random char from the single char group
                             randomstr = randomstr + randomSingle().toString();
-                        }
-                        else
-                        {
+                        } else {
                             // get a random char from the first range
                             randomstr = randomstr + randomChar((Character) lower.get(2), (Character) upper.get(2)).toString();
                         }
-                    }
-                    else
-                    {
+                    } else {
                         // the number was odd
 
-                        if (((int) (getFloat() * 100)) % 2 == 0)
-                        {
+                        if (((int) (getFloat() * 100)) % 2 == 0) {
                             // choose a random char from the second range
                             randomstr = randomstr + randomChar((Character) lower.get(1), (Character) upper.get(1)).toString();
-                        }
-                        else
-                        {
+                        } else {
                             // choose a random char from the third range
                             randomstr = randomstr + randomChar((Character) lower.get(0), (Character) upper.get(0)).toString();
                         }
                     }
                 }
-            }
-            else if (upper.size() == 2)
-            {
+            } else if (upper.size() == 2) {
                 // single chars are to be included choose a random char from
                 // two different ranges build the random char from single chars
                 // and two ranges
-                for (int i = 0; i < length.intValue(); i++)
-                {
+                for (int i = 0; i < length.intValue(); i++) {
                     // select the single chars or a range to get each random
                     // charfrom
 
-                    if (((int) (getFloat() * 100)) % 2 == 0)
-                    {
+                    if (((int) (getFloat() * 100)) % 2 == 0) {
                         // get random char from the single chars
                         randomstr = randomstr + randomSingle().toString();
-                    }
-                    else if (((int) (getFloat() * 100)) % 2 == 0)
-                    {
+                    } else if (((int) (getFloat() * 100)) % 2 == 0) {
                         // get the random char from the first range
                         randomstr = randomstr + randomChar((Character) lower.get(1), (Character) upper.get(1)).toString();
-                    }
-                    else
-                    {
+                    } else {
                         // get the random char from the second range
                         randomstr = randomstr + randomChar((Character) lower.get(0), (Character) upper.get(0)).toString();
                     }
                 }
-            }
-            else if (upper.size() == 1)
-            {
+            } else if (upper.size() == 1) {
                 // build the random string from single chars and one range
-                for (int i = 0; i < length.intValue(); i++)
-                {
-                    if (((int) getFloat() * 100) % 2 == 0)
-                    {
+                for (int i = 0; i < length.intValue(); i++) {
+                    if (((int) getFloat() * 100) % 2 == 0) {
                         // get a random single char
                         randomstr = randomstr + randomSingle().toString();
-                    }
-                    else
-                    {
+                    } else {
                         // get a random char from the range
                         randomstr = randomstr + randomChar((Character) lower.get(0), (Character) upper.get(0)).toString();
                     }
                 }
-            }
-            else
-            {
+            } else {
                 // build the rand string from single chars
-                for (int i = 0; i < length.intValue(); i++)
-                {
+                for (int i = 0; i < length.intValue(); i++) {
                     randomstr = randomstr + randomSingle().toString();
                 }
             }
-        }
-        else
-        {
+        } else {
             // no single chars are to be included in the random string
-            if (upper.size() == 3)
-            {
+            if (upper.size() == 3) {
                 // build random strng from three ranges
-                for (int i = 0; i < length.intValue(); i++)
-                {
-                    if (((int) (getFloat() * 100)) % 2 == 0)
-                    {
+                for (int i = 0; i < length.intValue(); i++) {
+                    if (((int) (getFloat() * 100)) % 2 == 0) {
                         // get random char from first range
                         randomstr = randomstr + randomChar((Character) lower.get(2), (Character) upper.get(2)).toString();
-                    }
-                    else if (((int) (getFloat() * 100)) % 2 == 0)
-                    {
+                    } else if (((int) (getFloat() * 100)) % 2 == 0) {
                         // get random char form second range
                         randomstr = randomstr + randomChar((Character) lower.get(1), (Character) upper.get(1)).toString();
-                    }
-                    else
-                    {
+                    } else {
                         // get random char from third range
                         randomstr = randomstr + randomChar((Character) lower.get(0), (Character) upper.get(0)).toString();
                     }
                 }
-            }
-            else if (upper.size() == 2)
-            {
+            } else if (upper.size() == 2) {
                 // build random string from two ranges
-                for (int i = 0; i < length.intValue(); i++)
-                {
-                    if (((int) (getFloat() * 100)) % 2 == 0)
-                    {
+                for (int i = 0; i < length.intValue(); i++) {
+                    if (((int) (getFloat() * 100)) % 2 == 0) {
                         // get random char from first range
                         randomstr = randomstr + randomChar((Character) lower.get(1), (Character) upper.get(1)).toString();
-                    }
-                    else
-                    {
+                    } else {
                         // get random char from second range
                         randomstr = randomstr + randomChar((Character) lower.get(0), (Character) upper.get(0)).toString();
                     }
                 }
-            }
-            else
-            {
+            } else {
                 // build random string
-                for (int i = 0; i < length.intValue(); i++)
-                {
+                for (int i = 0; i < length.intValue(); i++) {
                     // get random char from only range
                     randomstr = randomstr + randomChar((Character) lower.get(0), (Character) upper.get(0)).toString();
                 }
@@ -260,26 +192,19 @@ public class RandomStr
      * generate a random char from the single char list
      *
      * @returns - a randomly selscted character from the single char list
-     *
      */
-    private static Character randomSingle()
-    {
+    private static Character randomSingle() {
         return (new Character(single[(int) ((getFloat() * singlecount) - 1)]));
     }
 
     /**
      * generate a random character
      *
-     * @param lower
-     *            lower bound from which to get a random char
-     * @param upper
-     *            upper bound from which to get a random char
-     *
+     * @param lower lower bound from which to get a random char
+     * @param upper upper bound from which to get a random char
      * @returns - a randomly generated character
-     *
      */
-    private static Character randomChar(Character lower, Character upper)
-    {
+    private static Character randomChar(Character lower, Character upper) {
         int tempval;
         char low = lower.charValue();
         char up = upper.charValue();
@@ -296,18 +221,14 @@ public class RandomStr
      * name="id" property="randomstr"/>
      *
      * @return - randomly created string
-     *
      */
-    public static String getRandom()
-    {
+    public static String getRandom() {
         randomstr = new String();
         generaterandom(); // generate the first random string
 
-        if (hmap != null)
-        {
+        if (hmap != null) {
 
-            while (hmap.containsKey(randomstr))
-            {
+            while (hmap.containsKey(randomstr)) {
                 // random string has already been created generate a different
                 // one
                 generaterandom();
@@ -322,14 +243,10 @@ public class RandomStr
     /**
      * set the ranges from which to choose the characters for the random string
      *
-     * @param low
-     *            set of lower ranges
-     * @param up
-     *            set of upper ranges
-     *
+     * @param low set of lower ranges
+     * @param up  set of upper ranges
      */
-    public static void setRanges(ArrayList low, ArrayList up)
-    {
+    public static void setRanges(ArrayList low, ArrayList up) {
         lower = low;
         upper = up;
     }
@@ -337,37 +254,28 @@ public class RandomStr
     /**
      * set the hashmap that is used to check the uniqueness of random strings
      *
-     * @param map
-     *            hashmap whose keys are used to insure uniqueness of random
+     * @param map hashmap whose keys are used to insure uniqueness of random
      *            strgs
-     *
      */
-    public static void setHmap(HashMap map)
-    {
+    public static void setHmap(HashMap map) {
         hmap = map;
     }
 
     /**
      * set the length of the random string
      *
-     * @param value
-     *            length of the random string
-     *
+     * @param value length of the random string
      */
-    public static void setLength(String value)
-    {
+    public static void setLength(String value) {
         length = new Integer(value);
     }
 
     /**
      * set the algorithm name
      *
-     * @param value
-     *            name of the algorithm to use for a SecureRandom object
-     *
+     * @param value name of the algorithm to use for a SecureRandom object
      */
-    public static void setAlgorithm(String value)
-    {
+    public static void setAlgorithm(String value) {
         algorithm = value;
         secure = true; // a SecureRandom object is to be used
     }
@@ -375,24 +283,18 @@ public class RandomStr
     /**
      * set the provider name
      *
-     * @param value
-     *            name of the package to check for the algorithm
-     *
+     * @param value name of the package to check for the algorithm
      */
-    public static void setProvider(String value)
-    {
+    public static void setProvider(String value) {
         provider = value;
     }
 
     /**
      * set the allchars flag
      *
-     * @param value
-     *            boolean value of the allchars flag
-     *
+     * @param value boolean value of the allchars flag
      */
-    public static void setAllchars(boolean value)
-    {
+    public static void setAllchars(boolean value) {
         allchars = value;
     }
 
@@ -400,21 +302,16 @@ public class RandomStr
      * set the array of single chars to choose from for this random string and
      * the number of chars in the array
      *
-     * @param chars
-     *            the array of single chars
-     * @param value
-     *            the number of single chars
-     *
+     * @param chars the array of single chars
+     * @param value the number of single chars
      */
-    public static void setSingle(char[] chars, int value)
-    {
+    public static void setSingle(char[] chars, int value) {
         single = chars; // set the array of chars
         singlecount = value; // set the number of chars in array single
         singles = true; // set flag that single chars are in use
     }
 
-    public static void setCharset(String value)
-    {
+    public static void setCharset(String value) {
         // values tells the method whether or not to check for single chars
         boolean more = true;
 
@@ -424,57 +321,44 @@ public class RandomStr
         upper = new ArrayList(3);
 
         // user has chosen to use all possible characters in the random string
-        if (value.compareTo("all") == 0)
-        {
+        if (value.compareTo("all") == 0) {
             allchars = true; // set allchars flag
             // all chars are to be used so there are no single chars to sort
             // through
             more = false;
-        }
-        else if ((value.charAt(1) == '-') && (value.charAt(0) != '\\'))
-        {
+        } else if ((value.charAt(1) == '-') && (value.charAt(0) != '\\')) {
             // run through the ranges at most 3
-            while (more && (value.charAt(1) == '-'))
-            {
+            while (more && (value.charAt(1) == '-')) {
                 // check to make sure that the dash is not the single char
-                if (value.charAt(0) == '\\')
-                {
+                if (value.charAt(0) == '\\') {
                     break;
-                }
-                else
-                {
+                } else {
                     // add upper and lower ranges to there list
                     lower.add(new Character(value.charAt(0)));
                     upper.add(new Character(value.charAt(2)));
                 }
 
                 // check to see if there is more to the charset
-                if (value.length() <= 3)
-                {
+                if (value.length() <= 3) {
                     more = false;
-                }
-                else
-                {
+                } else {
                     value = value.substring(3);
                 }
             }
         }
 
         // if more = false there are no single chars in the charset
-        if (more)
-        {
+        if (more) {
             single = new char[30]; // create single
 
             // create a set of tokens from the string of single chars
             StringTokenizer tokens = new StringTokenizer(value);
 
-            while (tokens.hasMoreTokens())
-            {
+            while (tokens.hasMoreTokens()) {
                 // get the next token from the string
                 String token = tokens.nextToken();
 
-                if (token.length() > 1)
-                {
+                if (token.length() > 1) {
                     // char is a - add it to the list
                     single[singlecount++] = '-';
                 }
@@ -487,53 +371,39 @@ public class RandomStr
             setCharset("a-zA-Z0-9");
     }
 
-    public String getRandomStr(int len)
-    {
+    public String getRandomStr(int len) {
         String rtn = "";
-        try
-        {
+        try {
             RandomStr.setCharset("a-zA-Z0-9");
             RandomStr.setLength(String.valueOf(len));
             RandomStr.generateRandomObject();
             rtn = RandomStr.getRandom();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return rtn;
     }
 
-    public static String getRandomNum(int len)
-    {
+    public static String getRandomNum(int len) {
         String rtn = "";
-        try
-        {
+        try {
             RandomStr.setCharset("0-9");
             RandomStr.setLength(String.valueOf(len));
             RandomStr.generateRandomObject();
             rtn = RandomStr.getRandom();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return rtn;
     }
 
-    public static void main(String[] args)
-    {
-        for(int i=0;i<10;i++){
+    public static void main(String[] args) {
+        for (int i = 0; i < 10; i++) {
             // 流水号
             String str = "";
             RandomStr.setCharset("#-z");
             RandomStr.setLength("30");
-            try
-            {
+            try {
                 RandomStr.generateRandomObject();
-            }
-            catch (Exception exp)
-            {
+            } catch (Exception exp) {
                 System.out.println(exp);
             }
             str = RandomStr.getRandom();
