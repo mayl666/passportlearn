@@ -35,7 +35,6 @@ public class PhotoUtils {
 
     private HttpClient httpClient;
 
-    private String cdnURL = "http://imgstore.cdn.sogou.com";
     private String storageEngineURL ;
     private int timeout=5000;               // timeout毫秒数
     private String appid;
@@ -67,10 +66,10 @@ public class PhotoUtils {
 
         //初始化cdn列表
         listCDN = new ArrayList<String>();
-        listCDN.add("http://imgstore01.cdn.sogou.com");
-        listCDN.add("http://imgstore02.cdn.sogou.com");
-        listCDN.add("http://imgstore03.cdn.sogou.com");
-        listCDN.add("http://imgstore04.cdn.sogou.com");
+        listCDN.add("http://img01.sogoucdn.com");
+        listCDN.add("http://img02.sogoucdn.com");
+        listCDN.add("http://img03.sogoucdn.com");
+        listCDN.add("http://img04.sogoucdn.com");
     }
     //图片名生成
     public String generalFileName() {
