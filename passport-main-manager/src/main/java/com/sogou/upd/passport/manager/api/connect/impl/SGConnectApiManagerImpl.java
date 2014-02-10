@@ -13,7 +13,9 @@ import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
@@ -21,8 +23,12 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import com.sogou.upd.passport.service.connect.AccessTokenService;
+import com.sogou.upd.passport.service.connect.ConnectRelationService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,6 +54,12 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectTokenService connectTokenService;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private ConnectRelationService connectRelationService;
+    @Autowired
+    private AccessTokenService accessTokenService;
 
     @Override
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
@@ -104,9 +117,80 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     @Override
-    public Result buildConnectAccount(int clientId, String providerStr, OAuthTokenVO oAuthTokenVO) {
-        //To change body of implemented methods use File | Settings | File Templates.
-        return null;
+    public Result buildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO) {
+        Result result = new APIResultSupport(false);
+        try {
+            String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), providerStr);
+            int provider = AccountTypeEnum.getProvider(providerStr);
+            Account account = accountService.queryNormalAccount(passportId);
+            //1.account不存在则新增,说明是第一次登录
+            if (account == null) {
+                //todo 搜狗分支时会将version字段改为passwordtype字段，表示密码类型，第三方账号无密码，用0表示
+                account = accountService.initialAccount(oAuthTokenVO.getOpenid(), null, false, oAuthTokenVO.getIp(), provider);
+                if (account == null) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+                //2.connect_token表存在则更新，不存在则新增
+                ConnectToken connectToken = newConnectToken(passportId, appKey, provider, oAuthTokenVO);
+                boolean isSuccess = connectTokenService.initialConnectToken(connectToken);
+                if (!isSuccess) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+                //3.connect_relation表不存在则新增,无更新情况
+                ConnectRelation connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
+                boolean isConnectRelationSuccess = connectRelationService.initialConnectRelation(connectRelation);
+                if (!isConnectRelationSuccess) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+                result.setSuccess(true);
+                result.setDefaultModel("connectToken", connectToken);
+            } else {
+                //如果存在说明不是第一次登录操作，只更新connect_token表
+                ConnectToken connectToken = newConnectToken(passportId, appKey, provider, oAuthTokenVO);
+                boolean isSuccess = connectTokenService.updateConnectToken(connectToken);
+                if (!isSuccess) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+                result.setSuccess(true);
+                result.setDefaultModel("connectToken", connectToken);
+            }
+            result.setDefaultModel("userid", passportId);
+            //更新accessToken缓存
+            accessTokenService.initialOrUpdateAccessToken(passportId, oAuthTokenVO.getAccessToken(), oAuthTokenVO.getExpiresIn());
+        } catch (ServiceException se) {
+            logger.error("ServiceException: database operation error.{}", se);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        } catch (Exception e) {
+            logger.error("[connect] method buildConnectAccount error.{}", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
+    }
+
+    private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
+        ConnectToken connectToken = new ConnectToken();
+        connectToken.setPassportId(passportId);
+        connectToken.setAppKey(appKey);
+        connectToken.setProvider(provider);
+        connectToken.setOpenid(oAuthTokenVO.getOpenid());
+        connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
+        connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
+        connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
+        connectToken.setCreateTime(new Date());
+        return connectToken;
+    }
+
+    private ConnectRelation newConnectRelation(String appKey, String passportId, String openId, int provider) {
+        ConnectRelation connectRelation = new ConnectRelation();
+        connectRelation.setAppKey(appKey);
+        connectRelation.setOpenid(openId);
+        connectRelation.setPassportId(passportId);
+        connectRelation.setProvider(provider);
+        return connectRelation;
     }
 
     @Override
@@ -128,6 +212,11 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             throw new ServiceException(e);
         }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Result insertOrUpdateConnectToken(int clientId, int provider, String passportId, OAuthTokenVO oAuthTokenVO) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*

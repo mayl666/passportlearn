@@ -68,8 +68,8 @@ public class WapLoginManagerImpl implements WapLoginManager {
         String password = loginParams.getPassword();
 
         //简易版 炫彩版 需要md5加密
-        String v=loginParams.getV();
-        if(!v.equals(WapConstant.WAP_TOUCH)){
+        String v = loginParams.getV();
+        if (!v.equals(WapConstant.WAP_TOUCH)) {
             password = DigestUtils.md5Hex(password.getBytes());
         }
         String passportId = username;
@@ -83,10 +83,10 @@ public class WapLoginManagerImpl implements WapLoginManager {
             if (result.isSuccess()) {
                 //写session 数据库
                 Result sessionResult = sessionServerManager.createSession(passportId);
-                String sgid=null;
-                if(sessionResult.isSuccess()){
-                    sgid= (String) sessionResult.getModels().get("sgid");
-                    result.getModels().put("userid",result.getModels().get("userid").toString());
+                String sgid = null;
+                if (sessionResult.isSuccess()) {
+                    sgid = (String) sessionResult.getModels().get("sgid");
+                    result.getModels().put("userid", result.getModels().get("userid").toString());
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put("sgid", sgid);
                     }
@@ -117,7 +117,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result checkCaptchaVaild(String username, String ip, String clientId,String captchaCode,String token ) {
+    public Result checkCaptchaVaild(String username, String ip, String clientId, String captchaCode, String token) {
         Result result = new APIResultSupport(true);
         //校验验证码
         if (needCaptchaCheck(clientId, username, ip)) {
@@ -132,7 +132,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result passThroughQQ(int client_id,String sgid,String accessToken,String openId,String ip,String expires_in) {
+    public Result passThroughQQ(int client_id, String sgid, String accessToken, String openId, String ip, String expires_in) {
         Result result = new APIResultSupport(false);
         try {
             //根据获取第三方个人资料验证token的有效性
@@ -145,40 +145,40 @@ public class WapLoginManagerImpl implements WapLoginManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                 return result;
             }
-            String nickname=connectUserInfoVO.getNickname();
+            String nickname = connectUserInfoVO.getNickname();
             String shPassportId = openId + "@qq.sohu.com";
-            if(!Strings.isNullOrEmpty(sgid)){
-                 //session server获取passportid
-                Result sessionResult = sessionServerManager.getPassportIdBySgid(sgid,ip);
-                if(sessionResult.isSuccess()){
-                    String passportId= (String) sessionResult.getModels().get("passport_id");
-                    if(Strings.isNullOrEmpty(passportId)){
+            if (!Strings.isNullOrEmpty(sgid)) {
+                //session server获取passportid
+                Result sessionResult = sessionServerManager.getPassportIdBySgid(sgid, ip);
+                if (sessionResult.isSuccess()) {
+                    String passportId = (String) sessionResult.getModels().get("passport_id");
+                    if (Strings.isNullOrEmpty(passportId)) {
                         //sgid失效，重新生成sgid
-                        result=bulidSgid(accessToken,shPassportId,nickname,expires_in) ;
-                    }else if(passportId.equals(shPassportId)){
+                        result = bulidSgid(connectConfig.getAppKey(), accessToken, shPassportId, nickname, expires_in);
+                    } else if (passportId.equals(shPassportId)) {
                         result.setSuccess(true);
-                        result.getModels().put("sgid",sgid);
+                        result.getModels().put("sgid", sgid);
                     } else {
-                        result=bulidSgid(accessToken,shPassportId,nickname,expires_in) ;
+                        result = bulidSgid(connectConfig.getAppKey(), accessToken, shPassportId, nickname, expires_in);
                     }
                 }
-            }else {
-                result=bulidSgid(accessToken,shPassportId,nickname,expires_in) ;
+            } else {
+                result = bulidSgid(connectConfig.getAppKey(), accessToken, shPassportId, nickname, expires_in);
             }
-        }catch (Exception e){
-            logger.error("passThroughQQ error:",e);
+        } catch (Exception e) {
+            logger.error("passThroughQQ error:", e);
         }
 
         return result;
     }
 
-    private Result bulidSgid(String accessToken,String openId,String nickname,String expires_in) {
+    private Result bulidSgid(String appKey, String accessToken, String openId, String nickname, String expires_in) {
         // sohu创建第三方账号
-        String provider= AccountTypeEnum.QQ.toString();
-        OAuthTokenVO oAuthTokenVO=bulidOAuthTokenVO(accessToken, openId,nickname,expires_in);
-        Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(provider, oAuthTokenVO);
+        String provider = AccountTypeEnum.QQ.toString();
+        OAuthTokenVO oAuthTokenVO = bulidOAuthTokenVO(accessToken, openId, nickname, expires_in);
+        Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
 
-        if(connectAccountResult.isSuccess()){
+        if (connectAccountResult.isSuccess()) {
             //创建sgid
             Result sessionResult = sessionServerManager.createSession(openId);
             String sgid = null;
@@ -194,8 +194,8 @@ public class WapLoginManagerImpl implements WapLoginManager {
         }
     }
 
-    private OAuthTokenVO bulidOAuthTokenVO(String accessToken,String openId,String nickname,String expires_in){
-        OAuthTokenVO oAuthTokenVO=new OAuthTokenVO();
+    private OAuthTokenVO bulidOAuthTokenVO(String accessToken, String openId, String nickname, String expires_in) {
+        OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
         oAuthTokenVO.setAccessToken(accessToken);
         oAuthTokenVO.setOpenid(openId);
         oAuthTokenVO.setNickName(nickname);
@@ -220,7 +220,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     @Override
     public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
         //记录登陆次数
-        operateTimesService.incLoginTimes(username, ip,true);
+        operateTimesService.incLoginTimes(username, ip, true);
     }
 
 }
