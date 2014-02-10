@@ -3,9 +3,10 @@ package com.sogou.upd.passport.model.account;
 import java.util.Date;
 
 /**
- * 账号主表
- * User: mayan Date: 13-3-22 Time: 下午2:01 To change this template use File | Settings | File
- * Templates.
+ * 账号主表account
+ * User: mayan
+ * Date: 13-3-22
+ * Time: 下午2:01
  */
 public class Account {
 

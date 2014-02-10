@@ -8,8 +8,10 @@ import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
 /**
- * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-18 Time: 下午3:34 To change this template use File | Settings |
- * File Templates.
+ * connect_token表的DAO操作
+ * User: shipengzhi
+ * Date: 13-4-18 Time:
+ * 下午3:34
  */
 @DAO
 public interface ConnectTokenDAO {

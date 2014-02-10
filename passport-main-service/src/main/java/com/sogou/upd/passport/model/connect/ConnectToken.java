@@ -3,11 +3,10 @@ package com.sogou.upd.passport.model.connect;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
+ * 存储第三方Token和个人资料的connect_token表
  * User: shipengzhi
  * Date: 13-3-24
  * Time: 下午5:03
- * To change this template use File | Settings | File Templates.
  */
 public class ConnectToken {
 

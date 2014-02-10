@@ -41,10 +41,8 @@ public class RepairDataTest extends BaseTest {
     @Test
     public void repairNullAvatar() {
         try {
-            FileOutputStream fos = new FileOutputStream("d:/no_obtain_avatar-avator.txt");
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            BufferedWriter bw = new BufferedWriter(osw);
             List<String> passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\local-no-avator");
+            BufferedWriter bw = FileIOUtil.newWriter("d:/no_obtain_avatar-avator.txt");
             for (String passportId : passportIdList) {
                 AccountBaseInfo accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
                 SohuPassportSidMapping sohuPassportSidMapping = SohuPlusUtil.sendSohuPlusHttp(passportId);
@@ -79,9 +77,7 @@ public class RepairDataTest extends BaseTest {
     @Test
     public void repairNullUniqname() {
         try {
-            FileOutputStream fos = new FileOutputStream("d:/no_update_uniqname-avator.txt");
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            BufferedWriter bw = new BufferedWriter(osw);
+            BufferedWriter bw = FileIOUtil.newWriter("d:/no_update_uniqname-avator.txt");
             List<String> passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\local-update-nick");
             for (String passportId : passportIdList) {
                 AccountBaseInfo accountBaseInfo = accountBaseInfoService.queryAccountBaseInfo(passportId);
@@ -109,9 +105,7 @@ public class RepairDataTest extends BaseTest {
     @Test
     public void checkDiffSid() {
         try {
-            FileOutputStream fos = new FileOutputStream("d:/no_in_sohuplusfix.txt");
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            BufferedWriter bw = new BufferedWriter(osw);
+            BufferedWriter bw = FileIOUtil.newWriter("d:/no_in_sohuplusfix.txt");
             List<String> sogou_diffsid_passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\diff_sidsname-passportid");
             List<String> sohuplus_fixList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\sogou4.2fix-修复的2000个记录.txt");
             List<String> sohuplus_fix_passportIdList = Lists.newArrayList();
@@ -136,9 +130,7 @@ public class RepairDataTest extends BaseTest {
     @Test
     public void repairDiffSidOrSname() {
         try {
-            FileOutputStream fos = new FileOutputStream("d:/no_update_diffSidSname.txt");
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            BufferedWriter bw = new BufferedWriter(osw);
+            BufferedWriter bw = FileIOUtil.newWriter("d:/no_update_diffSidSname.txt");
             List<String> sogou_diffsid_passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Desktop\\新Passport\\sohu+\\数据迁移的错误数据\\SG与SH+不一样的\\diff_sidSname-passportid");
             for (String sogou_diffsid_passportId : sogou_diffsid_passportIdList) {
                 SohuPassportSidMapping sohuPassportSidMapping = SohuPlusUtil.sendSohuPlusHttp(sogou_diffsid_passportId);

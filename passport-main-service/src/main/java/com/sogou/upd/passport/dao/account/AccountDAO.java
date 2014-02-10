@@ -8,7 +8,8 @@ import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
 /**
- * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-17 Time: 下午3:55 To change this template
+ * Account表的DAO操作
+ * User: shipengzhi Date: 13-4-17 Time: 下午3:55 To change this template
  * use File | Settings | File Templates.
  */
 @DAO

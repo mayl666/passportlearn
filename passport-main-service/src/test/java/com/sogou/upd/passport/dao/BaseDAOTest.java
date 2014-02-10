@@ -48,7 +48,7 @@ public class BaseDAOTest extends BaseTest {
     // Connect Test Constant
     public static final String OPENID = "shipengzhi";
     public static final String APP_KEY = "123";
-    public static final String OTHER_APP_KEY = "abc";
+    public static final String OTHER_APP_KEY = "456";
 
     // Problem Test Constant
     public static final int PRO_STATUS = 0;

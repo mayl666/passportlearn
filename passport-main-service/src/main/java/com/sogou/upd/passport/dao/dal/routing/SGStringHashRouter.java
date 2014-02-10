@@ -103,17 +103,16 @@ public class SGStringHashRouter implements Router {
         return null;
     }
 
-    protected static int convert(Object columnValue) {
+    protected int convert(Object columnValue) {
         String stringHash = DigestUtils.md5Hex(String.valueOf(columnValue));
         int modInt = Integer.parseInt(stringHash.substring(0, 2), 16);
-
         return modInt;
     }
 
     /*
      * 根据分表数的位数，确定表名的位数；比如分32张表，表名为account_03
      */
-    private static String formatPatternValue(int value, int count) {
+    private String formatPatternValue(int value, int count) {
         int countLen = String.valueOf(count).length();
         String pattern = "";
         for (int i = 0; i < countLen; i++) {
@@ -121,13 +120,6 @@ public class SGStringHashRouter implements Router {
         }
         DecimalFormat df = new DecimalFormat(pattern);
         return df.format(value);
-    }
-
-    public static void main(String[] args) {
-        String columnValue = "geleisi@sogou.com";
-        int intValue = convert(columnValue);
-        int value = (intValue % 32);
-        System.out.println("value=" + formatPatternValue(value, 32));
     }
 
 }
