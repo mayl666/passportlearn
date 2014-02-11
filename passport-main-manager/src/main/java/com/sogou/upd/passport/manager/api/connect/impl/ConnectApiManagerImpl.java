@@ -14,6 +14,7 @@ import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,8 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
     private ConnectTokenService connectTokenService;
     @Autowired
     private ConnectConfigService connectConfigService;
+    @Autowired
+    private ConnectAuthService connectAuthService;
 
 
     @Override
@@ -86,6 +89,7 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
      * 1.获取token信息
      * 2.判断token是否过期，是否需要refreshToken刷新
      * 3.没有过期或access_Token刷新成功后，写SG DB或access_token双写
+     *
      * @param baseOpenApiParams 调用sohu接口参数类
      * @param clientId
      * @param clientKey
@@ -114,11 +118,9 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                     String refreshToken = connectToken.getRefreshToken();
                     //refreshToken不为空，则刷新token
                     if (!Strings.isNullOrEmpty(refreshToken)) {
-                        //todo refreshToken刷新accessToken
-//                        connectToken = connectAuthService.refreshAccessToken();
+                        OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
                         //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
                         //accessToken双写
-                        OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getRefreshToken());
                         updateConnectToken(appKey, AccountTypeEnum.getProviderStr(provider), oAuthTokenVO);
                         result.setSuccess(true);
                         result.setDefaultModel("connectToken", connectToken);
