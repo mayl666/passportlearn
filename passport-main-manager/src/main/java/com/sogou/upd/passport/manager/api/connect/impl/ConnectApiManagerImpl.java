@@ -30,7 +30,7 @@ import java.util.Map;
  * Time: 上午11:15
  * To change this template use File | Settings | File Templates.
  */
-@Component("connectTokenApiManager")
+@Component("connectApiManager")
 public class ConnectApiManagerImpl implements ConnectApiManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectApiManagerImpl.class);
