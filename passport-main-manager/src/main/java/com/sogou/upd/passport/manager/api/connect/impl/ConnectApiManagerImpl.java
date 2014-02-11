@@ -94,14 +94,6 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
         Result result = new APIResultSupport(false);
         try {
             Result tokenResult;
-            String passportId = baseOpenApiParams.getUserid();
-            int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-            if (connectConfig == null) {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
-                return result;
-            }
-            String appKey = connectConfig.getAppKey();
             //先查SG方有无此用户token信息,其中实现是先缓存再搜狗数据库
             tokenResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
             ConnectToken connectToken;
@@ -109,6 +101,14 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                 connectToken = (ConnectToken) tokenResult.getModels().get("connectToken");
                 //accessToken无效
                 if (!isValidToken(connectToken.getCreateTime(), connectToken.getExpiresIn())) {
+                    String passportId = baseOpenApiParams.getUserid();
+                    int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+                    ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+                    if (connectConfig == null) {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                        return result;
+                    }
+                    String appKey = connectConfig.getAppKey();
                     String refreshToken = connectToken.getRefreshToken();
                     //refreshToken不为空，则刷新token
                     if (!Strings.isNullOrEmpty(refreshToken)) {
