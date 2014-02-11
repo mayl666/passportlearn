@@ -23,7 +23,6 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -123,7 +122,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), providerStr);
             int provider = AccountTypeEnum.getProvider(providerStr);
             Account account = accountService.queryNormalAccount(passportId);
-            //1.account不存在则新增,说明是第一次登录
+            ConnectToken connectToken;
+            //1.account不存在则新增
             if (account == null) {
                 //todo 搜狗分支时会将version字段改为passwordtype字段，表示密码类型，第三方账号无密码，用0表示
                 account = accountService.initialAccount(oAuthTokenVO.getOpenid(), null, false, oAuthTokenVO.getIp(), provider);
@@ -131,14 +131,14 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
                 }
-                //2.connect_token表存在则更新，不存在则新增
-                ConnectToken connectToken = newConnectToken(passportId, appKey, provider, oAuthTokenVO);
-                boolean isSuccess = connectTokenService.initialConnectToken(connectToken);
-                if (!isSuccess) {
+                //2.connect_token表新增
+                connectToken = newConnectToken(passportId, appKey, provider, oAuthTokenVO);
+                boolean isNewConnectTokenSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+                if (!isNewConnectTokenSuccess) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
                 }
-                //3.connect_relation表不存在则新增,无更新情况
+                //3.connect_relation表新增
                 ConnectRelation connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 boolean isConnectRelationSuccess = connectRelationService.initialConnectRelation(connectRelation);
                 if (!isConnectRelationSuccess) {
@@ -146,17 +146,24 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     return result;
                 }
                 result.setSuccess(true);
-                result.setDefaultModel("connectToken", connectToken);
             } else {
-                //如果存在说明不是第一次登录操作，只更新connect_token表
-                ConnectToken connectToken = newConnectToken(passportId, appKey, provider, oAuthTokenVO);
-                boolean isSuccess = connectTokenService.updateConnectToken(connectToken);
-                if (!isSuccess) {
+                //如果account表存在，更新connect_token表
+                connectToken = newConnectToken(passportId, appKey, provider, oAuthTokenVO);
+                boolean isUpdateConnectTokenSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+                if (!isUpdateConnectTokenSuccess) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
                 }
+                ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
+                if (connectRelation == null) { //不存在则新增
+                    connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
+                    boolean isConnectRelationSuccess = connectRelationService.initialConnectRelation(connectRelation);
+                    if (!isConnectRelationSuccess) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                        return result;
+                    }
+                }
                 result.setSuccess(true);
-                result.setDefaultModel("connectToken", connectToken);
             }
             result.setDefaultModel("userid", passportId);
             //更新accessToken缓存
@@ -208,15 +215,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
-            logger.error("method[obtainConnectToken] obtain connect token error.{}", e);
-            throw new ServiceException(e);
+            logger.error("method[obtainConnectToken] obtain connect token from sogou db error.{}", e);
         }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Result insertOrUpdateConnectToken(int clientId, int provider, String passportId, OAuthTokenVO oAuthTokenVO) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*

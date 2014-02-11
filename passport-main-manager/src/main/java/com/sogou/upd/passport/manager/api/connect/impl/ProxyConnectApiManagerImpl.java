@@ -21,7 +21,6 @@ import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.connect.AccessTokenService;
 import org.apache.commons.lang.StringUtils;
@@ -144,12 +143,6 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         }
         return result;
     }
-
-    @Override
-    public Result insertOrUpdateConnectToken(int clientId, int provider, String passportId, OAuthTokenVO oAuthTokenVO) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
 
     private Result buildSuccResult(String userid, String accesstoken) {
         Result obtainTokenResult = new APIResultSupport(true);

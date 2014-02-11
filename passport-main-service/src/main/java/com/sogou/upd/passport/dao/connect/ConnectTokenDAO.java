@@ -42,6 +42,7 @@ public interface ConnectTokenDAO {
             + "#if(:accountConnect.refreshToken != null){refresh_token=:accountConnect.refreshToken,} "
             + "#if(:accountConnect.expiresIn > 0){expires_in=:accountConnect.expiresIn,}"
             + "#if(:accountConnect.accessToken != null){access_token=:accountConnect.accessToken} "
+            + "#if(:accountConnect.createTime != null){create_time=:accountConnect.createTime} "
             + "where passport_id=:passport_id and openid=:accountConnect.openid and provider=:accountConnect.provider and app_key=:accountConnect.appKey")
     public int updateConnectToken(@SQLParam("passport_id") String passport_id, @SQLParam("accountConnect") ConnectToken connectToken)
             throws DataAccessException;

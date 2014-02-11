@@ -66,6 +66,22 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     }
 
     @Override
+    public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException {
+        try {
+            String passportId = connectToken.getPassportId();
+            ConnectToken connectTokenReturn = queryConnectToken(passportId, connectToken.getProvider(), connectToken.getAppKey());
+            if (connectTokenReturn == null) {
+                return initialConnectToken(connectToken);
+            } else {
+                return updateConnectToken(connectToken);
+            }
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method insertOrUpdateConnectToken error.{}", e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public String querySpecifyOpenId(String passportId, int provider, String appKey) throws ServiceException {
         ConnectToken connectToken = queryConnectToken(passportId, provider, appKey);
         String openId = null;
