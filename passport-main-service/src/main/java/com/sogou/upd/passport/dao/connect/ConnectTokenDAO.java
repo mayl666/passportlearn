@@ -61,7 +61,8 @@ public interface ConnectTokenDAO {
             + "#if(:connectToken.avatarSmall != null){avatar_small=:connectToken.avatarSmall,} "
             + "#if(:connectToken.avatarMiddle != null){avatar_middle=:connectToken.avatarMiddle,} "
             + "#if(:connectToken.avatarLarge != null){avatar_large=:connectToken.avatarLarge,} "
-            + "#if(:connectToken.gender != null){gender=:connectToken.gender} "
+            + "#if(:connectToken.gender != null){gender=:connectToken.gender,} "
+            + "#if(:connectToken.createTime != null){create_time=:connectToken.createTime} "
             + "where passport_id=:passport_id and provider=:connectToken.provider and app_key=:connectToken.appKey")
     public int updateConnectToken(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("connectToken") ConnectToken connectToken)
             throws DataAccessException;
