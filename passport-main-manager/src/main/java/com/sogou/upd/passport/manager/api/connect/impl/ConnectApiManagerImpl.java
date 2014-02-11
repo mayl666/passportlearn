@@ -82,8 +82,10 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
 
 
     /**
-     * 此方法功能有以下三点：1.获取token信息  2.判断token是否过期，是否需要refreshToken刷新    3.没有过期或access_Token刷新成功后，写SG DB或access_token双写
-     *
+     * 此方法功能有以下三点：
+     * 1.获取token信息
+     * 2.判断token是否过期，是否需要refreshToken刷新
+     * 3.没有过期或access_Token刷新成功后，写SG DB或access_token双写
      * @param baseOpenApiParams 调用sohu接口参数类
      * @param clientId
      * @param clientKey
