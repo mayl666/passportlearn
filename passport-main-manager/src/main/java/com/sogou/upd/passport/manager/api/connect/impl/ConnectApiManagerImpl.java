@@ -94,6 +94,14 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
         Result result = new APIResultSupport(false);
         try {
             Result tokenResult;
+            String passportId = baseOpenApiParams.getUserid();
+            int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            if (connectConfig == null) {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                return result;
+            }
+            String appKey = connectConfig.getAppKey();
             //先查SG方有无此用户token信息,其中实现是先缓存再搜狗数据库
             tokenResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
             ConnectToken connectToken;
@@ -107,13 +115,9 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                         //todo refreshToken刷新accessToken
 //                        connectToken = connectAuthService.refreshAccessToken();
                         //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
-                        String passportId = baseOpenApiParams.getUserid();
-                        int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-                        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-                        if (connectConfig != null) {      //accessToken双写
-                            OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getRefreshToken());
-                            updateConnectToken(connectConfig.getAppKey(), AccountTypeEnum.getProviderStr(provider), oAuthTokenVO);
-                        }
+                        //accessToken双写
+                        OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getRefreshToken());
+                        updateConnectToken(appKey, AccountTypeEnum.getProviderStr(provider), oAuthTokenVO);
                         result.setSuccess(true);
                         result.setDefaultModel("connectToken", connectToken);
                     } else {

@@ -294,6 +294,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST = "30029";
     //accessToken写库失败
     public static final String ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED = "30030";
+    //没有找到此应用对应的第三方平台信息
+    public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -498,6 +500,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_ERROR, "token无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST, "refreshToken没有找到");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED, "accessToken写库失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
 
 
         // info

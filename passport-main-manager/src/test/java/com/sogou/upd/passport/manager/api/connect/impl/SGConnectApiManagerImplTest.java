@@ -3,15 +3,10 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,13 +20,19 @@ public class SGConnectApiManagerImplTest extends BaseTest {
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
-    //String appKey, String providerStr, OAuthTokenVO oAuthTokenVO
     @Test
     public void testBuildConnectAccount() throws Exception {
         String appKey = CommonConstant.APP_CONNECT_KEY;
         String providerStr = "qq";
+        String accessToken = "";
+        long expiresIn = 7776000;
+        String refreshToken = "";
+        String openId = "";
         OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
-//        Result result = ConnectApiManager.buildConnectAccount(appKey, providerStr, oAuthTokenVO);
+        Result result = sgConnectApiManager.buildConnectAccount(appKey, providerStr, oAuthTokenVO);
+        if (result.isSuccess()) {
+
+        }
     }
 
 }
