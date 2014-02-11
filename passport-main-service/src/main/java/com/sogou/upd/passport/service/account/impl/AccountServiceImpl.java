@@ -59,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
             cacheKey = buildAccountKey(username);
             account = redisUtils.getObject(cacheKey, Account.class);
             if (account != null) {
-                account.setStatus(AccountStatusEnum.REGULAR.getValue());
+                account.setFlag(AccountStatusEnum.REGULAR.getValue());
                 long id = accountDAO.insertAccount(username, account);
                 if (id != 0) {
                     //删除临时账户缓存，成为正式账户
@@ -92,12 +92,12 @@ public class AccountServiceImpl implements AccountService {
             if (!Strings.isNullOrEmpty(password) && !AccountTypeEnum.isConnect(provider)) {
                 passwordSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             }
-            account.setPasswd(passwordSign);
+            account.setPassword(passwordSign);
             account.setRegTime(new Date());
             account.setRegIp(ip);
             account.setAccountType(provider);
-            account.setStatus(AccountStatusEnum.REGULAR.getValue());
-            account.setVersion(Account.NEW_ACCOUNT_VERSION);
+            account.setFlag(AccountStatusEnum.REGULAR.getValue());
+            account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
             String mobile = null;
             if (AccountTypeEnum.isPhone(username, provider)) {
                 mobile = username;
@@ -154,7 +154,7 @@ public class AccountServiceImpl implements AccountService {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            if (PwdGenerator.verify(password, needMD5, userAccount.getPasswd())) {
+            if (PwdGenerator.verify(password, needMD5, userAccount.getPassword())) {
                 result.setSuccess(true);
                 result.setDefaultModel(userAccount);
                 return result;
@@ -234,7 +234,7 @@ public class AccountServiceImpl implements AccountService {
             int row = accountDAO.updatePassword(passwdSign, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                account.setPasswd(passwdSign);
+                account.setPassword(passwdSign);
                 redisUtils.set(cacheKey, account);
 
                 return true;
@@ -402,7 +402,7 @@ public class AccountServiceImpl implements AccountService {
             int row = accountDAO.updateState(newState, passportId);
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
-                account.setStatus(newState);
+                account.setFlag(newState);
                 redisUtils.set(cacheKey, account);
                 return true;
             }
@@ -425,11 +425,11 @@ public class AccountServiceImpl implements AccountService {
             if (!Strings.isNullOrEmpty(password)) {
                 passwordSign = PwdGenerator.generatorStoredPwd(password, false);
             }
-            account.setPasswd(passwordSign);
+            account.setPassword(passwordSign);
             account.setRegTime(new Date());
             account.setAccountType(provider);
-            account.setStatus(AccountStatusEnum.DISABLED.getValue());
-            account.setVersion(Account.NEW_ACCOUNT_VERSION);
+            account.setFlag(AccountStatusEnum.DISABLED.getValue());
+            account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
             account.setRegIp(ip);
 
             String cacheKey = buildAccountKey(username);

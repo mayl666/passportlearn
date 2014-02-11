@@ -1,8 +1,9 @@
 package com.sogou.upd.passport.model.connect;
 
 /**
- * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-21 Time: 下午5:39 To change this template
- * use File | Settings | File Templates.
+ * 存储第三方账号关联关系的connect_relation表
+ * User: shipengzhi
+ * Date: 13-4-21 Time: 下午5:39
  */
 public class ConnectRelation {
 

@@ -186,7 +186,7 @@ public class RegManagerImpl implements RegManager {
                 //激活失败
                 Account account = accountService.queryAccountByPassportId(username);
                 if (account != null) {
-                    if (account.getStatus() == AccountStatusEnum.REGULAR.getValue()) {
+                    if (account.getFlag() == AccountStatusEnum.REGULAR.getValue()) {
                         //已经激活，无需再次激活
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
                         return result;

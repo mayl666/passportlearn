@@ -26,19 +26,19 @@ public class ConnectRelationDAOTest extends BaseDAOTest {
     public void init() {
         ConnectRelation connectRelation = new ConnectRelation();
         connectRelation.setOpenid(OPENID);
+        connectRelation.setProvider(ACCOUNT_TYPE);
         connectRelation.setAppKey(APP_KEY);
         connectRelation.setPassportId(PASSPORT_ID);
-        connectRelation.setProvider(ACCOUNT_TYPE);
         int row1 = connectRelationDAO.insertConnectRelation(OPENID, connectRelation);
         connectRelation.setAppKey(OTHER_APP_KEY);
         int row2 = connectRelationDAO.insertConnectRelation(OPENID, connectRelation);
         Assert.assertTrue(row1 == 1 && row2 == 1);
     }
 
-    @After
-    public void end() {
-        int row = connectRelationDAO.deleteConnectRelation(OPENID, ACCOUNT_TYPE);
-        Assert.assertEquals(row, 2);
+    @Test
+    public void testGetSpecifyConnectToken() {
+        ConnectRelation connectRelation = connectRelationDAO.getSpecifyConnectToken(OPENID, ACCOUNT_TYPE, APP_KEY);
+        Assert.assertTrue(connectRelation != null);
     }
 
     @Test
@@ -47,4 +47,9 @@ public class ConnectRelationDAOTest extends BaseDAOTest {
         Assert.assertEquals(list.size(), 2);
     }
 
+    @After
+    public void end() {
+        int row = connectRelationDAO.deleteConnectRelation(OPENID, ACCOUNT_TYPE);
+        Assert.assertEquals(row, 2);
+    }
 }

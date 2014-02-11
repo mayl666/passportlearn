@@ -40,12 +40,6 @@ public class ConnectTokenDAOTest extends BaseDAOTest {
         Assert.assertTrue(row == 1);
     }
 
-    @After
-    public void end() {
-        int row = accountConnectDAO.deleteConnectTokenByPassportId(PASSPORT_ID);
-        Assert.assertTrue(row == 1);
-    }
-
     @Test
     public void testGetSpecifyConnectToken() {
         ConnectToken connectToken = accountConnectDAO.getSpecifyConnectToken(PASSPORT_ID, ACCOUNT_TYPE, APP_KEY);
@@ -55,8 +49,21 @@ public class ConnectTokenDAOTest extends BaseDAOTest {
     @Test
     public void testUpdateAccountConnect() {
         connectToken.setAccessToken("123");
+        connectToken.setExpiresIn(232332l);
+        connectToken.setRefreshToken("456");
+        connectToken.setConnectUniqname("跳刀的兔子");
+        connectToken.setAvatarSmall("http://account.sogou.com/small.jpg");
+        connectToken.setAvatarMiddle("http://account.sogou.com/middle.jpg");
+        connectToken.setAvatarLarge("http://account.sogou.com/large.jpg");
+        connectToken.setGender("1");
         int row = accountConnectDAO.updateConnectToken(PASSPORT_ID, connectToken);
         Assert.assertEquals(row, 1);
+    }
+
+    @After
+    public void end() {
+        int row = accountConnectDAO.deleteConnectTokenByPassportId(PASSPORT_ID);
+        Assert.assertTrue(row == 1);
     }
 
 }
