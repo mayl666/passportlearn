@@ -30,7 +30,7 @@ import java.util.Map;
  * Time: 上午11:15
  * To change this template use File | Settings | File Templates.
  */
-@Component("connectTokenApiManager")
+@Component("connectApiManager")
 public class ConnectApiManagerImpl implements ConnectApiManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectApiManagerImpl.class);
@@ -103,19 +103,23 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                 connectToken = (ConnectToken) tokenResult.getModels().get("connectToken");
                 //accessToken无效
                 if (!isValidToken(connectToken.getCreateTime(), connectToken.getExpiresIn())) {
+                    String passportId = baseOpenApiParams.getUserid();
+                    int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+                    ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+                    if (connectConfig == null) {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                        return result;
+                    }
+                    String appKey = connectConfig.getAppKey();
                     String refreshToken = connectToken.getRefreshToken();
                     //refreshToken不为空，则刷新token
                     if (!Strings.isNullOrEmpty(refreshToken)) {
                         //todo refreshToken刷新accessToken
 //                        connectToken = connectAuthService.refreshAccessToken();
                         //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
-                        String passportId = baseOpenApiParams.getUserid();
-                        int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-                        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-                        if (connectConfig != null) {      //accessToken双写
-                            OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getRefreshToken());
-                            updateConnectToken(connectConfig.getAppKey(), AccountTypeEnum.getProviderStr(provider), oAuthTokenVO);
-                        }
+                        //accessToken双写
+                        OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getRefreshToken());
+                        updateConnectToken(appKey, AccountTypeEnum.getProviderStr(provider), oAuthTokenVO);
                         result.setSuccess(true);
                         result.setDefaultModel("connectToken", connectToken);
                     } else {

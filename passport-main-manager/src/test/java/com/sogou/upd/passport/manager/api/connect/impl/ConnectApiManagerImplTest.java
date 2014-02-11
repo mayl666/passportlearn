@@ -18,10 +18,12 @@ import java.util.Map;
  * Time: 下午3:31
  * To change this template use File | Settings | File Templates.
  */
-public class ConnectApiManagerTest extends BaseTest {
+public class ConnectApiManagerImplTest extends BaseTest {
 
     @Autowired
     private ConnectApiManager proxyConnectApiManager;
+    @Autowired
+    private ConnectApiManager connectApiManager;
 
     @Test
     public void testSGGetUserInfo() throws Exception {
@@ -38,5 +40,24 @@ public class ConnectApiManagerTest extends BaseTest {
         } else {
             Assert.assertTrue(false);
         }
+    }
+
+    /**
+     * 第三方账号迁移时获取token，双读
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testObtainConnectToken() throws Exception {
+        int clientId = 1120;
+        String clientKey = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
+        //用户的openId/openKey
+        String userId = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
+        BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
+        baseOpenApiParams.setUserid(userId);
+        baseOpenApiParams.setOpenid(userId);
+        Result result = connectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
+        System.out.println("------------------结果如下-------------------");
+        System.out.println(result);
     }
 }
