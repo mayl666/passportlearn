@@ -618,10 +618,11 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String timesKey = buildUserNameLoginTimesKeyStr(username);
             long expireSeconds = redisUtils.getExpireTime(timesKey);
 
+            double durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
             StringBuilder log = new StringBuilder();
             Date date = new Date();
             log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("username")
-                    .append(" ").append(username).append(" ").append(reason).append(" ").append(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds);
+                    .append(" ").append(username).append(" ").append(reason).append(" ").append(durMin);
             loginBlackListLogger.info(log.toString());
         } catch (Exception e) {
             logger.error("addToBlackList:" + username, e);
@@ -638,10 +639,11 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             String timesKey = buildIPLoginTimesKeyStr(ip);
             long expireSeconds = redisUtils.getExpireTime(timesKey);
 
+            double durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
             StringBuilder log = new StringBuilder();
             Date date = new Date();
             log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("ip")
-                    .append(" ").append(ip).append(" ").append(reason).append(" ").append(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds);
+                    .append(" ").append(ip).append(" ").append(reason).append(" ").append(durMin);
             loginBlackListLogger.info(log.toString());
 
         } catch (Exception e) {
