@@ -621,7 +621,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             StringBuilder log = new StringBuilder();
             Date date = new Date();
             log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("username")
-                    .append(" ").append(username).append(" ").append(reason).append(" ").append(expireSeconds);
+                    .append(" ").append(username).append(" ").append(reason).append(" ").append(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds);
             loginBlackListLogger.info(log.toString());
         } catch (Exception e) {
             logger.error("addToBlackList:" + username, e);
@@ -641,7 +641,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             StringBuilder log = new StringBuilder();
             Date date = new Date();
             log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("ip")
-                    .append(" ").append(ip).append(" ").append(reason).append(" ").append(expireSeconds);
+                    .append(" ").append(ip).append(" ").append(reason).append(" ").append(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds);
             loginBlackListLogger.info(log.toString());
 
         } catch (Exception e) {
