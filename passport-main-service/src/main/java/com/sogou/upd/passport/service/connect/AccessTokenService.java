@@ -13,15 +13,6 @@ import com.sogou.upd.passport.model.connect.ConnectToken;
 public interface AccessTokenService {
 
     /**
-     * key:userid;valuse:accesstoken
-     * @param userid
-     * @param Accesstoken
-     * @return
-     * @throws ServiceException
-     */
-    public boolean initialOrUpdateAccessToken(String userid,String Accesstoken,long expire) throws ServiceException;
-
-    /**
      * 通过userid获取accesstoken
      * @param userid
      * @return

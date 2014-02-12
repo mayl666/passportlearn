@@ -1,10 +1,13 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
+import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +60,34 @@ public class ConnectApiManagerImplTest extends BaseTest {
         baseOpenApiParams.setUserid(userId);
         baseOpenApiParams.setOpenid(userId);
         Result result = connectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
-        System.out.println("------------------结果如下-------------------");
+        System.out.println("--------------------------结果如下-------------------------");
         System.out.println(result);
+        ConnectToken connectToken = null;
+        if (result.isSuccess()) {
+            connectToken = (ConnectToken) result.getModels().get("connectToken");
+        }
+        Assert.assertTrue(connectToken != null);
+    }
+
+    /**
+     * 第三方账号迁移时创建第三方账号，包含双写
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBuildConnectAccount() throws Exception {
+        String appKey = CommonConstant.APP_CONNECT_KEY;
+        String providerStr = "qq";
+        long expiresIn = 7776000;
+        String refreshToken = null;
+        //用户的openId/openKey
+        String openId = "CFF81AB013A94663D83FEC36AC117933";
+        String accessToken = "AC1311EBBADD950C4A1113B4A7C19E31";
+        OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, refreshToken);
+        oAuthTokenVO.setOpenid(openId);
+        Result result = connectApiManager.buildConnectAccount(appKey, providerStr, oAuthTokenVO);
+        System.out.println("---------------------结果如下--------------------");
+        System.out.println(result);
+        Assert.assertTrue(result.isSuccess());
     }
 }

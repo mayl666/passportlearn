@@ -46,5 +46,16 @@ public interface ConnectApiManager {
      */
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
 
+    /**
+     * 根据account表的状态来新增/修改connect_token表和connect_relation表
+     *
+     * @param appKey
+     * @param providerStr
+     * @param oAuthTokenVO
+     * @param isQueryConnectRelation
+     * @return
+     */
+    public Result rebuildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO, boolean isQueryConnectRelation);
+
 
 }

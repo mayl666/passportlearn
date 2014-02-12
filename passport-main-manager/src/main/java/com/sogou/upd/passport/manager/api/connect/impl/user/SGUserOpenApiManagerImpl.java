@@ -14,6 +14,7 @@ import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -43,7 +44,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
+    private ConnectApiManager connectApiManager;
 
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
@@ -72,12 +73,12 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setOpenid(userid);
             baseOpenApiParams.setUserid(userid);
-            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
-                openId = accessTokenMap.get("open_id").toString();
-                accessToken = accessTokenMap.get("access_token").toString();
+                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                openId = connectToken.getOpenid();
+                accessToken = connectToken.getAccessToken();
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_USERID_TYPE_ERROR);
                 return result;

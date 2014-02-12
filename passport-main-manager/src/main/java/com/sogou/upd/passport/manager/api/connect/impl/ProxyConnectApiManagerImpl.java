@@ -44,8 +44,6 @@ import java.util.Map;
 public class ProxyConnectApiManagerImpl extends BaseProxyManager implements ConnectApiManager {
 
     private static final Logger log = LoggerFactory.getLogger(ProxyConnectApiManagerImpl.class);
-    @Autowired
-    private AccessTokenService accessTokenService;
 
     @Override
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
@@ -91,8 +89,6 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
             result.setDefaultModel("userid", userid);
             result.setDefaultModel("token", map.get("token").toString());
             result.setDefaultModel("uniqname", map.get("uniqname"));
-            accessTokenService.initialOrUpdateAccessToken(userid, oAuthTokenVO.getAccessToken(), expires);
-
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             result.setDefaultModel(CommonConstant.RESPONSE_STATUS, map.get("error"));
@@ -111,11 +107,6 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) {
         Result result = new APIResultSupport(false);
         try {
-            String userid = baseOpenApiParams.getUserid();
-            String cacheAccesstoken = accessTokenService.getAccessToken(userid);
-            if (!StringUtils.isBlank(cacheAccesstoken)) {
-                return buildSuccResult(userid, cacheAccesstoken);
-            }
             //如果是post请求，原方法
             RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_QQ_LIGHT_USER_INFO);
             requestModelJSON.addParams(baseOpenApiParams);
@@ -126,10 +117,6 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
                 String status = map.get(SHPPUrlConstant.RESULT_STATUS).toString().trim();
                 if ("0".equals(status)) {
                     result.setSuccess(true);
-                    //更新缓存
-                    Map<String, String> accessTokenMap = (Map<String, String>) map.get("result");
-                    String resAccessToken = accessTokenMap.get("access_token").toString();
-                    accessTokenService.initialOrUpdateAccessToken(userid, resAccessToken, DateAndNumTimesConstant.TIME_ONEDAY);
                 }
                 Map.Entry<String, String> entry = ProxyErrorUtil.shppErrToSgpp(requestModelJSON.getUrl(), status);
                 result.setCode(entry.getKey());
@@ -144,25 +131,9 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         return result;
     }
 
-    private Result buildSuccResult(String userid, String accesstoken) {
-        Result obtainTokenResult = new APIResultSupport(true);
-        Map<String, Object> data = Maps.newHashMap();
-        Map<String, Object> result_value_data = Maps.newHashMap();
-        result_value_data.put("open_id", getOpenId(userid));
-        result_value_data.put("access_token", accesstoken);
-        data.put("result", result_value_data);
-        data.put("userid", userid);
-        data.put("openid", userid);
-        obtainTokenResult.setModels(data);
-        obtainTokenResult.setMessage("操作成功");
-        return obtainTokenResult;
-    }
-
-    private String getOpenId(String userid) {
-        if (StringUtils.isBlank(userid)) {
-            return null;
-        }
-        return userid.substring(0, userid.indexOf("@"));
+    @Override
+    public Result rebuildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO, boolean isQueryConnectRelation) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {

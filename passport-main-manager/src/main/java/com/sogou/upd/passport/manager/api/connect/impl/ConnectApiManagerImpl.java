@@ -9,10 +9,12 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
@@ -46,6 +48,8 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
     private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectAuthService connectAuthService;
+    @Autowired
+    private AccountService accountService;
 
 
     @Override
@@ -103,27 +107,24 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
             //先查SG方有无此用户token信息,其中实现是先缓存再搜狗数据库
             tokenResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
             ConnectToken connectToken;
+            String passportId = baseOpenApiParams.getUserid();
+            int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            if (connectConfig == null) {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                return result;
+            }
+            String appKey = connectConfig.getAppKey();
             if (tokenResult.isSuccess()) {
                 connectToken = (ConnectToken) tokenResult.getModels().get("connectToken");
                 //accessToken无效
                 if (!isValidToken(connectToken.getCreateTime(), connectToken.getExpiresIn())) {
-                    String passportId = baseOpenApiParams.getUserid();
-                    int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-                    ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-                    if (connectConfig == null) {
-                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
-                        return result;
-                    }
-                    String appKey = connectConfig.getAppKey();
                     String refreshToken = connectToken.getRefreshToken();
                     //refreshToken不为空，则刷新token
                     if (!Strings.isNullOrEmpty(refreshToken)) {
                         OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
                         //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
-                        //accessToken双写
                         updateConnectToken(appKey, AccountTypeEnum.getProviderStr(provider), oAuthTokenVO);
-                        result.setSuccess(true);
-                        result.setDefaultModel("connectToken", connectToken);
                     } else {
                         //refreshToken为空，返回错误状态码
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST);
@@ -136,22 +137,24 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                 }
             } else {
                 tokenResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
-                //如果sohu有此用户token信息
+                //如果sohu有此用户token信息,写SG库
                 if (tokenResult.isSuccess()) {
                     Map<String, String> accessTokenMap = (Map<String, String>) tokenResult.getModels().get("result");
                     String openId = accessTokenMap.get("open_id").toString();
                     String accessToken = accessTokenMap.get("access_token").toString();
-                    long expiresIn = Long.parseLong(accessTokenMap.get("expires_in").toString());
-                    //单写SG DB及缓存
-                    ConnectToken tokenInfo = new ConnectToken(openId, accessToken, expiresIn);
-                    boolean isInitialSuccess = connectTokenService.initialConnectToken(tokenInfo);
-                    if (isInitialSuccess) {
-                        result.setDefaultModel("connectToken", tokenInfo);
-                        result.setSuccess(true);
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-                        return result;
+                    long expiresIn = Long.parseLong(String.valueOf(accessTokenMap.get("expires_in")));
+                    //1.account表如果不存在，写account表
+                    Account account = accountService.queryNormalAccount(passportId);
+                    if (account == null) {
+                        account = accountService.initialAccount(openId, null, false, null, provider);
+                        if (account == null) {
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                            return result;
+                        }
                     }
+                    OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, null);
+                    oAuthTokenVO.setOpenid(openId);
+                    result = sgConnectApiManager.rebuildConnectAccount(appKey, AccountTypeEnum.getProviderStr(provider), oAuthTokenVO, true);
                 } else {
                     result = tokenResult;
                 }
@@ -165,6 +168,7 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
         }
         return result;
     }
+
 
     /**
      * accessToken双写搜狗、搜狐数据库
@@ -193,6 +197,8 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
                 return result;
             }
+            result.setSuccess(true);
+            result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
             logger.error("[ConnectToken] manager method updateConnectToken error.{}", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -200,6 +206,10 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
         return result;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public Result rebuildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO, boolean isQueryConnectRelation) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     /**
      * 验证Token是否失效,返回true表示有效，false表示过期

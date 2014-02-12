@@ -28,10 +28,9 @@ public class ConnectToken {
     public ConnectToken() {
     }
 
-    public ConnectToken(String openid, String accessToken, long expiresIn) {
+    public ConnectToken(String openid, String accessToken) {
         this.openid = openid;
         this.accessToken = accessToken;
-        this.expiresIn = expiresIn;
     }
 
     public long getId() {
