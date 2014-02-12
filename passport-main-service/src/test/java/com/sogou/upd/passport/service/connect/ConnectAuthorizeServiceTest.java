@@ -25,7 +25,7 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
 
     private static final int clientId = 1120;
     private static final int provider = AccountTypeEnum.QQ.getValue();
-    private static final int provider_sina = AccountTypeEnum.SINA.getValue();
+    private static final int provider_renren = AccountTypeEnum.RENREN.getValue();
 
     @Autowired
     private ConnectAuthService connectAuthorizeService;
@@ -54,10 +54,11 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
 
     @Test
     public void testRefreshAccessToken() {
-        String refreshToken = "33B7D25DA4F5FCD9F5DB7B4EE9136E67";
+        String refreshToken_qq = "33B7D25DA4F5FCD9F5DB7B4EE9136E67";
+//        String refreshToken_renren = "209417|0.zNgdF8EEhp2MlUx9r48zLZuwZWEHIx7g.225106022.1383223561658";
         ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
         try {
-            OAuthTokenVO oAuthTokenVO = connectAuthorizeService.refreshAccessToken(refreshToken, connectConfig);
+            OAuthTokenVO oAuthTokenVO = connectAuthorizeService.refreshAccessToken(refreshToken_qq, connectConfig);
             System.out.println("--------------------结果如下-------------------");
             System.out.println("accessToken:" + oAuthTokenVO.getAccessToken() + "refreshToken:" + oAuthTokenVO.getRefreshToken());
         } catch (IOException e) {
