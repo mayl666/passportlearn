@@ -154,6 +154,7 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                     }
                     OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, null);
                     oAuthTokenVO.setOpenid(openId);
+                    //2.写connect_relation、connect_token表
                     result = sgConnectApiManager.rebuildConnectAccount(appKey, AccountTypeEnum.getProviderStr(provider), oAuthTokenVO, true);
                 } else {
                     result = tokenResult;
