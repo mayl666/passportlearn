@@ -159,7 +159,7 @@ public class OAuthUtils {
      */
     public static Map<String, Object> parseQQIrregularJSONObject(String body) throws OAuthProblemException {
 
-        Map<String, Object> parameters = Maps.newHashMap();
+        Map<String, Object> parameters;
         int fromIndex1 = body.indexOf("{") - 1;
         int fromIndex2 = body.lastIndexOf("}") + 1;
         if (isJsonBodyBlank(fromIndex1, fromIndex2)) {

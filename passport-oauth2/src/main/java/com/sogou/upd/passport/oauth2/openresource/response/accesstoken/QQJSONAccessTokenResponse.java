@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+import com.sogou.upd.passport.oauth2.common.utils.OAuthUtils;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 
@@ -28,8 +29,12 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
         try {
             this.parameters = JacksonJsonMapperUtil.getMapper().readValue(this.body, Map.class);
         } catch (Exception e) {
-            throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
-                    "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");
+            try {
+                this.parameters = OAuthUtils.parseQQIrregularJSONObject(this.body);
+            } catch (Exception e1) {
+                throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
+                        "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");
+            }
         }
     }
 

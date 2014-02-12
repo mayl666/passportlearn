@@ -59,7 +59,7 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
         try {
             OAuthTokenVO oAuthTokenVO = connectAuthorizeService.refreshAccessToken(refreshToken, connectConfig);
             System.out.println("--------------------结果如下-------------------");
-            System.out.println(oAuthTokenVO);
+            System.out.println("accessToken:" + oAuthTokenVO.getAccessToken() + "refreshToken:" + oAuthTokenVO.getRefreshToken());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (OAuthProblemException e) {

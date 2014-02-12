@@ -88,7 +88,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                 .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
         OAuthAccessTokenResponse response;
         if (provider == AccountTypeEnum.QQ.getValue()) {
-            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, QQJSONAccessTokenResponse.class);
+            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {
             //renren刷新access_token接口，只允许POST方式
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
