@@ -43,7 +43,7 @@ public interface AccountService {
    */
   public boolean checkLimitResetPwd(String passportId) throws ServiceException;
   /**
-   * 验证账号的有效性，是否为正常用户
+   * 验证账号的有效性，返回正常用户
    *
    * @return 验证不通过，则返回null
    */
