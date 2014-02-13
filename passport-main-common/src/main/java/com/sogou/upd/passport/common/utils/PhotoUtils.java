@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.Result;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.JVMRandom;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,7 +36,6 @@ public class PhotoUtils {
 
     private HttpClient httpClient;
 
-    private String cdnURL = "http://imgstore.cdn.sogou.com";
     private String storageEngineURL ;
     private int timeout=5000;               // timeout毫秒数
     private String appid;
@@ -67,10 +67,10 @@ public class PhotoUtils {
 
         //初始化cdn列表
         listCDN = new ArrayList<String>();
-        listCDN.add("http://imgstore01.cdn.sogou.com");
-        listCDN.add("http://imgstore02.cdn.sogou.com");
-        listCDN.add("http://imgstore03.cdn.sogou.com");
-        listCDN.add("http://imgstore04.cdn.sogou.com");
+        listCDN.add("http://img01.sogoucdn.com");
+        listCDN.add("http://img02.sogoucdn.com");
+        listCDN.add("http://img03.sogoucdn.com");
+        listCDN.add("http://img04.sogoucdn.com");
     }
     //图片名生成
     public String generalFileName() {
@@ -104,7 +104,7 @@ public class PhotoUtils {
 
     //随机获取cdn域名
     public String getCdnURL() {
-        return listCDN.get(new Random().nextInt(listCDN.size()));
+        return listCDN.get(RandomUtils.nextInt(listCDN.size()));
     }
 
     //获取图片尺寸个数
