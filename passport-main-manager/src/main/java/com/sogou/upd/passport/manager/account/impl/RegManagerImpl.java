@@ -312,6 +312,36 @@ public class RegManagerImpl implements RegManager {
         }
     }
 
+    @Override
+    public Result checkMobileSendSMSInBlackList(String ip) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            //检查ip是否在黑名单中
+            if (operateTimesService.isMobileSendSMSInBlackList(ip)) {
+                //检查ip是否在白名单中
+                if (!operateTimesService.checkRegInWhiteList(ip)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                    return result;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("[manager]method isMobileSendSMSInBlackList error", e);
+            throw new Exception(e);
+        }
+        result.setSuccess(true);
+        return result;
+    }
+
+    @Override
+    public void incSendTimesForMobile(String ip) throws Exception {
+        try {
+            operateTimesService.incSendTimesForMobile(ip);
+        } catch (ServiceException e) {
+            logger.error("register incSendTimesForMobile Exception", e);
+            throw new Exception(e);
+        }
+    }
+
     /*
      * client=1044的username为个性域名或手机号
      * 都有可能是sohuplus的账号，需要判断sohuplus映射表

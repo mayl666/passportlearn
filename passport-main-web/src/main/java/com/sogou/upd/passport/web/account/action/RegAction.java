@@ -21,7 +21,6 @@ import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
-import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -63,8 +62,6 @@ public class RegAction extends BaseController {
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
-    @Autowired
-    private OperateTimesService operateTimesService;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
 
@@ -257,34 +254,63 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = {"/sendsms"}, method = RequestMethod.GET)
     @ResponseBody
-    public Object sendMobileCode(MoblieCodeParams reqParams)
+    public Object sendMobileCode(MoblieCodeParams reqParams, HttpServletRequest request)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(reqParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        //验证client_id
-        int clientId = Integer.parseInt(reqParams.getClient_id());
+        String finalCode = null;
+        String ip = getIp(request);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(reqParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id
+            int clientId = Integer.parseInt(reqParams.getClient_id());
 
-        //检查client_id是否存在
-        if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result.toString();
+            //检查client_id是否存在
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            //校验用户ip是否中了黑名单
+            result = regManager.checkMobileSendSMSInBlackList(ip);
+            if (!result.isSuccess()) {
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                    result.setMessage("发送短信失败");
+                }
+                return result.toString();
+            }
+
+            String mobile = reqParams.getMobile();
+            //为了数据迁移三个阶段，这里需要转换下参数类
+            BaseMoblieApiParams baseMoblieApiParams = buildProxyApiParams(clientId, mobile);
+            if (ManagerHelper.isInvokeProxyApi(mobile)) {
+                result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+            } else {
+                result = sgRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+            }
+        } catch (Exception e) {
+            logger.error("method[sendMobileCode] send mobile sms error.{}", e);
+        } finally {
+            String logCode;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
+            //web页面手机注册时，发送手机验证码
+            UserOperationLog userOperationLog = new UserOperationLog(reqParams.getMobile(), request.getRequestURI(), reqParams.getClient_id(), logCode, ip);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        String mobile = reqParams.getMobile();
-        //为了数据迁移三个阶段，这里需要转换下参数类
-        BaseMoblieApiParams baseMoblieApiParams = buildProxyApiParams(clientId, mobile);
-        if (ManagerHelper.isInvokeProxyApi(mobile)) {
-            result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
-        } else {
-            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
-        }
+        regManager.incSendTimesForMobile(ip);
         return result.toString();
-
     }
 
     private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {

@@ -39,6 +39,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = "SP.PASSPORTID:EMAILSCODE_"; // passportId与email中scode的映射
     public static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = "SP.PASSPORTID:SENDEMAILNUM_"; // passportId与email发送次数的映射
     public static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = "SP.PASSPORTID:ACCOUNT_BASE_INFO_"; // passportId与sohu+头像昵称映射
+    public static final String CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST = "SP.MOBILESMSCODE:IPBLACKLIST_SET_"; // ip与发送手机短信次数映射
 
     /*================账号黑名单、白名单缓存常量=====================*/
     public static final String CACHE_PREFIX_IP_UPDATEPWDNUM = "SP.IP:UPDATEPWDNUM_"; //IP的修改密码限制
