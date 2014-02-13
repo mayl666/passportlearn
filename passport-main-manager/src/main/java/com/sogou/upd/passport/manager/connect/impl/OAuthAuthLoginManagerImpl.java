@@ -124,7 +124,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             // 创建第三方账号
-            Result connectAccountResult = connectApiManager.buildConnectAccount(connectConfig.getAppKey(), providerStr, oAuthTokenVO);
+            Result connectAccountResult = connectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO, false);
 
             if (connectAccountResult.isSuccess()) {
                 String passportId = (String) connectAccountResult.getModels().get("userid");

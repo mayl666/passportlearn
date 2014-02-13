@@ -35,7 +35,7 @@ public class ConnectTokenDAOTest extends BaseDAOTest {
         connectToken.setAccessToken(ACCESS_TOKEN);
         connectToken.setRefreshToken(REFRESH_TOKEN);
         connectToken.setExpiresIn(436222l);
-        connectToken.setCreateTime(new Date());
+        connectToken.setUpdateTime(new Date());
         int row = accountConnectDAO.insertAccountConnect(PASSPORT_ID, connectToken);
         Assert.assertTrue(row == 1);
     }

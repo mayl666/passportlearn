@@ -26,7 +26,7 @@ import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientReques
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
-import com.sogou.upd.passport.service.connect.AccessTokenService;
+import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
@@ -50,6 +50,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGConnectApiManagerImpl.class);
 
     @Autowired
+    private ConnectApiManager proxyConnectApiManager;
+    @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectTokenService connectTokenService;
@@ -57,6 +59,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private AccountService accountService;
     @Autowired
     private ConnectRelationService connectRelationService;
+    @Autowired
+    private ConnectAuthService connectAuthService;
+
 
     @Override
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
@@ -113,26 +118,47 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         return request.getLocationUri();
     }
 
+    /**
+     * 创建第三方账号
+     *
+     * @param appKey        搜狗在第三方的appKey
+     * @param provider      第三方类型
+     * @param oAuthTokenVO  统一的OAuthToken对象
+     * @param isObtainQuery 为true表示需要查询connect_relation表，为false表示不需要查询。
+     *                      当accessToken SG没有，SH有时，且过期刷新成功后，此值为true，其它情况值默认为false，也即根据account查询结果来确定
+     * @return
+     */
     @Override
-    public Result rebuildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO, boolean isQueryConnectRelation) {
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO, boolean isObtainQuery) {
         Result result = new APIResultSupport(false);
         try {
-            String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), providerStr);
-            int provider = AccountTypeEnum.getProvider(providerStr);
+            String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), AccountTypeEnum.getProviderStr(provider));
+            boolean isBuildQuery = false;  //根据account是否为空，来决定是否查询connect_relation表,为true表示查询，为false表示不查询
+            //1.查询account表
+            Account account = accountService.queryAccountByPassportId(passportId);
+            if (account == null) {
+                account = accountService.initialAccount(oAuthTokenVO.getOpenid(), null, false, oAuthTokenVO.getIp(), provider);
+                if (account == null) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+            } else {
+                isBuildQuery = true;   //查relation表
+            }
             boolean isSuccess;
-            //connect_token表新增或修改
+            //2.connect_token表新增或修改
             ConnectToken connectToken = newConnectToken(passportId, appKey, provider, oAuthTokenVO);
             isSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
             if (!isSuccess) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                 return result;
             }
-            //connect_relation根据参数决定是否新增
+            //3.connect_relation根据参数决定是否新增
             ConnectRelation connectRelation = null;
-            if (isQueryConnectRelation) {
+            if (isObtainQuery || isBuildQuery) {
                 connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
             }
-            if (connectRelation == null || !isQueryConnectRelation) {
+            if (connectRelation == null) {
                 connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
             }
@@ -141,40 +167,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return result;
             }
             result.setSuccess(true);
-            result.setDefaultModel("connectToken",connectToken);
+            result.setDefaultModel("connectToken", connectToken);
         } catch (ServiceException se) {
             logger.error("[connect]method rebuildConnectAccount ServiceException: database operation error.{}", se);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        } catch (Exception e) {
-            logger.error("[connect] method buildConnectAccount error.{}", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
-    }
-
-    @Override
-    public Result buildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO) {
-        Result result = new APIResultSupport(false);
-        try {
-            String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), providerStr);
-            int provider = AccountTypeEnum.getProvider(providerStr);
-            Account account = accountService.queryNormalAccount(passportId);
-            boolean isQueryConnectRelation = false;  //根据account表是否存在来决定是否需要查询connect_relation表，connect_token有则更新，无则新增
-            //account不存在则新增
-            if (account == null) {
-                //todo 搜狗分支时会将version字段改为passwordtype字段，表示密码类型，第三方账号无密码，用0表示
-                account = accountService.initialAccount(oAuthTokenVO.getOpenid(), null, false, oAuthTokenVO.getIp(), provider);
-                if (account == null) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                    return result;
-                }
-            } else {
-                isQueryConnectRelation = true;
-            }
-            result = rebuildConnectAccount(appKey, providerStr, oAuthTokenVO, isQueryConnectRelation);
-            result.setDefaultModel("userid", passportId);
-        } catch (ServiceException se) {
-            logger.error("ServiceException: database operation error.{}", se);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (Exception e) {
             logger.error("[connect] method buildConnectAccount error.{}", e);
@@ -193,7 +188,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
         connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
         connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
-        connectToken.setCreateTime(new Date());
+        connectToken.setUpdateTime(new Date());
         return connectToken;
     }
 
@@ -206,24 +201,106 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         return connectRelation;
     }
 
+    /**
+     * 根据refreshToken是否过期，来决定是否用refreshToken来刷新accessToken
+     *
+     * @param connectToken
+     * @param provider
+     * @param connectConfig
+     * @return
+     * @throws IOException
+     * @throws OAuthProblemException
+     */
+    private Result verifyRefreshAccessToken(ConnectToken connectToken, int provider, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
+        Result result = new APIResultSupport(false);
+        if (!isValidToken(connectToken.getUpdateTime(), connectToken.getExpiresIn())) {
+            String refreshToken = connectToken.getRefreshToken();
+            //refreshToken不为空，则刷新token
+            if (!Strings.isNullOrEmpty(refreshToken)) {
+                OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
+                updateConnectToken(connectConfig.getAppKey(), provider, oAuthTokenVO);
+            } else {
+                //refreshToken为空，返回错误状态码
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST);
+                return result;
+            }
+        } else {
+            //accessToken有效直接返回
+            result.setSuccess(true);
+            result.setDefaultModel("connectToken", connectToken);
+        }
+        return result;
+    }
+
     @Override
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
             int provider = AccountTypeEnum.getAccountType(baseOpenApiParams.getUserid()).getValue();
             ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-            ConnectToken connectToken = null;
+            ConnectToken connectToken;
             if (connectConfig != null) {
                 connectToken = connectTokenService.queryConnectToken(baseOpenApiParams.getUserid(), provider, connectConfig.getAppKey());
                 if (connectToken != null) {
-                    result.setSuccess(true);
+                    //判断accessToken是否过期，是否需要刷新
+                    result = verifyRefreshAccessToken(connectToken, provider, connectConfig);
                 }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                return result;
             }
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
             logger.error("method[obtainConnectToken] obtain connect token from sogou db error.{}", e);
         }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
+    /**
+     * accessToken双写搜狗、搜狐数据库
+     *
+     * @param appKey
+     * @param provider
+     * @param oAuthTokenVO
+     * @return
+     */
+    private Result updateConnectToken(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
+        Result result = new APIResultSupport(false);
+        try {
+            ConnectToken connectToken = new ConnectToken();
+            connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
+            connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
+            connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
+            connectToken.setUpdateTime(new Date());
+            boolean isUpdateSuccess = connectTokenService.updateConnectToken(connectToken);
+            if (isUpdateSuccess) {
+                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO, false);
+                if (!result.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
+                    return result;
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
+                return result;
+            }
+            result.setSuccess(true);
+            result.setDefaultModel("connectToken", connectToken);
+        } catch (Exception e) {
+            logger.error("[ConnectToken] manager method updateConnectToken error.{}", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * 验证Token是否失效,返回true表示有效，false表示过期
+     */
+    private boolean isValidToken(Date createTime, long expiresIn) {
+        long currentTime = System.currentTimeMillis() / (1000);
+        long tokenTime = createTime.getTime() / (1000);
+        return currentTime < tokenTime + expiresIn;
     }
 
     /*

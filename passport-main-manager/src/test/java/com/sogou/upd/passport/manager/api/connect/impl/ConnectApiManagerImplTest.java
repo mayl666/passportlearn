@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -77,7 +78,7 @@ public class ConnectApiManagerImplTest extends BaseTest {
     @Test
     public void testBuildConnectAccount() throws Exception {
         String appKey = CommonConstant.APP_CONNECT_KEY;
-        String providerStr = "qq";
+        int provider = AccountTypeEnum.QQ.getValue();
         long expiresIn = 7776000;
         String refreshToken = null;
         //用户的openId/openKey
@@ -85,7 +86,7 @@ public class ConnectApiManagerImplTest extends BaseTest {
         String accessToken = "AC1311EBBADD950C4A1113B4A7C19E31";
         OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, refreshToken);
         oAuthTokenVO.setOpenid(openId);
-        Result result = connectApiManager.buildConnectAccount(appKey, providerStr, oAuthTokenVO);
+        Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO,false);
         System.out.println("---------------------结果如下--------------------");
         System.out.println(result);
         Assert.assertTrue(result.isSuccess());

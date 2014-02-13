@@ -25,7 +25,7 @@ public interface ConnectTokenDAO {
      * 所有字段列表
      */
     String ALL_FIELD = " passport_id, provider, app_key, openid, access_token, expires_in, refresh_token, " +
-            "connect_uniqname, avatar_small, avatar_middle, avatar_large, gender, create_time ";
+            "connect_uniqname, avatar_small, avatar_middle, avatar_large, gender, update_time ";
 
     /**
      * 值列表
@@ -33,7 +33,7 @@ public interface ConnectTokenDAO {
     String VALUE_FIELD = " :passport_id, :connectToken.provider, :connectToken.appKey, :connectToken.openid, " +
             ":connectToken.accessToken, :connectToken.expiresIn, :connectToken.refreshToken, " +
             ":connectToken.connectUniqname, :connectToken.avatarSmall, :connectToken.avatarMiddle, :connectToken.avatarLarge," +
-            " :connectToken.gender, :connectToken.createTime ";
+            " :connectToken.gender, :connectToken.updateTime ";
 
     /**
      * 根据passportId获取openId
@@ -62,7 +62,7 @@ public interface ConnectTokenDAO {
             + "#if(:connectToken.avatarMiddle != null){avatar_middle=:connectToken.avatarMiddle,} "
             + "#if(:connectToken.avatarLarge != null){avatar_large=:connectToken.avatarLarge,} "
             + "#if(:connectToken.gender != null){gender=:connectToken.gender,} "
-            + "#if(:connectToken.createTime != null){create_time=:connectToken.createTime} "
+            + "#if(:connectToken.updateTime != null){update_time=:connectToken.updateTime} "
             + "where passport_id=:passport_id and provider=:connectToken.provider and app_key=:connectToken.appKey")
     public int updateConnectToken(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("connectToken") ConnectToken connectToken)
             throws DataAccessException;

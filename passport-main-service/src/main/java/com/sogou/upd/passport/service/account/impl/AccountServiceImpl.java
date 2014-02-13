@@ -87,17 +87,21 @@ public class AccountServiceImpl implements AccountService {
         Account account = new Account();
         String passportId = PassportIDGenerator.generator(username, provider);
         account.setPassportId(passportId);
-        String passwordSign = null;
+        String passwordSign;
         try {
             if (!Strings.isNullOrEmpty(password) && !AccountTypeEnum.isConnect(provider)) {
                 passwordSign = PwdGenerator.generatorStoredPwd(password, needMD5);
+                account.setPassword(passwordSign);
             }
-            account.setPassword(passwordSign);
             account.setRegTime(new Date());
             account.setRegIp(ip);
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
-            account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
+            if (AccountTypeEnum.isConnect(provider)) {
+                account.setPasswordtype(Account.NO_PASSWORD);
+            } else {
+                account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
+            }
             String mobile = null;
             if (AccountTypeEnum.isPhone(username, provider)) {
                 mobile = username;

@@ -23,7 +23,7 @@ public class ConnectToken {
     private String avatarMiddle;  // 第三方头像（中图）
     private String avatarLarge;  // 第三方头像（大图）
     private String gender;   // 性别。 0-女，1-男，默认为1
-    private Date createTime; // 创建时间
+    private Date updateTime; // 修改时间。当首次创建时为创建时间，以后为每次修改时间
 
     public ConnectToken() {
     }
@@ -97,12 +97,12 @@ public class ConnectToken {
         this.refreshToken = refreshToken;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     public String getConnectUniqname() {

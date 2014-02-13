@@ -51,8 +51,9 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     }
 
     @Override
-    public Result buildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO) {
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO, boolean isQuery) {
         Result result = new APIResultSupport(false);
+        String providerStr = AccountTypeEnum.getProviderStr(provider);
         String url = SHPPUrlConstant.CREATE_CONNECT_USER + providerStr;
         RequestModel requestModel = new RequestModel(url);
         requestModel.addParam("appid", CommonConstant.SGPP_DEFAULT_CLIENTID);
@@ -129,11 +130,6 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
-    }
-
-    @Override
-    public Result rebuildConnectAccount(String appKey, String providerStr, OAuthTokenVO oAuthTokenVO, boolean isQueryConnectRelation) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {

@@ -127,7 +127,7 @@ public class OpenApiControllerTest extends BaseActionTest {
     }
 
     /**
-     * 获取QQ邮箱未读数
+     * 获取第三方用户信息
      *
      * @throws IOException
      */

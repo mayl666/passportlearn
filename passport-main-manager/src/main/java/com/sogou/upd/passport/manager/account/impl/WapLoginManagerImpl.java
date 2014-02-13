@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -16,8 +14,6 @@ import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
-import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -30,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,7 +53,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
+    private ConnectApiManager connectApiManager;
 
     @Override
     public Result accountLogin(WapLoginParams loginParams, String ip) {
@@ -174,9 +168,9 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
     private Result bulidSgid(String appKey, String accessToken, String openId, String nickname, String expires_in) {
         // sohu创建第三方账号
-        String provider = AccountTypeEnum.QQ.toString();
+        int provider = AccountTypeEnum.QQ.getValue();
         OAuthTokenVO oAuthTokenVO = bulidOAuthTokenVO(accessToken, openId, nickname, expires_in);
-        Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
+        Result connectAccountResult = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO, false);
 
         if (connectAccountResult.isSuccess()) {
             //创建sgid
