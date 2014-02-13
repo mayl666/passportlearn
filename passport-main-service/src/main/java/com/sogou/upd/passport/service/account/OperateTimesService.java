@@ -251,4 +251,22 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean isLoginTimesForBlackList(String username, String ip) throws ServiceException;
+
+    /**
+     * 检查用户ip是否中黑名单
+     *
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkMobileRegInBlackList(String ip) throws ServiceException;
+
+
+    /**
+     * 发短信次数
+     *
+     * @param ip
+     * @throws ServiceException
+     */
+    public void incSendTimesForMobile(final String ip) throws ServiceException;
 }

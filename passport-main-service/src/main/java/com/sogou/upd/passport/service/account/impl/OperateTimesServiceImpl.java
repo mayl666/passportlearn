@@ -635,6 +635,32 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    @Override
+    public boolean checkMobileRegInBlackList(String ip) throws ServiceException {
+        try {
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
+            String value = redisUtils.get(ipCacheKey);
+            if (!Strings.isNullOrEmpty(value)) {
+                int num = Integer.valueOf(value);
+                if (num >= LoginConstant.MOBILE_SEND_SMSCODE_LIMITED) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("checkMobileRegInBlackList:ip " + ip, e);
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+
+    @Override
+    public void incSendTimesForMobile(final String ip) throws ServiceException {
+        //ip与发短信验证码次数映射
+        String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
+        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+    }
+
     private boolean checkInSubIpList(String ip) throws ServiceException {
         try {
             if (!Strings.isNullOrEmpty(ip)) {
