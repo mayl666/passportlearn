@@ -14,7 +14,12 @@ import java.util.List;
  */
 public enum ConnectDomainEnum {
     HAO("hao.qq.com"),         //hao.qq.com
-    DAOHANG("daohang.qq.com"); //daohang.qq.com
+    DAOHANG("daohang.qq.com"), //daohang.qq.com
+    SHURUFA("shurufa.qq.com"), //shurufa.qq.com
+    PY("py.qq.com"), //py.qq.com
+    PINYIN("pinyin.qq.com"), //pinyin.qq.com
+    WUBI(" wubi.qq.com"), // wubi.qq.com
+    SHURU("shuru.qq.com"); //shuru.qq.com
 
     private String connectType;
     private static final List<String> DOMAIN_LIST = Lists.newArrayList();
@@ -22,6 +27,11 @@ public enum ConnectDomainEnum {
     static {
         DOMAIN_LIST.add(HAO.toString());
         DOMAIN_LIST.add(DAOHANG.toString());
+        DOMAIN_LIST.add(SHURUFA.toString());
+        DOMAIN_LIST.add(PY.toString());
+        DOMAIN_LIST.add(PINYIN.toString());
+        DOMAIN_LIST.add(WUBI.toString());
+        DOMAIN_LIST.add(SHURU.toString());
     }
 
     ConnectDomainEnum(String connectType) {

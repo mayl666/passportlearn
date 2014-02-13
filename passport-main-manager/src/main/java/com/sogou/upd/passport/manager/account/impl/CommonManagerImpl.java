@@ -186,11 +186,20 @@ public class CommonManagerImpl implements CommonManager {
         String daohangDomain = ConnectDomainEnum.DAOHANG.toString();
         String haoDomain = ConnectDomainEnum.HAO.toString();
 
+        String shurufaDomain=ConnectDomainEnum.SHURUFA.toString();
+
         if (domain.equals(daohangDomain)) {
             urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=").append(daohangDomain);
         } else if (domain.equals(haoDomain)) {
             urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL).append("?domain=").append(haoDomain);
-        } else {
+        }
+        ///////////这块需要修改成统一的， 先加上，以后改。  add by denghua/////////////
+        else if (domain.equals(shurufaDomain)) {
+            urlBuilder.append(CommonConstant.SHURUFA_CREATE_COOKIE_URL).append("?domain=").append(shurufaDomain);
+        }
+        ////////////////////// add by denghua end///////////////
+
+        else {
             return null;
         }
 
