@@ -259,7 +259,7 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public boolean checkMobileRegInBlackList(String ip) throws ServiceException;
+    public boolean isMobileSendSMSInBlackList(String ip) throws ServiceException;
 
 
     /**

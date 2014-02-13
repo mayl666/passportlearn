@@ -636,7 +636,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkMobileRegInBlackList(String ip) throws ServiceException {
+    public boolean isMobileSendSMSInBlackList(String ip) throws ServiceException {
         try {
             String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
             String value = redisUtils.get(ipCacheKey);
@@ -647,7 +647,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 }
             }
         } catch (Exception e) {
-            logger.error("checkMobileRegInBlackList:ip " + ip, e);
+            logger.error("isMobileSendSMSInBlackList:ip " + ip, e);
             throw new ServiceException(e);
         }
         return false;

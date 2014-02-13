@@ -378,11 +378,11 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result checkMobileRegInBlackList(String ip) throws Exception {
+    public Result checkMobileSendSMSInBlackList(String ip) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             //检查ip是否在黑名单中
-            if (operateTimesService.checkMobileRegInBlackList(ip)) {
+            if (operateTimesService.isMobileSendSMSInBlackList(ip)) {
                 //检查ip是否在白名单中
                 if (!operateTimesService.checkRegInWhiteList(ip)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
@@ -390,7 +390,7 @@ public class RegManagerImpl implements RegManager {
                 }
             }
         } catch (Exception e) {
-            logger.error("[manager]method checkMobileRegInBlackList error", e);
+            logger.error("[manager]method isMobileSendSMSInBlackList error", e);
             throw new Exception(e);
         }
         result.setSuccess(true);

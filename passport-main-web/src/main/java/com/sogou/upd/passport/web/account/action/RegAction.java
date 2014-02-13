@@ -21,7 +21,6 @@ import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
-import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -258,9 +257,8 @@ public class RegAction extends BaseController {
     public Object sendMobileCode(MoblieCodeParams reqParams, HttpServletRequest request)
             throws Exception {
         Result result = new APIResultSupport(false);
-        String uuidName;
         String finalCode = null;
-        String ip = null;
+        String ip = getIp(request);
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(reqParams);
@@ -277,9 +275,8 @@ public class RegAction extends BaseController {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result.toString();
             }
-            ip = getIp(request);
             //校验用户ip是否中了黑名单
-            result = regManager.checkMobileRegInBlackList(ip);
+            result = regManager.checkMobileSendSMSInBlackList(ip);
             if (!result.isSuccess()) {
                 if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;

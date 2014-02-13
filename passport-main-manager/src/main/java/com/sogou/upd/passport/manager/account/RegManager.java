@@ -82,7 +82,7 @@ public interface RegManager {
      * @return
      * @throws Exception
      */
-    public Result checkMobileRegInBlackList(String ip) throws Exception;
+    public Result checkMobileSendSMSInBlackList(String ip) throws Exception;
 
     /**
      * 手机发短信次数
