@@ -102,31 +102,31 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
             Result tokenResult;
             //先查SG方有无此用户token信息,其中实现是先缓存再搜狗数据库
             tokenResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
-//            if (!tokenResult.isSuccess()) {         //用于测试
-//                tokenResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
-//                //如果sohu有此用户token信息,写SG库
-//                if (tokenResult.isSuccess()) {
-//                    Map<String, String> accessTokenMap = (Map<String, String>) tokenResult.getModels().get("result");
-//                    String openId = accessTokenMap.get("open_id").toString();
-//                    String accessToken = accessTokenMap.get("access_token").toString();
-//                    long expiresIn = Long.parseLong(String.valueOf(accessTokenMap.get("expires_in")));
-//                    String passportId = baseOpenApiParams.getUserid();
-//                    int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-//                    ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-//                    if (connectConfig == null) {
-//                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
-//                        return result;
-//                    }
-//                    OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, null);
-//                    oAuthTokenVO.setOpenid(openId);
-//                    //写SG DB，其中需要查connect_relation表,最后一项参数值为true
-//                    result = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO, true);
-//                } else {
-//                    result = tokenResult;
-//                }
-//            } else {
+            if (!tokenResult.isSuccess()) {         //用于测试
+                tokenResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
+                //如果sohu有此用户token信息,写SG库
+                if (tokenResult.isSuccess()) {
+                    Map<String, String> accessTokenMap = (Map<String, String>) tokenResult.getModels().get("result");
+                    String openId = accessTokenMap.get("open_id").toString();
+                    String accessToken = accessTokenMap.get("access_token").toString();
+                    long expiresIn = Long.parseLong(String.valueOf(accessTokenMap.get("expires_in")));
+                    String passportId = baseOpenApiParams.getUserid();
+                    int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+                    ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+                    if (connectConfig == null) {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                        return result;
+                    }
+                    OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, null);
+                    oAuthTokenVO.setOpenid(openId);
+                    //写SG DB，其中需要查connect_relation表,最后一项参数值为true
+                    result = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO, true);
+                } else {
+                    result = tokenResult;
+                }
+            } else {
                 result = tokenResult;
-//            }
+            }
         } catch (ServiceException se) {
             logger.error("ServiceException:", se);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
