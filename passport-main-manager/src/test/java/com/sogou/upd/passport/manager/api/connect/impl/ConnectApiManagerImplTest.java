@@ -1,18 +1,22 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -86,9 +90,24 @@ public class ConnectApiManagerImplTest extends BaseTest {
         String accessToken = "AC1311EBBADD950C4A1113B4A7C19E31";
         OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, refreshToken);
         oAuthTokenVO.setOpenid(openId);
-        Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO,false);
+        Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO, false);
         System.out.println("---------------------结果如下--------------------");
         System.out.println(result);
         Assert.assertTrue(result.isSuccess());
     }
+
+    /**
+     * 预估缓存容量代码
+     */
+    @Test
+    public void testEstimatedCapacity() {
+        String passportId = "OOF81A5T13A94663D83FEC36AC117933@qq.sohu.com";
+        String openId = "OOF81A5T13A94663D83FEC36AC117933";
+        for (int i = 41; i <= 41; i++) {
+            passportId = i + passportId;
+            openId = i + openId;
+        }
+        connectApiManager.testEstimatedCapacity(openId, passportId);
+    }
+
 }

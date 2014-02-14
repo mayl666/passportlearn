@@ -150,4 +150,19 @@ public class OpenApiControllerTest extends BaseActionTest {
         System.out.println("--------------------------结果如下--------------------------");
         System.out.println(result);
     }
+
+
+    /**
+     * 预估缓存容量代码
+     */
+    @Test
+    public void testEstimatedCapacity() {
+        String passportId = "OOF81A5T13A94663D83FEC36AC117933@qq.sohu.com";
+        String openId = "OOF81A5T13A94663D83FEC36AC117933";
+        for (int i = 21; i <= 40; i++) {
+            passportId = i + passportId;
+            openId = i + openId;
+        }
+//        connectApiManager.testEstimatedCapacity(openId, passportId);
+    }
 }

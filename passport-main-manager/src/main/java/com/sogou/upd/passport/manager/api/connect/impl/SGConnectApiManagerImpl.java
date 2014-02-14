@@ -257,6 +257,12 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         return result;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public void testEstimatedCapacity(String openId, String passportId) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
 
     /**
      * accessToken双写搜狗、搜狐数据库

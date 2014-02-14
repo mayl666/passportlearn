@@ -132,6 +132,12 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         return result;
     }
 
+    @Override
+    public void testEstimatedCapacity(String openId, String passportId) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
     public RequestModelJSON setDefaultParams(RequestModelJSON requestModelJSON, String userId, String clientId, String clientKey) {
         long ct = System.currentTimeMillis();
         String code = ManagerHelper.generatorCodeGBK(userId, Integer.parseInt(clientId), clientKey, ct);
