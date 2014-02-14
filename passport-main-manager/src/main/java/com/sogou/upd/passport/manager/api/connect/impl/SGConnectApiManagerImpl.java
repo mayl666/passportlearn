@@ -245,6 +245,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 if (connectToken != null) {
                     //判断accessToken是否过期，是否需要刷新
                     result = verifyRefreshAccessToken(connectToken, provider, connectConfig);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
+                    return result;
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
@@ -261,7 +264,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     public void testEstimatedCapacity(String openId, String passportId) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
-
 
 
     /**
