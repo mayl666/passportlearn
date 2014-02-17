@@ -103,11 +103,12 @@ public class ConnectApiManagerImplTest extends BaseTest {
     public void testEstimatedCapacity() {
         String passportId = "OOF81A5T13A94663D83FEC36AC117933@qq.sohu.com";
         String openId = "OOF81A5T13A94663D83FEC36AC117933";
-        for (int i = 41; i <= 41; i++) {
+        for (int i = 0; i <= 1; i++) {
             passportId = i + passportId;
             openId = i + openId;
+            connectApiManager.testEstimatedCapacity(openId, passportId);
         }
-        connectApiManager.testEstimatedCapacity(openId, passportId);
+
     }
 
 }
