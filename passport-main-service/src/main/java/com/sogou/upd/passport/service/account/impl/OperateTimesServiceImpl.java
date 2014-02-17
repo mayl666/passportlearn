@@ -9,16 +9,21 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.black.BlackItem;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.service.black.BlackItemService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts.chain.contexts.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import java.net.InetAddress;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +43,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     private RedisUtils redisUtils;
     @Autowired
     private ThreadPoolTaskExecutor discardTaskExecutor;
+    @Autowired
+    private BlackItemService blackItemService;
 
     @Override
     public long recordTimes(String cacheKey, long timeout) throws ServiceException {
@@ -645,11 +652,23 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             long expireSeconds = redisUtils.getExpireTime(timesKey);
 
             double durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
+            DecimalFormat df = new DecimalFormat("#.00");
+            durMin = Double.parseDouble(df.format(durMin));
+
+            //记入log
             StringBuilder log = new StringBuilder();
             Date date = new Date();
             log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("username")
                     .append(" ").append(username).append(" ").append(reason).append(" ").append(durMin);
             loginBlackListLogger.info(log.toString());
+
+            //记入数据库
+            int flagSuccessLimit = BlackItem.FAILED_LIMIT;
+            if(reason.equals(CacheConstant.CACHE_SUCCESS_KEY)){
+                flagSuccessLimit = BlackItem.SUCCESS_LIMIT ;
+            }
+            String serverIP =  InetAddress.getLocalHost().getHostAddress();
+            blackItemService.initialBlackItem(BlackItem.BLACK_USERNAME,username,flagSuccessLimit,durMin,serverIP);
         } catch (Exception e) {
             logger.error("addToBlackList:" + username, e);
             throw new ServiceException(e);
@@ -666,12 +685,23 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             long expireSeconds = redisUtils.getExpireTime(timesKey);
 
             double durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
+            DecimalFormat df = new DecimalFormat("#.00");
+            durMin = Double.parseDouble(df.format(durMin));
+
+            //记入log
             StringBuilder log = new StringBuilder();
             Date date = new Date();
             log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("ip")
                     .append(" ").append(ip).append(" ").append(reason).append(" ").append(durMin);
             loginBlackListLogger.info(log.toString());
 
+            //记入数据库
+            int flagSuccessLimit = BlackItem.FAILED_LIMIT;
+            if(reason.equals(CacheConstant.CACHE_SUCCESS_KEY)){
+                flagSuccessLimit = BlackItem.SUCCESS_LIMIT ;
+            }
+            String serverIP =  InetAddress.getLocalHost().getHostAddress();
+            blackItemService.initialBlackItem(BlackItem.BLACK_IP,ip,flagSuccessLimit,durMin,serverIP);
         } catch (Exception e) {
             logger.error("addIPToBlackList:" + ip, e);
             throw new ServiceException(e);
