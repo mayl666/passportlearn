@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
@@ -16,6 +17,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.*;
 import java.util.Date;
 import java.util.Map;
 
@@ -109,6 +111,49 @@ public class ConnectApiManagerImplTest extends BaseTest {
             connectApiManager.testEstimatedCapacity(openId, passportId);
         }
 
+    }
+
+
+    /**
+     * 生成ct code
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCreateCtAndCode() throws Exception {
+        BufferedReader reader = null;
+        try {
+            String fileName = "D:\\50W.txt";
+            File file = new File(fileName);
+            reader = new BufferedReader(new FileReader(file));
+            String tempString;
+            int count = 0;
+            // 一次读入一行，直到读入null为文件结束
+            while ((tempString = reader.readLine()) != null && count <= 1000) {
+                // 显示行号
+                String[] rowString = tempString.split(" ");
+                String openIdString = rowString[0] + "@qq.sohu.com";
+                long ct = System.currentTimeMillis();
+                String code = ManagerHelper.generatorCodeGBK(openIdString, clientId, serverSecret, ct);
+                //打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
+                FileWriter writer = new FileWriter("D:\\openid.txt", true);
+                writer.write(openIdString + "," + ct + "," + code);
+                writer.write("\r\n");
+                writer.close();
+                count++;
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
     }
 
 }
