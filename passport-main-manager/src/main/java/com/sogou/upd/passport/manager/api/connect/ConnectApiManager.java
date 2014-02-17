@@ -34,7 +34,7 @@ public interface ConnectApiManager {
      * @param oAuthTokenVO
      * @return
      */
-    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO, boolean isQueryConnectRelation);
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO);
 
     /**
      * 根据第三方QQ用户信息获取用户的openid及accessToken

@@ -124,12 +124,10 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
      * @param appKey        搜狗在第三方的appKey
      * @param provider      第三方类型
      * @param oAuthTokenVO  统一的OAuthToken对象
-     * @param isObtainQuery 为true表示需要查询connect_relation表，为false表示不需要查询。
-     *                      当accessToken SG没有，SH有时，且过期刷新成功后，此值为true，其它情况值默认为false，也即根据account查询结果来确定
      * @return
      */
     @Override
-    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO, boolean isObtainQuery) {
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
         try {
             String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), AccountTypeEnum.getProviderStr(provider));
@@ -155,7 +153,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
             //3.connect_relation根据参数决定是否新增
             ConnectRelation connectRelation = null;
-            if (isObtainQuery || isBuildQuery) {
+            if (isBuildQuery) {
                 connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
             }
             if (connectRelation == null) {
@@ -284,7 +282,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             connectToken.setUpdateTime(new Date());
             boolean isUpdateSuccess = connectTokenService.updateConnectToken(connectToken);
             if (isUpdateSuccess) {
-                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO, false);
+                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
                 if (!result.isSuccess()) {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
                     return result;

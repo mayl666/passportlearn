@@ -90,7 +90,7 @@ public class ConnectApiManagerImplTest extends BaseTest {
         String accessToken = "AC1311EBBADD950C4A1113B4A7C19E31";
         OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, refreshToken);
         oAuthTokenVO.setOpenid(openId);
-        Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO, false);
+        Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
         System.out.println("---------------------结果如下--------------------");
         System.out.println(result);
         Assert.assertTrue(result.isSuccess());

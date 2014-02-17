@@ -63,12 +63,12 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
      * @return
      */
     @Override
-    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO, boolean isQueryConnectRelation) {
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
         try {
-            result = sgConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO, false);
+            result = sgConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
             if (result.isSuccess()) {
-                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO, false);
+                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
                 if (!result.isSuccess()) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
@@ -120,7 +120,7 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
                     OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, null);
                     oAuthTokenVO.setOpenid(openId);
                     //写SG DB，其中需要查connect_relation表,最后一项参数值为true
-                    result = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO, true);
+                    result = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
                 } else {
                     result = tokenResult;
                 }

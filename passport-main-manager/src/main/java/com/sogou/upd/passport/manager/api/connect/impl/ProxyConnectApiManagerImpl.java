@@ -51,7 +51,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
     }
 
     @Override
-    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO, boolean isQuery) {
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
         String providerStr = AccountTypeEnum.getProviderStr(provider);
         String url = SHPPUrlConstant.CREATE_CONNECT_USER + providerStr;
