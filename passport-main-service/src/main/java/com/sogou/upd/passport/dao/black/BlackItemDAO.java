@@ -34,6 +34,6 @@ public interface BlackItemDAO {
             "insert into " +
                     TABLE_NAME +
                     "(flag_ip,ip_or_username,flag_success_limit,insert_time,duration_time,insert_server) "
-                    + "values (:blackItem.flagIp,:blackItem.ipOrUsername,:blackItem.isSuccessLimit,:blackItem.insertTime,:blackItem.durationTime,:blackItem.insertServer)")
+                    + "values (:blackItem.flagIp,:blackItem.ipOrUsername,:blackItem.flagSuccessLimit,:blackItem.insertTime,:blackItem.durationTime,:blackItem.insertServer)")
     public int insertBlackItem(@SQLParam("blackItem") BlackItem blackItem) throws DataAccessException;
 }
