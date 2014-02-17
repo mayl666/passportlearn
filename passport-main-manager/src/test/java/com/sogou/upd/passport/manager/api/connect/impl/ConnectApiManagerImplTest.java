@@ -127,20 +127,22 @@ public class ConnectApiManagerImplTest extends BaseTest {
             File file = new File(fileName);
             reader = new BufferedReader(new FileReader(file));
             String tempString;
-            int count = 0;
+//            int count = 0;
             // 一次读入一行，直到读入null为文件结束
-            while ((tempString = reader.readLine()) != null && count <= 1000) {
+            while ((tempString = reader.readLine()) != null) {
                 // 显示行号
                 String[] rowString = tempString.split(" ");
-                String openIdString = rowString[0] + "@qq.sohu.com";
+                String openIdString = rowString[0];
+                String passportIdString = openIdString + "@qq.sohu.com";
+                String accessTokenString = rowString[1];
                 long ct = System.currentTimeMillis();
-                String code = ManagerHelper.generatorCodeGBK(openIdString, clientId, serverSecret, ct);
+                String code = ManagerHelper.generatorCodeGBK(passportIdString, clientId, serverSecret, ct);
                 //打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
                 FileWriter writer = new FileWriter("D:\\openid.txt", true);
-                writer.write(openIdString + "," + ct + "," + code);
+                writer.write(passportIdString + "," + openIdString + "," + accessTokenString + "," + ct + "," + code);
                 writer.write("\r\n");
                 writer.close();
-                count++;
+//                count++;
             }
             reader.close();
         } catch (IOException e) {
