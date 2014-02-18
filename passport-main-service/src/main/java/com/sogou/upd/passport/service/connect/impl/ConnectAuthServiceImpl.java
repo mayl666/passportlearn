@@ -47,8 +47,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private DBRedisUtils dbRedisUtils;
 
     @Override
-    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer, String redirectUrl)
-            throws IOException, OAuthProblemException {
+    public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
+                                                            String redirectUrl) throws IOException, OAuthProblemException {
 
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
@@ -102,7 +102,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public ConnectUserInfoVO obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
+    public ConnectUserInfoVO obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken,
+                                                   OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
         String url = oAuthConsumer.getUserInfo();
         String appKey = connectConfig.getAppKey();
         ConnectUserInfoVO userProfileFromConnect = null;
