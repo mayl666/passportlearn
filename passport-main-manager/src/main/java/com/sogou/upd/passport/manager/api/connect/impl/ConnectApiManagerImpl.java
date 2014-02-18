@@ -102,7 +102,7 @@ public class ConnectApiManagerImpl implements ConnectApiManager {
             Result tokenResult;
             //先查SG方有无此用户token信息,其中实现是先缓存再搜狗数据库
             tokenResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
-            if (!tokenResult.isSuccess()) {         //用于测试
+            if (!tokenResult.isSuccess()) {
                 tokenResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
                 //如果sohu有此用户token信息,写SG库
                 if (tokenResult.isSuccess()) {
