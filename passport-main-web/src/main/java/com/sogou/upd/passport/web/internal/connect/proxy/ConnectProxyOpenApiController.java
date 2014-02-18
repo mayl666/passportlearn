@@ -51,29 +51,10 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
-
-    /**
-     * 获取用户QQ空间未读消息数
-     *
-     * @param request
-     * @param params  第三方开放平台接口所需参数
-     * @return
-     * @throws Exception
-     */
-    @InterfaceSecurity
-    @RequestMapping(value = "/qq/user/qzone/unread_num", method = RequestMethod.POST)
-    @ResponseBody
-    public Object qzoneConnectProxyOpenApi(HttpServletRequest request, ConnectProxyOpenApiParams params) throws Exception {
-        Result result = new APIResultSupport(false);
-
-        return result;
-    }
-
-
     /**
      * 创建第三方用户，用于测试，测试结束后此方法删除
      *
-     * @param params  第三方开放平台接口所需参数
+     * @param params 第三方开放平台接口所需参数
      * @return
      * @throws Exception
      */
@@ -111,6 +92,63 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
         tokenMap.put("open_id", connectToken.getOpenid());
         tokenMap.put("access_token", connectToken.getAccessToken());
         return tokenMap;
+    }
+
+    /**
+     * 获取用户QQ空间未读消息数
+     *
+     * @param request
+     * @param params  第三方开放平台接口所需参数
+     * @return
+     * @throws Exception
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/qq/user/qzone/unread_num", method = RequestMethod.POST)
+    @ResponseBody
+    public Object qzoneConnectProxyOpenApi(HttpServletRequest request, ConnectProxyOpenApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            // 仅支持qq账号调用此接口
+            String userIdStr = params.getUserid();
+            if (AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ) {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                return result.toString();
+            }
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            String url = request.getRequestURI();
+            //调用搜狐接口，获取QQ token，openid等参数
+            BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
+            baseOpenApiParams.setUserid(params.getUserid());
+            baseOpenApiParams.setOpenid(params.getUserid());
+            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            if (openResult.isSuccess()) {
+                //获取用户的openId/openKey
+                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                Map<String, String> tokenMap = covertObjectToMap(connectToken);
+                if (!CollectionUtils.isEmpty(tokenMap)) {
+                    tokenMap.put("client_id", String.valueOf(params.getClient_id()));
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, null);
+                }
+            } else {
+                result = openResult;
+            }
+        } catch (Exception e) {
+            logger.error("qzoneConnectProxyOpenApi Is Failed,UserId is " + params.getUserid(), e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage("connectResult", result.toString());
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
     }
 
 

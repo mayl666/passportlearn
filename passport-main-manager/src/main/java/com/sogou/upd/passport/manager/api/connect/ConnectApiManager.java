@@ -45,10 +45,4 @@ public interface ConnectApiManager {
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
 
 
-    /**
-     * 预估缓存所用到的方法
-     */
-    public void testEstimatedCapacity(String openId, String passportId);
-
-
 }
