@@ -66,8 +66,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private AccountBaseInfoService accountBaseInfoService;
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
-    @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
     private MappTokenService mappTokenService;
