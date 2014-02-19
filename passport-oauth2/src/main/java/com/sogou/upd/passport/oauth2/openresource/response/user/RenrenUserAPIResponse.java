@@ -45,9 +45,9 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
     public ConnectUserInfoVO toUserInfo() {
         ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
         connectUserInfoVO.setNickname(getParam(RenrenOAuth.NAME));
-        connectUserInfoVO.setAvatarSmall((String) getAvatarMap().get(OAuth.AVATAR_SMALL));
-        connectUserInfoVO.setAvatarMiddle((String) getAvatarMap().get(OAuth.AVATAR_MIDDLE));
-        connectUserInfoVO.setAvatarLarge((String) getAvatarMap().get(OAuth.AVATAR_LARGE));
+        connectUserInfoVO.setAvatarSmall(getAvatarMap().get(OAuth.AVATAR_SMALL_KEY));
+        connectUserInfoVO.setAvatarMiddle(getAvatarMap().get(OAuth.AVATAR_MIDDLE_KEY));
+        connectUserInfoVO.setAvatarLarge(getAvatarMap().get(OAuth.AVATAR_LARGE_KEY));
         connectUserInfoVO.setGender(getGender());
         connectUserInfoVO.setProvince(getProvince());
         connectUserInfoVO.setCity(getCity());
@@ -55,13 +55,13 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
         return connectUserInfoVO;
     }
 
-    private Map getAvatarMap() {
+    private Map<String, String> getAvatarMap() {
         List avatarList = (List) this.parameters.get(RenrenOAuth.AVATAR);
         Map avatarMap = Maps.newHashMap();
         if (avatarList.size() >= 3) {
-            avatarMap.put(OAuth.AVATAR_SMALL, ((Map) avatarList.get(0)).get(RenrenOAuth.IMAGE_URL));
-            avatarMap.put(OAuth.AVATAR_MIDDLE, ((Map) avatarList.get(1)).get(RenrenOAuth.IMAGE_URL));
-            avatarMap.put(OAuth.AVATAR_LARGE, ((Map) avatarList.get(2)).get(RenrenOAuth.IMAGE_URL));
+            avatarMap.put(OAuth.AVATAR_SMALL_KEY, ((Map) avatarList.get(0)).get(RenrenOAuth.IMAGE_URL));
+            avatarMap.put(OAuth.AVATAR_MIDDLE_KEY, ((Map) avatarList.get(1)).get(RenrenOAuth.IMAGE_URL));
+            avatarMap.put(OAuth.AVATAR_LARGE_KEY, ((Map) avatarList.get(2)).get(RenrenOAuth.IMAGE_URL));
         }
         return avatarMap;
     }

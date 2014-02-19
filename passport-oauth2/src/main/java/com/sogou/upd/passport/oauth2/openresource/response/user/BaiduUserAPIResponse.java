@@ -42,9 +42,9 @@ public class BaiduUserAPIResponse extends UserAPIResponse {
     public ConnectUserInfoVO toUserInfo() {
         ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
         connectUserInfoVO.setNickname(getParam(BaiduOAuth.NAME));
-        connectUserInfoVO.setAvatarSmall(getAvatarMap().get(OAuth.AVATAR_SMALL));
-        connectUserInfoVO.setAvatarMiddle(getAvatarMap().get(OAuth.AVATAR_MIDDLE));
-        connectUserInfoVO.setAvatarLarge(getAvatarMap().get(OAuth.AVATAR_LARGE));
+        connectUserInfoVO.setAvatarSmall(getAvatarMap().get(OAuth.AVATAR_SMALL_KEY));
+        connectUserInfoVO.setAvatarMiddle(getAvatarMap().get(OAuth.AVATAR_MIDDLE_KEY));
+        connectUserInfoVO.setAvatarLarge(getAvatarMap().get(OAuth.AVATAR_LARGE_KEY));
         connectUserInfoVO.setGender(getGender());
         connectUserInfoVO.setProvince("");//百度不支持省 市信息
         connectUserInfoVO.setCity("");
@@ -65,9 +65,9 @@ public class BaiduUserAPIResponse extends UserAPIResponse {
         String portrait = (String) this.parameters.get(BaiduOAuth.AVATAR_ID);
         Map avatarMap = Maps.newHashMap();
         if (!Strings.isNullOrEmpty(portrait)) {
-            avatarMap.put(OAuth.AVATAR_SMALL, BaiduOAuth.AVATAR_SMALL_URL_EXP + portrait);
-            avatarMap.put(OAuth.AVATAR_MIDDLE, BaiduOAuth.AVATAR_MIDDLE_URL_EXP + portrait);
-            avatarMap.put(OAuth.AVATAR_LARGE, BaiduOAuth.AVATAR_LARGE_URL_EXP + portrait);
+            avatarMap.put(OAuth.AVATAR_SMALL_KEY, BaiduOAuth.AVATAR_SMALL_URL_EXP + portrait);
+            avatarMap.put(OAuth.AVATAR_MIDDLE_KEY, BaiduOAuth.AVATAR_MIDDLE_URL_EXP + portrait);
+            avatarMap.put(OAuth.AVATAR_LARGE_KEY, BaiduOAuth.AVATAR_LARGE_URL_EXP + portrait);
         }
         return avatarMap;
     }

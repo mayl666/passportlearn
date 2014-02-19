@@ -74,7 +74,7 @@ public class OAuth {
     public static final String OAUTH_ERROR_URI = "error_uri";
 
     // open api
-    public static final String AVATAR_SMALL = "avatar_small";  // 50pt*50pt 小头像
-    public static final String AVATAR_MIDDLE = "avatar_middle";  // 100pt*300pt 小头像
-    public static final String AVATAR_LARGE = "avatar_large";  // 200pt*600pt 小头像
+    public static final String AVATAR_SMALL_KEY = "avatar_small";  // 50pt*50pt 小头像
+    public static final String AVATAR_MIDDLE_KEY = "avatar_middle";  // 100pt*300pt 小头像
+    public static final String AVATAR_LARGE_KEY = "avatar_large";  // 200pt*600pt 小头像
 }
