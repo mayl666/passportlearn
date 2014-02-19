@@ -28,6 +28,28 @@
         <property name="redisTemplate" ref="cacheTemplate"/>
     </bean>
 
+    <bean id="jedisShardInfo_204" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="${passport.redis.shard1.url}"/>
+        <constructor-arg index="1" value="${passport.redis.shard1.port}" type="int"/>
+    </bean>
+    <bean id="jedisShardInfo_205" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="${passport.redis.shard2.url}"/>
+        <constructor-arg index="1" value="${passport.redis.shard2.port}" type="int"/>
+    </bean>
+    <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
+        <constructor-arg index="0" ref="cachePoolConfig"/>
+        <constructor-arg index="1">
+            <list>
+                <ref bean="jedisShardInfo_204"/>
+                <ref bean="jedisShardInfo_205"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="dbShardRedisUtils" class="com.sogou.upd.passport.common.utils.DBShardRedisUtils">
+        <property name="shardedJedisPool" ref="shardedJedisPool"/>
+    </bean>
+
     <!-- kv redis util definition -->
     <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxActive" value="200"/>
@@ -95,23 +117,6 @@
           p:connectionFactory-ref="dbConnectionFactory"/>
     <bean id="dbRedisUtils" class="com.sogou.upd.passport.common.utils.DBRedisUtils">
         <property name="redisTemplate" ref="dbTemplate"/>
-    </bean>
-
-    <bean id="jedisShardInfo" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="${passport.redis.url}"/>
-        <constructor-arg index="1" value="${passport.redis.port}" type="int"/>
-    </bean>
-    <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
-        <constructor-arg index="0" ref="cachePoolConfig"/>
-        <constructor-arg index="1">
-            <list>
-                <ref bean="jedisShardInfo"/>
-            </list>
-        </constructor-arg>
-    </bean>
-
-    <bean id="dbShardRedisUtils" class="com.sogou.upd.passport.common.utils.DBShardRedisUtils">
-        <property name="shardedJedisPool" ref="shardedJedisPool"/>
     </bean>
 
     <!--热切换redis-->
