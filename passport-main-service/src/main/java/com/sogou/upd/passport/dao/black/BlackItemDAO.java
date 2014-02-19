@@ -25,7 +25,7 @@ public interface BlackItemDAO {
      * 所有字段列表
      */
     String
-            ALL_FIELD = " id,flag_ip,ip_or_username,flag_success_limit,insert_time,duration_time,insert_server ";
+            ALL_FIELD = " id,sort,name,flag_success_limit,insert_time,duration_time,insert_server,scope ";
 
     /**
      * 新添用户
@@ -33,7 +33,7 @@ public interface BlackItemDAO {
     @SQL(
             "insert into " +
                     TABLE_NAME +
-                    "(flag_ip,ip_or_username,flag_success_limit,insert_time,duration_time,insert_server) "
-                    + "values (:blackItem.flagIp,:blackItem.ipOrUsername,:blackItem.flagSuccessLimit,:blackItem.insertTime,:blackItem.durationTime,:blackItem.insertServer)")
+                    "(sort,name,flag_success_limit,insert_time,duration_time,insert_server,scope) "
+                    + "values (:blackItem.sort,:blackItem.name,:blackItem.flagSuccessLimit,:blackItem.insertTime,:blackItem.durationTime,:blackItem.insertServer,:blackItem.scope)")
     public int insertBlackItem(@SQLParam("blackItem") BlackItem blackItem) throws DataAccessException;
 }

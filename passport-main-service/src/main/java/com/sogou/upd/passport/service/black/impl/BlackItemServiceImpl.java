@@ -23,15 +23,16 @@ public class BlackItemServiceImpl implements BlackItemService{
     private BlackItemDAO blackItemDAO;
 
     @Override
-    public BlackItem initialBlackItem(int flagIp, String ipOrUsername,int flagSuccessLimit, Double durationTime, String insertServer) throws ServiceException {
+    public BlackItem initialBlackItem(int flagIp, String ipOrUsername,int flagSuccessLimit, Double durationTime, String insertServer,int scope) throws ServiceException {
         BlackItem blackItem = new BlackItem();
         try {
-            blackItem.setFlagIp(flagIp);
-            blackItem.setIpOrUsername(ipOrUsername);
+            blackItem.setSort(flagIp);
+            blackItem.setName(ipOrUsername);
             blackItem.setFlagSuccessLimit(flagSuccessLimit);
             blackItem.setDurationTime(durationTime);
             blackItem.setInsertTime(new Date());
             blackItem.setInsertServer(insertServer);
+            blackItem.setScope(scope);
             long id = blackItemDAO.insertBlackItem(blackItem);
             if (id > 0) {
                 return blackItem;

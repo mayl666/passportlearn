@@ -17,13 +17,16 @@ public class BlackItem {
     public static final int SUCCESS_LIMIT = 1;
     public static final int FAILED_LIMIT = 0;
 
+    public static final int SCOPE_LOGIN = 1;
+
     private long id;
-    private int flagIp;
-    private String ipOrUsername;
+    private int sort;
+    private String name;
     private int flagSuccessLimit;
     private Date insertTime;
     private Double durationTime;
     private String insertServer;
+    private int scope;
 
     public long getId() {
         return id;
@@ -49,14 +52,6 @@ public class BlackItem {
         this.insertTime = insertTime;
     }
 
-    public String getIpOrUsername() {
-        return ipOrUsername;
-    }
-
-    public void setIpOrUsername(String ipOrUsername) {
-        this.ipOrUsername = ipOrUsername;
-    }
-
     public String getInsertServer() {
         return insertServer;
     }
@@ -65,19 +60,35 @@ public class BlackItem {
         this.insertServer = insertServer;
     }
 
-    public int getFlagIp() {
-        return flagIp;
-    }
-
-    public void setFlagIp(int flagIp) {
-        this.flagIp = flagIp;
-    }
-
     public int getFlagSuccessLimit() {
         return flagSuccessLimit;
     }
 
     public void setFlagSuccessLimit(int flagSuccessLimit) {
         this.flagSuccessLimit = flagSuccessLimit;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
+    public int getScope() {
+        return scope;
+    }
+
+    public void setScope(int scope) {
+        this.scope = scope;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

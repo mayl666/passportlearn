@@ -19,8 +19,9 @@ public interface BlackItemService {
      * @param flagSuccessLimit
      * @param durationTime
      * @param insertServer
+     * @param scope
      * @return
      * @throws ServiceException
      */
-    public BlackItem initialBlackItem(int flagIp, String ipOrUsername,int flagSuccessLimit, Double durationTime, String insertServer) throws ServiceException;
+    public BlackItem initialBlackItem(int flagIp, String ipOrUsername,int flagSuccessLimit, Double durationTime, String insertServer,int scope) throws ServiceException;
 }
