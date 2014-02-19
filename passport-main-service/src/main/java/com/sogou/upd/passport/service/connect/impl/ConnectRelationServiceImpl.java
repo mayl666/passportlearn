@@ -2,6 +2,8 @@ package com.sogou.upd.passport.service.connect.impl;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectRelationDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -30,7 +32,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
     @Autowired
     private ConnectRelationDAO connectRelationDAO;
     @Autowired
-    private RedisUtils redisUtils;
+    private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
     public ConnectRelation querySpecifyConnectRelation(String openid, int provider, String appKey) throws ServiceException {
@@ -47,7 +49,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
         String cacheKey = buildConnectRelationKey(openid, provider);
         Map<String, ConnectRelation> connectRelations = Maps.newHashMap();
         try {
-            Map<String, String> appKeyMappingConnectRelation = redisUtils.hGetAll(cacheKey);
+            Map<String, String> appKeyMappingConnectRelation = dbShardRedisUtils.hGetAll(cacheKey);
 
             if (!MapUtils.isEmpty(appKeyMappingConnectRelation)) {
                 connectRelations = RedisUtils.strMapToObjectMap(appKeyMappingConnectRelation, ConnectRelation.class);
@@ -56,7 +58,8 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
                 List<ConnectRelation> connectRelationList = connectRelationDAO.listConnectRelation(openid, provider);
                 if (!CollectionUtils.isEmpty(connectRelationList)) {
                     connectRelations = mapToList(connectRelationList);
-                    redisUtils.hPutAllObject(cacheKey, connectRelations);
+                    dbShardRedisUtils.hPutAllObject(cacheKey, connectRelations);
+                    dbShardRedisUtils.expire(cacheKey, (int) DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -75,7 +78,8 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
             row = connectRelationDAO.insertConnectRelation(connectRelation.getOpenid(), connectRelation);
             if (row != 0) {
                 String cacheKey = buildConnectRelationKey(openid, provider);
-                redisUtils.hPut(cacheKey, appKey, connectRelation);
+                dbShardRedisUtils.hPut(cacheKey, appKey, connectRelation);
+                dbShardRedisUtils.expire(cacheKey, (int) DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             } else {
                 return false;
