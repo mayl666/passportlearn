@@ -23,7 +23,7 @@
     </filter>
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
-        <url-pattern>/act/*</url-pattern>
+        <url-pattern>/act/authtoken</url-pattern>
     </filter-mapping>
 
     <servlet-mapping>
