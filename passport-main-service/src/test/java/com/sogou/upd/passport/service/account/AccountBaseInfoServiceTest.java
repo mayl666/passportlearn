@@ -3,7 +3,6 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +26,7 @@ public class AccountBaseInfoServiceTest extends BaseTest {
     public void testInitConnectAccountBaseInfo() {
         ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
         connectUserInfoVO.setNickname(uniqname_1);
-        connectUserInfoVO.setImageURL(avatar_1);
+        connectUserInfoVO.setAvatarLarge(avatar_1);
 
         AccountBaseInfo success = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);
 //        Assert.assertTrue(success);

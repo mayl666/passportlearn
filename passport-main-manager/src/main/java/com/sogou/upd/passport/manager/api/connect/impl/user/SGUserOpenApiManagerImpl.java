@@ -138,7 +138,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         result_value_data.put("sex", connectUserInfoVO.getGender());
         result_value_data.put("nick", connectUserInfoVO.getNickname());
         result_value_data.put("location", connectUserInfoVO.getProvince() + " " + connectUserInfoVO.getCity() + " " + connectUserInfoVO.getRegion());
-        result_value_data.put("headurl", connectUserInfoVO.getImageURL());
+        result_value_data.put("headurl", connectUserInfoVO.getAvatarLarge());
         data.put("result", result_value_data);
         data.put("original", connectUserInfoVO.getOriginal());
         data.put("userid", userid);

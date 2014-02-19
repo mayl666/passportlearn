@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -22,11 +21,8 @@ import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.connect.AccessTokenService;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -72,8 +68,8 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
         if (!Strings.isNullOrEmpty(oAuthTokenVO.getOpenid())) {
             requestModel.addParam("openid", oAuthTokenVO.getOpenid());
         }
-        if (!Strings.isNullOrEmpty(oAuthTokenVO.getNickName())) {
-            String nickName = oAuthTokenVO.getNickName();
+        if (oAuthTokenVO.getConnectUserInfoVO() != null) {
+            String nickName = oAuthTokenVO.getConnectUserInfoVO().getNickname();
             if (AccountTypeEnum.TAOBAO.toString().equals(providerStr)) {    // taobao注册账号昵称返回乱码
                 try {
                     nickName = URLEncoder.encode(nickName, CommonConstant.DEFAULT_CONTENT_CHARSET);
