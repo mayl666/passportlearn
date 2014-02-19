@@ -18,6 +18,7 @@ import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider) throws ServiceException {
         Account account = new Account();
@@ -126,6 +128,7 @@ public class AccountServiceImpl implements AccountService {
         return initialAccount(passportId, null, false, ip, provider);
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
         Account account;

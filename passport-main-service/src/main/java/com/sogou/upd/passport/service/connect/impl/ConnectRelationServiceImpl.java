@@ -11,6 +11,7 @@ import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.perf4j.aop.Profiled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_querySpecifyConnectRelation", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public ConnectRelation querySpecifyConnectRelation(String openid, int provider, String appKey) throws ServiceException {
         Map<String, ConnectRelation> connectRelations = queryAppKeyMapping(openid, provider);
@@ -43,7 +45,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
         }
         return connectRelation;
     }
-
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAppKeyMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Map<String, ConnectRelation> queryAppKeyMapping(String openid, int provider) throws ServiceException {
         String cacheKey = buildConnectRelationKey(openid, provider);
@@ -68,6 +70,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
         return connectRelations;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialConnectRelation", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialConnectRelation(ConnectRelation connectRelation) throws ServiceException {
         int row = 0;

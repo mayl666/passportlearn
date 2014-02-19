@@ -7,6 +7,7 @@ import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
 
     private static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_CONNECTTOKEN;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialConnectToken(ConnectToken connectToken) throws ServiceException {
         int row = 0;
@@ -47,6 +49,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateConnectToken(ConnectToken connectToken) throws ServiceException {
         int row = 0;
@@ -66,6 +69,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertOrUpdateConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException {
         try {
