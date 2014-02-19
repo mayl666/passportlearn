@@ -46,7 +46,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     @Override
     public AccountBaseInfo initConnectAccountBaseInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) {
         String uniqname = connectUserInfoVO.getNickname();
-        String avatar = connectUserInfoVO.getImageURL();
+        String avatar = connectUserInfoVO.getAvatarLarge();
         if (Strings.isNullOrEmpty(uniqname) && Strings.isNullOrEmpty(avatar)) {
             return null;
         }

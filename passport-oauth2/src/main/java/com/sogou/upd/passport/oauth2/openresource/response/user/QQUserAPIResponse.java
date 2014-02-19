@@ -37,7 +37,9 @@ public class QQUserAPIResponse extends UserAPIResponse {
     public ConnectUserInfoVO toUserInfo() {
         ConnectUserInfoVO user = new ConnectUserInfoVO();
 		user.setNickname(getParam(QQOAuth.NICK_NAME));
-		user.setImageURL(getParam(QQOAuth.FIGURE_URL_2));
+		user.setAvatarSmall(getParam(QQOAuth.FIGURE_URL_1));    // 40*40
+        user.setAvatarMiddle(getParam(QQOAuth.FIGURE_URL_2));  // 100*100
+        user.setAvatarLarge(getParam(QQOAuth.FIGURE_URL_2));   // 100*100
 		user.setGender(formGender(getParam(QQOAuth.GENDER)));
         user.setOriginal(parameters);
 		return user;

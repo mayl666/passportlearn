@@ -1,15 +1,15 @@
 package com.sogou.upd.passport.oauth2.openresource.response.user;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.BaiduOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.impl.BaiduAPIValidator;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
-import org.apache.commons.collections.MapUtils;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,7 +42,9 @@ public class BaiduUserAPIResponse extends UserAPIResponse {
     public ConnectUserInfoVO toUserInfo() {
         ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
         connectUserInfoVO.setNickname(getParam(BaiduOAuth.NAME));
-        connectUserInfoVO.setImageURL(getParam(BaiduOAuth.AVATAR));
+        connectUserInfoVO.setAvatarSmall(getAvatarMap().get(OAuth.AVATAR_SMALL));
+        connectUserInfoVO.setAvatarMiddle(getAvatarMap().get(OAuth.AVATAR_MIDDLE));
+        connectUserInfoVO.setAvatarLarge(getAvatarMap().get(OAuth.AVATAR_LARGE));
         connectUserInfoVO.setGender(getGender());
         connectUserInfoVO.setProvince("");//百度不支持省 市信息
         connectUserInfoVO.setCity("");
@@ -51,7 +53,7 @@ public class BaiduUserAPIResponse extends UserAPIResponse {
     }
 
     private int getGender() {
-       String gender = getParam(BaiduOAuth.SEX);
+        String gender = getParam(BaiduOAuth.SEX);
         int sex = 0;
         if (gender.equals("男")) {
             sex = 1;
@@ -59,5 +61,15 @@ public class BaiduUserAPIResponse extends UserAPIResponse {
         return sex;
     }
 
+    private Map<String, String> getAvatarMap() {
+        String portrait = (String) this.parameters.get(BaiduOAuth.AVATAR_ID);
+        Map avatarMap = Maps.newHashMap();
+        if (!Strings.isNullOrEmpty(portrait)) {
+            avatarMap.put(OAuth.AVATAR_SMALL, BaiduOAuth.AVATAR_SMALL_URL_EXP + portrait);
+            avatarMap.put(OAuth.AVATAR_MIDDLE, BaiduOAuth.AVATAR_MIDDLE_URL_EXP + portrait);
+            avatarMap.put(OAuth.AVATAR_LARGE, BaiduOAuth.AVATAR_LARGE_URL_EXP + portrait);
+        }
+        return avatarMap;
+    }
 
 }

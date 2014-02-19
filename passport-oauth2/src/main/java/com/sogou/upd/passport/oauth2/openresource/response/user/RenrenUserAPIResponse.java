@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.oauth2.openresource.response.user;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
+import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.impl.RenrenAPIValidator;
@@ -43,7 +45,9 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
     public ConnectUserInfoVO toUserInfo() {
         ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
         connectUserInfoVO.setNickname(getParam(RenrenOAuth.NAME));
-        connectUserInfoVO.setImageURL(getImageURL());
+        connectUserInfoVO.setAvatarSmall((String) getAvatarMap().get(OAuth.AVATAR_SMALL));
+        connectUserInfoVO.setAvatarMiddle((String) getAvatarMap().get(OAuth.AVATAR_MIDDLE));
+        connectUserInfoVO.setAvatarLarge((String) getAvatarMap().get(OAuth.AVATAR_LARGE));
         connectUserInfoVO.setGender(getGender());
         connectUserInfoVO.setProvince(getProvince());
         connectUserInfoVO.setCity(getCity());
@@ -51,16 +55,15 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
         return connectUserInfoVO;
     }
 
-    private String getImageURL() {
-        List imageList = (List) this.parameters.get(RenrenOAuth.AVATAR);
-        String url = "";
-        if (imageList.size() > 0) {
-            Map image = (Map) imageList.get(imageList.size() - 1);
-            if (MapUtils.isNotEmpty(image)) {
-                url = (String) image.get(RenrenOAuth.IMAGE_URL);
-            }
+    private Map getAvatarMap() {
+        List avatarList = (List) this.parameters.get(RenrenOAuth.AVATAR);
+        Map avatarMap = Maps.newHashMap();
+        if (avatarList.size() >= 3) {
+            avatarMap.put(OAuth.AVATAR_SMALL, ((Map) avatarList.get(0)).get(RenrenOAuth.IMAGE_URL));
+            avatarMap.put(OAuth.AVATAR_MIDDLE, ((Map) avatarList.get(1)).get(RenrenOAuth.IMAGE_URL));
+            avatarMap.put(OAuth.AVATAR_LARGE, ((Map) avatarList.get(2)).get(RenrenOAuth.IMAGE_URL));
         }
-        return url;
+        return avatarMap;
     }
 
     private int getGender() {

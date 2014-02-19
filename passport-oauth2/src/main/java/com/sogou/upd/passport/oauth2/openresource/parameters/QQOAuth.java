@@ -19,7 +19,9 @@ public class QQOAuth {
     /* 用户类API请求 */
     /* 用户类API响应 */
     public static final String NICK_NAME = "nickname"; // 昵称
-    public static final String FIGURE_URL_2 = "figureurl_qq_2"; // /user/get_user_info接口返回的头像url，尺寸100*100
+    public static final String FIGURE_URL_1 = "figureurl_qq_1"; // /user/get_user_info接口返回的头像url，尺寸40*40
+    public static final String FIGURE_URL_2 = "figureurl_qq_2"; // /user/get_user_info接口返回的头像url，尺寸100*100需要注意，不是所有的用户都拥有QQ的100x100的头像，但40x40像素则是一定会有。
+    public static final String FIGURE_URL_40 = "faceurl40"; // /oauth2/token接口返回的100尺寸头像
     public static final String FIGURE_URL_100 = "faceurl100"; // /oauth2/token接口返回的100尺寸头像
     public static final String GENDER = "gender"; // 性别
 
