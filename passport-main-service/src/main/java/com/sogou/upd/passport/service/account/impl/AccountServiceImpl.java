@@ -47,6 +47,8 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
+    @Autowired
     private MailUtils mailUtils;
     @Autowired
     private CaptchaUtils captchaUtils;
@@ -110,7 +112,7 @@ public class AccountServiceImpl implements AccountService {
             long id = accountDAO.insertAccount(passportId, account);
             if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                redisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
                 return account;
             }
         } catch (Exception e) {
@@ -130,11 +132,11 @@ public class AccountServiceImpl implements AccountService {
         try {
             String cacheKey = buildAccountKey(passportId);
 
-            account = redisUtils.getObject(cacheKey, Account.class);
+            account = dbShardRedisUtils.getObject(cacheKey, Account.class);
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
                 if (account != null) {
-                    redisUtils.set(cacheKey, account);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {
