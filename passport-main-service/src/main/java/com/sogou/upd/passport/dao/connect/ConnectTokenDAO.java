@@ -76,6 +76,26 @@ public interface ConnectTokenDAO {
     public int insertAccountConnect(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("connectToken") ConnectToken connectToken)
             throws DataAccessException;
 
+
+    /**
+     * 插入一条新记录
+     */
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(" + ALL_FIELD + ") values(" + VALUE_FIELD + ") on duplicate key "
+            + "update "
+            + "#if(:connectToken.accessToken != null){access_token=:connectToken.accessToken,} "
+            + "#if(:connectToken.expiresIn > 0){expires_in=:connectToken.expiresIn,}"
+            + "#if(:connectToken.refreshToken != null){refresh_token=:connectToken.refreshToken,} "
+            + "#if(:connectToken.connectUniqname != null){connect_uniqname=:connectToken.connectUniqname,} "
+            + "#if(:connectToken.avatarSmall != null){avatar_small=:connectToken.avatarSmall,} "
+            + "#if(:connectToken.avatarMiddle != null){avatar_middle=:connectToken.avatarMiddle,} "
+            + "#if(:connectToken.avatarLarge != null){avatar_large=:connectToken.avatarLarge,} "
+            + "#if(:connectToken.gender != null){gender=:connectToken.gender,} "
+            + "#if(:connectToken.updateTime != null){update_time=:connectToken.updateTime}")
+    public int insertOrUpdateAccountConnect(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("connectToken") ConnectToken connectToken)
+            throws DataAccessException;
+
     /**
      * 删除一条记录，（Unit Test使用）
      */
