@@ -11,7 +11,6 @@ import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
  */
 public class ConnectProxyOpenApiParams extends BaseOpenApiParams {
     private String pf;
-    private String accessToken;
 
     public String getPf() {
         return pf;
@@ -21,11 +20,4 @@ public class ConnectProxyOpenApiParams extends BaseOpenApiParams {
         this.pf = pf;
     }
 
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
 }
