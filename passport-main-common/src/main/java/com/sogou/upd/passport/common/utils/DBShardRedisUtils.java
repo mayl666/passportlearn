@@ -53,7 +53,7 @@ public class DBShardRedisUtils {
     /*
     * 设置缓存内容
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_set")
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_set")
     public String set(final String key, final String value) {
         return new Executor<String>(shardedJedisPool) {
 
@@ -67,7 +67,7 @@ public class DBShardRedisUtils {
     /*
 * 设置缓存内容
 */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_setObject")
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_setObject")
     public String set(final String key, final Object obj) {
         return new Executor<String>(shardedJedisPool) {
 
@@ -89,7 +89,7 @@ public class DBShardRedisUtils {
         }.getResult();
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_setWithinSeconds", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_setWithinSeconds", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public String setWithinSeconds(final String key, final Object obj, final long timeout) {
         return new Executor<String>(shardedJedisPool) {
             ShardedJedisPipeline pipeline=null;
@@ -104,7 +104,7 @@ public class DBShardRedisUtils {
         }.getResult();
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutAllObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_hPutAllObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public <T> String hPutAllObject(final String cacheKey, final Map<String, T> mapData) {
         return new Executor<String>(shardedJedisPool) {
 
@@ -125,7 +125,7 @@ public class DBShardRedisUtils {
         }.getResult();
     }
 
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPut", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_hPut", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public Long hPut(final String cacheKey, final String key, final Object obj) throws Exception {
         return new Executor<Long>(shardedJedisPool) {
 
@@ -140,7 +140,7 @@ public class DBShardRedisUtils {
     * 设置缓存内容
     * 冲突不覆盖
     */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_setNx", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_setNx", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public Long setNx(final String key, final String value) {
         return new Executor<Long>(shardedJedisPool) {
 
@@ -154,7 +154,7 @@ public class DBShardRedisUtils {
     /*
    * 根据key取缓存内容
    */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_get", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_get", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public String get(final String key) {
         return new Executor<String>(shardedJedisPool) {
 
@@ -268,7 +268,7 @@ public class DBShardRedisUtils {
     /**
      * 根据key取对象
      */
-    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_getObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_getObject", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public <T> T getObject(final String cacheKey, final Class returnClass) {
         return new Executor<T>(shardedJedisPool) {
             @Override
