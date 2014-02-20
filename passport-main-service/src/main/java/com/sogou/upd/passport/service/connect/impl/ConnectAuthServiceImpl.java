@@ -146,7 +146,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
+            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
             return false;
         }
     }
@@ -158,7 +158,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             ConnectUserInfoVO connectUserInfoVO = dbShardRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
             return connectUserInfoVO;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
+            logger.error("[ConnectToken] service method obtainCachedConnectUserInfo error.{}", e);
             return null;
         }
     }
