@@ -12,7 +12,9 @@ import java.util.Map;
 public class ConnectUserInfoVO {
 
     private String nickname;
-    public String imageURL;
+    public String avatarSmall;
+    public String avatarMiddle;
+    public String avatarLarge;
     public String userDesc;
     public int gender; // 0-女，1-男
     public String province; // 省
@@ -27,14 +29,6 @@ public class ConnectUserInfoVO {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public String getImageURL() {
-        return imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
     }
 
     public String getUserDesc() {
@@ -83,5 +77,29 @@ public class ConnectUserInfoVO {
 
     public void setOriginal(Map<String, Object> original) {
         this.original = original;
+    }
+
+    public String getAvatarSmall() {
+        return avatarSmall;
+    }
+
+    public void setAvatarSmall(String avatarSmall) {
+        this.avatarSmall = avatarSmall;
+    }
+
+    public String getAvatarMiddle() {
+        return avatarMiddle;
+    }
+
+    public void setAvatarMiddle(String avatarMiddle) {
+        this.avatarMiddle = avatarMiddle;
+    }
+
+    public String getAvatarLarge() {
+        return avatarLarge;
+    }
+
+    public void setAvatarLarge(String avatarLarge) {
+        this.avatarLarge = avatarLarge;
     }
 }

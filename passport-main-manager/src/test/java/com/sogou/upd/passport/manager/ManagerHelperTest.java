@@ -21,7 +21,7 @@ public class ManagerHelperTest extends BaseTest {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK(userid, clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("0000A55E2554712B677F0EBE2959B2FC@qq.sohu.com", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {

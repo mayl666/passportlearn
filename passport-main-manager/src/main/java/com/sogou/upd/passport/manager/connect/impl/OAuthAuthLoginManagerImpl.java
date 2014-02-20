@@ -119,6 +119,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             if (connectUserInfoVO != null) {
                 uniqname = connectUserInfoVO.getNickname();
                 oAuthTokenVO.setNickName(uniqname);
+                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
             }
 
             // 创建第三方账号

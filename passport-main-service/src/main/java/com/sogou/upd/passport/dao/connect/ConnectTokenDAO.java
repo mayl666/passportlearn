@@ -78,14 +78,14 @@ public interface ConnectTokenDAO {
 
 
     /**
-     * 插入一条新记录
+     * 插入或修改一条新记录
      */
     @SQL("insert into " +
             TABLE_NAME +
-            "(" + ALL_FIELD + ") values(" + VALUE_FIELD + ") on duplicate key "
+            "(" + ALL_FIELD + ") values (" + VALUE_FIELD + ") on duplicate key "
             + "update "
             + "#if(:connectToken.accessToken != null){access_token=:connectToken.accessToken,} "
-            + "#if(:connectToken.expiresIn > 0){expires_in=:connectToken.expiresIn,}"
+            + "#if(:connectToken.expiresIn > 0){expires_in=:connectToken.expiresIn,} "
             + "#if(:connectToken.refreshToken != null){refresh_token=:connectToken.refreshToken,} "
             + "#if(:connectToken.connectUniqname != null){connect_uniqname=:connectToken.connectUniqname,} "
             + "#if(:connectToken.avatarSmall != null){avatar_small=:connectToken.avatarSmall,} "

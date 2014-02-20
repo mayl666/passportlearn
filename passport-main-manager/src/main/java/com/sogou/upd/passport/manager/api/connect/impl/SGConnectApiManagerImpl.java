@@ -23,6 +23,7 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -121,9 +122,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     /**
      * 创建第三方账号
      *
-     * @param appKey        搜狗在第三方的appKey
-     * @param provider      第三方类型
-     * @param oAuthTokenVO  统一的OAuthToken对象
+     * @param appKey       搜狗在第三方的appKey
+     * @param provider     第三方类型
+     * @param oAuthTokenVO 统一的OAuthToken对象
      * @return
      */
     @Override
@@ -182,11 +183,27 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectToken.setPassportId(passportId);
         connectToken.setAppKey(appKey);
         connectToken.setProvider(provider);
-        connectToken.setOpenid(oAuthTokenVO.getOpenid());
-        connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
-        connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
-        connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getOpenid())) {
+            connectToken.setOpenid(oAuthTokenVO.getOpenid());
+        }
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getAccessToken())) {
+            connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
+        }
+        if (oAuthTokenVO.getExpiresIn() > 0) {
+            connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
+        }
+        if (!Strings.isNullOrEmpty(oAuthTokenVO.getRefreshToken())) {
+            connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
+        }
         connectToken.setUpdateTime(new Date());
+        ConnectUserInfoVO connectUserInfoVO = oAuthTokenVO.getConnectUserInfoVO();
+        if (connectUserInfoVO != null) {
+            connectToken.setConnectUniqname(connectUserInfoVO.getNickname());
+            connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));
+            connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
+            connectToken.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());
+            connectToken.setAvatarLarge(connectUserInfoVO.getAvatarLarge());
+        }
         return connectToken;
     }
 

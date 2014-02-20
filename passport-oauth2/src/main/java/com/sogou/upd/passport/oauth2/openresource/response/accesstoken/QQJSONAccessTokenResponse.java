@@ -57,7 +57,9 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
             connectUserInfoVO = new ConnectUserInfoVO();
             connectUserInfoVO.setNickname((String) userInfoMap.get(QQOAuth.NICK_NAME));
             connectUserInfoVO.setGender(formGender((String) userInfoMap.get(QQOAuth.GENDER)));
-            connectUserInfoVO.setImageURL((String) userInfoMap.get(QQOAuth.FIGURE_URL_100));
+            connectUserInfoVO.setAvatarSmall((String) userInfoMap.get(QQOAuth.FIGURE_URL_40));
+            connectUserInfoVO.setAvatarMiddle((String) userInfoMap.get(QQOAuth.FIGURE_URL_100));
+            connectUserInfoVO.setAvatarLarge((String) userInfoMap.get(QQOAuth.FIGURE_URL_100));
         }
         return connectUserInfoVO;
     }

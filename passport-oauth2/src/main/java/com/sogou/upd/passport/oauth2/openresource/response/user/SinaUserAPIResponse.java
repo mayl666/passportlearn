@@ -54,7 +54,9 @@ public class SinaUserAPIResponse extends UserAPIResponse {
         String cityID = getParam(SinaOAuth.CITY);
         ConnectUserInfoVO user = new ConnectUserInfoVO();
         user.setNickname(getParam(SinaOAuth.SCREEN_NAME));
-        user.setImageURL(getParam(SinaOAuth.AVATAR_LARGE));
+        user.setAvatarSmall(getParam(SinaOAuth.PROFILE_IMAGE_URL));   // 50*50
+        user.setAvatarMiddle(getParam(SinaOAuth.PROFILE_IMAGE_URL));   // 50*50
+        user.setAvatarLarge(getParam(SinaOAuth.AVATAR_LARGE));         // 180*180
         user.setGender(formGender(getParam(SinaOAuth.GENDER)));
         user.setUserDesc(getParam(SinaOAuth.DESC));
         user.setProvince(sinaProvinceCache.get(provinceID));
@@ -77,7 +79,7 @@ public class SinaUserAPIResponse extends UserAPIResponse {
         String city = "未知";
         for (Map<String, String> map : cityList) {
             city = map.get(cityID);
-            if (!Strings.isNullOrEmpty(city)){
+            if (!Strings.isNullOrEmpty(city)) {
                 city = StringUtil.exchangeToUf8(city);
                 break;
             }
