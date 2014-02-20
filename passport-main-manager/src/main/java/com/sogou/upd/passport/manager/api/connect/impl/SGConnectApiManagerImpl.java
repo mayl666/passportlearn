@@ -240,6 +240,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST);
                 return result;
             }
+            result.setCode(ErrorUtil.CONNECT_TOKEN_INVALID);
+            return result;
         } else {
             //accessToken有效直接返回
             result.setSuccess(true);
