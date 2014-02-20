@@ -16,6 +16,7 @@ public class BaiduOAuth extends OAuth {
 
 
     /* 用户类API响应参数 */
+    public static final String OPENID = "userid";
     public static final String NAME = "username"; // 用户昵称
     public static final String AVATAR_ID = "portrait";
     public static final String SEX = "sex"; // 性别
