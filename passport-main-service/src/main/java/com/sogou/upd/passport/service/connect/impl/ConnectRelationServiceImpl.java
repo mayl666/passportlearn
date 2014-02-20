@@ -78,7 +78,7 @@ public class ConnectRelationServiceImpl implements ConnectRelationService {
             String openid = connectRelation.getOpenid();
             int provider = connectRelation.getProvider();
             String appKey = connectRelation.getAppKey();
-            row = connectRelationDAO.insertConnectRelation(connectRelation.getOpenid(), connectRelation);
+            row = connectRelationDAO.insertOrUpdateConnectRelation(connectRelation.getOpenid(), connectRelation);
             if (row != 0) {
                 String cacheKey = buildConnectRelationKey(openid, provider);
                 dbShardRedisUtils.hPut(cacheKey, appKey, connectRelation);

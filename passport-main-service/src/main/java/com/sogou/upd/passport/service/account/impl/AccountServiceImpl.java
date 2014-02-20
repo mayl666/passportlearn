@@ -111,7 +111,7 @@ public class AccountServiceImpl implements AccountService {
                 mobile = username;
             }
             account.setMobile(mobile);
-            long id = accountDAO.insertAccount(passportId, account);
+            long id = accountDAO.insertOrUpdateAccount(passportId, account);
             if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
