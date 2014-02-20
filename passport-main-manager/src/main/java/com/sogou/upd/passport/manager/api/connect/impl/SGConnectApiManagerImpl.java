@@ -153,10 +153,10 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return result;
             }
             //3.connect_relation根据参数决定是否新增
-            ConnectRelation connectRelation = null;
-            if (isBuildQuery) {
-                connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
-            }
+//            ConnectRelation connectRelation = null;
+//            if (isBuildQuery) {
+            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
+//            }
             if (connectRelation == null) {
                 connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
