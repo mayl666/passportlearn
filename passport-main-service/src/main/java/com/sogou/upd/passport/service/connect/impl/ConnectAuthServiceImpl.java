@@ -155,7 +155,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid) {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(userid);
-            ConnectUserInfoVO connectUserInfoVO = dbRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
+            ConnectUserInfoVO connectUserInfoVO = dbShardRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
             return connectUserInfoVO;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
