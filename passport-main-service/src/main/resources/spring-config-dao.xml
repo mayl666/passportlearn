@@ -48,7 +48,7 @@
         属于单个connection而不是整个连接池。所以设置这个参数需要考虑到多方面的因素。
         如果maxStatements与maxStatementsPerConnection均为0，则缓存被关闭。Default: 0-->
         <property name="maxStatements">
-            <value>6000</value>
+            <value>3000</value>
         </property>
         <!--初始化时获取三个连接，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
         <property name="initialPoolSize">
@@ -60,9 +60,9 @@
         </property>
         <!--c3p0是异步操作的，缓慢的JDBC操作通过帮助进程完成。扩展这些操作可以有效的提升性能
         通过多线程实现多个操作同时被执行。Default: 3-->
-        <property name="numHelperThreads">
-            <value>10</value>
-        </property>
+        <!--<property name="numHelperThreads">-->
+            <!--<value>10</value>-->
+        <!--</property>-->
     </bean>
 
     <!-- 配置slave数据库 -->
@@ -99,7 +99,7 @@
             <value>30</value>
         </property>
         <property name="maxStatements">
-            <value>6000</value>
+            <value>3000</value>
         </property>
         <property name="initialPoolSize">
             <value>50</value>
@@ -107,9 +107,9 @@
         <property name="maxIdleTime">
             <value>300</value>
         </property>
-        <property name="numHelperThreads">
-            <value>10</value>
-        </property>
+        <!--<property name="numHelperThreads">-->
+            <!--<value>10</value>-->
+        <!--</property>-->
     </bean>
 
 
