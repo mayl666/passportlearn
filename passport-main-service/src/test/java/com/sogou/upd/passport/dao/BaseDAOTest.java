@@ -12,7 +12,7 @@ import com.sogou.upd.passport.BaseTest;
 public class BaseDAOTest extends BaseTest {
 
     // Account Test Constant
-    public static final String PASSPORT_ID = "13600000000@sohu.com";
+    public static final String PASSPORT_ID = "13900000000@sohu.com";
     public static final String NEW_PASSPORT_ID = "13600000001@sohu.com";
     public static final String MOBILE = "13600000000";
     public static final String SID = "120000";

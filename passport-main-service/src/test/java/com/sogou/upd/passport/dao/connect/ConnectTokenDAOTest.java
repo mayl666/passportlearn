@@ -48,10 +48,10 @@ public class ConnectTokenDAOTest extends BaseDAOTest {
 
     @Test
     public void testUpdateAccountConnect() {
-        connectToken.setOpenid("Xxxxx");
+        connectToken.setOpenid("13900000000");
         connectToken.setProvider(1);
         connectToken.setAccessToken("123");
-        connectToken.setExpiresIn(232332l);
+        connectToken.setExpiresIn(776732l);
         connectToken.setRefreshToken("456");
         connectToken.setConnectUniqname("跳刀的兔子");
         connectToken.setAvatarSmall("http://account.sogou.com/small.jpg");

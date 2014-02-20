@@ -32,7 +32,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialConnectToken(ConnectToken connectToken) throws ServiceException {
-        int row = 0;
+        int row;
         try {
             String passportId = connectToken.getPassportId();
             row = connectTokenDAO.insertAccountConnect(passportId, connectToken);
@@ -52,7 +52,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateConnectToken(ConnectToken connectToken) throws ServiceException {
-        int row = 0;
+        int row;
         try {
             String passportId = connectToken.getPassportId();
             row = connectTokenDAO.updateConnectToken(passportId, connectToken);
@@ -72,16 +72,19 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertOrUpdateConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException {
+        int row;
         try {
             String passportId = connectToken.getPassportId();
-            ConnectToken connectTokenReturn = queryConnectToken(passportId, connectToken.getProvider(), connectToken.getAppKey());
-            if (connectTokenReturn == null) {
-                return initialConnectToken(connectToken);
+            row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
+            if (row != 0) {
+                String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
+                return true;
             } else {
-                return updateConnectToken(connectToken);
+                return false;
             }
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method insertOrUpdateConnectToken error.{}", e);
+            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
             throw new ServiceException(e);
         }
     }
