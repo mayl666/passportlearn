@@ -14,6 +14,7 @@ public class OAuthTokenVO {
     private String nickName; //昵称
     private String openidSecret;  // openid密钥
     private String ip;
+    private ConnectUserInfoVO ConnectUserInfoVO; // 第三方用户信息
 
     public OAuthTokenVO() {
     }
@@ -106,5 +107,13 @@ public class OAuthTokenVO {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public ConnectUserInfoVO getConnectUserInfoVO() {
+        return ConnectUserInfoVO;
+    }
+
+    public void setConnectUserInfoVO(ConnectUserInfoVO connectUserInfoVO) {
+        ConnectUserInfoVO = connectUserInfoVO;
     }
 }

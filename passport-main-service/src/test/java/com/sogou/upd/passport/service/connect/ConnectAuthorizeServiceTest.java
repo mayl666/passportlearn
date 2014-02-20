@@ -7,6 +7,7 @@ import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
 
     private static final int clientId = 1120;
     private static final int provider = AccountTypeEnum.QQ.getValue();
+    private static final int provider_renren = AccountTypeEnum.RENREN.getValue();
 
     @Autowired
     private ConnectAuthService connectAuthorizeService;
@@ -38,10 +40,27 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
         try {
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             String ru = "https://account.sogou.com";
-            String accessToken=oAuthConsumer.getAccessTokenUrl();
+            String accessToken = oAuthConsumer.getAccessTokenUrl();
             OAuthAccessTokenResponse response = connectAuthorizeService.obtainAccessTokenByCode(provider, code, connectConfig, oAuthConsumer, ru);
             String body = response.getBody();
             System.out.println("body:" + body);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (OAuthProblemException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testRefreshAccessToken() {
+        String refreshToken_qq = "33B7D25DA4F5FCD9F5DB7B4EE9136E67";
+//        String refreshToken_renren = "209417|0.zNgdF8EEhp2MlUx9r48zLZuwZWEHIx7g.225106022.1383223561658";
+        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        try {
+            OAuthTokenVO oAuthTokenVO = connectAuthorizeService.refreshAccessToken(refreshToken_qq, connectConfig);
+            System.out.println("--------------------结果如下-------------------");
+            System.out.println("accessToken:" + oAuthTokenVO.getAccessToken() + "refreshToken:" + oAuthTokenVO.getRefreshToken());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (OAuthProblemException e) {

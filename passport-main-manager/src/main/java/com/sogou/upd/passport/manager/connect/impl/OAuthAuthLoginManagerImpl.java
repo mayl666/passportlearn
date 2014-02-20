@@ -66,8 +66,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private AccountBaseInfoService accountBaseInfoService;
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
-    @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
     private MappTokenService mappTokenService;
@@ -75,9 +73,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private SessionServerManager sessionServerManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
+    @Autowired
+    private ConnectApiManager connectApiManager;
 
     @Override
-    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type,String httpOrHttps) {
+    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
         Result result = new APIResultSupport(false);
         try {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
@@ -101,7 +101,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from,domain);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -119,17 +119,18 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             if (connectUserInfoVO != null) {
                 uniqname = connectUserInfoVO.getNickname();
                 oAuthTokenVO.setNickName(uniqname);
+                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
             }
 
             // 创建第三方账号
-            Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
+            Result connectAccountResult = connectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
 
             if (connectAccountResult.isSuccess()) {
                 String passportId = (String) connectAccountResult.getModels().get("userid");
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
                 //更新个人资料缓存
-                connectAuthService.initialOrUpdateConnectUserInfo(userId,connectUserInfoVO);
+                connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
 
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
@@ -150,10 +151,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-                     String token = mappTokenService.saveToken(userId);
-                     String url = buildMAppSuccessRu(ru, userId, token, uniqname);
-                     result.setSuccess(true);
-                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                    String token = mappTokenService.saveToken(userId);
+                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+                    result.setSuccess(true);
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (type.equals(ConnectTypeEnum.MOBILE.toString())) {
                     String s_m_u = getSMU(userId);
                     String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
@@ -182,16 +183,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(userId);
-                    String sgid=null;
-                    if(sessionResult.isSuccess()){
-                         sgid= (String) sessionResult.getModels().get("sgid");
-                         if (!Strings.isNullOrEmpty(sgid)) {
+                    String sgid = null;
+                    if (sessionResult.isSuccess()) {
+                        sgid = (String) sessionResult.getModels().get("sgid");
+                        if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
                             result.getModels().put("sgid", sgid);
-                            ru= buildWapSuccessRu(ru, sgid);
-                         }
-                    }else {
-                        result=buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:"+userId);
+                            ru = buildWapSuccessRu(ru, sgid);
+                        }
+                    } else {
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
                     }
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {

@@ -6,6 +6,7 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 
 import java.io.IOException;
 
@@ -34,8 +35,7 @@ public interface ConnectAuthService {
      * 用refresh_token刷新access_token
      * QQ微博和人人
      */
-    public OAuthAccessTokenResponse refreshAccessToken(int appid, String connectName, String refreshToken)
-            throws IOException, OAuthProblemException;
+    public OAuthTokenVO refreshAccessToken(String refreshToken, ConnectConfig connectConfig) throws OAuthProblemException, IOException;
 
     /**
      * 获取第三方个人资料
@@ -51,18 +51,20 @@ public interface ConnectAuthService {
 
     /**
      * 更新第三方个人资料缓存
+     *
      * @param passportId
      * @param connectUserInfoVO
      * @return
      * @throws ServiceException
      */
-    public boolean initialOrUpdateConnectUserInfo(String passportId,ConnectUserInfoVO connectUserInfoVO) throws ServiceException;
+    public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException;
 
     /**
      * 通过缓存获取个人资料
+     *
      * @param userid
      * @return
      * @throws ServiceException
      */
-    public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid) throws ServiceException;
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid);
 }

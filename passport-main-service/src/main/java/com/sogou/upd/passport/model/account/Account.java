@@ -3,25 +3,28 @@ package com.sogou.upd.passport.model.account;
 import java.util.Date;
 
 /**
- * 账号主表
- * User: mayan Date: 13-3-22 Time: 下午2:01 To change this template use File | Settings | File
- * Templates.
+ * 账号主表account
+ * User: mayan
+ * Date: 13-3-22
+ * Time: 下午2:01
  */
-public class
-        Account {
+public class Account {
 
+    public static final int NO_PASSWORD = 0; //无密码
     public static final int NEW_ACCOUNT_VERSION = 1; // sogou-passport新生成的账号
     public static final int OLD_ACCOUNT_VERSION = 2; // sohu-passport迁移过来的账号
 
     private long id;
     private String passportId;
-    private String passwd;
+    private String password;
     private String mobile;
     private Date regTime;
     private String regIp;
-    private int status;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
-    private int version;  // 0-sohu老用户，1-sogou新用户
-    private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-
+    private int flag;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
+    private int passwordtype;  // 密码类型
+    private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-taobao；7-baidu；
+    private String uniqname; // 昵称
+    private String avatar;  // 头像url
 
     public Account() {
     }
@@ -30,27 +33,27 @@ public class
         this.mobile = mobile;
     }
 
-    public Account(String mobile, String passwd) {
+    public Account(String mobile, String password) {
         this.mobile = mobile;
-        this.passwd = passwd;
+        this.password = password;
     }
 
-    public Account(String passwd, String mobile, String regIp) {
-        this.passwd = passwd;
+    public Account(String password, String mobile, String regIp) {
+        this.password = password;
         this.mobile = mobile;
         this.regIp = regIp;
     }
 
-    public Account(long id, String passportId, String passwd, String mobile, Date regTime,
-                   String regIp, int status, int version, int accountType) {
+    public Account(long id, String passportId, String password, String mobile, Date regTime,
+                   String regIp, int flag, int passwordtype, int accountType) {
         this.id = id;
         this.passportId = passportId;
-        this.passwd = passwd;
+        this.password = password;
         this.mobile = mobile;
         this.regTime = regTime;
         this.regIp = regIp;
-        this.status = status;
-        this.version = version;
+        this.flag = flag;
+        this.passwordtype = passwordtype;
         this.accountType = accountType;
     }
 
@@ -70,12 +73,12 @@ public class
         this.passportId = passportId;
     }
 
-    public String getPasswd() {
-        return passwd;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswd(String passwd) {
-        this.passwd = passwd;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getMobile() {
@@ -102,20 +105,20 @@ public class
         this.regIp = regIp;
     }
 
-    public int getStatus() {
-        return status;
+    public int getFlag() {
+        return flag;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setFlag(int flag) {
+        this.flag = flag;
     }
 
-    public int getVersion() {
-        return version;
+    public int getPasswordtype() {
+        return passwordtype;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
+    public void setPasswordtype(int passwordtype) {
+        this.passwordtype = passwordtype;
     }
 
     public int getAccountType() {
@@ -124,5 +127,21 @@ public class
 
     public void setAccountType(int accountType) {
         this.accountType = accountType;
+    }
+
+    public String getUniqname() {
+        return uniqname;
+    }
+
+    public void setUniqname(String uniqname) {
+        this.uniqname = uniqname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

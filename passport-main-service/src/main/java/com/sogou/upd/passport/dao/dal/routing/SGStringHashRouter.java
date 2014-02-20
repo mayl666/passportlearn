@@ -106,7 +106,6 @@ public class SGStringHashRouter implements Router {
     protected int convert(Object columnValue) {
         String stringHash = DigestUtils.md5Hex(String.valueOf(columnValue));
         int modInt = Integer.parseInt(stringHash.substring(0, 2), 16);
-
         return modInt;
     }
 

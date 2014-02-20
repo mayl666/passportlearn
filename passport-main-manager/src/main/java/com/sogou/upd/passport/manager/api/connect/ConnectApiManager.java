@@ -30,11 +30,11 @@ public interface ConnectApiManager {
     /**
      * 同步创建第三方账号的接口
      *
-     * @param providerStr
+     * @param provider
      * @param oAuthTokenVO
      * @return
      */
-    public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO);
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO);
 
     /**
      * 根据第三方QQ用户信息获取用户的openid及accessToken
@@ -44,13 +44,5 @@ public interface ConnectApiManager {
      */
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
 
-    /**
-     * 从搜狗和搜狐库里双读token，最后再将token写入搜狗数据库中
-     *
-     * @param baseOpenApiParams
-     * @param clientId
-     * @param clientKey
-     * @return
-     */
-    public Result handleConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
+
 }

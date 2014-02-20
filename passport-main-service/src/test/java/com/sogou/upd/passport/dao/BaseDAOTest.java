@@ -12,17 +12,17 @@ import com.sogou.upd.passport.BaseTest;
 public class BaseDAOTest extends BaseTest {
 
     // Account Test Constant
-    public static final String PASSPORT_ID = "13600000000@sohu.com";
+    public static final String PASSPORT_ID = "13900000000@sohu.com";
     public static final String NEW_PASSPORT_ID = "13600000001@sohu.com";
     public static final String MOBILE = "13600000000";
     public static final String SID = "120000";
     public static final String SNAME = "sohuplus_name";
     public static final String PASSWORD = "111111";
     public static final String NEW_PASSWORD = "123456";
-    public static final int ACCOUNT_TYPE = 2;
+    public static final int ACCOUNT_TYPE = 2; // 手机账号
     public static final String IP = "10.1.164.65";
-    public static final int STATUS = 1;
-    public static final int VERSION = 1;
+    public static final int FLAG = 1;
+    public static final int PWDTYPE = 1;
 
     // AccountInfo Test Constant ---hjf 2013.5.3
     public static final String EMAIL = "Binding123@163.com";
@@ -48,7 +48,7 @@ public class BaseDAOTest extends BaseTest {
     // Connect Test Constant
     public static final String OPENID = "shipengzhi";
     public static final String APP_KEY = "123";
-    public static final String OTHER_APP_KEY = "abc";
+    public static final String OTHER_APP_KEY = "456";
 
     // Problem Test Constant
     public static final int PRO_STATUS = 0;

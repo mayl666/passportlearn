@@ -39,6 +39,7 @@ public interface ConnectTokenService {
 
     /**
      * 获取ConnectToken对象
+     *
      * @param passportId
      * @param provider
      * @param appKey
@@ -46,6 +47,15 @@ public interface ConnectTokenService {
      * @throws ServiceException
      */
     public ConnectToken queryConnectToken(String passportId, int provider, String appKey) throws ServiceException;
+
+    /**
+     * 新增或更新ConnectTokena对象
+     *
+     * @param connectToken
+     * @return
+     * @throws ServiceException
+     */
+    public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException;
 
 
 }

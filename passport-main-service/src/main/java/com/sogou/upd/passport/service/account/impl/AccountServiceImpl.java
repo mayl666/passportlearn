@@ -18,6 +18,7 @@ import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
+    @Autowired
     private MailUtils mailUtils;
     @Autowired
     private CaptchaUtils captchaUtils;
@@ -59,7 +62,7 @@ public class AccountServiceImpl implements AccountService {
             cacheKey = buildAccountKey(username);
             account = redisUtils.getObject(cacheKey, Account.class);
             if (account != null) {
-                account.setStatus(AccountStatusEnum.REGULAR.getValue());
+                account.setFlag(AccountStatusEnum.REGULAR.getValue());
                 long id = accountDAO.insertAccount(username, account);
                 if (id != 0) {
                     //删除临时账户缓存，成为正式账户
@@ -82,22 +85,27 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider) throws ServiceException {
         Account account = new Account();
         String passportId = PassportIDGenerator.generator(username, provider);
         account.setPassportId(passportId);
-        String passwordSign = null;
+        String passwordSign;
         try {
-            if (!Strings.isNullOrEmpty(password)) {
+            if (!Strings.isNullOrEmpty(password) && !AccountTypeEnum.isConnect(provider)) {
                 passwordSign = PwdGenerator.generatorStoredPwd(password, needMD5);
+                account.setPassword(passwordSign);
             }
-            account.setPasswd(passwordSign);
             account.setRegTime(new Date());
             account.setRegIp(ip);
             account.setAccountType(provider);
-            account.setStatus(AccountStatusEnum.REGULAR.getValue());
-            account.setVersion(Account.NEW_ACCOUNT_VERSION);
+            account.setFlag(AccountStatusEnum.REGULAR.getValue());
+            if (AccountTypeEnum.isConnect(provider)) {
+                account.setPasswordtype(Account.NO_PASSWORD);
+            } else {
+                account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
+            }
             String mobile = null;
             if (AccountTypeEnum.isPhone(username, provider)) {
                 mobile = username;
@@ -106,7 +114,7 @@ public class AccountServiceImpl implements AccountService {
             long id = accountDAO.insertAccount(passportId, account);
             if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                redisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
                 return account;
             }
         } catch (Exception e) {
@@ -120,21 +128,21 @@ public class AccountServiceImpl implements AccountService {
         return initialAccount(passportId, null, false, ip, provider);
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
         Account account;
         try {
             String cacheKey = buildAccountKey(passportId);
 
-            account = redisUtils.getObject(cacheKey, Account.class);
+            account = dbShardRedisUtils.getObject(cacheKey, Account.class);
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
                 if (account != null) {
-                    redisUtils.set(cacheKey, account);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {
-
             throw new ServiceException();
         }
         return account;
@@ -154,7 +162,7 @@ public class AccountServiceImpl implements AccountService {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            if (PwdGenerator.verify(password, needMD5, userAccount.getPasswd())) {
+            if (PwdGenerator.verify(password, needMD5, userAccount.getPassword())) {
                 result.setSuccess(true);
                 result.setDefaultModel(userAccount);
                 return result;
@@ -234,7 +242,7 @@ public class AccountServiceImpl implements AccountService {
             int row = accountDAO.updatePassword(passwdSign, passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                account.setPasswd(passwdSign);
+                account.setPassword(passwdSign);
                 redisUtils.set(cacheKey, account);
 
                 return true;
@@ -402,7 +410,7 @@ public class AccountServiceImpl implements AccountService {
             int row = accountDAO.updateState(newState, passportId);
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
-                account.setStatus(newState);
+                account.setFlag(newState);
                 redisUtils.set(cacheKey, account);
                 return true;
             }
@@ -425,11 +433,11 @@ public class AccountServiceImpl implements AccountService {
             if (!Strings.isNullOrEmpty(password)) {
                 passwordSign = PwdGenerator.generatorStoredPwd(password, false);
             }
-            account.setPasswd(passwordSign);
+            account.setPassword(passwordSign);
             account.setRegTime(new Date());
             account.setAccountType(provider);
-            account.setStatus(AccountStatusEnum.DISABLED.getValue());
-            account.setVersion(Account.NEW_ACCOUNT_VERSION);
+            account.setFlag(AccountStatusEnum.DISABLED.getValue());
+            account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
             account.setRegIp(ip);
 
             String cacheKey = buildAccountKey(username);

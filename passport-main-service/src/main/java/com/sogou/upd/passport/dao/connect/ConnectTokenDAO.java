@@ -4,11 +4,14 @@ import com.sogou.upd.passport.model.connect.ConnectToken;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
+import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
 /**
- * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-18 Time: 下午3:34 To change this template use File | Settings |
- * File Templates.
+ * connect_token表的DAO操作
+ * User: shipengzhi
+ * Date: 13-4-18 Time:
+ * 下午3:34
  */
 @DAO
 public interface ConnectTokenDAO {
@@ -21,49 +24,16 @@ public interface ConnectTokenDAO {
     /**
      * 所有字段列表
      */
-    String ALL_FIELD = " id, passport_id, app_key, provider, openid, access_token, expires_in, refresh_token, create_time ";
+    String ALL_FIELD = " passport_id, provider, app_key, openid, access_token, expires_in, refresh_token, " +
+            "connect_uniqname, avatar_small, avatar_middle, avatar_large, gender, update_time ";
 
     /**
      * 值列表
      */
-    String VALUE_FIELD = " :connectToken.id, :connectToken.passportId, :connectToken.appKey, :connectToken.provider, :connectToken.openid, :connectToken.accessToken, :connectToken.expiresIn, :connectToken.refreshToken, :connectToken.createTime ";
-
-    /**
-     * 修改字段列表
-     */
-    String UPDATE_FIELD = " passport_id = :connectToken.passportId, app_key = :connectToken.appKey, provider = :connectToken.provider, openid = :connectToken.openid, access_token = :connectToken.accessToken, expires_in = :connectToken.expiresIn, refresh_token = :connectToken.refreshToken, create_time = :connectToken.createTime ";
-
-    /**
-     * 更新AccountConnect
-     */
-    @SQL("update " +
-            TABLE_NAME +
-            " set "
-            + "#if(:accountConnect.refreshToken != null){refresh_token=:accountConnect.refreshToken,} "
-            + "#if(:accountConnect.expiresIn > 0){expires_in=:accountConnect.expiresIn,}"
-            + "#if(:accountConnect.accessToken != null){access_token=:accountConnect.accessToken} "
-            + "where passport_id=:passport_id and openid=:accountConnect.openid and provider=:accountConnect.provider and app_key=:accountConnect.appKey")
-    public int updateConnectToken(@SQLParam("passport_id") String passport_id, @SQLParam("accountConnect") ConnectToken connectToken)
-            throws DataAccessException;
-
-    /**
-     * 插入一条新记录
-     */
-    @SQL("insert into " +
-            TABLE_NAME +
-            "(passport_id,app_key,provider,openid,access_token,"
-            + "expires_in,refresh_token,create_time) values(:passport_id,:accountConnect.appKey,"
-            + ":accountConnect.provider,:accountConnect.openid,:accountConnect.accessToken,:accountConnect.expiresIn,:accountConnect.refreshToken,:accountConnect.createTime)")
-    public int insertAccountConnect(@SQLParam("passport_id") String passport_id, @SQLParam("accountConnect") ConnectToken accountConnect)
-            throws DataAccessException;
-
-    /**
-     * 删除一条记录，（Unit Test使用）
-     */
-    @SQL("delete from " +
-            TABLE_NAME +
-            " where passport_id=:passport_id")
-    public int deleteConnectTokenByPassportId(@SQLParam("passport_id") String passport_id) throws DataAccessException;
+    String VALUE_FIELD = " :passport_id, :connectToken.provider, :connectToken.appKey, :connectToken.openid, " +
+            ":connectToken.accessToken, :connectToken.expiresIn, :connectToken.refreshToken, " +
+            ":connectToken.connectUniqname, :connectToken.avatarSmall, :connectToken.avatarMiddle, :connectToken.avatarLarge," +
+            " :connectToken.gender, :connectToken.updateTime ";
 
     /**
      * 根据passportId获取openId
@@ -75,8 +45,62 @@ public interface ConnectTokenDAO {
             TABLE_NAME +
             " where "
             + "(passport_id=:passport_id and provider=:provider and app_key=:app_key)")
-    public ConnectToken getSpecifyConnectToken(@SQLParam("passport_id") String passport_id, @SQLParam("provider") int provider,
+    public ConnectToken getSpecifyConnectToken(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("provider") int provider,
                                                @SQLParam("app_key") String app_key) throws DataAccessException;
 
+    /**
+     * 更新AccountConnect
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set "
+            + "#if(:connectToken.accessToken != null){access_token=:connectToken.accessToken,} "
+            + "#if(:connectToken.expiresIn > 0){expires_in=:connectToken.expiresIn,}"
+            + "#if(:connectToken.refreshToken != null){refresh_token=:connectToken.refreshToken,} "
+            + "#if(:connectToken.connectUniqname != null){connect_uniqname=:connectToken.connectUniqname,} "
+            + "#if(:connectToken.avatarSmall != null){avatar_small=:connectToken.avatarSmall,} "
+            + "#if(:connectToken.avatarMiddle != null){avatar_middle=:connectToken.avatarMiddle,} "
+            + "#if(:connectToken.avatarLarge != null){avatar_large=:connectToken.avatarLarge,} "
+            + "#if(:connectToken.gender != null){gender=:connectToken.gender,} "
+            + "#if(:connectToken.updateTime != null){update_time=:connectToken.updateTime} "
+            + "where passport_id=:passport_id and provider=:connectToken.provider and app_key=:connectToken.appKey")
+    public int updateConnectToken(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("connectToken") ConnectToken connectToken)
+            throws DataAccessException;
 
+    /**
+     * 插入一条新记录
+     */
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(" + ALL_FIELD + ") values(" + VALUE_FIELD + ")")
+    public int insertAccountConnect(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("connectToken") ConnectToken connectToken)
+            throws DataAccessException;
+
+
+    /**
+     * 插入或修改一条新记录
+     */
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(" + ALL_FIELD + ") values (" + VALUE_FIELD + ") on duplicate key "
+            + "update "
+            + "#if(:connectToken.accessToken != null){access_token=:connectToken.accessToken,} "
+            + "#if(:connectToken.expiresIn > 0){expires_in=:connectToken.expiresIn,} "
+            + "#if(:connectToken.refreshToken != null){refresh_token=:connectToken.refreshToken,} "
+            + "#if(:connectToken.connectUniqname != null){connect_uniqname=:connectToken.connectUniqname,} "
+            + "#if(:connectToken.avatarSmall != null){avatar_small=:connectToken.avatarSmall,} "
+            + "#if(:connectToken.avatarMiddle != null){avatar_middle=:connectToken.avatarMiddle,} "
+            + "#if(:connectToken.avatarLarge != null){avatar_large=:connectToken.avatarLarge,} "
+            + "#if(:connectToken.gender != null){gender=:connectToken.gender,} "
+            + "#if(:connectToken.updateTime != null){update_time=:connectToken.updateTime}")
+    public int insertOrUpdateAccountConnect(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("connectToken") ConnectToken connectToken)
+            throws DataAccessException;
+
+    /**
+     * 删除一条记录，（Unit Test使用）
+     */
+    @SQL("delete from " +
+            TABLE_NAME +
+            " where passport_id=:passport_id")
+    public int deleteConnectTokenByPassportId(@ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 }

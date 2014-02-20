@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.connect.proxy;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -11,6 +12,8 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectProxyOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.proxy.ConnectProxyOpenApiParams;
+import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -44,7 +47,52 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
     @Autowired
     private ConnectProxyOpenApiManager connectProxyOpenApiManager;
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
+    private ConnectApiManager connectApiManager;
+    @Autowired
+    private ConnectApiManager sgConnectApiManager;
+
+    /**
+     * 创建第三方用户，用于测试，测试结束后此方法删除
+     *
+     * @param params 第三方开放平台接口所需参数
+     * @return
+     * @throws Exception
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/build/account", method = RequestMethod.POST)
+    @ResponseBody
+    public Object buildConnectAccount(ConnectProxyOpenApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            String appKey = CommonConstant.APP_CONNECT_KEY;
+            int provider = AccountTypeEnum.QQ.getValue();
+            long expiresIn = 7776000;
+            String refreshToken = null;
+            String openId = params.getOpenid();
+            String accessToken = params.getAccessToken();
+            //用户的openId/openKey
+            OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, refreshToken);
+            oAuthTokenVO.setOpenid(openId);
+            Result openResult = sgConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
+            if (openResult.isSuccess()) {
+                result.setCode("0");
+                result.setSuccess(true);
+            } else {
+                result = openResult;
+            }
+        } catch (Exception e) {
+            logger.error("qzoneConnectProxyOpenApi Is Failed,UserId is " + params.getUserid(), e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result.toString();
+    }
+
+    private Map<String, String> covertObjectToMap(ConnectToken connectToken) {
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("open_id", connectToken.getOpenid());
+        tokenMap.put("access_token", connectToken.getAccessToken());
+        return tokenMap;
+    }
 
     /**
      * 获取用户QQ空间未读消息数
@@ -78,12 +126,13 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
+                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                Map<String, String> tokenMap = covertObjectToMap(connectToken);
                 if (!CollectionUtils.isEmpty(tokenMap)) {
-                    tokenMap.put("client_id",String.valueOf(params.getClient_id()));
+                    tokenMap.put("client_id", String.valueOf(params.getClient_id()));
                     result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, null);
                 }
             } else {
@@ -135,14 +184,15 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
+                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                Map<String, String> tokenMap = covertObjectToMap(connectToken);
                 HashMap<String, Object> paramMap = new HashMap<>();
                 paramMap.put("pf", "tapp");
                 if (!CollectionUtils.isEmpty(tokenMap)) {
-                    tokenMap.put("client_id",String.valueOf(params.getClient_id()));
+                    tokenMap.put("client_id", String.valueOf(params.getClient_id()));
                     result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, paramMap);
                 }
             } else {
@@ -194,12 +244,13 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> tokenMap = (Map<String, String>) openResult.getModels().get("result");
+                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                Map<String, String> tokenMap = covertObjectToMap(connectToken);
                 if (!CollectionUtils.isEmpty(tokenMap)) {
-                    tokenMap.put("client_id",String.valueOf(params.getClient_id()));
+                    tokenMap.put("client_id", String.valueOf(params.getClient_id()));
                     result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, null);
                 }
             } else {
