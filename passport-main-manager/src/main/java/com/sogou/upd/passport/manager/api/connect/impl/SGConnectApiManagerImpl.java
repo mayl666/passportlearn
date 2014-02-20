@@ -298,7 +298,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
             connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
             connectToken.setUpdateTime(new Date());
-            boolean isUpdateSuccess = connectTokenService.updateConnectToken(connectToken);
+            boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
             if (isUpdateSuccess) {
                 result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
                 if (!result.isSuccess()) {
