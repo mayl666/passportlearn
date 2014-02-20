@@ -45,8 +45,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private static final String CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO = CacheConstant.CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO;
 
     @Autowired
-    private DBRedisUtils dbRedisUtils;
-    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
     @Override

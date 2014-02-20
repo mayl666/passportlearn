@@ -43,7 +43,7 @@
         <constructor-arg index="1">
             <list>
                 <ref bean="jedisShardInfo_1"/>
-                <ref bean="jedisShardInfo_2"/>
+                <!--<ref bean="jedisShardInfo_2"/>-->
                 <ref bean="jedisShardInfo_3"/>
                 <ref bean="jedisShardInfo_4"/>
                 <ref bean="jedisShardInfo_5"/>
