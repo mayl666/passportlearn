@@ -168,7 +168,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
         } catch (ServiceException se) {
-            logger.error("[connect]method rebuildConnectAccount ServiceException: database operation error.{}", se);
+            logger.error("[connect]method buildConnectAccount ServiceException: database operation error.{}", se);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (Exception e) {
             logger.error("[connect] method buildConnectAccount error.{}", e);
