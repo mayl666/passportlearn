@@ -79,6 +79,12 @@ public class LoginConstant {
      * 一天内某一个ip注册次数限制
      */
     public static final int REGISTER_IP_LIMITED = 100; // ip一天限制次数
+
+    /**
+     * 一天内某一个ip注册时调用发送手机验证码接口次数限制
+     */
+    public static final int MOBILE_SEND_SMSCODE_LIMITED = 1000; //ip一天限制次数
+
     /**
      * 一天内某一个cookie注册次数限制
      */

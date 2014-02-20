@@ -131,48 +131,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         return false;
     }
 
-    public static String buildLoginUserNameBlackKeyStr(String username) {
-        return CacheConstant.CACHE_PREFIX_LOGIN_USERNAME_BLACK_ + username;
-    }
 
-    public static String buildLoginIPBlackKeyStr(String ip) {
-        return CacheConstant.CACHE_PREFIX_LOGIN_IP_BLACK_ + ip;
-    }
 
-    @Override
-    public void addUserNameToLoginBlackList(String username) throws ServiceException {
-        try {
-            String key = buildLoginUserNameBlackKeyStr(username);
-            redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-
-            StringBuilder log = new StringBuilder();
-            Date date = new Date();
-            log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("username")
-                    .append(" ").append(username);
-            loginBlackListLogger.info(log.toString());
-        } catch (Exception e) {
-            logger.error("addToBlackList:" + username, e);
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
-    public void addIPToLoginBlackList(String ip) throws ServiceException {
-        try {
-            String key = buildLoginIPBlackKeyStr(ip);
-            redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-
-            StringBuilder log = new StringBuilder();
-            Date date = new Date();
-            log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("ip")
-                    .append(" ").append(ip);
-            loginBlackListLogger.info(log.toString());
-
-        } catch (Exception e) {
-            logger.error("addIPToBlackList:" + ip, e);
-            throw new ServiceException(e);
-        }
-    }
 
 
     private void incLoginSuccessTimes(final String username, final String ip) throws ServiceException {
@@ -228,14 +188,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         try {
             //username
             int num = 0;
-            String userName_hKey = CacheConstant.CACHE_PREFIX_USERNAME_LOGINNUM + username;
+            String userName_hKey = buildUserNameLoginTimesKeyStr(username);
             Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
             if (!MapUtils.isEmpty(username_hmap)) {
                 String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
                 if (!Strings.isNullOrEmpty(username_failedNum)) {
                     num = Integer.parseInt(username_failedNum);
                     if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
-                        addUserNameToLoginBlackList(username);
+                        addUserNameToLoginBlackList(username,CacheConstant.CACHE_FAILED_KEY);
                         return true;
                     }
                 }
@@ -243,7 +203,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 if (!Strings.isNullOrEmpty(username_successNum)) {
                     num = Integer.parseInt(username_successNum);
                     if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
-                        addUserNameToLoginBlackList(username);
+                        addUserNameToLoginBlackList(username,CacheConstant.CACHE_SUCCESS_KEY);
                         return true;
 
                     }
@@ -252,7 +212,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             }
 
             if (!Strings.isNullOrEmpty(ip)) {      //  根据ip判断是否进入黑名单
-                String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                String ip_hKey = buildIPLoginTimesKeyStr(ip);
                 Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
                 if (!MapUtils.isEmpty(ip_hmap)) {
                     String ip_failedNum = ip_hmap.get(CacheConstant.CACHE_FAILED_KEY);
@@ -260,13 +220,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         num = Integer.parseInt(ip_failedNum);
                         if (checkInSubIpList(ip)) {
                             if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
-                                addIPToLoginBlackList(ip);
+                                addIPToLoginBlackList(ip,CacheConstant.CACHE_FAILED_KEY);
                                 return true;
 
                             }
                         } else {
                             if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT) {
-                                addIPToLoginBlackList(ip);
+                                addIPToLoginBlackList(ip,CacheConstant.CACHE_FAILED_KEY);
                                 return true;
 
                             }
@@ -276,7 +236,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     if (!Strings.isNullOrEmpty(ip_successNum)) {
                         num = Integer.parseInt(ip_successNum);
                         if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
-                            addIPToLoginBlackList(ip);
+                            addIPToLoginBlackList(ip,CacheConstant.CACHE_SUCCESS_KEY);
                             return true;
 
                         }
@@ -288,14 +248,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             throw new ServiceException(e);
         }
         return false;
-    }
-
-    private void logLoginBlackList(String username, String ip, String blackKey, int blackNum) {
-        StringBuilder log = new StringBuilder();
-        Date date = new Date();
-        log.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date)).append(" ").append(username)
-                .append(" ").append(ip).append(" ").append(blackKey).append(" ").append(blackNum);
-        loginBlackListLogger.info(log.toString());
     }
 
     @Override
@@ -635,6 +587,32 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    @Override
+    public boolean isMobileSendSMSInBlackList(String ip) throws ServiceException {
+        try {
+            String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
+            String value = redisUtils.get(ipCacheKey);
+            if (!Strings.isNullOrEmpty(value)) {
+                int num = Integer.valueOf(value);
+                if (num >= LoginConstant.MOBILE_SEND_SMSCODE_LIMITED) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("isMobileSendSMSInBlackList:ip " + ip, e);
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+
+    @Override
+    public void incSendTimesForMobile(final String ip) throws ServiceException {
+        //ip与发短信验证码次数映射
+        String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
+        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+    }
+
     private boolean checkInSubIpList(String ip) throws ServiceException {
         try {
             if (!Strings.isNullOrEmpty(ip)) {
@@ -656,5 +634,63 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             logger.error("checkLoginUserWhiteList," + ip, e);
             return false;
         }
+    }
+
+    private void addUserNameToLoginBlackList(String username, String reason) throws ServiceException {
+        try {
+            String key = buildLoginUserNameBlackKeyStr(username);
+            redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+
+            String timesKey = buildUserNameLoginTimesKeyStr(username);
+            long expireSeconds = redisUtils.getExpireTime(timesKey);
+
+            double durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
+            StringBuilder log = new StringBuilder();
+            Date date = new Date();
+            log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("username")
+                    .append(" ").append(username).append(" ").append(reason).append(" ").append(durMin);
+            loginBlackListLogger.info(log.toString());
+        } catch (Exception e) {
+            logger.error("addToBlackList:" + username, e);
+            throw new ServiceException(e);
+        }
+    }
+
+
+    private void addIPToLoginBlackList(String ip, String reason) throws ServiceException {
+        try {
+            String key = buildLoginIPBlackKeyStr(ip);
+            redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+
+            String timesKey = buildIPLoginTimesKeyStr(ip);
+            long expireSeconds = redisUtils.getExpireTime(timesKey);
+
+            double durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
+            StringBuilder log = new StringBuilder();
+            Date date = new Date();
+            log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("ip")
+                    .append(" ").append(ip).append(" ").append(reason).append(" ").append(durMin);
+            loginBlackListLogger.info(log.toString());
+
+        } catch (Exception e) {
+            logger.error("addIPToBlackList:" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    private static String buildLoginUserNameBlackKeyStr(String username) {
+        return CacheConstant.CACHE_PREFIX_LOGIN_USERNAME_BLACK_ + username;
+    }
+
+    private static String buildLoginIPBlackKeyStr(String ip) {
+        return CacheConstant.CACHE_PREFIX_LOGIN_IP_BLACK_ + ip;
+    }
+
+    private static String buildUserNameLoginTimesKeyStr(String username) {
+        return  CacheConstant.CACHE_PREFIX_USERNAME_LOGINNUM + username;
+    }
+
+    private static String buildIPLoginTimesKeyStr(String ip) {
+        return CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
     }
 }
