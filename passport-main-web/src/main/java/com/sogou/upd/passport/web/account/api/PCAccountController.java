@@ -120,23 +120,6 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
-
-        //解决中文账号cookie问题
-        if (userId.indexOf("@focus.cn") > 0) {
-            char[] carr = userId.toCharArray();
-            byte[] barr = new byte[carr.length];
-            for (int i = 0; i < carr.length; i++) {
-                barr[i] = (byte) (carr[i]);
-            }
-            try {
-                userId = new String(new String(barr, "utf-8"));
-                // email = new String(new String(barr, "utf-8").getBytes(),
-                // "GBK");
-            } catch (UnsupportedEncodingException e) {
-            }
-        }
-
-
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();

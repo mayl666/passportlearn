@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.utils.DateUtil;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
 
@@ -36,8 +37,8 @@ public class Test {
 //        System.out.println("code:"+Coder.decodeUTF8(passportId2));
 //        System.out.println("code:"+URLDecoder.decode(passportId2,"GBK"));
 //
-        String passportId3 = "���2345678@focus.cn";
-        String passportId4 = Coder.encodeUTF8(passportId3);
+        String passportId3 = "����31231@focus.cn";
+        //解决中文账号cookie问题
 
 //        String p1 ="���31@focus.cn";
 //        String p2="%b4%f3%b4%f3%b4%f331231%40focus.cn";
@@ -45,14 +46,44 @@ public class Test {
 
 
         String p3="大大大31231@focus.cn";
-        System.out.println("encode:"+ Coder.encode(p3,"gbk"));
+        System.out.println("encode:"+ Coder.encode(passportId3,"utf-8"));
+
+
+        String p6="\\xB4\\xF3\\xB4\\xF3\\xB4\\xF331231@focus.cn";
+        String p7 = new String(p6.getBytes(),"ISO-8859-1");
+        String p8 = new String(p7.getBytes(),"gbk");
+
+
+
+//        if (p6.indexOf("@focus.cn") > 0) {
+//            char[] carr = p6.toCharArray();
+//            byte[] barr = new byte[carr.length];
+//            for (int i = 0; i < carr.length; i++) {
+//                barr[i] = (byte) (carr[i]);
+//            }
+//            try {
+//                p6 = new String(new String(barr, "utf-8"));
+//                // email = new String(new String(barr, "utf-8").getBytes(),
+//                // "GBK");
+//            } catch (UnsupportedEncodingException e) {
+//            }
+//        }
+        System.out.println("passportId3:"+p6);
+
+
+
+
+
+        String p9 = "\\xB4\\xF3\\xB4\\xF3\\xB4\\xF331231@focus.cn\n";
+        System.out.println("p7:"+p7);
+        System.out.println("p8:"+p8);
 
 //        String p4="���31231@focus.cn";
 //        String p5= Coder.encodeUTF8(p4);
 //        System.out.println("encode:"+URLDecoder.decode(p5,"gbk"));
-
-        String p6="%b4%f3%b4%f3%b4%f331231%40focus.cn";
-        System.out.println("encode:"+URLDecoder.decode(p6,"gbk"));
+//
+//        String p6="%b4%f3%b4%f3%b4%f331231%40focus.cn";
+//        System.out.println("encode:"+URLDecoder.decode(p6,"gbk"));
 
 
 //        String tmpPassportId =  new String(passportId3.getBytes(), "utf-8");

@@ -202,7 +202,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 if (!Strings.isNullOrEmpty(username_failedNum)) {
                     num = Integer.parseInt(username_failedNum);
                     if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
-                        addIPOrUsernameToLoginBlackList(username,CacheConstant.CACHE_FAILED_KEY,false);
+                        blackItemService.addIPOrUsernameToLoginBlackList(username,BlackItem.FAILED_LIMIT,false);
                         return true;
                     }
                 }
@@ -210,7 +210,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 if (!Strings.isNullOrEmpty(username_successNum)) {
                     num = Integer.parseInt(username_successNum);
                     if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
-                        addIPOrUsernameToLoginBlackList(username,CacheConstant.CACHE_SUCCESS_KEY,false);
+                        blackItemService.addIPOrUsernameToLoginBlackList(username,BlackItem.SUCCESS_LIMIT,false);
                         return true;
 
                     }
@@ -227,13 +227,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         num = Integer.parseInt(ip_failedNum);
                         if (checkInSubIpList(ip)) {
                             if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
-                                addIPOrUsernameToLoginBlackList(ip,CacheConstant.CACHE_FAILED_KEY,true);
+                                blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.FAILED_LIMIT,true);
                                 return true;
 
                             }
                         } else {
                             if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT) {
-                                addIPOrUsernameToLoginBlackList(ip,CacheConstant.CACHE_FAILED_KEY,true);
+                                blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.FAILED_LIMIT,true);
                                 return true;
 
                             }
@@ -243,7 +243,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     if (!Strings.isNullOrEmpty(ip_successNum)) {
                         num = Integer.parseInt(ip_successNum);
                         if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
-                            addIPOrUsernameToLoginBlackList(ip,CacheConstant.CACHE_SUCCESS_KEY,true);
+                            blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.SUCCESS_LIMIT,true);
                             return true;
 
                         }
@@ -640,48 +640,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         } catch (Exception e) {
             logger.error("checkLoginUserWhiteList," + ip, e);
             return false;
-        }
-    }
-
-    private void addIPOrUsernameToLoginBlackList(String ipOrUsername, String reason,boolean isIp) throws ServiceException {
-        try {
-            String key = null;
-            String timesKey = null;
-            int sort = -1;
-            if(isIp){
-                key = buildLoginIPBlackKeyStr(ipOrUsername);
-                timesKey = buildIPLoginTimesKeyStr(ipOrUsername);
-                sort = BlackItem.BLACK_IP;
-            }else {
-                key = buildLoginUserNameBlackKeyStr(ipOrUsername);
-                timesKey = buildUserNameLoginTimesKeyStr(ipOrUsername);
-                sort = BlackItem.BLACK_USERNAME;
-
-            }
-            redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-            long expireSeconds = redisUtils.getExpireTime(timesKey);
-
-            double durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
-            DecimalFormat df = new DecimalFormat("#.00");
-            durMin = Double.parseDouble(df.format(durMin));
-
-            //记入log
-            StringBuilder log = new StringBuilder();
-            Date date = new Date();
-            log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("ip")
-                    .append(" ").append(ipOrUsername).append(" ").append(reason).append(" ").append(durMin);
-            loginBlackListLogger.info(log.toString());
-
-            //记入数据库
-            int flagSuccessLimit = BlackItem.FAILED_LIMIT;
-            if(reason.equals(CacheConstant.CACHE_SUCCESS_KEY)){
-                flagSuccessLimit = BlackItem.SUCCESS_LIMIT ;
-            }
-            String serverIP =  InetAddress.getLocalHost().getHostAddress();
-            blackItemService.initialBlackItem(sort,ipOrUsername,flagSuccessLimit,durMin,serverIP,BlackItem.SCOPE_LOGIN);
-        } catch (Exception e) {
-            logger.error("addIPToBlackList:" + ipOrUsername, e);
-            throw new ServiceException(e);
         }
     }
 

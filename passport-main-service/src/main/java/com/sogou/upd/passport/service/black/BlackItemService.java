@@ -3,6 +3,9 @@ package com.sogou.upd.passport.service.black;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.black.BlackItem;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: chenjiameng
@@ -12,6 +15,14 @@ import com.sogou.upd.passport.model.black.BlackItem;
  */
 public interface BlackItemService {
 
+    /**
+     * 将IP或者username插入黑名单
+     * @param ipOrUsername
+     * @param reason
+     * @param isIp
+     * @throws ServiceException
+     */
+    public void addIPOrUsernameToLoginBlackList(String ipOrUsername, int reason,boolean isIp) throws ServiceException;
     /**
      * 插入一条黑名单项
      * @param flagIp
@@ -24,4 +35,41 @@ public interface BlackItemService {
      * @throws ServiceException
      */
     public BlackItem initialBlackItem(int flagIp, String ipOrUsername,int flagSuccessLimit, Double durationTime, String insertServer,int scope) throws ServiceException;
+
+    /**
+     * 根据查询条件获取黑名单项列表
+     * @param startDate
+     * @param endDate
+     * @param sort
+     * @param name
+     * @param flag_success_limit
+     * @param minTime
+     * @param maxTime
+     * @param scope
+     * @return
+     * @throws ServiceException
+     */
+    public List<BlackItem> getBlackItemList( Date startDate,Date endDate,Integer sort,
+                                             String name,Integer flag_success_limit,
+                                             Double minTime,Double maxTime,
+                                             Integer scope) throws ServiceException;
+
+    /**
+     * 根据name获取当前黑名中的项
+     * @param startDate
+     * @param endDate
+     * @param sort
+     * @param name
+     * @return
+     * @throws ServiceException
+     */
+    public BlackItem getBlackItemByName(Date startDate,Date endDate,int sort,String name) throws ServiceException;
+
+    /**
+     * 根据id删除黑名单项
+     * @param id
+     * @return
+     * @throws ServiceException
+     */
+    public int delBlackItem(long id) throws ServiceException;
 }

@@ -14,6 +14,7 @@ public class BlackItem {
     public static final int BLACK_IP = 1;
     public static final int BLACK_USERNAME = 0;
 
+    public static final int Add_LIMIT = 2;
     public static final int SUCCESS_LIMIT = 1;
     public static final int FAILED_LIMIT = 0;
 
