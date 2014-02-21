@@ -31,6 +31,11 @@ public class ConnectApiManagerImplTest extends BaseTest {
     @Autowired
     private ConnectApiManager connectApiManager;
 
+    /**
+     * 从sohu库中获取token
+     *
+     * @throws Exception
+     */
     @Test
     public void testGetSOHUToken() throws Exception {
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
@@ -48,6 +53,14 @@ public class ConnectApiManagerImplTest extends BaseTest {
             System.out.println(openResult.toString());
             Assert.assertTrue(false);
         }
+    }
+
+    /**
+     * 验证sohu导出的入sogou库的token是否与sohu库中一致，sohu线上
+     */
+    @Test
+    public void testSogouTokenIsEqulsSohuToken() {
+
     }
 
     /**
@@ -98,7 +111,7 @@ public class ConnectApiManagerImplTest extends BaseTest {
 
 
     /**
-     * 生成ct code
+     * 为测试同学生成passportId,openid,accessToken,ct code信息，方便测试
      *
      * @throws Exception
      */
