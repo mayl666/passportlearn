@@ -80,7 +80,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 openId = connectToken.getOpenid();
                 accessToken = connectToken.getAccessToken();
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_USERID_TYPE_ERROR);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                 return result;
             }
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
