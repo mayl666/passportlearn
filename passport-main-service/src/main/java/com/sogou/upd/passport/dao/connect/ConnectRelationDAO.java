@@ -75,6 +75,18 @@ public interface ConnectRelationDAO {
     public int insertConnectRelation(@ShardBy @SQLParam("openid") String openid, @SQLParam("connectRelation") ConnectRelation connectRelation)
             throws DataAccessException;
 
+
+    /**
+     * 插入或修改一条新记录
+     */
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(" + ALL_FIELD + ") values(" + VALUE_FIELD + ") on duplicate key "
+            + " update "
+            + "#if(:connectRelation.passportId != null){passport_id=:connectRelation.passportId} ")
+    public int insertOrUpdateConnectRelation(@ShardBy @SQLParam("openid") String openid, @SQLParam("connectRelation") ConnectRelation connectRelation)
+            throws DataAccessException;
+
     /**
      * 删除一条记录
      * Unit Test使用

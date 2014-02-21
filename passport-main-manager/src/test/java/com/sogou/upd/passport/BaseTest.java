@@ -21,9 +21,9 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
 
     protected static final String uniqname = "你好";
 
-    protected static final int clientId = 1115;
+    protected static final int clientId = 2009;
 
-    protected static final String serverSecret = "RBCqf6a448Wj5a8#KF&POL75*5GBQ5";
+    protected static final String serverSecret = "Hpi%#ZT<u@hR.6F)HtfvUKf5ERYR1b";
 
     protected static final String modifyIp = "10.1.164.160";
 

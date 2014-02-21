@@ -32,10 +32,10 @@ public class ConnectApiManagerImplTest extends BaseTest {
     private ConnectApiManager connectApiManager;
 
     @Test
-    public void testSGGetUserInfo() throws Exception {
+    public void testGetSOHUToken() throws Exception {
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
-        baseOpenApiParams.setOpenid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
-        baseOpenApiParams.setUserid("E4AB85CD9373A582582F05342BB36D2F@qq.sohu.com");
+        baseOpenApiParams.setOpenid("5D0A220034B14C88C208DCB12D61F18A@qq.sohu.com");
+        baseOpenApiParams.setUserid("5D0A220034B14C88C208DCB12D61F18A@qq.sohu.com");
         Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
         if (openResult.isSuccess()) {
             //获取用户的openId/openKey
@@ -43,7 +43,9 @@ public class ConnectApiManagerImplTest extends BaseTest {
             String openId = accessTokenMap.get("open_id").toString();
             String accessToken = accessTokenMap.get("access_token").toString();
             System.out.println("openId:" + openId + ", accessToken:" + accessToken);
+            System.out.println(openResult.toString());
         } else {
+            System.out.println(openResult.toString());
             Assert.assertTrue(false);
         }
     }

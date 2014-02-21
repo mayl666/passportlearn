@@ -48,44 +48,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
     private ConnectProxyOpenApiManager connectProxyOpenApiManager;
     @Autowired
     private ConnectApiManager connectApiManager;
-    @Autowired
-    private ConnectApiManager sgConnectApiManager;
-
-    /**
-     * 创建第三方用户，用于测试，测试结束后此方法删除
-     *
-     * @param params 第三方开放平台接口所需参数
-     * @return
-     * @throws Exception
-     */
-    @InterfaceSecurity
-    @RequestMapping(value = "/build/account", method = RequestMethod.POST)
-    @ResponseBody
-    public Object buildConnectAccount(ConnectProxyOpenApiParams params) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            String appKey = CommonConstant.APP_CONNECT_KEY;
-            int provider = AccountTypeEnum.QQ.getValue();
-            long expiresIn = 7776000;
-            String refreshToken = null;
-            String openId = params.getOpenid();
-            String accessToken = params.getAccessToken();
-            //用户的openId/openKey
-            OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(accessToken, expiresIn, refreshToken);
-            oAuthTokenVO.setOpenid(openId);
-            Result openResult = sgConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
-            if (openResult.isSuccess()) {
-                result.setCode("0");
-                result.setSuccess(true);
-            } else {
-                result = openResult;
-            }
-        } catch (Exception e) {
-            logger.error("qzoneConnectProxyOpenApi Is Failed,UserId is " + params.getUserid(), e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result.toString();
-    }
 
     private Map<String, String> covertObjectToMap(ConnectToken connectToken) {
         Map<String, String> tokenMap = new HashMap<>();

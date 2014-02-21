@@ -85,6 +85,26 @@ public interface AccountDAO {
                              @SQLParam("account") Account account) throws DataAccessException;
 
     /**
+     * 验证合法，用户注册
+     */
+    @SQL(
+            "insert into " +
+                    TABLE_NAME +
+                    "(" + ALL_FIELD + ") " + "values (" + VALUE_FIELD + ") on duplicate key "
+                    + "update "
+                    + "#if(:account.password != null){password=:account.password,} "
+                    + "#if(:account.mobile != null){mobile=:account.mobile,} "
+                    + "#if(:account.regTime != null){reg_time=:account.regTime,} "
+                    + "#if(:account.regIp != null){reg_ip=:account.regIp,} "
+                    + "#if(:account.flag > 0){flag=:account.flag,} "
+                    + "#if(:account.accountType > 0){account_type=:account.accountType,} "
+                    + "#if(:account.uniqname != null){uniqname=:account.uniqname,} "
+                    + "#if(:account.avatar != null){avatar=:account.avatar,} "
+                    + "#if(:account.passwordtype >= 0){passwordtype=:account.passwordtype} ")
+    public int insertOrUpdateAccount(@ShardBy @SQLParam("passport_id") String passport_id,
+                                     @SQLParam("account") Account account) throws DataAccessException;
+
+    /**
      * 根据passportId删除用户的Account信息， 内部调试接口使用
      */
     @SQL("delete from" +

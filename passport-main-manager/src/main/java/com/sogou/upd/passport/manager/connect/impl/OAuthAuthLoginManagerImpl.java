@@ -25,6 +25,7 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.parameters.BaiduOAuth;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
@@ -114,6 +115,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
             } else {
                 connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+                if (provider == AccountTypeEnum.BAIDU.getValue()) {     // 百度 oauth2.0授权的openid需要从用户信息接口获取
+                    setBaiduOpenid(connectUserInfoVO, oAuthTokenVO);
+                }
             }
             String uniqname = openId;
             if (connectUserInfoVO != null) {
@@ -325,6 +329,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             result.setDefaultModel(CommonConstant.RESPONSE_ERROR, error);
         }
         return result;
+    }
+
+    private void setBaiduOpenid(ConnectUserInfoVO connectUserInfoVO, OAuthTokenVO oAuthTokenVO) {
+        String baiduOpenid = (String) connectUserInfoVO.getOriginal().get(BaiduOAuth.OPENID);
+        if (!Strings.isNullOrEmpty(baiduOpenid)) {
+            oAuthTokenVO.setOpenid(baiduOpenid);
+        }
     }
 
 }

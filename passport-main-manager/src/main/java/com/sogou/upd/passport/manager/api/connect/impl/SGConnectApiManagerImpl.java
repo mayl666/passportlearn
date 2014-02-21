@@ -153,10 +153,10 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return result;
             }
             //3.connect_relation根据参数决定是否新增
-            ConnectRelation connectRelation = null;
-            if (isBuildQuery) {
-                connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
-            }
+//            ConnectRelation connectRelation = null;
+//            if (isBuildQuery) {
+            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
+//            }
             if (connectRelation == null) {
                 connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
@@ -168,7 +168,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
         } catch (ServiceException se) {
-            logger.error("[connect]method rebuildConnectAccount ServiceException: database operation error.{}", se);
+            logger.error("[connect]method buildConnectAccount ServiceException: database operation error.{}", se);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (Exception e) {
             logger.error("[connect] method buildConnectAccount error.{}", e);
