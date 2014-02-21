@@ -57,13 +57,44 @@ public interface BlackItemDAO {
             + "#if(:minTime != null){and duration_time >= :minTime }"
             + "#if(:maxTime != null){and duration_time <= :maxTime }"
             + "#if(:scope != null){and scope = :scope }"
+            + " order by insert_time DESC "
+            + " #if((:start != null)&&(:end !=null)){ limit :start,:end }"
         )
     public List<BlackItem> getBlackItemList(@SQLParam("start_date") Date startDate, @SQLParam("end_date") Date endDate,
                                             @SQLParam("sort") Integer sort,@SQLParam("name") String name,
                                             @SQLParam("flag_success_limit") Integer flag_success_limit,
                                             @SQLParam("minTime") Double minTime, @SQLParam("maxTime") Double maxTime,
-                                            @SQLParam("scope") Integer scope) throws
-            DataAccessException;
+                                            @SQLParam("scope") Integer scope,
+                                            @SQLParam("start") Integer start,
+                                            @SQLParam("end") Integer end
+                                            ) throws DataAccessException;
+
+
+    /**
+     * 取当前的BlackItem列表
+     */
+    @SQL("select count(id) from  "
+            + TABLE_NAME +
+            " where 1=1 "
+            + "#if(:start_date != null){and insert_time >= :start_date }"
+            + "#if(:end_date != null){and insert_time <= :end_date }"
+            + "#if(:sort != null){and sort = :sort }"
+            + "#if(:name != null){and name = :name }"
+            + "#if(:flag_success_limit != null){and flag_success_limit = :flag_success_limit }"
+            + "#if(:minTime != null){and duration_time >= :minTime }"
+            + "#if(:maxTime != null){and duration_time <= :maxTime }"
+            + "#if(:scope != null){and scope = :scope }"
+            + " order by insert_time DESC "
+            + " #if((:start != null)&&(:end !=null)){ limit :start,:end }"
+    )
+    public int getBlackItemCount(@SQLParam("start_date") Date startDate, @SQLParam("end_date") Date endDate,
+                                            @SQLParam("sort") Integer sort,@SQLParam("name") String name,
+                                            @SQLParam("flag_success_limit") Integer flag_success_limit,
+                                            @SQLParam("minTime") Double minTime, @SQLParam("maxTime") Double maxTime,
+                                            @SQLParam("scope") Integer scope,
+                                            @SQLParam("start") Integer start,
+                                            @SQLParam("end") Integer end
+    ) throws DataAccessException;
 
     /**
      * 根据id删除黑名单项

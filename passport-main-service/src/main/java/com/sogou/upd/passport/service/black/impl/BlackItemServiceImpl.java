@@ -112,9 +112,18 @@ public class BlackItemServiceImpl implements BlackItemService{
     public List<BlackItem> getBlackItemList( Date startDate,Date endDate,Integer sort,
                                              String name,Integer flag_success_limit,
                                              Double minTime,Double maxTime,
-                                             Integer scope) throws ServiceException{
-        return blackItemDAO.getBlackItemList(startDate,endDate,sort,name,flag_success_limit,minTime,maxTime,scope);
+                                             Integer scope,Integer start,Integer end) throws ServiceException{
+        return blackItemDAO.getBlackItemList(startDate,endDate,sort,name,flag_success_limit,minTime,maxTime,scope,start,end);
     }
+
+    @Override
+    public int getBlackItemCount( Date startDate,Date endDate,Integer sort,
+                                             String name,Integer flag_success_limit,
+                                             Double minTime,Double maxTime,
+                                             Integer scope,Integer start,Integer end) throws ServiceException{
+        return blackItemDAO.getBlackItemCount(startDate,endDate,sort,name,flag_success_limit,minTime,maxTime,scope,start,end);
+    }
+
 
     @Override
     public BlackItem getBlackItemByName(Date startDate,Date endDate,int sort,String name) throws ServiceException{

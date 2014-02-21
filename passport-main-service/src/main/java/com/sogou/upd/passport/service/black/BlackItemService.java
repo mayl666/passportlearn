@@ -37,7 +37,7 @@ public interface BlackItemService {
     public BlackItem initialBlackItem(int flagIp, String ipOrUsername,int flagSuccessLimit, Double durationTime, String insertServer,int scope) throws ServiceException;
 
     /**
-     * 根据查询条件获取黑名单项列表
+     * 根据查询条件查询黑名单列表
      * @param startDate
      * @param endDate
      * @param sort
@@ -46,13 +46,15 @@ public interface BlackItemService {
      * @param minTime
      * @param maxTime
      * @param scope
+     * @param start
+     * @param end
      * @return
      * @throws ServiceException
      */
     public List<BlackItem> getBlackItemList( Date startDate,Date endDate,Integer sort,
                                              String name,Integer flag_success_limit,
                                              Double minTime,Double maxTime,
-                                             Integer scope) throws ServiceException;
+                                             Integer scope,Integer start,Integer end) throws ServiceException;
 
     /**
      * 根据name获取当前黑名中的项
@@ -72,4 +74,24 @@ public interface BlackItemService {
      * @throws ServiceException
      */
     public int delBlackItem(long id) throws ServiceException;
+
+    /**
+     * 通过查询条件获取黑名单项列表数目
+     * @param startDate
+     * @param endDate
+     * @param sort
+     * @param name
+     * @param flag_success_limit
+     * @param minTime
+     * @param maxTime
+     * @param scope
+     * @param start
+     * @param end
+     * @return
+     * @throws ServiceException
+     */
+    public int getBlackItemCount( Date startDate,Date endDate,Integer sort,
+                                  String name,Integer flag_success_limit,
+                                  Double minTime,Double maxTime,
+                                  Integer scope,Integer start,Integer end) throws ServiceException;
 }
