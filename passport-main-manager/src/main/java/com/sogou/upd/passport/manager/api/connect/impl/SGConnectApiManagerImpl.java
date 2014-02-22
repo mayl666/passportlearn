@@ -174,7 +174,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
 
-    private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) throws UnsupportedEncodingException {
+    private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         ConnectToken connectToken = new ConnectToken();
         connectToken.setPassportId(passportId);
         connectToken.setAppKey(appKey);
@@ -194,7 +194,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectToken.setUpdateTime(new Date());
         ConnectUserInfoVO connectUserInfoVO = oAuthTokenVO.getConnectUserInfoVO();
         if (connectUserInfoVO != null) {
-            connectToken.setConnectUniqname(StringUtil.strToUTF8(connectUserInfoVO.getNickname()));
+            connectToken.setConnectUniqname(StringUtil.filterConnectUniqname(connectUserInfoVO.getNickname()));
             connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));
             connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
             connectToken.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());

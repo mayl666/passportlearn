@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
  * File | Settings | File Templates.
  */
 
-public class StringUtilTest  extends TestCase {
+public class StringUtilTest extends TestCase {
     private static final String STR1 = "hello";
     private static final String STR2 = " world";
     private static final String STR3 = "ni hao";
@@ -36,7 +36,7 @@ public class StringUtilTest  extends TestCase {
         System.out.println("false值：" + StringUtil.checkExistNullOrEmpty());
     }
 
-    public void testStrToUTF8(){
+    public void testStrToUTF8() {
         String str1 = "abc_+}{?><23";
         String str2 = "打法工必存在";
         String str3 = "媽爾哦女廁";
@@ -54,4 +54,17 @@ public class StringUtilTest  extends TestCase {
             e.printStackTrace();
         }
     }
+
+    public void testFileterEmoji() {
+        String s = "<body>😄213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)!" +
+                "(@*$&@(&#!)@*)!&$!)@^%@(!&#. 😄👩👨], ";
+        String c = StringUtil.filterEmoji(s);
+        assertFalse(s.equals(c));
+        String expected = "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)" +
+                "!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ], ";
+        assertEquals(expected, c);
+        assertSame(expected, "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)" +
+                "!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ], ");
+    }
+
 }
