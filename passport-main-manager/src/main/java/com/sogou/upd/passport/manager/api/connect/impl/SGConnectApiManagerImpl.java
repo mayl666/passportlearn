@@ -154,11 +154,11 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                 return result;
             }
-            //3.connect_relation根据参数决定是否新增
-//            ConnectRelation connectRelation = null;
-//            if (isBuildQuery) {
-            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
-//            }
+//            3.connect_relation根据参数决定是否新增
+            ConnectRelation connectRelation = null;
+            if (isBuildQuery) {
+                connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
+            }
             if (connectRelation == null) {
                 connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
