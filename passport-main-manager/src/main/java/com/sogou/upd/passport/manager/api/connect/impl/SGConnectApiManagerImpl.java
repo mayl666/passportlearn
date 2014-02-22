@@ -134,7 +134,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         Result result = new APIResultSupport(false);
         try {
             String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), AccountTypeEnum.getProviderStr(provider));
-            boolean isBuildQuery = false;  //根据account是否为空，来决定是否查询connect_relation表,为true表示查询，为false表示不查询
             //1.查询account表
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
@@ -143,8 +142,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
                 }
-            } else {
-                isBuildQuery = true;   //查relation表
             }
             boolean isSuccess;
             //2.connect_token表新增或修改
@@ -154,11 +151,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                 return result;
             }
-//            3.connect_relation根据参数决定是否新增
-            ConnectRelation connectRelation = null;
-            if (isBuildQuery) {
-                connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
-            }
+            //3.connect_relation新增或修改
+            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
             if (connectRelation == null) {
                 connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
