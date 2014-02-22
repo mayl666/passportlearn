@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -36,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 /**
@@ -178,7 +180,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
 
-    private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
+    private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) throws UnsupportedEncodingException {
         ConnectToken connectToken = new ConnectToken();
         connectToken.setPassportId(passportId);
         connectToken.setAppKey(appKey);
@@ -198,7 +200,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectToken.setUpdateTime(new Date());
         ConnectUserInfoVO connectUserInfoVO = oAuthTokenVO.getConnectUserInfoVO();
         if (connectUserInfoVO != null) {
-            connectToken.setConnectUniqname(connectUserInfoVO.getNickname());
+            connectToken.setConnectUniqname(StringUtil.strToUTF8(connectUserInfoVO.getNickname()));
             connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));
             connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
             connectToken.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());
