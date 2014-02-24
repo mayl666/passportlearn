@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.internal.connect.file;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.ConnectTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
@@ -13,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -54,39 +55,37 @@ public class MoveCacheThread implements Runnable {
                 String passportIdString = AccountTypeEnum.generateThirdPassportId(openIdString, rowString[3]);
                 String sohuFileToken = rowString[1];   //accessToken
                 String appKey = ConnectTypeEnum.getAppKey(provider); //根据provider获取appKey
-                ConnectToken connectToken = connectTokenService.queryConnectToken(passportIdString, provider, appKey);
-                if (connectToken == null) {
-                    //1.sohu导出的文件中有，但Sogou库中没有，需要记录下来,格式为：openid,sohuFileToken
-                    FileWriter writer = new FileWriter("D:\\sogou_not_exist.txt", true);
-                    writer.write(openIdString + "," + sohuFileToken);
-                    writer.write("\r\n");
-                    writer.close();
-                } else {
-                    String sogouDBToken = connectToken.getAccessToken();
-                    BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
-                    baseOpenApiParams.setOpenid(passportIdString);
-                    baseOpenApiParams.setUserid(passportIdString);
-                    Result result = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
-                    if (result.isSuccess()) {
-                        HashMap<String, String> map = (HashMap<String, String>) result.getModels().get("result");
-                        String sohuOnLineToken = map.get("access_token").toString();
-                        if (!sohuOnLineToken.equals(sogouDBToken)) {
-                            //2.sohu导出文件中存在的token与从sogou库中查出的token不一样，需要记录下来，格式为：passportId，sohuFileToken，sohuOnLineToken,sogouDBToken
-                            FileWriter writer = new FileWriter("D:\\sogou_sohu_different.txt", true);
-                            writer.write(passportIdString + "," + sohuFileToken + "," + sohuOnLineToken + "," + sogouDBToken);
-                            writer.write("\r\n");
-                            writer.close();
-                        }
+
+                String dateString = rowString[7];  //token起始时间
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date date = sdf.parse(dateString);
+                long expiredIn = Long.parseLong(rowString[9]);   //token有效期长
+                if (isValidToken(date, expiredIn)) { //只验证有效的token
+                    ConnectToken connectToken = connectTokenService.queryConnectToken(passportIdString, provider, appKey);
+                    if (connectToken == null) {
+                        //1.sohu导出的文件中有，但Sogou库中没有，需要记录下来,格式为：openid,sohuFileToken
+                        FileWriter writer = new FileWriter("D:\\sogou_not_exist.txt", true);
+                        writer.write(openIdString + "," + sohuFileToken);
+                        writer.write("\r\n");
+                        writer.close();
                     } else {
-                        String code = result.getCode();
-                        if (code.equals(ErrorUtil.CONNECT_TOKEN_INVALID)) {
-                            //3.从sogou库中查询token已经过期了，需要记录下来，格式为：passportId,sogouToken
-                            FileWriter writer = new FileWriter("D:\\sohu_expired.txt", true);
-                            writer.write(passportIdString + "," + sohuFileToken + "," + sogouDBToken);
-                            writer.write("\r\n");
-                            writer.close();
+                        String sogouDBToken = connectToken.getAccessToken();
+                        BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
+                        baseOpenApiParams.setOpenid(passportIdString);
+                        baseOpenApiParams.setUserid(passportIdString);
+                        Result result = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+                        if (result.isSuccess()) {
+                            HashMap<String, String> map = (HashMap<String, String>) result.getModels().get("result");
+                            String sohuOnLineToken = map.get("access_token").toString();
+                            if (!sohuOnLineToken.equals(sogouDBToken)) {
+                                //2.sohu导出文件中存在的token与从sogou库中查出的token不一样，需要记录下来，格式为：passportId，sohuFileToken，sohuOnLineToken,sogouDBToken
+                                FileWriter writer = new FileWriter("D:\\sogou_sohu_different.txt", true);
+                                writer.write(passportIdString + "," + sohuFileToken + "," + sohuOnLineToken + "," + sogouDBToken);
+                                writer.write("\r\n");
+                                writer.close();
+                            }
                         } else {
-                            //4.其它原因导致没有查询成功的token，需要记录下来，格式为：passportId,sogouToken
+                            //3.其它原因导致没有查询成功的token，需要记录下来，格式为：passportId,sogouToken
                             FileWriter writer = new FileWriter("D:\\sohu_other.txt", true);
                             writer.write(passportIdString + "," + result.toString());
                             writer.write("\r\n");
@@ -109,6 +108,15 @@ public class MoveCacheThread implements Runnable {
             }
             latch.countDown();
         }
+    }
+
+    /**
+     * 验证Token是否失效,返回true表示有效，false表示过期
+     */
+    private boolean isValidToken(Date createTime, long expiresIn) {
+        long currentTime = System.currentTimeMillis() / (1000);
+        long tokenTime = createTime.getTime() / (1000);
+        return currentTime < tokenTime + expiresIn;
     }
 }
 

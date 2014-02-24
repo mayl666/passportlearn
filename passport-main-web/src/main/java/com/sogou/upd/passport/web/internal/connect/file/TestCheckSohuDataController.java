@@ -36,8 +36,8 @@ public class TestCheckSohuDataController {
     public Object move()
             throws Exception {
         long time = System.currentTimeMillis();
-        String fileRoot = "D:\\";
-        String[] fileNames = {"1.txt", "2.txt", "3.txt", "4.txt", "5.txt", "6.txt", "7.txt", "8.txt", "9.txt", "10.txt"};
+        String fileRoot = "D:\\db\\";
+        String[] fileNames = {"open_token_1.txt", "open_token_2.txt", "open_token_3.txt", "open_token_4.txt", "open_token_5.txt", "open_token_6.txt", "open_token_7.txt", "open_token_8.txt", "open_token_9.txt", "open_token_10.txt"};
 
         int size = fileNames.length;
 
