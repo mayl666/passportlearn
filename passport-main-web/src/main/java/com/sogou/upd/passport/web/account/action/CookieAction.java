@@ -78,7 +78,7 @@ public class CookieAction extends BaseController {
             if (account == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result.toString();
-            } else if (account.getStatus() == AccountStatusEnum.KILLED.getValue()) {
+            } else if (account.getFlag() == AccountStatusEnum.KILLED.getValue()) {
                 //封杀用户不允许操作
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result.toString();
@@ -113,7 +113,7 @@ public class CookieAction extends BaseController {
         }
         cookieApiParams.setRu(ru);
         if (account != null) {
-            int status = account.getStatus();
+            int status = account.getFlag();
             switch (status) {
                 case 0:
                     cookieApiParams.setTrust(0);             //未激活

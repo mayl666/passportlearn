@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.service.connect.impl;
 
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +25,20 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     @Autowired
     private ConnectTokenDAO connectTokenDAO;
     @Autowired
-    private RedisUtils redisUtils;
+    private DBShardRedisUtils dbShardRedisUtils;
 
     private static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_CONNECTTOKEN;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialConnectToken(ConnectToken connectToken) throws ServiceException {
-        int row = 0;
+        int row;
         try {
             String passportId = connectToken.getPassportId();
             row = connectTokenDAO.insertAccountConnect(passportId, connectToken);
             if (row != 0) {
                 String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
-                redisUtils.set(cacheKey, connectToken);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             } else {
                 return false;
@@ -46,21 +49,42 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateConnectToken(ConnectToken connectToken) throws ServiceException {
-        int row = 0;
+        int row;
         try {
             String passportId = connectToken.getPassportId();
             row = connectTokenDAO.updateConnectToken(passportId, connectToken);
             if (row != 0) {
                 String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
-                redisUtils.set(cacheKey, connectToken);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             } else {
                 return false;
             }
         } catch (Exception e) {
             logger.error("[ConnectToken] service method updateConnectToken error.{}", e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertOrUpdateConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException {
+        int row;
+        try {
+            String passportId = connectToken.getPassportId();
+            row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
+            if (row != 0) {
+                String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
             throw new ServiceException(e);
         }
     }
@@ -81,14 +105,14 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         String cacheKey = buildConnectTokenCacheKey(passportId, provider, appKey);
         try {
 
-            connectToken = redisUtils.getObject(cacheKey, ConnectToken.class);
+            connectToken = dbShardRedisUtils.getObject(cacheKey, ConnectToken.class);
             if (connectToken == null) {
                 //读取数据库
                 connectToken = connectTokenDAO.getSpecifyConnectToken(passportId, provider, appKey);
                 if (connectToken == null) {
                     return null;
                 }
-                redisUtils.set(cacheKey, connectToken);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
             }
             return connectToken;
         } catch (Exception e) {

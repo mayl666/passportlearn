@@ -11,8 +11,8 @@ public class SinaOAuth extends OAuth {
 
 	/* 用户类API响应参数 */
 	public static final String SCREEN_NAME = "screen_name"; // 用户昵称
-	public static final String PROFILE_IMAGE_URL = "profile_image_url"; // 头像url
-	public static final String AVATAR_LARGE = "avatar_large"; // 大头像url
+	public static final String PROFILE_IMAGE_URL = "profile_image_url"; // 头像url(中图)，50*50像素
+	public static final String AVATAR_LARGE = "avatar_large"; // 大头像url（大图），180×180像素
 	public static final String GENDER = "gender"; // 性别，m：男、f：女、n：未知
 	public static final String DESC = "description"; // 用户描述
 	public static final String PROVINCE = "province"; // 用户所在地区ID

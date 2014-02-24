@@ -34,7 +34,7 @@ public class ManagerHelper {
         connect.setAccessToken(accessToken);
         connect.setExpiresIn(expiresIn);
         connect.setRefreshToken(refreshToken);
-        connect.setCreateTime(new Date());
+        connect.setUpdateTime(new Date());
         return connect;
     }
 
