@@ -101,7 +101,7 @@ public class JacksonTest extends TestCase {
       String jsonString = JacksonJsonMapperUtil.getMapper().writeValueAsString(activeEmail);
 
 
-      ActiveEmail newActiveEmail =  (ActiveEmail)JacksonJsonMapperUtil.getMapper().readValue(jsonString, ActiveEmail.class);
+      ActiveEmail newActiveEmail =  JacksonJsonMapperUtil.getMapper().readValue(jsonString, ActiveEmail.class);
       System.out.println("activeEmail.getActiveUrl(): " + activeEmail.getActiveUrl());
       System.out.println("activeEmail.getCategory(): " + activeEmail.getCategory());
 

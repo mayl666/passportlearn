@@ -20,7 +20,6 @@ import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.*;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +43,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     private AccountService accountService;
     @Autowired
     private AccountInfoService accountInfoService;
-    @Autowired
-    private AccountTokenService accountTokenService;
-    @Autowired
-    private AppConfigService appConfigService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired

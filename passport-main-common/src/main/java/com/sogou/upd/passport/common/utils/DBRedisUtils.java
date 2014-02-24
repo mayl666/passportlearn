@@ -17,7 +17,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Redis工具类 User: mayan Date: 13-3-27 Time: 上午11:19 To change this template use File | Settings | File Templates.
+ * Redis工具类
+ * User: mayan Date: 13-3-27
+ * Time: 上午11:19
  */
 public class DBRedisUtils {
 

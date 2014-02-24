@@ -4,16 +4,16 @@ import com.sogou.upd.passport.model.connect.ConnectRelation;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
+import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
 /**
- * connectToken的反查表，按openid分表
+ * connect_token的反查表，按openid分表
  * User: shipengzhi
  * Date: 13-4-22
  * Time: 上午11:30
- * To change this template use File | Settings | File Templates.
  */
 @DAO
 public interface ConnectRelationDAO {
@@ -26,17 +26,29 @@ public interface ConnectRelationDAO {
     /**
      * 所有字段列表
      */
-    String ALL_FIELD = " id, openid, provider, passport_id, app_key ";
+    String ALL_FIELD = " openid, provider, passport_id, app_key ";
 
     /**
      * 值列表
      */
-    String VALUE_FIELD = " :connectRelation.id, :connectRelation.openid, :connectRelation.provider, :connectRelation.passportId, :connectRelation.appKey ";
+    String VALUE_FIELD = " :openid, :connectRelation.provider, :connectRelation.passportId, :connectRelation.appKey ";
 
     /**
-     * 修改字段列表
+     * 根据openid、provider、appkey获取唯一的用户
+     *
+     * @param openid
+     * @param provider
+     * @return
+     * @throws DataAccessException
      */
-    String UPDATE_FIELD = " openid = :connectRelation.openid, provider = :connectRelation.provider, passport_id = :connectRelation.passportId, app_key = :connectRelation.appKey ";
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where openid=:openid and provider=:provider and app_key=:app_key")
+    public ConnectRelation getSpecifyConnectToken(@ShardBy @SQLParam("openid") String openid,
+                                                  @SQLParam("provider") int provider, @SQLParam("app_key") String app_key)
+            throws DataAccessException;
 
     /**
      * 根据openid和provider获取对应的用户
@@ -51,7 +63,7 @@ public interface ConnectRelationDAO {
             " from " +
             TABLE_NAME +
             " where openid=:openid and provider=:provider")
-    public List<ConnectRelation> listConnectRelation(@SQLParam("openid") String openid, @SQLParam("provider") int provider)
+    public List<ConnectRelation> listConnectRelation(@ShardBy @SQLParam("openid") String openid, @SQLParam("provider") int provider)
             throws DataAccessException;
 
     /**
@@ -59,8 +71,20 @@ public interface ConnectRelationDAO {
      */
     @SQL("insert into " +
             TABLE_NAME +
-            "(openid,provider,passport_id,app_key) values(:openid,:connectRelation.provider,:connectRelation.passportId,:connectRelation.appKey)")
-    public int insertConnectRelation(@SQLParam("openid") String openid, @SQLParam("connectRelation") ConnectRelation connectRelation)
+            "(" + ALL_FIELD + ") values(" + VALUE_FIELD + ")")
+    public int insertConnectRelation(@ShardBy @SQLParam("openid") String openid, @SQLParam("connectRelation") ConnectRelation connectRelation)
+            throws DataAccessException;
+
+
+    /**
+     * 插入或修改一条新记录
+     */
+    @SQL("insert into " +
+            TABLE_NAME +
+            "(" + ALL_FIELD + ") values(" + VALUE_FIELD + ") on duplicate key "
+            + " update "
+            + "#if(:connectRelation.passportId != null){passport_id=:connectRelation.passportId} ")
+    public int insertOrUpdateConnectRelation(@ShardBy @SQLParam("openid") String openid, @SQLParam("connectRelation") ConnectRelation connectRelation)
             throws DataAccessException;
 
     /**
@@ -73,5 +97,5 @@ public interface ConnectRelationDAO {
     @SQL("delete from " +
             TABLE_NAME +
             " where openid=:openid and provider=:provider")
-    public int deleteConnectRelation(@SQLParam("openid") String openid, @SQLParam("provider") int provider) throws DataAccessException;
+    public int deleteConnectRelation(@ShardBy @SQLParam("openid") String openid, @SQLParam("provider") int provider) throws DataAccessException;
 }

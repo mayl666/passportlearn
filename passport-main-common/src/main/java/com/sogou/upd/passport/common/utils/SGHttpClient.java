@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -101,7 +102,7 @@ public class SGHttpClient {
             case xml:
                 t = XMLUtil.xmlToBean(value, type);
                 break;
-        }
+        }       ArrayList list = new ArrayList();list.iterator();
         return t;
     }
 
@@ -287,7 +288,6 @@ public class SGHttpClient {
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 return null;
             }
         }

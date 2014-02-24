@@ -16,7 +16,7 @@ public class OAuthClientResponseFactory {
 
         T resp = (T) OAuthUtils.instantiateClassWithParameters(clazz, null, null);
         resp.init(body, contentType, responseCode);
-        return (T) resp;
+        return resp;
     }
 
 }

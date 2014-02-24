@@ -2,10 +2,7 @@ package com.sogou.upd.passport;
 
 import com.google.common.collect.Lists;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -34,7 +31,6 @@ public class FileIOUtil {
             }
             reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             if (reader != null) {
                 try {
@@ -44,6 +40,12 @@ public class FileIOUtil {
             }
         }
         return LinesList;
+    }
+
+    public static BufferedWriter newWriter(String fileName) throws FileNotFoundException {
+        FileOutputStream fos = new FileOutputStream("c:/1.txt");
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        return new BufferedWriter(osw);
     }
 
 }
