@@ -79,7 +79,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
             Set<Map.Entry<String, String>> set = params.entrySet();
             for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();) {
-                Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
+                Map.Entry<String, String> entry = it.next();
                 requestModel.addParam(entry.getKey(),entry.getValue());
             }
 
@@ -114,7 +114,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
             Set<Map.Entry<String, String>> set = params.entrySet();
             for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();) {
-                Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
+                Map.Entry<String, String> entry = it.next();
                 requestModel.addParam(entry.getKey(),entry.getValue());
             }
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
@@ -148,7 +148,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
             Set<Map.Entry<String, String>> set = params.entrySet();
             for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();) {
-                Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
+                Map.Entry<String, String> entry = it.next();
                 requestModel.addParam(entry.getKey(),entry.getValue());
             }
             requestModel.addParam("user_ip",ip);

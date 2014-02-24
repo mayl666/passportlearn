@@ -16,7 +16,12 @@ public class BaiduOAuth extends OAuth {
 
 
     /* 用户类API响应参数 */
+    public static final String OPENID = "userid";
     public static final String NAME = "username"; // 用户昵称
-    public static final String AVATAR = "portrait";
+    public static final String AVATAR_ID = "portrait";
     public static final String SEX = "sex"; // 性别
+    // baidu头像url格式为   http://tb.himg.baidu.com/sys/portraitn/item/{$portrait}
+    public static final String AVATAR_SMALL_URL_EXP = "http://tb.himg.baidu.com/sys/portraitn/item/";
+    public static final String AVATAR_MIDDLE_URL_EXP = "http://tb.himg.baidu.com/sys/portrait/item/";
+    public static final String AVATAR_LARGE_URL_EXP = "http://tb.himg.baidu.com/sys/portrait/item/";
 }

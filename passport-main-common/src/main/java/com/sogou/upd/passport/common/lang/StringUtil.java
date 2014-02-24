@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.lang;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -195,6 +196,76 @@ public class StringUtil {
     }
 
     /**
+     * 过滤第三方用户昵称，包含：
+     * strToUTF8 & filterEmoji
+     * @param str
+     * @return
+     */
+    public static String filterConnectUniqname(String str){
+        try {
+            str = filterEmoji(strToUTF8(str));
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
+        return str;
+    }
+
+    /**
+     * 是否包含emoji表情
+     *
+     * @param source
+     * @return 包含返回true，不包含返回false
+     */
+    public static boolean containsEmoji(String source) {
+        if (Strings.isNullOrEmpty(source)) {
+            return false;
+        }
+        int len = source.length();
+        for (int i = 0; i < len; i++) {
+            char codePoint = source.charAt(i);
+            if (isNotEmojiCharacter(codePoint)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * 没有emoji表情返回true，有则返回false
+     */
+    private static boolean isNotEmojiCharacter(char codePoint) {
+        return (codePoint == 0x0) ||
+                (codePoint == 0x9) ||
+                (codePoint == 0xA) ||
+                (codePoint == 0xD) ||
+                ((codePoint >= 0x20) && (codePoint <= 0xD7FF)) ||
+                ((codePoint >= 0xE000) && (codePoint <= 0xFFFD)) ||
+                ((codePoint >= 0x10000) && (codePoint <= 0x10FFFF));
+    }
+
+    /**
+     * 过滤emoji 或者 其他非文字类型的字符
+     *
+     * @param source
+     * @return
+     */
+
+    public static String filterEmoji(String source) {
+        if (!containsEmoji(source)) {
+            return source;//如果不包含，直接返回
+        }
+        StringBuilder buf = new StringBuilder();
+        int len = source.length();
+        for (int i = 0; i < len; i++) {
+            char codePoint = source.charAt(i);
+            if (isNotEmojiCharacter(codePoint)) {
+                buf.append(codePoint);
+            }
+        }
+        return buf.toString();
+    }
+
+    /**
      * 过滤特殊字符，只保留 中文、英文大小写字母、空格、-、_
      */
     public static String filterSpecialChar(String str) {
@@ -349,7 +420,8 @@ public class StringUtil {
     }
 
     /**
-     *解决中文乱码问题
+     * 解决中文乱码问题
+     *
      * @param value
      * @return
      */

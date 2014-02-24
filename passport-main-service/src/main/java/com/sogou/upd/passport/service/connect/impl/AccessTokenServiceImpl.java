@@ -23,18 +23,6 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     private static final String CACHE_PREFIX_PASSPORTID_ACCESSTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCESSTOKEN;
 
     @Override
-    public boolean initialOrUpdateAccessToken(String userid, String accesstoken, long expire) throws ServiceException {
-        try {
-            String cacheKey = buildConnectTokenCacheKey(userid);
-            redisUtils.setWithinSeconds(cacheKey, accesstoken, expire);
-            return true;
-        } catch (Exception e) {
-            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
     public String getAccessToken(String userid) throws ServiceException {
         try {
             String cacheKey = buildConnectTokenCacheKey(userid);

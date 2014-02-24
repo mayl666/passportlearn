@@ -3,15 +3,12 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
@@ -22,37 +19,23 @@ import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
-import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.model.connect.ConnectRelation;
-import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
-import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
+import com.sogou.upd.passport.oauth2.openresource.parameters.BaiduOAuth;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQOpenIdResponse;
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.*;
-import com.sogou.upd.passport.service.app.AppConfigService;
+import com.sogou.upd.passport.service.account.AccountBaseInfoService;
+import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
-import com.sogou.upd.passport.service.connect.ConnectRelationService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,10 +44,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 
@@ -83,19 +63,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
-    private AccountService accountService;
-    @Autowired
-    private AccountTokenService accountTokenService;
-    @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectRelationService connectRelationService;
-    @Autowired
     private ConnectAuthService connectAuthService;
     @Autowired
     private AccountBaseInfoService accountBaseInfoService;
-    @Autowired
-    private ConnectApiManager proxyConnectApiManager;
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
@@ -104,96 +74,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private SessionServerManager sessionServerManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
-
-
-    @Override
-    public Result connectSSOLogin(OAuthSinaSSOTokenRequest oauthRequest, int provider, String ip) {
-        Result result = new APIResultSupport(false);
-        int clientId = oauthRequest.getClientId();
-        String openid = oauthRequest.getOpenid();
-        String instanceId = oauthRequest.getInstanceId();
-
-        AccountToken accountToken;
-        try {
-            // 获取第三方用户信息
-            Map<String, ConnectRelation> connectRelations = connectRelationService.queryAppKeyMapping(openid, provider);
-            String appKey = connectConfigService.querySpecifyAppKey(clientId, provider);
-            String passportId = getPassportIdByAppointAppKey(connectRelations, appKey);
-
-            if (passportId == null) { // 此账号未在当前应用登录过
-                if (MapUtils.isEmpty(connectRelations)) { // 此账号未授权过任何应用
-                    Account account = accountService.initialConnectAccount(openid, ip, provider);
-                    if (account == null) {
-                        result.setCode(ErrorUtil.AUTHORIZE_FAIL);
-                        return result;
-                    }
-                    passportId = account.getPassportId();
-                } else { // 此账号已存在，只是未在当前应用登录 TODO 注意QQ的不同appid返回的uid不同
-                    passportId = obtainPassportId(connectRelations); // 一个openid只可能对应一个passportId
-                    Account account = accountService.queryNormalAccount(passportId);
-                    if (account == null) {
-                        result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                        return result;
-                    }
-                }
-                // 在切换appkey的时，应该是update，正常情况是Insert
-                accountToken = accountTokenService.updateOrInsertAccountToken(passportId, clientId, instanceId);
-                if (accountToken == null) {
-                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
-                    return result;
-                }
-                ConnectToken newConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
-                        oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
-                boolean isInitialConnectToken = connectTokenService.initialConnectToken(newConnectToken);
-                if (!isInitialConnectToken) {
-                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
-                    return result;
-                }
-                ConnectRelation newConnectRelation = ManagerHelper.buildConnectRelation(openid, provider, passportId, appKey);
-                boolean isInitialConnectRelation = connectRelationService.initialConnectRelation(newConnectRelation);
-                if (!isInitialConnectRelation) {
-                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
-                    return result;
-                }
-            } else { // 此账号在当前应用第N次登录
-                Account account = accountService.queryNormalAccount(passportId);
-                if (account == null) {
-                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                    return result;
-                }
-                // 更新当前应用的Account_token，出于安全考虑refresh_token和access_token重新生成
-                accountToken = accountTokenService.updateOrInsertAccountToken(passportId, clientId, instanceId);
-                if (accountToken == null) {
-                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
-                    return result;
-                }
-                // 更新当前应用的Connect_token
-                ConnectToken updateConnectToken = ManagerHelper.buildConnectToken(passportId, provider, appKey, openid, oauthRequest.getAccessToken(),
-                        oauthRequest.getExpiresIn(), oauthRequest.getRefreshToken());
-                boolean isUpdateAccountConnect = connectTokenService.updateConnectToken(updateConnectToken);
-                if (!isUpdateAccountConnect) {
-                    result.setCode(ErrorUtil.AUTHORIZE_FAIL);
-                    return result;
-                }
-            }
-            Map<String, Object> mapResult = Maps.newHashMap();
-            mapResult.put(OAuth.OAUTH_ACCESS_TOKEN, accountToken.getAccessToken());
-            mapResult.put(OAuth.OAUTH_EXPIRES_TIME, accountToken.getAccessValidTime());
-            mapResult.put(OAuth.OAUTH_REFRESH_TOKEN, accountToken.getRefreshToken());
-
-            result.setSuccess(true);
-            result.setMessage("登录成功！");
-            result.setModels(mapResult);
-            return result;
-        } catch (ServiceException e) {
-            logger.error("SSO login Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
+    @Autowired
+    private ConnectApiManager connectApiManager;
 
     @Override
-    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type,String httpOrHttps) {
+    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
         Result result = new APIResultSupport(false);
         try {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
@@ -217,7 +102,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from,domain);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -230,22 +115,26 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
             } else {
                 connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
+                if (provider == AccountTypeEnum.BAIDU.getValue()) {     // 百度 oauth2.0授权的openid需要从用户信息接口获取
+                    setBaiduOpenid(connectUserInfoVO, oAuthTokenVO);
+                }
             }
             String uniqname = openId;
             if (connectUserInfoVO != null) {
                 uniqname = connectUserInfoVO.getNickname();
                 oAuthTokenVO.setNickName(uniqname);
+                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
             }
 
             // 创建第三方账号
-            Result connectAccountResult = proxyConnectApiManager.buildConnectAccount(providerStr, oAuthTokenVO);
+            Result connectAccountResult = connectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
 
             if (connectAccountResult.isSuccess()) {
                 String passportId = (String) connectAccountResult.getModels().get("userid");
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
                 //更新个人资料缓存
-                connectAuthService.initialOrUpdateConnectUserInfo(userId,connectUserInfoVO);
+                connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
 
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
@@ -266,10 +155,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-                     String token = mappTokenService.saveToken(userId);
-                     String url = buildMAppSuccessRu(ru, userId, token, uniqname);
-                     result.setSuccess(true);
-                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                    String token = mappTokenService.saveToken(userId);
+                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+                    result.setSuccess(true);
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (type.equals(ConnectTypeEnum.MOBILE.toString())) {
                     String s_m_u = getSMU(userId);
                     String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
@@ -298,16 +187,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(userId);
-                    String sgid=null;
-                    if(sessionResult.isSuccess()){
-                         sgid= (String) sessionResult.getModels().get("sgid");
-                         if (!Strings.isNullOrEmpty(sgid)) {
+                    String sgid = null;
+                    if (sessionResult.isSuccess()) {
+                        sgid = (String) sessionResult.getModels().get("sgid");
+                        if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
                             result.getModels().put("sgid", sgid);
-                            ru= buildWapSuccessRu(ru, sgid);
-                         }
-                    }else {
-                        result=buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:"+userId);
+                            ru = buildWapSuccessRu(ru, sgid);
+                        }
+                    } else {
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
                     }
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
@@ -442,28 +331,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return result;
     }
 
-    /**
-     * 该账号是否在当前应用登录过
-     * 返回passportId，如果没有登录过返回null
-     *
-     * @return
-     */
-    private String getPassportIdByAppointAppKey(Map<String, ConnectRelation> connectRelations, String appKey) {
-        String passportId = null;
-        if (!MapUtils.isEmpty(connectRelations)) {
-            ConnectRelation connectRelation = connectRelations.get(appKey);
-            if (connectRelation != null) {
-                passportId = connectRelation.getPassportId();
-            }
+    private void setBaiduOpenid(ConnectUserInfoVO connectUserInfoVO, OAuthTokenVO oAuthTokenVO) {
+        String baiduOpenid = (String) connectUserInfoVO.getOriginal().get(BaiduOAuth.OPENID);
+        if (!Strings.isNullOrEmpty(baiduOpenid)) {
+            oAuthTokenVO.setOpenid(baiduOpenid);
         }
-        return passportId;
     }
 
-    private String obtainPassportId(Map<String, ConnectRelation> connectRelations) {
-        String passportId = "";
-        for (String key : connectRelations.keySet()) {
-            return connectRelations.get(key).getPassportId();
-        }
-        return passportId;
-    }
 }

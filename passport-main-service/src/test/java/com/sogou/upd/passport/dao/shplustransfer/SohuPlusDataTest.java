@@ -2,23 +2,17 @@ package com.sogou.upd.passport.dao.shplustransfer;
 
 
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.dao.BaseDAOTest;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
-import com.sogou.upd.passport.dao.account.SohuplusTmpDAO;
-import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.dao.shplustransfer.DO.SohuPassportSidMapping;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.SnamePassportMapping;
-import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;

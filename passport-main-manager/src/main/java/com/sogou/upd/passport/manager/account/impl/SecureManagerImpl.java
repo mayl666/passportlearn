@@ -2,12 +2,10 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -23,7 +21,6 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
-import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
@@ -58,8 +55,6 @@ public class SecureManagerImpl implements SecureManager {
     private AccountService accountService;
     @Autowired
     private AccountInfoService accountInfoService;
-    @Autowired
-    private AccountTokenService accountTokenService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
@@ -212,63 +207,6 @@ public class SecureManagerImpl implements SecureManager {
             return result;
         } catch (ServiceException e) {
             logger.error("find passport Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
-
-    @Override
-    public Result resetPassword(MobileModifyPwdParams regParams) throws Exception {
-        Result result = new APIResultSupport(false);
-
-        String mobile = regParams.getMobile();
-        String smsCode = regParams.getSmscode();
-        String password = regParams.getPassword();
-        int clientId = Integer.parseInt(regParams.getClient_id());
-        int pwdType = regParams.getPwd_type();
-        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
-
-        try {
-            //验证手机号码与验证码是否匹配
-            boolean checkSmsInfo =
-                    mobileCodeSenderService
-                            .checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
-            if (!checkSmsInfo) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-                return result;
-            }
-            //重置密码
-            String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-            if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                return result;
-            }
-
-            Account account = accountService.queryNormalAccount(passportId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-
-            if (operateTimesService.checkLimitResetPwd(passportId, clientId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
-                return result;
-            }
-
-            if (!accountService.resetPassword(account, password, needMD5)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
-                return result;
-            }
-            // 异步更新accountToken信息
-            accountTokenService.asynbatchUpdateAccountToken(passportId, clientId);
-            //清除验证码的缓存
-            mobileCodeSenderService.deleteSmsCache(mobile, clientId);
-            operateTimesService.incLimitResetPwd(passportId, clientId);
-            result.setSuccess(true);
-            result.setMessage("重置密码成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("reset password Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }

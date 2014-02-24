@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.parameter.*;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -19,12 +19,11 @@ import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
-import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.oauth2.common.OAuth;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +41,6 @@ public class RegManagerImpl implements RegManager {
 
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private MobileCodeSenderService mobileCodeSenderService;
-    @Autowired
-    private AccountTokenService accountTokenService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
@@ -166,64 +159,6 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result mobileRegister(MobileRegParams regParams, String ip) {
-        String mobile = regParams.getMobile();
-        String smsCode = regParams.getSmscode();
-        String password = regParams.getPassword();
-        int clientId = Integer.parseInt(regParams.getClient_id());
-        String instanceId = regParams.getInstance_id();
-        int pwdType = regParams.getPwd_type();
-        boolean needMD5 = pwdType == PasswordTypeEnum.Plaintext.getValue() ? true : false;
-
-        Result result = new APIResultSupport(false);
-        //验证手机号码与验证码是否匹配
-        boolean checkSmsInfo =
-                mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.REGISTER, smsCode);
-        if (!checkSmsInfo) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-            return result;
-        }
-        Account account =
-                accountService.initialAccount(mobile, password, needMD5, ip, AccountTypeEnum.PHONE.getValue());
-        if (account != null) {  //     如果插入account表成功，则插入用户授权信息表
-            boolean
-                    isInitialMobilePassportMapping =
-                    mobilePassportMappingService
-                            .initialMobilePassportMapping(mobile, account.getPassportId());
-            if (!isInitialMobilePassportMapping) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                return result;
-            }
-            //生成token并向account_auth表里插一条用户状态记录
-            AccountToken accountToken = accountTokenService.initialAccountToken(account.getPassportId(),
-                    clientId, instanceId);
-            if (accountToken != null) {   //如果用户授权信息表插入也成功，则说明注册成功
-                //清除验证码的缓存
-                mobileCodeSenderService.deleteSmsCache(mobile, clientId);
-                String accessToken = accountToken.getAccessToken();
-                long accessValidTime = accountToken.getAccessValidTime();
-                String refreshToken = accountToken.getRefreshToken();
-                Map<String, Object> mapResult = Maps.newHashMap();
-                mapResult.put(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
-                mapResult.put(OAuth.OAUTH_EXPIRES_TIME, accessValidTime);
-                mapResult.put(OAuth.OAUTH_REFRESH_TOKEN, refreshToken);
-
-                result.setSuccess(true);
-                result.setMessage("注册成功！");
-                result.setModels(mapResult);
-                return result;
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                return result;
-            }
-        } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-            return result;
-        }
-    }
-
-
-    @Override
     public Result activeEmail(ActiveEmailParams activeParams, String ip) throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -251,7 +186,7 @@ public class RegManagerImpl implements RegManager {
                 //激活失败
                 Account account = accountService.queryAccountByPassportId(username);
                 if (account != null) {
-                    if (account.getStatus() == AccountStatusEnum.REGULAR.getValue()) {
+                    if (account.getFlag() == AccountStatusEnum.REGULAR.getValue()) {
                         //已经激活，无需再次激活
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
                         return result;

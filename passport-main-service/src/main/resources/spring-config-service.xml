@@ -29,11 +29,11 @@
     <bean id="discardTaskExecutor"
           class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <!-- 核心线程数，默认为1 -->
-        <property name="corePoolSize" value="50" />
+        <property name="corePoolSize" value="20" />
         <!-- 最大线程数，默认为Integer.MAX_VALUE -->
-        <property name="maxPoolSize" value="100" />
+        <property name="maxPoolSize" value="40" />
         <!-- 队列最大长度，一般需要设置值>=notifyScheduledMainExecutor.maxNum；默认为Integer.MAX_VALUE -->
-        <property name="queueCapacity" value="150" />
+        <property name="queueCapacity" value="60" />
         <!-- 线程池维护线程所允许的空闲时间，默认为60s -->
         <property name="keepAliveSeconds" value="120" />
         <!-- 线程池对拒绝任务（无线程可用）的处理策略，目前只支持AbortPolicy、CallerRunsPolicy；默认为后者 -->
@@ -49,9 +49,9 @@
     <bean id="uploadImgExecutor"
           class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <!-- 核心线程数，默认为1 -->
-        <property name="corePoolSize" value="30"/>
+        <property name="corePoolSize" value="20"/>
         <!-- 最大线程数，默认为Integer.MAX_VALUE -->
-        <property name="maxPoolSize" value="60"/>
+        <property name="maxPoolSize" value="40"/>
         <!-- 队列最大长度，一般需要设置值>=notifyScheduledMainExecutor.maxNum；默认为Integer.MAX_VALUE -->
         <property name="queueCapacity" value="60"/>
         <!-- 线程池维护线程所允许的空闲时间，默认为60s -->

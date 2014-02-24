@@ -34,7 +34,6 @@ public class FileIOUtil {
             }
             reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             if (reader != null) {
                 try {

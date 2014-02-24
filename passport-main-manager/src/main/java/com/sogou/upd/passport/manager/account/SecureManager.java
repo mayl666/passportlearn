@@ -63,13 +63,6 @@ public interface SecureManager {
     public Result findPassword(String mobile, int clientId);
 
     /**
-     * 手机用户重置密码
-     *
-     * @return Result格式的返回值, 成功或失败，返回提示信息
-     */
-    public Result resetPassword(MobileModifyPwdParams regParams) throws Exception;
-
-    /**
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理
      *
      * @param passportId
