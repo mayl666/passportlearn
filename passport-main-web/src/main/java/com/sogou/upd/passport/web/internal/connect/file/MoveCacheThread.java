@@ -50,11 +50,10 @@ public class MoveCacheThread implements Runnable {
                 String[] rowString = tempString.split(",");
                 String openIdString = rowString[4];  //openid
                 logOpenId = openIdString;
-                String passportIdString = openIdString + "@qq.sohu.com";
+                int provider = Integer.parseInt(rowString[3]);   //provider
+                String passportIdString = AccountTypeEnum.generateThirdPassportId(openIdString, rowString[3]);
                 String sohuFileToken = rowString[1];   //accessToken
-                AccountTypeEnum accountTypeEnum = AccountTypeEnum.getAccountType(passportIdString);
-                int provider = accountTypeEnum.getValue();
-                String appKey = ConnectTypeEnum.getAppKey(provider);
+                String appKey = ConnectTypeEnum.getAppKey(provider); //根据provider获取appKey
                 ConnectToken connectToken = connectTokenService.queryConnectToken(passportIdString, provider, appKey);
                 if (connectToken == null) {
                     //1.sohu导出的文件中有，但Sogou库中没有，需要记录下来,格式为：openid,sohuFileToken
@@ -84,6 +83,12 @@ public class MoveCacheThread implements Runnable {
                             //3.从sogou库中查询token已经过期了，需要记录下来，格式为：passportId,sogouToken
                             FileWriter writer = new FileWriter("D:\\sohu_expired.txt", true);
                             writer.write(passportIdString + "," + sohuFileToken + "," + sogouDBToken);
+                            writer.write("\r\n");
+                            writer.close();
+                        } else {
+                            //4.其它原因导致没有查询成功的token，需要记录下来，格式为：passportId,sogouToken
+                            FileWriter writer = new FileWriter("D:\\sohu_other.txt", true);
+                            writer.write(passportIdString + "," + result.toString());
                             writer.write("\r\n");
                             writer.close();
                         }

@@ -31,7 +31,7 @@ public class TestCheckSohuDataController {
 
     private static ExecutorService service = Executors.newFixedThreadPool(300);
 
-    @RequestMapping(value = "/move")
+    @RequestMapping(value = "/check")
     @ResponseBody
     public Object move()
             throws Exception {
