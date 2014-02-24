@@ -24,6 +24,9 @@ public class RuValidatorTest  extends TestCase {
         result=ru.isValid(url,null);
         assertEquals(true,result);
 
+        url="https://account.sogou.com";
+        result=ru.isValid(url,null);
+        assertEquals(true,result);
 
         url="http://www.sogou.com";
         result=ru.isValid(url,null);
