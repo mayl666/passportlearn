@@ -55,7 +55,6 @@ public class MoveCacheThread implements Runnable {
                 String passportIdString = AccountTypeEnum.generateThirdPassportId(openIdString, rowString[3]);
                 String sohuFileToken = rowString[1];   //accessToken
                 String appKey = ConnectTypeEnum.getAppKey(provider); //根据provider获取appKey
-
                 String dateString = rowString[7];  //token起始时间
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date date = sdf.parse(dateString);
