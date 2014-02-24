@@ -54,11 +54,11 @@ public class BlackItemServiceImpl implements BlackItemService{
                 sort = BlackItem.BLACK_USERNAME;
 
             }
+            redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+            long expireSeconds = redisUtils.getExpireTime(timesKey);
+
             double durMin = 0;
             if(reason != BlackItem.Add_LIMIT){
-                redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-                long expireSeconds = redisUtils.getExpireTime(timesKey);
-
                 durMin = (double)(DateAndNumTimesConstant.TIME_ONEHOUR - expireSeconds)/60;
                 DecimalFormat df = new DecimalFormat("#.00");
                 durMin = Double.parseDouble(df.format(durMin));
