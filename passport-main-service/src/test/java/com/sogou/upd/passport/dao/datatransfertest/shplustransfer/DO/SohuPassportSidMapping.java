@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.dao.shplustransfer.DO;
+package com.sogou.upd.passport.dao.datatransfertest.shplustransfer.DO;
 
 /**
  * Created with IntelliJ IDEA.
