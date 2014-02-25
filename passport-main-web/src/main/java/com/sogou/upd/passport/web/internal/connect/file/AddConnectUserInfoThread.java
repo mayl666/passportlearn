@@ -63,13 +63,26 @@ public class AddConnectUserInfoThread implements Runnable {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
                 ConnectConfig connectConfig = new ConnectConfig();
                 connectConfig.setAppKey(appKey);
-                ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
-                if (connectUserInfoVO == null) {
-                    //1.1第三方API调用失败，记录passportId
-                    FileWriter writer = new FileWriter("D:\\connect_token\\not_found.txt", true);
-                    writer.write(passportId);
+                ConnectUserInfoVO connectUserInfoVO;
+                try {
+                    connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+                } catch (Exception e) {
+                    //1.1获取第三方用户信息失败，记录格式为passportId,provider,appKey,openId,accessToken,date
+                    FileWriter writer = new FileWriter("D:\\connect_token\\obtain_exception.txt", true);
+                    writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13]);
                     writer.write("\r\n");
                     writer.close();
+                    count++;
+                    continue;
+                }
+                if (connectUserInfoVO == null) {
+                    //1.2第三方API调用失败，记录passportId
+                    FileWriter writer = new FileWriter("D:\\connect_token\\obtain_exception.txt", true);
+                    writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13]);
+                    writer.write("\r\n");
+                    writer.close();
+                    count++;
+                    continue;
                 } else {
                     //暂时先不更新缓存
 //                connectAuthService.initialOrUpdateConnectUserInfo(passportId, connectUserInfoVO);
@@ -80,15 +93,32 @@ public class AddConnectUserInfoThread implements Runnable {
                     connectToken.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle()); //第三方用户中头像
                     connectToken.setAvatarLarge(connectUserInfoVO.getAvatarLarge());  //第三方用户大头像
                     connectToken.setPassportId(passportId);
+                    connectToken.setAppKey(appKey);
+                    connectToken.setProvider(provider);
+                    connectToken.setOpenid(openId);
+                    connectToken.setAccessToken(accessToken);
                     connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));//第三方用户性别
                     connectToken.setUpdateTime(date); //connectToken表的更新时间还保持原来表中的时间
-                    boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
-                    if (!isUpdateSuccess) {
-                        //2.1 更新sogou connect_token表失败的记录下来,格式为passportId,provider,appKey,openId,accessToken,date
+                    boolean isUpdateSuccess;
+                    try {
+                        isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+                    } catch (Exception e) {
+                        //2.1更新connect_token表异常，记录passportId
                         FileWriter writer = new FileWriter("D:\\connect_token\\update_error.txt", true);
                         writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13]);
                         writer.write("\r\n");
                         writer.close();
+                        count++;
+                        continue;
+                    }
+                    if (!isUpdateSuccess) {
+                        //2.2更新sogou connect_token表失败的记录下来,格式为passportId,provider,appKey,openId,accessToken,date
+                        FileWriter writer = new FileWriter("D:\\connect_token\\update_error.txt", true);
+                        writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13]);
+                        writer.write("\r\n");
+                        writer.close();
+                        count++;
+                        continue;
                     }
                 }
                 count++;
