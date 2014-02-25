@@ -64,7 +64,7 @@ public class MoveCacheThread implements Runnable {
                     ConnectToken connectToken = connectTokenService.queryConnectToken(passportIdString, provider, appKey);
                     if (connectToken == null) {
                         //1.sohu导出的文件中有，但Sogou库中没有，需要记录下来,格式为：openid,sohuFileToken
-                        FileWriter writer = new FileWriter("D:\\sogou_not_exist.txt", true);
+                        FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_not_exist.txt", true);
                         writer.write(passportIdString + "," + sohuFileToken);
                         writer.write("\r\n");
                         writer.close();
@@ -79,14 +79,14 @@ public class MoveCacheThread implements Runnable {
                             String sohuOnLineToken = map.get("access_token").toString();
                             if (!sohuOnLineToken.equalsIgnoreCase(sogouDBToken)) {
                                 //2.sohu导出文件中存在的token与从sogou库中查出的token不一样，需要记录下来，格式为：passportId，sohuFileToken，sohuOnLineToken,sogouDBToken
-                                FileWriter writer = new FileWriter("D:\\sogou_sohu_different.txt", true);
+                                FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_sohu_different.txt", true);
                                 writer.write(passportIdString + "," + sohuFileToken + "," + sohuOnLineToken + "," + sogouDBToken);
                                 writer.write("\r\n");
                                 writer.close();
                             }
                         } else {
                             //3.其它原因导致没有查询成功的token，需要记录下来，格式为：passportId,sohu返回结果信息
-                            FileWriter writer = new FileWriter("D:\\sohu_other.txt", true);
+                            FileWriter writer = new FileWriter("/search/passport/log/liuling/sohu_other.txt", true);
                             writer.write(passportIdString + "," + result.toString());
                             writer.write("\r\n");
                             writer.close();
@@ -102,7 +102,7 @@ public class MoveCacheThread implements Runnable {
             //4.运行时异常，需要记录下来，格式为：openId
             FileWriter writer;
             try {
-                writer = new FileWriter("D:\\runtime_exception.txt", true);
+                writer = new FileWriter("/search/passport/log/liuling/runtime_exception.txt", true);
                 writer.write(Thread.currentThread().getName() + "," + logOpenId);
                 writer.write("\r\n");
                 writer.close();
