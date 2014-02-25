@@ -496,24 +496,28 @@ public class AccountServiceImpl implements AccountService {
         try {
             String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
-            //更新数据库
-            int row = accountDAO.updateUniqName(uniqname, passportId);
-            if (row > 0) {
-                String cacheKey = buildAccountKey(passportId);
-                account.setUniqname(uniqname);
-                redisUtils.set(cacheKey, account);
 
-                //移除原来映射表
-                if (removeUniqName(oldUniqName)) {
-                    //更新新的映射表
-                    row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                    if (row > 0) {
-                        cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                        redisUtils.set(cacheKey, passportId);
+            if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
+                //更新数据库
+                int row = accountDAO.updateUniqName(uniqname, passportId);
+                if (row > 0) {
+                    String cacheKey = buildAccountKey(passportId);
+                    account.setUniqname(uniqname);
+                    redisUtils.set(cacheKey, account);
+
+                    //移除原来映射表
+                    if (removeUniqName(oldUniqName)) {
+                        //更新新的映射表
+                        row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                        if (row > 0) {
+                            cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                            redisUtils.set(cacheKey, passportId);
+                        }
+                        return true;
                     }
-                    return true;
                 }
-
+            } else {
+                return true;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
