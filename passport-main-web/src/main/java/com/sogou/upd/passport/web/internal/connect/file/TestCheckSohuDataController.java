@@ -73,10 +73,10 @@ public class TestCheckSohuDataController {
     @ResponseBody
     public Object addConnectUserInfo(UserOpenApiParams params) throws Exception {
         long time = System.currentTimeMillis();
-        String fileRoot = "/search/passport/log/liuling/";
+        String fileRoot = "D:\\";
         //从03线上库中的connect_token32张表中导出的信息
 //        String[] fileNames = {"connect_token_1.txt", "connect_token_2.txt", "connect_token_3.txt", "connect_token_4.txt", "connect_token_5.txt"};
-        String[] fileNames = {"connect_token_1.txt"};
+        String[] fileNames = {"test.txt"};
 
         int size = fileNames.length;
 
