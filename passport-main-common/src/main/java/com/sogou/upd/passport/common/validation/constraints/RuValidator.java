@@ -40,19 +40,40 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
         }
         String rootPath;
         try {
-            Pattern p = Pattern.compile("(?<=(http|https)://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv)", Pattern.CASE_INSENSITIVE);
+            Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou|sohu|qq|soso|go2map)\\.com($|\\/|\\\\)", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(value);
-            matcher.find();
-            rootPath = matcher.group();
+            if(matcher.find()){
+                return true;
+            }else{
+                return false;
+            }
+
+
         } catch (Exception e) {
             return false;
         }
 
-        if (!SUPPORT_DOMAIN.contains(rootPath)) {
-            return false;
+//        if (!SUPPORT_DOMAIN.contains(rootPath)) {
+//            return false;
+//        }
+
+//        return true;
+    }
+
+    public static void main(String args[]){
+        String value="http://www.qq.com";
+        String rootPath;
+        try {
+            Pattern p = Pattern.compile("(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = p.matcher(value);
+            matcher.find();
+            rootPath = matcher.group();
+            System.out.println(rootPath);
+        } catch (Exception e) {
+            System.out.println("error!!");
+
         }
 
-        return true;
     }
 
 }

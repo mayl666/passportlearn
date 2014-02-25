@@ -33,7 +33,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         submited: false,
         init: function() {
 
-            this.exPassport("size", "540", "325")
+            this.exPassport("size", "540", "345")
             this.initEvents()
 
             this.refreshVcode($('.chkPic img'));

@@ -61,8 +61,6 @@ public class ErrorUtil {
     public static final String INVALID_REFRESH_TOKEN = "109";
     // login/authorize fail,数据库写入失败
     public static final String AUTHORIZE_FAIL = "110";
-    // 用户名密码不匹配
-    public static final String USERNAME_PWD_MISMATCH = "111";  // 与20206一样，因为T3历史原因，暂不删除
 
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
@@ -379,7 +377,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_RESOURCE_TYPE, "不支持的resource_type");
         ERR_CODE_MSG_MAP.put(INVALID_REFRESH_TOKEN, "refresh_token不存在或过期");
         ERR_CODE_MSG_MAP.put(AUTHORIZE_FAIL, "授权失败");
-        ERR_CODE_MSG_MAP.put(USERNAME_PWD_MISMATCH, "账号或密码错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED, "暂不支持邮箱注册");
 
         // account
