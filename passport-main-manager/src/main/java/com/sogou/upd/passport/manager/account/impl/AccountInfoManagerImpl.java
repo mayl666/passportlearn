@@ -246,6 +246,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
             updateUserInfoApiParams.setBirthday(birthday);
             updateUserInfoApiParams.setUsername(infoParams.getFullname());
+            updateUserInfoApiParams.setUniqname(infoParams.getNickname());
 
             updateUserInfoApiParams.setProvince(infoParams.getProvince());
 

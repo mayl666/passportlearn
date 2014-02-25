@@ -199,7 +199,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     info.setGender(params.getGender());
                     info.setProvince(params.getProvince());
                     info.setCity(params.getCity());
-                    info.setFullname(params.getFullname());
+                    info.setFullname(params.getUsername());
                     info.setPersonalid(params.getPersonalId());
                     info.setModifyip(params.getModifyip());
 
