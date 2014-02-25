@@ -513,8 +513,8 @@ public class AccountServiceImpl implements AccountService {
                             cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                             redisUtils.set(cacheKey, passportId);
                         }
-                        return true;
                     }
+                    return true;
                 }
             } else {
                 return true;
