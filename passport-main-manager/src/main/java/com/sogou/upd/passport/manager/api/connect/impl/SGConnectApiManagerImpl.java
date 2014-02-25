@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -36,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 /**
@@ -132,7 +134,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         Result result = new APIResultSupport(false);
         try {
             String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), AccountTypeEnum.getProviderStr(provider));
-            boolean isBuildQuery = false;  //根据account是否为空，来决定是否查询connect_relation表,为true表示查询，为false表示不查询
             //1.查询account表
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
@@ -141,8 +142,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
                 }
-            } else {
-                isBuildQuery = true;   //查relation表
             }
             boolean isSuccess;
             //2.connect_token表新增或修改
@@ -152,11 +151,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                 return result;
             }
-            //3.connect_relation根据参数决定是否新增
-//            ConnectRelation connectRelation = null;
-//            if (isBuildQuery) {
+            //3.connect_relation新增或修改
             ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
-//            }
             if (connectRelation == null) {
                 connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
@@ -198,7 +194,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectToken.setUpdateTime(new Date());
         ConnectUserInfoVO connectUserInfoVO = oAuthTokenVO.getConnectUserInfoVO();
         if (connectUserInfoVO != null) {
-            connectToken.setConnectUniqname(connectUserInfoVO.getNickname());
+            connectToken.setConnectUniqname(StringUtil.filterConnectUniqname(connectUserInfoVO.getNickname()));
             connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));
             connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
             connectToken.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());
