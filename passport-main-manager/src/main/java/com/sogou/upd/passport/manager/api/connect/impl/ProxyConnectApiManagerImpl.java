@@ -122,7 +122,7 @@ public class ProxyConnectApiManagerImpl extends BaseProxyManager implements Conn
                 result.setModels(map);
             }
         } catch (Exception e) {
-            log.error("getConnectTokenInfo Fail:", e);
+            log.error("getConnectTokenInfo Fail,passportId is " + baseOpenApiParams.getUserid(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
