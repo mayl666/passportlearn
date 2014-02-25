@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.AccountInfo;
+
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
+
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -21,7 +23,7 @@ public interface AccountInfoDAO {
     /**
      * 所有字段列表
      */
-    String ALL_FIELD = " id, passport_id, email, question, answer ";
+    String ALL_FIELD = " id, passport_id, email, question, answer, birthday, gender, province, city,fullname,personalid, modifyip ";
 
     /**
      * 值列表
@@ -61,10 +63,10 @@ public interface AccountInfoDAO {
             "insert into " +
                     TABLE_NAME +
                     "(passport_id, email, question, answer) "
-            + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer) on duplicate key "
-            + "update email = :accountInfo.email")
+                    + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer) on duplicate key "
+                    + "update email = :accountInfo.email")
     public int saveEmailOrInsert(@SQLParam("passport_id") String passport_id,
-                                   @SQLParam("accountInfo") AccountInfo account_info)
+                                 @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
 
     /**
@@ -74,10 +76,23 @@ public interface AccountInfoDAO {
             "insert into " +
                     TABLE_NAME +
                     "(passport_id, email, question, answer)"
-            + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer) on duplicate key "
-            + "update question = :accountInfo.question, answer = :accountInfo.answer")
+                    + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer) on duplicate key "
+                    + "update question = :accountInfo.question, answer = :accountInfo.answer")
     public int saveQuesOrInsert(@SQLParam("passport_id") String passport_id,
-                                  @SQLParam("accountInfo") AccountInfo account_info)
+                                @SQLParam("accountInfo") AccountInfo account_info)
+            throws DataAccessException;
+
+    /**
+     * 修改个人信息
+     */
+    @SQL(
+            "insert into " +
+                    TABLE_NAME +
+                    "(passport_id, birthday, gender, province, city, fullname, personalid, modifyip)"
+                    + "values(:passport_id,:accountInfo.birthday,:accountInfo.gender,:accountInfo.province,:accountInfo.city,:accountInfo.fullname, :accountInfo.personalid,:accountInfo.modifyip) on duplicate key "
+                    + "update birthday = :accountInfo.birthday, gender = :accountInfo.gender, province = :accountInfo.province, city = :accountInfo.city, fullname = :accountInfo.fullname, modifyip = :accountInfo.modifyip")
+    public int saveInfoOrInsert(@SQLParam("passport_id") String passport_id,
+                                @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
 
     /**
@@ -87,9 +102,12 @@ public interface AccountInfoDAO {
             "insert into " +
                     TABLE_NAME +
                     "(passport_id,email,question,answer) "
-            + "values (:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer)")
+                    + "values (:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer)")
     public int insertAccountInfo(@SQLParam("passport_id") String passport_id,
                                  @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
+
+
+
 
 }
