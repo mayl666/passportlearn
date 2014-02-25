@@ -21,13 +21,13 @@ public class BlackItem {
     public static final int SCOPE_LOGIN = 1;
 
     private long id;
-    private int nameSort;
-    private String name;
-    private int limitSort;
+    private int nameSort;//name字段的类型:0为username；1为ip
+    private String name; //ip或者username
+    private int limitSort; //限制的类型“0为失败限制；1为成功限制；2为后台添加的限制
     private Date insertTime;
-    private Double durationTime;
-    private String insertServer;
-    private int scope;
+    private Double durationTime; //统计次数的持续时间
+    private String insertServer; //插入黑名的服务器IP
+    private int scope; //限制的范围：1为登陆
 
     public long getId() {
         return id;
