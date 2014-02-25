@@ -67,7 +67,7 @@ public class MoveCacheThread implements Runnable {
                         connectToken = connectTokenService.queryConnectToken(passportIdString, provider, appKey);
                     } catch (Exception e) {
                         FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_not_exist.txt", true);
-                        writer.write(passportIdString + "," + sohuFileToken);
+                        writer.write(passportIdString + "," + sohuFileToken + ",error:query token failed");
                         writer.write("\r\n");
                         writer.close();
                         count++;
@@ -76,7 +76,7 @@ public class MoveCacheThread implements Runnable {
                     if (connectToken == null) {
                         //1.sohu导出的文件中有，但Sogou库中没有，需要记录下来,格式为：openid,sohuFileToken
                         FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_not_exist.txt", true);
-                        writer.write(passportIdString + "," + sohuFileToken);
+                        writer.write(passportIdString + "," + sohuFileToken + ",error:query token null");
                         writer.write("\r\n");
                         writer.close();
                         count++;
@@ -91,7 +91,7 @@ public class MoveCacheThread implements Runnable {
                             result = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
                         } catch (Exception e) {
                             FileWriter writer = new FileWriter("/search/passport/log/liuling/sohu_other.txt", true);
-                            writer.write(passportIdString + "," + result.toString());
+                            writer.write(passportIdString + "," + result.toString() + ",error:obtain token failed");
                             writer.write("\r\n");
                             writer.close();
                             count++;
@@ -103,7 +103,7 @@ public class MoveCacheThread implements Runnable {
                             if (!sohuOnLineToken.equalsIgnoreCase(sogouDBToken)) {
                                 //2.sohu导出文件中存在的token与从sogou库中查出的token不一样，需要记录下来，格式为：passportId，sohuFileToken，sohuOnLineToken,sogouDBToken
                                 FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_sohu_different.txt", true);
-                                writer.write(passportIdString + "," + sohuFileToken + "," + sohuOnLineToken + "," + sogouDBToken);
+                                writer.write(passportIdString + "," + sohuFileToken + "," + sohuOnLineToken + "," + sogouDBToken + ",error:sohu sogou token is not equals");
                                 writer.write("\r\n");
                                 writer.close();
                                 count++;
