@@ -28,7 +28,7 @@ public interface BlackItemDAO {
      * 所有字段列表
      */
     String
-            ALL_FIELD = " id,sort,name,flag_success_limit,insert_time,duration_time,insert_server,scope ";
+            ALL_FIELD = " id,name_sort,name,limit_sort,insert_time,duration_time,insert_server,scope ";
 
     /**
      * 新添用户
@@ -36,8 +36,8 @@ public interface BlackItemDAO {
     @SQL(
             "insert into " +
                     TABLE_NAME +
-                    "(sort,name,flag_success_limit,insert_time,duration_time,insert_server,scope) "
-                    + "values (:blackItem.sort,:blackItem.name,:blackItem.flagSuccessLimit,:blackItem.insertTime,:blackItem.durationTime,:blackItem.insertServer,:blackItem.scope)")
+                    "(name_sort,name,limit_sort,insert_time,duration_time,insert_server,scope) "
+                    + "values (:blackItem.nameSort,:blackItem.name,:blackItem.limitSort,:blackItem.insertTime,:blackItem.durationTime,:blackItem.insertServer,:blackItem.scope)")
     public int insertBlackItem(@SQLParam("blackItem") BlackItem blackItem) throws DataAccessException;
 
 
@@ -51,9 +51,9 @@ public interface BlackItemDAO {
             " where 1=1 "
             + "#if(:start_date != null){and insert_time >= :start_date }"
             + "#if(:end_date != null){and insert_time <= :end_date }"
-            + "#if(:sort != null){and sort = :sort }"
+            + "#if(:name_sort != null){and name_sort = :name_sort }"
             + "#if(:name != null){and name = :name }"
-            + "#if(:flag_success_limit != null){and flag_success_limit = :flag_success_limit }"
+            + "#if(:limit_sort != null){and limit_sort = :limit_sort }"
             + "#if(:minTime != null){and duration_time >= :minTime }"
             + "#if(:maxTime != null){and duration_time <= :maxTime }"
             + "#if(:scope != null){and scope = :scope }"
@@ -61,8 +61,8 @@ public interface BlackItemDAO {
             + " #if((:start != null)&&(:end !=null)){ limit :start,:end }"
         )
     public List<BlackItem> getBlackItemList(@SQLParam("start_date") Date startDate, @SQLParam("end_date") Date endDate,
-                                            @SQLParam("sort") Integer sort,@SQLParam("name") String name,
-                                            @SQLParam("flag_success_limit") Integer flag_success_limit,
+                                            @SQLParam("name_sort") Integer name_sort,@SQLParam("name") String name,
+                                            @SQLParam("limit_sort") Integer limit_sort,
                                             @SQLParam("minTime") Double minTime, @SQLParam("maxTime") Double maxTime,
                                             @SQLParam("scope") Integer scope,
                                             @SQLParam("start") Integer start,
@@ -78,9 +78,9 @@ public interface BlackItemDAO {
             " where 1=1 "
             + "#if(:start_date != null){and insert_time >= :start_date }"
             + "#if(:end_date != null){and insert_time <= :end_date }"
-            + "#if(:sort != null){and sort = :sort }"
+            + "#if(:name_sort != null){and name_sort = :name_sort }"
             + "#if(:name != null){and name = :name }"
-            + "#if(:flag_success_limit != null){and flag_success_limit = :flag_success_limit }"
+            + "#if(:limit_sort != null){and limit_sort = :limit_sort }"
             + "#if(:minTime != null){and duration_time >= :minTime }"
             + "#if(:maxTime != null){and duration_time <= :maxTime }"
             + "#if(:scope != null){and scope = :scope }"
@@ -88,8 +88,8 @@ public interface BlackItemDAO {
             + " #if((:start != null)&&(:end !=null)){ limit :start,:end }"
     )
     public int getBlackItemCount(@SQLParam("start_date") Date startDate, @SQLParam("end_date") Date endDate,
-                                            @SQLParam("sort") Integer sort,@SQLParam("name") String name,
-                                            @SQLParam("flag_success_limit") Integer flag_success_limit,
+                                            @SQLParam("name_sort") Integer name_sort,@SQLParam("name") String name,
+                                            @SQLParam("limit_sort") Integer limit_sort,
                                             @SQLParam("minTime") Double minTime, @SQLParam("maxTime") Double maxTime,
                                             @SQLParam("scope") Integer scope,
                                             @SQLParam("start") Integer start,
@@ -118,9 +118,9 @@ public interface BlackItemDAO {
             TABLE_NAME +
             " where insert_time >= :start_date " +
             " and insert_time <= :end_date " +
-            " and sort=:sort" +
+            " and limit_sort=:limit_sort" +
             " and name=:name ")
     public BlackItem getBlackItemByName(@SQLParam("start_date") Date startDate, @SQLParam("end_date") Date endDate,
-                                        @SQLParam("sort") int sort,@SQLParam("name") String name) throws
+                                        @SQLParam("limit_sort") int limit_sort,@SQLParam("name") String name) throws
             DataAccessException;
 }

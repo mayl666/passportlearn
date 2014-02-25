@@ -91,9 +91,9 @@ public class BlackItemServiceImpl implements BlackItemService{
     public BlackItem initialBlackItem(int flagIp, String ipOrUsername,int flagSuccessLimit, Double durationTime, String insertServer,int scope) throws ServiceException {
         BlackItem blackItem = new BlackItem();
         try {
-            blackItem.setSort(flagIp);
+            blackItem.setNameSort(flagIp);
             blackItem.setName(ipOrUsername);
-            blackItem.setFlagSuccessLimit(flagSuccessLimit);
+            blackItem.setLimitSort(flagSuccessLimit);
             blackItem.setDurationTime(durationTime);
             blackItem.setInsertTime(new Date());
             blackItem.setInsertServer(insertServer);

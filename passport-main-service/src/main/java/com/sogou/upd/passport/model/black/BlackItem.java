@@ -21,9 +21,9 @@ public class BlackItem {
     public static final int SCOPE_LOGIN = 1;
 
     private long id;
-    private int sort;
+    private int nameSort;
     private String name;
-    private int flagSuccessLimit;
+    private int limitSort;
     private Date insertTime;
     private Double durationTime;
     private String insertServer;
@@ -61,22 +61,6 @@ public class BlackItem {
         this.insertServer = insertServer;
     }
 
-    public int getFlagSuccessLimit() {
-        return flagSuccessLimit;
-    }
-
-    public void setFlagSuccessLimit(int flagSuccessLimit) {
-        this.flagSuccessLimit = flagSuccessLimit;
-    }
-
-    public int getSort() {
-        return sort;
-    }
-
-    public void setSort(int sort) {
-        this.sort = sort;
-    }
-
     public int getScope() {
         return scope;
     }
@@ -91,5 +75,21 @@ public class BlackItem {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getLimitSort() {
+        return limitSort;
+    }
+
+    public void setLimitSort(int limitSort) {
+        this.limitSort = limitSort;
+    }
+
+    public int getNameSort() {
+        return nameSort;
+    }
+
+    public void setNameSort(int nameSort) {
+        this.nameSort = nameSort;
     }
 }
