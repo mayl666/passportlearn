@@ -47,7 +47,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
     @Autowired
     private ConnectProxyOpenApiManager connectProxyOpenApiManager;
     @Autowired
-    private ConnectApiManager connectApiManager;
+    private ConnectApiManager sgConnectApiManager;
 
     private Map<String, String> covertObjectToMap(ConnectToken connectToken) {
         Map<String, String> tokenMap = new HashMap<>();
@@ -88,7 +88,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
@@ -146,7 +146,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
@@ -206,7 +206,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getUserid());
-            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");

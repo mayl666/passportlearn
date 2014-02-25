@@ -44,7 +44,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
-    private ConnectApiManager connectApiManager;
+    private ConnectApiManager sgConnectApiManager;
 
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
@@ -73,7 +73,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setOpenid(userid);
             baseOpenApiParams.setUserid(userid);
-            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
