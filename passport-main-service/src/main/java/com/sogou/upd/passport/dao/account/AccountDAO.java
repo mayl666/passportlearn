@@ -73,7 +73,7 @@ public interface AccountDAO {
             TABLE_NAME +
             " set uniqname=:uniqname where passport_id=:passport_id")
     public int updateUniqName(@SQLParam("uniqname") String uniqname,
-                              @SQLParam("passport_id") String passport_id) throws DataAccessException;
+                               @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
     /**
      * 修改头像
@@ -82,7 +82,7 @@ public interface AccountDAO {
             TABLE_NAME +
             " set avatar=:avatar where passport_id=:passport_id")
     public int updateAvatar(@SQLParam("avatar") String avatar,
-                              @SQLParam("passport_id") String passport_id) throws DataAccessException;
+                            @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
 
     /**
