@@ -103,7 +103,7 @@ public class MoveCacheThread implements Runnable {
             FileWriter writer;
             try {
                 writer = new FileWriter("D:\\runtime_exception.txt", true);
-                writer.write(logOpenId);
+                writer.write(Thread.currentThread().getName() + "," + logOpenId);
                 writer.write("\r\n");
                 writer.close();
             } catch (IOException ioe) {
