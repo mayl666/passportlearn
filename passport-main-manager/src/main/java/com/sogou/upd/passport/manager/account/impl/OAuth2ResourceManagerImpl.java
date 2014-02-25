@@ -205,9 +205,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId, String username) {
-        Map resourceMap;
         String passportId = null;
-
         if (accessToken.startsWith(CommonConstant.SG_TOKEN_OLD_START)) {
             passportId = pcAccountTokenService.getPassportIdByOldToken(accessToken, clientSecret);
             return getPassportIdByUsername(passportId, accessToken, clientId, clientSecret, instanceId, username);
@@ -215,26 +213,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             passportId = pcAccountTokenService.getPassportIdByToken(accessToken, clientSecret);
             return getPassportIdByUsername(passportId, accessToken, clientId, clientSecret, instanceId, username);
         } else {
-            //sohu+token，获取passportId
-            Map map = shPlusTokenService.getResourceByToken(instanceId, accessToken, OAuth2ResourceTypeEnum.GET_FULL_USERINFO);
-            if (SHPlusConstant.AUTH_TOKEN_SUCCESS.equals(map.get("result"))) {
-                resourceMap = (Map) map.get(RESOURCE);
-                Map dataMap = (Map) resourceMap.get(DATA);
-                String sname = (String) dataMap.get(SNAME);
-                String sid = (String) dataMap.get(SID);
-                passportId = snamePassportMappingService.queryPassportIdBySid(sid);
-                //处理11.26号数据迁移以后注册的账号
-                if (StringUtils.isBlank(passportId)) {
-                    if (AccountDomainEnum.isPassportId(username)) {
-                        //如果username包含@,说明该username为有效账号
-                        snamePassportMappingService.insertSnamePassportMapping(sid, sname, username, "");
-                        passportId = username;
-                    }
-                }
-            }
-            shPlusTokenLog.info("[SHPlusToken] get shplus cookie by accesstoken,accessToken：" + accessToken);
+            return null;
         }
-        return passportId;
     }
 
     private String getPassportIdByUsername(String passportId,String accessToken, int clientId, String clientSecret, String instanceId, String username){

@@ -87,7 +87,7 @@
 </div>
 #end
 </body>
-<script type="text/javascript" src="/./static/js/pcaccount/prototype.js?t=201308221425"></script>
-<script type="text/javascript" src="/./static/js/pcaccount/pclogin.js?t=201308221425"></script>
+<script type="text/javascript" src="http://s.account.sogoucdn.com/u/pcaccount/prototype.js?t=20140213"></script>
+<script type="text/javascript" src="http://s.account.sogoucdn.com/u/pcaccount/pclogin.js?t=20140213"></script>
 </html>
 <!--zly-->

@@ -153,10 +153,10 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return result;
             }
             //3.connect_relation根据参数决定是否新增
-            ConnectRelation connectRelation = null;
-            if (isBuildQuery) {
-                connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
-            }
+//            ConnectRelation connectRelation = null;
+//            if (isBuildQuery) {
+            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
+//            }
             if (connectRelation == null) {
                 connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
@@ -168,7 +168,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
         } catch (ServiceException se) {
-            logger.error("[connect]method rebuildConnectAccount ServiceException: database operation error.{}", se);
+            logger.error("[connect]method buildConnectAccount ServiceException: database operation error.{}", se);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (Exception e) {
             logger.error("[connect] method buildConnectAccount error.{}", e);
@@ -234,14 +234,16 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             if (!Strings.isNullOrEmpty(refreshToken)) {
                 OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
                 //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
-                updateConnectToken(connectConfig.getAppKey(), provider, oAuthTokenVO);
+                result = updateConnectToken(connectConfig.getAppKey(), provider, oAuthTokenVO);
             } else {
                 //refreshToken为空，返回错误状态码
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST);
+                result.setCode(ErrorUtil.CONNECT_TOKEN_INVALID);
                 return result;
             }
-            result.setCode(ErrorUtil.CONNECT_TOKEN_INVALID);
-            return result;
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.CONNECT_TOKEN_INVALID);
+                return result;
+            }
         } else {
             //accessToken有效直接返回
             result.setSuccess(true);
@@ -262,6 +264,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 if (connectToken != null) {
                     //判断accessToken是否过期，是否需要刷新
                     result = verifyRefreshAccessToken(connectToken, provider, connectConfig);
+                    if (result.isSuccess()) {
+                        connectToken = (ConnectToken) result.getModels().get("connectToken");
+                    }
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                     return result;
@@ -293,7 +298,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
             connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
             connectToken.setUpdateTime(new Date());
-            boolean isUpdateSuccess = connectTokenService.updateConnectToken(connectToken);
+            boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
             if (isUpdateSuccess) {
                 result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
                 if (!result.isSuccess()) {

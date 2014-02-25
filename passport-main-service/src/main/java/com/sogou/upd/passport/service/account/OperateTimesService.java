@@ -222,20 +222,6 @@ public interface OperateTimesService {
     public boolean isUserInBlackList(String username, String ip) throws ServiceException;
 
     /**
-     * 将username添加到登录黑名单中
-     * @param username
-     * @throws ServiceException
-     */
-    public void addUserNameToLoginBlackList(String username) throws ServiceException;
-
-    /**
-     * 将ip添加到登录黑名单中
-     * @param ip
-     * @throws ServiceException
-     */
-    public void addIPToLoginBlackList(String ip) throws ServiceException;
-
-    /**
      * 检查用户名或者ip是否在白名单中
      * @param username
      * @param ip
@@ -251,4 +237,22 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean isLoginTimesForBlackList(String username, String ip) throws ServiceException;
+
+    /**
+     * 检查用户ip是否中黑名单
+     *
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean isMobileSendSMSInBlackList(String ip) throws ServiceException;
+
+
+    /**
+     * 发短信次数
+     *
+     * @param ip
+     * @throws ServiceException
+     */
+    public void incSendTimesForMobile(final String ip) throws ServiceException;
 }

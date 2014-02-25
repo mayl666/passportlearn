@@ -1,10 +1,10 @@
-package com.sogou.upd.passport.dao.shplustransfer;
+package com.sogou.upd.passport.dao.datatransfertest.shplustransfer;
 
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.dao.shplustransfer.DO.SohuPassportSidMapping;
+import com.sogou.upd.passport.dao.datatransfertest.shplustransfer.DO.SohuPassportSidMapping;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
