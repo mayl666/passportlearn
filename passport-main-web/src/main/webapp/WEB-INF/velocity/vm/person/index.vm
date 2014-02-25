@@ -74,7 +74,7 @@
                         <div class="form-item">
     <label for="NicknameIpt">昵称：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require nickname" type="text" name="nickname" id="NicknameIpt" value="" data-desc="请输入您的昵称" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require nickname" type="text" name="uniqname" id="NicknameIpt" value="" data-desc="请输入您的昵称" value="" class="" placeholder=""/>
     </span>
 </div>
                         <div class="form-item">
