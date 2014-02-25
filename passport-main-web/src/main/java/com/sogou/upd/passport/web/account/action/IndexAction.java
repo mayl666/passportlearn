@@ -46,7 +46,7 @@ public class IndexAction extends BaseController {
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId));
+                result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {

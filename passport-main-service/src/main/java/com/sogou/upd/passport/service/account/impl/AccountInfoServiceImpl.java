@@ -105,4 +105,34 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     private String buildAccountInfoKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
     }
+
+    @Override
+    public boolean updateAccountInfo(AccountInfo accountInfo) throws ServiceException{
+        Result result = new APIResultSupport(false);
+        try {
+            String passportId= accountInfo.getPassportId();
+            int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
+            if (row != 0) {
+                // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
+                String cacheKey = buildAccountInfoKey(passportId);
+                AccountInfo accountInfoTmp=null;
+                if ((accountInfoTmp = (AccountInfo) redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
+                    accountInfoTmp.setBirthday(accountInfo.getBirthday());
+                    accountInfoTmp.setCity(accountInfo.getCity());
+                    accountInfoTmp.setGender(accountInfo.getGender());
+                    accountInfoTmp.setProvince(accountInfo.getProvince());
+                    accountInfoTmp.setFullname(accountInfo.getFullname());
+                    accountInfoTmp.setPersonalid(accountInfo.getPersonalid());
+                    accountInfoTmp.setModifyip(accountInfo.getModifyip());
+                } else {
+                    accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
+                }
+                redisUtils.set(cacheKey, accountInfoTmp);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
 }

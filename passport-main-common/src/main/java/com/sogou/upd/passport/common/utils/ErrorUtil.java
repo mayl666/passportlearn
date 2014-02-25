@@ -162,6 +162,7 @@ public class ErrorUtil {
     //昵称包含限制词
     public static final String ERR_CODE_UNIQNAME_FORBID = "20249";
 
+
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
     /* ============================================================================ */
@@ -354,6 +355,11 @@ public class ErrorUtil {
 
     public static final String ERR_CODE_ERROR_SERVERNAME = "30710";
 
+    //个人信息修改失败
+    public static final String ERR_CODE_UPDATE_USERINFO = "30801";
+    //获取个人资料失败
+    public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
+
     public ErrorUtil() {
         super();
     }
@@ -479,6 +485,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_PHOTO_TO_LARGE, "上传图片过大，不能超过3M");
         ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
         ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
+
+        ERR_CODE_MSG_MAP.put(ERR_CODE_UPDATE_USERINFO, "个人信息修改失败");
+        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_ACCOUNT_INFO, "获取个人信息失败");
 
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
