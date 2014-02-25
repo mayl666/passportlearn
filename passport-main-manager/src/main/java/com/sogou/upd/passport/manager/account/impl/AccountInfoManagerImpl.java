@@ -234,9 +234,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 String []birthdayArr=birthday.split("-");
                 String month=birthdayArr[1];
                 if(month.startsWith("0")){
-                    month="0"+String.valueOf(Integer.parseInt(month)+1);
+                    month="0"+String.valueOf(Integer.parseInt(month));
                 } else{
-                    month=String.valueOf(Integer.parseInt(month)+1);
+                    month=String.valueOf(Integer.parseInt(month));
                 }
                 if("010".equals(month)){
                     month="10";

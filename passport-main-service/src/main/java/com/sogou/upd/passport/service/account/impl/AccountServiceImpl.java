@@ -503,7 +503,7 @@ public class AccountServiceImpl implements AccountService {
                 if (row > 0) {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
-                    redisUtils.set(cacheKey, account);
+                    dbShardRedisUtils.set(cacheKey, account);
 
                     //移除原来映射表
                     if (removeUniqName(oldUniqName)) {
@@ -535,7 +535,7 @@ public class AccountServiceImpl implements AccountService {
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setAvatar(avatar);
-                redisUtils.set(cacheKey, account);
+                dbShardRedisUtils.set(cacheKey, account);
                 return true;
             }
         } catch (Exception e) {
