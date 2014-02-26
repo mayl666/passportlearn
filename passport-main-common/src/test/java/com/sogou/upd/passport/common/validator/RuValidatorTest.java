@@ -58,6 +58,14 @@ public class RuValidatorTest  extends TestCase {
         result=ru.isValid(url,null);
         assertEquals(true,result);
 
+        url="http://k.sogou.com:80/touch/";
+        result=ru.isValid(url,null);
+        assertEquals(true,result);
+
+        url="http://k.sogou.com:80";
+        result=ru.isValid(url,null);
+        assertEquals(true,result);
+
 
     }
 }
