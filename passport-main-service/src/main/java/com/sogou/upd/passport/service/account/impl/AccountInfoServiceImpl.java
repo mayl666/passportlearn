@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-26 Time: 下午2:38 To change this template use
  * File | Settings | File Templates.
@@ -124,6 +126,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                     accountInfoTmp.setFullname(accountInfo.getFullname());
                     accountInfoTmp.setPersonalid(accountInfo.getPersonalid());
                     accountInfoTmp.setModifyip(accountInfo.getModifyip());
+                    accountInfoTmp.setUpdate_time(new Date());
                 } else {
                     accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
