@@ -29,6 +29,10 @@ public class AccountInfo {
     //身份证号
     private String personalid;
 
+    private Date createTime;
+    private Date update_time;
+
+
     public AccountInfo(String passportId) {
         this.passportId = passportId;
     }
@@ -130,5 +134,21 @@ public class AccountInfo {
 
     public void setPersonalid(String personalid) {
         this.personalid = personalid;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(Date update_time) {
+        this.update_time = update_time;
     }
 }
