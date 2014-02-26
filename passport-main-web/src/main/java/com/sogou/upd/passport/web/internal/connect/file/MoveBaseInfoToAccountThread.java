@@ -64,7 +64,7 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                     id = accountDAO.insertOrUpdateAccount(passportId, account);
                 } catch (Exception e) {
                     //1.插入或更新表异常
-                    FileWriter writer = new FileWriter("D:\\transfer\\account_base_info\\update_exception.txt", true);
+                    FileWriter writer = new FileWriter("/search/passport/log/liuling/update_exception.txt", true);
                     writer.write(passportId);
                     writer.write("\r\n");
                     writer.close();
@@ -72,7 +72,7 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                 }
                 if (id == 0) {
                     //2.插入更新表失败
-                    FileWriter writer = new FileWriter("D:\\transfer\\account_base_info\\update_failed.txt", true);
+                    FileWriter writer = new FileWriter("/search/passport/log/liuling/update_failed.txt", true);
                     writer.write(passportId);
                     writer.write("\r\n");
                     writer.close();
