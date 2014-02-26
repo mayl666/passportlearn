@@ -90,7 +90,7 @@ public class QQLightOpenApiController extends BaseConnectController {
                         resultString = resp;
                         result.setSuccess(true);
                     } else {
-                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                         resultString = result.toString();
                     }
                 } else {
