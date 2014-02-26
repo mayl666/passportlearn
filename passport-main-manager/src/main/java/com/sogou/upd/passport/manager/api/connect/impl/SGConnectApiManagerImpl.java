@@ -182,9 +182,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             ConnectToken connectToken;
             if (connectConfig != null) {
                 connectToken = connectTokenService.queryConnectToken(passportId, provider, connectConfig.getAppKey());
-                if (connectToken != null && verifyAccessToken(connectToken, connectConfig)) {           //判断accessToken是否过期，是否需要刷新
-                    connectToken = (ConnectToken) result.getModels().get("connectToken");
-                } else {
+                if (connectToken == null || !verifyAccessToken(connectToken, connectConfig)) {           //判断accessToken是否过期，是否需要刷新
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                     return result;
                 }
@@ -192,6 +190,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
                 return result;
             }
+            result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
             logger.error("method[obtainConnectToken] obtain connect token from sogou db error.{}", e);
