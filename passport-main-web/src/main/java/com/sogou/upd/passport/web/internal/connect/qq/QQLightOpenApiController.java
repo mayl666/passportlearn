@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -105,7 +104,11 @@ public class QQLightOpenApiController extends BaseConnectController {
             resultString = result.toString();
         } finally {
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String code = result.getCode();
+            if (!resultString.contains("\"ret\":0")) {      //以后改，这样硬编码不行
+                code = ErrorUtil.CONNECT_USER_DEFINED_ERROR;
+            }
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), code, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage("qqResult", resultString);
