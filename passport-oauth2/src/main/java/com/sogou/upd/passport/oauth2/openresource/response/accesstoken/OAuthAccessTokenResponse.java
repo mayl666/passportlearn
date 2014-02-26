@@ -17,6 +17,7 @@ public abstract class OAuthAccessTokenResponse extends OAuthClientResponse {
     protected static final Long RToken_ExpiresIn = 60 * 24 * 3600L * 1000;
 
     public abstract String getOpenid();
+
     public abstract String getNickName();
 
     public String getAccessToken() {

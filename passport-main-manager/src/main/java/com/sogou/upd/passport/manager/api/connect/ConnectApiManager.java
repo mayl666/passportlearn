@@ -25,16 +25,16 @@ public interface ConnectApiManager {
      * @return
      */
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid,
-                                       int provider, String ip,String httpOrHttps) throws OAuthProblemException;
+                                       int provider, String ip, String httpOrHttps) throws OAuthProblemException;
 
     /**
      * 同步创建第三方账号的接口
      *
-     * @param providerStr
+     * @param provider
      * @param oAuthTokenVO
      * @return
      */
-    public Result buildConnectAccount(String providerStr, OAuthTokenVO oAuthTokenVO);
+    public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO);
 
     /**
      * 根据第三方QQ用户信息获取用户的openid及accessToken
@@ -43,4 +43,6 @@ public interface ConnectApiManager {
      * @return
      */
     public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
+
+
 }

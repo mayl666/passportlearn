@@ -21,14 +21,6 @@ public interface RegManager {
      * @param regParams 参数封装的对象
      * @return Result格式的返回值，提示注册成功信息
      */
-    public Result mobileRegister(MobileRegParams regParams, String ip);
-
-    /**
-     * 手机用户正式注册接口
-     *
-     * @param regParams 参数封装的对象
-     * @return Result格式的返回值，提示注册成功信息
-     */
     public Result webRegister(WebRegisterParams regParams, String ip) throws Exception;
 
     /**

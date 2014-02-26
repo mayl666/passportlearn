@@ -36,11 +36,4 @@ public interface SHPlusTokenService {
      */
     public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException;
 
-    /**
-     * 根据sid获取Passportid
-     * @param sid
-     * @return
-     * @throws ServiceException
-     */
-    public String getSohuPlusPassportIdBySid(String sid) throws ServiceException;
 }

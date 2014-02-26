@@ -11,6 +11,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -42,7 +43,7 @@ public class QQLightOpenApiController extends BaseConnectController {
     @Autowired
     private QQLightOpenApiManager sgQQLightOpenApiManager;
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
+    private ConnectApiManager sgConnectApiManager;
 
     /**
      * 根据用户信息，实现qq图标点亮
@@ -76,13 +77,13 @@ public class QQLightOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getOpenid());
-            Result openResult = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             resultString = openResult.toString();
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                Map<String, String> accessTokenMap = (Map<String, String>) openResult.getModels().get("result");
-                String openId = accessTokenMap.get("open_id").toString();
-                String accessToken = accessTokenMap.get("access_token").toString();
+                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                String openId = connectToken.getOpenid();
+                String accessToken = connectToken.getAccessToken();
                 String resp;
                 if (!Strings.isNullOrEmpty(openId) && !Strings.isNullOrEmpty(accessToken)) {
                     resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params);

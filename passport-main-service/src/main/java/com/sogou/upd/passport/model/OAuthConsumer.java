@@ -12,7 +12,6 @@ public class OAuthConsumer {
     private String webUserAuthzUrl;
     private String accessTokenUrl;
     private String refreshAccessTokenUrl; // renren支持
-    private String openIdUrl;  // qq支持
     private String callbackUrl;
 
     private String wapUserAuthzUrl;  //qq wap支持
@@ -42,14 +41,6 @@ public class OAuthConsumer {
 
     public void setRefreshAccessTokenUrl(String refreshAccessTokenUrl) {
         this.refreshAccessTokenUrl = refreshAccessTokenUrl;
-    }
-
-    public String getOpenIdUrl() {
-        return openIdUrl;
-    }
-
-    public void setOpenIdUrl(String openIdUrl) {
-        this.openIdUrl = openIdUrl;
     }
 
     public String getCallbackUrl() {

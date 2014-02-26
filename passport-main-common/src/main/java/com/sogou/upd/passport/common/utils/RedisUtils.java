@@ -615,4 +615,20 @@ public class RedisUtils {
 
         }
     }
+
+    /**
+     * 获取key 的剩余时间
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public long getExpireTime(String key) throws Exception {
+        long expireSeconds = -1;
+        try {
+            expireSeconds = redisTemplate.getExpire(key);
+        } catch (Exception e) {
+            logger.error("[Cache] getExpireTime cache fail, key:" + key, e);
+        }
+        return expireSeconds;
+    }
 }

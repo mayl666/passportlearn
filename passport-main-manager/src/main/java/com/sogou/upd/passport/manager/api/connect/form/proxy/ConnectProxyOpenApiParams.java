@@ -19,4 +19,5 @@ public class ConnectProxyOpenApiParams extends BaseOpenApiParams {
     public void setPf(String pf) {
         this.pf = pf;
     }
+
 }

@@ -54,8 +54,7 @@ public class JUnitActionBase {
             context.refresh();
             msc.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 
-            handlerMapping = (HandlerMapping) context
-                    .getBean(DefaultAnnotationHandlerMapping.class);
+            handlerMapping = context.getBean(DefaultAnnotationHandlerMapping.class);
             handlerAdapter = (HandlerAdapter) context.getBean(context.getBeanNamesForType(AnnotationMethodHandlerAdapter.class)[0]);
         }
     }
