@@ -215,13 +215,12 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
      * 根据refreshToken是否过期，来决定是否用refreshToken来刷新accessToken
      *
      * @param connectToken
-     * @param provider
      * @param connectConfig
      * @return
      * @throws IOException
      * @throws OAuthProblemException
      */
-    private Result verifyRefreshAccessToken(ConnectToken connectToken, int provider, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
+    private Result verifyRefreshAccessToken(ConnectToken connectToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
         Result result = new APIResultSupport(false);
         if (!isValidToken(connectToken.getUpdateTime(), connectToken.getExpiresIn())) {
             String refreshToken = connectToken.getRefreshToken();
@@ -229,7 +228,18 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             if (!Strings.isNullOrEmpty(refreshToken)) {
                 OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
                 //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
-                result = updateConnectToken(connectConfig.getAppKey(), provider, oAuthTokenVO);
+                connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
+                connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
+                connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
+                connectToken.setUpdateTime(new Date());
+                boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+                if (isUpdateSuccess) {
+                    result.setSuccess(true);
+                    result.setDefaultModel("connectToken", connectToken);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
+                    return result;
+                }
             } else {
                 //refreshToken为空，返回错误状态码
                 result.setCode(ErrorUtil.CONNECT_TOKEN_INVALID);
@@ -258,7 +268,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 connectToken = connectTokenService.queryConnectToken(baseOpenApiParams.getUserid(), provider, connectConfig.getAppKey());
                 if (connectToken != null) {
                     //判断accessToken是否过期，是否需要刷新
-                    result = verifyRefreshAccessToken(connectToken, provider, connectConfig);
+                    result = verifyRefreshAccessToken(connectToken,connectConfig);
                     if (result.isSuccess()) {
                         connectToken = (ConnectToken) result.getModels().get("connectToken");
                     }
@@ -273,50 +283,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
             logger.error("method[obtainConnectToken] obtain connect token from sogou db error.{}", e);
-        }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
-     * accessToken双写搜狗、搜狐数据库
-     *
-     * @param appKey
-     * @param provider
-     * @param oAuthTokenVO
-     * @return
-     */
-    private Result updateConnectToken(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
-        Result result = new APIResultSupport(false);
-        try {
-            ConnectToken connectToken = new ConnectToken();
-            connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
-            connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
-            connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
-            connectToken.setUpdateTime(new Date());
-            boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
-//            if (isUpdateSuccess) {
-//                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
-//                if (!result.isSuccess()) {
-//                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-//                    return result;
-//                }
-//            } else {
-//                result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-//                return result;
-//            }
-//            result.setSuccess(true);
-//            result.setDefaultModel("connectToken", connectToken);
-
-            if (isUpdateSuccess) {
-                result.setSuccess(true);
-                result.setDefaultModel("connectToken", connectToken);
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-                return result;
-            }
-        } catch (Exception e) {
-            logger.error("[ConnectToken] manager method updateConnectToken error.{}", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
     }

@@ -4,7 +4,6 @@ import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.junit.Test;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -29,8 +28,8 @@ public class SGStringHashRouterTest extends TestCase {
      * 测试sg-string-hash计算是否正确
      */
     public void testRoute() {
-        router = new SGStringHashRouter("id", "connect_relation_{0}", 32);
-        String id = "08E032F95A441B8F125A121E6251F88E@qq.sohu.com";
+        router = new SGStringHashRouter("id", "connect_relation_{0}", 3);
+        String id = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");

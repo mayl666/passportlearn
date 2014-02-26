@@ -4,7 +4,6 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
