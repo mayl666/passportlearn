@@ -105,7 +105,7 @@ public class QQLightOpenApiController extends BaseConnectController {
         } finally {
             //用户注册log
             String code = result.getCode();
-            if (!resultString.contains("ret:0")) {
+            if (!resultString.contains("\"ret\":0")) {      //以后改，这样硬编码不行
                 code = ErrorUtil.CONNECT_USER_DEFINED_ERROR;
             }
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), code, getIp(request));
