@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.internal.connect.file;
+package com.sogou.upd.passport.web.internal.debug;
 
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;

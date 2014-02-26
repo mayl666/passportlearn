@@ -1,23 +1,12 @@
-package com.sogou.upd.passport.web.internal.connect.file;
+package com.sogou.upd.passport.web.internal.debug;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
-import com.sogou.upd.passport.model.OAuthConsumer;
-import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
-import com.sogou.upd.passport.service.account.AccountBaseInfoService;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.connect.ConnectAuthService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 /**

@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.internal.connect.file;
+package com.sogou.upd.passport.web.internal.debug;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.model.OAuthConsumer;
