@@ -294,18 +294,18 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
             connectToken.setUpdateTime(new Date());
             boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
-//            if (isUpdateSuccess) {
-//                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
-//                if (!result.isSuccess()) {
-//                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-//                    return result;
-//                }
-//            } else {
-//                result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-//                return result;
-//            }
-//            result.setSuccess(true);
-//            result.setDefaultModel("connectToken", connectToken);
+            if (isUpdateSuccess) {
+                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
+                if (!result.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
+                    return result;
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
+                return result;
+            }
+            result.setSuccess(true);
+            result.setDefaultModel("connectToken", connectToken);
 
             if (isUpdateSuccess) {
                 result.setSuccess(true);
