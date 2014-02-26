@@ -276,7 +276,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_PASSTHROUGH = "30018";
     //不支持指定编码以及不支持指定的加密方法
     public static final String ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR = "30020";
-    //找不到access_token
+    //access_token不存在或已失效
     public static final String ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND = "30021";
     //第三方返回openapi调用失败
     public static final String ERR_CODE_CONNECT_OPENAPI_ERROR = "30023";
@@ -490,7 +490,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL, "用户取消授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类第三方账号调用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH, "透传失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "找不到access_token");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "第三方access_token不存在或失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPENAPI_ERROR, "第三方返回openapi调用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_PARAMETER, "参数无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_FAILED, "第三方Api调用失败");

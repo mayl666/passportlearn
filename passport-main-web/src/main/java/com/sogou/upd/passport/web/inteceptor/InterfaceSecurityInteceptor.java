@@ -67,6 +67,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
 //                    } else {
 //                        result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
 //                    }
+                    return true;
                 } else {
                     result.setCode(ErrorUtil.INVALID_CLIENTID);
                 }
