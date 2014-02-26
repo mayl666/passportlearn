@@ -414,7 +414,7 @@ public class SecureAction extends BaseController {
 
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
         model.addAttribute("data", result.toString());
-        return "redirect:"+params.getRu();
+        return "redirect:" + params.getRu();
     }
 
     /*
@@ -423,31 +423,52 @@ public class SecureAction extends BaseController {
     @RequestMapping(value = "/sendsms", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
-    public Object sendSmsSecMobile(BaseWebParams params) throws Exception {
+    public Object sendSmsSecMobile(BaseWebParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String userId = hostHolder.getPassportId();
-        int clientId = Integer.parseInt(params.getClient_id());
+        String finalCode = null;
+        String ip = getIp(request);
+        String userIdInLog = null;
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
 
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result.toString();
-            case THIRD:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result.toString();
-            case PHONE:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
-                return result.toString();
-        }
+            String userId = hostHolder.getPassportId();
+            userIdInLog = userId;
+            int clientId = Integer.parseInt(params.getClient_id());
 
-        // result = secureManager.sendMobileCodeByPassportId(userId, clientId);
-        result = secureManager.sendMobileCodeOld(userId, clientId);
+            switch (AccountDomainEnum.getAccountDomain(userId)) {
+                case SOHU:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                    return result.toString();
+                case THIRD:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                    return result.toString();
+                case PHONE:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                    return result.toString();
+            }
+
+            // result = secureManager.sendMobileCodeByPassportId(userId, clientId);
+            result = secureManager.sendMobileCodeOld(userId, clientId);
+        } catch (Exception e) {
+            logger.error("method[sendSmsSecMobile] send mobile sms to old mobile error.{}", e);
+        } finally {
+            String logCode;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
+            //web页面手机注册时，发送手机验证码
+            UserOperationLog userOperationLog = new UserOperationLog(userIdInLog, request.getRequestURI(), params.getClient_id(), logCode, ip);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 
@@ -457,35 +478,55 @@ public class SecureAction extends BaseController {
     @RequestMapping(value = "/sendsmsnew", method = RequestMethod.GET)
     @ResponseBody
     @LoginRequired
-    public Object sendSmsNewMobile(WebMobileParams params) throws Exception {
+    public Object sendSmsNewMobile(WebMobileParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        // TODO:要不要在检验smscode时，验证userId
-        String userId = hostHolder.getPassportId();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String newMobile = params.getNew_mobile();
+        String finalCode = null;
+        String ip = getIp(request);
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
 
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result.toString();
-            case THIRD:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result.toString();
-            case PHONE:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
-                return result.toString();
-        }
+            // TODO:要不要在检验smscode时，验证userId
+            String userId = hostHolder.getPassportId();
+            int clientId = Integer.parseInt(params.getClient_id());
+            String newMobile = params.getNew_mobile();
 
-        // result = secureManager.sendMobileCode(newMobile, clientId);
-        result = secureManager.sendMobileCodeNew(userId, clientId, newMobile);
+            switch (AccountDomainEnum.getAccountDomain(userId)) {
+                case SOHU:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                    return result.toString();
+                case THIRD:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                    return result.toString();
+                case PHONE:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                    return result.toString();
+            }
+
+            // result = secureManager.sendMobileCode(newMobile, clientId);
+            result = secureManager.sendMobileCodeNew(userId, clientId, newMobile);
+        } catch (Exception e) {
+            logger.error("method[sendSmsNewMobile] send mobile sms to new mobile error.{}", e);
+        } finally {
+            String logCode;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
+            //web页面手机注册时，发送手机验证码
+            UserOperationLog userOperationLog = new UserOperationLog(params.getNew_mobile(), request.getRequestURI(), params.getClient_id(), logCode, ip);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
+
 
     /*
      * 绑定密保手机

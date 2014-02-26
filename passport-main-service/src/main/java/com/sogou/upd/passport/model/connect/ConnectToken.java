@@ -18,7 +18,7 @@ public class ConnectToken {
     private String accessToken; // 第三方access_token
     private long expiresIn; // 第三方access_token有效期
     private String refreshToken; // 第三方refresh_token
-    private String connectUniqname;  // 第三方昵称
+    private String connectUniqname;  // 第三方昵称   写入数据库时，一定要转码为utf8，不然中文乱码插入失败
     private String avatarSmall;   // 第三方头像（小图）
     private String avatarMiddle;  // 第三方头像（中图）
     private String avatarLarge;  // 第三方头像（大图）

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.connect.file;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.ConnectTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -61,28 +62,52 @@ public class MoveCacheThread implements Runnable {
                 Date date = sdf.parse(dateString);
                 long expiredIn = Long.parseLong(rowString[8]);   //token有效期长
                 if (isValidToken(date, expiredIn)) { //只验证有效的token
-                    ConnectToken connectToken = connectTokenService.queryConnectToken(passportIdString, provider, appKey);
+                    ConnectToken connectToken;
+                    try {
+                        connectToken = connectTokenService.queryConnectToken(passportIdString, provider, appKey);
+                    } catch (Exception e) {
+                        FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_not_exist.txt", true);
+                        writer.write(passportIdString + "," + sohuFileToken + ",error:query token failed");
+                        writer.write("\r\n");
+                        writer.close();
+                        count++;
+                        continue;
+                    }
                     if (connectToken == null) {
                         //1.sohu导出的文件中有，但Sogou库中没有，需要记录下来,格式为：openid,sohuFileToken
                         FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_not_exist.txt", true);
-                        writer.write(passportIdString + "," + sohuFileToken);
+                        writer.write(passportIdString + "," + sohuFileToken + ",error:query token null");
                         writer.write("\r\n");
                         writer.close();
+                        count++;
+                        continue;
                     } else {
                         String sogouDBToken = connectToken.getAccessToken();
                         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
                         baseOpenApiParams.setOpenid(passportIdString);
                         baseOpenApiParams.setUserid(passportIdString);
-                        Result result = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+                        Result result = new APIResultSupport(false);
+                        try {
+                            result = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+                        } catch (Exception e) {
+                            FileWriter writer = new FileWriter("/search/passport/log/liuling/sohu_other.txt", true);
+                            writer.write(passportIdString + "," + result.toString() + ",error:obtain token failed");
+                            writer.write("\r\n");
+                            writer.close();
+                            count++;
+                            continue;
+                        }
                         if (result.isSuccess()) {
                             HashMap<String, String> map = (HashMap<String, String>) result.getModels().get("result");
                             String sohuOnLineToken = map.get("access_token").toString();
                             if (!sohuOnLineToken.equalsIgnoreCase(sogouDBToken)) {
                                 //2.sohu导出文件中存在的token与从sogou库中查出的token不一样，需要记录下来，格式为：passportId，sohuFileToken，sohuOnLineToken,sogouDBToken
                                 FileWriter writer = new FileWriter("/search/passport/log/liuling/sogou_sohu_different.txt", true);
-                                writer.write(passportIdString + "," + sohuFileToken + "," + sohuOnLineToken + "," + sogouDBToken);
+                                writer.write(passportIdString + "," + sohuFileToken + "," + sohuOnLineToken + "," + sogouDBToken + ",error:sohu sogou token is not equals");
                                 writer.write("\r\n");
                                 writer.close();
+                                count++;
+                                continue;
                             }
                         } else {
                             //3.其它原因导致没有查询成功的token，需要记录下来，格式为：passportId,sohu返回结果信息
@@ -90,6 +115,8 @@ public class MoveCacheThread implements Runnable {
                             writer.write(passportIdString + "," + result.toString());
                             writer.write("\r\n");
                             writer.close();
+                            count++;
+                            continue;
                         }
                     }
                 }
