@@ -42,7 +42,7 @@ public class QQLightOpenApiController extends BaseConnectController {
     @Autowired
     private QQLightOpenApiManager sgQQLightOpenApiManager;
     @Autowired
-    private ConnectApiManager connectApiManager;
+    private ConnectApiManager sgConnectApiManager;
 
     /**
      * 根据用户信息，实现qq图标点亮
@@ -76,7 +76,7 @@ public class QQLightOpenApiController extends BaseConnectController {
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setUserid(params.getUserid());
             baseOpenApiParams.setOpenid(params.getOpenid());
-            Result openResult = connectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
             resultString = openResult.toString();
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
