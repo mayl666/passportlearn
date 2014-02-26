@@ -109,7 +109,8 @@ public class TestCheckSohuDataController {
     @ResponseBody
     public Object moveBaseInfoToAccount() throws Exception {
         long time = System.currentTimeMillis();
-        String fileRoot = "/search/passport/log/liuling/";
+//        String fileRoot = "/search/passport/log/liuling/";
+        String fileRoot = "D:\\transfer\\account_base_info\\";
         //从03线上库中的account_base_info表中导出的信息第三方昵称、头像非空的数据
         String[] fileNames = {"baidu.txt", "qq.txt", "renren.txt", "sina.txt"};
 
