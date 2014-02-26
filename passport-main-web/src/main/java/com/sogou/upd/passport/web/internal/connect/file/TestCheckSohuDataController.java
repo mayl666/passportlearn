@@ -55,6 +55,7 @@ public class TestCheckSohuDataController {
             throws Exception {
         long time = System.currentTimeMillis();
         String fileRoot = "/search/passport/log/liuling/";
+        //从05库的open_token_info_utf8导出的sohu的10个文件
         String[] fileNames = {"open_token_1.txt", "open_token_2.txt", "open_token_3.txt", "open_token_4.txt", "open_token_5.txt", "open_token_6.txt", "open_token_7.txt", "open_token_8.txt", "open_token_9.txt", "open_token_10.txt"};
 
         int size = fileNames.length;
@@ -80,7 +81,7 @@ public class TestCheckSohuDataController {
     public Object addConnectUserInfo() throws Exception {
         long time = System.currentTimeMillis();
         String fileRoot = "D:\\connect_token\\";
-        //从03线上库中的connect_token32张表中导出的信息
+        //从03线上库中的connect_token的32张表中导出的数据
         String[] fileNames = {"connect_token_1.txt", "connect_token_2.txt", "connect_token_3.txt", "connect_token_4.txt"};
 
         int size = fileNames.length;
@@ -109,8 +110,8 @@ public class TestCheckSohuDataController {
     public Object moveBaseInfoToAccount() throws Exception {
         long time = System.currentTimeMillis();
         String fileRoot = "D:\\transfer\\account_base_info\\";
-        //从03线上库中的connect_token32张表中导出的信息
-        String[] fileNames = {"connect_token_1.txt"};
+        //从03线上库中的account_base_info表中导出的信息第三方昵称、头像非空的数据
+        String[] fileNames = {"baidu.txt", "qq.txt", "renren.txt", "sina.txt"};
 
         int size = fileNames.length;
 
@@ -128,7 +129,7 @@ public class TestCheckSohuDataController {
     }
 
     /**
-     * 将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
+     * 将03线上库中account表中第三方账号的个人资料从sohu移入03库中的account_info表中，数据源用验证token的10个open_token_1至open_token_10
      *
      * @return
      * @throws Exception
@@ -137,9 +138,9 @@ public class TestCheckSohuDataController {
     @ResponseBody
     public Object getSecureInfoToAccountInfo() throws Exception {
         long time = System.currentTimeMillis();
-        String fileRoot = "D:\\";
-        //从03线上库中的connect_token32张表中导出的信息
-        String[] fileNames = {"info_1.txt"};
+        String fileRoot = "D:\\transfer\\account_info\\";
+        //同验证token的数据源一致。见/check方法
+        String[] fileNames = {"open_token_1.txt", "open_token_2.txt", "open_token_3.txt", "open_token_4.txt", "open_token_5.txt", "open_token_6.txt", "open_token_7.txt", "open_token_8.txt", "open_token_9.txt", "open_token_10.txt"};
 
         int size = fileNames.length;
 
@@ -147,7 +148,7 @@ public class TestCheckSohuDataController {
 
         for (int i = 0; i < size; i++) {
             String fileName = fileRoot + fileNames[i];
-            service.execute(new SecureInfoToAccountThread(latch, fileName, proxyUserInfoApiManager, accountInfoService));
+            service.execute(new SecureInfoToAccountThread(latch, fileName, proxyUserInfoApiManager, accountInfoService, accountDAO));
         }
         latch.await();
         System.out.println("总执行时间：" + (System.currentTimeMillis() - time));
