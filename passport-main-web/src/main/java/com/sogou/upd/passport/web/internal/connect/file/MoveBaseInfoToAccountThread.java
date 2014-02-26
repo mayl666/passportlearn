@@ -53,10 +53,13 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                 String passportId = rowString[1]; //passportId;
                 logOpenId = passportId;
                 String uniqname = rowString[2];//第三方用户昵称
-                String avatar = rowString[3];//第三方用户头像
+                String avatar = null;
+                if(rowString.length == 4){
+                    avatar = rowString[3];//第三方用户头像
+                }
                 Account account = new Account();
                 account.setPassportId(passportId);
-                account.setUniqname(uniqname);
+                account.setUniqname(StringUtil.strToUTF8(uniqname));
                 account.setAvatar(avatar);
                 account.setPasswordtype(Account.NO_PASSWORD);
                 long id;
