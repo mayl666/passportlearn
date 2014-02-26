@@ -484,6 +484,30 @@ public class RedisUtils {
         operations.add(key, value);
     }
 
+
+    /**
+     * 从集合中删除一个元素
+     * @param key
+     * @param value
+     */
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_remStringFromSet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    public void srem(String key, String value) {
+        SetOperations operations = redisTemplate.opsForSet();
+        operations.remove(key, value);
+    }
+
+    /**
+     * 检查元素是否是集合中的成员
+     * @param key
+     * @param value
+     * @return
+     */
+    @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_remStringFromSet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    public boolean isMember(String key, String value) {
+        SetOperations operations = redisTemplate.opsForSet();
+        return operations.isMember(key,value);
+    }
+
     /*
      * 返回集合key中的所有成员，不存在的key视为空集合
      */
