@@ -33,7 +33,7 @@ public class TestCheckSohuDataController {
     @Autowired
     private ConnectAuthService connectAuthService;
 
-    private static ExecutorService service = Executors.newFixedThreadPool(300);
+    private static ExecutorService service = Executors.newFixedThreadPool(50);
 
     /**
      * 验证sohu导出的数据与sohu线上是否一致
@@ -75,7 +75,7 @@ public class TestCheckSohuDataController {
         long time = System.currentTimeMillis();
         String fileRoot = "D:\\";
         //从03线上库中的connect_token32张表中导出的信息
-        String[] fileNames = {"connect_token_1.txt"};
+        String[] fileNames = {"connect_token_111.txt", "connect_token_222.txt", "connect_token_333.txt", "connect_token_444.txt"};
 
         int size = fileNames.length;
 
