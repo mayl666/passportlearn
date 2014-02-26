@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.web.internal.connect.file;
 
+import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
+import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,17 @@ public class TestCheckSohuDataController {
     @Autowired
     private ConnectTokenService connectTokenService;
     @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
     private ConnectApiManager proxyConnectApiManager;
     @Autowired
+    private AccountInfoService accountInfoService;
+    @Autowired
     private ConnectAuthService connectAuthService;
+    @Autowired
+    private AccountDAO accountDAO;
 
-    private static ExecutorService service = Executors.newFixedThreadPool(300);
+    private static ExecutorService service = Executors.newFixedThreadPool(50);
 
     /**
      * 验证sohu导出的数据与sohu线上是否一致
@@ -65,16 +73,15 @@ public class TestCheckSohuDataController {
     /**
      * 线下方式调用第三方API补全第三方用户信息
      *
-     * @param params
      * @return
      */
     @RequestMapping(value = "/add")
     @ResponseBody
-    public Object addConnectUserInfo(UserOpenApiParams params) throws Exception {
+    public Object addConnectUserInfo() throws Exception {
         long time = System.currentTimeMillis();
         String fileRoot = "D:\\connect_token\\";
         //从03线上库中的connect_token32张表中导出的信息
-        String[] fileNames = {"connect_token_1.txt", "connect_token_2.txt","connect_token_3.txt", "connect_token_4.txt"};
+        String[] fileNames = {"connect_token_1.txt", "connect_token_2.txt", "connect_token_3.txt", "connect_token_4.txt"};
 
         int size = fileNames.length;
 
@@ -83,6 +90,64 @@ public class TestCheckSohuDataController {
         for (int i = 0; i < size; i++) {
             String fileName = fileRoot + fileNames[i];
             service.execute(new AddConnectUserInfoThread(latch, fileName, connectTokenService, connectAuthService));
+        }
+        latch.await();
+        System.out.println("总执行时间：" + (System.currentTimeMillis() - time));
+        return buildSuccess("", null);
+
+
+    }
+
+    /**
+     * 将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/move")
+    @ResponseBody
+    public Object moveBaseInfoToAccount() throws Exception {
+        long time = System.currentTimeMillis();
+        String fileRoot = "D:\\transfer\\account_base_info\\";
+        //从03线上库中的connect_token32张表中导出的信息
+        String[] fileNames = {"connect_token_1.txt"};
+
+        int size = fileNames.length;
+
+        CountDownLatch latch = new CountDownLatch(size);
+
+        for (int i = 0; i < size; i++) {
+            String fileName = fileRoot + fileNames[i];
+            service.execute(new MoveBaseInfoToAccountThread(latch, fileName, accountDAO));
+        }
+        latch.await();
+        System.out.println("总执行时间：" + (System.currentTimeMillis() - time));
+        return buildSuccess("", null);
+
+
+    }
+
+    /**
+     * 将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/info")
+    @ResponseBody
+    public Object getSecureInfoToAccountInfo() throws Exception {
+        long time = System.currentTimeMillis();
+        String fileRoot = "D:\\";
+        //从03线上库中的connect_token32张表中导出的信息
+        String[] fileNames = {"info_1.txt"};
+
+        int size = fileNames.length;
+
+        CountDownLatch latch = new CountDownLatch(size);
+
+        for (int i = 0; i < size; i++) {
+            String fileName = fileRoot + fileNames[i];
+            service.execute(new SecureInfoToAccountThread(latch, fileName, proxyUserInfoApiManager, accountInfoService));
         }
         latch.await();
         System.out.println("总执行时间：" + (System.currentTimeMillis() - time));
