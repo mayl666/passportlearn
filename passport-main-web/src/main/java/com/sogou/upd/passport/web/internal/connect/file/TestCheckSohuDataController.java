@@ -42,7 +42,7 @@ public class TestCheckSohuDataController {
     @Autowired
     private AccountDAO accountDAO;
 
-    private static ExecutorService service = Executors.newFixedThreadPool(300);
+    private static ExecutorService service = Executors.newFixedThreadPool(50);
 
     /**
      * 验证sohu导出的数据与sohu线上是否一致
