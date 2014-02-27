@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.web.internal.debug;
 
+import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
@@ -11,7 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -40,6 +45,8 @@ public class TestCheckSohuDataController {
     private ConnectAuthService connectAuthService;
     @Autowired
     private AccountDAO accountDAO;
+    @Autowired
+    private AccountBaseInfoDAO accountBaseInfoDAO;
 
     private static ExecutorService service = Executors.newFixedThreadPool(50);
 
@@ -100,7 +107,7 @@ public class TestCheckSohuDataController {
     }
 
     /**
-     * 将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
+     * 从文件移动废弃！！！将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
      *
      * @return
      * @throws Exception
@@ -120,10 +127,68 @@ public class TestCheckSohuDataController {
 
         for (int i = 0; i < size; i++) {
             String fileName = fileRoot + fileNames[i];
-            service.execute(new MoveBaseInfoToAccountThread(latch, fileName, accountDAO));
+//            service.execute(new MoveBaseInfoToAccountThread(latch, fileName, accountDAO));
         }
         latch.await();
         System.out.println("总执行时间：" + (System.currentTimeMillis() - time));
+        return buildSuccess("", null);
+
+
+    }
+
+    private List<List<AccountBaseInfo>> buildListRange(List<AccountBaseInfo> listConnectBaseInfo) throws IOException {
+        int dbsize = listConnectBaseInfo.size();
+        List<List<AccountBaseInfo>> listRange = new ArrayList<>();
+        int count = dbsize / 1000;
+        int start;
+        int end = -1;
+        for (int i = 0; i < count; i++) {
+            start = end + 1;
+            end = start + 999;
+            List<AccountBaseInfo> listItem = new ArrayList<>();
+            int index = start;
+            while (index <= end) {
+                listItem.add(listConnectBaseInfo.get(index));
+                index++;
+            }
+            listRange.add(listItem);
+        }
+        return listRange;
+    }
+
+
+    /**
+     * 从数据库表直接移动，将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/move/db")
+    @ResponseBody
+    public Object moveBaseInfoToAccountDB() throws Exception {
+        long time = System.currentTimeMillis();
+        int totalCount = accountBaseInfoDAO.getConnectTotalCount(); //记录总数
+        int pageSize = 10000; //每次处理记录的条数,暂定每次取1W
+        int pageCount;  //循环次数，也即处理次数
+        if (totalCount % pageSize == 0) {
+            pageCount = totalCount / pageSize;
+        } else {
+            pageCount = totalCount / pageSize + 1;
+        }
+        int currentPage = 0; //当前处理环数
+        for (int i = 0; i < pageCount; i++) {
+            int pageIndex = (pageSize + 1) * currentPage;
+            List<AccountBaseInfo> listConnectBaseInfo = accountBaseInfoDAO.listConnectBaseInfoByPage(pageIndex, pageSize);
+            List<List<AccountBaseInfo>> listRange = buildListRange(listConnectBaseInfo);
+            CountDownLatch latch = new CountDownLatch(listRange.size());
+            for (int j = 0; j < listRange.size(); j++) {
+                List<AccountBaseInfo> listItem = listRange.get(j);
+                service.execute(new MoveBaseInfoToAccountThread(latch, accountDAO, listItem));
+            }
+            latch.await();
+            System.out.println(i + "次循环总执行时间：" + (System.currentTimeMillis() - time));
+            currentPage++;
+        }
         return buildSuccess("", null);
 
 
