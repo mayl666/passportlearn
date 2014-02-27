@@ -10,7 +10,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
@@ -61,7 +60,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private ConnectRelationService connectRelationService;
     @Autowired
     private ConnectAuthService connectAuthService;
-
 
     @Override
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
@@ -118,14 +116,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         return request.getLocationUri();
     }
 
-    /**
-     * 创建第三方账号
-     *
-     * @param appKey       搜狗在第三方的appKey
-     * @param provider     第三方类型
-     * @param oAuthTokenVO 统一的OAuthToken对象
-     * @return
-     */
     @Override
     public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
@@ -171,9 +161,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     @Override
-    public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey) throws ServiceException {
+    public Result obtainConnectToken(String passportId, int clientId) throws ServiceException {
         Result result = new APIResultSupport(false);
-        String passportId = baseOpenApiParams.getUserid();
         try {
             int provider = AccountTypeEnum.getAccountType(passportId).getValue();
             ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);

@@ -2,22 +2,10 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
-import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.QQUserAPIRequest;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.user.QQUserAPIResponse;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

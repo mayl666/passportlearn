@@ -11,7 +11,7 @@ import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import java.io.IOException;
 
 /**
- * Created with IntelliJ IDEA.
+ * 第三方OAuth授权相关服务接口
  * User: shipengzhi
  * Date: 13-5-28
  * Time: 上午12:14
@@ -33,7 +33,7 @@ public interface ConnectAuthService {
 
     /**
      * 用refresh_token刷新access_token
-     * QQ微博和人人
+     * QQ、人人、百度
      */
     public OAuthTokenVO refreshAccessToken(String refreshToken, ConnectConfig connectConfig) throws OAuthProblemException, IOException;
 
@@ -62,9 +62,9 @@ public interface ConnectAuthService {
     /**
      * 通过缓存获取个人资料
      *
-     * @param userid
+     * @param passportId
      * @return
      * @throws ServiceException
      */
-    public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid);
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId);
 }
