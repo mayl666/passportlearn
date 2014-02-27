@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.internal.connect.file;
+package com.sogou.upd.passport.web.internal.debug;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.ConnectTypeEnum;

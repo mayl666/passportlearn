@@ -126,7 +126,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                     accountInfoTmp.setFullname(accountInfo.getFullname());
                     accountInfoTmp.setPersonalid(accountInfo.getPersonalid());
                     accountInfoTmp.setModifyip(accountInfo.getModifyip());
-                    accountInfoTmp.setUpdate_time(accountInfo.getUpdate_time());
+                    accountInfoTmp.setUpdateTime(new Date());
                 } else {
                     accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }

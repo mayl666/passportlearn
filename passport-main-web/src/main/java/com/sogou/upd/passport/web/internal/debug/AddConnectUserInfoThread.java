@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.internal.connect.file;
+package com.sogou.upd.passport.web.internal.debug;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.model.OAuthConsumer;
@@ -56,6 +56,9 @@ public class AddConnectUserInfoThread implements Runnable {
                 String appKey = rowString[3];  //appKey
                 String openId = rowString[4];//openId
                 String accessToken = rowString[5];//accessToken
+                String expiredInString = rowString[6];//accessToken的有效期
+                long expiredIn = Long.parseLong(expiredInString);
+                String refreshToken = rowString[7];//refreshToken
                 String dateString = rowString[13].replace("/", "-");//数据库中该passport记录对应的修改时间串
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date date = sdf.parse(dateString);
@@ -97,6 +100,8 @@ public class AddConnectUserInfoThread implements Runnable {
                     connectToken.setProvider(provider);
                     connectToken.setOpenid(openId);
                     connectToken.setAccessToken(accessToken);
+                    connectToken.setExpiresIn(expiredIn);
+                    connectToken.setRefreshToken(refreshToken);
                     connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));//第三方用户性别
                     connectToken.setUpdateTime(date); //connectToken表的更新时间还保持原来表中的时间
                     boolean isUpdateSuccess;
