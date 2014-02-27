@@ -279,6 +279,8 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
+                result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(userId,1120));
+
                 result.setDefaultModel("disable", true);
             }
             model.addAttribute("data", result.toString());
