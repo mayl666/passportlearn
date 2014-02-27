@@ -87,9 +87,9 @@ public class TestCheckSohuDataController {
     @ResponseBody
     public Object addConnectUserInfo() throws Exception {
         long time = System.currentTimeMillis();
-        String fileRoot = "D:\\connect_token\\";
+        String fileRoot = "/search/passport/log/liuling/";
         //从03线上库中的connect_token的32张表中导出的数据
-        String[] fileNames = {"connect_token_1.txt", "connect_token_2.txt", "connect_token_3.txt", "connect_token_4.txt"};
+        String[] fileNames = {"connect_token_1.txt", "connect_token_2.txt", "connect_token_3.txt", "connect_token_4.txt", "connect_token_5.txt", "connect_token_6.txt", "connect_token_7.txt", "connect_token_8.txt"};
 
         int size = fileNames.length;
 

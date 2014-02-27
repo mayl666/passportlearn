@@ -71,7 +71,7 @@ public class AddConnectUserInfoThread implements Runnable {
                     connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
                 } catch (Exception e) {
                     //1.1获取第三方用户信息失败，记录格式为passportId,provider,appKey,openId,accessToken,date
-                    FileWriter writer = new FileWriter("D:\\connect_token\\obtain_exception.txt", true);
+                    FileWriter writer = new FileWriter("/search/passport/log/liuling/obtain_exception.txt", true);
                     writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:obtain userinfo exception!");
                     writer.write("\r\n");
                     writer.close();
@@ -80,7 +80,7 @@ public class AddConnectUserInfoThread implements Runnable {
                 }
                 if (connectUserInfoVO == null) {
                     //1.2第三方API调用失败，记录passportId
-                    FileWriter writer = new FileWriter("D:\\connect_token\\obtain_exception.txt", true);
+                    FileWriter writer = new FileWriter("/search/passport/log/liuling/obtain_exception.txt", true);
                     writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:user info is null");
                     writer.write("\r\n");
                     writer.close();
@@ -109,7 +109,7 @@ public class AddConnectUserInfoThread implements Runnable {
                         isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
                     } catch (Exception e) {
                         //2.1更新connect_token表异常，记录passportId
-                        FileWriter writer = new FileWriter("D:\\connect_token\\update_error.txt", true);
+                        FileWriter writer = new FileWriter("/search/passport/log/liuling/update_error.txt", true);
                         writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:update exception!");
                         writer.write("\r\n");
                         writer.close();
@@ -118,7 +118,7 @@ public class AddConnectUserInfoThread implements Runnable {
                     }
                     if (!isUpdateSuccess) {
                         //2.2更新sogou connect_token表失败的记录下来,格式为passportId,provider,appKey,openId,accessToken,date
-                        FileWriter writer = new FileWriter("D:\\connect_token\\update_error.txt", true);
+                        FileWriter writer = new FileWriter("/search/passport/log/liuling/update_error.txt", true);
                         writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:update failed");
                         writer.write("\r\n");
                         writer.close();
