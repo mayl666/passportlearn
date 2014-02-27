@@ -129,6 +129,7 @@ public class TestCheckSohuDataController {
 
     /**
      * 从数据库表直接移动，将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
+     * todo 代码上线前再跑这一块
      *
      * @return
      * @throws Exception
