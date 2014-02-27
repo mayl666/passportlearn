@@ -52,8 +52,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGConnectApiManagerImpl.class);
 
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
-    @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectTokenService connectTokenService;

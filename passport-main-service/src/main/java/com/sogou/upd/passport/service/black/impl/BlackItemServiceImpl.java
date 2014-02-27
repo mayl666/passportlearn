@@ -44,14 +44,17 @@ public class BlackItemServiceImpl implements BlackItemService{
             String key = null;
             String timesKey = null;
             int sort = -1;
+            String flag = "";
             if(isIp){
                 key = buildLoginIPBlackKeyStr(ipOrUsername);
                 timesKey = buildIPLoginTimesKeyStr(ipOrUsername);
                 sort = BlackItem.BLACK_IP;
+                flag ="ip";
             }else {
                 key = buildLoginUserNameBlackKeyStr(ipOrUsername);
                 timesKey = buildUserNameLoginTimesKeyStr(ipOrUsername);
                 sort = BlackItem.BLACK_USERNAME;
+                flag ="username";
 
             }
             redisUtils.setWithinSeconds(key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
@@ -73,7 +76,7 @@ public class BlackItemServiceImpl implements BlackItemService{
             }
             StringBuilder log = new StringBuilder();
             Date date = new Date();
-            log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append("ip")
+            log.append(new SimpleDateFormat("HH:mm:ss").format(date)).append(" ").append(flag)
                     .append(" ").append(ipOrUsername).append(" ").append(reasionStr).append(" ").append(durMin);
             loginBlackListLogger.info(log.toString());
 
