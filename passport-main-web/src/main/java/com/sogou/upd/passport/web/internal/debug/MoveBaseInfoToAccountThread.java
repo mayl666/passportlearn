@@ -1,12 +1,13 @@
 package com.sogou.upd.passport.web.internal.debug;
 
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -18,39 +19,47 @@ import java.util.concurrent.CountDownLatch;
  */
 public class MoveBaseInfoToAccountThread implements Runnable {
     private CountDownLatch latch;
-    private String fileName;
     private AccountDAO accountDAO;
+    private List<AccountBaseInfo> listConnectBaseInfo;
     private static final Logger logger = LoggerFactory.getLogger(AddConnectUserInfoThread.class);
 
-    public MoveBaseInfoToAccountThread(CountDownLatch latch, String fileName, AccountDAO accountDAO) {
+    public MoveBaseInfoToAccountThread(CountDownLatch latch, AccountDAO accountDAO, List<AccountBaseInfo> listConnectBaseInfo) {
         this.latch = latch;
-        this.fileName = fileName;
         this.accountDAO = accountDAO;
+        this.listConnectBaseInfo = listConnectBaseInfo;
     }
 
     @Override
     public void run() {
-        BufferedReader reader = null;
         String logOpenId = null;
         try {
-            long start = System.currentTimeMillis();
-            File file = new File(this.fileName);
-            reader = new BufferedReader(new FileReader(file));
-            String tempString;
-            while ((tempString = reader.readLine()) != null) {
-                String[] rowString = tempString.split(",");
-                String passportId = rowString[1]; //passportId;
-                logOpenId = passportId;
-                String uniqname = rowString[2];//第三方用户昵称
-                String avatar = null;
-                if(rowString.length == 4){
-                    avatar = rowString[3];//第三方用户头像
+            List<AccountBaseInfo> listInfo = this.listConnectBaseInfo;
+            for (AccountBaseInfo accountBaseInfo : listInfo) {
+                String passportId = accountBaseInfo.getPassportId();
+                Account queryAccount;
+                try {
+                    queryAccount = accountDAO.getAccountByPassportId(passportId);
+                } catch (Exception e) {
+                    //更新account表之前先查询是否有此记录,查询异常的要记录下来
+                    FileWriter writer = new FileWriter("D:\\transfer\\account_base_info\\query_account_exception.txt", true);
+                    writer.write(passportId + ",error:get account by passportId from account table error");
+                    writer.write("\r\n");
+                    writer.close();
+                    continue;
+                }
+                if (queryAccount == null) {
+                    //记录下来account_base_info表中有，但在account表中没有的记录
+                    FileWriter writer = new FileWriter("D:\\transfer\\account_base_info\\query_account_null.txt", true);
+                    writer.write(passportId + ",error:passportId is not exist in account table");
+                    writer.write("\r\n");
+                    writer.close();
+                    continue;
                 }
                 Account account = new Account();
                 account.setPassportId(passportId);
-                account.setUniqname(uniqname);
-                account.setAvatar(avatar);
-                account.setPasswordtype(Account.NO_PASSWORD);
+                account.setUniqname(accountBaseInfo.getUniqname()); //昵称
+                account.setAvatar(accountBaseInfo.getAvatar());   //头像
+                account.setPasswordtype(Account.NO_PASSWORD); //密码类型
                 long id;
                 try {
                     id = accountDAO.insertOrUpdateAccount(passportId, account);
@@ -71,18 +80,9 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                     continue;
                 }
             }
-            reader.close();
-            System.out.println(Thread.currentThread().getName() + ":" + (System.currentTimeMillis() - start));
         } catch (Exception e) {
             logger.error("出错记录passportId为：" + logOpenId, e);
         } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e1) {
-                    logger.error("异常信息：", e1);
-                }
-            }
             latch.countDown();
         }
     }
