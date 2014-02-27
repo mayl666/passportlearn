@@ -48,7 +48,7 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                 }
                 Account account = new Account();
                 account.setPassportId(passportId);
-                account.setUniqname(StringUtil.strToUTF8(uniqname));
+                account.setUniqname(uniqname);
                 account.setAvatar(avatar);
                 account.setPasswordtype(Account.NO_PASSWORD);
                 long id;
