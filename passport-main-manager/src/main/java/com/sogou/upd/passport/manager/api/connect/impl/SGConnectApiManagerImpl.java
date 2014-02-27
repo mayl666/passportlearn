@@ -52,8 +52,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGConnectApiManagerImpl.class);
 
     @Autowired
-    private ConnectApiManager proxyConnectApiManager;
-    @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectTokenService connectTokenService;
@@ -274,7 +272,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         } catch (Exception e) {
             logger.error("method[obtainConnectToken] obtain connect token from sogou db error.{}", e);
         }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     /**
@@ -294,31 +292,17 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
             connectToken.setUpdateTime(new Date());
             boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
-            if (isUpdateSuccess) {
-                result = proxyConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
-                if (!result.isSuccess()) {
-                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-                    return result;
-                }
-            } else {
+            if (!isUpdateSuccess) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
                 return result;
             }
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
-
-            if (isUpdateSuccess) {
-                result.setSuccess(true);
-                result.setDefaultModel("connectToken", connectToken);
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED);
-                return result;
-            }
         } catch (Exception e) {
             logger.error("[ConnectToken] manager method updateConnectToken error.{}", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     /**

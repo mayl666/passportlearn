@@ -21,8 +21,6 @@ public class SGConnectApiManagerImplTest extends BaseTest {
 
     @Autowired
     private ConnectApiManager sgConnectApiManager;
-    @Autowired
-    private ConnectApiManager proxyConnectApiManager;
 
     /**
      * 创建第三方账号写SG库
@@ -63,21 +61,6 @@ public class SGConnectApiManagerImplTest extends BaseTest {
         Result result = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
         System.out.println("------------------结果如下-------------------");
         System.out.println(result);
-
-    }
-
-    @Test
-    public void testGetSHToken() {
-        String userId = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
-        BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
-        baseOpenApiParams.setUserid(userId);
-        baseOpenApiParams.setOpenid(userId);
-        int clientId = 1120;
-        String clientKey = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
-        Result result = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, clientId, clientKey);
-        System.out.println("----------------------结果如下----------------------");
-        System.out.println(result);
-
 
     }
 
