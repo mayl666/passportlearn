@@ -22,6 +22,7 @@ import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
@@ -130,7 +131,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
 
             if (connectAccountResult.isSuccess()) {
-                String passportId = (String) connectAccountResult.getModels().get("userid");
+                ConnectToken connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
+                String passportId = connectToken.getPassportId();
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
                 //更新个人资料缓存
