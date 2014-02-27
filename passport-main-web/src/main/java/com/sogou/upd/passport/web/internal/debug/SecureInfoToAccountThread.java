@@ -79,7 +79,7 @@ public class SecureInfoToAccountThread implements Runnable {
                     continue;
                 }
                 if (result.isSuccess()) {
-                    Map<String, String> map = (Map<String, String>) result.getModels().get("data");
+                    Map<String, String> map = (Map<String, String>) result.getModels();
                     String birthday = map.get("birthday").toString();
                     String gender = map.get("gender").toString();
                     String province = map.get("province").toString();

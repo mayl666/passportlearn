@@ -106,36 +106,6 @@ public class TestCheckSohuDataController {
 
     }
 
-    /**
-     * 从文件移动废弃！！！将03线上库中account_base_info表中第三方账号的昵称、头像非空的记录移动到account 32张小表中
-     *
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/move")
-    @ResponseBody
-    public Object moveBaseInfoToAccount() throws Exception {
-        long time = System.currentTimeMillis();
-//        String fileRoot = "/search/passport/log/liuling/";
-        String fileRoot = "D:\\transfer\\account_base_info\\";
-        //从03线上库中的account_base_info表中导出的信息第三方昵称、头像非空的数据
-        String[] fileNames = {"baidu.txt", "qq.txt", "renren.txt", "sina.txt"};
-
-        int size = fileNames.length;
-
-        CountDownLatch latch = new CountDownLatch(size);
-
-        for (int i = 0; i < size; i++) {
-            String fileName = fileRoot + fileNames[i];
-//            service.execute(new MoveBaseInfoToAccountThread(latch, fileName, accountDAO));
-        }
-        latch.await();
-        System.out.println("总执行时间：" + (System.currentTimeMillis() - time));
-        return buildSuccess("", null);
-
-
-    }
-
     private List<List<AccountBaseInfo>> buildListRange(List<AccountBaseInfo> listConnectBaseInfo) throws IOException {
         int dbsize = listConnectBaseInfo.size();
         List<List<AccountBaseInfo>> listRange = new ArrayList<>();
@@ -163,7 +133,7 @@ public class TestCheckSohuDataController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/move/db")
+    @RequestMapping(value = "/move")
     @ResponseBody
     public Object moveBaseInfoToAccountDB() throws Exception {
         long time = System.currentTimeMillis();

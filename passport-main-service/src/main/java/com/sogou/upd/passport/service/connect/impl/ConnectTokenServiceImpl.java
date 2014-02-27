@@ -77,8 +77,9 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
             String passportId = connectToken.getPassportId();
             row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
             if (row != 0) {
-                String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
-                dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
+                //todo 更新个人资料暂时不写缓存,更新完成后注释去掉
+//                String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
+//                dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             } else {
                 return false;

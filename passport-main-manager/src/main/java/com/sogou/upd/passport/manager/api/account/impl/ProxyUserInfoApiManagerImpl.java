@@ -54,6 +54,8 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("username"); //用户真实姓名
         SUPPORT_FIELDS_MAP.add("uniqname"); //用户昵称
         SUPPORT_FIELDS_MAP.add("avatarurl"); //用户头像
+        SUPPORT_FIELDS_MAP.add("createtime");//创建时间
+        SUPPORT_FIELDS_MAP.add("createip");//创建ip
     }
 
     @Override
