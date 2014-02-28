@@ -72,7 +72,7 @@ public class AddConnectUserInfoThread implements Runnable {
                 } catch (Exception e) {
                     //1.1获取第三方用户信息失败，记录格式为passportId,provider,appKey,openId,accessToken,date
                     FileWriter writer = new FileWriter("/search/passport/log/liuling/obtain_exception.txt", true);
-                    writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:obtain userinfo exception!");
+                    writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:obtain userinfo exception!" + e.getMessage());
                     writer.write("\r\n");
                     writer.close();
                     count++;
@@ -110,7 +110,7 @@ public class AddConnectUserInfoThread implements Runnable {
                     } catch (Exception e) {
                         //2.1更新connect_token表异常，记录passportId
                         FileWriter writer = new FileWriter("/search/passport/log/liuling/update_error.txt", true);
-                        writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:update exception!");
+                        writer.write(passportId + "," + provider + "," + appKey + "," + openId + "," + accessToken + "," + rowString[13] + ",error:update exception!" + e.getMessage());
                         writer.write("\r\n");
                         writer.close();
                         count++;

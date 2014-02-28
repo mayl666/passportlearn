@@ -44,6 +44,16 @@ public class SecureInfoToAccountThread implements Runnable {
         this.accountDAO = accountDAO;
     }
 
+    private boolean isNeedInsert(String... args) {
+        if (args != null && args.length != 0) {
+            String gender = args[1];
+            if (!Strings.isNullOrEmpty(gender)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public void run() {
         BufferedReader reader = null;
@@ -89,10 +99,13 @@ public class SecureInfoToAccountThread implements Runnable {
                     String username = map.get("username");
                     String createIp = map.get("createip");
                     String createTime = map.get("createtime");
+                    //如果大多数参数都为空，则没有插入的必要了
+                    if (!isNeedInsert(birthday, gender, province, city, personalid, username)) {
+                        continue;
+                    }
                     //创建时间
                     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date_createtime;
-
                     if (!Strings.isNullOrEmpty(createTime)) {
                         try {
                             date_createtime = sdf1.parse(createTime);
@@ -113,7 +126,7 @@ public class SecureInfoToAccountThread implements Runnable {
                         continue;
                     }
                     //生日
-                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
                     Date date_birthday = null;
                     if (!Strings.isNullOrEmpty(birthday)) {
                         try {
