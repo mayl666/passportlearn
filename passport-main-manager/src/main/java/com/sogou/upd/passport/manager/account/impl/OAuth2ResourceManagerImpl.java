@@ -309,7 +309,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }catch (Exception e){
             log.error("getUniqname error! passportId:"+passportId,e);
         }
-        return uniqname;
+        return Strings.isNullOrEmpty(uniqname)?passportId:uniqname;
     }
 
     @Override
