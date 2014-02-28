@@ -290,9 +290,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
                 Account account=commonManager.queryAccountByPassportId(passportId);
-                if(account!=null){
-                    uniqname=account.getUniqname();
-                }else {
+                if(account!=null && Strings.isNullOrEmpty(account.getUniqname())){
                     ConnectToken connectToken=getConnectToken(passportId,clientId);
                     if(connectToken!=null){
                         uniqname=connectToken.getConnectUniqname();
