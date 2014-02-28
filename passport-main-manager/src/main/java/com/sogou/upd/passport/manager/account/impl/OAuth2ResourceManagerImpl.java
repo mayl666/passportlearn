@@ -295,6 +295,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                     if(connectToken!=null){
                         uniqname=connectToken.getConnectUniqname();
                     }
+                }else {
+                    uniqname=account.getUniqname();
                 }
             } else {
                 AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
