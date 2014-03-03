@@ -25,16 +25,16 @@ public interface UserOpenApiManager {
      * 获取第三方个人资料，先从搜狗获取，如果没有获取到，再从第三方获取，获取成功后，更新到搜狗库中
      *
      * @param provider
-     * @param connectConfig
      * @param openid
      * @param accessToken
-     * @param oAuthConsumer
+     * @param original
      * @return
      * @throws com.sogou.upd.passport.exception.ServiceException
+     *
      * @throws java.io.IOException
      * @throws com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException
+     *
      */
-    public ConnectUserInfoVO handleObtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken,
-                                                         OAuthConsumer oAuthConsumer) throws ServiceException, IOException, OAuthProblemException;
+    public Result handleObtainConnectUserInfo(int provider, String openid, String accessToken, int original) throws ServiceException, IOException, OAuthProblemException;
 
 }

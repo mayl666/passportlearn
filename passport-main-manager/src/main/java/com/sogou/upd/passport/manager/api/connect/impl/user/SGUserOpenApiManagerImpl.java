@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl.user;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.ConnectTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -18,9 +19,9 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
-import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,13 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectApiManager connectApiManager;
+    @Autowired
+    private ConnectApiManager sgConnectApiManager;
+    @Autowired
+    private ConnectTokenService connectTokenService;
+
+    private final static int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息
+    private final static int NOT_WITH_CONNECT_ORIGINAL = 0;  //0表示不需要从第三方获取原始信息，默认为0
 
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
@@ -85,7 +93,12 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                 return result;
             }
-            ConnectUserInfoVO connectUserInfoVO = handleObtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+            int original = userOpenApiParams.getOriginal();
+            result = handleObtainConnectUserInfo(provider, openId, accessToken, original);
+            ConnectUserInfoVO connectUserInfoVO = null;
+            if (result.isSuccess()) {
+                connectUserInfoVO = (ConnectUserInfoVO) result.getModels().get("connectUserInfoVo");
+            }
 //            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
             if (connectUserInfoVO == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
@@ -114,30 +127,68 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     }
 
     @Override
-    public ConnectUserInfoVO handleObtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken, OAuthConsumer oAuthConsumer) throws ServiceException, IOException, OAuthProblemException {
+    public Result handleObtainConnectUserInfo(int provider, String openid, String accessToken, int original) throws ServiceException, IOException, OAuthProblemException {
+        Result result = new APIResultSupport(false);
         try {
             String passportId = AccountTypeEnum.generateThirdPassportId(openid, AccountTypeEnum.getProviderStr(provider));
-            String appKey = connectConfig.getAppKey();
-            //1.先从搜狗方获取第三方个人资料
-            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfoFromSogou(passportId, provider, appKey);
-            if (connectUserInfoVO == null) {
-                //2.搜狗的第三方个人资料获取失败后，再调用第三方openapi获取，并更新搜狗库及缓存
-                connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
-                if (connectUserInfoVO != null) {
-                    OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
-                    oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
-                    oAuthTokenVO.setOpenid(openid);
-                    oAuthTokenVO.setAccessToken(accessToken);
-                    Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
-                    if (result.isSuccess()) {
-                        return connectUserInfoVO;
+            String appKey = ConnectTypeEnum.getAppKey(provider);
+            ConnectUserInfoVO connectUserInfoVo;
+            //如果需要返回第三方原始信息，则调用第三方openapi
+            if (original == WITH_CONNECT_ORIGINAL) {
+                ConnectConfig connectConfig = new ConnectConfig();
+                connectConfig.setAppKey(appKey);
+                OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+                connectUserInfoVo = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
+                if (connectUserInfoVo != null) {
+                    ConnectToken connectToken = new ConnectToken();
+                    connectToken.setPassportId(passportId);
+                    connectToken.setConnectUniqname(connectUserInfoVo.getNickname());
+                    connectToken.setAvatarSmall(connectUserInfoVo.getAvatarSmall());
+                    connectToken.setAvatarMiddle(connectUserInfoVo.getAvatarMiddle());
+                    connectToken.setAvatarLarge(connectUserInfoVo.getAvatarLarge());
+                    connectToken.setGender(String.valueOf(connectUserInfoVo.getGender()));
+                    boolean isSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+                    if (!isSuccess) {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+                        return result;
+                    }
+                    result.setSuccess(true);
+                    result.setDefaultModel("connectUserInfoVo", connectUserInfoVo);
+                }
+            } else {
+                //否则，从搜狗方获取第三方个人资料
+                connectUserInfoVo = connectAuthService.obtainConnectUserInfo(passportId, provider, appKey);
+                if (connectUserInfoVo == null) {
+                    ConnectConfig connectConfig = new ConnectConfig();
+                    connectConfig.setAppKey(appKey);
+                    OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+                    //2.搜狗的第三方个人资料获取失败后，再调用第三方openapi获取，并更新搜狗库及缓存
+                    connectUserInfoVo = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
+                    if (connectUserInfoVo != null) {
+                        ConnectToken connectToken = new ConnectToken();
+                        connectToken.setPassportId(passportId);
+                        connectToken.setConnectUniqname(connectUserInfoVo.getNickname());
+                        connectToken.setAvatarSmall(connectUserInfoVo.getAvatarSmall());
+                        connectToken.setAvatarMiddle(connectUserInfoVo.getAvatarMiddle());
+                        connectToken.setAvatarLarge(connectUserInfoVo.getAvatarLarge());
+                        connectToken.setGender(String.valueOf(connectUserInfoVo.getGender()));
+                        boolean isSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+                        if (!isSuccess) {
+                            result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+                            return result;
+                        }
+                        connectUserInfoVo.setOriginal(null);
+                        result.setSuccess(true);
+                        result.setDefaultModel("connectUserInfoVo", connectUserInfoVo);
                     }
                 }
+                result.setSuccess(true);
+                result.setDefaultModel("connectUserInfoVo", connectUserInfoVo);
             }
         } catch (Exception e) {
-
+            logger.error("[mananger]method handleObtainConnectUserInfo error.{}", e);
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private String getProviderByUserid(String userid) {

@@ -142,20 +142,24 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public ConnectUserInfoVO obtainConnectUserInfoFromSogou(String passportId, int provider, String appKey) throws ServiceException {
+    public ConnectUserInfoVO obtainConnectUserInfo(String passportId, int provider, String appKey) throws ServiceException {
         try {
             ConnectToken connectToken = connectTokenService.queryConnectToken(passportId, provider, appKey);
             if (connectToken != null) {
-                ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
-                connectUserInfoVO.setNickname(connectToken.getConnectUniqname());
-                connectUserInfoVO.setAvatarSmall(connectToken.getAvatarSmall());
-                connectUserInfoVO.setAvatarMiddle(connectToken.getAvatarMiddle());
-                connectUserInfoVO.setAvatarLarge(connectToken.getAvatarLarge());
+                String nickname = connectToken.getConnectUniqname();
+                String avatarSmall = connectToken.getAvatarSmall();
+                String avatarMiddle = connectToken.getAvatarMiddle();
+                String avatarLarge = connectToken.getAvatarLarge();
                 String gender = connectToken.getGender();
-                if (!Strings.isNullOrEmpty(gender)) {
+                if (isNotEmpty(nickname,avatarSmall, avatarMiddle, avatarLarge, gender)) {
+                    ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
+                    connectUserInfoVO.setNickname(nickname);
+                    connectUserInfoVO.setAvatarSmall(avatarSmall);
+                    connectUserInfoVO.setAvatarMiddle(avatarMiddle);
+                    connectUserInfoVO.setAvatarLarge(avatarLarge);
                     connectUserInfoVO.setGender(Integer.parseInt(gender));
+                    return connectUserInfoVO;
                 }
-                return connectUserInfoVO;
             }
         } catch (Exception e) {
             logger.error("[ConnectUserInfoVO] service method obtainConnectUserInfoFromSogou error.{}", e);
@@ -190,5 +194,12 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     private String buildConnectUserInfoCacheKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId;
+    }
+
+    private boolean isNotEmpty(String nickname, String avatarSmall, String avatarMiddle, String avatarLarge, String gender) {
+        if (!Strings.isNullOrEmpty(nickname) && !Strings.isNullOrEmpty(avatarSmall) && !Strings.isNullOrEmpty(avatarMiddle) && !Strings.isNullOrEmpty(avatarLarge) && !Strings.isNullOrEmpty(gender)) {
+            return true;
+        }
+        return false;
     }
 }

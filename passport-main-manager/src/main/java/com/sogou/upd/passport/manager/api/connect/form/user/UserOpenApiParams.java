@@ -14,6 +14,7 @@ import java.util.Date;
 public class UserOpenApiParams extends BaseOpenApiParams {
     private String accessToken;
     private Date updateTime;
+    private int original;
 
     public String getAccessToken() {
         return accessToken;
@@ -29,5 +30,13 @@ public class UserOpenApiParams extends BaseOpenApiParams {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public int getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(int original) {
+        this.original = original;
     }
 }

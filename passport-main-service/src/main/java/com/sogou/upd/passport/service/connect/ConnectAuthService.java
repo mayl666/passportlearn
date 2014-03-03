@@ -59,8 +59,7 @@ public interface ConnectAuthService {
      * @return
      * @throws ServiceException
      */
-    public ConnectUserInfoVO obtainConnectUserInfoFromSogou(String passportId, int provider, String appKey) throws ServiceException;
-
+    public ConnectUserInfoVO obtainConnectUserInfo(String passportId, int provider, String appKey) throws ServiceException;
 
 
     /**
