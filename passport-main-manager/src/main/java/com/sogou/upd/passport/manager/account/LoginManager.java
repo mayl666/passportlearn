@@ -25,7 +25,7 @@ public interface LoginManager {
 
     public void doAfterLoginSuccess(final String username,final String ip,final String passportId,final int clientId);
 
-    public void doAfterLoginFailed(final String username,final String ip);
+    public void doAfterLoginFailed(final String username,final String ip,String errCode);
 
     /**
      * 检查username ip是否在黑名单中

@@ -322,7 +322,8 @@ public class ErrorUtil {
     /* ============================================================================ */
     public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
 
-    public static final String ERR_CODE_ERROR_SERVERNAME = "30710";
+    //cookie值无效
+    public static final String ERR_CODE_ERROR_COOKIE = "30710";
 
     public ErrorUtil() {
         super();
@@ -487,7 +488,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号冲突或者异常，请到论坛问题反馈区找回账号");
 
         //SSO setcookie接口
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_SERVERNAME, "非法的服务器名");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
