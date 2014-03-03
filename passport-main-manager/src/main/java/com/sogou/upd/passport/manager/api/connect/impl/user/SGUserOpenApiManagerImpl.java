@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
@@ -17,6 +18,7 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.apache.commons.lang.StringUtils;
@@ -67,8 +69,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             int provider = AccountTypeEnum.getProvider(providerStr);
             ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-            String openId = null;
-            String accessToken = null;
+            String openId;
+            String accessToken;
             //去sohu获取token
             BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
             baseOpenApiParams.setOpenid(userid);
@@ -83,7 +85,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                 return result;
             }
-            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+            ConnectUserInfoVO connectUserInfoVO = handleObtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+//            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
             if (connectUserInfoVO == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                 return result;
@@ -99,7 +102,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             if (StringUtils.isBlank(errMsg)) {
                 logger.error("handle oauth authroize code error!", ope);
                 result = buildErrorResult(errorCode, ope.getDescription());
-            }else {
+            } else {
                 result = buildErrorResult(errorCode, errMsg);
             }
         } catch (Exception exp) {
@@ -108,6 +111,33 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         }
         return result;
 
+    }
+
+    @Override
+    public ConnectUserInfoVO handleObtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken, OAuthConsumer oAuthConsumer) throws ServiceException, IOException, OAuthProblemException {
+        try {
+            String passportId = AccountTypeEnum.generateThirdPassportId(openid, AccountTypeEnum.getProviderStr(provider));
+            String appKey = connectConfig.getAppKey();
+            //1.先从搜狗方获取第三方个人资料
+            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfoFromSogou(passportId, provider, appKey);
+            if (connectUserInfoVO == null) {
+                //2.搜狗的第三方个人资料获取失败后，再调用第三方openapi获取，并更新搜狗库及缓存
+                connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
+                if (connectUserInfoVO != null) {
+                    OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
+                    oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
+                    oAuthTokenVO.setOpenid(openid);
+                    oAuthTokenVO.setAccessToken(accessToken);
+                    Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
+                    if (result.isSuccess()) {
+                        return connectUserInfoVO;
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private String getProviderByUserid(String userid) {

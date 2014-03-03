@@ -1,16 +1,15 @@
 package com.sogou.upd.passport.service.connect.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
-import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -26,7 +25,6 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
@@ -52,8 +50,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private DBShardRedisUtils dbShardRedisUtils;
     @Autowired
     private ConnectTokenService connectTokenService;
-    @Autowired
-    private AccountInfoService accountInfoService;
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -155,13 +151,11 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                 connectUserInfoVO.setAvatarSmall(connectToken.getAvatarSmall());
                 connectUserInfoVO.setAvatarMiddle(connectToken.getAvatarMiddle());
                 connectUserInfoVO.setAvatarLarge(connectToken.getAvatarLarge());
-                AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-                if (accountInfo != null) {
-                    connectUserInfoVO.setCity(accountInfo.getCity());
-                    connectUserInfoVO.setProvince(accountInfo.getProvince());
-                    connectUserInfoVO.setGender(Integer.parseInt(accountInfo.getGender()));
-                    return connectUserInfoVO;
+                String gender = connectToken.getGender();
+                if (!Strings.isNullOrEmpty(gender)) {
+                    connectUserInfoVO.setGender(Integer.parseInt(gender));
                 }
+                return connectUserInfoVO;
             }
         } catch (Exception e) {
             logger.error("[ConnectUserInfoVO] service method obtainConnectUserInfoFromSogou error.{}", e);

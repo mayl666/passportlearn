@@ -61,6 +61,8 @@ public interface ConnectAuthService {
      */
     public ConnectUserInfoVO obtainConnectUserInfoFromSogou(String passportId, int provider, String appKey) throws ServiceException;
 
+
+
     /**
      * 更新第三方个人资料缓存
      *
