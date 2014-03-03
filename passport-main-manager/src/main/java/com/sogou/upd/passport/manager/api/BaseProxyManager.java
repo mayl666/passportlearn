@@ -57,7 +57,7 @@ public class BaseProxyManager {
                 result.setModels(map);
             }
         } catch (Exception e) {
-            log.error(requestModel.getUrl() + " execute error ", e);
+            log.warn(requestModel.getUrl() + " execute error ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION));
         }

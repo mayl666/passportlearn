@@ -87,7 +87,7 @@ public class HttpClientUtil {
             return method.getResponseHeaders();
         } catch (Exception e) {
             stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
-            logger.error("http request error", e);
+            logger.warn("http request error", e);
             return null;
         } finally {
             method.releaseConnection();
@@ -127,7 +127,7 @@ public class HttpClientUtil {
             }
         } catch (Exception e) {
             stopWatch(stopWatch, urlArray[0] + "(fail)", "failed");
-            logger.error("http request error", e);
+            logger.warn("http request error", e);
             return null;
         } finally {
             method.releaseConnection();
