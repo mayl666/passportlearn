@@ -62,9 +62,8 @@ public class SecureInfoToAccountThread implements Runnable {
             String tempString;
             while ((tempString = reader.readLine()) != null) {
                 String[] rowString = tempString.split(",");
-                String openIdString = rowString[4];  //openid
-                logOpenId = openIdString;
-                String passportIdString = AccountTypeEnum.generateThirdPassportId(openIdString, rowString[3]);
+                String passportIdString = rowString[0];
+                logOpenId = passportIdString;
                 //构建调用sohu接口的参数类
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(passportIdString);

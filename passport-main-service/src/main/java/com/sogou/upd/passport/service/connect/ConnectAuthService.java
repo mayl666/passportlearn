@@ -49,6 +49,18 @@ public interface ConnectAuthService {
     public ConnectUserInfoVO obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken,
                                                    OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException;
 
+
+    /**
+     * 从搜狗数据库及缓存中获取第三方个人资料
+     *
+     * @param passportId
+     * @param provider
+     * @param appKey
+     * @return
+     * @throws ServiceException
+     */
+    public ConnectUserInfoVO obtainConnectUserInfoFromSogou(String passportId, int provider, String appKey) throws ServiceException;
+
     /**
      * 更新第三方个人资料缓存
      *

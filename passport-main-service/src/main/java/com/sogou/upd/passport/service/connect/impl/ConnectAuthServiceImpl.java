@@ -10,7 +10,9 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
+import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
@@ -24,7 +26,9 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +50,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
+    @Autowired
+    private ConnectTokenService connectTokenService;
+    @Autowired
+    private AccountInfoService accountInfoService;
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -135,6 +143,31 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             userProfileFromConnect = response.toUserInfo();
         }
         return userProfileFromConnect;
+    }
+
+    @Override
+    public ConnectUserInfoVO obtainConnectUserInfoFromSogou(String passportId, int provider, String appKey) throws ServiceException {
+        try {
+            ConnectToken connectToken = connectTokenService.queryConnectToken(passportId, provider, appKey);
+            if (connectToken != null) {
+                ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
+                connectUserInfoVO.setNickname(connectToken.getConnectUniqname());
+                connectUserInfoVO.setAvatarSmall(connectToken.getAvatarSmall());
+                connectUserInfoVO.setAvatarMiddle(connectToken.getAvatarMiddle());
+                connectUserInfoVO.setAvatarLarge(connectToken.getAvatarLarge());
+                AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
+                if (accountInfo != null) {
+                    connectUserInfoVO.setCity(accountInfo.getCity());
+                    connectUserInfoVO.setProvince(accountInfo.getProvince());
+                    connectUserInfoVO.setGender(Integer.parseInt(accountInfo.getGender()));
+                    return connectUserInfoVO;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("[ConnectUserInfoVO] service method obtainConnectUserInfoFromSogou error.{}", e);
+            return null;
+        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
