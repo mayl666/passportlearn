@@ -79,7 +79,7 @@ public class SecureInfoToAccountThread implements Runnable {
                     result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 } catch (Exception e) {
                     //从sohu获取第三方用户信息异常
-                    FileWriter writer = new FileWriter("D:\\transfer\\account_info\\get_from_sohu_exception.txt", true);
+                    FileWriter writer = new FileWriter("/search/passport/log/liuling/get_from_sohu_exception.txt", true);
                     writer.write(passportIdString + ",get user info exception info is :" + result.toString());
                     writer.write("\r\n");
                     writer.close();
@@ -107,7 +107,7 @@ public class SecureInfoToAccountThread implements Runnable {
                             date_createtime = sdf1.parse(createTime);
                         } catch (Exception e) {
                             //记录下来create_time格式错误的记录
-                            FileWriter writer = new FileWriter("D:\\transfer\\account_info\\create_time_null.txt", true);
+                            FileWriter writer = new FileWriter("/search/passport/log/liuling/create_time_null.txt", true);
                             writer.write(passportIdString + ",connect user create_time format error : createTime is " + createTime);
                             writer.write("\r\n");
                             writer.close();
@@ -122,7 +122,7 @@ public class SecureInfoToAccountThread implements Runnable {
                             date_birthday = sdf2.parse(birthday);
                         } catch (Exception e) {
                             //记录下来create_time为空的记录
-                            FileWriter writer = new FileWriter("D:\\transfer\\account_info\\create_time_null.txt", true);
+                            FileWriter writer = new FileWriter("/search/passport/log/liuling/create_time_null.txt", true);
                             writer.write(passportIdString + ",connect user birthday format error : birthday is " + birthday);
                             writer.write("\r\n");
                             writer.close();
@@ -145,7 +145,7 @@ public class SecureInfoToAccountThread implements Runnable {
                         isInsertSuccess = accountInfoService.updateAccountInfo(accountInfo);
                     } catch (Exception e) {
                         //插入到account_info表异常
-                        FileWriter writer = new FileWriter("D:\\transfer\\account_info\\insert_account_info_exception.txt", true);
+                        FileWriter writer = new FileWriter("/search/passport/log/liuling/insert_account_info_exception.txt", true);
                         writer.write(passportIdString + ",insert into account_info exception");
                         writer.write("\r\n");
                         writer.close();
@@ -167,7 +167,7 @@ public class SecureInfoToAccountThread implements Runnable {
                             }
                         } catch (Exception e) {
                             //插入到account表异常
-                            FileWriter writer = new FileWriter("D:\\transfer\\account_info\\update_account_exception.txt", true);
+                            FileWriter writer = new FileWriter("/search/passport/log/liuling/update_account_exception.txt", true);
                             writer.write(passportIdString + ",insert into account table exception");
                             writer.write("\r\n");
                             writer.close();
@@ -175,7 +175,7 @@ public class SecureInfoToAccountThread implements Runnable {
                         }
                         if (row == 0) {
                             //插入到account表失败
-                            FileWriter writer = new FileWriter("D:\\transfer\\account_info\\update_account_failed.txt", true);
+                            FileWriter writer = new FileWriter("/search/passport/log/liuling/update_account_failed.txt", true);
                             writer.write(passportIdString + ",insert into account table error");
                             writer.write("\r\n");
                             writer.close();
@@ -183,7 +183,7 @@ public class SecureInfoToAccountThread implements Runnable {
                         }
                     } else {
                         //插入到account_info表失败
-                        FileWriter writer = new FileWriter("D:\\transfer\\account_info\\insert_account_info_failed.txt", true);
+                        FileWriter writer = new FileWriter("/search/passport/log/liuling/insert_account_info_failed.txt", true);
                         writer.write(passportIdString + ",insert into account_info error");
                         writer.write("\r\n");
                         writer.close();
@@ -191,7 +191,7 @@ public class SecureInfoToAccountThread implements Runnable {
                     }
                 } else {
                     //从sohu获取第三方用户信息失败
-                    FileWriter writer = new FileWriter("D:\\transfer\\account_info\\get_from_sohu_failed.txt", true);
+                    FileWriter writer = new FileWriter("/search/passport/log/liuling/get_from_sohu_failed.txt", true);
                     writer.write(passportIdString + ",error info:" + result.toString());
                     writer.write("\r\n");
                     writer.close();

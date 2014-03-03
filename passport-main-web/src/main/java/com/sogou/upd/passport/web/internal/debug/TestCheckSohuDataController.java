@@ -175,7 +175,7 @@ public class TestCheckSohuDataController {
     @ResponseBody
     public Object getSecureInfoToAccountInfo() throws Exception {
         long time = System.currentTimeMillis();
-        String fileRoot = "D:\\transfer\\account_info\\";
+        String fileRoot = "/search/passport/log/liuling/";
         //03线上库中connect_token 32张表中第三方账号
         String[] fileNames = {"open_token_1.txt", "open_token_2.txt", "open_token_3.txt", "open_token_4.txt", "open_token_5.txt", "open_token_6.txt", "open_token_7.txt", "open_token_8.txt", "open_token_9.txt", "open_token_10.txt"};
 
