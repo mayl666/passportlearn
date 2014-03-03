@@ -28,7 +28,6 @@ import java.util.Date;
 public class ConnectAuthServiceTest extends BaseTest {
     @Autowired
     private ConnectAuthService connectAuthService;
-    private final static String passportId = "001A6C38D281DECDEC5438F451945F05@qq.sohu.com";
     @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired

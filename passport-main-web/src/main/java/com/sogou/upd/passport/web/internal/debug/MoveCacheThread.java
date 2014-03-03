@@ -88,7 +88,7 @@ public class MoveCacheThread implements Runnable {
                         baseOpenApiParams.setUserid(passportIdString);
                         Result result = new APIResultSupport(false);
                         try {
-                            result = proxyConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+                            result = proxyConnectApiManager.obtainConnectToken(passportIdString, SHPPUrlConstant.APP_ID);
                         } catch (Exception e) {
                             FileWriter writer = new FileWriter("/search/passport/log/liuling/sohu_other.txt", true);
                             writer.write(passportIdString + "," + result.toString() + ",error:obtain token failed");
