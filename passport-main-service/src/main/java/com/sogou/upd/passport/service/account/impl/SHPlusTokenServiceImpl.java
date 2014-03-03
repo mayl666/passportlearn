@@ -67,26 +67,4 @@ public class SHPlusTokenServiceImpl implements SHPlusTokenService {
         return null;
     }
 
-    @Override
-    public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException {
-        RequestModel requestModel = new RequestModel(SHPlusConstant.OAUTH2_RESOURCE);
-        requestModel.addParam(OAuth.OAUTH_CLIENT_ID, SHPlusConstant.BROWSER_SHPLUS_CLIENTID);
-        requestModel.addParam(OAuth.OAUTH_CLIENT_SECRET, SHPlusConstant.BROWSER_SHPLUS_CLIENTSECRET);
-        requestModel.addParam(OAuth.OAUTH_INSTANCE_ID, instanceId);
-        requestModel.addParam(OAuth.OAUTH_SCOPE, "all");
-        requestModel.addParam(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
-        requestModel.addParam(OAuth.OAUTH_RESOURCE_TYPE, resourceType.getValue());
-        requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
-        String json = SGHttpClient.executeStr(requestModel);
-        Map resultMap = null;
-        try {
-            resultMap = jsonMapper.readValue(json, Map.class);
-        } catch (IOException e) {
-            log.error("parse json to map fail,jsonString:" + json, e);
-            throw new ServiceException(e);
-        }
-
-        return resultMap;
-    }
-
 }

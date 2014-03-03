@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
@@ -16,7 +15,7 @@ import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 public interface ConnectApiManager {
 
     /**
-     * 第三方账户登录接口
+     * 构造第三方用户OAuth授权接口URL
      *
      * @param connectLoginParams OAuth2登录授权请求参数
      * @param uuid               防CRSF攻击的唯一值
@@ -28,7 +27,7 @@ public interface ConnectApiManager {
                                        int provider, String ip, String httpOrHttps) throws OAuthProblemException;
 
     /**
-     * 同步创建第三方账号的接口
+     * 创建第三方账号
      *
      * @param provider
      * @param oAuthTokenVO
@@ -37,12 +36,12 @@ public interface ConnectApiManager {
     public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO);
 
     /**
-     * 根据第三方QQ用户信息获取用户的openid及accessToken
+     * 获取第三方用户的accesstoken、refreshtoken
      *
-     * @param baseOpenApiParams 调用sohu接口参数类
+     * @param passportId 用户Id
      * @return
      */
-    public Result obtainConnectToken(BaseOpenApiParams baseOpenApiParams, int clientId, String clientKey);
+    public Result obtainConnectToken(String passportId, int clientId);
 
 
 }
