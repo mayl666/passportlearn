@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -45,10 +46,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
 
     @Autowired
     private ConnectAuthService connectAuthService;
-    @Autowired
-    private ConnectConfigService connectConfigService;
-    @Autowired
-    private ConnectApiManager connectApiManager;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
     @Autowired
@@ -76,8 +73,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             int provider = AccountTypeEnum.getProvider(providerStr);
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-            OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             String openId;
             String accessToken;
             Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
@@ -91,12 +86,12 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             int original = userOpenApiParams.getOriginal();
+            //获取第三方用户信息
             result = handleObtainConnectUserInfo(provider, openId, accessToken, original);
             ConnectUserInfoVO connectUserInfoVO = null;
             if (result.isSuccess()) {
                 connectUserInfoVO = (ConnectUserInfoVO) result.getModels().get("connectUserInfoVo");
             }
-//            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
             if (connectUserInfoVO == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                 return result;
@@ -137,8 +132,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
                 connectUserInfoVo = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
                 if (connectUserInfoVo != null) {
-                    ConnectToken connectToken = new ConnectToken();
-                    connectToken.setPassportId(passportId);
+                    ConnectToken connectToken = connectTokenService.queryConnectToken(passportId,provider,appKey);
                     connectToken.setConnectUniqname(connectUserInfoVo.getNickname());
                     connectToken.setAvatarSmall(connectUserInfoVo.getAvatarSmall());
                     connectToken.setAvatarMiddle(connectUserInfoVo.getAvatarMiddle());
